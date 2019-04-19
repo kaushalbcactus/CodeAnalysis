@@ -1,0 +1,37 @@
+<app-root></app-root>
+<script type="text/javascript">
+    
+    window.onload = function(e){ 
+        executeDelayLoad();
+    }
+    function executeDelayLoad() {
+        var array = [
+          "https://code.jquery.com/jquery-1.12.4.js",
+          "/sites/Medcomqa/SiteAssets/CustomAssets/AngularModules/FileUploader/runtime.js",
+          "/sites/Medcomqa/SiteAssets/CustomAssets/AngularModules/FileUploader/polyfills.js",
+          "/sites/Medcomqa/SiteAssets/CustomAssets/AngularModules/FileUploader/vendor.js",
+          "/sites/Medcomqa/SiteAssets/CustomAssets/AngularModules/FileUploader/styles.js",
+          "/sites/Medcomqa/SiteAssets/CustomAssets/AngularModules/FileUploader/main.js"
+        ]
+        loadJSFile(array);
+    }
+
+    function loadJSFile(arrayJS) {
+        var script = arrayJS.shift();
+        var jsElm = document.createElement("script");
+        // set the type attribute
+        jsElm.type = "text/javascript";
+        // make the script element load file
+        jsElm.src = script;
+        jsElm.onload = function(script){
+            //console.log(script + ' loaded!');
+            if(arrayJS.length) {
+                loadJSFile(arrayJS);
+            }
+        };
+        // finally insert the element to the body element in order to load the script
+        document.getElementById("contentBox").parentElement.parentElement.appendChild(jsElm);
+
+    }
+  
+</script>
