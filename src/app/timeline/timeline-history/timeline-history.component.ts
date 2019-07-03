@@ -32,12 +32,12 @@ export class TimelineHistoryComponent implements OnInit {
   public loading: boolean;
   public displayBody = false;
   public timelineHeader = [
-    { field: 'date_time', header: 'Date & Time' },
-    { field: 'activity_type', header: 'Activity Type' },
-    { field: 'activity_sub_type', header: 'Activity Sub-Type' },
-    { field: 'activity_by', header: 'Activity By' },
-    { field: 'activity_description', header: 'Activity Description' },
-    { field: 'file_uploaded', header: 'File Uploaded' }
+    { field: 'date_time', header: 'Date & Time', width: '14%' },
+    { field: 'activity_type', header: 'Activity Type', width: '14%'},
+    { field: 'activity_sub_type', header: 'Activity Sub-Type', width: '' },
+    { field: 'activity_by', header: 'Activity By' , width: ''},
+    { field: 'activity_description', header: 'Activity Description', width: '20%' },
+    { field: 'file_uploaded', header: 'File Uploaded', width: '' }
   ];
   public filter = {
     dates: [],

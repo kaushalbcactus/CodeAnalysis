@@ -9,8 +9,8 @@
         [loading]="loading" *ngIf="timelineData.length > 0">
         <ng-template pTemplate="header" let-columns>
             <tr>
-                <th>Sr.No.</th>
-                <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                <th width="4%">Sr.No.</th>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [width]="col.width">
                     {{col.header}}
                     <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
                         ariaLabelDesc="Activate to sort in descending order"
@@ -37,13 +37,13 @@
         </ng-template>
         <ng-template pTemplate="body" let-rowData let-i="rowIndex">
             <tr>
-                <td>{{i+1}}</td>
-                <td>{{rowData.date_time | date: 'MMM d, y, hh:mm a'}}</td>
-                <td>{{rowData.activity_type}}</td>
-                <td>{{rowData.activity_sub_type}}</td>
-                <td>{{rowData.activity_by}}</td>
-                <td>{{rowData.activity_description}}</td>
-                <td><a href="{{rowData.file_uploaded}}" class="download" download
+                <td width="4%">{{i+1}}</td>
+                <td width="14%">{{rowData.date_time | date: 'MMM d, y, hh:mm a'}}</td>
+                <td width="14%">{{rowData.activity_type}}</td>
+                <td width="">{{rowData.activity_sub_type}}</td>
+                <td width="">{{rowData.activity_by}}</td>
+                <td width="20%">{{rowData.activity_description}}</td>
+                <td width=""><a href="{{rowData.file_uploaded}}" class="download" download
                         *ngIf="rowData.file_uploaded !== ''">View Docs</a></td>
             </tr>
         </ng-template>
