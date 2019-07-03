@@ -1,0 +1,71 @@
+<div class="wrap-table100" [hidden]="isPAFilterHidden">
+    <div class="tableLoader" [hidden]='isPAInnerLoaderHidden'>
+        <div id="scInnerLoader"></div>
+        <div id="scInnerLoaderText">Loading...</div>
+    </div>
+    <div class="noDataMessage" [hidden]='paHideNoDataMessage'>
+        No Tasks Found.
+    </div>
+    <div class="table100 projectDataExist ver4 m-b-110" [hidden]="isPATableHidden">
+        <p-table #paTableRef [columns]="displayedColumns" [value]="pmObject.pendingAllocationArray_copy"
+            [paginator]="true" [rows]="5" [lazy]="true" (onLazyLoad)="paLazyLoadTask($event)"
+            [totalRecords]="pmObject.totalRecords.PendingAllocation" [loading]="pmObject.loading.PendingAllocation"
+            [lazyLoadOnInit]="false">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                        {{ col.header }}
+                        <p-sortIcon [field]="col.field"></p-sortIcon>
+                    </th>
+                    <th class="lastColumnWidth"></th>
+                </tr>
+                <tr>
+                    <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                        <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="paArrays.projectCodeArray"
+                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="paArrays.clientLegalEntityArray"
+                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'POC'" [options]="paArrays.POCArray" defaultLabel="All"
+                            (onChange)="paTableRef.filter($event.value, col.field, 'in')"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="paArrays.deliveryTypeArray"
+                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'TA'" [options]="paArrays.taArray" defaultLabel="All"
+                            (onChange)="paTableRef.filter($event.value, col.field, 'in')"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'Molecule'" [options]="paArrays.moleculeArray" defaultLabel="All"
+                            (onChange)="paTableRef.filter($event.value, col.field, 'in')"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'Milestone'" [options]="paArrays.milestoneArray"
+                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'Status'" [options]="paArrays.statusArray" defaultLabel="All"
+                            (onChange)="paTableRef.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    </th>
+                    <th class="lastColumnWidth"></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-task>
+                <tr [pContextMenuRow]="rowData">
+                    <td>{{task.ProjectCode}}</td>
+                    <td>{{task.ClientLegalEntity}}</td>
+                    <td>{{task.POC}}</td>
+                    <td>{{task.DeliverableType}}</td>
+                    <td>{{task.TA}}</td>
+                    <td>{{task.Molecule}}</td>
+                    <td>{{task.PrimaryResourceText}}</td>
+                    <td>{{task.Milestone}}</td>
+                    <td>{{task.Status}}</td>
+                    <td>
+                        <p-slideMenu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu
+                            [model]="popItems" [popup]="true">
+                        </p-slideMenu>
+                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
+                            (click)="storeRowData(rowData); menu.toggle($event);"></i>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+<app-timeline-history #timelineRef></app-timeline-history>

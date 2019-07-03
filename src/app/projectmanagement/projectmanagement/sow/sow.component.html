@@ -1,0 +1,60 @@
+<div class="tableLoader" [hidden]='isAllSOWLoaderHidden'>
+    <div id="allSOWLoader"></div>
+    <div id="allSOWLoaderText">Loading...</div>
+</div>
+<div class="allSOW-section" [hidden]='isAllSOWTableHidden'>
+    <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.allSOWArrayCopy" [paginator]="true"
+        [rows]="5" [lazy]="true" [totalRecords]="pmObject.totalRecords.AllSOW" [loading]="pmObject.loading.AllSOW"
+        (onLazyLoad)="lazyLoadTask($event)" [lazyLoadOnInit]="false">
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                    {{ col.header }}
+                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                </th>
+                <th class="lastColumnWidth"></th>
+            </tr>
+            <tr>
+                <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                    <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allSOW.sowCodeArray" defaultLabel="All"
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="allSOW.shortTitleArray" defaultLabel="All"
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="allSOW.clientLegalEntityArray"
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'POC'" [options]="allSOW.pocArray" defaultLabel="All"
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'CreatedBy'" [options]="allSOW.createdByArray" defaultLabel="All"
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'CreatedDate'" [options]="allSOW.createdDateArray" defaultLabel="All"
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                </th>
+                <th class="lastColumnWidth"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-task>
+            <tr [pContextMenuRow]="rowData">
+                <td>{{task.SOWCode}}</td>
+                <td>{{task.ShortTitle}}</td>
+                <td>{{task.ClientLegalEntity}}</td>
+                <td>{{task.POC}}</td>
+                <td>{{task.CreatedBy}}</td>
+                <td>{{task.CreatedDate}}</td>
+                <td>
+                    <p-slideMenu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu
+                        [model]="popItems" [popup]="true">
+                    </p-slideMenu>
+                    <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
+                    (click)="storeRowData(task); menu.toggle($event);"></i>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+<app-timeline-history #timelineRef></app-timeline-history>

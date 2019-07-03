@@ -1,0 +1,278 @@
+
+
+ <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" *ngIf="!GanttChartView && projectDetails !== undefined">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
+  </div>
+
+
+
+<div fxLayout="row" fxLayoutAlign="center center" style="width:100%;">
+
+      <div  *ngIf="GanttChartView" fxLayout="column" fxLayoutAlign="center start" style="margin-top: 1vh;">
+
+        <!-- **********************************************************************************************************
+                                                         Heading buget Hours etc. Data
+           ********************************************************************************************************** -->
+        <div fxLayout="row" fxLayoutGap="20px" style="padding: 10px 0px 30px 0px;" fxLayoutAlign="space-around center">
+
+          <div *ngIf="(visualgraph === false && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress') && !projectDetails">
+            <button  mat-raised-button type="button"   (click)="showRestructure()">
+              <mat-icon>create</mat-icon> Restructure Project
+            </button>
+
+          </div>
+          <div fxLayout="row" id="timeline-header" fxLayoutAlign="center start">
+            <div class="table-header-cell-timeline">
+              Budget Hrs
+            </div>
+            <div class="table-body-cell-timeline">
+              <div id="projectBudgetHrs">{{oProjectDetails.budgetHours}}</div>
+            </div>
+            <div class="table-header-cell-timeline">
+              Allocated Hrs
+            </div>
+            <div class="table-body-cell-timeline">
+              <div id="allocatedHrs">{{oProjectDetails.allocatedHours}}</div>
+            </div>
+            <div class="table-header-cell-timeline">
+              Spent Hrs
+            </div>
+            <div class="table-body-cell-timeline">
+              <div id="spentHrs">{{oProjectDetails.hoursSpent}}</div>
+            </div>
+            <div class="table-header-cell-timeline">
+              Available Hrs
+            </div>
+            <div class="table-body-cell-timeline" style="border-top-right-radius: 4px;border-bottom-right-radius: 4px;">
+              <div id="availableBudgetHrs">{{oProjectDetails.availableHours}}</div>
+            </div>
+          </div>
+          <div>
+            <button type="button" mat-raised-button (click)="showVisualRepresentation()">
+              <mat-icon *ngIf="visualgraph === true"> table_chart</mat-icon>
+              <mat-icon *ngIf="visualgraph === false"> show_chart</mat-icon>
+              {{ visualgraph === false ? 'Visual Representation' : 'Table Representation' }}
+            </button>
+          </div>
+        </div>
+
+          <!-- **********************************************************************************************************
+                                                         Color Code Data
+           ********************************************************************************************************** -->
+
+           <div fxLayout="row" fxLayoutAlign="space-between center" style="width: 100%;padding: 0px 0px 5px;">
+            <div>
+            <div class="input-color">
+             <label>Planned</label>
+             <div class="color-box" style="background-color: #FFD34E;"></div>
+          </div>
+          <div class="input-color">
+            <label>Not Started</label>
+            <div class="color-box" style="background-color: #5F6273;"></div>
+          </div>
+          <div class="input-color">
+            <label>In Progress</label>
+            <div class="color-box" style="background-color: #6EDC6C;"></div>
+          </div>
+          <div class="input-color">
+            <label>Completed</label>
+            <div class="color-box" style="background-color: #3498DB;"></div>
+          </div>
+          <div class="input-color">
+            <label>Auto Closed</label>
+            <div class="color-box" style="background-color: #8183CC;"></div>
+          </div>
+          <div class="input-color">
+            <label>On Hold</label>
+            <div class="color-box" style="background-color: #FF3E56;"></div>
+          </div>
+        </div>
+        <div>
+        <div *ngIf="visualgraph === false && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress'" class="input-color" fxLayoutAlign="end center">
+          <button *ngIf="!projectDetails"  mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks()">
+            <mat-icon>save</mat-icon> Save Tasks
+          </button>
+        </div>
+      </div>
+        </div>
+        
+        <div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center"  *ngIf="loaderenable" >
+            <div id="scInnerLoader"></div>
+            <div id="scInnerLoaderText">Loading...</div>
+        </div>
+
+        <!-- **********************************************************************************************************
+                                                          Table View Data
+           ********************************************************************************************************** -->
+        <div fxLayout="row" fxLayoutAlign="center start" [hidden]="visualgraph === true" *ngIf="!loaderenable">
+          <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" position="bottom-center">
+          </p-toast>
+          <p-treeTable [value]="milestoneData" [(contextMenuSelection)]="selectedNode" [contextMenu]="!projectDetails ? milestones : ''"
+            (onContextMenuSelect)="milestoneContextMenuEvent($event, milestones)">
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width:30%"> </th>
+                <th style="width:5%">Budget Hrs</th>
+                <th style="width:5%">Spent Hrs</th>
+                <th style="width:15%" >Start Date</th>
+                <th style="width:15%">End Date</th>
+                <th style="width:4%">TAT</th>
+                <th style="width:15%">Assign To</th>
+                <th style="width:5%">Allow Start</th>
+                <th style="width:3%"> </th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
+              <tr  *ngIf="(rowData.status !== 'Deleted')" [ttContextMenuRow]="rowNode" class="milestoneTable"
+                [style.font-weight]="rowData.type === 'milestone' || rowData.type === 'submilestone' || rowData.pName ==='Client Review' ? '700':''">
+
+                <td [style.text-align]="'left'" [style.padding-left.px]="rowData.pName ==='Client Review' ? '20':''">
+                  <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+                  {{rowData.pName}}
+
+                  <div id="nextMilestone" title="Set as Current Milestone" (click)="setAsNextMilestoneCall()" *ngIf="rowData.isNext === true" style="display: inline;"
+                    [hidden]=" rowData.type==='milestone' && (oProjectDetails.status ==='In Discussion' || rowData.status === 'Completed' || rowData.pID === -1)">
+                    <i class="pi pi-check" style="font-size: 2em;vertical-align: middle;"></i>
+                  </div>
+                </td>
+                <td style="text-align: center;">
+                  <span
+                    *ngIf="(rowData.type === 'milestone' && rowData.status !== 'Not Saved' && !rowData.isCurrent && !rowData.isFuture) || (rowData.type ==='task' && !rowData.editMode && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client') && projectDetails ">{{rowData.budgetHours}}</span>
+                  <input type="number" class="form-control budgetHr" required="required" min="0" value="0"
+                    onchange="validity.valid||(value='0');" step="0.25"
+                    *ngIf="(rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.editMode && (rowData.itemType !== 'Client Review' &&  rowData.itemType !== 'Send to client')) || ((rowData.status ==='In Progress' || rowData.status ==='Not Started' || rowData.status ==='Not Confirmed' || rowData.status ==='Not Saved') && rowData.type === 'milestone') && !projectDetails"
+                    required="required"
+                    style="border:none;border-radius: 0px;height: 25px;text-align: center;padding:0px;"
+                    [id]="rowData.pID" (ngModelChange)="modelChanged(rowData)" [(ngModel)]="rowData.budgetHours">
+                </td>
+                <td style="text-align: center;">{{rowData.spentTime}}</td>
+
+                <td> 
+
+                  <span [title] = "rowData.pUserStart |  date:' d MMM, y, h:mm a'"  *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone' || (!rowData.editMode && rowData.type === 'task' && rowData.itemType==='Client Review' ) ">{{rowData.pStart |  date:' d MMM, y' }}</span>
+                  <span [title] = "rowData.pUserStart |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true  && rowData.itemType !=='Client Review'">{{rowData.pStart |  date:' d MMM, y, h:mm a' }}</span>
+
+                  <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType ==='Client Review' ">
+                    <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart" [disabledDays]="[0,6]"
+                      [readonlyInput]="true" dateFormat="dd M , yy"
+                      yearRange="{{yearsRange}}" appendTo="body" hideOnDateTimeSelect="true"  
+                      [stepMinute]="15" [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
+                      [yearNavigator]="true"  (onClose)="DateChangePart(rowData,'start')"
+                      [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px','border':'none'}"></p-calendar>
+                  </span>
+                  <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Client Review' ">
+                    <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart" [disabledDays]="[0,6]"
+                      [readonlyInput]="true" dateFormat="dd M , yy"
+                      yearRange="{{yearsRange}}" appendTo="body" hideOnDateTimeSelect="true"  
+                      [stepMinute]="15" [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
+                      [yearNavigator]="true"  (onClose)="DateChangePart(rowData,'start')"
+                      [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px','border':'none'}"></p-calendar>
+                      <input [disabled]="rowData.tat" readonly [ngxTimepicker]="picker"  [(ngModel)]="rowData.pUserStartTimePart" class="timePicker">
+                      <ngx-material-timepicker [preventOverlayClick]="true" (closed)="DateChangePart(rowData,'start')" #picker [minutesGap]="15"></ngx-material-timepicker>
+                  </span>
+
+                </td>
+
+                <td>
+                  <span [title] = "rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone' || (!rowData.editMode && rowData.type === 'task' && rowData.itemType==='Client Review' ) ">{{rowData.pEnd |  date:' d MMM, y' }}</span>
+                  <span [title] = "rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true  && rowData.itemType !=='Client Review'">{{rowData.pEnd |  date:' d MMM, y, h:mm a' }}</span>
+
+                  <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType ==='Client Review' ">
+                    <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart" [disabledDays]="[0,6]"
+                      [readonlyInput]="true" dateFormat="dd M , yy"
+                      yearRange="{{yearsRange}}" appendTo="body" hideOnDateTimeSelect="true"  
+                      [stepMinute]="15" [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
+                      [yearNavigator]="true"  (onClose)="DateChangePart(rowData,'end')"
+                      [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px','border':'none'}"></p-calendar>
+                        
+                  </span>
+                  <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Client Review' ">
+                    <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart" [disabledDays]="[0,6]"
+                      [readonlyInput]="true" dateFormat="dd M , yy"
+                      yearRange="{{yearsRange}}" appendTo="body" hideOnDateTimeSelect="true"  
+                      [stepMinute]="15" [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
+                      [yearNavigator]="true"  (onClose)="DateChangePart(rowData,'end')"
+                      [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px','border':'none'}"></p-calendar>
+                      <input [disabled]="rowData.tat" readonly [ngxTimepicker]="picker" [(ngModel)]="rowData.pUserEndTimePart" class="timePicker">
+                      <ngx-material-timepicker [preventOverlayClick]="true" (closed)="DateChangePart(rowData,'start')" #picker [minutesGap]="15"></ngx-material-timepicker>
+                  </span>
+                </td>
+              
+                <td style="text-align: center">
+                  <span *ngIf="rowData.type ==='milestone' || rowData.type ==='submilestone'">{{rowData.tatVal}}</span>
+                  <span  *ngIf="!rowData.editMode && rowData.type ==='task'">{{rowData.tat === true ? rowData.tatVal :'No'}}</span>
+                  <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task'"
+                    [disabled]=" rowData.pName ==='Client Review'" (onChange)="ChangeEndDate($event, rowData)" [(ngModel)]="rowData.pName ==='Client Review' ? 'Yes' : rowData.tat" binary="true"></p-checkbox>
+                </td>
+                <td>
+                  <span *ngIf="!rowData.editMode"> {{rowData.pRes}}</span>
+                  <ng-select *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone'" #assignedTo class="txtTask"
+                    [items]="rowData.assignedUsers" bindLabel="Title" placeholder="Select Resource" groupBy="userType"
+                    [(ngModel)]="rowData.AssignedTo" (change)="assignedToUserChanged(rowData)"  appendTo="body"></ng-select>
+                </td>
+                <td>
+                  <span
+                    *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone') ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
+                  <p-checkbox
+                    *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.pName !=='Client Review' && rowData.pName !=='SC')"
+                    [(ngModel)]="rowData.allowStart" binary="true"></p-checkbox>
+                </td>
+                <td [style.backgroundColor]="rowData.color">
+                  <div
+                    *ngIf="(rowData.type === 'milestone' && rowData.type === 'submilestone' ) && ((rowData.isCurrent || rowData.isFuture) && rowData.status  !== 'Completed') ">
+                    <button type="button" [hidden]="rowData.editMode === false" (click)="CancelChanges(rowData,'milestone')"
+                      style="line-height: 0px;height: 0px;" mat-icon-button title="Cancel">
+                      <mat-icon> cancel</mat-icon>
+                    </button>
+                  </div>
+                  <button
+                    *ngIf="rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && (rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') "
+                    [hidden]="rowData.editMode === false" type="button" (click)="CancelChanges(rowData,'task')"
+                    style="line-height: 0px;height: 0px;" mat-icon-button title="Cancel">
+                    <mat-icon> cancel</mat-icon>
+                  </button>
+                </td>
+              </tr>  
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage" let-columns>
+              <tr>
+                  <td style="text-align:center" [attr.colspan]="9">
+                      No milestones found
+                  </td>
+              </tr>
+            </ng-template>
+            
+          </p-treeTable>
+
+          <p-contextMenu #milestones  [hidden]="contextMenuvisible" appendTo="body"  [model]="contextMenuOptions"></p-contextMenu>
+
+          <!-- **********************************************************************************************************
+                                                         Comment Popup
+           ********************************************************************************************************** -->
+          <p-dialog header="Any specific instructions for task" [closable]="false" [modal]="true" [style]="{width: '450px', minWidth: '300px'}"
+            [(visible)]="displayComment">
+            <textarea *ngIf="displayComment" placeholder="Leave Comment" rows="8" cols="30" pInputTextarea
+              autoResize="autoResize" style="width:100%;padding: 3%;" [(ngModel)]="task.data.scope"> </textarea>
+            <p-footer>
+              <button type="button" pButton icon="pi pi-check" (click)=" displayComment=false" label="Save"></button>
+              <button type="button" pButton icon="pi pi-times" (click)="cancelComment();displayComment=false"
+                label="Cancel" class="ui-button-secondary"></button>
+            </p-footer>
+          </p-dialog>
+        </div>
+
+        <!-- **********************************************************************************************************
+                                                         gantt chart Data
+           ********************************************************************************************************** -->
+        <div fxLayout="row" fxLayoutAlign=" start center" class="VisualRepresentation" [hidden]="visualgraph === false">
+          <ng-gantt style="width:100%;" [options]="editorOptions" [data]="GanttchartData" #gantteditor></ng-gantt>
+        </div>
+
+      </div>
+
+   
+</div>

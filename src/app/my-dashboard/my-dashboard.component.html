@@ -1,0 +1,12 @@
+<div fxLayout="row" fxLayoutAlign="space-between  center" >
+
+    <p-tabMenu [model]="items" fxFlex="97">
+    </p-tabMenu>
+    
+<i fxFlex="3" (click)="loadTimeBookingDialog()"  title="Time Booking" style="cursor: pointer; font-size: 2em;padding:2px;border-bottom:1px solid #C53E3E;" class="fa fa-calendar-plus-o" aria-hidden="true"></i>
+    
+</div>
+
+<router-outlet (activate)="onActivate($event) " #myOutlet="outlet"></router-outlet>
+
+ 

@@ -1,0 +1,29 @@
+<div>
+
+  <p-table *ngIf="tasks.length > 0" [value]="tasks">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 10em;">Task Type</th>
+        <th>Task Name</th>
+        <th>Assigned To</th>
+        <th>Start Date</th>
+        <th>Due Date</th>
+        <th style="width: 10em;">Status</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-task>
+      <tr>
+        <td>{{task.TaskType}}</td>
+        <td>{{task.Title}}</td>
+        <td>{{task.AssignedTo.Title}}</td>
+        <td>{{task.StartDate}}</td>
+        <td>{{task.DueDate}}</td>
+        <td>{{task.Status}}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <div *ngIf="tasks.length===0"><span style="font-size: 2em;color:#C53E3E;">No Task Available.</span></div>
+
+
+</div>

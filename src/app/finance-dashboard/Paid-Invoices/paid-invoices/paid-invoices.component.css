@@ -1,0 +1,27 @@
+/* table ui */
+::ng-deep  .ui-table table, .ui-table table
+{  table-layout:auto !important;
+}
+::ng-deep .ui-table-tablewrapper {
+    width: auto!important;
+}
+
+::ng-deep .ui-table-resizable {
+    padding-bottom: 1px;
+    /* overflow: auto; */
+    width: auto !important;
+}
+.ui-table .ui-table-tbody > tr, .ui-table .ui-table-thead > tr > th, .ui-table .ui-table-tfoot > tr > td{
+    max-width: 300px !important;
+    font-size: 12px;
+    padding: 0px !important;
+    padding-left: 4px !important;
+    color: black;
+    text-transform: capitalize;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis !important;
+    border-width: 1px;
+}
+
+  table td {border:inset 1px #000;}

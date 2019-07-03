@@ -1,0 +1,46 @@
+<p-tabMenu [model]="items" [activeItem]="activeItem"></p-tabMenu>
+<div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" [hidden]="!loaderenable">
+  <div id="modalInnerLoader"></div>
+  <div id="modalInnerLoaderText">Loading...</div>
+</div>
+<p-toast styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'" position="bottom-center">
+</p-toast>
+<p-fileUpload [style]="{'margin-top':'1vh'}" customUpload="true" (uploadHandler)="uploadDocuments($event,selectedTab)" multiple="multiple" maxFileSize="100000000">
+</p-fileUpload>
+<p-tabPanel [header]="item.label" [hidden]="loaderenable" *ngFor="let item of items; let i = index"
+  [selected]="item.label === selectedTab">
+  <p-table [style]="{'margin-top':'1vh'}" *ngIf="documentArray.length > 0" [columns]="cols"
+    [(selection)]="selectedDocuments" [value]="documentArray">
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th style="width: 3em">
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th *ngFor="let col of columns">
+          {{col.header}}
+          <i *ngIf="item.label ==='My Drafts'" style="font-size: 1.2em; margin-left: 0.5vw;cursor: pointer;"
+            [hidden]="col.header !=='Document Name'" title="Mark as final" class="fa fa-file-text" aria-hidden="true"
+            (click)="markAsFinal()"></i>
+
+          <i style="font-size: 1.2em; margin-left: 0.5vw;cursor: pointer;vertical-align: middle;"
+            [hidden]="col.header !=='Document Name'" (click)="downloadFile()" title="Download" class="fa fa-download"
+            aria-hidden="true"></i>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <tr>
+        <td style="width: 3em">
+          <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+        </td>
+        <td *ngFor="let col of columns">
+          <a href="{{rowData.ServerRelativeUrl}}" style="color:#c53e3e;" target="_blank"
+            *ngIf="col.field === 'fileName'">{{rowData[col.field]}}</a>
+          <span *ngIf="col.field !== 'fileName'">{{rowData[col.field]}}</span>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</p-tabPanel>
+<div *ngIf="documentArray.length === 0 && !loaderenable"
+  style="padding: 30px 0px 0px 0px;color: #c53e3e;font-size: 1.2em;">* No Documents present for current task. </div>

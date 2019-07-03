@@ -1,0 +1,333 @@
+<div class="tableLoader" [hidden]='isAllProjectLoaderHidden'>
+    <div id="allProjectLoader"></div>
+    <div id="allProjectLoaderText">Loading...</div>
+</div>
+<div class="allProjects-section" [hidden]='isAllProjectTableHidden'>
+    <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.allProjectsArrayCopy" [paginator]="true"
+        [rows]="5" [lazy]="true" [totalRecords]="pmObject.totalRecords.AllProject"
+        [loading]="pmObject.loading.AllProject" (onLazyLoad)="lazyLoadTask($event)" [lazyLoadOnInit]="false">
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                    {{ col.header }}
+                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                </th>
+                <th class="lastColumnWidth"></th>
+            </tr>
+            <tr>
+                <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                    <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allProjects.sowCodeArray" defaultLabel="All"
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="allProjects.projectCodeArray"
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="allProjects.shortTitleArray"
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="allProjects.clientLegalEntityArray"
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="allProjects.deliveryTypeArray"
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ProjectType'" [options]="allProjects.projectTypeArray"
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Status'" [options]="allProjects.statusArray" defaultLabel="All"
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'CreatedBy'" [options]="allProjects.createdByArray" defaultLabel="All"
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'CreatedDate'" [options]="allProjects.createdDateArray"
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                </th>
+                <th class="lastColumnWidth"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-task>
+            <tr [pContextMenuRow]="rowData">
+                <td>{{task.SOWCode}}</td>
+                <td>{{task.ProjectCode}}</td>
+                <td>{{task.ShortTitle}}</td>
+                <td>{{task.ClientLegalEntity}}</td>
+                <td>{{task.DeliverableType}}</td>
+                <td>{{task.ProjectType}}</td>
+                <td
+                    [ngClass]="{'blueColor' : task.isBlueIndicator,'redColor': task.isRedIndicator,'greenColor': task.isGreenIndicator}">
+                    {{task.Status}}</td>
+                <td>{{task.CreatedBy}}</td>
+                <td>{{task.CreatedDate}}</td>
+                <td>
+                    <p-slideMenu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu
+                        [model]="popItems" [popup]="true"></p-slideMenu>
+                    <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
+                        (click)="storeRowData(rowData,menu); menu.toggle($event);"></i>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+    <div *ngIf="pmObject.isProjectRightSideVisible" class="ng-right-side-overlay">
+        <p-sidebar [(visible)]="pmObject.isProjectRightSideVisible" position="right" styleClass="ui-sidebar-md">
+            <div class="ui-g">
+                <div class="ui-g-6">SOW Code</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.SOWSelect.SOWCode}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Project Code</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.ProjectAttributes.ProjectCode}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">ClientLegalEntity</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.ProjectAttributes.ClientLegalEntity}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Sub Division</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.ProjectAttributes.SubDivision}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Billing Entity</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.ProjectAttributes.BillingEntity}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Billed By</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.ProjectAttributes.BilledBy}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Practice Area</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.ProjectAttributes.PracticeArea}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Priority</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.ProjectAttributes.Priority}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Project Status</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.ProjectAttributes.ProjectStatus}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Point of Contact</div>
+                <div class="ui-g-3">{{this.pmObject.addProject.ProjectAttributes.PointOfContact1}}</div>
+                <div class="ui-g-3">{{this.pmObject.addProject.ProjectAttributes.PointOfContact2}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Molecule</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.ProjectAttributes.Molecule}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Therapeutic Area</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.ProjectAttributes.TherapeuticArea}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Indication</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.ProjectAttributes.Indication}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">PUB Support Required</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.ProjectAttributes.PUBSupportRequired}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">PUB Support Status</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.ProjectAttributes.PUBSupportStatus}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-12">Project Title</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-12">{{this.pmObject.addProject.ProjectAttributes.ProjectTitle}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-12">Alternate ID/ Short Title</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-12">{{this.pmObject.addProject.ProjectAttributes.AlternateShortTitle}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-12">End Use of Deliverable</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-12">{{this.pmObject.addProject.ProjectAttributes.EndUseofDeliverable}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">SOW Box Link</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.ProjectAttributes.SOWBoxLink}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-12">Conference / Journal</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-12">{{this.pmObject.addProject.ProjectAttributes.ConferenceJournal}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-12">Authors</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-12">{{this.pmObject.addProject.ProjectAttributes.Authors}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-12">Comments</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-12">{{this.pmObject.addProject.ProjectAttributes.Comments}}</div>
+            </div>
+            <div *ngIf="pmObject.addProject.Timeline.Standard.IsStandard" class="ui-g"> Standard Project
+                <div class="ui-g">
+                    <div class="ui-g-6">Service</div>
+                    <div class="ui-g-6">{{this.pmObject.addProject.Timeline.Standard.Service}}</div>
+                </div>
+                <div class="ui-g">
+                    <div class="ui-g-6">Proposed Start Date</div>
+                    <div class="ui-g-6">{{this.pmObject.addProject.Timeline.Standard.ProposedStartDate | date:'medium'}}
+                    </div>
+                </div>
+                <div class="ui-g">
+                    <div class="ui-g-6">Proposed End Date</div>
+                    <div class="ui-g-6">{{this.pmObject.addProject.Timeline.Standard.ProposedEndDate | date:'medium'}}
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="pmObject.addProject.Timeline.NonStandard.IsStandard" class="ui-g"> Non Standard Project
+                <div class="ui-g">
+                    <div class="ui-g-6">Deliverable Type</div>
+                    <div class="ui-g-6">{{this.pmObject.addProject.Timeline.NonStandard.DeliverableType}}</div>
+                </div>
+                <div class="ui-g">
+                    <div class="ui-g-6">Sub Type</div>
+                    <div class="ui-g-6">{{this.pmObject.addProject.Timeline.NonStandard.SubDeliverable}}</div>
+                </div>
+                <div class="ui-g">
+                    <div class="ui-g-6">Service</div>
+                    <div class="ui-g-6">{{this.pmObject.addProject.Timeline.NonStandard.Service}}</div>
+                </div>
+                <div class="ui-g">
+                    <div class="ui-g-6">Proposed Start Date</div>
+                    <div class="ui-g-6">
+                        {{ this.pmObject.addProject.Timeline.NonStandard.ProposedStartDate | date:'medium'}}
+                    </div>
+                </div>
+                <div class="ui-g">
+                    <div class="ui-g-6">Proposed End Date</div>
+                    <div class="ui-g-6">
+                        {{this.pmObject.addProject.Timeline.NonStandard.ProposedEndDate | date:'medium'}}
+                    </div>
+                </div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">currency</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.FinanceManagement.Currency}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Budget Hours</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.FinanceManagement.BudgetHours}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-12">Budget</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Total</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.FinanceManagement.Budget.Total}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Revenue</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.FinanceManagement.Budget.Net}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">OOP</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.FinanceManagement.Budget.OOP}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Tax</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.FinanceManagement.Budget.Tax}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Active CM 1</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.FinanceManagement.ActiveCM1}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Active CM 2</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.FinanceManagement.ActiveCM2}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Active Delivery 1</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.FinanceManagement.ActiveDelivery1}}</div>
+            </div>
+            <div class="ui-g">
+                <div class="ui-g-6">Active Delivery 2</div>
+                <div class="ui-g-6">{{this.pmObject.addProject.FinanceManagement.ActiveDelivery2}}</div>
+            </div>
+        </p-sidebar>
+    </div>
+    <div *ngIf="pmObject.isAuditRollingVisible">
+        <p-dialog [(visible)]="pmObject.isAuditRollingVisible" [modal]="true" [style]="{width: '1300px'}">
+            <p-header>
+                Audit Rolling Project.
+            </p-header>
+            <div class="audit-rolling-section">
+                <div class="formContentChecklist">
+                    <div class="formRow">
+                        <div class="attrCheckListContentHeader"></div>
+                        <div class="attrCheckListContentHeader">
+                            Parameters
+                        </div>
+                        <div class="attrCheckListContentHeader">Comments</div>
+                    </div>
+                    <div class="formRow">
+                        <div class="attrCheckListHeader">
+                            <input type="checkbox"> </div>
+                        <div class="attrCheckListContent">
+                            All files uploaded correctly
+                        </div>
+                        <div class="attrCheckListContent">
+                            <textarea rows="1" cols="30"></textarea>
+                        </div>
+                    </div>
+                    <div class="formRow">
+                        <div class="attrCheckListHeader">
+                            <input type="checkbox"> </div>
+                        <div class="attrCheckListContent">
+                            All tasks completed and hrs updated
+                        </div>
+                        <div class="attrCheckListContent">
+                            <textarea rows="1" cols="30"></textarea>
+                        </div>
+                    </div>
+                    <div class="formRow">
+                        <div class="attrCheckListHeader">
+                            <input type="checkbox"> </div>
+                        <div class="attrCheckListContent">
+                            All necessary project details updated
+                        </div>
+                        <div class="attrCheckListContent">
+                            <textarea rows="1" cols="30"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="error" *ngIf="checkList.addRollingProjectError">{{checkList.addRollingProjectErrorMsg}}</div>
+            <p-footer>
+                <button class="btnSave" type="button" (click)="auditComplete()">Confirm</button>
+                <button class="btnCancel" type="button" (click)="closeDialog()">Cancel</button>
+            </p-footer>
+        </p-dialog>
+    </div>
+    <div *ngIf="pmObject.isMoveProjectToSOWVisible">
+        <p-dialog [(visible)]="pmObject.isMoveProjectToSOWVisible" [modal]="true" [style]="{width: '900px'}">
+            <p-header>
+                Move Project To SOW
+            </p-header>
+            <div class="ui-grid-col-2">SOW Code</div>
+            <div class="ui-grid-col-4">
+                <p-dropdown [(ngModel)]="newSelectedSOW" [options]="sowDropDownArray" placeholder="Please Select"
+                    [showClear]="true"></p-dropdown>
+            </div>
+            <p-footer>
+                <button class="btnSave" type="button" (click)="performSOWMove()">Move</button>
+                <button class="btnCancel" type="button" (click)="closeMoveSOW()">Cancel</button>
+            </p-footer>
+        </p-dialog>
+    </div>
+    <p-toast position="bottom-right" key="allProject"></p-toast>
+</div>
+<app-timeline-history #timelineRef></app-timeline-history>

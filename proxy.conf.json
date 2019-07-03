@@ -1,0 +1,9 @@
+{
+  "/sites/*": {
+      "target": "http://localhost:8080",
+      "secure": false,
+      "changeOrigin": true,
+      "logLevel": "debug",
+      "pathRewrite": {"^/sites" : "http://localhost:8080/sites"}
+    }
+  }

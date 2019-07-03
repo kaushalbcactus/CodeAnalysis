@@ -1,0 +1,67 @@
+
+  
+
+<div fxLayout="row" fxLayoutAlign="center center" *ngIf=" !loaderenable  && SearchView " >
+        <mat-card class="Search-card">
+          <mat-card-content>
+            <form class="example-form" fxLayoutAlign="center center">
+              <mat-form-field    style="width:80%;">
+                <input matInput placeholder="Search Project" [formControl]="searchFormControl" (keydown)="SearchProject($event)">
+                <button matSuffix mat-icon-button>
+                  <mat-icon class="searchIcon" (click)=getProjectDetails() [style.color]=" !Searchenable ? '#b03f44'  :'#673AB7'" >search</mat-icon>
+                </button>
+              </mat-form-field>
+            </form>
+          </mat-card-content>
+        </mat-card>
+  </div>
+
+   <div fxLayout="row" fxLayoutAlign="center center"   [hidden]="errormessage ===''" >
+      <p style="color:#b03f44;font-size: 1.3em;">{{errormessage}}</p>
+  </div>
+
+  <div fxLayout="column" style="padding: 10vw;" fxLayoutAlign="center center" [hidden]="!loaderenable" >
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
+
+<div id="codeSection" *ngIf = "!loaderenable  && timelineView">
+    <h1 class="floatLeft" id="formHeaderText">Project Code: {{globalObject.oTaskAllocation.oProjectDetails.projectCode}}({{globalObject.oTaskAllocation.oProjectDetails.wbjid}})</h1>
+    <div class="floatRight">
+     
+      <mat-icon (click) = "showSearchSection()" style="vertical-align: middle;color:#db1721;cursor: pointer; ">navigation</mat-icon>
+    </div>
+    <div class="clearBoth"></div>
+</div>
+
+<div fxLayout="column" fxLayoutAlign="center center"   *ngIf = "!loaderenable  && timelineView" >
+    
+    <app-resource-section (reloadResources)="reloadResourceArray($event)"  fxLayout="row" style="width:98%;" fxLayoutAlign="center center"></app-resource-section>
+
+
+
+    <mat-accordion fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="space-around center" style="width:98%;"
+    >
+ 
+     <!--***************************************************************************************************************************************
+                                                            TimeLine  panel      
+         ****************************************************************************************************************************************-->
+ 
+     <mat-expansion-panel style="  
+          border-radius: 0px;width:100%;" [expanded]="true">
+       <mat-expansion-panel-header fxLayoutAlign="center center" style=" background: #db1721;"
+         [collapsedHeight]="customCollapsedHeight" [expandedHeight]="customCollapsedHeight">
+         <h4 style="width:100%;margin: 0%;">
+           <mat-icon style="vertical-align: middle;">timeline</mat-icon> TimeLine
+         
+         </h4>
+       </mat-expansion-panel-header>
+       <app-timeline (reloadResources)="reloadResourceArray($event)"  fxLayout="row" style="width:98%;" fxLayoutAlign="center center"></app-timeline>
+
+      </mat-expansion-panel>
+      </mat-accordion>
+
+
+  
+
+</div>

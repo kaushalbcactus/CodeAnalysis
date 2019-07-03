@@ -1,0 +1,15 @@
+<div class="tableLoader" [hidden]='fdConstantsService.fdComponent.isPSInnerLoaderHidden'>
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
+
+<!-- Toaster -->
+<!-- <p-toast [style]="{marginTop: '80px'}"></p-toast> -->
+
+<!-- Tabmenu list -->
+<p-tabMenu [model]="fdConstantsService.fdComponent.tabs.topMenu" class="smb-20"></p-tabMenu>
+
+<router-outlet></router-outlet>
+
+<!-- Toast Messages -->
+<p-toast position="bottom-right" key="fdToast"></p-toast>

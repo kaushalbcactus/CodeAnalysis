@@ -1,0 +1,484 @@
+<div class="ui-g ui-fluid mtb-20">
+    <div class="ui-g-12 ui-md-4">
+        <p-calendar [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="dd M , yy"
+            placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()" (onClearClick)="setDefault()"></p-calendar>
+    </div>
+    <div class="ui-g-12 ui-md-2">
+        <button pButton type="button" type="button" label="Request expense"
+            (click)="requestExpense();scroll(target)"></button>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+
+<!-- Tabmenu list -->
+<p-tabMenu [model]="fdConstantsService.fdComponent.tabs.expenditureMenu"></p-tabMenu>
+
+<!-- Request Expense -->
+<p-dialog header="Add Expenditure" [(visible)]="showHideREModal" [modal]="true" [contentStyle]="{'max-height':'450px'}"
+    [responsive]="true" [style]="{'width': '55%'}" (onHide)="cancelFormSub('addExpenditure')">
+    <form id="myform" [formGroup]="addExpenditure_form" #target>
+        <div class="p-grid">
+            <div class="p-col-4">
+                <div class="box">
+                    Payment Request
+                </div>
+            </div>
+            <div class="p-col-8">
+                <div class="box">
+                    <p-radioButton name="groupPM" value="Credit Card" label="Credit Card" inputId="pm1"
+                        (onClick)="selectedRequest()" formControlName="PaymentRequest"></p-radioButton>&nbsp;
+                    <p-radioButton name="groupPM" value="Invoice Payment" label="Invoice Payment" inputId="pmD2"
+                        (onClick)="selectedRequest()" formControlName="PaymentRequest">
+                    </p-radioButton>&nbsp;
+                    <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.PaymentRequest.errors">
+                        <div *ngIf="isValidExpenditureForm.PaymentRequest.errors.required" style="color:red;">
+                            Payment
+                            Request is required.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-grid">
+            <div class="p-col-4">
+                <div class="box">
+                    Billable
+                </div>
+            </div>
+            <div class="p-col-8">
+                <div class="box">
+                    <p-radioButton name="groupB" value="Billable" label="Yes" inputId="b1"
+                        (onClick)="selectedBillable()" formControlName="Billable">
+                    </p-radioButton>&nbsp;
+                    <p-radioButton name="groupB" value="Non Billable" label="No" inputId="b2"
+                        (onClick)="selectedBillable()" formControlName="Billable">
+                    </p-radioButton>
+                    <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.Billable.errors">
+                        <div *ngIf="isValidExpenditureForm.Billable.errors.required" style="color:red;">Billable
+                            is
+                            required.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-grid">
+            <div class="p-col-4">
+                <div class="box">
+                    Freelancer/ Vendor Name
+                </div>
+            </div>
+            <div class="p-col-4">
+                <div class="box">
+                    <p-dropdown [options]="freelancerVendersRes" virtualScroll="true" itemSize="30" [showClear]="false"
+                        resetFilterOnHide="false" filter="true" autoDisplayFirst="false" name="projctCodeDD"
+                        placeholder="Select Freelancer/ Vendor Name " [style]="{'width':'100%'}"
+                        formControlName="FreelancerVenderName" optionLabel="Title">
+                    </p-dropdown>
+                    <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.FreelancerVenderName.errors">
+                        <div *ngIf="isValidExpenditureForm.FreelancerVenderName.errors.required" style="color:red;">
+                            Freelancer / Vendor Name is required.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-col-4">
+                <i class="pi pi-plus-circle" style="font-size: 3em;color:#c53e3e;margin-top: -7px;"
+                    (click)="openFreelancerModal()"></i>
+            </div>
+        </div>
+        <div class="p-grid">
+            <div class="p-col-4">
+                <div class="box">
+                    Invoice No./ Reference No
+                </div>
+            </div>
+            <div class="p-col-8">
+                <div class="box">
+                    <input type="text" pInputText formControlName="InvoiceNo" style="width: 100%;" />
+                    <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.InvoiceNo.errors">
+                        <div *ngIf="isValidExpenditureForm.InvoiceNo.errors.required" style="color:red;">Please
+                            Provide Invoice / Reference No.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-grid">
+            <div class="p-col-4">
+                <div class="box">
+                    Currency
+                </div>
+            </div>
+            <div class="p-col-8">
+                <div class="box">
+                    <p-dropdown [options]="currencyList" placeholder="Select Currency" [showClear]="false"
+                        resetFilterOnHide="false" filter="true" autoDisplayFirst="false" name="currency"
+                        placeholder="Select a Currency" [style]="{'width':'100%'}" formControlName="Currency">
+                        <ng-template let-item pTemplate="item">
+                            <span>{{item.value}}</span>
+                        </ng-template>
+                    </p-dropdown>
+
+                    <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.Currency.errors">
+                        <div *ngIf="isValidExpenditureForm.Currency.errors.required" style="color:red;">Please
+                            select Currency.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-grid">
+            <div class="p-col-4">
+                <div class="box">
+                    Amount
+                </div>
+            </div>
+            <div class="p-col-8">
+                <div class="box">
+                    <input id="input" type="text" (keypress)="onlyNumberKey($event)" pInputText style="width: 100%;"
+                        formControlName="Amount" maxlength="15" (input)="refAmt($event.target.value)" />
+
+                    <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.Amount.errors">
+                        <div *ngIf="isValidExpenditureForm.Amount.errors.required" style="color:red;">Please
+                            provide Amount.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-grid">
+            <div class="p-col-4">
+                <div class="box">
+                    Expense Type
+                </div>
+            </div>
+            <div class="p-col-8">
+                <div class="box">
+                    <p-dropdown [options]="expenseTypeArray" placeholder="Select a Expense Type"
+                        [style]="{'width':'100%'}" formControlName="SpendType" optionLabel="value"
+                        onfocus='this.size=10;'>
+                    </p-dropdown>
+                    <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.SpendType.errors">
+                        <div *ngIf="isValidExpenditureForm.SpendType.errors.required" style="color:red;">Expense
+                            type is required.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-grid">
+            <div class="p-col-4">
+                <div class="box">Note</div>
+            </div>
+            <div class="p-col-8">
+                <div class="box">
+                    <textarea rows="3" cols="40" pInputTextarea formControlName="Notes"></textarea>
+                    <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.Notes.errors">
+                        <div *ngIf="isValidExpenditureForm.Notes.errors.required" style="color:red;">Note is
+                            required.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-grid">
+            <div class="p-col-4">
+                <div class="box">Upload File</div>
+            </div>
+            <div class="p-col-8">
+                <div class="box">
+                    <input type="file" name="myfile" class="form-control" id="myfile"
+                        (change)="onFileChange($event, 'CreatedExpenseFiles')" #fileInput formControlName="FileURL" />
+                    <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.FileURL.errors">
+                        <div *ngIf="isValidExpenditureForm.FileURL.errors.required" style="color:red;">File is
+                            required.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="p-grid">
+            <div class="p-col-4">
+                <div class="box">Approval Email File</div>
+            </div>
+            <div class="p-col-8">
+                <div class="box">
+                    <input type="file" name="myfile" class="form-control" id="myfile"
+                        (change)="caOnFileChange($event, 'ClientApproval')" #fileInput formControlName="CAFileURL" />
+                    <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.CAFileURL.errors">
+                        <div *ngIf="isValidExpenditureForm.CAFileURL.errors.required" style="color:red;">File is
+                            required.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <div class="p-grid">
+        <table style="width: 100%;">
+            <tr>
+                <th width="35%" style="border: none">Project / Client </th>
+                <th style="border: none">Amount</th>
+            </tr>
+            <tr *ngFor="let p of totalLineItems; let i = index">
+                <td>
+                    <div class="p-grid">
+                        <div class="p-col-12">
+                            <div class="box">
+                                <p-dropdown [options]="piCleData" [group]="true" virtualScroll="true" itemSize="31"
+                                    filter="true" placeholder="Select a Project Code / Client"
+                                    [style]="{'width':'100%'}" [(ngModel)]="p.ProjectCode"
+                                    (onChange)="selectedProjectCode($event.value, i)">
+                                    <ng-template let-group pTemplate="group">
+                                        <span style="margin-left:.25em">{{group.label}}</span>
+                                    </ng-template>
+                                </p-dropdown>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <input id="input" type="text" (keypress)="onlyNumberKey($event)" pInputText
+                        [(ngModel)]="p.AmountPerProject" maxlength="15" (input)="enteredAmt($event.target.value, i)" />
+                </td>
+            </tr>
+            <div *ngIf="formSubmit.isSubmit && projectClientIsEmpty" style="color:red;">
+                Please select Project/Client & add Amount.
+            </div>
+            <tr>
+                <button pButton type="button" type="button" label="Add" (click)="addProjectAmtItem()"
+                    class="ui-button-rounded"></button>
+            </tr>
+        </table>
+    </div>
+
+
+    <p-footer>
+        <button pButton type="button" label="Add Expense" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('addExpenditure')"></button>
+        <button pButton type="button" label="Cancel" (click)="cancelFormSub('addExpenditure')"></button>
+    </p-footer>
+</p-dialog>
+
+<!-- Create Freelancer / Vendor Modal -->
+<p-dialog header="Create Freelancer / Vendor" [(visible)]="freeLancerModal" [modal]="true"
+    [contentStyle]="{'max-height':'450px'}" [style]="{'width': '85%'}" [responsive]="true"
+    (onHide)="cancelFormSub('editDeliverable')">
+    <form [formGroup]="createFreelancer_form">
+
+        <div class="p-grid">
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    Name
+                </div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    <input type="text" pInputText formControlName="Title" style="width: 100%;" maxlength="30" />
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.Title.errors">
+                        <div *ngIf="isValidCreateFreelancerForm.Title.errors.required" style="color:red;">
+                            Please provide Title.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">Phone No</div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    <input type="text" pInputText formControlName="PhoneNo" placeholder="" style="width: 100%;"
+                        (keypress)="onlyNumberKey($event)" maxlength="30" />
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.PhoneNo.errors">
+                        <div *ngIf="isValidCreateFreelancerForm.PhoneNo.errors.required" style="color:red;">
+                            Please provide Phone NO .</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    Email
+                </div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    <input type="text" pInputText formControlName="Email" placeholder="a@a.com" maxlength="50"
+                        style="width: 100%;" />
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.Email.errors">
+                        <div *ngIf="isValidCreateFreelancerForm.Email.errors.required" style="color:red;">
+                            Please provide Email.</div>
+                    </div>
+                    <div *ngIf="formSubmit.isSubmit && cvEmailIdFound">
+                        <div style="color:red;">
+                            This Email ID is already avaliable.Please provide new one.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    Type
+                </div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    <p-dropdown [options]="recordTypes" virtualScroll="true" itemSize="30" [showClear]="false"
+                        placeholder="Select a type" [style]="{'width':'100%'}" formControlName="RecordType"
+                        optionLabel="label">
+                    </p-dropdown>
+
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.RecordType.errors">
+                        <div *ngIf="isValidCreateFreelancerForm.RecordType.errors.required" style="color:red;">
+                            Please provide Type.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    Billed To
+                </div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    <p-dropdown [options]="billingEntityData" virtualScroll="true" itemSize="30" [showClear]="false"
+                        placeholder="Select a Billing Entity" [style]="{'width':'100%'}" formControlName="BilledTo"
+                        optionLabel="Title">
+                    </p-dropdown>
+
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.BilledTo.errors">
+                        <div *ngIf="isValidCreateFreelancerForm.BilledTo.errors.required" style="color:red;">
+                            Please provide Billing Name.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    Credit Period
+                </div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    <input id="input" type="text" pInputText formControlName="CreditPeriod" placeholder="xx days" />
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.CreditPeriod.errors">
+                        <div *ngIf="isValidCreateFreelancerForm.CreditPeriod.errors.required" style="color:red;">
+                            Please provide CreditPeriod.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">Contract Start Date</div>
+            </div>
+
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
+                        yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true"
+                        [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}"
+                        formControlName="ContractStartDate">
+                    </p-calendar>
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.ContractStartDate.errors">
+                        <div *ngIf="isValidCreateFreelancerForm.ContractStartDate.errors.required" style="color:red;">
+                            Please provide Start Date.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">Contract End Date</div>
+            </div>
+
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
+                        yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true"
+                        [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}"
+                        formControlName="ContractEndDate">
+                    </p-calendar>
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.ContractEndDate.errors">
+                        <div *ngIf="isValidCreateFreelancerForm.ContractEndDate.errors.required" style="color:red;">
+                            Please provide End Date.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    White Label Agreement needed
+                </div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    <p-radioButton name="groupB" value="Yes" label="Yes" inputId="b1" formControlName="WLA">
+                    </p-radioButton>&nbsp;
+                    <p-radioButton name="groupB" value="No" label="No" inputId="b2" formControlName="WLA">
+                    </p-radioButton>
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.WLA.errors">
+                        <div *ngIf="isValidCreateFreelancerForm.WLA.errors.required" style="color:red;">WLA
+                            is required.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">Address</div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    <!-- <input id="input" type="text" pInputText formControlName="Address" maxlength="100" /> -->
+                    <textarea rows="5" cols="30" pInputTextarea formControlName="Address" maxlength="100"></textarea>
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.Address.errors">
+                        <div *ngIf="isValidCreateFreelancerForm.Address.errors.required" style="color:red;">
+                            Please provide Address.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    Billing terms
+                </div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    <!-- <input id="input" type="text" pInputText formControlName="BillingTerms"
+                        placeholder="xx days" /> -->
+                    <textarea rows="5" cols="30" pInputTextarea formControlName="BillingTerms"
+                        maxlength="100"></textarea>
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.BillingTerms.errors">
+                        <div *ngIf="isValidCreateFreelancerForm.BillingTerms.errors.required" style="color:red;">
+                            Please provide Billing terms.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    Upload File
+                </div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)"
+                        #fileInput formControlName="File" />
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.File.errors">
+                        <div *ngIf="isValidCreateFreelancerForm.File.errors.required" style="color:red;">File
+                            is required.</div>
+                    </div>
+                </div>
+            </div> -->
+
+        </div>
+
+    </form>
+    <p-footer>
+        <button pButton type="button" label="Create" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('createFreelancer')"></button>
+        <button pButton type="button" label="Cancel" (click)="cancelFormSub('createFreelancer')"></button>
+    </p-footer>
+</p-dialog>
+
+<!-- Toast Messages -->
+<p-toast position="bottom-right" key="fdToast"></p-toast>
+
+<router-outlet></router-outlet>

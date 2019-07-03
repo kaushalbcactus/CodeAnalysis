@@ -1,0 +1,97 @@
+<div id="resourcesComponent" fxLayout="row" fxLayoutAlign="center center" style="width:100%;">
+  <!-- <div>
+    <ngb-alert *ngIf="resourceSuccessMessage" type="success" (close)="resourceSuccessMessage = null">{{ resourceSuccessMessage }}</ngb-alert>
+  </div> -->
+
+  <mat-accordion fxLayout="column" fxLayoutGap="5px" fxLayoutAlign="space-around center" style="width:100%;">
+    <mat-expansion-panel #expansionPanel style="  
+         border-radius: 0px;width:100%;" [(expanded)]="sharedObject.resSectionShow">
+      <mat-expansion-panel-header (click)="toggleResourcesTimeline($event, expansionPanel)" fxLayoutAlign="center center" style=" background: #db1721;"
+      [collapsedHeight]="customCollapsedHeight" [expandedHeight]="customCollapsedHeight">
+        <h4 style="width:100%;margin: 0%;" >
+          <mat-icon style="vertical-align: middle;">person</mat-icon> Resources
+        </h4>
+      </mat-expansion-panel-header>
+      <div class="resources" fxLayout="column" fxLayoutAlign="center start" style="margin-top: 1vh;">
+        <div class="resourceSectionHeight">
+          <div id="resp-table">
+                  <div id="resp-table-header">
+                          <div class="table-header-cell">
+                                  Primary Resources
+                          </div>
+                          <div class="table-header-cell">
+                                  Writer
+                          </div>
+                          <div class="table-header-cell">
+                                  Reviewer
+                          </div>
+                          <div class="table-header-cell">
+                                  Quality Checker
+                          </div>
+                          <div class="table-header-cell">
+                                  Editor
+                          </div>
+                          <div class="table-header-cell">
+                                  Graphics
+                          </div>
+                          <div class="table-header-cell">
+                                  Publication Support
+                          </div>
+                          <div class="table-header-cell">
+                                  Save
+                          </div>
+                  </div>
+                  <div id="resp-table-body">
+                      <div class="resp-table-row">
+                              <div class="table-body-cell">
+                                <ng-select #selectPrimResource id="primaryResourcesSelect" [items]="resources"
+                                      bindLabel="UserName.Title"
+                                      bindVaue = "ID"
+                                      placeholder="Select Resource"
+                                      (change)="setPrimaryResource($event, selectPrimResource)" (close)="selectPrimResource.handleClearClick()">
+                                  </ng-select>
+                              </div>
+                      </div>
+                      <div class="resp-table-row">
+                              <div class="table-body-cell">
+                                      <div id="primaryResources"></div>
+                              </div>
+                              <div class="table-body-cell">
+                                      <div id="writer"></div>
+                              </div>
+                              <div class="table-body-cell">
+                                      <div id="reviewer"></div>
+                              </div>
+                              <div class="table-body-cell">
+                                      <div id="qualityChecker"></div>
+                              </div>
+                              <div class="table-body-cell">
+                                      <div id="editor"></div>
+                              </div>
+                              <div class="table-body-cell">
+                                      <div id="graphicsMembers"></div>
+                              </div>
+                              <div class="table-body-cell">
+                                      <div id="pubSupportMembers"></div>
+                              </div>
+                              <div class="table-body-cell">
+                                      <div id="divSave"> <img (click)="saveResources()" id="saveResource" [src]= "webImageURL + '/Images/update.png'" title="Update Resources" /></div>
+                              </div>
+                      </div>
+                  </div>
+          </div>
+          <div class="loading" style="display:none">
+                  <div id="resourceLoader" class="mainLoader"></div>
+                  <div id="resourceLoaderText" class="resourceLoaderText">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+
+
+  <!-- <div class="resourcetab" >
+          <div class="resourceHeader" align="center" (click)="toggleResourcesTimeline($event)">Resources</div>
+          
+  </div> -->
+</div>
