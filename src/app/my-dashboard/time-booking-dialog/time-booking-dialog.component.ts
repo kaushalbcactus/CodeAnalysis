@@ -141,7 +141,7 @@ export class TimeBookingDialogComponent implements OnInit {
 
 
     AllMilestones.filter = AllMilestones.filter.replace(/{{projectCode}}/gi, projectCode).replace(/{{DateString}}/gi, this.MainminDate);
-    const AllMilestonesUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules + '', AllMilestones);
+    const AllMilestonesUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', AllMilestones);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, AllMilestonesUrl);
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 

@@ -167,7 +167,7 @@ export class TaskAllocationComponent implements OnInit {
     const batchGuid = this.spServices.generateUUID();
     let checkAccessCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.checkAccess);
     checkAccessCall.filter = checkAccessCall.filter.replace(/{{code}}/gi, code);
-    const checkAccessUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation + '', checkAccessCall);
+    const checkAccessUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', checkAccessCall);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, checkAccessUrl);
     let arrayOperationResources;
 

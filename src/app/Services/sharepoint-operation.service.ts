@@ -1054,7 +1054,7 @@ export class SharepointoperationService {
 
 
     triggerMail(fromEmail, templateName, objEmailBody, mailSubject, arrayTo, errorDetail) {
-        const mailContent = this.constants.listNames.MailContent;
+        const mailContent = this.constants.listNames.MailContent.name;
         //tslint:disable
         const url = "/_api/web/lists/GetByTitle('" + mailContent + "')/items?$select=Content&$filter=Title eq '" + templateName + "'";
         // tslint:enable

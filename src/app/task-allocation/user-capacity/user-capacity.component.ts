@@ -22,9 +22,9 @@ export class UserCapacityComponent implements OnInit {
     arrUserDetails: []
   };
   data:any;
-  private leaveCalendar = this.constants.listNames.LeaveCalendar;
-  private Schedules = this.constants.listNames.Schedules;
-  public sUserCapacity = this.sharedObject.oTaskAllocation.userCapacity;
+  private leaveCalendar = this.constants.listNames.LeaveCalendar.name;
+  private Schedules = this.constants.listNames.Schedules.name;
+  public sUserCapacity = this.sharedObject.oTaskAllocation.userCapacity.name;
   height: string;
   verticalAlign: string;
   loaderenable : boolean=false;
@@ -110,7 +110,7 @@ export class UserCapacityComponent implements OnInit {
 
 
             
-              const userCapacityUrl = this.spService.getReadURL('' + this.constants.listNames.Schedules + '', userCapacityCall);
+              const userCapacityUrl = this.spService.getReadURL('' + this.constants.listNames.Schedules.name + '', userCapacityCall);
               this.spService.getBatchBodyGet(batchContents, batchGuid, userCapacityUrl);
  
               this.oCapacity.arrUserDetails.push(oUser);
@@ -155,7 +155,7 @@ export class UserCapacityComponent implements OnInit {
 
 
 
-        const userCapacityEndPointUrl = this.spService.getReadURL('' + this.constants.listNames.LeaveCalendar + '', userCapacityEndPointcall);
+        const userCapacityEndPointUrl = this.spService.getReadURL('' + this.constants.listNames.LeaveCalendar.name + '', userCapacityEndPointcall);
         this.spService.getBatchBodyGet(batchContents, batchGuid, userCapacityEndPointUrl);
 
 

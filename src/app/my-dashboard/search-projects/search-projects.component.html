@@ -49,9 +49,9 @@
 
 
 
-<!-- **********************************************************************************************************
+<!--*************************************************************************************************
                                                           Table View Data
-           ********************************************************************************************************** -->
+************************************************************************************************ -->
 
 <div *ngIf="!loaderenable && tableviewenable" style="padding-top: 5px;">
   <p-table #project [columns]="cols" [value]="ProjectList" [resizableColumns]="true" [exportFilename]="ProjectList">
@@ -127,51 +127,18 @@
 </div>
 
 
+<!--*************************************************************************************************
+                                                           View Details
+************************************************************************************************ -->
 
-
-
-
-
-
-
-<router-outlet></router-outlet>
-
-
-
-<p-dialog *ngIf="showDetails" header="{{projectDisplayTitle}}" [contentStyle]="{'min-height':'85vh','max-height':'85vh'}"
+<p-dialog *ngIf="showDetailsenable" header="{{projectDisplayTitle}}" [contentStyle]="{'max-height':'90vh'}"
   [style]="{'width':'100vw'}" [positionTop]="0" [modal]="true" [draggable]="false" appendTo='body'
   [(visible)]="showDetailsenable">
 
-  <!-- <div class="timeLineButton" fxLayout="row" fxLayoutAlign="end center"  >
 
-           
-        
-            <button type="button" pButton icon="pi pi-save" id="saveTime" style="margin-right:5px" (click)="UpdateTask()"  
-              [disabled]="task.Status === SelectedStatus  ||  SelectedStatus === undefined" label="Update"></button>
-            <button type="button"  pButton icon="pi pi-times" (click)="taskdisplay=false" label="Cancel" class="ui-button-secondary"
-              style="background-color:ghostwhite;"></button>
-          
-          </div> -->
+  <mat-accordion>
 
-  <!--*************************************************************************************************
-//  dialog to show adhoc data
-************************************************************************************************** -->
-
-
-
-
-
-
-  <!--**************************************************************************************************
-//  dialog to load different component 
-************************************************************************************************** -->
-
-  <mat-accordion  >
-    <!--****************************************************************************************** 
-        //  dialog to display task proeprties
-        ****************************************************************************************** -->
-
-    <mat-expansion-panel  [expanded]="step === 0" (opened)="setStep(0)">
+    <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)">
       <mat-expansion-panel-header>
         <mat-panel-title style="color:#000000;">
           <mat-icon style="padding: 4px 0px 0px 0px;">event_note</mat-icon>&nbsp;&nbsp; Project Properties
@@ -217,7 +184,7 @@
             </tr>
             <tr>
               <th>Proposed Start Date </th>
-            
+
               <td>
                 <span
                   *ngIf="ProjectPopupDetails.ProposedStartDate !== null">{{ProjectPopupDetails.ProposedStartDate | date:'medium'}}
@@ -238,7 +205,7 @@
                 </span>
 
               </td>
-              <th>Actual End Date  </th>
+              <th>Actual End Date </th>
               <td>
                 <span
                   *ngIf="ProjectPopupDetails.ActualEndDate !== null">{{ProjectPopupDetails.ActualEndDate | date:'medium'}}
@@ -248,13 +215,13 @@
             <tr>
               <th>Pub Support Required</th>
               <td>{{ProjectPopupDetails.IsPubSupport}}</td>
-              <th>Pub support Status  </th>
+              <th>Pub support Status </th>
               <td>{{ProjectPopupDetails.PubSupportStatus}} </td>
             </tr>
             <tr>
               <th>Journel / Conference </th>
               <td>{{ProjectPopupDetails.ConferenceJournal}}</td>
-              <th>Authors  </th>
+              <th>Authors </th>
               <td>{{ProjectPopupDetails.Authors}} </td>
             </tr>
             <tr>
@@ -263,56 +230,6 @@
 
             </tr>
           </table>
-
-          <!-- <table [hidden]="modalloaderenable" style="width:100%;margin:10px 0px 0px 0px;">
-                        <tr>
-                            <th>Project Name:</th>
-                            <td>{{task.ProjectName}}</td>
-                            <th>Assigned To:</th>
-                            <td>{{task.AssignedTo}}</td>
-                        </tr>
-                        <tr>
-                            <th>Start Date:</th>
-                            <td>{{task.StartDate | date :'medium'}}</td>
-                            <th>End Date:</th>
-                            <td>{{task.DueDate | date:'medium'}}</td>
-                        </tr>
-                        <tr>
-                            <th>Milestone:</th>
-                            <td>{{task.Milestone}}</td>
-                            <th>Task & Scope:</th>
-                            <td>{{task.Task}}</td>
-                        </tr>
-                        <tr>
-                            <th>Status:</th>
-                            <td>
-                              
-                                <span *ngIf="task.Status !== 'Not Started' && task.Status !== 'In Progress'"> {{task.Status}} </span>
-                                <p-dropdown  [hidden]="task.Status !== 'Not Started' && task.Status !== 'In Progress'"    [options]="statusOptions" [(ngModel)]="SelectedStatus" appendTo="body" [style]="{'width':'100%'}"></p-dropdown>
-
-                            </td>
-                            <th>Time Spent:</th>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <th>Previous Tasks:</th>
-                            <td>
-                                <div *ngFor="let task of tasks">
-                                    <span *ngIf="task.TaskType === 'Previous Task'">
-                                        {{task.Title}} ({{task.AssignedTo.Title}} - {{task.Status}})
-                                    </span>
-                                </div>
-                            </td>
-                            <th>Next Tasks:</th>
-                            <td>
-                                <div *ngFor="let task of tasks">
-                                    <span *ngIf="task.TaskType === 'Next Task'">
-                                        {{task.Title}} ({{task.AssignedTo.Title}} - {{task.Status}})
-                                    </span>
-                                </div>
-                            </td>
-                        </tr>
-                    </table> -->
         </ng-template>
       </mat-expansion-panel-header>
 
@@ -322,7 +239,7 @@
 
 
     <!--****************************************************************************************** 
-        //  dialog to display Project Resources
+              //  dialog to display Project Resources
         ****************************************************************************************** -->
 
     <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)">
@@ -376,104 +293,53 @@
     </mat-expansion-panel>
 
     <!--****************************************************************************************** 
-        //  dialog to display Time spent
-        ****************************************************************************************** -->
+        //  dialog to view shared  Document
+      ****************************************************************************************** -->
+    <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)">
+      <mat-expansion-panel-header>
+        <mat-panel-title style="color:#000000;">
+          <mat-icon style="padding: 4px 0px 0px 0px;">folder</mat-icon> &nbsp;&nbsp; Shared Documents
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <ng-template matExpansionPanelContent>
+        <app-view-upload-document-dialog [taskData]="ProjectPopupDetails"></app-view-upload-document-dialog>
+      </ng-template>
 
-    <!-- <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)">
-            <mat-expansion-panel-header>
-                <mat-panel-title style="color:#000000;">
-                    <mat-icon style="padding: 4px 0px 0px 0px;">timer</mat-icon>&nbsp;&nbsp; Time Spent
-                </mat-panel-title>
-
-                <ng-template matExpansionPanelContent>
-                    <app-time-spent-dialog [taskData]="task"></app-time-spent-dialog>
-                </ng-template>
-
-            </mat-expansion-panel-header>
-
-
-        </mat-expansion-panel> -->
+    </mat-expansion-panel>
 
     <!--****************************************************************************************** 
-        //  dialog to add /view comment
-        ****************************************************************************************** -->
-
-    <!-- <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)">
-            <mat-expansion-panel-header>
-                <mat-panel-title style="color:#000000;">
-                    <mat-icon style="padding: 4px 0px 0px 0px;">comment</mat-icon> &nbsp;&nbsp; View / Add Comments
-                </mat-panel-title>
-
-                <ng-template matExpansionPanelContent>
-                    <app-add-edit-comment-dialog [taskData]="task"></app-add-edit-comment-dialog>
-                </ng-template>
-
-            </mat-expansion-panel-header>
+        //  dialog to view project Timeline
+      ****************************************************************************************** -->
 
 
-        </mat-expansion-panel> -->
+    <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)">
+      <mat-expansion-panel-header>
+        <mat-panel-title style="color:#000000;">
+          <mat-icon style="vertical-align: middle;">timeline</mat-icon> &nbsp;&nbsp; Project Timeline
+        </mat-panel-title>
+
+      </mat-expansion-panel-header>
+      <ng-template matExpansionPanelContent>
+        <app-timeline [projectDetails]="ProjectPopupDetails"></app-timeline>
+      </ng-template>
+
+    </mat-expansion-panel>
 
     <!--****************************************************************************************** 
-        //  dialog to add /view Document
-        ****************************************************************************************** -->
-    
-        <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)">
-            <mat-expansion-panel-header>
-                <mat-panel-title style="color:#000000;">
-                    <mat-icon style="padding: 4px 0px 0px 0px;">folder</mat-icon> &nbsp;&nbsp; View / Add Documents
-                </mat-panel-title>
-
-            </mat-expansion-panel-header>
-            <ng-template matExpansionPanelContent>
-                <app-view-upload-document-dialog [taskData]="ProjectPopupDetails"></app-view-upload-document-dialog>
-            </ng-template>
-
-        </mat-expansion-panel>
-
-            <!--****************************************************************************************** 
         //  dialog to show project drafts
         ****************************************************************************************** -->
-    
-        <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)">
-            <mat-expansion-panel-header>
-                <mat-panel-title style="color:#000000;">
-                    <mat-icon style="vertical-align: middle;">timeline</mat-icon> &nbsp;&nbsp; Project Timeline
-                </mat-panel-title>
 
-            </mat-expansion-panel-header>
-            <ng-template matExpansionPanelContent>
-                <app-timeline [projectDetails] ="ProjectPopupDetails" ></app-timeline>
-            </ng-template>
+    <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)">
+      <mat-expansion-panel-header>
+        <mat-panel-title style="color:#000000;">
+          <mat-icon style="padding: 4px 0px 0px 0px;">folder</mat-icon> &nbsp;&nbsp; Project Drafts
+        </mat-panel-title>
 
-        </mat-expansion-panel>
+      </mat-expansion-panel-header>
+      <ng-template matExpansionPanelContent>
+        <app-project-drafts [milestoneData]="ProjectPopupDetails"></app-project-drafts>
+      </ng-template>
 
-     
-
-         <!--****************************************************************************************** 
-        //  dialog to show project drafts
-        ****************************************************************************************** -->
-    
-        <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)">
-            <mat-expansion-panel-header>
-                <mat-panel-title style="color:#000000;">
-                    <mat-icon style="padding: 4px 0px 0px 0px;">folder</mat-icon> &nbsp;&nbsp; Project Drafts
-                </mat-panel-title>
-
-            </mat-expansion-panel-header>
-            <ng-template matExpansionPanelContent>
-                <app-project-drafts [milestoneData]="ProjectPopupDetails"></app-project-drafts>
-            </ng-template>
-
-        </mat-expansion-panel>
-
-
-        
+    </mat-expansion-panel>
   </mat-accordion>
-
-
-      <p-footer>
-          <button type="button" pButton icon="pi pi-check" (click)="onCancel();showDetailsenable=false" label="Yes"></button>
-        
-      </p-footer>
-  
 </p-dialog>

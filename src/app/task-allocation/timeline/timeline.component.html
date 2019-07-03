@@ -131,7 +131,8 @@
 
                 <td [style.text-align]="'left'" [style.padding-left.px]="rowData.pName ==='Client Review' ? '20':''">
                   <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-                  {{rowData.pName}}
+                   <span *ngIf="rowData.type !=='task'">  {{rowData.pName}}</span>
+                   <span style="color:#dc2038;cursor: pointer;" *ngIf="rowData.type ==='task'" (click)="ViewTaskDetails(rowData)">  {{rowData.pName}}</span>
 
                   <div id="nextMilestone" title="Set as Current Milestone" (click)="setAsNextMilestoneCall()" *ngIf="rowData.isNext === true" style="display: inline;"
                     [hidden]=" rowData.type==='milestone' && (oProjectDetails.status ==='In Discussion' || rowData.status === 'Completed' || rowData.pID === -1)">

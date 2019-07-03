@@ -38,12 +38,12 @@ export class MyDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.items = [
-      { label: 'My Current Tasks', icon: 'fa fa-fw fa-tasks', routerLink: ['my-current-tasks'] },
-      { label: 'My Timeline', icon: 'fa fa-fw fa-line-chart', routerLink: ['my-timeline'] },
-      { label: 'My Projects', icon: 'fa fa-fw fa-folder-open', routerLink: ['my-projects'] },
-      { label: 'My SOW', icon: 'fa fa-fw fa-file-text-o', routerLink: ['my-sow'] },
-      { label: 'My Completed Task', icon: 'fa fa-fw fa-list-alt', routerLink: ['my-completed-tasks'] },
-      { label: 'Search Projects', icon: 'fa fa-fw fa-search', routerLink: ['search-projects'] }
+      { label: 'My Current Tasks', routerLink: ['my-current-tasks'] },
+      { label: 'My Timeline', routerLink: ['my-timeline'] },
+      { label: 'My Projects', routerLink: ['my-projects'] },
+      { label: 'My SOW', routerLink: ['my-sow'] },
+      { label: 'My Completed Task', routerLink: ['my-completed-tasks'] },
+      { label: 'Search Projects', routerLink: ['search-projects'] }
     ];
 
     this.GetCurrentUser();

@@ -20,8 +20,9 @@ import { NgxGraphModule } from '@swimlane/ngx-graph';
 import { StickyModule } from 'ng2-sticky-kit';
 import { ResourceSectionComponent } from './resource-section/resource-section.component';
 import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
+import { TaskDetailsDialogComponent } from './task-details-dialog/task-details-dialog.component';
 @NgModule({
-  declarations: [TaskAllocationComponent,TimelineComponent, UserCapacityComponent, DragDropComponent, ResourceSectionComponent],
+  declarations: [TaskAllocationComponent,TimelineComponent, UserCapacityComponent, DragDropComponent, ResourceSectionComponent, TaskDetailsDialogComponent],
   imports: [
     CommonModule,
     TaskAllocationRoutingModule,
@@ -40,7 +41,7 @@ import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
     NgxMaterialTimepickerModule
   ],
   providers: [DatePipe,ConfirmationService],
-  entryComponents: [ UserCapacityComponent, DragDropComponent ]
+  entryComponents: [ UserCapacityComponent, DragDropComponent,TaskDetailsDialogComponent ]
  // providers: [TaskAllocationAPI]
 })
 export class TaskAllocationModule { }

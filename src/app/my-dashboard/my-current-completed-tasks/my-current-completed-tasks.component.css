@@ -82,3 +82,7 @@ body .ui-chkbox .ui-chkbox-box.ui-state-active, body .ui-button, body .ui-button
   background-color: #f4f4f4  !important;
   border: 1px solid #f4f4f4  !important;
 }
+:host ::ng-deep .ui-slidemenu-wrapper {
+  height: 130px !important;
+} 
+  

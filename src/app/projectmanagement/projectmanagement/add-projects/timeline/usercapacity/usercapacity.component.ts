@@ -21,9 +21,9 @@ export class UsercapacityComponent implements OnInit {
   };
   //tslint:disable
   public modalReference = null;
-  private Schedules = this.constants.listNames.Schedules;
-  private ProjectInformation = this.constants.listNames.ProjectInformation;
-  private leaveCalendar = this.constants.listNames.LeaveCalendar;
+  private Schedules = this.constants.listNames.Schedules.name;
+  private ProjectInformation = this.constants.listNames.ProjectInformation.name;
+  private leaveCalendar = this.constants.listNames.LeaveCalendar.name;
   public clickedTaskTitle = '';
   public milestoneTasks = [];
   public height = '';

@@ -10,6 +10,7 @@ import { TreeNode, MessageService, DialogService } from 'primeng/api';
 import { MenuItem } from 'primeng/api';
 import { UserCapacityComponent } from '../user-capacity/user-capacity.component';
 import { DragDropComponent } from '../drag-drop/drag-drop.component';
+import { TaskDetailsDialogComponent } from '../task-details-dialog/task-details-dialog.component';
 
 
 @Component({
@@ -218,7 +219,7 @@ debugger;
     let milestoneSubmilestones = [];
     let milestoneCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.milestone);
     milestoneCall.filter = milestoneCall.filter.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode);
-    const milestoneUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules + '', milestoneCall);
+    const milestoneUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', milestoneCall);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, milestoneUrl);
 
     let allRetrievedTasks = [];
@@ -2553,11 +2554,11 @@ debugger;
       let addMilLength = addMilestones.length;
       let endIndex = addMilLength + addTasks.length;
       for (const response of arrResponse) {
-        const fileUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/Lists/' + this.constants.listNames.Schedules + '/' + response.d.ID + '_.000';
-        let moveFileUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/Lists/' + this.constants.listNames.Schedules + '/' + this.oProjectDetails.projectCode;
+        const fileUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/Lists/' + this.constants.listNames.Schedules.name + '/' + response.d.ID + '_.000';
+        let moveFileUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/Lists/' + this.constants.listNames.Schedules.name + '/' + this.oProjectDetails.projectCode;
         if (counter < addMilLength) {
           moveFileUrl = moveFileUrl + '/' + response.d.ID + '_.000';
-          let milestoneURL = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/Web/Lists/getByTitle('" + this.constants.listNames.Schedules + "')/Items('" + response.d.ID + "')";
+          let milestoneURL = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/Web/Lists/getByTitle('" + this.constants.listNames.Schedules.name + "')/Items('" + response.d.ID + "')";
           let moveData = JSON.stringify({
             "__metadata": { type: "SP.Data.SchedulesListItem" },
             //Title: response.d.Title,
@@ -2631,8 +2632,8 @@ debugger;
 
     // tslint:disable
     const endpoint = bAdd ?
-      this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules + "')/items" :
-      this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules + "')/items(" + +(milestoneTask.pID) + ")";
+      this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items" :
+      this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(milestoneTask.pID) + ")";
     // tslint:enable
     const updateBody = JSON.stringify(
       !bAdd ?
@@ -2755,8 +2756,8 @@ debugger;
 
     // tslint:disable
     const endpoint = bAdd ?
-      this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules + "')/items" :
-      this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules + "')/items(" + +(currentMilestone.pID) + ")";
+      this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items" :
+      this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(currentMilestone.pID) + ")";
     return {
       body: updateMilestoneBody,
       url: endpoint,
@@ -2786,7 +2787,7 @@ debugger;
 
     // tslint:disable
     const projectInfoEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" +
-      this.constants.listNames.ProjectInformation + "')/items(" + +(projectID) + ")";
+      this.constants.listNames.ProjectInformation.name + "')/items(" + +(projectID) + ")";
     // tslint:enable
     this.spServices.getChangeSetBodySC(batchContents, changeSetId, projectInfoEndpoint, JSON.stringify(updateProjectRes), false);
     batchContents.push('--changeset_' + changeSetId + '--');
@@ -3100,7 +3101,7 @@ debugger;
     const changeSetId = this.spServices.generateUUID();
     /// Body for project information update
     // tslint:disable
-    const endpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.ProjectInformation + "')" +
+    const endpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.ProjectInformation.name + "')" +
       "/items(" + +(projectID) + ")";
     // tslint:enable
     const updateProjectBody = JSON.stringify({
@@ -3113,7 +3114,7 @@ debugger;
     /// end of project information update
     if (currentMilestone.length > 0) {
       // tslint:disable
-      const pMilestoneEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules + "')/items(" + +(currentMilestone[0].data.pID) + ")";
+      const pMilestoneEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(currentMilestone[0].data.pID) + ")";
       // tslint:enable
       const updatePMilestoneBody = JSON.stringify({
         __metadata: { type: 'SP.Data.SchedulesListItem' },
@@ -3134,7 +3135,7 @@ debugger;
         }
         //task.allowStart =  true;
         // tslint:disable
-        const endpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules + "')/items(" + +(task.pID) + ")";
+        const endpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(task.pID) + ")";
         // tslint:enable
         const updateSchedulesBody = JSON.stringify({
           __metadata: { type: 'SP.Data.SchedulesListItem' },
@@ -3144,10 +3145,10 @@ debugger;
         this.spServices.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateSchedulesBody, false);
       }
     }
-    const schedules = this.constants.listNames.Schedules;
+    const schedules = this.constants.listNames.Schedules.name;
     const spservice = this.spServices;
     // tslint:disable
-    const cMilestoneEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules + "')/items(" + +(newCurrentMilestone[0].data.pID) + ")";
+    const cMilestoneEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(newCurrentMilestone[0].data.pID) + ")";
     // tslint:enable
     const updateCMilestoneBody = JSON.stringify({
       __metadata: { type: 'SP.Data.SchedulesListItem' },
@@ -3267,6 +3268,32 @@ debugger;
     }
     return true;
   }
+
+
+    // *************************************************************************************************************************************
+  // load component for  comment
+  // *************************************************************************************************************************************
+
+
+  async ViewTaskDetails(task) {
+
+    console.log(task);
+
+    const ref = this.dialogService.open(TaskDetailsDialogComponent, {
+      data: {
+        task: task,
+      },
+      header: task.submilestone !== null ? task.milestone + " - " + task.submilestone +" - " + task.pName :task.milestone + " - " + task.pName,
+      width: '80vw',
+      contentStyle: { "min-height": "30vh", "max-height": "90vh", "overflow-y": "auto" }
+    });
+    ref.onClose.subscribe(async (taskobj: any) => {
+     
+    });
+  }
+
+
+
 }
 
 

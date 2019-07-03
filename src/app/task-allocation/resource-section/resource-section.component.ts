@@ -21,7 +21,7 @@ export class ResourceSectionComponent implements OnInit {
   public customCollapsedHeight : string = '30px';
   // private _resourceSuccess = new Subject<string>();
   // public resourceSuccessMessage: string;
-  private projectInformationList = this.constants.listNames.ProjectInformation;
+  private projectInformationList = this.constants.listNames.ProjectInformation.name;
   public sharedTaskAllocateObj = this.sharedObject.oTaskAllocation;
   
   constructor(private spService: SharepointoperationService, private commonService: CommonService,

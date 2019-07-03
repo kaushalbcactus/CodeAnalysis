@@ -76,7 +76,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   }
   ngOnDestroy(): void {    
     // ... some clean up logic
-  alert("Sucess testttt");
+  
   }
   
   // **************************************************************************************************************************************
@@ -103,7 +103,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
         this.ProjectInformation = this.sharedObject.DashboardData.ProjectInformation;
       }
       else {
-        await this.getCurrentTaskProjectInformation(projectDetails.ProjectCode, true)
+        await this.getCurrentTaskProjectInformation(projectDetails.ProjectCode)
         this.ProjectInformation = this.sharedObject.DashboardData.ProjectInformation;
       }
 
@@ -114,7 +114,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   //  Get  current project information
   // **************************************************************************************************************************************
 
-  async getCurrentTaskProjectInformation(ProjectCode, isLoadDraftDoc) {
+  async getCurrentTaskProjectInformation(ProjectCode) {
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
     let project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);

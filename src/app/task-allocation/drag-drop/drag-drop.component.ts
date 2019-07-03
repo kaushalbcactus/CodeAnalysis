@@ -560,7 +560,7 @@ export class DragDropComponent implements OnInit {
     // **************************************************************************************************************************************
     
     this.taskAllocationService.taskallocationComponent.milestoneList.filter = this.taskAllocationService.taskallocationComponent.milestoneList.filter.replace(/{{status}}/gi, 'Active');
-    const milestoneListUrl = this.spServices.getReadURL('' + this.constants.listNames.Milestones + '', this.taskAllocationService.taskallocationComponent.milestoneList);
+    const milestoneListUrl = this.spServices.getReadURL('' + this.constants.listNames.Milestones.name + '', this.taskAllocationService.taskallocationComponent.milestoneList);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, milestoneListUrl);
 
     // **************************************************************************************************************************************
@@ -578,7 +578,7 @@ export class DragDropComponent implements OnInit {
     // **************************************************************************************************************************************
    
     this.taskAllocationService.taskallocationComponent.taskList.filter = this.taskAllocationService.taskallocationComponent.taskList.filter.replace(/{{status}}/gi, 'Active');
-    const taskListUrl = this.spServices.getReadURL('' + this.constants.listNames.MilestoneTasks + '', this.taskAllocationService.taskallocationComponent.taskList);
+    const taskListUrl = this.spServices.getReadURL('' + this.constants.listNames.MilestoneTasks.name + '', this.taskAllocationService.taskallocationComponent.taskList);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, taskListUrl);
 
 
