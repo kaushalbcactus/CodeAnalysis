@@ -48,13 +48,89 @@
                 <td>{{task.CreatedDate}}</td>
                 <td>
                     <p-slideMenu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu
-                        [model]="popItems" [popup]="true">
+                        [model]="popItems" [popup]="true" appendTo="body">
                     </p-slideMenu>
                     <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
-                    (click)="storeRowData(task); menu.toggle($event);"></i>
+                        (click)="storeRowData(task); menu.toggle($event);"></i>
                 </td>
             </tr>
         </ng-template>
     </p-table>
+</div>
+<div class="all-project-section">
+    <p-dialog [(visible)]="pmObject.isProjectVisible" [modal]="true""
+        [style]="{width: '1300px'}">
+        <mat-accordion>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title style="color:#000000;">
+                        <mat-icon style="padding: 4px 0px 0px 0px;">event_note</mat-icon>&nbsp;&nbsp; Active Projects
+                    </mat-panel-title>
+                    <ng-template matExpansionPanelContent>
+                        <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center"
+                            [hidden]="!modalloaderenable">
+                            <div id="modalInnerLoader"></div>
+                            <div id="modalInnerLoaderText">Loading...</div>
+                        </div>
+                        <p-table #activeProject [columns]="projectsDisplayedColumns"
+                            [value]="pmObject.allProjects.activeProjectCopyArray" [paginator]="true" [rows]="5"
+                            [lazy]="true" [totalRecords]="pmObject.totalRecords.activeProject"
+                            [loading]="pmObject.loading.activeProject" (onLazyLoad)="lazyLoadTask($event)"
+                            [lazyLoadOnInit]="false">
+                            <ng-template pTemplate="caption">
+                                <div style="text-align: left">
+                                    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                                    <input type="text" pInputText size="50" placeholder="search"
+                                        (input)="activeProject.filterGlobal($event.target.value, 'contains')"
+                                        style="width:auto">
+                                </div>
+                            </ng-template>
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <th class="lastColumnWidth"></th>
+                                    <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                                        {{ col.header }}
+                                        <p-sortIcon [field]="col.field"></p-sortIcon>
+                                    </th>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </ng-template>
+                </mat-expansion-panel-header>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title style="color:#000000;">
+                        <mat-icon style="padding: 4px 0px 0px 0px;">timer</mat-icon>&nbsp;&nbsp; Pipeline Projects
+                    </mat-panel-title>
+                    <ng-template matExpansionPanelContent>
+                        <p-table [columns]="projectsDisplayedColumns"
+                            [value]="pmObject.allProjects.pipelineProjectCopyArray" [paginator]="true" [rows]="5"
+                            [lazy]="true" [totalRecords]="pmObject.totalRecords.pipelineProject"
+                            [loading]="pmObject.loading.pipelineProject" (onLazyLoad)="lazyLoadTask($event)"
+                            [lazyLoadOnInit]="false">
+
+                        </p-table>
+                    </ng-template>
+                </mat-expansion-panel-header>
+            </mat-expansion-panel>
+            <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                    <mat-panel-title style="color:#000000;">
+                        <mat-icon style="padding: 4px 0px 0px 0px;">comment</mat-icon> &nbsp;&nbsp; InActive Projects
+                    </mat-panel-title>
+                    <ng-template matExpansionPanelContent>
+                        <p-table [columns]="projectsDisplayedColumns"
+                            [value]="pmObject.allProjects.inActiveProjectCopyArray" [paginator]="true" [rows]="5"
+                            [lazy]="true" [totalRecords]="pmObject.totalRecords.inActiveProject"
+                            [loading]="pmObject.loading.inActiveProject" (onLazyLoad)="lazyLoadTask($event)"
+                            [lazyLoadOnInit]="false">
+
+                        </p-table>
+                    </ng-template>
+                </mat-expansion-panel-header>
+            </mat-expansion-panel>
+        </mat-accordion>
+    </p-dialog>
 </div>
 <app-timeline-history #timelineRef></app-timeline-history>

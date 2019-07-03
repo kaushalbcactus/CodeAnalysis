@@ -21,9 +21,8 @@ import { PreviosNextTasksDialogComponent } from './previos-next-tasks-dialog/pre
 import { CustomMaterialModule } from '../shared/material.module';
 import { BlockTimeDialogComponent } from './block-time-dialog/block-time-dialog.component';
 import { TimeBookingDialogComponent } from './time-booking-dialog/time-booking-dialog.component';
-import { NgxAutoScrollModule } from "ngx-auto-scroll";
+import { NgxAutoScrollModule } from 'ngx-auto-scroll';
 import { ProjectDraftsComponent } from './search-projects/project-drafts/project-drafts.component';
-import { TimelineComponent } from '../task-allocation/timeline/timeline.component';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxGraphModule } from '@swimlane/ngx-graph';
 import { DndModule } from 'ngx-drag-drop';
@@ -31,7 +30,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { TreeTableModule } from 'primeng/primeng';
 import { NgGanttEditorModule } from 'ng-gantt';
 import { ProjectmanagementModule } from '../projectmanagement/projectmanagement.module';
-
+import { TaskAllocationModule } from '../task-allocation/task-allocation.module';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
 };
@@ -39,7 +38,18 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
 
 
 @NgModule({
-  declarations: [MyCurrentCompletedTasksComponent, MyDashboardComponent, MyTimelineComponent, SearchProjectsComponent, AddEditCommentComponent, TimeSpentDialogComponent, ViewUploadDocumentDialogComponent, PreviosNextTasksDialogComponent, BlockTimeDialogComponent, TimeBookingDialogComponent, ProjectDraftsComponent, TimelineComponent],
+  declarations: [
+    MyCurrentCompletedTasksComponent,
+    MyDashboardComponent,
+    MyTimelineComponent,
+    SearchProjectsComponent,
+    AddEditCommentComponent,
+    TimeSpentDialogComponent,
+    ViewUploadDocumentDialogComponent,
+    PreviosNextTasksDialogComponent,
+    BlockTimeDialogComponent,
+    TimeBookingDialogComponent,
+    ProjectDraftsComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -56,13 +66,21 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     DndModule,
     NgxGraphModule,
     NgxChartsModule,
-    ProjectmanagementModule
+    ProjectmanagementModule,
+    TaskAllocationModule
   ],
 
   providers: [ConfirmationService, DatePipe, DialogService, DynamicDialogConfig, DynamicDialogRef, {
     provide: PERFECT_SCROLLBAR_CONFIG,
     useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
   }],
-  entryComponents: [TimeSpentDialogComponent, ViewUploadDocumentDialogComponent, TimeBookingDialogComponent, AddEditCommentComponent, PreviosNextTasksDialogComponent, BlockTimeDialogComponent, ProjectDraftsComponent]
+  entryComponents: [
+    TimeSpentDialogComponent,
+    ViewUploadDocumentDialogComponent,
+    TimeBookingDialogComponent,
+    AddEditCommentComponent,
+    PreviosNextTasksDialogComponent,
+    BlockTimeDialogComponent,
+    ProjectDraftsComponent]
 })
 export class MyDashboardModule { }

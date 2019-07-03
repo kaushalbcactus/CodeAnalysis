@@ -110,8 +110,9 @@ export class PmconstantService {
   };
   public SOW_QUERY = {
     ALL_SOW: {
-      select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget,'
-        + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, InvoicedRevenue',
+      select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget, '
+        + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, InvoicedRevenue,'
+        + 'BillingEntity',
       expand: 'Author/Id,Author/Title',
       filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\')',
       orderby: 'Modified desc',
@@ -119,7 +120,8 @@ export class PmconstantService {
     },
     USER_SPECIFIC_SOW: {
       select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget'
-        + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, InvoicedRevenue',
+        + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, InvoicedRevenue,'
+        + 'BillingEntity',
       expand: 'Author/Id,Author/Title',
       // tslint:disable-next-line:max-line-length
       filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllResources/Id eq ' + this.global.sharePointPageObject.userId + ')',
@@ -323,7 +325,8 @@ export class PmconstantService {
       filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\''
     },
     PROJECT_FINANCE_BY_PROJECTCODE: {
-      select: 'ID, Title, Currency, Budget, RevenueBudget, OOPBudget, TaxBudget,BudgetHrs',
+      select: 'ID, Title, Currency, Budget, RevenueBudget, OOPBudget, TaxBudget,BudgetHrs,' +
+        'InvoicesScheduled, ScheduledRevenue, ScheduledOOP, Invoiced, InvoicedRevenue, InvoicedOOP',
       filter: 'Title eq \'{{projectCode}}\''
     },
     PROJECT_FINANCE_BREAKUP_BY_PROJECTCODE: {

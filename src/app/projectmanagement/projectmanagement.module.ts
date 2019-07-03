@@ -27,6 +27,7 @@ import { PMMainResolve } from './PMMainResolve';
 import { CommunicationComponent } from './projectmanagement/communication/communication.component';
 import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/api';
 import { TimelineModule } from '../timeline/timeline.module';
+import { CustomMaterialModule } from '../shared/material.module';
 @NgModule({
   declarations: [
     ProjectmanagementComponent,
@@ -55,6 +56,7 @@ import { TimelineModule } from '../timeline/timeline.module';
     NgSelectModule,
     ReactiveFormsModule,
     TimelineModule,
+    CustomMaterialModule,
     NgbModule
   ],
   providers: [
@@ -67,6 +69,7 @@ import { TimelineModule } from '../timeline/timeline.module';
     DynamicDialogRef],
   entryComponents: [
     ProjectAttributesComponent,
-    ManageFinanceComponent]
+    ManageFinanceComponent,
+    AddProjectsComponent]
 })
 export class ProjectmanagementModule { }

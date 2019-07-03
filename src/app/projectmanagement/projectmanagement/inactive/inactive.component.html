@@ -58,7 +58,7 @@
                     <td>{{task.Status}}</td>
                     <td>
                         <p-slideMenu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu
-                            [model]="popItems" [popup]="true">
+                            [model]="popItems" [popup]="true" appendTo="body">
                         </p-slideMenu>
                         <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                             (click)="storeRowData(rowData); menu.toggle($event);"></i>

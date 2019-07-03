@@ -4,9 +4,10 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, DialogService } from 'primeng/api';
 import { DataService } from 'src/app/Services/data.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
+import { AddProjectsComponent } from '../add-projects/add-projects.component';
 declare var $;
 @Component({
   selector: 'app-sow',
@@ -30,6 +31,9 @@ export class SOWComponent implements OnInit {
     { field: 'POC' },
     { field: 'CreatedBy' },
     { field: 'CreatedDate' }];
+    projectsDisplayedColumns: any[] = [
+
+    ];
   public allSOW = {
     sowCodeArray: [],
     shortTitleArray: [],
@@ -42,17 +46,14 @@ export class SOWComponent implements OnInit {
   isAllSOWTableHidden = true;
   selectedSOWTask;
   popItems: MenuItem[];
-  @ViewChild('timelineRef', {static:true}) timeline: TimelineHistoryComponent;
+  @ViewChild('timelineRef', {static: true}) timeline: TimelineHistoryComponent;
   constructor(
     public pmObject: PMObjectService,
-    // tslint:disable-next-line:align
     private datePipe: DatePipe,
-    // tslint:disable-next-line:align
     private commonService: CommonService,
-    // tslint:disable-next-line:align
-    private constants: ConstantsService,
     private pmConstant: PmconstantService,
-    private dataService: DataService
+    private dataService: DataService,
+    public dialogService: DialogService
   ) { }
 
   ngOnInit() {
@@ -82,11 +83,11 @@ export class SOWComponent implements OnInit {
       },
       {
         label: 'View Project', icon: 'pi pi-eye', target: '_blank',
-        command: (event) => this.addBudgetSOW(this.pmObject.selectedSOWTask)
+        command: (event) => this.viewProjectSOW(this.pmObject.selectedSOWTask)
       },
       {
         label: 'Add Project', icon: 'pi pi-plus-circle', target: '_blank',
-        command: (event) => this.addBudgetSOW(this.pmObject.selectedSOWTask)
+        command: (event) => this.addProjectSOW(this.pmObject.selectedSOWTask)
       },
       {
         label: 'Close SOW', icon: 'pi pi-times-circle', target: '_blank',
@@ -117,6 +118,14 @@ export class SOWComponent implements OnInit {
   }
   closeSOW(task) {
     this.dataService.publish('call-Close-SOW');
+  }
+  addProjectSOW(task) {
+    this.pmObject.isAddProjectVisible = true;
+    this.pmObject.addProject.SOWSelect.SOWCode = task.SOWCode;
+    this.pmObject.activeIndex = 1;
+  }
+  viewProjectSOW(task) {
+    this.pmObject.isProjectVisible = true;
   }
   /**
    * This method is used to show all sow.

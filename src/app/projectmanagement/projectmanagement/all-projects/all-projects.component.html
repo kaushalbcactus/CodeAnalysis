@@ -62,7 +62,7 @@
                 <td>{{task.CreatedDate}}</td>
                 <td>
                     <p-slideMenu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu
-                        [model]="popItems" [popup]="true"></p-slideMenu>
+                        [model]="popItems" [popup]="true" appendTo="body"></p-slideMenu>
                     <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                         (click)="storeRowData(rowData,menu); menu.toggle($event);"></i>
                 </td>
@@ -320,7 +320,7 @@
             <div class="ui-grid-col-2">SOW Code</div>
             <div class="ui-grid-col-4">
                 <p-dropdown [(ngModel)]="newSelectedSOW" [options]="sowDropDownArray" placeholder="Please Select"
-                    [showClear]="true"></p-dropdown>
+                    [showClear]="true" [filter]="true"></p-dropdown>
             </div>
             <p-footer>
                 <button class="btnSave" type="button" (click)="performSOWMove()">Move</button>

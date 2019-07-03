@@ -15,7 +15,10 @@ export class PMObjectService {
     InactiveProject: 0,
     AllProject: 0,
     AllSOW: 0,
-    SelectSOW: 0
+    SelectSOW: 0,
+    activeProject: 0,
+    pipelineProject: 0,
+    inActiveProject: 0
   };
   public loading = {
     SendToClient: false,
@@ -24,7 +27,18 @@ export class PMObjectService {
     InactiveProject: false,
     AllProject: false,
     AllSOW: false,
-    SelectSOW: false
+    SelectSOW: false,
+    activeProject: false,
+    pipelineProject: false,
+    inActiveProject: false
+  };
+  public allProjects = {
+    activeProjectArray: [],
+    activeProjectCopyArray: [],
+    pipelineProjectArray : [],
+    pipelineProjectCopyArray: [],
+    inActiveProjectArray: [],
+    inActiveProjectCopyArray: []
   };
   public yearRange: any = '';
   public sendToClientArray: any = [];
@@ -469,4 +483,5 @@ export class PMObjectService {
   public isProjectRightSideVisible = false;
   public isAuditRollingVisible = false;
   public isMoveProjectToSOWVisible = false;
+  public isProjectVisible = false;
 }

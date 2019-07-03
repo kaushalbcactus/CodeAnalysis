@@ -63,8 +63,9 @@ export class AllProjectsComponent implements OnInit {
     addRollingProjectErrorMsg: ''
   };
   newSelectedSOW;
+  moveSOWObjectArray = [];
   sowDropDownArray: SelectItem[];
-  @ViewChild('timelineRef', {static:true}) timeline: TimelineHistoryComponent;
+  @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
@@ -674,21 +675,176 @@ export class AllProjectsComponent implements OnInit {
   /**
    * This method is used to transfer the project from one sow code to another sow code.
    */
-  performSOWMove() {
-    let isProjectMovementPossible = true;
+  async performSOWMove() {
     const projObject = this.selectedProjectObj;
-    if (this.newSelectedSOW) {
-    } else {
+    const isValid = await this.validateSOWBudgetForProjectMovement(this.newSelectedSOW, projObject);
+    if (isValid) {
+      const batchURL = [];
+      const options = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
+      // calculate New SOW Budget.
+      const allSOWArray = this.pmObject.allSOWItems;
+      const newSOWObj = allSOWArray.filter(x => x.SOWCode === this.newSelectedSOW);
+      const oldSOWObj = allSOWArray.filter(x => x.SOWCode === projObject.SOWCode);
+      if (newSOWObj && newSOWObj.length && oldSOWObj && oldSOWObj.length) {
+        const newSOW = newSOWObj[0];
+        const oldSOW = oldSOWObj[0];
+        const newSOWTotalBudget = newSOW.TotalLinked + projObject.Budget;
+        const newSOWRevenueBudget = newSOW.RevenueLinked + projObject.RevenueBudget;
+        const newSOWOOPBudget = newSOW.OOPLinked + projObject.OOPBudget;
+        const newSOWTaxBudget = newSOW.TaxLinked + projObject.TaxBudget;
+        const newSOWTotalScheduled = newSOW.TotalScheduled + projObject.InvoicesScheduled;
+        const newSOWScheduledRevenue = newSOW.ScheduledRevenue + projObject.ScheduledRevenue;
+        const newSOWScheduledOOP = newSOW.ScheduledOOP + projObject.ScheduledOOP;
+        const newSOWData = this.getSOWData(newSOWTotalBudget, newSOWRevenueBudget, newSOWOOPBudget,
+          newSOWTaxBudget, newSOWTotalScheduled, newSOWScheduledRevenue, newSOWScheduledOOP);
+        const newSOWUpdate = Object.assign({}, options);
+        newSOWUpdate.url = this.spServices.getItemURL(this.constants.listNames.SOW.name, newSOW.ID);
+        newSOWUpdate.data = newSOWData;
+        newSOWUpdate.type = 'PATCH';
+        newSOWUpdate.listName = this.constants.listNames.SOW.name;
+        batchURL.push(newSOWUpdate);
+        // calculate old sow Budget.
+        const oldSOWTotalBudget = oldSOW.TotalLinked - projObject.Budget;
+        const oldSOWRevenueBudget = oldSOW.RevenueLinked - projObject.RevenueBudget;
+        const oldSOWOOPBudget = oldSOW.OOPLinked - projObject.OOPBudget;
+        const oldSOWTaxBudget = oldSOW.TaxLinked - projObject.TaxBudget;
+        const oldSOWTotalScheduled = oldSOW.TotalScheduled - projObject.InvoicesScheduled;
+        const oldSOWScheduledRevenue = oldSOW.ScheduledRevenue - projObject.ScheduledRevenue;
+        const oldSOWScheduledOOP = oldSOW.ScheduledOOP - projObject.ScheduledOOP;
+        const oldSOWData = this.getSOWData(oldSOWTotalBudget, oldSOWRevenueBudget, oldSOWOOPBudget,
+          oldSOWTaxBudget, oldSOWTotalScheduled, oldSOWScheduledRevenue, oldSOWScheduledOOP);
+        const oldSOWUpdate = Object.assign({}, options);
+        oldSOWUpdate.url = this.spServices.getItemURL(this.constants.listNames.SOW.name, oldSOW.ID);
+        oldSOWUpdate.data = oldSOWData;
+        oldSOWUpdate.type = 'PATCH';
+        oldSOWUpdate.listName = this.constants.listNames.SOW.name;
+        batchURL.push(oldSOWUpdate);
+        const invoiceItemArray = this.moveSOWObjectArray[1].retItems;
+        invoiceItemArray.forEach(element => {
+          const data = {
+            __metadata: { type: this.constants.listNames.InvoiceLineItems.type },
+            SOWCode: this.newSelectedSOW
+          };
+          const invoiceUpdate = Object.assign({}, options);
+          invoiceUpdate.url = this.spServices.getItemURL(this.constants.listNames.InvoiceLineItems.name, element.ID);
+          invoiceUpdate.data = data;
+          invoiceUpdate.type = 'PATCH';
+          invoiceUpdate.listName = this.constants.listNames.InvoiceLineItems.name;
+          batchURL.push(invoiceUpdate);
+        });
+        const projectData = {
+          __metadata: { type: this.constants.listNames.ProjectInformation.type },
+          SOWCode: this.newSelectedSOW
+        };
+        const projectInfoUpdate = Object.assign({}, options);
+        projectInfoUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, projObject.ID);
+        projectInfoUpdate.data = projectData;
+        projectInfoUpdate.type = 'PATCH';
+        projectInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
+        batchURL.push(projectInfoUpdate);
+      }
+      const sResult = await this.spServices.executeBatch(batchURL);
       this.messageService.add({
-        key: 'allProject', severity: 'error', summary: 'Error Message',
-        detail: 'Select some SOW to proceed with project movement.'
+        key: 'allProject', severity: 'success', summary: 'Success Message',
+        detail: 'Project move to under new SOW Code - ' + this.newSelectedSOW + ''
       });
-      isProjectMovementPossible = false;
-      return false;
+      setTimeout(() => {
+        this.closeMoveSOW();
+      }, 500);
     }
-    if (isProjectMovementPossible) {
-      // isProjectMovementPossible = validateSOWBudgetForProjectMovement(sowCode);
+  }
+  /**
+   * This method is used to get SOW Object.
+   * @param sowTotalLinked pass TotalLinked Object as parameter.
+   * @param sowRevenueLinked pass RevenueLinked Object as parameter.
+   * @param sowOOPLinked pass OOPLinked Object as parameter.
+   * @param sowTaxLinked pass TaxLinked Object as parameter.
+   * @param sowTotalScheduled pass TotalScheduled Object as parameter.
+   * @param sowScheduledRevenue pass ScheduledRevenue Object as parameter.
+   * @param sowScheduledOOP pass ScheduledOOP Object as parameter.
+   */
+  getSOWData(sowTotalLinked, sowRevenueLinked, sowOOPLinked, sowTaxLinked, sowTotalScheduled, sowScheduledRevenue, sowScheduledOOP) {
+    const data = {
+      __metadata: { type: this.constants.listNames.SOW.type },
+      TotalLinked: sowTotalLinked,
+      RevenueLinked: sowRevenueLinked,
+      OOPLinked: sowOOPLinked,
+      TaxLinked: sowTaxLinked,
+      TotalScheduled: sowTotalScheduled,
+      ScheduledRevenue: sowScheduledRevenue,
+      ScheduledOOP: sowScheduledOOP
+    };
+    return data;
+  }
+  /**
+   * This method is used to check whether New SOW code budget is greater than project budget.
+   * @param newSOWCode pass the new sowcode as parameter.
+   * @param projObj pass the projObj as parameter.
+   */
+  async validateSOWBudgetForProjectMovement(newSOWCode, projObj) {
+    // get data from project finance based on project code.
+    let budgetValidateFlag = false;
+    const allSOWArray = this.pmObject.allSOWItems;
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    // Get Project Finance  ##0;
+    const projectFinanceGet = Object.assign({}, options);
+    const projectFinaceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE);
+    projectFinaceFilter.filter = projectFinaceFilter.filter.replace(/{{projectCode}}/gi,
+      projObj.ProjectCode);
+    projectFinanceGet.url = this.spServices.getReadURL(this.constants.listNames.ProjectFinances.name,
+      projectFinaceFilter);
+    projectFinanceGet.type = 'GET';
+    projectFinanceGet.listName = this.constants.listNames.ProjectFinances.name;
+    batchURL.push(projectFinanceGet);
+    // Get InvoiceLine Items ##1;
+    const inoviceGet = Object.assign({}, options);
+    const invoiceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.INVOICE_LINE_ITEMS_BY_PROJECTCODE);
+    invoiceFilter.filter = projectFinaceFilter.filter.replace(/{{projectCode}}/gi,
+      projObj.ProjectCode);
+    inoviceGet.url = this.spServices.getReadURL(this.constants.listNames.InvoiceLineItems.name,
+      invoiceFilter);
+    inoviceGet.type = 'GET';
+    inoviceGet.listName = this.constants.listNames.InvoiceLineItems.name;
+    batchURL.push(inoviceGet);
+    const sResult = await this.spServices.executeBatch(batchURL);
+    const sowObj = allSOWArray.filter(x => x.SOWCode === newSOWCode);
+    if (sResult && sResult.length && sowObj && sowObj.length) {
+      this.moveSOWObjectArray = sResult;
+      const fm = sResult[0].retItems[0];
+      const sowItem = sowObj[0];
+      // add budget into project object to utilize for update operation.
+      projObj.Budget = fm.Budget ? fm.Budget : 0;
+      projObj.RevenueBudget = fm.RevenueBudget ? fm.RevenueBudget : 0;
+      projObj.OOPBudget = fm.OOPBudget ? fm.OOPBudget : 0;
+      projObj.TaxBudget = fm.TaxBudget ? fm.TaxBudget : 0;
+      projObj.InvoicesScheduled = fm.InvoicesScheduled ? fm.InvoicesScheduled : 0;
+      projObj.ScheduledRevenue = fm.ScheduledRevenue ? fm.ScheduledRevenue : 0;
+      projObj.ScheduledOOP = fm.ScheduledOOP ? fm.ScheduledOOP : 0;
+      const sowBalanceTotalBudget = sowItem.TotalBudget - sowItem.TotalLinked;
+      const sowBalanceRevenueBudget = sowItem.NetBudget - sowItem.RevenueLinked;
+      const sowBalanceOOPBudget = sowItem.OOPBudget - sowItem.OOPLinked;
+      const sowBalanceTaxBudget = sowItem.TaxBudget - sowItem.TaxLinked;
+      if (sowBalanceTotalBudget >= fm.Budget &&
+        sowBalanceRevenueBudget >= fm.RevenueBudget &&
+        sowBalanceOOPBudget >= fm.OOPBudget &&
+        sowBalanceTaxBudget >= fm.TaxBudget) {
+        budgetValidateFlag = true;
+      } else {
+        budgetValidateFlag = false;
+      }
     }
+    return budgetValidateFlag;
   }
   /**
    * This method is used to close the dialog box.

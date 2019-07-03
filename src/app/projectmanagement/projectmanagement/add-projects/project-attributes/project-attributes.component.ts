@@ -21,7 +21,7 @@ export class ProjectAttributesComponent implements OnInit {
   isProjectAttributeTableHidden = true;
   billedBy: SelectItem[];
   priority: SelectItem[];
-  subDivision: SelectItem[];
+  subDivisionArray: SelectItem[];
   cmLevel1: SelectItem[];
   cmLevel2: SelectItem[];
   deliveryLevel1: SelectItem[];
@@ -31,6 +31,7 @@ export class ProjectAttributesComponent implements OnInit {
   selectedFile;
   fileReader;
   projObj;
+  sowObj;
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -42,12 +43,13 @@ export class ProjectAttributesComponent implements OnInit {
     private messageService: MessageService
   ) { }
   ngOnInit() {
+    this.initForm();
     this.isProjectAttributeLoaderHidden = false;
     this.isProjectAttributeTableHidden = true;
     setTimeout(() => {
-      this.initForm();
       if (this.config && this.config.hasOwnProperty('data')) {
         this.projObj = this.config.data.projectObj;
+        this.sowObj = this.config.data.sowObj;
       }
       this.addProjectAttributesForm.get('clientLeagalEntity').disable();
       this.addProjectAttributesForm.get('billingEntity').disable();
@@ -55,13 +57,15 @@ export class ProjectAttributesComponent implements OnInit {
         this.editProject(this.projObj);
         this.showEditSave = true;
       } else {
-        const sow = this.pmObject.projectInformationItems.filter(objt => objt.SOWCode === this.pmObject.addProject.SOWSelect.SOWCode);
-        const sowObj = {
-          ClientLegalEntity: sow[0].ClientLegalEntity,
-          BillingEntity: sow[0].BillingEntity
-        };
-        this.setFieldProperties(this.pmObject.addProject.ProjectAttributes, sowObj, true);
-        this.showEditSave = false;
+        const sow = this.pmObject.allSOWItems.filter(objt => objt.SOWCode === this.pmObject.addProject.SOWSelect.SOWCode);
+        if (sow && sow.length) {
+          const sowObj = {
+            ClientLegalEntity: sow[0].ClientLegalEntity,
+            BillingEntity: sow[0].BillingEntity
+          };
+          this.setFieldProperties(this.pmObject.addProject.ProjectAttributes, sowObj, true);
+          this.showEditSave = false;
+        }
       }
     }, 500);
   }
@@ -160,6 +164,7 @@ export class ProjectAttributesComponent implements OnInit {
     this.isProjectAttributeLoaderHidden = true;
   }
   async setDropDownValue(clientLeagalEntity) {
+    this.subDivisionArray = [];
     this.billedBy = [
       { label: this.pmConstant.PROJECT_TYPE.DELIVERABLE, value: this.pmConstant.PROJECT_TYPE.DELIVERABLE },
       { label: this.pmConstant.PROJECT_TYPE.HOURLY, value: this.pmConstant.PROJECT_TYPE.HOURLY }
@@ -190,7 +195,7 @@ export class ProjectAttributesComponent implements OnInit {
     const result = await this.spServices.readItems(this.constant.listNames.ClientSubdivision.name, queryOptions);
     if (result && result.length) {
       result.forEach(element => {
-        this.subDivision.push({ label: element.Title, value: element.Title });
+        this.subDivisionArray.push({ label: element.Title, value: element.Title });
       });
     }
     // set the CM1, CM2, AD1, AD2 dropdown value.
