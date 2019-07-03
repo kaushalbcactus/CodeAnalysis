@@ -33,8 +33,9 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   fileReader = new FileReader();
 
   @Input() milestoneData: any;
-  menuItems: any=[];
-  constructor(public config: DynamicDialogConfig,
+  menuItems: any = [];
+  constructor(
+    public config: DynamicDialogConfig,
     public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
@@ -56,7 +57,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
     console.log(this.data);
 
     this.milestoneData.Milestones.split(';#').filter(c => c !== "").forEach(element => {
-     this.menuItems.push({ label: element, icon: 'pi pi-inbox', command: (e) => this.onChange(e) })
+      this.menuItems.push({ label: element, icon: 'pi pi-inbox', command: (e) => this.onChange(e) })
     });
     this.items = this.menuItems;
     this.activeItem = this.items[0];
@@ -70,15 +71,15 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
       { field: 'ModifiedDateString', header: 'Uploaded Date' },
     ];
 
-   this.getDocuments(this.data);
-  // this.loadDraftDocs(this.selectedTab);
+    this.getDocuments(this.data);
+    // this.loadDraftDocs(this.selectedTab);
     this.loaderenable = true;
   }
-  ngOnDestroy(): void {    
+  ngOnDestroy(): void {
     // ... some clean up logic
   
   }
-  
+
   // **************************************************************************************************************************************
   //  Switch tab on click 
   // **************************************************************************************************************************************
@@ -147,7 +148,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
     //   documentsUrl = "/Emails";
     // }
     // else {
-      documentsUrl = "/Drafts/Internal/" + selectedTab;
+    documentsUrl = "/Drafts/Internal/" + selectedTab;
     // }
 
     var completeFolderRelativeUrl = "";
@@ -163,18 +164,18 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
 
     this.allDocuments = this.response[0];
 
-    
-
-   
-  this.DocumentArray = this.allDocuments;
-    
 
 
-   var Ids = this.DocumentArray.map(c => c.DocIds = c.ListItemAllFields.EditorId).filter((el, i, a) => i === a.indexOf(el));
 
-     if (Ids.length > 0)
+    this.DocumentArray = this.allDocuments;
+
+
+
+    var Ids = this.DocumentArray.map(c => c.DocIds = c.ListItemAllFields.EditorId).filter((el, i, a) => i === a.indexOf(el));
+
+    if (Ids.length > 0)
       var users = await this.getUsers(Ids);
-      this.loaderenable = false;
+    this.loaderenable = false;
 
 
 
@@ -185,12 +186,12 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
     this.DocumentArray.map(c => c.isFileMarkedAsFinal = c.status.split(" ").splice(-1)[0] === "Complete" ? true : false);
     this.DocumentArray.map(c => c.ModifiedDateString = this.datePipe.transform(c.ListItemAllFields.Modified, 'MMM d, y, h:mm a'));
 
-    this.DocumentArray = this.DocumentArray.filter(c=>c.isFileMarkedAsFinal);
+    this.DocumentArray = this.DocumentArray.filter(c => c.isFileMarkedAsFinal);
 
     if (this.DocumentArray.length) {
       debugger;
       this.DocumentArray = this.DocumentArray.sort((a, b) =>
-    
+
         new Date(a.ModifiedDateString).getTime() < new Date(b.ModifiedDateString).getTime() ? 1 : -1
       );
     }

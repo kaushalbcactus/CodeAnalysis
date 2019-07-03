@@ -329,11 +329,39 @@
         //  dialog to show project drafts
         ****************************************************************************************** -->
 
+<<<<<<< HEAD
     <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)">
       <mat-expansion-panel-header>
         <mat-panel-title style="color:#000000;">
           <mat-icon style="padding: 4px 0px 0px 0px;">folder</mat-icon> &nbsp;&nbsp; Project Drafts
         </mat-panel-title>
+=======
+            </mat-expansion-panel-header>
+            <ng-template matExpansionPanelContent>
+                <!-- <app-timeline [projectDetails] ="ProjectPopupDetails" ></app-timeline> -->
+            </ng-template>
+
+        </mat-expansion-panel>
+
+     
+
+         <!--****************************************************************************************** 
+        //  dialog to show project drafts
+        ****************************************************************************************** -->
+    
+        <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)">
+            <mat-expansion-panel-header>
+                <mat-panel-title style="color:#000000;">
+                    <mat-icon style="padding: 4px 0px 0px 0px;">folder</mat-icon> &nbsp;&nbsp; Project Drafts
+                </mat-panel-title>
+
+            </mat-expansion-panel-header>
+            <ng-template matExpansionPanelContent>
+                <app-project-drafts [milestoneData]="ProjectPopupDetails"></app-project-drafts>
+            </ng-template>
+
+        </mat-expansion-panel>
+>>>>>>> 1946606936b5f29212282521fd4ad298e84358f1
 
       </mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>

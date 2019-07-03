@@ -43,7 +43,7 @@
         <div>
             <form [formGroup]='addSowForm'>
                 <div class="ui-g mt-20">
-                    <div class="ui-g-2">
+                    <div class="ui-g-2"> <span class="compulsory">*</span>
                         Client Legal Entity
                     </div>
                     <div class="ui-g-4">
@@ -55,7 +55,7 @@
                             *ngIf="!addSowForm.controls['clientLegalEntity'].valid&&addSowForm.controls['clientLegalEntity'].touched">
                             Client Legal Entity is required</div>
                     </div>
-                    <div class="ui-g-2">SOW Code</div>
+                    <div class="ui-g-2"><span class="compulsory">*</span>SOW Code</div>
                     <div class="ui-g-4">
                         <input class="mr-5" formControlName="sowCode" type="text" pInputText>
                         <div class="error"
@@ -64,7 +64,7 @@
                     </div>
                 </div>
                 <div class="ui-g mt-20">
-                    <div class="ui-g-2">Billing Entity</div>
+                    <div class="ui-g-2"><span class="compulsory">*</span>Billing Entity</div>
                     <div class="ui-g-4">
                         <p-dropdown class="mr-5" [options]="sowDropDown.BillingEntity"
                             formControlName="cactusBillingEntity" placeholder="Please Select" [showClear]="true"
@@ -74,7 +74,7 @@
                             *ngIf="!addSowForm.controls['cactusBillingEntity'].valid&&addSowForm.controls['cactusBillingEntity'].touched">
                             Billing Entity is required</div>
                     </div>
-                    <div class="ui-g-2">Practice Area</div>
+                    <div class="ui-g-2"><span class="compulsory">*</span>Practice Area</div>
                     <div class="ui-g-4">
                         <p-multiSelect class="mr-5" formControlName="practiceArea" [options]="sowDropDown.PracticeArea"
                             [panelStyle]="{minWidth:'12em'}" [style]="{'width':'85%'}" defaultLabel="Please Select"
@@ -85,7 +85,7 @@
                     </div>
                 </div>
                 <div class="ui-g mt-20">
-                    <div class="ui-g-2">Client Point of Contact</div>
+                    <div class="ui-g-2"><span class="compulsory">*</span>Client Point of Contact</div>
                     <div class="ui-g-3">
                         <p-dropdown class="mr-5" [options]="sowDropDown.POC" formControlName="poc"
                             placeholder="Please Select" [showClear]="true" [filter]="true">
@@ -100,7 +100,7 @@
                     </div>
                 </div>
                 <div class="ui-g mt-20">
-                    <div class="ui-g-2">SOW Title</div>
+                    <div class="ui-g-2"><span class="compulsory">*</span>SOW Title</div>
                     <div class="ui-g-8">
                         <textarea class="mr-5" [rows]="5" [cols]="80" formControlName="sowTitle" pInputTextarea
                             autoResize="autoResize"></textarea>
@@ -110,7 +110,7 @@
                     </div>
                 </div>
                 <div class="ui-g mt-20">
-                    <div class="ui-g-2">SOW Cretion Date</div>
+                    <div class="ui-g-2"><span class="compulsory">*</span>SOW Cretion Date</div>
                     <div class="ui-g-4">
                         <p-calendar class="pcalendarClass" formControlName="sowCreationDate" [disabledDays]="[0,6]"  
                             [readonlyInput]="true"   [showTime]="false"   hourFormat="12"   dateFormat="dd M, yy"  
@@ -121,7 +121,7 @@
                             *ngIf="!addSowForm.controls['sowCreationDate'].valid&&addSowForm.controls['sowCreationDate'].touched">
                             SOW Cretion Date is required</div>
                     </div>
-                    <div class="ui-g-2">SOW Expiry Date</div>
+                    <div class="ui-g-2"><span class="compulsory">*</span>SOW Expiry Date</div>
                     <div class="ui-g-4">
                         <p-calendar class="pcalendarClass" formControlName="sowExpiryDate" [disabledDays]="[0,6]"  
                             [readonlyInput]="true"   [showTime]="false"   hourFormat="12"   dateFormat="dd M, yy"  
@@ -152,7 +152,7 @@
                     </div>
                 </div>
                 <div class="ui-g mt-20">
-                    <div class="ui-g-2">Currency</div>
+                    <div class="ui-g-2"><span class="compulsory">*</span>Currency</div>
                     <div class="ui-g-4">
                         <p-dropdown class="mr-5" [options]="sowDropDown.Currency" formControlName="currency"
                             placeholder="Please Select" [showClear]="true" [filter]="true"></p-dropdown>
@@ -168,7 +168,7 @@
                     <div class="ui-g-2">Tax</div>
                 </div>
                 <div class="ui-g mt-20">
-                    <div class="ui-g-2">Budget</div>
+                    <div class="ui-g-2"> <span class="compulsory">*</span> Budget</div>
                     <div class="ui-g-2">
                         <input formControlName="total" type="number" [attr.disabled]="true" placeholder="Total"
                             pInputText>
@@ -194,7 +194,7 @@
                 </div>
                 <h3 class="center">1. Assign User Access</h3>
                 <div class="ui-g mt-20">
-                    <div class="ui-g-2">CM</div>
+                    <div class="ui-g-2"><span class="compulsory">*</span>CM</div>
                     <div class="ui-g-4">
                         <p-multiSelect formControlName="cm" [options]="sowDropDown.CMLevel1"
                             [panelStyle]="{minWidth:'12em'}" [style]="{'width':'85%'}" defaultLabel="Please Select"
@@ -211,7 +211,7 @@
                     </div>
                 </div>
                 <div class="ui-g mt-20">
-                    <div class="ui-g-2">Delivery</div>
+                    <div class="ui-g-2"><span class="compulsory">*</span>Delivery</div>
                     <div class="ui-g-4">
                         <p-multiSelect formControlName="deliveryOptional" [options]="sowDropDown.DeliveryOptional"
                             [panelStyle]="{minWidth:'12em'}" [style]="{'width':'85%'}" defaultLabel="Please Select"
@@ -226,7 +226,7 @@
                     </div>
                 </div>
                 <div class="ui-g mt-20">
-                    <div class="ui-g-2">SOW Owner</div>
+                    <div class="ui-g-2"><span class="compulsory">*</span>SOW Owner</div>
                     <div class="ui-g-4">
                         <p-dropdown class="mr-5" formControlName="sowOwner" [options]="sowDropDown.SowOwner"
                             placeholder="Please Select" [showClear]="true" [filter]="true"></p-dropdown>

@@ -1,10 +1,10 @@
-import {NgModule} from "@angular/core";
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  MatButtonModule, MatNativeDateModule, MatIconModule, MatSidenavModule, MatTooltipModule, 
-  MatListModule, MatToolbarModule, MatCardModule, MatInputModule, MatSelectModule,MatRadioModule,   MatCheckboxModule, MatTableModule,
-  MatDatepickerModule, MatPaginatorModule, MatDialogModule, MatExpansionModule,MatDividerModule, MatChipsModule,MatMenuModule,
-  MatAutocompleteModule ,MatBottomSheetModule,MatTreeModule,
+  MatButtonModule, MatNativeDateModule, MatIconModule, MatSidenavModule, MatTooltipModule,
+  MatListModule, MatToolbarModule, MatCardModule, MatInputModule, MatSelectModule, MatRadioModule, MatCheckboxModule, MatTableModule,
+  MatDatepickerModule, MatPaginatorModule, MatDialogModule, MatExpansionModule, MatDividerModule, MatChipsModule, MatMenuModule,
+  MatAutocompleteModule, MatBottomSheetModule, MatTreeModule,
 } from '@angular/material';
 
 
@@ -58,7 +58,7 @@ import {
     MatAutocompleteModule,
     MatBottomSheetModule,
     MatTreeModule,
-    
+
   ],
 })
 export class CustomMaterialModule { }
