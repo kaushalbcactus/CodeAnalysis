@@ -4,7 +4,7 @@
         <div id="mainLoaderText">Loading...</div>
     </div>
     <p-table #dt id="tblTimeline" [columns]="timelineHeader" [value]="timelineData" [scrollable]="true"
-        scrollHeight="300px" [virtualScroll]="true" [lazy]="true" [rows]="1" [rowTrackBy]="rowTrackBy"
+        scrollHeight="100%" [virtualScroll]="true" [lazy]="true" [rows]="1" [rowTrackBy]="rowTrackBy"
         [virtualRowHeight]="50" (onLazyLoad)="loadData($event)" [lazyLoadOnInit]="false" [totalRecords]="totalRecords"
         [loading]="loading" *ngIf="timelineData.length > 0">
         <ng-template pTemplate="header" let-columns>
@@ -20,16 +20,16 @@
             <tr>
                 <th></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field">
-                    <p-multiSelect *ngSwitchCase="'date_time'" [panelStyle]="{minWidth:'12em'}"
+                    <p-multiSelect *ngSwitchCase="'date_time'" [panelStyle]="{minWidth:'12em'}" appendTo="body"
                         [style]="{'width':'100%'}" [options]="filter.dates" defaultLabel="All"
                         (onChange)="dt.filter($event.value, col.field, 'contains','test')"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'activity_type'" [panelStyle]="{minWidth:'12em'}"
+                    <p-multiSelect *ngSwitchCase="'activity_type'" [panelStyle]="{minWidth:'12em'}" appendTo="body"
                         [style]="{'width':'100%'}" [options]="filter.activityType" defaultLabel="All"
                         (onChange)="dt.filter($event.value, col.field, 'in')"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'activity_sub_type'" [panelStyle]="{minWidth:'12em'}"
+                    <p-multiSelect *ngSwitchCase="'activity_sub_type'" [panelStyle]="{minWidth:'12em'}" appendTo="body"
                         [style]="{'width':'100%'}" [options]="filter.activitySubType" defaultLabel="All"
                         (onChange)="dt.filter($event.value, col.field, 'in')"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'activity_by'" [panelStyle]="{minWidth:'12em'}"
+                    <p-multiSelect *ngSwitchCase="'activity_by'" [panelStyle]="{minWidth:'12em'}" appendTo="body"
                         [style]="{'width':'100%'}" [options]="filter.activityBy" defaultLabel="All"
                         (onChange)="dt.filter($event.value, col.field, 'in')"></p-multiSelect>
                 </th>

@@ -398,6 +398,7 @@ export class ConstantsService {
       SentToAMForApproval: 'Sent to AM for Approval'
     },
     columns: {
+      Title: 'Title',
       ProjectType: 'ProjectType',
       BusinessVertical: 'BusinessVertical',
       PrimaryPOC: 'PrimaryPOC',

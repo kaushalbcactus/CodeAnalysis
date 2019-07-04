@@ -1,6 +1,6 @@
 import { GlobalService } from '../../Services/global.service';
 import { ConstantsService } from '../../Services/constants.service';
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewEncapsulation } from '@angular/core';
 import { SPCommonService } from '../../Services/spcommon.service';
 import { TimelineConstantsService } from './../services/timeline-constants.service';
 import { DatePipe } from '@angular/common';
@@ -33,9 +33,9 @@ export class TimelineHistoryComponent implements OnInit {
   public displayBody = false;
   public timelineHeader = [
     { field: 'date_time', header: 'Date & Time', width: '14%' },
-    { field: 'activity_type', header: 'Activity Type', width: '14%'},
+    { field: 'activity_type', header: 'Activity Type', width: '14%' },
     { field: 'activity_sub_type', header: 'Activity Sub-Type', width: '' },
-    { field: 'activity_by', header: 'Activity By' , width: ''},
+    { field: 'activity_by', header: 'Activity By', width: '' },
     { field: 'activity_description', header: 'Activity Description', width: '20%' },
     { field: 'file_uploaded', header: 'File Uploaded', width: '' }
   ];
@@ -74,16 +74,16 @@ export class TimelineHistoryComponent implements OnInit {
   public filterEnabled = false;
   public hideLoader = true;
   constructor(private spStandardService: SPOperationService, private constant: TimelineConstantsService,
-    private globalConstant: ConstantsService, private spcommon: SPCommonService, private datePipe: DatePipe,
-    public elemRef: ElementRef, public global: GlobalService) { }
+              private globalConstant: ConstantsService, private spcommon: SPCommonService, private datePipe: DatePipe,
+              public elemRef: ElementRef, public global: GlobalService) { }
 
   ngOnInit() {
     /**
      * fetches project contacts and po on page load
      */
-  
-      this.initialize();
-   
+
+    this.initialize();
+
   }
 
   // #region component initialization
@@ -137,8 +137,8 @@ export class TimelineHistoryComponent implements OnInit {
   showTimeline(id, moduleName, type) {
     this.reset();
     this.initialRequestOngoing = true;
-   // this.loading = true;
-   this.hideLoader = false;
+    // this.loading = true;
+    this.hideLoader = false;
     this.displayBody = true;
     this.timelineBaseObj = JSON.parse(JSON.stringify(this.ObjTimeline));
     this.requestType = type;
@@ -157,7 +157,7 @@ export class TimelineHistoryComponent implements OnInit {
     this.assimilation();
     this.updateInitialStruture(this.timelineBaseObj);
     await this.creationComplete(moduleName);
-   
+
     // this.loading = false;
   }
 
@@ -1347,6 +1347,11 @@ export class TimelineHistoryComponent implements OnInit {
           obj.date_time = new Date(element.Modified).toISOString();
           obj.activity_by = element.Editor.LookupValue ? element.Editor.LookupValue : element.Editor;
           switch (key) {
+            case this.globalConstant.projectList.columns.Title:
+              obj.activity_type = 'Project updated';
+              obj.activity_sub_type = 'Title updated';
+              obj.activity_description = 'Title updated to ' + versionDetail.BusinessVertical;
+              break;
             case this.globalConstant.projectList.columns.BusinessVertical:
               obj.activity_type = 'Project updated';
               obj.activity_sub_type = 'Practice area updated';
@@ -1380,8 +1385,8 @@ export class TimelineHistoryComponent implements OnInit {
             case this.globalConstant.projectList.columns.Description:
               if (versionDetail.Description) {
                 obj.activity_type = 'Project updated';
-                obj.activity_sub_type = 'Description updated';
-                obj.activity_description = 'Description Updated to ' + versionDetail.Description;
+                obj.activity_sub_type = 'End Use of Deliverable updated';
+                obj.activity_description = 'End Use of Deliverable Updated to ' + versionDetail.Description;
               }
               break;
             case this.globalConstant.projectList.columns.ConferenceJournal:
@@ -1746,18 +1751,18 @@ export class TimelineHistoryComponent implements OnInit {
   setPrjDocuments(objDocuments) {
     const items = [];
     const filteredFolders = objDocuments.Folders.results.filter(f => ['Communications', 'Emails', 'References', 'Source Documents'].indexOf(f.Name) > -1);
-      filteredFolders.forEach(folder => {
+    filteredFolders.forEach(folder => {
       if (folder.ItemCount > 0) {
-        const obj = JSON.parse(JSON.stringify(this.objTimelineData));       
-          folder.Files.results.forEach(file => {
-            obj.date_time = new Date(file.TimeLastModified).toISOString();
-            obj.activity_by = file.ModifiedBy.Title ? file.ModifiedBy.Title : file.ModifiedBy;
-            obj.activity_type = 'Attachment';
-            obj.activity_sub_type = 'Document added';
-            obj.activity_description = 'Document added to ' + folder.Name;
-            obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + file.ServerRelativeUrl;
-            items.push(obj);
-        
+        const obj = JSON.parse(JSON.stringify(this.objTimelineData));
+        folder.Files.results.forEach(file => {
+          obj.date_time = new Date(file.TimeLastModified).toISOString();
+          obj.activity_by = file.ModifiedBy.Title ? file.ModifiedBy.Title : file.ModifiedBy;
+          obj.activity_type = 'Attachment';
+          obj.activity_sub_type = 'Document added';
+          obj.activity_description = 'Document added to ' + folder.Name;
+          obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + file.ServerRelativeUrl;
+          items.push(obj);
+
         });
       }
     });

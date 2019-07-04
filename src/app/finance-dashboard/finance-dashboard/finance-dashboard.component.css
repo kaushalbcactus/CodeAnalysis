@@ -165,7 +165,7 @@ body .ui-datepicker table td > a.ui-state-active:hover{
   background-color: #c53e3e !important;
 }
 
-.ui-table-scrollable-wrapper .ui-table-scrollable-header tr th:first-child
+/* .ui-table-scrollable-wrapper .ui-table-scrollable-header tr th:first-child
 {width: 1%;}
 .ui-table-scrollable-wrapper .ui-table-scrollable-header th:nth-child(2){
   width: 12%;
@@ -202,8 +202,8 @@ body .ui-datepicker table td > a.ui-state-active:hover{
   position: static;
 }
 .ui-table-scrollable-wrapper .ui-table-scrollable-body tr td:nth-child(7){
-  /* width: 10%; */
-}
+   width: 10%;
+} */
 
 
 
