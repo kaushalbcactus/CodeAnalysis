@@ -27,7 +27,8 @@ export class SharepointoperationService {
     apiArchiveUrl: string;
     currentUser: string;
     login: string;
-    constructor(private http: Http, private globalService: GlobalService, private httpClient: HttpClient, private constants: ConstantsService) {
+    constructor(private http: Http, private globalService: GlobalService, private httpClient: HttpClient
+        , private constants: ConstantsService ) {
         this.setBaseUrl(null);
     }
     setBaseUrl(webUrl?: string) {
@@ -1228,6 +1229,58 @@ export class SharepointoperationService {
 
 
     // }
+
+    executePostPatchRequest(arrayOfData) {
+        const batchGuid = this.generateUUID();
+        const batchContents = new Array();
+        const changeSetId = this.generateUUID();
+        arrayOfData.forEach(element => {
+          this.getChangeSetBodySC(batchContents, changeSetId, element.endPoint, JSON.stringify(element.data), element.isPostMethod);
+        });
+        batchContents.push('--changeset_' + changeSetId + '--');
+        const batchBody = batchContents.join('\r\n');
+        const batchBodyContent = this.getBatchBodyPost(batchBody, batchGuid, changeSetId);
+        batchBodyContent.push('--batch_' + batchGuid + '--');
+        const sBatchData = batchBodyContent.join('\r\n');
+        const arrResults = this.executeBatchRequest(batchGuid, sBatchData);
+        return arrResults;
+      }
+
+        /**
+   * Move scorecard item into current month folder
+   *
+   * @param {*} scorecardItem
+   * @returns
+   * @memberof ReviewerDetailViewComponent
+   */
+  moveListItem(item, listName) {
+    const currentYear = new Date().getFullYear();
+    const currentMonth = this.getMonthName(new Date());
+    const fileUrl =  this.globalService.currentUser.serverRelativeUrl + '/Lists/' + listName + '/' + item.ID + '_.000';
+    const moveFileUrl =  this.globalService.currentUser.serverRelativeUrl + '/Lists/' + listName + '/' + currentYear + '/' +
+                       currentMonth + '/' + item.ID + '_.000';
+    const moveItemEndpoint = this.constants.feedbackPopupComponent.moveFileUrl.replace('{{FileUrl}}', fileUrl)
+                                                                             .replace('{{NewFileUrl}}', moveFileUrl);
+    return ({'endPoint': moveItemEndpoint, 'data': {}, 'isPostMethod': true});
+  }
+
+  getMonthName(date: Date): string {
+    const d = new Date(date);
+    const month = new Array();
+    month[0] = 'January';
+    month[1] = 'February';
+    month[2] = 'March';
+    month[3] = 'April';
+    month[4] = 'May';
+    month[5] = 'June';
+    month[6] = 'July';
+    month[7] = 'August';
+    month[8] = 'September';
+    month[9] = 'October';
+    month[10] = 'November';
+    month[11] = 'December';
+    return month[d.getMonth()];
+  }
 
    
  

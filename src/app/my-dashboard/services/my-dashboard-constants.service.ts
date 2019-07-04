@@ -57,7 +57,7 @@ export class MyDashboardConstantsService {
       top: "4500"
     },
     ProjectInformations: {
-      select: 'ID,Title,ProjectCode,Status,ClientLegalEntity,Milestones,WBJID',
+      select: 'ID,Title,ProjectCode,Status,ClientLegalEntity,Milestones,WBJID,ProjectFolder',
       filter: "(Status eq 'Author Review' or Status eq 'In Progress' or Status eq 'Ready for Client' or Status eq 'Unallocated')",
       orderby: "ProjectCode asc",
       top: "4500"
@@ -813,6 +813,102 @@ export class MyDashboardConstantsService {
     var data = uniqueArray.map(a => { let b = { label: a, value: a }; return b; })
     return data;
   }
+
+  getTaskDocument(folderUrl, documentUrl, previousTask) {
+    let documents = [];
+    const completeFolderRelativeUrl = folderUrl + documentUrl;
+    const Url = "/_api/web/getfolderbyserverrelativeurl('" + completeFolderRelativeUrl + "')/Files?$expand=ListItemAllFields";
+    if (previousTask) {
+      documents = this.spServices.fetchTaskDocumentsByRestAPI(Url, previousTask);
+    } else {
+      documents = this.spServices.fetchTaskDocumentsByRestAPI(Url, null);
+    }
+    if (documents.length) {
+      documents = documents.sort((a, b) =>
+        new Date(a.modified) < new Date(b.modified) ? 1 : -1
+      );
+    }
+    return documents;
+  }
+
+
+  callQMSPopup(currentTaskElement, qmsObj) {
+    var previousTaskFilter = '';
+    var newValue = [];
+    if (currentTaskElement.PrevTasks) {
+      newValue = currentTaskElement.PrevTasks.split(";#");
+      for (var i = 0; i < newValue.length; i++) {
+        previousTaskFilter += "(Title eq '" + newValue[i] + "')";
+        if (i != newValue.length - 1) {
+          previousTaskFilter += " or "
+        }
+      }
+    }
+    const project = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === currentTaskElement.ProjectCode);
+    var folderUrl = project.ProjectFolder;
+    var documentsUrl = "/Drafts/Internal/" + currentTaskElement.Milestone;
+
+    var tempArray = [];
+    var reviewDocArray = [];
+    var documents = this.getTaskDocument(folderUrl, documentsUrl, currentTaskElement.PrevTasks);
+    for (var document in documents) {
+      if (documents[document].visiblePrevTaskDoc === true) {
+        var docObj = {
+          url: '',
+          fileName: ''
+        }
+        docObj.url = documents[document].fileUrl;
+        docObj.fileName = documents[document].fileName;
+        tempArray.push(docObj);
+      }
+    }
+    var reviewDocuments = this.getTaskDocument(folderUrl, documentsUrl, '');
+    for (var document in reviewDocuments) {
+      if (reviewDocuments[document].taskName === currentTaskElement.TaskName && reviewDocuments[document].status.indexOf('Complete') > -1) {
+        var docObj = {
+          url: '',
+          fileName: ''
+        }
+        docObj.url = reviewDocuments[document].fileUrl;
+        docObj.fileName = reviewDocuments[document].fileName;
+        reviewDocArray.push(docObj);
+      }
+    }
+    if (newValue.length == 1 && tempArray.length) {
+      var queryUrl = "/_api/web/lists/GetByTitle('Schedules')/items?$select=ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,Actual_x0020_End_x0020_Date,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail&$expand=AssignedTo/Title&$filter=" + previousTaskFilter;
+      var previousItems = this.spServices.fetchListItemsByRestAPI(queryUrl);
+      var obj = {
+        documentURL: [],
+        resourceID: 0,
+        resource: '',
+        taskCompletionDate: new Date(),
+        reviewTask: {
+          ID: 0,
+          Title: '',
+          PrevTasks: '',
+          Rated: '',
+        },
+        reviewTaskDocUrl: [],
+        taskTitle: '',
+        taskID: 0
+      }
+      obj.documentURL = tempArray;
+      obj.resourceID = previousItems[0].AssignedTo.Id;
+      obj.resource = previousItems[0].AssignedTo.Title;
+      obj.taskCompletionDate = previousItems[0].Actual_x0020_End_x0020_Date;
+      obj.reviewTask.ID = currentTaskElement.ID;
+      obj.reviewTask.Title = currentTaskElement.TaskName ? currentTaskElement.TaskName : currentTaskElement.Title;
+      obj.reviewTask.PrevTasks = currentTaskElement.PrevTasks;
+      obj.reviewTask.Rated = currentTaskElement.Rated;
+      obj.taskTitle = previousItems[0].Title;
+      obj.taskID = previousItems[0].ID;
+      obj.reviewTaskDocUrl = reviewDocArray;
+      qmsObj.openPopup(obj);
+      //window.angularComponentReference.zone.run(() =>{window.angularComponentReference.componentFn(obj);});
+    }
+  }
+
+
 
 }
 
