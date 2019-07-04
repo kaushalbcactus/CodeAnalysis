@@ -1753,8 +1753,8 @@ export class TimelineHistoryComponent implements OnInit {
     const filteredFolders = objDocuments.Folders.results.filter(f => ['Communications', 'Emails', 'References', 'Source Documents'].indexOf(f.Name) > -1);
     filteredFolders.forEach(folder => {
       if (folder.ItemCount > 0) {
-        const obj = JSON.parse(JSON.stringify(this.objTimelineData));
         folder.Files.results.forEach(file => {
+          const obj = JSON.parse(JSON.stringify(this.objTimelineData));
           obj.date_time = new Date(file.TimeLastModified).toISOString();
           obj.activity_by = file.ModifiedBy.Title ? file.ModifiedBy.Title : file.ModifiedBy;
           obj.activity_type = 'Attachment';

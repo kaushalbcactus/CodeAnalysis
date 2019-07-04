@@ -1,7 +1,7 @@
 <p-sidebar [(visible)]="displayBody" position="bottom" styleClass="ui-sidebar-lg">
     <div class="tableLoader" [hidden]='hideLoader'>
-        <div id="mainLoader"></div>
-        <div id="mainLoaderText">Loading...</div>
+        <div id="timelineMainLoader"></div>
+        <div id="timelineMainLoaderText">Loading...</div>
     </div>
     <p-table #dt id="tblTimeline" [columns]="timelineHeader" [value]="timelineData" [scrollable]="true"
         scrollHeight="90%" [virtualScroll]="true" [lazy]="true" [rows]="1" [rowTrackBy]="rowTrackBy"
