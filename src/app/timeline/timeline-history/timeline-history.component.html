@@ -4,7 +4,7 @@
         <div id="mainLoaderText">Loading...</div>
     </div>
     <p-table #dt id="tblTimeline" [columns]="timelineHeader" [value]="timelineData" [scrollable]="true"
-        scrollHeight="100%" [virtualScroll]="true" [lazy]="true" [rows]="1" [rowTrackBy]="rowTrackBy"
+        scrollHeight="90%" [virtualScroll]="true" [lazy]="true" [rows]="1" [rowTrackBy]="rowTrackBy"
         [virtualRowHeight]="50" (onLazyLoad)="loadData($event)" [lazyLoadOnInit]="false" [totalRecords]="totalRecords"
         [loading]="loading" *ngIf="timelineData.length > 0">
         <ng-template pTemplate="header" let-columns>

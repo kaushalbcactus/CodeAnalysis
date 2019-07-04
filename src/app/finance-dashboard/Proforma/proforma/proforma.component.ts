@@ -505,7 +505,7 @@ export class ProformaComponent implements OnInit {
         this.items.push(
             { label: 'Replace Proforma', command: (e) => this.openMenuContent(e, data) },
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
-            { label: 'Show Timeline', command: (e) => this.openMenuContent(e, data) },
+            { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
         )
 
         if (this.items.length === 0) {
@@ -557,7 +557,7 @@ export class ProformaComponent implements OnInit {
             this.generateInvoiceModal = true;
             this.getILIByPID();
 
-        } else if (this.confirmDialog.title.toLowerCase() === 'show timeline') {
+        } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
             this.timeline.showTimeline(data.Id, 'FD', 'Proforma');
         } else if (this.confirmDialog.title.toLowerCase() === 'edit proforma') {
             const proformaObj = JSON.parse(data.ProformaHtml);

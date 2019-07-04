@@ -563,7 +563,7 @@ export class ConfirmedComponent implements OnInit {
 
         this.items = [
             { label: 'Revert Invoice', command: (e) => this.openMenuContent(e, data) },
-            { label: 'Show Timeline', command: (e) => this.openMenuContent(e, data) },
+            { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
         ];
 
@@ -586,7 +586,7 @@ export class ConfirmedComponent implements OnInit {
             }
             console.log('pInfo ', pInfo);
             this.revertInvModal = true;
-        } else if (this.confirmDialog.title.toLowerCase() === 'show timeline') {
+        } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
             this.timeline.showTimeline(data.Id, 'FD', 'InvoiceLineItems');
         } else if (event.item.label === 'Details') {
             this.rightSideBar = !this.rightSideBar;

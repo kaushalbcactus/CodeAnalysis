@@ -561,7 +561,7 @@ export class PaidInvoicesComponent implements OnInit {
         //     }
         // }
         this.items.push(
-            { label: 'Show Timeline', command: (e) => this.openMenuContent(e, data) },
+            { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
         )
         if (this.items.length === 0) {
@@ -590,7 +590,7 @@ export class PaidInvoicesComponent implements OnInit {
         // } else if (this.confirmDialog.title.includes("Debit/Credit Note")) {
         //     this.creditOrDebitModal = true;
         // } else
-        if (this.confirmDialog.title.toLowerCase() === 'show timeline') {
+        if (this.confirmDialog.title.toLowerCase() === 'show history') {
             this.timeline.showTimeline(data.Id, 'FD', 'Invoices');
         } else if (event.item.label === 'Details') {
             this.rightSideBar = !this.rightSideBar;

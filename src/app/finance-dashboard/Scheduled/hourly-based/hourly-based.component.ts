@@ -450,7 +450,7 @@ export class HourlyBasedComponent implements OnInit {
             { label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) },
             { label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) },
             { label: 'View Project Details', command: (e) => this.openMenuContent(e, data) },
-            { label: 'Show Timeline', command: (e) => this.openMenuContent(e, data) },
+            { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
         ];
     }
@@ -476,7 +476,7 @@ export class HourlyBasedComponent implements OnInit {
             this.updateInvoice();
         } else if (this.hourlyDialog.title.toLowerCase() === 'view project details') {
             this.goToProjectDetails(this.selectedRowItem)
-        } else if (this.hourlyDialog.title.toLowerCase() === 'show timeline') {
+        } else if (this.hourlyDialog.title.toLowerCase() === 'show history') {
             this.timeline.showTimeline(data.Id, 'FD', 'HourlyBased');
         } else if (event.item.label === 'Details') {
             this.rightSideBar = !this.rightSideBar;
