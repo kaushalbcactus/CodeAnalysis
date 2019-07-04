@@ -1528,7 +1528,7 @@ export class TimelineHistoryComponent implements OnInit {
       // fetch version detail based on version ID
       const version = arrVersions.filter(v => v.VersionId === element.VersionId);
       const versionDetail = version.length > 0 ? version[0] : {};
-      const currentPO = this.arrPO.filter(po => po.Id === versionDetail.PO);
+      const currentPO = this.arrPO.filter(po => po.Id === versionDetail.POLookup);
       const currentPODetail = currentPO.length > 0 ? currentPO[0] : { Number: '' };
       const properties = element.changedProperties;
       for (const key in properties) {
