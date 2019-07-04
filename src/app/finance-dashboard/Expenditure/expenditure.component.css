@@ -1,4 +1,4 @@
-::ng-deep  .ui-table table, .ui-table table
+::ng-deep .financeTable .ui-table table, .ui-table table
 {  table-layout:auto !important;
 }
 ::ng-deep .ui-table-tablewrapper {

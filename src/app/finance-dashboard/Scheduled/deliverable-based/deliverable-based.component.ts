@@ -487,7 +487,7 @@ export class DeliverableBasedComponent implements OnInit {
         }
         this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });
         this.items.push({ label: 'View Project Details', command: (e) => this.openMenuContent(e, data) });
-        this.items.push({ label: 'Show Timeline', command: (e) => this.openMenuContent(e, data) });
+        this.items.push({ label: 'Show History', command: (e) => this.openMenuContent(e, data) });
         this.items.push({ label: 'Details', command: (e) => this.openMenuContent(e, data) });
     }
 
@@ -509,7 +509,7 @@ export class DeliverableBasedComponent implements OnInit {
             this.getPOCNamesForEditInv(data);
         } else if (this.deliverableDialog.title.toLowerCase() === 'view project details') {
             this.goToProjectDetails(this.selectedRowItem)
-        } else if (this.deliverableDialog.title.toLowerCase() === 'show timeline') {
+        } else if (this.deliverableDialog.title.toLowerCase() === 'show history') {
             this.timeline.showTimeline(data.Id, 'FD', 'InvoiceLineItems');
         } else if (event.item.label === 'Details') {
             this.rightSideBar = !this.rightSideBar;

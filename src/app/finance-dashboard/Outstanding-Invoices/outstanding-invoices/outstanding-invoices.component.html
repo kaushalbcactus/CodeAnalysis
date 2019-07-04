@@ -10,7 +10,7 @@
         </div>
     </div>
 </div>
-
+<div class="financeTable">
 <p-table #outi [columns]="outstandingInCols" [value]="outstandingInvoicesRes" [paginator]="true" [rows]="10"
     [resizableColumns]="true" [(selection)]="selectedRowData" selectionMode="multiple"
     (onRowSelect)="onRowSelect($event)" exportFilename="outstanding_Invoices">
@@ -98,7 +98,7 @@
         </tr>
     </ng-template>
 </p-table>
-
+</div>
 <!-- Table End  -->
 
 

@@ -44,3 +44,5 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+New folder/package.json
+New folder/package-lock.json

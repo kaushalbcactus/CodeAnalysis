@@ -642,7 +642,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'SOW Created Successfully.' });
         setTimeout(() => {
           this.pmObject.isAddSOWVisible = false;
-          this.router.navigate(['/projectmanagement/allSOW']);
+          this.router.navigate(['/projectMgmt/allSOW']);
         }, 500);
       }
     } else { // Update SOW
@@ -657,7 +657,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'SOW Updated Successfully.' });
       setTimeout(() => {
         this.pmObject.isAddSOWVisible = false;
-        this.router.navigate(['/projectmanagement/allSOW']);
+        this.router.navigate(['/projectMgmt/allSOW']);
       }, 500);
     }
   }

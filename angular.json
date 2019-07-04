@@ -20,7 +20,7 @@
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets" 
             ],
             "styles": [
               "src/styles.css",
@@ -90,6 +90,18 @@
               "vendorChunk": false,
               "buildOptimizer": true,
               "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/MyDashboard/"
+            },
+            "qaPM": {
+              "optimization": true,
+              "outputHashing": "bundles",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/PM/"
             }
           }
         },
