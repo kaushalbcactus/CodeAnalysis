@@ -94,7 +94,7 @@ export class TimeBookingDialogComponent implements OnInit {
   AddNewRow() {
     console.log(this.UserMilestones);
     const newMilestone = {
-      ID: -1, Entity: '', Project: '', Milestone: '', dbClientLegalEntities: this.dbClientLegalEntities, dbProjects: [{ label: 'Select Project', value: null }], dbMilestones: [{ label: 'Select Milestone', value: null }], isEditable: true, TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: new Date(this.datePipe.transform(this.MainminDate, 'yyyy-MM-dd')).getTime() < new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() ? true : false }))
+      ID: -1, Entity: '', Project: '', Milestone: '', type: "task", dbClientLegalEntities: this.dbClientLegalEntities, dbProjects: [{ label: 'Select Project', value: null }], dbMilestones: [{ label: 'Select Milestone', value: null }], isEditable: true, TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: new Date(this.datePipe.transform(this.MainminDate, 'yyyy-MM-dd')).getTime() <= new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() ? true : false }))
     }
 
     this.UserMilestones.push(newMilestone);
@@ -134,13 +134,16 @@ export class TimeBookingDialogComponent implements OnInit {
 
 
   async getAllMilestones(projectCode, rowData) {
-
+  debugger;
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
     let AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.AllMilestones);
 
+    var month =this.MainminDate.getMonth()+1;
 
-    AllMilestones.filter = AllMilestones.filter.replace(/{{projectCode}}/gi, projectCode).replace(/{{DateString}}/gi, this.MainminDate);
+    var EndDate= this.MainminDate.getFullYear() + "-" + (month < 10 ? "0" + month : month) + "-" + (this.MainminDate.getDate() < 10 ? "0" + this.MainminDate.getDate() : this.MainminDate.getDate()) + "T23:59:00.000Z";
+
+    AllMilestones.filter = AllMilestones.filter.replace(/{{projectCode}}/gi, projectCode).replace(/{{DateString}}/gi,EndDate );
     const AllMilestonesUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', AllMilestones);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, AllMilestonesUrl);
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
@@ -420,7 +423,7 @@ export class TimeBookingDialogComponent implements OnInit {
     }
 
     this.modalloaderenable = false;
-    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time booking updated sucessfully.' });
+    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time booking updated successfully.' });
 
     this.ref.close();
 

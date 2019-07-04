@@ -61,7 +61,7 @@
     </div>
 </div>
 <!-- <button (click)="checkSelectedRowData()">Check Data</button> -->
-
+<div class="financeTable">
 <p-table #cnf [columns]="confirmCols" [value]="confirmedRes" [paginator]="false" [resizableColumns]="true"
     (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" [(selection)]="selectedAllRowData"
     selectionMode="" exportFilename="ConfirmedProjects">
@@ -151,7 +151,7 @@
     </ng-template>
 
 </p-table>
-
+</div>
 <!-- Table End -->
 
 <!-- Right Side Bar -->

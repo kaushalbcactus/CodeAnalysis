@@ -14,6 +14,7 @@ import { ViewUploadDocumentDialogComponent } from '../view-upload-document-dialo
 import { PreviosNextTasksDialogComponent } from '../previos-next-tasks-dialog/previos-next-tasks-dialog.component';
 import { Table } from 'primeng/table';
 import { FeedbackPopupComponent } from '../feedback-popup/feedback-popup.component';
+import { SlideMenu } from 'primeng/primeng';
 
 @Component({
   selector: 'app-my-current-completed-tasks',
@@ -22,10 +23,13 @@ import { FeedbackPopupComponent } from '../feedback-popup/feedback-popup.compone
   providers: [DatePipe, MessageService],
 
 })
-export class MyCurrentCompletedTasksComponent implements OnInit {
+export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
 
   selectedDueDate: DateObj;
   selectedStartDate: DateObj;
+  @ViewChild('popupMenu',{static: true})
+  popupMenu:SlideMenu;
+  thenpopupMenu: SlideMenu;
   thenBlock: Table;
   public loderenable: boolean = false;
   @ViewChild('taskId', { static: true })
@@ -93,6 +97,11 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     ];
     this.myDashboardConstantsService.getEmailTemplate();
 
+  }
+  ngOnDestroy()
+  {
+     debugger;
+     // this.popupMenu.hide();
   }
 
 
@@ -286,7 +295,13 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     this.AllTaskColArray.StartDate.push.apply(this.AllTaskColArray.StartDate, this.myDashboardConstantsService.getUniqueDates(this.allTasks.map(a => a.StartDate)));
     this.AllTaskColArray.DueDate.push.apply(this.AllTaskColArray.DueDate, this.myDashboardConstantsService.getUniqueDates(this.allTasks.map(a => a.DueDate)));
     this.loaderenable = false;
+<<<<<<< HEAD
     this.thenBlock = this.taskId;
+=======
+    this.thenBlock =this.taskId;
+
+    this.thenpopupMenu = this.popupMenu;
+>>>>>>> e5ebb54efd0c15130853ce65eecec2fd2d7b0f1d
   }
 
 
@@ -442,9 +457,26 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       width: '80vw',
     });
     ref.onClose.subscribe(async (Commentobj: any) => {
+
+      debugger;
       if (Commentobj) {
         if (Commentobj.IsMarkComplete) {
-          this.CompleteTask(task);
+          this.loaderenable= true;
+          task.TaskComments = Commentobj.comment; 
+          var response = await this.myDashboardConstantsService.CompleteTask(task);
+
+          if (response) {
+            this.loaderenable= false;
+            this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
+
+          }
+          else {
+            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task Updated Successfully.' });
+            this.GetDatabyDateSelection(this.selectedTab, this.days);
+          }
+         
+
+
 
         }
         else {
@@ -475,6 +507,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   }
 
 
+<<<<<<< HEAD
   // *************************************************************************************************************************************
   //  get Previous Task Status
   // *************************************************************************************************************************************
@@ -528,6 +561,15 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     });
     return status;
   }
+=======
+
+
+
+
+
+
+
+>>>>>>> e5ebb54efd0c15130853ce65eecec2fd2d7b0f1d
 
 
   // *************************************************************************************************************************************
@@ -566,12 +608,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   async checkCompleteTask(task) {
 
     debugger;
-    var stval = await this.getPrevTaskStatus(task);
+    var stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
 
     if (stval === "Completed" || stval === "AllowCompletion" || stval === "Auto Closed") {
 
       if (!task.FinalDocSubmit) {
-        this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Please upload the document and mark as final.' });
+        this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'No Final Document Found' });
         return false;
       }
       if (task.TaskComments) {
@@ -580,9 +622,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
           message: 'Are you sure that you want to proceed?',
           header: 'Confirmation',
           icon: 'pi pi-exclamation-triangle',
-          accept: () => {
+          accept: ()  => {
+           
+            this.callComplete(task);
 
-            this.CompleteTask(task);
+            this.loaderenable= true;
+            
             // this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Please upload the document and mark as final.' });
           },
           reject: () => {
@@ -601,13 +646,24 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   };
 
 
+  async callComplete(task) {
+    var response = await this.myDashboardConstantsService.CompleteTask(task);
+    debugger;
+
+    if (response) {
+      this.loaderenable = false;
+      this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
+
+    }
+    else {
+      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task Updated Successfully.' });
+      this.GetDatabyDateSelection(this.selectedTab, this.days);
+    }
+  
+  }
 
 
-  // **************************************************************************************************************************************
-  //  Complete Task 
-  // **************************************************************************************************************************************
-
-
+<<<<<<< HEAD
   async CompleteTask(task) {
     this.NextPreviousTask = await this.getNextPreviousTask(task);
     if (task.Task == 'Galley' || task.Task == 'Submission Pkg'
@@ -640,6 +696,52 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
     }
   }
+=======
+
+
+  // // **************************************************************************************************************************************
+  // //  Complete Task 
+  // // **************************************************************************************************************************************
+
+
+  // async CompleteTask(task) {
+  //   debugger;
+  //   this.NextPreviousTask = await this.getNextPreviousTask(task);
+  //   if (task.Task == 'Galley' || task.Task == 'Submission Pkg'
+  //     || task.Task == 'Submit' || task.Task == 'Journal Selection'
+  //     || task.Task == 'Journal Requirement') {
+  //     await this.myDashboardConstantsService.GetAllDocuments(task);
+  //     var isJcIdFound = await this.myDashboardConstantsService.getJCIDS(task);
+  //     if (!isJcIdFound) {
+  //       this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: task.Task + "task can't be closed as no submission details are found." });
+  //       return false;
+  //     }
+  //     else {
+  //       this.loaderenable=true;
+  //       task.Status="Completed";   
+  //        await  this.myDashboardConstantsService.saveTask(task, true);
+
+  //         this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated sucessfully.' });
+
+  //         this.GetDatabyDateSelection(this.selectedTab, this.days);
+
+        
+  //     }
+
+  //   }
+  //   else {
+  //     this.loaderenable=true;
+  //     task.Status="Completed";   
+  //     await this.myDashboardConstantsService.saveTask(task, false);
+
+  //     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated sucessfully.' });
+
+  //     this.GetDatabyDateSelection(this.selectedTab, this.days);
+
+  //   }
+
+  // }
+>>>>>>> e5ebb54efd0c15130853ce65eecec2fd2d7b0f1d
 
 }
 

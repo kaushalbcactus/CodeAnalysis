@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { GlobalService } from 'src/app/Services/global.service';
+import { filter } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -220,7 +221,10 @@ export class PmconstantService {
     PENDING_ALLOCATION: 'Pending Allocation',
     INACTIVE_PROJECTS: 'Inactive Projects',
     SEND_TO_CLIENT: 'Send To Client',
-    SELECT_SOW: 'Select SOW'
+    SELECT_SOW: 'Select SOW',
+    ACTIVE_PROJECT: 'Active Project',
+    PIPELINE_PROJECT: 'Pipeline Project',
+    INACTIVE_PROJECT: 'InActive Project'
   };
   // ***********************************************************************//
   // Time line Section
@@ -346,6 +350,34 @@ export class PmconstantService {
     PROJECT_BUDGET_BREAKUP_BY_PROJECTCODE: {
       select: 'ID',
       filter: 'ProjectCode eq \'{{projectCode}}\''
+    },
+    ACTIVE_PROJECT_BY_SOWCODE: {
+      select: 'ID, Title, ProjectType,ProjectCode,Title,DeliverableType,WBJID,Status,IsApproved,SOWCode,ProposedStartDate',
+      filter: 'SOWCode eq \'{{sowCode}}\' and (Status eq \'In Progress\' or Status eq \'Ready for Client\''
+        + ' or Status eq \'Author Review\' or Status eq \'Sent To AM For Approval\''
+        + ' or Status eq \'Audit In Progress\' or Status eq \'Pending Closure\')',
+      top: 4900
+    },
+    PIPELINE_PROJECT_BY_SOWCODE: {
+      select: 'ID, Title, ProjectType, ProjectCode, Title, DeliverableType, WBJID, Status, IsApproved, SOWCode, ProposedStartDate',
+      filter: 'SOWCode eq \'{{sowCode}}\' and (Status eq \'In Discussion\' or Status eq \'Unallocated\')',
+      top: 4900
+    },
+    INACTIVE_PROJECTS_BY_SOWCODE1: {
+      select: 'ID, Title, ProjectType, ProjectCode, Title, DeliverableType, WBJID, Status, IsApproved, SOWCode, ProposedStartDate',
+      filter: 'SOWCode eq \'{{sowCode}}\' and ((Status eq \'Closed\' and ActualEndDate gt datetime\'{{actualEndDate}}\')'
+        + ' or (Status eq \'On Hold\') or (Status eq \'Awaiting Cancel Approval\') or (Status eq \'Cancelled\''
+        + ' and (RejectionDate gt datetime\'{{rejectionDate}}\' or ProposedStartDate gt datetime\'{{proposedStartDate}}\')))',
+      top: 4900
+    },
+    INACTIVE_PROJECTS_BY_SOWCODE: {
+      select: 'ID, Title, ProjectType, ProjectCode, Title, DeliverableType, WBJID, Status, IsApproved, SOWCode, ProposedStartDate',
+      filter: 'SOWCode eq \'{{sowCode}}\' and ((Status eq \'Closed\' and ActualEndDate gt datetime\'{{actualStartDate}}\''
+        + ' and ActualEndDate lt datetime\'{{actualEndDate}}\') or (Status eq \'On Hold\')'
+        + ' or (Status eq \'Awaiting Cancel Approval\') or (Status eq \'Cancelled\''
+        + ' and ((RejectionDate gt datetime\'{{rejectionStartDate}}\' and RejectionDate lt datetime\'{{rejectionEndDate}}\')'
+        + ' or (ProposedStartDate gt datetime\'{{proposedStartDate}}\' and ProposedStartDate lt datetime\'{{proposedEndDate}}\')))) ',
+      top: 4900
     }
   };
   public PROJECT_TYPE = {

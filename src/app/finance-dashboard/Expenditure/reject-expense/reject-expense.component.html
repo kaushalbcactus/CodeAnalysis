@@ -14,6 +14,7 @@
         </div>
     </div>
 </div>
+<div class="financeTable">
 <p-table #rc [columns]="rejectCancelExpenseCols" [value]="rejectExpenses" [paginator]="true" [rows]="10"
     exportFilename="Cancelled_Reject_Expenses" [resizableColumns]="true">
     <ng-template pTemplate="header" let-columns>
@@ -92,7 +93,7 @@
         </tr>
     </ng-template>
 </p-table>
-
+</div>
 <!-- Right Side Bar -->
 <p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
     <ng-container *ngIf="rightSideBar">

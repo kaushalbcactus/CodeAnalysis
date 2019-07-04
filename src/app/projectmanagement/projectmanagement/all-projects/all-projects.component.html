@@ -19,7 +19,7 @@
                     <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allProjects.sowCodeArray" defaultLabel="All"
                         (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="allProjects.projectCodeArray"
+                    <p-multiSelect *ngSwitchCase="'ProjectCode'" [(ngModel)]="pmObject.columnFilter.ProjectCode" [options]="allProjects.projectCodeArray"
                         defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="allProjects.shortTitleArray"

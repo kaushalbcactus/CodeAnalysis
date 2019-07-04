@@ -294,6 +294,7 @@ export class SharepointoperationService {
                 type: type
             };
         }
+        debugger;
         const data = JSON.stringify(jsonBody);
         return this.http.post(url, data, this.options).toPromise().then(function (res: Response) {
             return res.json();

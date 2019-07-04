@@ -240,7 +240,7 @@ export class SPOperationService {
     });
     return this.parseRetMultiple(res);
   }
-  
+
   async readItems(listName: string, options?: any) {
     const url = this.getReadURL(listName, options);
     let res;

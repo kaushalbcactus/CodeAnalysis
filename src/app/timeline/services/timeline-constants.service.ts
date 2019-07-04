@@ -166,9 +166,9 @@ export class TimelineConstantsService {
       }
     },
     sow: {
-      propertiesRequired: ['Title', 'PrimaryPOC', 'BusinessVertical', 'CreatedDate','ExpiryDate' , 'Status', 'SOWLink', 'CMLevel1', 'CMLevel2', 'DeliveryLevel1', 'DeliveryLevel2', 'BD'],
+      propertiesRequired: ['Title', 'PrimaryPOC', 'Comments', 'BusinessVertical', 'CreatedDate','ExpiryDate' , 'Status', 'SOWLink', 'CMLevel1', 'CMLevel2', 'DeliveryLevel1', 'DeliveryLevel2', 'BD'],
       getVersions: {
-        select: 'Id,Title,PrimaryPOC, ClientLegalEntity, SOWCode, BusinessVertical, CreatedDate,ExpiryDate , Status, SOWLink, BD/LookupId, BD/LookupValue,' +
+        select: 'Id,Title,PrimaryPOC, ClientLegalEntity, Comments, SOWCode, BusinessVertical, CreatedDate,ExpiryDate , Status, SOWLink, BD/LookupId, BD/LookupValue,' +
           'CMLevel1/LookupId, CMLevel1/LookupValue, CMLevel2/LookupId, CMLevel2/LookupValue, DeliveryLevel1/LookupId, DeliveryLevel1/LookupValue,' +
           'DeliveryLevel2/LookupId, DeliveryLevel2/LookupValue,' +
           'IsCurrentVersion,VersionLabel, VersionId, Modified, Editor/LookupId, Editor/LookupValue',

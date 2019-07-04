@@ -95,6 +95,24 @@ export class AllProjectsComponent implements OnInit {
     ];
     setTimeout(() => {
       this.getAllProjects();
+      if (this.pmObject.columnFilter.ProjectCode && this.pmObject.columnFilter.ProjectCode.length) {
+        const event = {
+          filters: {
+            ProjectCode: {
+              matchMode: 'in',
+              value: this.pmObject.columnFilter.ProjectCode
+            }
+          },
+          first: 0,
+          globalFilter: null,
+          multiSortMeta: undefined,
+          rows: 5,
+          sortField: undefined,
+          sortOrder: 1
+        };
+        this.lazyLoadTask(event);
+      }
+      this.pmObject.columnFilter.ProjectCode = [];
     }, 500);
   }
   /**

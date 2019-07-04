@@ -113,7 +113,7 @@ export class CommonService {
     return document;
   }
 
-  getLastWorkingDay(days, date) {    
+  getLastWorkingDay(days, date) {
     var tempDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     while (days > 0) {
       tempDate = new Date(tempDate.setDate(tempDate.getDate() - 1));
@@ -124,7 +124,7 @@ export class CommonService {
     return tempDate;
   }
 
-  getNextWorkingDay(days, date) {    
+  getNextWorkingDay(days, date) {
     var tempDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     let counter = 0;
     while (counter < days) {
@@ -273,6 +273,15 @@ export class CommonService {
       case this.pmConstant.filterAction.SELECT_SOW:
         this.pmObject.loading.SelectSOW = true;
         break;
+      case this.pmConstant.filterAction.ACTIVE_PROJECT:
+        this.pmObject.loading.activeProject = true;
+        break;
+      case this.pmConstant.filterAction.PIPELINE_PROJECT:
+        this.pmObject.loading.pipelineProject = true;
+        break;
+      case this.pmConstant.filterAction.INACTIVE_PROJECT:
+        this.pmObject.loading.inActiveProject = true;
+        break;
     }
     let data = $.extend(true, [], sendToClient);
     setTimeout(() => {
@@ -326,6 +335,21 @@ export class CommonService {
             this.pmObject.totalRecords.SelectSOW = data.length;
             this.pmObject.selectSOWArrayCopy = items;
             this.pmObject.loading.SelectSOW = false;
+          case this.pmConstant.filterAction.ACTIVE_PROJECT:
+            this.pmObject.totalRecords.activeProject = data.length;
+            this.pmObject.allProjects.activeProjectCopyArray = items;
+            this.pmObject.loading.activeProject = false;
+            break;
+          case this.pmConstant.filterAction.PIPELINE_PROJECT:
+            this.pmObject.totalRecords.pipelineProject = data.length;
+            this.pmObject.allProjects.pipelineProjectCopyArray = items;
+            this.pmObject.loading.pipelineProject = false;
+            break;
+          case this.pmConstant.filterAction.INACTIVE_PROJECT:
+            this.pmObject.totalRecords.inActiveProject = data.length;
+            this.pmObject.allProjects.inActiveProjectCopyArray = items;
+            this.pmObject.loading.inActiveProject = false;
+            break;
         }
       }
     }, 1000);
