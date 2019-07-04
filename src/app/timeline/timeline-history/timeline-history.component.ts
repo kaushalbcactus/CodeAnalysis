@@ -1350,7 +1350,7 @@ export class TimelineHistoryComponent implements OnInit {
             case this.globalConstant.projectList.columns.Title:
               obj.activity_type = 'Project updated';
               obj.activity_sub_type = 'Title updated';
-              obj.activity_description = 'Title updated to ' + versionDetail.BusinessVertical;
+              obj.activity_description = 'Title updated to ' + versionDetail.Title;
               break;
             case this.globalConstant.projectList.columns.BusinessVertical:
               obj.activity_type = 'Project updated';
@@ -1755,11 +1755,12 @@ export class TimelineHistoryComponent implements OnInit {
       if (folder.ItemCount > 0) {
         folder.Files.results.forEach(file => {
           const obj = JSON.parse(JSON.stringify(this.objTimelineData));
+          const displayName = folder.Name === 'Communication' ? 'Meeting Notes & Client Comments' : folder.Name;
           obj.date_time = new Date(file.TimeLastModified).toISOString();
           obj.activity_by = file.ModifiedBy.Title ? file.ModifiedBy.Title : file.ModifiedBy;
           obj.activity_type = 'Attachment';
           obj.activity_sub_type = 'Document added';
-          obj.activity_description = 'Document added to ' + folder.Name;
+          obj.activity_description = 'Document added to ' + displayName;
           obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + file.ServerRelativeUrl;
           items.push(obj);
 
@@ -1842,10 +1843,15 @@ export class TimelineHistoryComponent implements OnInit {
               obj.activity_sub_type = 'SOW title updated';
               obj.activity_description = 'SOW title updated to ' + versionDetail.Title;
               break;
+            case this.globalConstant.sowList.columns.Comments:
+              obj.activity_type = 'SOW updated';
+              obj.activity_sub_type = 'Comments updated';
+              obj.activity_description = 'Comments updated to ' + versionDetail.Title;
+              break;
             case this.globalConstant.sowList.columns.BusinessVertical:
               obj.activity_type = 'SOW updated';
               obj.activity_sub_type = 'Business vertical updated';
-              obj.activity_description = 'Business vertical updated to ' + versionDetail.BusinessVertical;
+              obj.activity_description = 'Business vertical updated to ' + versionDetail.BusinessVertical.replace(/;#/g, ',');
               break;
             case this.globalConstant.sowList.columns.CreatedDate:
               if (versionDetail.CreatedDate) {
@@ -1873,7 +1879,7 @@ export class TimelineHistoryComponent implements OnInit {
                 let sowListName = this.arrCle.filter(c => c.ClientLegalEntity === versionDetail.ClientLegalEntity);
                 sowListName = sowListName.length > 0 ? sowListName[0].ListName : [];
                 obj.activity_type = 'SOW updated';
-                obj.activity_sub_type = 'SOW updated';
+                obj.activity_sub_type = 'SOW document updated';
                 obj.activity_description = 'SOW document Updated to ' + versionDetail.SOWLink;
                 obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + sowListName + '/Finance/SOW/' + versionDetail.SOWLink
               }
@@ -1881,8 +1887,8 @@ export class TimelineHistoryComponent implements OnInit {
             case this.globalConstant.sowList.columns.BD:
               if (properties.BD) {
                 obj.activity_type = 'SOW updated';
-                obj.activity_sub_type = 'BD Updated';
-                obj.activity_description = 'BD Updated to ' + properties.BD;
+                obj.activity_sub_type = 'SOW owner Updated';
+                obj.activity_description = 'SOW Owner Updated to ' + properties.BD;
               }
               break;
             case this.globalConstant.sowList.columns.CMLevel1:
@@ -1945,13 +1951,6 @@ export class TimelineHistoryComponent implements OnInit {
                 obj.activity_description = 'SOW oop budget added with ' + versionDetail.AddendumOOPBudget;
               }
               break;
-            case this.globalConstant.sowBudgetBreakupList.columns.AddendumTaxBudget:
-              if (versionDetail.AddendumTaxBudget) {
-                obj.activity_type = 'SOW updated';
-                obj.activity_sub_type = 'SOW tax budget added';
-                obj.activity_description = 'SOW tax budget added with ' + versionDetail.AddendumTaxBudget;
-              }
-              break;
             case this.globalConstant.sowBudgetBreakupList.columns.NetBudget:
               if (versionDetail.NetBudget) {
                 obj.activity_type = 'SOW updated';
@@ -1962,15 +1961,8 @@ export class TimelineHistoryComponent implements OnInit {
             case this.globalConstant.sowBudgetBreakupList.columns.OOPBudget:
               if (versionDetail.OOPBudget) {
                 obj.activity_type = 'SOW updated';
-                obj.activity_sub_type = 'Business vertical updated';
+                obj.activity_sub_type = 'SOW oop budget updated';
                 obj.activity_description = 'Updated sow oop budget is ' + versionDetail.OOPBudget;
-              }
-              break;
-            case this.globalConstant.sowBudgetBreakupList.columns.TaxBudget:
-              if (versionDetail.TaxBudget) {
-                obj.activity_type = 'SOW updated';
-                obj.activity_sub_type = 'Business vertical updated';
-                obj.activity_description = 'Updated sow tax budget is ' + versionDetail.TaxBudget;
               }
               break;
           }

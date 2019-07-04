@@ -487,6 +487,7 @@ export class ConstantsService {
     columns: {
       Title: 'Title',
       PrimaryPOC: 'PrimaryPOC',
+      Comments: 'Comments',
       BusinessVertical: 'BusinessVertical',
       CreatedDate: 'CreatedDate',
       ExpiryDate: 'ExpiryDate' ,
