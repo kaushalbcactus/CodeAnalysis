@@ -123,6 +123,7 @@ async ngOnInit() {
 
 
   async saveBooking() {
+    debugger;
     if ((this.SelectedClientLegalEntity === undefined && this.data.timeblockType !== 'Admin') && (this.SelectedClientLegalEntity === undefined && this.data.timeblockType !== 'Internal Meeting') && (this.SelectedClientLegalEntity === undefined && this.data.timeblockType !== 'Training') ) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Client.' });
       return false;
@@ -141,6 +142,10 @@ async ngOnInit() {
     }
     else if (this.commment === undefined) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
+      return false;
+    }
+    else if (this.starttime === this.endtime) {
+      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'End Time should be Greater than Start Time.' });
       return false;
     }
     else {
@@ -198,6 +203,8 @@ async ngOnInit() {
 
 
   async saveLeave() {
+
+    debugger;
     if (this.eventDate === undefined) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Start Date.' });
       return false;
@@ -213,12 +220,15 @@ async ngOnInit() {
     else {
 
       const obj = {
-         
+        __metadata:  {
+          'type': this.constants.listNames.LeaveCalendar.type 
+        },
         Title: this.IsHalfDay ? this.sharedObject.currentUser.title + " on half day leave" : this.sharedObject.currentUser.title + " on leave",
-        EventDate: new Date(this.datePipe.transform(this.eventDate, 'yyyy-MM-dd')),
-        EndDate: new Date(this.datePipe.transform(this.eventEndDate, 'yyyy-MM-dd')),
+        EventDate: new Date(this.datePipe.transform(this.eventDate, 'yyyy-MM-dd')+ "T09:00:00.000"),
+        EndDate: new Date(this.datePipe.transform(this.eventEndDate, 'yyyy-MM-dd') + "T19:00:00.000"),
         Description: this.commment,
-        IsHalfDay:this.IsHalfDay
+        IsHalfDay:this.IsHalfDay,
+
       }
       this.ref.close(obj);
     }

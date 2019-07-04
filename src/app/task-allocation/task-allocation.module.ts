@@ -39,6 +39,9 @@ import { TaskDetailsDialogComponent } from './task-details-dialog/task-details-d
     StickyModule,
     NgxMaterialTimepickerModule
   ],
+  exports:[
+    TimelineComponent
+  ],
   providers: [DatePipe,ConfirmationService],
   entryComponents: [ UserCapacityComponent, DragDropComponent,TaskDetailsDialogComponent ]
  // providers: [TaskAllocationAPI]

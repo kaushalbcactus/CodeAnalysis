@@ -129,6 +129,9 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
     this.ProjectColArray.Status.push.apply(this.ProjectColArray.Status, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
 
+
+    this.ProjectColArray.CreatedBy.push.apply(this.ProjectColArray.CreatedBy, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; })));
+
     this.ProjectColArray.Created.push.apply(this.ProjectColArray.Created, this.myDashboardConstantsService.getUniqueDates(this.ProjectList.map(a => a.Created)));
 
     this.loaderenable = false;
@@ -175,6 +178,8 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
         this.ProjectList = this.response[0];
 
         this.ProjectList.map(c => c.Created = new Date(c.Created));
+
+        this.ProjectList.map(c=>c.CreatedBy = c.Author.Title);
 
         this.createColFieldValues();
 
