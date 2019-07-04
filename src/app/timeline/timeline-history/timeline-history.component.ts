@@ -1846,7 +1846,7 @@ export class TimelineHistoryComponent implements OnInit {
             case this.globalConstant.sowList.columns.Comments:
               obj.activity_type = 'SOW updated';
               obj.activity_sub_type = 'Comments updated';
-              obj.activity_description = 'Comments updated to ' + versionDetail.Title;
+              obj.activity_description = 'Comments updated to ' + versionDetail.Comments;
               break;
             case this.globalConstant.sowList.columns.BusinessVertical:
               obj.activity_type = 'SOW updated';
