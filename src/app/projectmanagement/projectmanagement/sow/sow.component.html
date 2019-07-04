@@ -58,75 +58,152 @@
     </p-table>
 </div>
 <div class="all-project-section">
-    <p-dialog [(visible)]="pmObject.isProjectVisible" [modal]="true"
-        [style]="{width: '1300px'}">
+    <p-dialog [(visible)]="pmObject.isProjectVisible" [modal]="true" [style]="{width: '1300px'}">
         <mat-accordion>
-            <mat-expansion-panel>
+            <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)">
                 <mat-expansion-panel-header>
                     <mat-panel-title style="color:#000000;">
                         <mat-icon style="padding: 4px 0px 0px 0px;">event_note</mat-icon>&nbsp;&nbsp; Active Projects
                     </mat-panel-title>
                     <ng-template matExpansionPanelContent>
                         <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center"
-                            [hidden]="!modalloaderenable">
-                            <div id="modalInnerLoader"></div>
-                            <div id="modalInnerLoaderText">Loading...</div>
+                            [hidden]="activeProjectLoader">
+                            <div id="mainLoader"></div>
+                            <div id="mainLoaderText">Loading...</div>
                         </div>
-                        <p-table #activeProject [columns]="projectsDisplayedColumns"
-                            [value]="pmObject.allProjects.activeProjectCopyArray" [paginator]="true" [rows]="5"
-                            [lazy]="true" [totalRecords]="pmObject.totalRecords.activeProject"
-                            [loading]="pmObject.loading.activeProject" (onLazyLoad)="lazyLoadTask($event)"
-                            [lazyLoadOnInit]="false">
-                            <ng-template pTemplate="caption">
-                                <div style="text-align: left">
-                                    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-                                    <input type="text" pInputText size="50" placeholder="search"
-                                        (input)="activeProject.filterGlobal($event.target.value, 'contains')"
-                                        style="width:auto">
-                                </div>
-                            </ng-template>
-                            <ng-template pTemplate="header" let-columns>
-                                <tr>
-                                    <th class="lastColumnWidth"></th>
-                                    <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-                                        {{ col.header }}
-                                        <p-sortIcon [field]="col.field"></p-sortIcon>
-                                    </th>
-                                </tr>
-                            </ng-template>
-                        </p-table>
+                        <div [hidden]="isActiveProjectTableHidden">
+                            <p-table #activeProject [columns]="projectsDisplayedColumns"
+                                [value]="pmObject.allProjects.activeProjectCopyArray" [paginator]="true" [rows]="5"
+                                [lazy]="true" [totalRecords]="pmObject.totalRecords.activeProject"
+                                [loading]="pmObject.loading.activeProject"
+                                (onLazyLoad)="activeProjectlazyLoadTask($event)" [lazyLoadOnInit]="false">
+                                <ng-template pTemplate="caption">
+                                    <div style="text-align: left">
+                                        <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                                        <input type="text" pInputText size="50" placeholder="search"
+                                            (input)="activeProject.filterGlobal($event.target.value, 'contains')"
+                                            style="width:auto">
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr>
+                                        <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                                            {{ col.header }}
+                                            <p-sortIcon [field]="col.field"></p-sortIcon>
+                                        </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-rowData let-task>
+                                    <tr [pContextMenuRow]="rowData">
+                                        <td>{{task.DeliverableType}}</td>
+                                        <td><a href="javascript:void(0)" (click)="navigateToProject(task)">{{task.ProjectCode}}</a></td>
+                                        <td>{{task.Title}}</td>
+                                        <td>{{task.Budget}}</td>
+                                        <td>{{task.Status}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
                     </ng-template>
                 </mat-expansion-panel-header>
             </mat-expansion-panel>
-            <mat-expansion-panel>
+            <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)">
                 <mat-expansion-panel-header>
                     <mat-panel-title style="color:#000000;">
                         <mat-icon style="padding: 4px 0px 0px 0px;">timer</mat-icon>&nbsp;&nbsp; Pipeline Projects
                     </mat-panel-title>
                     <ng-template matExpansionPanelContent>
-                        <p-table [columns]="projectsDisplayedColumns"
-                            [value]="pmObject.allProjects.pipelineProjectCopyArray" [paginator]="true" [rows]="5"
-                            [lazy]="true" [totalRecords]="pmObject.totalRecords.pipelineProject"
-                            [loading]="pmObject.loading.pipelineProject" (onLazyLoad)="lazyLoadTask($event)"
-                            [lazyLoadOnInit]="false">
+                        <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center"
+                            [hidden]="pipelineProjectLoader">
+                            <div id="mainLoader"></div>
+                            <div id="mainLoaderText">Loading...</div>
+                        </div>
+                        <div [hidden]="isPipelineProjectTableHidden">
+                            <p-table #pipeLineProject [columns]="projectsDisplayedColumns"
+                                [value]="pmObject.allProjects.pipelineProjectCopyArray" [paginator]="true" [rows]="5"
+                                [lazy]="true" [totalRecords]="pmObject.totalRecords.pipelineProject"
+                                [loading]="pmObject.loading.pipelineProject"
+                                (onLazyLoad)="pipelineProjectlazyLoadTask($event)" [lazyLoadOnInit]="false">
+                                <ng-template pTemplate="caption">
+                                    <div style="text-align: left">
+                                        <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                                        <input type="text" pInputText size="50" placeholder="search"
+                                            (input)="pipeLineProject.filterGlobal($event.target.value, 'contains')"
+                                            style="width:auto">
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr>
+                                        <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                                            {{ col.header }}
+                                            <p-sortIcon [field]="col.field"></p-sortIcon>
+                                        </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-rowData let-task>
+                                    <tr [pContextMenuRow]="rowData">
+                                        <td>{{task.DeliverableType}}</td>
+                                        <td><a href="javascript:void(0)" (click)="navigateToProject(task)">{{task.ProjectCode}}</a></td>
+                                        <td>{{task.Title}}</td>
+                                        <td>{{task.Budget}}</td>
+                                        <td>{{task.Status}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
 
-                        </p-table>
+                        </div>
                     </ng-template>
                 </mat-expansion-panel-header>
             </mat-expansion-panel>
-            <mat-expansion-panel>
+            <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)">
                 <mat-expansion-panel-header>
                     <mat-panel-title style="color:#000000;">
                         <mat-icon style="padding: 4px 0px 0px 0px;">comment</mat-icon> &nbsp;&nbsp; InActive Projects
                     </mat-panel-title>
                     <ng-template matExpansionPanelContent>
-                        <p-table [columns]="projectsDisplayedColumns"
-                            [value]="pmObject.allProjects.inActiveProjectCopyArray" [paginator]="true" [rows]="5"
-                            [lazy]="true" [totalRecords]="pmObject.totalRecords.inActiveProject"
-                            [loading]="pmObject.loading.inActiveProject" (onLazyLoad)="lazyLoadTask($event)"
-                            [lazyLoadOnInit]="false">
-
-                        </p-table>
+                        <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center"
+                            [hidden]="inActiveProjectLoader">
+                            <div id="mainLoader"></div>
+                            <div id="mainLoaderText">Loading...</div>
+                        </div>
+                        <div [hidden]="isInActiveProjectTableHidden">
+                            <p-calendar [(ngModel)]="rangeDates" selectionMode="range"
+                                (onClose)="getInactiveProject()" [style]="{'width':'130%'}"
+                                numberOfMonths='1' appendTo="body" dateFormat="dd M , yy" [showIcon]="true"
+                                [disabledDays]="[0,6]" [readonlyInput]="true" placeholder="Select Custom Dates"
+                                [style]="{'cursor': 'pointer'}"></p-calendar>
+                            <p-table #inActiveProject [columns]="projectsDisplayedColumns"
+                                [value]="pmObject.allProjects.inActiveProjectCopyArray" [paginator]="true" [rows]="5"
+                                [lazy]="true" [totalRecords]="pmObject.totalRecords.inActiveProject"
+                                [loading]="pmObject.loading.inActiveProject" (onLazyLoad)="inActivelazyLoadTask($event)"
+                                [lazyLoadOnInit]="false">
+                                <ng-template pTemplate="caption">
+                                    <div style="text-align: left">
+                                        <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                                        <input type="text" pInputText size="50" placeholder="search"
+                                            (input)="inActiveProject.filterGlobal($event.target.value, 'contains')"
+                                            style="width:auto">
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="header" let-columns>
+                                    <tr>
+                                        <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                                            {{ col.header }}
+                                            <p-sortIcon [field]="col.field"></p-sortIcon>
+                                        </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-rowData let-task>
+                                    <tr [pContextMenuRow]="rowData">
+                                        <td>{{task.DeliverableType}}</td>
+                                        <td><a href="javascript:void(0)"  (click)="navigateToProject(task)">{{task.ProjectCode}}</a></td>
+                                        <td>{{task.Title}}</td>
+                                        <td>{{task.Budget}}</td>
+                                        <td>{{task.Status}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
                     </ng-template>
                 </mat-expansion-panel-header>
             </mat-expansion-panel>

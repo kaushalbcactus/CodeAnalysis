@@ -35,7 +35,7 @@ export class PMObjectService {
   public allProjects = {
     activeProjectArray: [],
     activeProjectCopyArray: [],
-    pipelineProjectArray : [],
+    pipelineProjectArray: [],
     pipelineProjectCopyArray: [],
     inActiveProjectArray: [],
     inActiveProjectCopyArray: []
@@ -484,4 +484,7 @@ export class PMObjectService {
   public isAuditRollingVisible = false;
   public isMoveProjectToSOWVisible = false;
   public isProjectVisible = false;
+  public columnFilter = {
+    ProjectCode: []
+  };
 }

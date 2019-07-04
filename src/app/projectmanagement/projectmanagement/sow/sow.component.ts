@@ -8,6 +8,8 @@ import { MenuItem, DialogService } from 'primeng/api';
 import { DataService } from 'src/app/Services/data.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { AddProjectsComponent } from '../add-projects/add-projects.component';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { Router } from '@angular/router';
 declare var $;
 @Component({
   selector: 'app-sow',
@@ -31,9 +33,18 @@ export class SOWComponent implements OnInit {
     { field: 'POC' },
     { field: 'CreatedBy' },
     { field: 'CreatedDate' }];
-    projectsDisplayedColumns: any[] = [
-
-    ];
+  projectsDisplayedColumns: any[] = [
+    { field: 'DeliverableType', header: 'Deliverable Type' },
+    { field: 'ProjectCode', header: 'Project Code' },
+    { field: 'Title', header: 'Title' },
+    { field: 'Budget', header: 'Budget' },
+    { field: 'Status', header: 'Status' }];
+  projectFilterColumns: any[] = [
+    { field: 'DeliverableType' },
+    { field: 'ProjectCode' },
+    { field: 'Title' },
+    { field: 'Budget' },
+    { field: 'Status' }];
   public allSOW = {
     sowCodeArray: [],
     shortTitleArray: [],
@@ -42,18 +53,37 @@ export class SOWComponent implements OnInit {
     createdByArray: [],
     createdDateArray: []
   };
+  public projectObj = {
+    ID: 0,
+    DeliverableType: '',
+    ProjectCode: '',
+    Title: '',
+    Budget: '',
+    Status: ''
+  };
+  rangeDates: Date[];
   isAllSOWLoaderHidden = true;
   isAllSOWTableHidden = true;
   selectedSOWTask;
+  activeProjectLoader = true;
+  pipelineProjectLoader = true;
+  inActiveProjectLoader = true;
+  isActiveProjectTableHidden = true;
+  isPipelineProjectTableHidden = true;
+  isInActiveProjectTableHidden = true;
   popItems: MenuItem[];
-  @ViewChild('timelineRef', {static: true}) timeline: TimelineHistoryComponent;
+  @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+  step: number;
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
     private commonService: CommonService,
     private pmConstant: PmconstantService,
     private dataService: DataService,
-    public dialogService: DialogService
+    public dialogService: DialogService,
+    private spServices: SPOperationService,
+    private constants: ConstantsService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -95,7 +125,7 @@ export class SOWComponent implements OnInit {
       },
       {
         label: 'Show History', icon: 'pi pi-download', target: '_blank',
-        command: (task) =>  this.timeline.showTimeline(this.pmObject.selectedSOWTask.ID, 'ProjectMgmt', 'SOW')
+        command: (task) => this.timeline.showTimeline(this.pmObject.selectedSOWTask.ID, 'ProjectMgmt', 'SOW')
       }
     ];
   }
@@ -126,6 +156,7 @@ export class SOWComponent implements OnInit {
   }
   viewProjectSOW(task) {
     this.pmObject.isProjectVisible = true;
+    this.setStep(0);
   }
   /**
    * This method is used to show all sow.
@@ -179,5 +210,157 @@ export class SOWComponent implements OnInit {
   }
   storeRowData(rowData) {
     this.pmObject.selectedSOWTask = rowData;
+  }
+  getActiveProject() {
+    this.activeProjectLoader = false;
+    this.isActiveProjectTableHidden = true;
+    setTimeout(() => {
+      this.loadProjectTable(this.pmConstant.filterAction.ACTIVE_PROJECT);
+    }, 500);
+  }
+  getPipelineProject() {
+    this.pipelineProjectLoader = false;
+    this.isPipelineProjectTableHidden = true;
+    setTimeout(() => {
+      this.loadProjectTable(this.pmConstant.filterAction.PIPELINE_PROJECT);
+    }, 500);
+  }
+  getInactiveProject() {
+    this.inActiveProjectLoader = false;
+    this.isInActiveProjectTableHidden = true;
+    setTimeout(() => {
+      this.loadProjectTable(this.pmConstant.filterAction.INACTIVE_PROJECT);
+    }, 500);
+  }
+  async loadProjectTable(projectFilter) {
+    let projectInformationFilter: any = {};
+    switch (projectFilter) {
+      case this.pmConstant.filterAction.ACTIVE_PROJECT:
+        projectInformationFilter = Object.assign({}, this.pmConstant.QUERY.ACTIVE_PROJECT_BY_SOWCODE);
+        projectInformationFilter.filter = projectInformationFilter.filter.replace(/{{sowCode}}/gi, this.pmObject.selectedSOWTask.SOWCode);
+        break;
+      case this.pmConstant.filterAction.PIPELINE_PROJECT:
+        projectInformationFilter = Object.assign({}, this.pmConstant.QUERY.PIPELINE_PROJECT_BY_SOWCODE);
+        projectInformationFilter.filter = projectInformationFilter.filter.replace(/{{sowCode}}/gi, this.pmObject.selectedSOWTask.SOWCode);
+        break;
+      case this.pmConstant.filterAction.INACTIVE_PROJECT:
+        const now = new Date();
+        const past30Days = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 30);
+        let startDate = past30Days.toISOString();
+        let endDate = now.toISOString();
+        if (this.rangeDates) {
+          startDate = this.rangeDates[0].toISOString();
+          endDate = this.rangeDates[1].toISOString();
+        } else {
+          this.rangeDates = [];
+          this.rangeDates.push(new Date(startDate));
+          this.rangeDates.push(new Date(endDate));
+        }
+        projectInformationFilter = Object.assign({}, this.pmConstant.QUERY.INACTIVE_PROJECTS_BY_SOWCODE);
+        projectInformationFilter.filter = projectInformationFilter.filter
+          .replace(/{{sowCode}}/gi, this.pmObject.selectedSOWTask.SOWCode)
+          .replace(/{{actualStartDate}}/gi, startDate)
+          .replace(/{{actualEndDate}}/gi, endDate)
+          .replace(/{{rejectionStartDate}}/gi, startDate)
+          .replace(/{{rejectionEndDate}}/gi, endDate)
+          .replace(/{{proposedStartDate}}/gi, startDate)
+          .replace(/{{proposedEndDate}}/gi, endDate);
+        break;
+    }
+    const sResults = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInformationFilter);
+    const budgetArray = await this.getBudget(sResults);
+    this.pmObject.allProjects.activeProjectArray = [];
+    this.pmObject.allProjects.activeProjectCopyArray = [];
+    const tempProjectArray = [];
+    if (sResults && sResults.length) {
+      sResults.forEach(projectItem => {
+        const projectObj = $.extend(true, {}, this.projectObj);
+        projectObj.ID = projectItem.ID;
+        projectObj.DeliverableType = projectItem.DeliverableType;
+        projectObj.ProjectCode = projectItem.ProjectCode;
+        projectObj.Title = projectItem.Title;
+        const tempBuget = budgetArray.filter(x => x.retItems[0].Title === projectItem.ProjectCode);
+        projectObj.Budget = tempBuget && tempBuget.length && tempBuget[0] && tempBuget[0].retItems.length
+          ? tempBuget[0].retItems[0].RevenueBudget ? tempBuget[0].retItems[0].RevenueBudget : 0 : 0;
+        projectObj.Status = projectItem.Status;
+        tempProjectArray.push(projectObj);
+      });
+    }
+    switch (projectFilter) {
+      case this.pmConstant.filterAction.ACTIVE_PROJECT:
+        this.pmObject.allProjects.activeProjectArray = Object.assign([], tempProjectArray);
+        this.pmObject.totalRecords.activeProject = tempProjectArray.length;
+        this.pmObject.allProjects.activeProjectCopyArray = tempProjectArray.splice(0, 5);
+        this.activeProjectLoader = true;
+        this.isActiveProjectTableHidden = false;
+        break;
+      case this.pmConstant.filterAction.PIPELINE_PROJECT:
+        this.pmObject.allProjects.pipelineProjectArray = Object.assign([], tempProjectArray);
+        this.pmObject.totalRecords.pipelineProject = tempProjectArray.length;
+        this.pmObject.allProjects.pipelineProjectCopyArray = tempProjectArray.splice(0, 5);
+        this.pipelineProjectLoader = true;
+        this.isPipelineProjectTableHidden = false;
+        break;
+      case this.pmConstant.filterAction.INACTIVE_PROJECT:
+        this.pmObject.allProjects.inActiveProjectArray = Object.assign([], tempProjectArray);
+        this.pmObject.totalRecords.inActiveProject = tempProjectArray.length;
+        this.pmObject.allProjects.inActiveProjectCopyArray = tempProjectArray.splice(0, 5);
+        this.inActiveProjectLoader = true;
+        this.isInActiveProjectTableHidden = false;
+        break;
+    }
+  }
+  async getBudget(projectArray) {
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    if (projectArray && projectArray.length) {
+      projectArray.forEach(element => {
+        const projectFinanceGet = Object.assign({}, options);
+        const projectFinanceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE);
+        projectFinanceFilter.filter = projectFinanceFilter.filter.replace(/{{projectCode}}/gi,
+          element.ProjectCode);
+        projectFinanceGet.url = this.spServices.getReadURL(this.constants.listNames.ProjectFinances.name,
+          projectFinanceFilter);
+        projectFinanceGet.type = 'GET';
+        projectFinanceGet.listName = this.constants.listNames.ProjectFinances.name;
+        batchURL.push(projectFinanceGet);
+      });
+    }
+    const batchResults = await this.spServices.executeBatch(batchURL);
+    return batchResults;
+  }
+  activeProjectlazyLoadTask(event) {
+    const activeProjectArray = this.pmObject.allProjects.activeProjectArray;
+    this.commonService.lazyLoadTask(event, activeProjectArray, this.projectFilterColumns, this.pmConstant.filterAction.ACTIVE_PROJECT);
+  }
+  pipelineProjectlazyLoadTask(event) {
+    const pipelineProjectArray = this.pmObject.allProjects.pipelineProjectArray;
+    this.commonService.lazyLoadTask(event, pipelineProjectArray, this.projectFilterColumns, this.pmConstant.filterAction.PIPELINE_PROJECT);
+  }
+  inActivelazyLoadTask(event) {
+    const inActiveProjectArray = this.pmObject.allProjects.inActiveProjectArray;
+    this.commonService.lazyLoadTask(event, inActiveProjectArray, this.projectFilterColumns, this.pmConstant.filterAction.INACTIVE_PROJECT);
+  }
+  setStep(index: number) {
+    this.step = index;
+    if (this.step === 0) {
+      this.getActiveProject();
+    }
+    if (this.step === 1) {
+      this.getPipelineProject();
+    }
+    if (this.step === 2) {
+      this.getInactiveProject();
+    }
+  }
+  navigateToProject(projObj) {
+    this.pmObject.isProjectVisible = false;
+    this.pmObject.columnFilter.ProjectCode = [projObj.ProjectCode];
+    this.router.navigate(['/projectMgmt/allProjects']);
   }
 }

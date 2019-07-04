@@ -35,7 +35,7 @@ export class SendToClientComponent implements OnInit {
     { field: 'Milestone' },
     { field: 'PreviousTaskUser' },
     { field: 'PreviousTaskStatus' }];
-  @ViewChild('sendToClientTableRef', {static:true}) sct: ElementRef;
+  @ViewChild('sendToClientTableRef', {static: true}) sct: ElementRef;
   // tslint:disable-next-line:variable-name
   private _success = new Subject<string>();
   // tslint:disable-next-line:variable-name
