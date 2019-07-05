@@ -11,7 +11,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { BlockTimeDialogComponent } from '../block-time-dialog/block-time-dialog.component';
 import { DatePipe } from '@angular/common';
-
+import { FeedbackPopupComponent } from '../feedback-popup/feedback-popup.component';
 
 @Component({
   selector: 'app-my-timeline',
@@ -22,6 +22,7 @@ import { DatePipe } from '@angular/common';
 export class MyTimelineComponent implements OnInit {
   @ViewChild('menuPopup', { static: true }) plusmenu: MenuModule;
   @ViewChild('calendar', { static: true }) fullCalendar: any;
+  @ViewChild('feedbackPopup', { static: true }) feedbackPopupComponent: FeedbackPopupComponent
   response: any[];
   display: boolean;
   tasks: any;
@@ -95,7 +96,7 @@ export class MyTimelineComponent implements OnInit {
       },
       aspectRatio: 2.5,
       // contentHeight:550,
-      weekends: false,
+      // weekends: false,
       defaultView: 'timeGridWeek',
       titleFormat: { // will produce something like "Tuesday, September 18, 2018"
         month: 'short',
@@ -124,6 +125,8 @@ export class MyTimelineComponent implements OnInit {
         }
       },
       eventClick: async function (eventInfo) {
+
+        debugger;
         self.EnableEditDate = self.EnableEditDate === undefined ? await self.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3) : self.EnableEditDate;
         if (eventInfo.event.backgroundColor !== '#D6CFC7') {
           self.modalloaderenable = true;
@@ -254,9 +257,9 @@ export class MyTimelineComponent implements OnInit {
         "title": element.Task === 'Adhoc' ? element.Entity + "-" + element.Comments + " : " + element.TimeSpent : element.ExpectedTime !== null ? element.Title + " : " + element.ExpectedTime : element.Title,
         "id": element.Id,
         "start": new Date(element.StartDate),
-        "end": new Date(element.DueDate),
+        "end": new Date(this.datePipe.transform(element.StartDate,"yyyy-MM-dd")).getTime() !==  new Date(this.datePipe.transform(element.DueDate,"yyyy-MM-dd")).getTime() ?new Date(new Date(element.DueDate).setDate(new Date(element.DueDate).getDate()+1)): new Date(element.DueDate),
         "backgroundColor": element.Status === 'Not Confirmed' ? "#FFD34E" : element.Status === 'Not Started' ? "#5F6273" : element.Status === 'In Progress' ? "#6EDC6C" : element.Status === 'Auto Closed' ? "#8183CC" : element.Status === 'On Hold' ? "#FF3E56" : (element.Status === 'Completed' && element.Task === 'Adhoc') ? element.Comments === "Administrative Work" ?
-          '#eb592d' : element.Comments === "Client meeting / client training" ? '#7852A9' : element.Comments === "Internal meeting" ? '#795C32' : '#445cad' : "#3498DB",
+          '#eb592d' : element.Comments === "Client meeting / client training" ? '#ff8566' : element.Comments === "Internal meeting" ? '#795C32' : '#445cad' : "#3498DB",
         allDay: element.TATStatus === "Yes" ? true : false
 
       }
@@ -268,7 +271,7 @@ export class MyTimelineComponent implements OnInit {
         "title": element.Title,
         "id": element.Id,
         "start": new Date(element.EventDate),
-        "end": new Date(element.EndDate),
+        "end": new Date(this.datePipe.transform(element.EventDate,"yyyy-MM-dd")).getTime() !==  new Date(this.datePipe.transform(element.EndDate,"yyyy-MM-dd")).getTime() ? new Date(new Date(element.EndDate).setDate(new Date(element.EndDate).getDate()+1)) : new Date(element.EndDate),
         "backgroundColor": "#D6CFC7",
         allDay: true,
       }
@@ -373,6 +376,22 @@ export class MyTimelineComponent implements OnInit {
       else {
         this.task.ProjectName = this.task.ProjectCode;
       }
+
+      if (this.task.Status === "Not Started") {
+        this.SelectedStatus = "Not Started";
+        this.statusOptions = [
+          { label: 'Not Started', value: 'Not Started' },
+          { label: 'In Progress', value: 'In Progress' },
+          { label: 'Completed', value: 'Completed' },
+        ]
+      }
+      else if (this.task.Status === "In Progress") {
+        this.SelectedStatus = "In Progress";
+        this.statusOptions = [
+          { label: 'In Progress', value: 'In Progress' },
+          { label: 'Completed', value: 'Completed' },
+        ]
+      }
       this.modalloaderenable = false;
 
     }
@@ -451,19 +470,19 @@ export class MyTimelineComponent implements OnInit {
     });
     ref.onClose.subscribe(async (blockTimeobj: any) => {
       if (blockTimeobj) {
-
+          debugger;
         this.CalendarLoader = true;
         if (event === 'Leave') {
 
           await this.spServices.create(this.constants.listNames.LeaveCalendar.name, blockTimeobj, '');
-          this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Leave created sucessfully.' });
+          this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Leave created successfully.' });
         }
         else {
           if (task === undefined) {
             const folderUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/Lists/Schedules/AdhocTasks";
             await this.spServices.createAndMove(this.constants.listNames.Schedules.name, blockTimeobj, folderUrl);
 
-            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time Booking created sucessfully.' });
+            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time Booking created successfully.' });
           }
           else {
 
@@ -475,7 +494,7 @@ export class MyTimelineComponent implements OnInit {
 
               await this.spServices.update(this.constants.listNames.Schedules.name, task.ID, blockTimeobj, "SP.Data.SchedulesListItem");
 
-              this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time Booking updated sucessfully.' });
+              this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time Booking updated successfully.' });
             }
 
           }
@@ -561,11 +580,19 @@ export class MyTimelineComponent implements OnInit {
 
           }
           else {
-            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated sucessfully.' });
+            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated successfully.' });
+
+            if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1 && task.Status === 'Completed') {
+              this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
+            }
 
           }
 
           this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start, this.fullCalendar.calendar.state.dateProfile.currentRange.end);
+
+
+        
+
         },
         reject: () => {
           task.Status = earlierStaus;

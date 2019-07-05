@@ -229,15 +229,15 @@ font-size: 20px !important;
   display: none !important;
 } 
 
-
+::ng-deep .timeLineButton
+{
+  position: fixed !important;
+  width: 100% !important;
+  margin: -57px !important;
+}
 @media (min-width: 1400px) {
   
-  ::ng-deep .timeLineButton
-  {
-    position: fixed !important;
-    width: 100% !important;
-    margin: -2.6vw !important;
-  }
+ 
 
   ::ng-deep .currentTaskButton
   {
@@ -248,12 +248,7 @@ font-size: 20px !important;
 
 @media (min-width: 1025px) and (max-width: 1400px) {
   
-  ::ng-deep .timeLineButton
-  {
-    position: fixed !important;
-    width: 100% !important;
-    margin: -3.6vw !important;
-  }
+  
   ::ng-deep .currentTaskButton
   {
     margin: 4px 0px 4px 0px !important;

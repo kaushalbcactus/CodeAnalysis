@@ -7,7 +7,8 @@ import { SearchProjectsComponent } from './search-projects/search-projects.compo
 import { MyCurrentCompletedTasksComponent } from './my-current-completed-tasks/my-current-completed-tasks.component';
 import { SOWComponent } from '../projectmanagement/projectmanagement/sow/sow.component';
 import { PMResolve } from '../projectmanagement/PMResolve';
-import { AllProjectsComponent } from '../projectmanagement/projectmanagement/all-projects/all-projects.component';
+// import { AllProjectsComponent } from '../projectmanagement/projectmanagement/all-projects/all-projects.component';
+import { MyprojectsComponent } from './myprojects/myprojects.component';
 
 const routes: Routes = [
 
@@ -17,7 +18,7 @@ const routes: Routes = [
       { path: '', redirectTo: 'my-current-tasks', pathMatch: 'full' },
       { path: 'my-current-tasks', component: MyCurrentCompletedTasksComponent, data: { type: 'MyCurrentTask' } },
       { path: 'my-timeline', component: MyTimelineComponent },
-      { path: 'my-projects', component: AllProjectsComponent, resolve: { pmData: PMResolve } },
+      { path: 'my-projects', component: MyprojectsComponent, resolve: { pmData: PMResolve } },
       { path: 'my-sow', component: SOWComponent, resolve: { pmData: PMResolve } },
       { path: 'my-completed-tasks', component: MyCurrentCompletedTasksComponent, data: { type: 'MyCompletedTask' } },
       { path: 'search-projects', component: SearchProjectsComponent },

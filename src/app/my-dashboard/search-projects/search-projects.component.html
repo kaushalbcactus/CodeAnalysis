@@ -1,131 +1,133 @@
-<div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px" style="padding:0.3em;"> </div>
+<div *ngIf="onSearchProject">
+  <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px" style="padding:0.3em;"> </div>
 
 
-<div fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="10px">
-  <div></div>
-  <form class="SearchForm" #SearchForm="ngForm" (ngSubmit)="SearchProject()">
+  <div fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="10px">
+    <div></div>
+    <form class="SearchForm" #SearchForm="ngForm" (ngSubmit)="SearchProject()">
 
-    <div fxLayout="row" class="SearchBox" fxLayoutAlign="space-around center" fxLayoutGap="10px">
-      <span style="color: #c53e3e; font-weight: 500;font-size:1.2em;"> Search Project</span>
-      <span class="ui-float-label">
-        <input id="float-input" type="text" name="ProjectCode" size="25" [(ngModel)]="ProjectCode"
-          (focus)="focusFunction('ProjectCode')" pInputText>
-        <label for="float-input">By Project Code</label>
-      </span>
-      <span style="color: #c53e3e; font-weight: 500;font-size:1.5em;"> OR</span>
-      <span class="ui-float-label">
-        <input id="float-input" type="text" class="form-control" name="ProjectTitle" [(ngModel)]="ProjectTitle"
-          size="25" (focus)="focusFunction('ProjectTitle')" pInputText>
-        <label for="float-input">By Short Title</label>
-      </span>
+      <div fxLayout="row" class="SearchBox" fxLayoutAlign="space-around center" fxLayoutGap="10px">
+        <span style="color: #c53e3e; font-weight: 500;font-size:1.2em;"> Search Project</span>
+        <span class="ui-float-label">
+          <input id="float-input" type="text" name="ProjectCode" size="25" [(ngModel)]="ProjectCode"
+            (focus)="focusFunction('ProjectCode')" pInputText>
+          <label for="float-input">By Project Code</label>
+        </span>
+        <span style="color: #c53e3e; font-weight: 500;font-size:1.5em;"> OR</span>
+        <span class="ui-float-label">
+          <input id="float-input" type="text" class="form-control" name="ProjectTitle" [(ngModel)]="ProjectTitle"
+            size="25" (focus)="focusFunction('ProjectTitle')" pInputText>
+          <label for="float-input">By Short Title</label>
+        </span>
 
-      <button pButton type="submit" [disabled]="ProjectCode ==='' && ProjectTitle===''"
-        [ngStyle]="{'cursor': ProjectCode ==='' && ProjectTitle==='' ? 'not-allowed':'pointer'}" icon="pi pi-search"
-        label="Search" class="ui-button-danger"></button>
-    </div>
-  </form>
-  <div></div>
+        <button pButton type="submit" [disabled]="ProjectCode ==='' && ProjectTitle===''"
+          [ngStyle]="{'cursor': ProjectCode ==='' && ProjectTitle==='' ? 'not-allowed':'pointer'}" icon="pi pi-search"
+          label="Search" class="ui-button-danger"></button>
+      </div>
+    </form>
+    <div></div>
 
-</div>
+  </div>
 
-<!-- **********************************************************************************************************
+  <!-- **********************************************************************************************************
                                                       toaster message dialog
 ********************************************************************************************************** -->
 
 
-<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
-  position="bottom-center">
-</p-toast>
+  <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
+    position="bottom-center">
+  </p-toast>
 
 
 
-<!-- **********************************************************************************************************
+  <!-- **********************************************************************************************************
                                                          loader enable 
 ********************************************************************************************************** -->
-<div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" *ngIf="loaderenable">
-  <div id="scInnerLoader"></div>
-  <div id="scInnerLoaderText">Loading...</div>
-</div>
+  <div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" *ngIf="loaderenable">
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+  </div>
 
 
 
-<!--*************************************************************************************************
+  <!--*************************************************************************************************
                                                           Table View Data
 ************************************************************************************************ -->
 
-<div *ngIf="!loaderenable && tableviewenable" style="padding-top: 5px;">
-  <p-table #project [columns]="cols" [value]="ProjectList" [resizableColumns]="true" [exportFilename]="ProjectList">
+  <div *ngIf="!loaderenable && tableviewenable" style="padding-top: 5px;">
+    <p-table #project [columns]="cols" [value]="ProjectList" [resizableColumns]="true" [exportFilename]="ProjectList">
 
-    <ng-template pTemplate="header" let-columns>
-      <tr>
-        <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn pReorderableColumn>
-          {{col.header}}
-          <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
-        </th>
-        <th style="width: 3em;"></th>
-      </tr>
-      <tr>
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn pReorderableColumn>
+            {{col.header}}
+            <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+          </th>
+          <th style="width: 3em;"></th>
+        </tr>
+        <tr>
 
-        <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
-          <ng-container *ngIf="col.field">
+          <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
+            <ng-container *ngIf="col.field">
 
-            <p-dropdown *ngSwitchCase="'SOWCode'" [options]="ProjectColArray.SOWCode" appendTo="body"
-              (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-            <p-dropdown *ngSwitchCase="'ProjectCode'" [options]="ProjectColArray.ProjectCode" appendTo="body"
-              (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-            <p-dropdown *ngSwitchCase="'WBJID'" [options]="ProjectColArray.WBJID" appendTo="body"
-              (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-            <p-dropdown *ngSwitchCase="'ClientLegalEntity'" [options]="ProjectColArray.ClientLegalEntity"
-              appendTo="body" (onChange)="project.filter($event.value, col.field, 'equals')">
-            </p-dropdown>
-            <p-dropdown *ngSwitchCase="'DeliverableType'" [options]="ProjectColArray.DeliverableType" appendTo="body"
-              (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-            <p-dropdown *ngSwitchCase="'ProjectType'" [options]="ProjectColArray.ProjectType" appendTo="body"
-              (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-            <p-dropdown *ngSwitchCase="'Status'" [options]="ProjectColArray.Status" appendTo="body"
-              (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-            <p-dropdown *ngSwitchCase="'CreatedBy'" [options]="ProjectColArray.CreatedBy" appendTo="body"
-              (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
+              <p-dropdown *ngSwitchCase="'SOWCode'" [options]="ProjectColArray.SOWCode" appendTo="body"
+                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
+              <p-dropdown *ngSwitchCase="'ProjectCode'" [options]="ProjectColArray.ProjectCode" appendTo="body"
+                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
+              <p-dropdown *ngSwitchCase="'WBJID'" [options]="ProjectColArray.WBJID" appendTo="body"
+                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
+              <p-dropdown *ngSwitchCase="'ClientLegalEntity'" [options]="ProjectColArray.ClientLegalEntity"
+                appendTo="body" (onChange)="project.filter($event.value, col.field, 'equals')">
+              </p-dropdown>
+              <p-dropdown *ngSwitchCase="'DeliverableType'" [options]="ProjectColArray.DeliverableType" appendTo="body"
+                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
+              <p-dropdown *ngSwitchCase="'ProjectType'" [options]="ProjectColArray.ProjectType" appendTo="body"
+                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
+              <p-dropdown *ngSwitchCase="'Status'" [options]="ProjectColArray.Status" appendTo="body"
+                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
+              <p-dropdown *ngSwitchCase="'CreatedBy'" [options]="ProjectColArray.CreatedBy" appendTo="body"
+                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
 
-            <p-dropdown [options]="ProjectColArray.Created" *ngSwitchCase="'Created'" [(ngModel)]="selectedDate"
-              appendTo="body" (onChange)="project.filter($event.value, col.field, 'equals')">
-              <ng-template let-sDate pTemplate="selectedItem">
-                <span *ngIf="sDate.value === null"> {{sDate.label}}</span>
-                <span *ngIf="sDate.value !== null"> {{sDate.label | date:'d MMM, y, h:mm a'}}</span>
-              </ng-template>
-              <ng-template let-sDate pTemplate="item">
-                <span *ngIf="sDate.value === null"> {{sDate.label}}</span>
-                <span *ngIf="sDate.value !== null"> {{sDate.label | date:'d MMM, y, h:mm a'}}</span>
-              </ng-template>
-            </p-dropdown>
+              <p-dropdown [options]="ProjectColArray.Created" *ngSwitchCase="'Created'" [(ngModel)]="selectedDate"
+                appendTo="body" (onChange)="project.filter($event.value, col.field, 'equals')">
+                <ng-template let-sDate pTemplate="selectedItem">
+                  <span *ngIf="sDate.value === null"> {{sDate.label}}</span>
+                  <span *ngIf="sDate.value !== null"> {{sDate.label | date:'d MMM, y, h:mm a'}}</span>
+                </ng-template>
+                <ng-template let-sDate pTemplate="item">
+                  <span *ngIf="sDate.value === null"> {{sDate.label}}</span>
+                  <span *ngIf="sDate.value !== null"> {{sDate.label | date:'d MMM, y, h:mm a'}}</span>
+                </ng-template>
+              </p-dropdown>
 
 
-          </ng-container>
-        </th>
-        <th></th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
-      <tr style="font-size: 12px;">
-        <td *ngFor="let col of columns;index as i">
-          <span *ngIf="col.field === 'Created'"> {{rowData[col.field] | date:'d MMM, y, h:mm a'}} </span>
-          <span *ngIf="col.field !== 'Created'"> {{rowData[col.field]}} </span>
-        </td>
-        <td>
-          <span>
-            <p-slideMenu #popupMenu [popup]="true" appendTo="body" [model]="projectMenu">
-            </p-slideMenu>
+            </ng-container>
+          </th>
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr style="font-size: 12px;">
+          <td *ngFor="let col of columns;index as i">
+            <span *ngIf="col.field === 'Created'"> {{rowData[col.field] | date:'d MMM, y, h:mm a'}} </span>
+            <span *ngIf="col.field !== 'Created'"> {{rowData[col.field]}} </span>
+          </td>
+          <td>
+            <span>
+              <p-slideMenu #popupMenu [popup]="true" appendTo="body" [model]="projectMenu">
+              </p-slideMenu>
 
-            <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
-              (click)="openPopup(rowData, popupMenu);popupMenu.toggle($event);"></i>
-          </span>
-        </td>
-      </tr>
-    </ng-template>
+              <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
+                (click)="openPopup(rowData, popupMenu);popupMenu.toggle($event);"></i>
+            </span>
+          </td>
+        </tr>
+      </ng-template>
 
-  </p-table>
+    </p-table>
+  </div>
+
 </div>
-
 
 <!--*************************************************************************************************
                                                            View Details
@@ -320,7 +322,7 @@
 
       </mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
-        <!-- <app-timeline [projectDetails]="ProjectPopupDetails"></app-timeline> -->
+        <app-timeline [projectDetails]="ProjectPopupDetails"></app-timeline>
       </ng-template>
 
     </mat-expansion-panel>
@@ -328,7 +330,6 @@
     <!--****************************************************************************************** 
         //  dialog to show project drafts
         ****************************************************************************************** -->
-
     <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)">
       <mat-expansion-panel-header>
         <mat-panel-title style="color:#000000;">

@@ -7,6 +7,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { ProjectDraftsComponent } from './project-drafts/project-drafts.component';
 import { TimelineComponent } from 'src/app/task-allocation/timeline/timeline.component';
 import { ViewUploadDocumentDialogComponent } from '../view-upload-document-dialog/view-upload-document-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-search-projects',
@@ -36,6 +37,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   ProjectColArray: any;
   ProjectList: any;
   showDetailsenable: boolean = false;
+  onSearchProject: boolean = true;
   step: number;
   modalloaderenable: boolean = false;
   projectDisplayTitle: any;
@@ -73,10 +75,17 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
     private spServices: SharepointoperationService,
-    public sharedObject: GlobalService) { }
+    public sharedObject: GlobalService, public router: Router) { }
 
   ngOnInit() {
+    const route  = this.router.url;
 
+    if(route.indexOf('search-projects') > -1) {
+      this.onSearchProject = true;
+    }
+    else {
+      this.onSearchProject = false;
+    }
     this.cols = [
       { field: 'SOWCode', header: 'SOW Code' },
       { field: 'ProjectCode', header: 'Project Code' },
@@ -95,7 +104,6 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
 
   openPopup(data) {
-
     this.projectMenu = [
       { label: 'View Details', icon: 'pi pi-info-circle', command: (e) => this.getProjectDetails(data) }
     ];
@@ -107,10 +115,6 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.viewUploadDocumentDialogComponent.ngOnDestroy();
     this.timelineComponent.ngOnDestroy();
   }
-
-
-
-
 
   createColFieldValues() {
 
@@ -129,17 +133,16 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
     this.ProjectColArray.Status.push.apply(this.ProjectColArray.Status, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
 
+
+    this.ProjectColArray.CreatedBy.push.apply(this.ProjectColArray.CreatedBy, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; })));
+
     this.ProjectColArray.Created.push.apply(this.ProjectColArray.Created, this.myDashboardConstantsService.getUniqueDates(this.ProjectList.map(a => a.Created)));
 
     this.loaderenable = false;
     this.tableviewenable = true;
   }
 
-
-
   async SearchProject() {
-
-    
     
     this.ProjectPopupDetails = Object.assign({}, this.ProjectDetails);
     this.ProjectPopupDetails = undefined;
@@ -175,6 +178,8 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
         this.ProjectList = this.response[0];
 
         this.ProjectList.map(c => c.Created = new Date(c.Created));
+
+        this.ProjectList.map(c=>c.CreatedBy = c.Author.Title);
 
         this.createColFieldValues();
 

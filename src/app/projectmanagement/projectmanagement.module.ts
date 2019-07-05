@@ -28,6 +28,8 @@ import { CommunicationComponent } from './projectmanagement/communication/commun
 import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/api';
 import { TimelineModule } from '../timeline/timeline.module';
 import { CustomMaterialModule } from '../shared/material.module';
+
+
 @NgModule({
   declarations: [
     ProjectmanagementComponent,
@@ -59,6 +61,9 @@ import { CustomMaterialModule } from '../shared/material.module';
     CustomMaterialModule,
     NgbModule
   ],
+  exports:[
+    AllProjectsComponent
+  ],
   providers: [
     DatePipe,
     UsercapacityComponent,
@@ -66,7 +71,8 @@ import { CustomMaterialModule } from '../shared/material.module';
     PMMainResolve,
     DialogService,
     DynamicDialogConfig,
-    DynamicDialogRef],
+    DynamicDialogRef
+  ],
   entryComponents: [
     ProjectAttributesComponent,
     ManageFinanceComponent,

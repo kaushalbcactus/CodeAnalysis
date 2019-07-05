@@ -150,6 +150,8 @@ export class AddEditCommentComponent implements OnInit {
   // ********************************************************************************************************
 
   async saveComment(IsMarkComplete) {
+
+    debugger;
     const commentObj = {
       comment: this.previousComment !== null ? this.previousComment + this.editor.getData() : this.editor.getData(),
       IsMarkComplete: IsMarkComplete

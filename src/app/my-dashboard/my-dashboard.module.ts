@@ -27,10 +27,14 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxGraphModule } from '@swimlane/ngx-graph';
 import { DndModule } from 'ngx-drag-drop';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { TreeTableModule } from 'primeng/primeng';
+import { TreeTableModule, RatingModule } from 'primeng/primeng';
 import { NgGanttEditorModule } from 'ng-gantt';
 import { ProjectmanagementModule } from '../projectmanagement/projectmanagement.module';
 import { TaskAllocationModule } from '../task-allocation/task-allocation.module';
+import { FeedbackPopupComponent } from './feedback-popup/feedback-popup.component';
+import { MyprojectsComponent } from './myprojects/myprojects.component';
+import { DisplayProjectsComponent } from './myprojects/display-projects/display-projects.component';
+
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
 };
@@ -49,7 +53,10 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     PreviosNextTasksDialogComponent,
     BlockTimeDialogComponent,
     TimeBookingDialogComponent,
-    ProjectDraftsComponent],
+    ProjectDraftsComponent,
+    FeedbackPopupComponent,
+    MyprojectsComponent,
+    DisplayProjectsComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -62,6 +69,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NgxAutoScrollModule,
     NgGanttEditorModule,
     TreeTableModule,
+    RatingModule,
     NgSelectModule,
     DndModule,
     NgxGraphModule,
@@ -70,7 +78,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     TaskAllocationModule
   ],
 
-  providers: [ConfirmationService, DatePipe, DialogService, DynamicDialogConfig, DynamicDialogRef, {
+  providers: [ConfirmationService, DatePipe, DialogService, DynamicDialogConfig, DynamicDialogRef, FeedbackPopupComponent,  {
     provide: PERFECT_SCROLLBAR_CONFIG,
     useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
   }],
@@ -81,6 +89,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     AddEditCommentComponent,
     PreviosNextTasksDialogComponent,
     BlockTimeDialogComponent,
-    ProjectDraftsComponent]
+    ProjectDraftsComponent,
+    FeedbackPopupComponent]
 })
 export class MyDashboardModule { }

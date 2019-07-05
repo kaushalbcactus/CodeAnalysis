@@ -470,7 +470,7 @@ debugger;
             }
             else {
               this.loadDraftDocs(this.selectedTab);
-              this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated sucessfully.' });
+              this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
             }
           }
 
@@ -513,7 +513,7 @@ debugger;
     const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
     const responseInLines = response.split('\n');
     this.loadDraftDocs(this.selectedTab);
-    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated sucessfully.' });
+    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
   }
 
 }
