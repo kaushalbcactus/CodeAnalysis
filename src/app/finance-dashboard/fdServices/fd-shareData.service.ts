@@ -106,33 +106,34 @@ export class FDDataShareService {
 
     setData(data: any) {
         console.log(data.length);
+        
         if (data[0]) {
-            this.projectInfoData.next(data[0]);
-            // this.piData = data[0];
+            this.projectContactData.next(data[0]);
         }
         if (data[1]) {
-            this.projectContactData.next(data[1]);
+            this.clientLEntityData.next(data[1]);
         }
         if (data[2]) {
-            this.clientLEntityData.next(data[2]);
+            this.usStatesData.next(data[2]);
         }
         if (data[3]) {
-            this.usStatesData.next(data[3]);
+            this.currencyData.next(data[3]);
         }
         if (data[4]) {
-            this.currencyData.next(data[4]);
+            this.poData.next(data[4]);
         }
         if (data[5]) {
-            this.poData.next(data[5]);
+            this.resourceCateData.next(data[5]);
         }
         if (data[6]) {
-            this.resourceCateData.next(data[6]);
+            this.billingEntityData.next(data[6]);
         }
         if (data[7]) {
-            this.billingEntityData.next(data[7]);
+            this.budgetRateData.next(data[7]);
         }
         if (data[8]) {
-            this.budgetRateData.next(data[8]);
+            this.projectInfoData.next(data[8]);
+            // this.piData = data[0];
         }
         // this.dataSource.next(data)
     }
@@ -282,7 +283,11 @@ export class FDDataShareService {
             const billingEntity = this.spServices.getReadURL('' + this.constantService.listNames.BillingEntity.name + '', this.fdConstantsService.fdComponent.billingEntity);
             const budgetRate = this.spServices.getReadURL('' + this.constantService.listNames.BudgetRateMaster.name + '', this.fdConstantsService.fdComponent.budgetRate);
             // const userGroup = this.spServices.getReadURL(''+this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
-            let endPoints = [projectInfoEndpoint, projectContactEndpoint, clientLegalEntityEndpoint, usStates, currnecy, projectPO, resourceCateg, billingEntity, budgetRate];
+            //projectInfoEndpoint,
+            let endPoints = [ projectContactEndpoint, clientLegalEntityEndpoint, usStates, currnecy
+                , projectPO, resourceCateg, billingEntity, budgetRate
+                ,projectInfoEndpoint
+            ];
             let userBatchBody;
             for (let i = 0; i < endPoints.length; i++) {
                 const element = endPoints[i];

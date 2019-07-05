@@ -192,6 +192,7 @@ export class PendingExpenseComponent implements OnInit {
         this.pendingExpeseCols = [
             { field: 'RequestType', header: 'Request Type', visibility: true },
             { field: 'ProjectCode', header: 'Project', visibility: true },
+            { field: 'VendorName', header: 'Vendor Freelancer', visibility: true },
             { field: 'ClientLegalEntity', header: 'Client', visibility: true },
             { field: 'Category', header: 'Category', visibility: true },
             // { field: 'PONumber', header: 'PO Number', visibility:true },
@@ -200,8 +201,8 @@ export class PendingExpenseComponent implements OnInit {
             { field: 'ClientCurrency', header: 'Client Currency', visibility: true },
             { field: 'Created', header: 'Date Created', visibility: true },
             { field: 'CreatedBy', header: 'Created By', visibility: true },
-            { field: 'Modified', header: 'Modified Date', visibility: true },
-            { field: 'ModifiedBy', header: 'Modified By', visibility: true },
+            { field: 'Modified', header: 'Modified Date', visibility: false },
+            { field: 'ModifiedBy', header: 'Modified By', visibility: false },
 
             { field: 'SOWCode', header: 'SOW Code', visibility: false },
             { field: 'SOWName', header: 'SOW Name', visibility: false },
@@ -214,7 +215,7 @@ export class PendingExpenseComponent implements OnInit {
             { field: 'ApproverComments', header: 'Approver Comments', visibility: false },
             { field: 'ApproverFileUrl', header: 'Approver File Url', visibility: false },
             { field: 'PayingEntity', header: 'Paying Entity', visibility: false },
-            { field: 'VendorFreelancer', header: 'Vendor Freelancer', visibility: false },
+            
             { field: 'AuthorId', header: 'Author Id', visibility: false },
 
             { field: 'DollarAmount', header: 'Dollar Amount', visibility: false },
@@ -350,11 +351,11 @@ export class PendingExpenseComponent implements OnInit {
                 ExpenseType: element.SpendType,
                 ClientAmount: parseFloat(element.ClientAmount).toFixed(2),
                 ClientCurrency: element.ClientCurrency,
-                Created: this.datePipe.transform(element.Created, 'MMM d, y, hh:mm a'),
+                Created: element.Created, // this.datePipe.transform(element.Created, 'MMM d, y, hh:mm a'),
                 CreatedBy: rcCreatedItem ? rcCreatedItem.UserName.Title : '',
                 ModifiedBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
                 Notes: element.Notes,
-                Modified: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
+                Modified: element.Modified, // this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
                 RequestType: element.RequestType,
                 Number: element.Number,
                 DateSpend: element.DateSpend,
@@ -433,10 +434,12 @@ export class PendingExpenseComponent implements OnInit {
         CreatedBy: [],
         ModifiedBy: [],
         ModifiedDate: [],
+        VendorName: [],
     }
 
     createColFieldValues() {
 
+        this.pendinExpenseColArray.VendorName = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }));
         this.pendinExpenseColArray.RequestType = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.RequestType, value: a.RequestType }; return b; }));
         this.pendinExpenseColArray.ProjectCode = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }));
         this.pendinExpenseColArray.ClientLegalEntity = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
@@ -445,10 +448,10 @@ export class PendingExpenseComponent implements OnInit {
         this.pendinExpenseColArray.ExpenseType = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }));
         this.pendinExpenseColArray.ClientAmount = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ClientAmount, value: a.ClientAmount }; return b; }));
         this.pendinExpenseColArray.ClientCurrency = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }));
-        this.pendinExpenseColArray.Created = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.Created, value: a.Created }; return b; }));
+        this.pendinExpenseColArray.Created = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: this.datePipe.transform(a.Created, 'MMM d, y'), value: a.Created }; return b; }));
         this.pendinExpenseColArray.CreatedBy = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }));
         this.pendinExpenseColArray.ModifiedBy = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }));
-        this.pendinExpenseColArray.ModifiedDate = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }));
+        this.pendinExpenseColArray.ModifiedDate = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM d, y'), value: a.Modified }; return b; }));
     }
 
     uniqueArrayObj(array: any) {

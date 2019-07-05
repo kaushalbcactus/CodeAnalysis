@@ -347,7 +347,7 @@ export class OutstandingInvoicesComponent implements OnInit {
                 Currency: element.Currency,
                 FileURL: element.FileURL,
                 FiscalYear: element.FiscalYear,
-                InvoiceDate: this.datePipe.transform(element.InvoiceDate, 'MMM d, y, hh:mm a'),
+                InvoiceDate: element.InvoiceDate, // this.datePipe.transform(element.InvoiceDate, 'MMM d, y, hh:mm a'),
                 InvoiceNumber: element.InvoiceNumber,
                 MainPOC: element.MainPOC,
                 InvoiceStatus: element.Status,
@@ -359,7 +359,6 @@ export class OutstandingInvoicesComponent implements OnInit {
                 Template: element.Template,
                 InvoiceHtml: element.InvoiceHtml,
                 showMenu: true, // (element.Status === 'Sent to AP' || element.Status === 'Generated') ?  true : false
-
                 PaymentURL: element.PaymentURL,
                 ProformaLookup: element.ProformaLookup,
                 LineItemsLookup: element.LineItemsLookup,
@@ -452,7 +451,7 @@ export class OutstandingInvoicesComponent implements OnInit {
         this.outInvoiceColArray.InvoiceNumber = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }));
         this.outInvoiceColArray.PONumber = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
         this.outInvoiceColArray.POName = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; }));
-        this.outInvoiceColArray.InvoiceDate = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.InvoiceDate, value: a.InvoiceDate }; return b; }));
+        this.outInvoiceColArray.InvoiceDate = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: this.datePipe.transform(a.InvoiceDate, 'MMM d, y'), value: a.InvoiceDate }; return b; }));
         this.outInvoiceColArray.Amount = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
         this.outInvoiceColArray.Currency = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
         this.outInvoiceColArray.POC = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.POC, value: a.POC }; return b; }));

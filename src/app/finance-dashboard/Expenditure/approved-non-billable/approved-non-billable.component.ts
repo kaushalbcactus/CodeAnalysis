@@ -154,7 +154,7 @@ export class ApprovedNonBillableComponent implements OnInit {
             { field: 'PayingEntity', header: 'Paying Entity', visibility: true },
             { field: 'Status', header: 'Status', visibility: true },
             { field: 'ApproverComments', header: 'Approver Comments', visibility: true },
-            { field: 'Modified', header: 'Approval/ Billabe Date', visibility: true },
+            { field: 'Modified', header: 'Approval / Billable Date', visibility: true },
             { field: '', header: '', visibility: true },
 
             { field: 'Category', header: 'Category', visibility: false },
@@ -235,7 +235,7 @@ export class ApprovedNonBillableComponent implements OnInit {
                 DateCreated: this.datePipe.transform(element.Created, 'MMM d, y, hh:mm a'),
                 Notes: element.Notes,
                 Created: this.datePipe.transform(element.Created, 'MMM d, y, hh:mm a'),
-                Modified: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
+                Modified: element.Modified, // this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
                 CreatedBy: rcCreatedItem ? rcCreatedItem.UserName.Title : '',
                 ModifiedBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
                 // ModifiedDate: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
@@ -315,7 +315,7 @@ export class ApprovedNonBillableComponent implements OnInit {
 
         this.anonBillableColArray.Number = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Number, value: a.Number }; return b; }));
         this.anonBillableColArray.PaymentDate = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }));
-        this.anonBillableColArray.Modified = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }));
+        this.anonBillableColArray.Modified = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM d, y'), value: a.Modified }; return b; }));
         this.anonBillableColArray.Created = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Created, value: a.Created }; return b; }));
 
         // this.anonBillableColArray.SOWCode = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }));

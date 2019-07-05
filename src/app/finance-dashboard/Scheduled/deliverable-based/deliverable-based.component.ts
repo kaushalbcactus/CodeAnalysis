@@ -307,7 +307,7 @@ export class DeliverableBasedComponent implements OnInit {
                 PO: element.PO,
                 POCId: element.MainPOC,
                 ClientName: this.getCLE(element),
-                ScheduledDate: this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
+                ScheduledDate: element.ScheduledDate, // this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
                 Amount: element.Amount,
                 Currency: element.Currency,
                 POCName: this.getPOCName(element),
@@ -407,7 +407,7 @@ export class DeliverableBasedComponent implements OnInit {
         this.deliverableBasedColArray.POCName = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }));
         // this.deliverableBasedColArray.ClientName this.uniqueArrayObj(= this.deliverableBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }));
         this.deliverableBasedColArray.ClientName = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b ? b : ''; }));
-        this.deliverableBasedColArray.ScheduledDate = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.ScheduledDate, value: a.ScheduledDate }; return b; }));
+        this.deliverableBasedColArray.ScheduledDate = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }));
         this.deliverableBasedColArray.Amount = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
         this.deliverableBasedColArray.Currency = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
         this.deliverableBasedColArray.PONumber = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));

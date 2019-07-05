@@ -83,8 +83,11 @@
                 <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
             </td>
             <td *ngFor="let col of columns;index as i" class="ui-resizable-column" [hidden]="!col.visibility">
-                <ng-container *ngIf="col.field != 'InvoiceNumber' &&  col.field != ''">
+                <ng-container *ngIf="col.field != 'InvoiceNumber' &&  col.field != '' && col.field != 'InvoiceDate'">
                     {{rowData[col.field]}}
+                </ng-container>
+                <ng-container *ngIf="col.field == 'InvoiceDate'">
+                    <p>{{rowData[col.field] | date:'MMM d, y' }}</p>
                 </ng-container>
                 <ng-container *ngIf="col.field == 'InvoiceNumber'">
                     <a *ngIf="rowData['FileURL']" [href]="rowData['FileURL']" target="_blank">

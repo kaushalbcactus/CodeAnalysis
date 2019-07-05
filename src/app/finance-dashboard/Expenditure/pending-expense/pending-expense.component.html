@@ -91,7 +91,9 @@
                     <p-multiSelect *ngSwitchCase="'Modified'" [options]="pendinExpenseColArray.ModifiedDate"
                         defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-
+                    <p-multiSelect *ngSwitchCase="'VendorName'" [options]="pendinExpenseColArray.VendorName"
+                    defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                </p-multiSelect>
                     <!-- <p-dropdown [options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">
                                             <ng-template let-item pTemplate="item">
                                                 <span>{{item.value}}</span>
@@ -110,7 +112,12 @@
                 <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
             </td>
             <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" class="ui-resizable-column">
-                {{rowData[col.field]}}
+                <ng-container *ngIf="col.field != 'Created' && col.field != 'Modified' &&  col.field != '' ">
+                    {{rowData[col.field]}}
+                </ng-container>
+                <ng-container *ngIf="col.field == 'Created' || col.field == 'Modified'">
+                    <p>{{rowData[col.field] | date:'MMM d, y' }}</p>
+                </ng-container>
                 <ng-container *ngIf="col.field == ''">
                     <p-menu #popupMenu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu">
                     </p-menu>

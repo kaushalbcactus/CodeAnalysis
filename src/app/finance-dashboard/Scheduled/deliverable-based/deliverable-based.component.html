@@ -79,7 +79,12 @@
                 <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
             </td>
             <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility">
-                {{rowData[col.field]}}
+                <ng-container *ngIf="col.field != 'ScheduledDate' &&  col.field != '' ">
+                    {{rowData[col.field]}}
+                </ng-container>
+                <ng-container *ngIf="col.field == 'ScheduledDate'">
+                    <p>{{rowData[col.field] | date:'MMM d, y' }}</p>
+                </ng-container>
                 <ng-container *ngIf="col.field == ''">
                     <div>
                         <!-- <div *ngIf="rowData.showMenu === true"> -->

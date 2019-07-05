@@ -377,7 +377,7 @@ export class ConfirmedComponent implements OnInit {
                 ProjectMileStone: project ? project.Milestone : '', // this.getMilestones(element),
                 PONumber: element.PO,
                 ClientLegalEntity: this.selectedPurchaseNumber.ClientLegalEntity,
-                ScheduledDate: this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
+                ScheduledDate: element.ScheduledDate, // this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
                 ScheduleType: element.ScheduleType,
                 Amount: element.Amount,
                 Currency: element.Currency,
@@ -385,14 +385,13 @@ export class ConfirmedComponent implements OnInit {
                 AddressType: element.AddressType,
                 ProjectTitle: project ? project.Title : '',
                 POName: element.POName,
-
                 CS: this.getCSDetails(element.CS.results),
                 TaggedDate: element.TaggedDate,
                 Status: element.Status,
                 ProformaLookup: element.ProformaLookup,
                 InvoiceLookup: element.InvoiceLookup,
                 Template: element.Template,
-                Modified: element.Modified
+                Modified: this.datePipe.transform(element.Modified, 'MMM d, y')
             })
         }
         this.createColFieldValues();
@@ -472,7 +471,7 @@ export class ConfirmedComponent implements OnInit {
         this.confirmedInColArray.POName = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; }));
         this.confirmedInColArray.ClientLegalEntity = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
         this.confirmedInColArray.PONumber = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
-        this.confirmedInColArray.ScheduledDate = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ScheduledDate, value: a.ScheduledDate }; return b; }));
+        this.confirmedInColArray.ScheduledDate = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }));
         this.confirmedInColArray.ScheduleType = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ScheduleType, value: a.ScheduleType }; return b; }));
         this.confirmedInColArray.Amount = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
         this.confirmedInColArray.Currency = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));

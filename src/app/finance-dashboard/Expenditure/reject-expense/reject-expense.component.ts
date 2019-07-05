@@ -191,12 +191,12 @@ export class RejectExpenseComponent implements OnInit {
                 CreatedBy: rcCreatedItem ? rcCreatedItem.UserName.Title : '',
                 ModifiedBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
                 Notes: element.Notes,
-                ModifiedDate: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
+                //ModifiedDate: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
                 RequestType: element.RequestType,
                 ApproverComments: element.ApproverComments,
                 Status: element.Status,
                 ActionBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
-                Modified: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
+                Modified: element.Modified, // this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
 
                 FileURL: element.FileURL,
                 ClientApprovalFileURL: element.ClientApprovalFileURL,
@@ -238,9 +238,8 @@ export class RejectExpenseComponent implements OnInit {
         ClientCurrency: [],
         Created: [],
         ModifiedBy: [],
-        ModifiedDate: [],
-        ActionBy: [],
         Modified: [],
+        ActionBy: [],
         CreatedBy: []
     }
 
@@ -254,9 +253,9 @@ export class RejectExpenseComponent implements OnInit {
         this.pendinExpenseColArray.ClientAmount = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ClientAmount, value: a.ClientAmount }; return b; }));
         this.pendinExpenseColArray.ClientCurrency = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }));
         this.pendinExpenseColArray.Created = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.Created, value: a.Created }; return b; }));
-        this.pendinExpenseColArray.ModifiedDate = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }));
+        this.pendinExpenseColArray.Modified = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM d, y'), value: a.Modified }; return b; }));
         this.pendinExpenseColArray.ActionBy = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
-        this.pendinExpenseColArray.Modified = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }));
+        //this.pendinExpenseColArray.Modified = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }));
         this.pendinExpenseColArray.CreatedBy = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }));
     }
 

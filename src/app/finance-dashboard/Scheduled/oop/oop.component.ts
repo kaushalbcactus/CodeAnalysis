@@ -266,7 +266,7 @@ export class OopComponent implements OnInit {
                 PO: element.PO,
                 POCId: element.MainPOC,
                 ClientName: this.getCLE(element),
-                ScheduledDate: this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
+                ScheduledDate: element.ScheduledDate,// this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
                 Amount: element.Amount,
                 Currency: element.Currency,
                 POCName: this.getPOCName(element),
@@ -357,7 +357,7 @@ export class OopComponent implements OnInit {
         this.oopColArray.ProjectMileStone = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }));
         this.oopColArray.PONumber = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
         this.oopColArray.ClientName = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }));
-        this.oopColArray.ScheduledDate = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ScheduledDate, value: a.ScheduledDate }; return b; }));
+        this.oopColArray.ScheduledDate = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, 'MMM d, y'), value: a.ScheduledDate }; return b; }));
         this.oopColArray.Amount = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
         this.oopColArray.Currency = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
         this.oopColArray.POC = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }));
