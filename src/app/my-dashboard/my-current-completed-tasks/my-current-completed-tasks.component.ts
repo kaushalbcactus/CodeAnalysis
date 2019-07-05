@@ -100,7 +100,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
   }
   ngOnDestroy()
   {
-     debugger;
+    
      // this.popupMenu.hide();
   }
 
@@ -138,6 +138,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
 
       this.allTasks = [];
       this.loaderenable = true;
+      this.rangeDates[1] = this.rangeDates[1] === null ? this.rangeDates[0] : this.rangeDates[1]; 
       var dates = this.CalculateDatesDiffernce(event, days);
       this.getStatusFilterDropDownValue(this.TabName, dates);
     }
@@ -167,6 +168,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
 
       startDate = this.RemoveBusinessDays(endDate, days - 1);
     } else if (nextLast == "Custom") {
+
       startDate = this.rangeDates[0];
       endDate = this.rangeDates[1];
 
@@ -235,7 +237,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
 
 
       // this.allTasks.map(c => c.TimeSpent = c.TimeSpent === null ? 0 : c.TimeSpent.split('.')[0] < 10 ?"0" + c.TimeSpent.split('.')[0] +":" + c.TimeSpent.split('.')[1] : c.TimeSpent.split('.')[0] +":" + c.TimeSpent.split('.')[1]);
-      debugger;
+    
       this.allTasks.map(c => c.TimeSpent = c.TimeSpent === null ? 0 : parseFloat(c.TimeSpent));
 
       this.allTasks.map(c => c.StartDate = new Date(this.datePipe.transform(c.StartDate, 'd MMM, y, h:mm a')));
@@ -355,7 +357,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
   // *************************************************************************************************************************************
 
   async showDialog(task, type, row) {
-    debugger;
+   
     this.modalloaderenable = true;
     this.selectedTask = task.DisplayTitle;
     this.selectedindex = row;
@@ -450,7 +452,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
     });
     ref.onClose.subscribe(async (Commentobj: any) => {
 
-      debugger;
+     
       if (Commentobj) {
         if (Commentobj.IsMarkComplete) {
           this.loaderenable= true;
@@ -587,7 +589,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
 
   async checkCompleteTask(task) {
 
-    debugger;
+  
     var stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
 
     if (stval === "Completed" || stval === "AllowCompletion" || stval === "Auto Closed") {
@@ -629,7 +631,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
   async callComplete(task) {
     task.Status="Completed";
     var response = await this.myDashboardConstantsService.CompleteTask(task);
-    debugger;
+ 
 
     if (response) {
       this.loaderenable = false;

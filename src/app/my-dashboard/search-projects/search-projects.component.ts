@@ -26,8 +26,8 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   viewUploadDocumentDialogComponent: ViewUploadDocumentDialogComponent;
   
   selectedDate: DateObj;
-  ProjectTitle: string = '';
-  ProjectCode: string = '';
+  ProjectTitle: any = '';
+  ProjectCode: any = '';
   batchContents: any[];
   response: any[];
   loaderenable: boolean = false;
@@ -161,12 +161,12 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
       var Project;
       if (this.ProjectCode !== '') {
         Project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformation);
-        Project.filterByCode = Project.filterByCode.replace(/{{projectCode}}/gi, this.ProjectCode);
+        Project.filterByCode = Project.filterByCode.replace(/{{projectCode}}/gi, this.ProjectCode.trimEnd());
         Project.filter = Project.filterByCode;
       }
       else {
         Project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformation);
-        Project.filterByTitle = Project.filterByTitle.replace(/{{shortTitle}}/gi, this.ProjectTitle);
+        Project.filterByTitle = Project.filterByTitle.replace(/{{shortTitle}}/gi, this.ProjectTitle.trimEnd());
         Project.filter = Project.filterByTitle;
       }
 

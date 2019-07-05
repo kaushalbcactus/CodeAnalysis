@@ -35,7 +35,7 @@ export class AddEditCommentComponent implements OnInit {
 
   ngOnInit() {
 
-    debugger;
+
 
 
     this.data = this.config.data === undefined ? this.taskData : this.config.data;
@@ -66,7 +66,7 @@ export class AddEditCommentComponent implements OnInit {
     this.modalloaderenable = true;
     this.data = this.config.data === undefined ? this.taskData : this.config.data;
     this.getComments(this.data, false);
- 
+
   }
   onload() {
     DecoupledEditor
@@ -136,13 +136,13 @@ export class AddEditCommentComponent implements OnInit {
   //  Cancel task comment
   //*********************************************************************************************************
   cancelComment() {
-  
+
     this.editor.setData('');
-    if (this.config.data !== undefined){
+    if (this.config.data !== undefined) {
       this.ref.close();
       this.commentsdb = [];
     }
-   
+
   }
 
   //*********************************************************************************************************
@@ -150,8 +150,6 @@ export class AddEditCommentComponent implements OnInit {
   // ********************************************************************************************************
 
   async saveComment(IsMarkComplete) {
-
-    debugger;
     const commentObj = {
       comment: this.previousComment !== null ? this.previousComment + this.editor.getData() : this.editor.getData(),
       IsMarkComplete: IsMarkComplete

@@ -48,7 +48,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   activeItem: MenuItem;
   ngOnInit() {
 
-    debugger;
+    
     this.loaderenable = true;
     this.DocumentArray = [];
     this.data = this.milestoneData;
@@ -85,7 +85,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   // **************************************************************************************************************************************
 
   onChange(event) {
-    debugger;
+    
     this.loaderenable = true;
     this.selectedDocuments = [];
     this.DocumentArray = [];
@@ -131,7 +131,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   // **************************************************************************************************************************************
 
   async loadDraftDocs(selectedTab) {
-    debugger;
+    
     this.DocumentArray = [];
     var documentsUrl = '';
 
@@ -189,7 +189,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
     this.DocumentArray = this.DocumentArray.filter(c => c.isFileMarkedAsFinal);
 
     if (this.DocumentArray.length) {
-      debugger;
+      
       this.DocumentArray = this.DocumentArray.sort((a, b) =>
 
         new Date(a.ModifiedDateString).getTime() < new Date(b.ModifiedDateString).getTime() ? 1 : -1
@@ -206,7 +206,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   // **************************************************************************************************************************************
 
   async getUsers(Ids) {
-    debugger;
+    
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
 

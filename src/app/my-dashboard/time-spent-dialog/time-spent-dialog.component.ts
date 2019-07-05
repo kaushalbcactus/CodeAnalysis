@@ -260,7 +260,7 @@ export class TimeSpentDialogComponent implements OnInit {
       ActualStartDate = task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date(ActualStartDate);
     }
 
-    debugger;
+  
     var timeSpentString = dateArray.map(c => (c.date + ":" + c.time).replace(/ /g, '')).join('\n');
     var timeSpentHours = dateArray.map(c => c.time.split(":")).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
     var timeSpentMin = dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;

@@ -126,7 +126,7 @@ export class MyTimelineComponent implements OnInit {
       },
       eventClick: async function (eventInfo) {
 
-        debugger;
+      
         self.EnableEditDate = self.EnableEditDate === undefined ? await self.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3) : self.EnableEditDate;
         if (eventInfo.event.backgroundColor !== '#D6CFC7') {
           self.modalloaderenable = true;
@@ -470,7 +470,7 @@ export class MyTimelineComponent implements OnInit {
     });
     ref.onClose.subscribe(async (blockTimeobj: any) => {
       if (blockTimeobj) {
-          debugger;
+       
         this.CalendarLoader = true;
         if (event === 'Leave') {
 

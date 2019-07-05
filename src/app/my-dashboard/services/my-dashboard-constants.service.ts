@@ -350,7 +350,7 @@ export class MyDashboardConstantsService {
 
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Url);
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    debugger;
+   
     this.allDocuments = this.response[0];
 
     this.allDocuments.map(c => c.isFileMarkedAsFinal = c.ListItemAllFields.Status.split(" ").splice(-1)[0] === "Complete" ? true : false);
@@ -380,7 +380,7 @@ export class MyDashboardConstantsService {
 
 
   async getJCIDS(task) {
-    debugger;
+   
     var isJcIdFound = false;
     const batchGuid = this.spServices.generateUUID();
     var batchContents = new Array();
@@ -439,7 +439,6 @@ export class MyDashboardConstantsService {
 
   async saveTask(task, isJcIdFound) {
 
-debugger;
     const batchGuid = this.spServices.generateUUID();
     var batchContents = new Array();
     const changeSetId = this.spServices.generateUUID();
@@ -623,7 +622,7 @@ debugger;
         "key": "@@Val0@@",
         "value": element.ID
       });
-      debugger;
+    
       objEmailBody.forEach(element => {
         EmailTemplate = EmailTemplate.replace(RegExp(element.key, "gi"), element.value);
       });

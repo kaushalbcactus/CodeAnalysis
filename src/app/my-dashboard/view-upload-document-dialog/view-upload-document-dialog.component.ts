@@ -46,7 +46,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
   activeItem: MenuItem;
   ngOnInit() {
 
-    debugger;
+    
     this.loaderenable=true;
     this.DocumentArray = [];
     this.data = this.config.data === undefined ? this.taskData : this.config.data;
@@ -117,7 +117,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
 
   // ngOnChanges(changes: SimpleChanges) {
 
-  //   debugger;
+  //   
   //   this.loaderenable=true;
   //   this.DocumentArray = [];
   //   this.data = this.config.data === undefined ? this.taskData : this.config.data;
@@ -177,7 +177,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
   // **************************************************************************************************************************************
 
   onChange(event) {
-    debugger;
+    
     this.loaderenable = true;
     this.selectedDocuments = [];
     this.DocumentArray = [];
@@ -246,7 +246,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
   // **************************************************************************************************************************************
 
   async loadDraftDocs(selectedTab) {
-debugger;
+
     this.DocumentArray = [];
     var documentsUrl = '';
 
@@ -321,7 +321,7 @@ debugger;
   // **************************************************************************************************************************************
 
   async getUsers(Ids) {
-    debugger;
+    
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
 

@@ -56,24 +56,26 @@ export class BlockTimeDialogComponent implements OnInit {
     private datePipe: DatePipe,
     public sharedObject: GlobalService) { }
 
-async ngOnInit() {
+  async ngOnInit() {
 
     this.getMaxDate();
     this.data = this.config.data;
     console.log(this.data);
     if (this.data.task !== undefined) {
+
+      debugger;
       this.SelectedClientLegalEntity = this.data.timeblockType !== 'Admin' && this.data.timeblockType !== 'Training' && this.data.timeblockType !== 'Internal Meeting' ? this.data.task.Entity : undefined;
       this.eventDate = new Date(this.datePipe.transform(this.data.task.StartDate, 'dd MMM, yyyy'));
-      this.starttime = this.data.timeblockType !== 'Admin' ? this.datePipe.transform(this.data.task.StartDate, 'hh:mm a') : this.data.task.TimeSpent;
+      this.starttime = this.data.timeblockType !== 'Admin' ? this.datePipe.transform(this.data.task.StartDate, 'hh:mm aa').toLowerCase() : this.data.task.TimeSpent;
       this.minEndTime = this.starttime;
-       this.minDateValue =  await this.myDashboardConstantsService.CalculateminstartDateValue(this.eventDate, 3);
-      this.endtime = this.datePipe.transform(this.data.task.DueDate, 'hh:mm a')
+      this.minDateValue = await this.myDashboardConstantsService.CalculateminstartDateValue(this.eventDate, 3);
+      this.endtime = this.datePipe.transform(this.data.task.DueDate, 'hh:mm aa').toLowerCase()
       this.commment = this.data.task.TaskComments !== null ? this.data.task.TaskComments : undefined;
 
     }
     else {
       if (this.data.timeblockType !== 'Leave') {
-        this.minDateValue =  await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3);
+        this.minDateValue = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3);
       }
       else {
         var date = new Date()
@@ -100,22 +102,21 @@ async ngOnInit() {
 
 
   async getAllClients() {
-    this.ClientLegalEntities =  await this.myDashboardConstantsService.getAllClients();
+    this.ClientLegalEntities = await this.myDashboardConstantsService.getAllClients();
     this.modalloaderenable = false;
   }
 
   //*************************************************************************************************
   //  Delete booking 
   //*************************************************************************************************
-  MarkAsDelete()
-  {
-    const obj = { 
-      IsDeleted:true 
+  MarkAsDelete() {
+    const obj = {
+      IsDeleted: true
     }
     this.ref.close(obj);
   }
 
-  
+
 
   //*************************************************************************************************
   //  Save booking / create Meeting
@@ -123,10 +124,15 @@ async ngOnInit() {
 
 
   async saveBooking() {
-    debugger;
-    if ((this.SelectedClientLegalEntity === undefined && this.data.timeblockType !== 'Admin') && (this.SelectedClientLegalEntity === undefined && this.data.timeblockType !== 'Internal Meeting') && (this.SelectedClientLegalEntity === undefined && this.data.timeblockType !== 'Training') ) {
+
+    if ((this.SelectedClientLegalEntity === undefined && this.data.timeblockType !== 'Admin') && (this.SelectedClientLegalEntity === undefined && this.data.timeblockType !== 'Internal Meeting') && (this.SelectedClientLegalEntity === undefined && this.data.timeblockType !== 'Training')) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Client.' });
       return false;
+    }
+    else if (this.SelectedClientLegalEntity === null) {
+      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Client.' });
+      return false;
+
     }
     else if (this.eventDate === undefined) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select  Date.' });
@@ -144,6 +150,10 @@ async ngOnInit() {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
       return false;
     }
+    else if (this.commment === "") {
+      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
+      return false;
+    }
     else if (this.starttime === this.endtime) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'End Time should be Greater than Start Time.' });
       return false;
@@ -151,7 +161,7 @@ async ngOnInit() {
     else {
       var startDateTime = new Date();
       var endDateTime = new Date();
-
+      debugger;
       if (this.data.timeblockType !== 'Admin') {
         var totalsHours = await this.ConvertTimeformat(this.starttime);
         var totaleHours = await this.ConvertTimeformat(this.endtime);
@@ -172,7 +182,7 @@ async ngOnInit() {
           'type': 'SP.Data.SchedulesListItem'
         } : undefined,
         Title: 'Adhoc ' + this.datePipe.transform(this.eventDate, 'dd MMM') + ' ' + this.sharedObject.currentUser.title,
-        Entity: this.data.timeblockType === 'Admin' ||  this.data.timeblockType === 'Training' ||  this.data.timeblockType === 'Internal Meeting' ? 'CACTUS Internal India' : this.SelectedClientLegalEntity,
+        Entity: this.data.timeblockType === 'Admin' || this.data.timeblockType === 'Training' || this.data.timeblockType === 'Internal Meeting' ? 'CACTUS Internal India' : this.SelectedClientLegalEntity,
         ProjectCode: "Adhoc",
         Task: "Adhoc",
         StartDate: startDateTime,
@@ -187,8 +197,8 @@ async ngOnInit() {
         AssignedToId: this.sharedObject.currentUser.id,
         TimeZone: this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID === this.sharedObject.currentUser.id) !== undefined ? this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID === this.sharedObject.currentUser.id).TimeZone !== undefined ? this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID === this.sharedObject.currentUser.id).TimeZone.Title : "5.5" : "5.5",
         TATStatus: this.data.timeblockType === 'Admin' ? 'Yes' : 'No',
-        
-        
+
+
 
       }
       this.ref.close(obj);
@@ -204,7 +214,7 @@ async ngOnInit() {
 
   async saveLeave() {
 
-    debugger;
+
     if (this.eventDate === undefined) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Start Date.' });
       return false;
@@ -220,14 +230,14 @@ async ngOnInit() {
     else {
 
       const obj = {
-        __metadata:  {
-          'type': this.constants.listNames.LeaveCalendar.type 
+        __metadata: {
+          'type': this.constants.listNames.LeaveCalendar.type
         },
         Title: this.IsHalfDay ? this.sharedObject.currentUser.title + " on half day leave" : this.sharedObject.currentUser.title + " on leave",
-        EventDate: new Date(this.datePipe.transform(this.eventDate, 'yyyy-MM-dd')+ "T09:00:00.000"),
+        EventDate: new Date(this.datePipe.transform(this.eventDate, 'yyyy-MM-dd') + "T09:00:00.000"),
         EndDate: new Date(this.datePipe.transform(this.eventEndDate, 'yyyy-MM-dd') + "T19:00:00.000"),
         Description: this.commment,
-        IsHalfDay:this.IsHalfDay,
+        IsHalfDay: this.IsHalfDay,
 
       }
       this.ref.close(obj);
@@ -245,6 +255,7 @@ async ngOnInit() {
     var AMPM = time.match(/\s(.*)$/)[1];
     if (AMPM == "pm" && hours < 12) hours = hours + 12;
     if (AMPM == "am" && hours == 12) hours = hours - 12;
+
     var sHours = hours.toString();
     var sMinutes = minutes.toString();
     if (hours < 10) sHours = "0" + sHours;
@@ -254,7 +265,7 @@ async ngOnInit() {
 
   }
 
- 
+
 
 
   //*************************************************************************************************
