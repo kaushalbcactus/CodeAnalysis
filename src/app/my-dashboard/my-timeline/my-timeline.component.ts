@@ -11,7 +11,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { BlockTimeDialogComponent } from '../block-time-dialog/block-time-dialog.component';
 import { DatePipe } from '@angular/common';
-
+import { FeedbackPopupComponent } from '../feedback-popup/feedback-popup.component';
 
 @Component({
   selector: 'app-my-timeline',
@@ -22,6 +22,7 @@ import { DatePipe } from '@angular/common';
 export class MyTimelineComponent implements OnInit {
   @ViewChild('menuPopup', { static: true }) plusmenu: MenuModule;
   @ViewChild('calendar', { static: true }) fullCalendar: any;
+  @ViewChild('feedbackPopup', { static: true }) feedbackPopupComponent: FeedbackPopupComponent
   response: any[];
   display: boolean;
   tasks: any;
@@ -584,6 +585,12 @@ export class MyTimelineComponent implements OnInit {
           }
 
           this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start, this.fullCalendar.calendar.state.dateProfile.currentRange.end);
+
+
+          if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
+            this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
+          }
+
         },
         reject: () => {
           task.Status = earlierStaus;

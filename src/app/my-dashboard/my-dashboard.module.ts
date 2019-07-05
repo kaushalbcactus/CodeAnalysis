@@ -32,6 +32,8 @@ import { NgGanttEditorModule } from 'ng-gantt';
 import { ProjectmanagementModule } from '../projectmanagement/projectmanagement.module';
 import { TaskAllocationModule } from '../task-allocation/task-allocation.module';
 import { FeedbackPopupComponent } from './feedback-popup/feedback-popup.component';
+import { MyprojectsComponent } from './myprojects/myprojects.component';
+import { DisplayProjectsComponent } from './myprojects/display-projects/display-projects.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -52,7 +54,9 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     BlockTimeDialogComponent,
     TimeBookingDialogComponent,
     ProjectDraftsComponent,
-    FeedbackPopupComponent],
+    FeedbackPopupComponent,
+    MyprojectsComponent,
+    DisplayProjectsComponent],
   imports: [
     CommonModule,
     FormsModule,

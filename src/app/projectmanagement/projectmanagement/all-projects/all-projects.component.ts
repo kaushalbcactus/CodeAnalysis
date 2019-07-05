@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -11,6 +11,8 @@ import { CommunicationComponent } from '../communication/communication.component
 import { ProjectAttributesComponent } from '../add-projects/project-attributes/project-attributes.component';
 import { ManageFinanceComponent } from '../add-projects/manage-finance/manage-finance.component';
 import { TimelineHistoryComponent } from '../../../timeline/timeline-history/timeline-history.component';
+
+
 declare var $;
 @Component({
   selector: 'app-all-projects',
@@ -18,6 +20,7 @@ declare var $;
   styleUrls: ['./all-projects.component.css']
 })
 export class AllProjectsComponent implements OnInit {
+  @Output() sendOutput = new EventEmitter<string>();
   popItems: MenuItem[];
   selectedProjectObj;
   displayedColumns: any[] = [
@@ -75,7 +78,8 @@ export class AllProjectsComponent implements OnInit {
     private pmCommonService: PMCommonService,
     private spServices: SPOperationService,
     private messageService: MessageService,
-    public dialogService: DialogService
+    public dialogService: DialogService,
+
   ) { }
 
   ngOnInit() {
@@ -92,6 +96,7 @@ export class AllProjectsComponent implements OnInit {
       { label: 'Move SOW', icon: 'pi pi-download', command: (event) => this.moveSOW(this.selectedProjectObj) },
       { label: 'Communication', icon: 'pi pi-download', command: (event) => this.communications(this.selectedProjectObj) },
       { label: 'Show History', icon: 'pi pi-download', command: (event) => this.showTimeline(this.selectedProjectObj) },
+      { label: 'View Details', icon: 'pi pi-download', command: (event) => this.sendOutput.next(this.selectedProjectObj) }
     ];
     setTimeout(() => {
       this.getAllProjects();

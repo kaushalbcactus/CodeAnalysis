@@ -298,42 +298,6 @@ export class MyDashboardConstantsService {
         status = "AllowCompletion";
       }
     }
-
-
-    // this.response[0].forEach( async element => {
-    //   if (element.AllowCompletion === "No") {
-    //     var previousTaskFilter = '';
-    //     if (element.PrevTasks) {
-    //       var previousTasks = task.PrevTasks.split(";#");
-    //       previousTasks.forEach(function (value, i) {
-    //         previousTaskFilter += "(Title eq '" + value + "')";
-    //         previousTaskFilter += i < previousTasks.length - 1 ? " or " : '';
-    //       });
-
-    //       this.batchContents = new Array();
-    //       const batchGuid = this.spServices.generateUUID();
-
-    //       let previousTask = Object.assign({}, this.mydashboardComponent.taskStatus);
-    //       previousTask.filter = previousTaskFilter
-
-    //       const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules + '', previousTask);
-    //       this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
-
-    //       this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-    //       this.response[0].forEach(element => {
-    //         status = element.Status;
-    //       });
-
-    //     }
-    //     else {
-    //       status = "AllowCompletion";
-    //     }
-    //   }
-    //   else {
-    //     status = "AllowCompletion";
-    //   }
-    // });
     return status;
   }
 
@@ -360,10 +324,7 @@ export class MyDashboardConstantsService {
       else {
         task.Status = "Completed";
         response = await this.saveTask(task, true);
-
-
       }
-
     }
     else {
       task.Status = "Completed";
