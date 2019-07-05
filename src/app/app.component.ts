@@ -26,8 +26,8 @@ export class AppComponent {
     // this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 1426 : _spPageContextInfo.userId;
     // this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/MedicalWriting'
     // : _spPageContextInfo.webAbsoluteUrl;
-    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 222 : _spPageContextInfo.userId;
-    this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
+    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 90 : _spPageContextInfo.userId;
+    this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
       : _spPageContextInfo.webAbsoluteUrl;
     // this.globalObject.sharePointPageObject.serverRelativeUrl = window.location.href.indexOf('localhost') > -1 ?
     //   '/sites/medcomdev' : _spPageContextInfo.webServerRelativeUrl,
