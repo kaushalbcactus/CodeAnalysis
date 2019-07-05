@@ -87,14 +87,14 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   bindMenuItems() {
     this.pmObject.tabMenuItems = [
       // tslint:disable-next-line:max-line-length
-      { label: 'All SOW (' + this.pmObject.countObj.allSOWCount + ')', icon: 'fa fa-fw fa-bar-chart', routerLink: 'allSOW', routerLinkActiveOptions: { exact: true } },
+      { label: 'All SOW (' + this.pmObject.countObj.allSOWCount + ')',  routerLink: 'allSOW', routerLinkActiveOptions: { exact: true } },
       // tslint:disable-next-line:max-line-length
-      { label: 'All Projects (' + this.pmObject.countObj.allProjectCount + ')', icon: 'fa fa-fw fa-bar-chart', routerLink: 'allProjects' },
-      { label: 'Send to Client (' + this.pmObject.countObj.scCount + ')', icon: 'fa fa-fw fa-calendar', routerLink: 'sendToClient' },
-      { label: 'Client Review (' + this.pmObject.countObj.crCount + ')', icon: 'fa fa-fw fa-book', routerLink: 'clientReview' },
+      { label: 'All Projects (' + this.pmObject.countObj.allProjectCount + ')',  routerLink: 'allProjects' },
+      { label: 'Send to Client (' + this.pmObject.countObj.scCount + ')',  routerLink: 'sendToClient' },
+      { label: 'Client Review (' + this.pmObject.countObj.crCount + ')',  routerLink: 'clientReview' },
       // tslint:disable-next-line:max-line-length
-      { label: 'Pending Allocation (' + this.pmObject.countObj.paCount + ')', icon: 'fa fa-fw fa-support', routerLink: 'pendingAllocation' },
-      { label: 'Inactive Projects (' + this.pmObject.countObj.iapCount + ')', icon: 'fa fa-fw fa-twitter', routerLink: 'inActive' }
+      { label: 'Pending Allocation (' + this.pmObject.countObj.paCount + ')',  routerLink: 'pendingAllocation' },
+      { label: 'Inactive Projects (' + this.pmObject.countObj.iapCount + ')',  routerLink: 'inActive' }
     ];
     this.buttons = [
       {

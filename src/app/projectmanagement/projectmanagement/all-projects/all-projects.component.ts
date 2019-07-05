@@ -56,6 +56,7 @@ export class AllProjectsComponent implements OnInit {
     createdByArray: [],
     createdDateArray: []
   };
+  projectViewDataArray = [];
   public Ids = {
     projectBudgetBreakUPID: 0,
     projectFinanceID: 0
@@ -277,8 +278,7 @@ export class AllProjectsComponent implements OnInit {
       menu.model[8].visible = false;
       menu.model[9].visible = false;
       menu.model[10].visible = false;
-    }
-    else {
+    } else {
       menu.model[11].visible = false;
       switch (status) {
         case this.constants.projectStatus.InDiscussion:
@@ -505,7 +505,9 @@ export class AllProjectsComponent implements OnInit {
    */
   async viewProject(selectedProjectObj) {
     const proj = selectedProjectObj;
+    this.projectViewDataArray = [];
     this.pmObject.addProject.SOWSelect.SOWCode = proj.SOWCode;
+    this.pmObject.addProject.ProjectAttributes.ID = proj.hasOwnProperty('ID') ? proj.ID : 0;
     this.pmObject.addProject.ProjectAttributes.ProjectCode = proj.ProjectCode;
     this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = proj.ClientLegalEntity;
     this.pmObject.addProject.ProjectAttributes.SubDivision = proj.SubDivision;
@@ -528,6 +530,13 @@ export class AllProjectsComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.Comments = proj.Comments;
     this.pmObject.addProject.ProjectAttributes.ProjectTitle = proj.Title;
     this.pmObject.addProject.ProjectAttributes.EndUseofDeliverable = proj.Description;
+    if (proj.IsStandard === 'Yes') {
+      this.pmObject.addProject.Timeline.Standard.IsStandard = true;
+      this.pmObject.addProject.Timeline.NonStandard.IsStandard = false;
+    } else {
+      this.pmObject.addProject.Timeline.Standard.IsStandard = false;
+      this.pmObject.addProject.Timeline.NonStandard.IsStandard = true;
+    }
     if (this.pmObject.addProject.Timeline.Standard.IsStandard) {
       this.pmObject.addProject.Timeline.Standard.Service = proj.StandardService;
       this.pmObject.addProject.Timeline.Standard.ProposedStartDate = proj.ProposedStartDate;
@@ -557,6 +566,7 @@ export class AllProjectsComponent implements OnInit {
       this.pmObject.addProject.FinanceManagement.Budget.OOP = fm.OOPBudget;
       this.pmObject.addProject.FinanceManagement.Budget.Tax = fm.TaxBudget;
     }
+    this.projectViewDataArray.push(this.pmObject.addProject);
     this.pmObject.isProjectRightSideVisible = true;
   }
   async manageFinances(selectedProjectObj) {

@@ -100,31 +100,31 @@ export class SOWComponent implements OnInit {
     }, 500);
     this.popItems = [
       {
-        label: 'View SOW', icon: 'pi pi-eye', target: '_blank',
+        label: 'View SOW',  target: '_blank',
         command: (event) => this.viewSOW(this.pmObject.selectedSOWTask)
       },
       {
-        label: 'Edit SOW', icon: 'pi pi-pencil', target: '_blank',
+        label: 'Edit SOW',  target: '_blank',
         command: (event) => this.editSOW(this.pmObject.selectedSOWTask)
       },
       {
-        label: 'Update Budget', icon: 'pi pi-pencil', target: '_blank',
+        label: 'Update Budget',  target: '_blank',
         command: (event) => this.addBudgetSOW(this.pmObject.selectedSOWTask)
       },
       {
-        label: 'View Project', icon: 'pi pi-eye', target: '_blank',
+        label: 'View Project', target: '_blank',
         command: (event) => this.viewProjectSOW(this.pmObject.selectedSOWTask)
       },
       {
-        label: 'Add Project', icon: 'pi pi-plus-circle', target: '_blank',
+        label: 'Add Project', target: '_blank',
         command: (event) => this.addProjectSOW(this.pmObject.selectedSOWTask)
       },
       {
-        label: 'Close SOW', icon: 'pi pi-times-circle', target: '_blank',
+        label: 'Close SOW',  target: '_blank',
         command: (event) => this.closeSOW(this.pmObject.selectedSOWTask)
       },
       {
-        label: 'Show History', icon: 'pi pi-download', target: '_blank',
+        label: 'Show History',  target: '_blank',
         command: (task) => this.timeline.showTimeline(this.pmObject.selectedSOWTask.ID, 'ProjectMgmt', 'SOW')
       }
     ];

@@ -162,28 +162,28 @@
                     </div>
                 </div>
                 <div class="ui-g mt-20">
-                    <div class="ui-g-2 ui-g-offset-2">Total</div>
-                    <div class="ui-g-2">Net</div>
-                    <div class="ui-g-2">OOP</div>
+                    <div class="ui-g-2 ui-g-offset-2 mr-5">Total</div>
+                    <div class="ui-g-2  mr-5">Net</div>
+                    <div class="ui-g-2  mr-5">OOP</div>
                     <div class="ui-g-2">Tax</div>
                 </div>
                 <div class="ui-g mt-20">
                     <div class="ui-g-2"> <span class="compulsory">*</span> Budget</div>
-                    <div class="ui-g-2">
+                    <div class="ui-g-2  mr-5">
                         <input formControlName="total" type="number" [attr.disabled]="true" placeholder="Total"
                             pInputText>
                         <div class="error"
                             *ngIf="!addSowForm.controls['total'].valid&&addSowForm.controls['total'].touched">Total is
                             required</div>
                     </div>
-                    <div class="ui-g-2">
+                    <div class="ui-g-2  mr-5">
                         <input formControlName="net" type="number" (change)="setSOWTotal()" placeholder="Net"
                             pInputText>
                         <div class="error"
                             *ngIf="!addSowForm.controls['net'].valid&&addSowForm.controls['net'].touched">Net is
                             required</div>
                     </div>
-                    <div class="ui-g-2">
+                    <div class="ui-g-2  mr-5">
                         <input formControlName="oop" type="number" (change)="setSOWTotal()" placeholder="OOP"
                             pInputText>
                     </div>
@@ -302,7 +302,7 @@
             <ng-template pTemplate="body" let-rowData let-task style="overflow: auto">
                 <tr>
                     <td [ngStyle]="{'color':'#d7181f'}">SOW ID</td>
-                    <td>{{rowData.ID}}</td>
+                    <td>{{task.ID}}</td>
                 </tr>
                 <tr>
                     <td [ngStyle]="{'color':'#d7181f'}">SOW Code</td>
@@ -321,7 +321,7 @@
                     <td>{{task.PracticeArea}}</td>
                 </tr>
                 <tr>
-                    <td colspan="2" [ngStyle]="{'color':'#d7181f'}">Client Point of Contact</td>
+                    <td colspan="2" [ngStyle]="{'color':'#d7181f'}">Client POC</td>
                 </tr>
                 <tr>
                     <td>{{task.PocText}}</td>

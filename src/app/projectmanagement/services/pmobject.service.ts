@@ -215,6 +215,7 @@ export class PMObjectService {
       SOWSelectedItem: {}
     },
     ProjectAttributes: {
+      ID: 0,
       ClientLegalEntity: '',
       SubDivision: '',
       BillingEntity: '',

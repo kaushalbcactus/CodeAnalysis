@@ -596,8 +596,8 @@ body .ui-table .ui-table-tbody > tr:nth-child(even){
         color: red;
     }
     .ng-right-side-overlay .ui-sidebar {
-        background-color: #B13E3E !important;
-        color: #ffff !important; 
+        /* background-color: #B13E3E !important;
+        color: #ffff !important;  */
         height: 620px;
         overflow-x: auto; 
     }
@@ -723,6 +723,7 @@ body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover {
 body .ui-calendar.ui-calendar-w-btn .ui-datepicker-trigger.ui-button {
   background: #C53E3E;
   color: #fff;
+  border: 3px solid #C53E3E;
 }
 
 input,
