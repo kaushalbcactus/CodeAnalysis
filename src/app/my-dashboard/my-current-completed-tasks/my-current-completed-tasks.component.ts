@@ -455,6 +455,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
         if (Commentobj.IsMarkComplete) {
           this.loaderenable= true;
           task.TaskComments = Commentobj.comment; 
+          task.Status="Completed";
           var response = await this.myDashboardConstantsService.CompleteTask(task);
           if (response) {
             this.loaderenable= false;
@@ -463,6 +464,9 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
           else {
             this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task Updated Successfully.' });
             this.GetDatabyDateSelection(this.selectedTab, this.days);
+            if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
+              this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
+            }
           }
         }
         else {
@@ -623,6 +627,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
 
 
   async callComplete(task) {
+    task.Status="Completed";
     var response = await this.myDashboardConstantsService.CompleteTask(task);
     debugger;
 
@@ -634,43 +639,44 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
     else {
       this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task Updated Successfully.' });
       this.GetDatabyDateSelection(this.selectedTab, this.days);
+      if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
+        this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
+      }
     }
   
   }
 
 
-  async CompleteTask(task) {
-    this.NextPreviousTask = await this.getNextPreviousTask(task);
-    if (task.Task == 'Galley' || task.Task == 'Submission Pkg'
-      || task.Task == 'Submit' || task.Task == 'Journal Selection'
-      || task.Task == 'Journal Requirement') {
-      await this.myDashboardConstantsService.GetAllDocuments(task);
-      var isJcIdFound = await this.myDashboardConstantsService.getJCIDS(task);
-      if (!isJcIdFound) {
-        this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: task.Task + "task can't be closed as no submission details are found." });
-        return false;
-      }
-      else {
-        this.loaderenable = true;
-        task.Status = "Completed";
-        await this.myDashboardConstantsService.saveTask(task, true);
-        this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated sucessfully.' });
-        this.GetDatabyDateSelection(this.selectedTab, this.days);
-      }
+  // async CompleteTask(task) {
+  //   this.NextPreviousTask = await this.getNextPreviousTask(task);
+  //   if (task.Task == 'Galley' || task.Task == 'Submission Pkg'
+  //     || task.Task == 'Submit' || task.Task == 'Journal Selection'
+  //     || task.Task == 'Journal Requirement') {
+  //     await this.myDashboardConstantsService.GetAllDocuments(task);
+  //     var isJcIdFound = await this.myDashboardConstantsService.getJCIDS(task);
+  //     if (!isJcIdFound) {
+  //       this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: task.Task + "task can't be closed as no submission details are found." });
+  //       return false;
+  //     }
+  //     else {
+  //       this.loaderenable = true;
+  //       task.Status = "Completed";
+  //       await this.myDashboardConstantsService.saveTask(task, true);
+  //       this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated sucessfully.' });
+  //       this.GetDatabyDateSelection(this.selectedTab, this.days);
+  //     }
 
-    }
-    else {
-      this.loaderenable = true;
-      task.Status = "Completed";
-      await this.myDashboardConstantsService.saveTask(task, false);
-      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated sucessfully.' });
-      this.GetDatabyDateSelection(this.selectedTab, this.days);
-    }
+  //   }
+  //   else {
+  //     this.loaderenable = true;
+  //     task.Status = "Completed";
+  //     await this.myDashboardConstantsService.saveTask(task, false);
+  //     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated sucessfully.' });
+  //     this.GetDatabyDateSelection(this.selectedTab, this.days);
+  //   }
 
-    if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
-      this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
-    }
-  }
+   
+  // }
 
 }
 

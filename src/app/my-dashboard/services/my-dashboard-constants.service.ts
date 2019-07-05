@@ -322,12 +322,11 @@ export class MyDashboardConstantsService {
         return response;
       }
       else {
-        task.Status = "Completed";
+       
         response = await this.saveTask(task, true);
       }
     }
     else {
-      task.Status = "Completed";
       response = await this.saveTask(task, false);
     }
     return response;

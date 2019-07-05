@@ -582,14 +582,16 @@ export class MyTimelineComponent implements OnInit {
           else {
             this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated successfully.' });
 
+            if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1 && task.Status === 'Completed') {
+              this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
+            }
+
           }
 
           this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start, this.fullCalendar.calendar.state.dateProfile.currentRange.end);
 
 
-          if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
-            this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
-          }
+        
 
         },
         reject: () => {
