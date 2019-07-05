@@ -44,7 +44,7 @@
                     <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="hourlyBasedColArray.ProjectCode"
                         defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="hourlyBasedColArray.SOWCode" defaultLabel="All"
+                    <p-multiSelect *ngSwitchCase="'SOWValue'" [options]="hourlyBasedColArray.SOWCode" defaultLabel="All"
                         appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProjectMileStone'" [options]="hourlyBasedColArray.ProjectMileStone"

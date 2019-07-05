@@ -41,7 +41,7 @@
                     <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="oopColArray.ProjectCode" defaultLabel="All"
                         appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="oopColArray.SOWCode" defaultLabel="All"
+                    <p-multiSelect *ngSwitchCase="'SOWValue'" [options]="oopColArray.SOWCode" defaultLabel="All"
                         appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProjectMileStone'" [options]="oopColArray.ProjectMileStone"

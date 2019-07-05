@@ -26,6 +26,15 @@ export class FDDataShareService {
         return this.subject.asObservable();
     }
 
+    // For Expense 
+    setExpenseAddObj() {
+        this.subject.next();
+    }
+
+    getAddExpenseSuccess(): Observable<any> {
+        return this.subject.asObservable();
+    }
+
     public DateRange: any = {
         startDate: '',
         endDate: '',
@@ -212,7 +221,8 @@ export class FDDataShareService {
 
     async getRequiredData(): Promise<any> {
         if (!this.requiredData.length) {
-            const currentUser = await this.spOperationsServices.getUserInfo(this.globalObject.sharePointPageObject.userId.toString());
+
+            this.globalObject.userInfo = await this.spOperationsServices.getUserInfo(this.globalObject.sharePointPageObject.userId.toString());
             // Default Tabs & sub Menus
             this.fdConstantsService.fdComponent.tabs.topMenu = [
                 { label: 'Expenditure', routerLink: ['expenditure'] },
@@ -228,8 +238,8 @@ export class FDDataShareService {
                 { label: 'OOP', routerLink: ['oop'] },
             ]
 
-            if (currentUser.Groups.results.length) {
-                const groups = currentUser.Groups.results.map(x => x.LoginName);
+            if (this.globalObject.userInfo.Groups.results.length) {
+                const groups = this.globalObject.userInfo.Groups.results.map(x => x.LoginName);
                 if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1) {
                     // All 
                     this.fdConstantsService.fdComponent.tabs.topMenu.push(
@@ -366,7 +376,7 @@ export class FDDataShareService {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.selectedComp.reload();
     }
-
+    bdtRate: any = [];
     getProformaPDFObject(oProformaObj, cleData, projectContactsData, purchaseOrdersList, projectAppendix) {
         const oCle = cleData.find(e => e.Title === oProformaObj.ClientLegalEntity);
         const oPOC = projectContactsData.find(e => e.ID === oProformaObj.MainPOC);
@@ -384,28 +394,45 @@ export class FDDataShareService {
             addressArr = ['', '', '', ''];
         }
         let val = '';
+        let tax1 = oProformaObj.Template === "India" ? (parseFloat(oProformaObj.Amount) * 18 / 100).toFixed(2) : (oProformaObj.Template === "Japan" ? (parseFloat(oProformaObj.Amount) * 8 / 100).toFixed(2) : '0');
+        let tax = parseFloat(tax1.toString());
+        let total = '';
+        let taxString = '';
+
         switch (oProformaObj.Template) {
             case "US":
             case "Japan":
                 val = this.styleUSJapan(oProformaObj.Amount);
+                taxString = this.styleUSJapan(tax);
+                total = this.styleUSJapan(oProformaObj.Amount + tax);
                 break;
             case "India":
                 val = this.styleIndia(oProformaObj.Amount);
+                taxString = this.styleIndia(tax);
+                total = this.styleIndia(oProformaObj.Amount + tax);
                 break;
         }
         projectAppendix.forEach(element => {
             switch (oProformaObj.Template) {
                 case "US":
                 case "Japan":
-                    element.Amount = this.styleUSJapan(element.Amount);
+                    element.Amount = this.styleUSJapan(element.amount);
                     break;
                 case "India":
-                    element.Amount = this.styleIndia(element.Amount);
+                    element.Amount = this.styleIndia(element.amount);
                     break;
             }
 
         });
 
+        this.budgetRateData.subscribe((res) => {
+            if (res) {
+                this.bdtRate = res;
+                console.log('this.bdtRate ', this.bdtRate);
+            }
+        })
+
+        const currencyObj = this.bdtRate.find(e => e.Title === oProformaObj.Currency);
 
         return {
             Template: oProformaObj.Template,
@@ -414,12 +441,12 @@ export class FDDataShareService {
             invoice: 'Proforma',
             invoice_no: oProformaObj.Title,
             invoice_date: this.datePipe.transform(oProformaObj.ProformaDate, 'MMM d, y'),
-            usCurrencyName: 'USD',
-            usCurrencySymbol: '$',
-            JpnCurrencyName: 'JPY',
-            JpnCurrencySymbol: '¥',
-            IndCurrencyName: 'INR',
-            IndCurrencySymbol: 'Rs',
+            usCurrencyName: oProformaObj.Currency, //'USD',
+            usCurrencySymbol: currencyObj.Symbol, //'$',
+            JpnCurrencyName: oProformaObj.Currency, //'JPY',
+            JpnCurrencySymbol: currencyObj.Symbol, //'¥',
+            IndCurrencyName: oProformaObj.Currency, //'INR',
+            IndCurrencySymbol: currencyObj.Symbol, //'Rs',
             email: oPOC.EmailAddress ? oPOC.EmailAddress : '', // 'gordon.strachan@asstraZeneca.com',
             company: oCle.InvoiceName, // 'AstraZeneca UK Ltd',
             clientcontact1: oProformaObj.Template === "US" ? oPOC.LName + ', ' + oPOC.FName : oPOC.FName + ' ' + oPOC.LName, // 'Strachan , Gordon',
@@ -431,9 +458,9 @@ export class FDDataShareService {
             phone: oPOC.Phone ? oPOC.Phone : '', // '+44 (0) 16255170000',
             serviceDetails: oProformaObj.ProformaTitle,
             invoiceFees: val,
-            total: val,
+            total: total,
             purchaseOrderNumber: oPO.Number,
-            tax: oProformaObj.Template === "India" ? (parseFloat(val) * 18 / 100).toFixed(2) : (oProformaObj.Template === "Japan" ? (parseFloat(val) * 8 / 100).toFixed(2) : ''),
+            tax: taxString,
             Appendix: projectAppendix
 
         };

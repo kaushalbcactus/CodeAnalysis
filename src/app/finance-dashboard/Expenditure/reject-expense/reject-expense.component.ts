@@ -110,7 +110,8 @@ export class RejectExpenseComponent implements OnInit {
 
     createRCECols() {
         this.rejectCancelExpenseCols = [
-            { field: 'ProjectCode', header: 'Project / Client Name', visibility: true },
+            { field: 'ProjectCode', header: 'Project', visibility: true },
+            { field: 'ClientLegalEntity', header: 'Client', visibility: true },
             { field: 'Category', header: 'Category', visibility: true },
             // { field: 'PONumber', header: 'PO Number', visibility:true },
             { field: 'ExpenseType', header: 'Expense Type', visibility: true },
@@ -177,7 +178,7 @@ export class RejectExpenseComponent implements OnInit {
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(sowCodeFromPI.SOWCode);
             this.rejectExpenses.push({
                 Id: element.ID,
-                ProjectCode: element.Title + ' / ' + sowCodeFromPI.ClientLegalEntity,
+                ProjectCode: element.Title,
                 SOWCode: sowCodeFromPI.SOWCode,
                 SOWName: sowItem.Title,
                 ClientLegalEntity: sowCodeFromPI.ClientLegalEntity,
@@ -212,6 +213,7 @@ export class RejectExpenseComponent implements OnInit {
 
             })
         }
+        this.rejectExpenses = [...this.rejectExpenses];
         this.isPSInnerLoaderHidden = true;
         this.createColFieldValues();
     }
@@ -228,6 +230,7 @@ export class RejectExpenseComponent implements OnInit {
 
     pendinExpenseColArray = {
         ProjectCode: [],
+        ClientLegalEntity: [],
         SOWCode: [],
         Category: [],
         ExpenseType: [],
@@ -244,6 +247,7 @@ export class RejectExpenseComponent implements OnInit {
     createColFieldValues() {
 
         this.pendinExpenseColArray.ProjectCode = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }));
+        this.pendinExpenseColArray.ClientLegalEntity = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
         this.pendinExpenseColArray.SOWCode = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }));
         this.pendinExpenseColArray.Category = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.Category, value: a.Category }; return b; }));
         this.pendinExpenseColArray.ExpenseType = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }));

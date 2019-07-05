@@ -145,8 +145,8 @@ export class ApprovedNonBillableComponent implements OnInit {
 
     createANBCols() {
         this.approvedNonBillableCols = [
-            { field: 'ProjectCode', header: 'Project Code' },
             { field: 'Number', header: 'Ref. Number', visibility: true },
+            { field: 'ProjectCode', header: 'Project Code', visibility: true },
             { field: 'ExpenseType', header: 'Expense Type', visibility: true },
             { field: 'PaymentMode', header: 'Payment Mode', visibility: true },
             { field: 'ClientAmount', header: 'Client Amount', visibility: true },
@@ -259,6 +259,7 @@ export class ApprovedNonBillableComponent implements OnInit {
                 // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM d, y, hh:mm a')
             })
         }
+        this.approvedNonBillableRes = [...this.approvedNonBillableRes];
         this.isPSInnerLoaderHidden = true;
         this.createColFieldValues();
     }
@@ -339,8 +340,6 @@ export class ApprovedNonBillableComponent implements OnInit {
             this.selectedRowItemData = this.selectedAllRowsItem;
         }
         console.log('in selectAllRows ', this.selectedAllRowsItem);
-        console.log('selectedRowItemData ', this.selectedRowItemData);
-
     }
 
     // CLick on Table Check box to Select All Row Item
@@ -348,24 +347,29 @@ export class ApprovedNonBillableComponent implements OnInit {
 
     selectedRowItemData: any = [];
     selectedRowItemPC: any;
+    approvedSts: boolean = true;
     onRowSelect(event) {
-        console.log(event);
-        let selectedRowIndex = this.approvedNonBillableRes.indexOf(event.data);
-        this.selectedRowItemData.push(event.data);
-        this.selectedRowItemPC = event.data.ProjectCode;
-        console.log(this.selectedRowItemData);
+        console.log(this.selectedAllRowsItem);
+        this.approvedSts = true;
+        for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
+            const element = this.selectedAllRowsItem[i];
+            let sts = this.selectedAllRowsItem[0].Status;
+            if (element.Status !== sts) {
+                this.approvedSts = false;
+                this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Please select line item with status containing "Payment Pending" & try again.', detail: '', life: 4000 });
+            }
+
+        }
     }
 
     onRowUnselect(event) {
-        let rowUnselectIndex = this.selectedRowItemData.indexOf(event.data);
-        this.selectedRowItemData.splice(rowUnselectIndex, 1);
+        console.log(this.selectedAllRowsItem);
     }
 
     rightSideBar: boolean = false;
     items: any[];
     openTableAtt(data, popUpData) {
         this.items = [];
-        console.log('this.selectedRowItemData ', this.selectedRowItemData);
         this.items.push({ label: 'Details', command: (e) => this.openMenuContent(e, data) });
     }
 
@@ -377,12 +381,10 @@ export class ApprovedNonBillableComponent implements OnInit {
     }
 
     // Modal
-    scheduleOopModal: boolean = false;
     markAsPaymentModal: boolean = false;
     listOfPOCs: any = [];
     openPopup(modal: string) {
         console.log('selectedAllRowsItem ', this.selectedAllRowsItem);
-        console.log('this.selectedRowItemData ', this.selectedRowItemData);
         this.checkUniquePC();
         if (!this.selectedAllRowsItem.length) {
             this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Please select at least 1 Projects & try again', detail: '', life: 4000 });
@@ -393,40 +395,50 @@ export class ApprovedNonBillableComponent implements OnInit {
                 // if (this.selectedRowItemData[0].Status.includes("Payment Pending")) {
                 let sts = this.checkPPStatus();
                 console.log('Sts ', sts);
+                if (!this.approvedSts) {
+                    this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Please select line item with status containing "Payment Pending" & try again.', detail: '', life: 4000 });
+                    return false;
+                }
                 if (sts) {
                     this.markAsPaymentModal = true;
                 } else {
                     this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Payment already marked', detail: '', life: 4000 });
                 }
             }
-
         } else {
-            this.scheduleOopModal = false;
-            this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Please select same Projects & try again', detail: '', life: 4000 });
+            this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Please select same project & try again.', detail: '', life: 4000 });
         }
     }
 
     checkPPStatus() {
-        let found = this.selectedAllRowsItem.find((item) => {
-            if (item.Status.includes('Payment Pending')) {
-                return item;
+        let ppSts = true;
+        for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
+            const element = this.selectedAllRowsItem[i];
+            let sts = this.selectedAllRowsItem[0].Status;
+            if (element.Status !== sts) {
+                return 'Please select same Status & try again.';
             }
-        })
-        return found ? true : false
+            if (!element.Status.includes('Payment Pending')) {
+                ppSts = false;
+                break;
+            } else {
+                ppSts = true;
+            }
+        }
+        return ppSts;
+
     }
 
     pcFound: boolean = false;
     checkUniquePC() {
         for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
-            const ele = this.selectedAllRowsItem[i];
-            for (let j = 0; j < this.selectedRowItemData.length; j++) {
-                const element = this.selectedRowItemData[j];
-                if (ele.ProjectCode !== element.ProjectCode) {
-                    this.pcFound = false;
-                    break;
-                } else {
-                    this.pcFound = true;
-                }
+            const element = this.selectedAllRowsItem[i];
+            let pc = this.selectedAllRowsItem[0].ProjectCode;
+            if (element.ProjectCode !== pc) {
+                this.pcFound = false;
+                break;
+            } else {
+                this.pcFound = true;
             }
         }
     }
@@ -448,7 +460,10 @@ export class ApprovedNonBillableComponent implements OnInit {
             if (this.markAsPayment_form.invalid) {
                 return;
             }
+            this.isPSInnerLoaderHidden = false;
+            this.submitBtn.isClicked = true;
             console.log('form is submitting ..... for selected row Item i.e ', this.markAsPayment_form.value);
+            this.uploadFileData(type);
         }
     }
 
@@ -502,6 +517,9 @@ export class ApprovedNonBillableComponent implements OnInit {
                     }
                     this.submitForm(data, type);
                 }
+            } else {
+                this.isPSInnerLoaderHidden = true;
+                this.submitBtn.isClicked = false;
             }
         });
     }
@@ -531,16 +549,13 @@ export class ApprovedNonBillableComponent implements OnInit {
         await this.spServices.getData(batchGuid, sBatchData).subscribe(res => {
             const arrResults = res;
             console.log('--oo ', arrResults);
-            if (type === "scheduledOOP") {
-                // this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'OOP Invoice is Scheduled.', detail: '', life: 2000 });
-                // this.updateStsToBilled();
-                // this.reload();
-            } else if (type === "updateScheduledOopLineItem") {
-                this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Updated.', detail: '', life: 2000 });
-                this.isPSInnerLoaderHidden = true;
-                this.scheduleOopModal = false;
+            if (type === 'markAsPayment_form') {
+                this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Payment marked.', detail: '', life: 2000 });
+                this.markAsPaymentModal = false;
                 this.reload();
             }
+            this.isPSInnerLoaderHidden = true;
+            this.submitBtn.isClicked = false;
 
         });
     }

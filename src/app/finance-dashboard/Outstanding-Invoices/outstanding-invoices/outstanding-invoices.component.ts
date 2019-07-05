@@ -59,8 +59,8 @@ export class OutstandingInvoicesComponent implements OnInit {
 
     // Loader
     isPSInnerLoaderHidden: boolean = false;
-    @ViewChild('timelineRef', {static:true}) timeline: TimelineHistoryComponent;
-    @ViewChild('editorRef', {static:true}) editorRef: EditorComponent;
+    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+    @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
     constructor(
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
@@ -376,6 +376,7 @@ export class OutstandingInvoicesComponent implements OnInit {
                 Created: this.datePipe.transform(element.Created, 'MMM d, y, hh:mm a'),
             })
         }
+        this.outstandingInvoicesRes = [...this.outstandingInvoicesRes];
         this.isPSInnerLoaderHidden = true;
         this.createColFieldValues();
     }
@@ -534,8 +535,8 @@ export class OutstandingInvoicesComponent implements OnInit {
             }
         }
         this.items.push(
-            { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
+            { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
         )
         if (this.items.length === 0) {
             console.log('this.items ', this.items);

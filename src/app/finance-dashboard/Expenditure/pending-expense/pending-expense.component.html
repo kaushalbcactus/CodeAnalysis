@@ -51,6 +51,10 @@
                     <p-multiSelect *ngSwitchCase="'RequestType'" [options]="pendinExpenseColArray.RequestType"
                         defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'"
+                        [options]="pendinExpenseColArray.ClientLegalEntity" defaultLabel="All" appendTo="body"
+                        (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="pendinExpenseColArray.ProjectCode"
                         defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>

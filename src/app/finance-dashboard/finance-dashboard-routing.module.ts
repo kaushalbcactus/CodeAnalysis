@@ -28,10 +28,10 @@ const routes: Routes = [
                 component: ExpenditureComponent,
                 children: [
                     { path: '', redirectTo: 'pending', pathMatch: 'full' },
-                    { path: 'pending', component: PendingExpenseComponent, resolve: { fdData: FDResolve } },
-                    { path: 'cancelled-reject', component: RejectExpenseComponent, resolve: { fdData: FDResolve } },
-                    { path: 'approvedBillable', component: ApprovedBillableComponent, resolve: { fdData: FDResolve } },
-                    { path: 'approvedNonBillable', component: ApprovedNonBillableComponent, resolve: { fdData: FDResolve } },
+                    { path: 'pending', component: PendingExpenseComponent },
+                    { path: 'cancelled-reject', component: RejectExpenseComponent },
+                    { path: 'approvedBillable', component: ApprovedBillableComponent },
+                    { path: 'approvedNonBillable', component: ApprovedNonBillableComponent },
                 ]
             },
 
@@ -42,19 +42,21 @@ const routes: Routes = [
                 component: ScheduledComponent,
                 children: [
                     { path: '', redirectTo: 'deliverable-based', pathMatch: 'full' },
-                    { path: 'deliverable-based', component: DeliverableBasedComponent, resolve: { fdData: FDResolve } },
-                    { path: 'hourly-based', component: HourlyBasedComponent, resolve: { fdData: FDResolve } },
-                    { path: 'oop', component: OopComponent, resolve: { fdData: FDResolve } },
-                    // { path: 'approvedNonBillable', component: ApprovedNonBillableComponent, resolve: { fdData: FDResolve } },
+                    { path: 'deliverable-based', component: DeliverableBasedComponent },
+                    { path: 'hourly-based', component: HourlyBasedComponent },
+                    { path: 'oop', component: OopComponent },
+                    // { path: 'approvedNonBillable', component: ApprovedNonBillableComponent },
                 ]
             },
 
-            { path: 'confirmed', component: ConfirmedComponent, resolve: { fdData: FDResolve } },
-            { path: 'proforma', component: ProformaComponent, resolve: { fdData: FDResolve } },
-            { path: 'outstanding-invoices', component: OutstandingInvoicesComponent, resolve: { fdData: FDResolve } },
-            { path: 'paid-invoices', component: PaidInvoicesComponent, resolve: { fdData: FDResolve } },
+            { path: 'confirmed', component: ConfirmedComponent },
+            { path: 'proforma', component: ProformaComponent },
+            { path: 'outstanding-invoices', component: OutstandingInvoicesComponent },
+            { path: 'paid-invoices', component: PaidInvoicesComponent },
 
-        ]
+        ],
+        resolve: { fdData: FDResolve },
+        runGuardsAndResolvers: 'always'
     },
 ];
 

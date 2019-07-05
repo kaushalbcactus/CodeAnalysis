@@ -94,11 +94,17 @@
                 <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
             </td>
             <td *ngFor="let col of columns;index as i" class="ui-resizable-column" [hidden]="!col.visibility">
-                <ng-container *ngIf="col.field != 'ProformaNumber' &&  col.field != ''">
+                <ng-container
+                    *ngIf="col.field != 'ProformaNumber' &&  col.field != '' && col.field !== 'ProformaDate' ">
                     {{rowData[col.field]}}
                 </ng-container>
+                <ng-container *ngIf="col.field == 'ProformaDate'">
+                    <p>{{rowData[col.field] | date:'MMM d, y' }}</p>
+                </ng-container>
                 <ng-container *ngIf="col.field == 'ProformaNumber'">
-                    <a [href]="rowData['FileURL']" target="_blank"> {{rowData[col.field]}}</a>
+                    <a *ngIf="rowData['FileURL']" [href]="rowData['FileURL']" target="_blank">
+                        {{rowData[col.field]}}</a>
+                    <p *ngIf="!rowData['FileURL'] ">{{rowData[col.field]}}</p>
                 </ng-container>
                 <ng-container *ngIf="col.field == ''">
                     <p-menu #popupMenu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
@@ -133,8 +139,8 @@
 
 <!-- Replace Proforma -->
 <p-dialog header="Replace Proforma" [(visible)]="replaceProformaModal" [modal]="true" [draggable]="false"
-    [responsive]="true" [style]="{'width': '30%', 'top':'0px'}" [maximizable]="false" [baseZIndex]="10000"
-    (onHide)="cancelFormSub('editDeliverable')">
+    [responsive]="true" [style]="{'width': '30%'}" [maximizable]="false" 
+    (onHide)="cancelFormSub('replaceProforma')">
     <form id="myform" [formGroup]="replaceProforma_form">
         <div class="ui-g">
             <div class="ui-g-6">
@@ -162,8 +168,8 @@
 
 <!-- Generate Invoice -->
 <p-dialog header="Generate Invoice" [(visible)]="generateInvoiceModal" [modal]="true" [draggable]="false"
-    [responsive]="true" [style]="{'width': '40%'}" [maximizable]="false" [baseZIndex]="10000"
-    (onHide)="cancelFormSub('generateInvoice')" [responsive]="true">
+    [responsive]="true" [style]="{'width': '40%'}" [maximizable]="false" (onHide)="cancelFormSub('generateInvoice')"
+    [responsive]="true">
     <form id="myform" [formGroup]="generateInvoice_form">
         <div class="ui-g">
             <div class="ui-g-6">
@@ -183,7 +189,6 @@
             </div>
         </div>
     </form>
-    <br><br><br><br><br><br><br>
     <p-footer>
         <button pButton type="button" label="Save" [disabled]="submitBtn.isClicked"
             (click)="onSubmit('generateInvoice')"></button>
@@ -195,8 +200,8 @@
 
 <!-- Add to Proforma Modal -->
 <p-dialog header="Create Proforma Form" [(visible)]="proformaModal" [modal]="true" [draggable]="false"
-    [responsive]="true" [style]="{'width': '85%', 'top':'0px'}" [maximizable]="false" [baseZIndex]="10000"
-    (onHide)="cancelFormSub('editDeliverable')">
+    [responsive]="true" [style]="{'width': '85%', 'top':'0px'}" [maximizable]="false"
+    (onHide)="cancelFormSub('createProforma')">
 
     <form id="myform" [formGroup]="createProforma_form" novalidate>
 
@@ -410,6 +415,9 @@
         <button type="button" pButton label="Cancel" (click)="cancelFormSub('createProforma')"></button>
     </p-footer>
 </p-dialog>
+
+<!-- To Display Proforma Number -->
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" position="bottom-center"></p-toast>
 <!-- <router-outlet></router-outlet> -->
 <app-editor #editorRef></app-editor>
 <app-timeline-history #timelineRef></app-timeline-history>

@@ -40,7 +40,7 @@
                     <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="deliverableBasedColArray.ProjectCode"
                         defaultLabel="All" appendTo="body" (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="deliverableBasedColArray.SOWCode"
+                    <p-multiSelect *ngSwitchCase="'SOWValue'" [options]="deliverableBasedColArray.SOWCode"
                         defaultLabel="All" appendTo="body" (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProjectMileStone'"

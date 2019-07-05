@@ -13,7 +13,7 @@
     <div style="clear: both;"></div>
 </div>
 <div class="financeTable">
-<p-table #pi [columns]="outstandingInCols" [value]="outstandingInvoicesRes" [paginator]="true" [rows]="10"
+<p-table #pi [columns]="outstandingInCols" [value]="paidInvoicesRes" [paginator]="true" [rows]="10"
     [resizableColumns]="true" [(selection)]="selectedRowData" [(selection)]="selectedRowData" selectionMode=""
     (onRowSelect)="onRowSelect($event)" exportFilename="Paid_Invoices">
     <ng-template pTemplate="header" let-columns>

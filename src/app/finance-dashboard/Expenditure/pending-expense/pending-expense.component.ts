@@ -11,6 +11,7 @@ import { DatePipe } from '@angular/common';
 import { NodeService } from '../../../node.service';
 import { ActivatedRoute } from '@angular/router';
 import { SpOperationsService } from 'src/app/Services/sp-operations.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-pending-expense',
@@ -67,6 +68,9 @@ export class PendingExpenseComponent implements OnInit {
     freelancerVendersRes: any = [];
     sowRes: any = [];
 
+    // Observable 
+    subscriptionPE: Subscription;
+
     constructor(
         private messageService: MessageService,
         private fb: FormBuilder,
@@ -80,7 +84,12 @@ export class PendingExpenseComponent implements OnInit {
         private nodeService: NodeService,
         private route: ActivatedRoute,
         private spOperationsService: SpOperationsService,
-    ) { }
+    ) {
+        this.subscriptionPE = this.fdDataShareServie.getDateRange().subscribe(date => {
+            console.log('I called when expense created success...... ');
+            this.getRequiredData();
+        });
+    }
 
     async ngOnInit() {
         let snapData = this.route.snapshot.data['fdData'];
@@ -182,7 +191,8 @@ export class PendingExpenseComponent implements OnInit {
     createPECols() {
         this.pendingExpeseCols = [
             { field: 'RequestType', header: 'Request Type', visibility: true },
-            { field: 'ProjectCode', header: 'Project / Client Name', visibility: true },
+            { field: 'ProjectCode', header: 'Project', visibility: true },
+            { field: 'ClientLegalEntity', header: 'Client', visibility: true },
             { field: 'Category', header: 'Category', visibility: true },
             // { field: 'PONumber', header: 'PO Number', visibility:true },
             { field: 'ExpenseType', header: 'Expense Type', visibility: true },
@@ -193,7 +203,6 @@ export class PendingExpenseComponent implements OnInit {
             { field: 'Modified', header: 'Modified Date', visibility: true },
             { field: 'ModifiedBy', header: 'Modified By', visibility: true },
 
-            { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: false },
             { field: 'SOWCode', header: 'SOW Code', visibility: false },
             { field: 'SOWName', header: 'SOW Name', visibility: false },
             { field: 'PaymentMode', header: 'Payment Mode', visibility: false },
@@ -278,11 +287,25 @@ export class PendingExpenseComponent implements OnInit {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
-        let speInfoObj = {
-            filter: this.fdConstantsService.fdComponent.spendingInfo.filter.replace("{{Status}}", "Created"),
-            select: this.fdConstantsService.fdComponent.spendingInfo.select,
-            top: this.fdConstantsService.fdComponent.spendingInfo.top,
-            orderby: this.fdConstantsService.fdComponent.spendingInfo.orderby.replace("{{Status}}", "Created")
+
+        let speInfoObj
+        const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
+        if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1) {
+            speInfoObj = {
+                filter: this.fdConstantsService.fdComponent.spendingInfo.filter.replace("{{Status}}", "Created"),
+                select: this.fdConstantsService.fdComponent.spendingInfo.select,
+                top: this.fdConstantsService.fdComponent.spendingInfo.top,
+                orderby: this.fdConstantsService.fdComponent.spendingInfo.orderby.replace("{{Status}}", "Created")
+            }
+        }
+        else {
+            speInfoObj = {
+                filter: this.fdConstantsService.fdComponent.spendingInfoCS.filter.replace("{{Status}}", "Created").replace("{{UserID}}"
+                    , this.globalService.sharePointPageObject.userId.toString()),
+                select: this.fdConstantsService.fdComponent.spendingInfoCS.select,
+                top: this.fdConstantsService.fdComponent.spendingInfoCS.top,
+                orderby: this.fdConstantsService.fdComponent.spendingInfoCS.orderby.replace("{{Status}}", "Created")
+            }
         }
 
         const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
@@ -318,14 +341,14 @@ export class PendingExpenseComponent implements OnInit {
 
             this.pendingExpenses.push({
                 Id: element.ID,
-                ProjectCode: element.Title + '' + cname,
+                ProjectCode: element.Title,
                 SOWCode: sowCodeFromPI.SOWCode,
                 SOWName: sowItem.Title,
                 ClientLegalEntity: sowCodeFromPI.ClientLegalEntity,
                 Category: element.Category,
                 PONumber: element.PONumber,
                 ExpenseType: element.SpendType,
-                ClientAmount: element.Amount,
+                ClientAmount: parseFloat(element.ClientAmount).toFixed(2),
                 ClientCurrency: element.ClientCurrency,
                 Created: this.datePipe.transform(element.Created, 'MMM d, y, hh:mm a'),
                 CreatedBy: rcCreatedItem ? rcCreatedItem.UserName.Title : '',
@@ -353,6 +376,7 @@ export class PendingExpenseComponent implements OnInit {
                 // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM d, y, hh:mm a')
             })
         }
+        this.pendingExpenses = [...this.pendingExpenses];
         this.isPSInnerLoaderHidden = true;
         this.createColFieldValues();
     }
@@ -398,6 +422,7 @@ export class PendingExpenseComponent implements OnInit {
 
     pendinExpenseColArray = {
         ProjectCode: [],
+        ClientLegalEntity: [],
         RequestType: [],
         SOWCode: [],
         Category: [],
@@ -414,6 +439,7 @@ export class PendingExpenseComponent implements OnInit {
 
         this.pendinExpenseColArray.RequestType = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.RequestType, value: a.RequestType }; return b; }));
         this.pendinExpenseColArray.ProjectCode = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }));
+        this.pendinExpenseColArray.ClientLegalEntity = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
         this.pendinExpenseColArray.SOWCode = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }));
         this.pendinExpenseColArray.Category = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.Category, value: a.Category }; return b; }));
         this.pendinExpenseColArray.ExpenseType = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }));
@@ -909,7 +935,6 @@ export class PendingExpenseComponent implements OnInit {
 
     sendCreateExpenseMail(expense, type: string) {
         // let isCleData = this.getCleByPC(expense.projectCode);
-        debugger;
         let isCleData = this.cleForselectedPI;
         let author = this.getAuthor(expense.AuthorId);
         let val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.ProjectCode + ' (' + isCleData.ClientLegalEntity + ')' : expense.ProjectCode;
@@ -932,10 +957,18 @@ export class PendingExpenseComponent implements OnInit {
         mailContent = this.replaceContent(mailContent, "@@Val14@@", this.currentUserInfoData.Title);
         if (type === "Approve Expense") {
             mailContent = this.replaceContent(mailContent, "@@Val15@@", this.approveExpense_form.value.PayingEntity.Title);
-            mailContent = this.replaceContent(mailContent, "@@Val8@@", this.approveExpense_form.value.PaymentMode.value);
-            mailContent = this.replaceContent(mailContent, "@@Val9@@", this.datePipe.transform(this.approveExpense_form.value.DateSpend, 'dd MMMM yyyy, hh:mm a'));
-            mailContent = this.replaceContent(mailContent, "@@Val11@@", this.approveExpense_form.value.Number);
-            mailContent = this.replaceContent(mailContent, "@@Val12@@", this.globalService.sharePointPageObject.webAbsoluteUrl + '' + this.fileUploadedUrl);
+            if (expense.RequestType !== "Invoice Payment") {
+                mailContent = this.replaceContent(mailContent, "@@Val8@@", this.approveExpense_form.value.PaymentMode.value);
+                mailContent = this.replaceContent(mailContent, "@@Val9@@", this.datePipe.transform(this.approveExpense_form.value.DateSpend, 'dd MMMM yyyy, hh:mm a'));
+                mailContent = this.replaceContent(mailContent, "@@Val11@@", this.approveExpense_form.value.Number);
+                mailContent = this.replaceContent(mailContent, "@@Val12@@", this.globalService.sharePointPageObject.webAbsoluteUrl + '' + this.fileUploadedUrl);
+            } else {
+                mailContent = this.replaceContent(mailContent, "@@Val8@@", '');
+                mailContent = this.replaceContent(mailContent, "@@Val9@@", '');
+                mailContent = this.replaceContent(mailContent, "@@Val11@@", '');
+                mailContent = this.replaceContent(mailContent, "@@Val12@@", '');
+
+            }
         }
 
         var ccUser = [];
@@ -943,7 +976,8 @@ export class PendingExpenseComponent implements OnInit {
         let tos = this.getTosList();
         this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.isPSInnerLoaderHidden = false;
-        this.reload();
+        // this.reload();
+        this.reFetchData();
     }
 
     getTosList() {
@@ -977,23 +1011,36 @@ export class PendingExpenseComponent implements OnInit {
                 }
             }
         }
+        arrayTo = arrayTo.filter(this.onlyUnique);
         console.log('arrayTo ', arrayTo);
         return arrayTo;
     }
 
-
-    reload() {
-        setTimeout(() => {
-            window.location.reload();
-            // this.getRequiredData();
-            // this.currentUserInfo();
-        }, 3000);
+    onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
     }
+
+    reFetchData() {
+        this.getRequiredData();
+    }
+
+
+    // reload() {
+    //     setTimeout(() => {
+    //         window.location.reload();
+    //         // this.getRequiredData();
+    //         // this.currentUserInfo();
+    //     }, 3000);
+    // }
 
     // Export to Excel
     convertToExcelFile(cnf1) {
         console.log('cnf ', cnf1);
         cnf1.exportCSV();
+    }
+
+    ngOnDestroy() {
+        this.subscriptionPE.unsubscribe();
     }
 
 }

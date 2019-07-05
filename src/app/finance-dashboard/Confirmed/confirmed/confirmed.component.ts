@@ -13,6 +13,7 @@ import { MAX_LENGTH_VALIDATOR, MaxLengthValidator } from '@angular/forms/src/dir
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
 import { SpOperationsService } from 'src/app/Services/sp-operations.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-confirmed',
@@ -49,7 +50,8 @@ export class ConfirmedComponent implements OnInit {
 
     // PoBalance Obj
     po: any = {
-        totalPoBalance: ''
+        oopBalance: '',
+        revenuBalance: ''
     }
 
     // Loader
@@ -74,6 +76,7 @@ export class ConfirmedComponent implements OnInit {
         private messageService: MessageService,
         private commonService: CommonService,
         private spOperationsService: SpOperationsService,
+        private router: Router
     ) { }
 
     async ngOnInit() {
@@ -223,7 +226,7 @@ export class ConfirmedComponent implements OnInit {
     createANBCols() {
         this.confirmCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
-            { field: 'SOWCode', header: 'SOW Code/ Name', visibility: true },
+            { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true },
             { field: 'ScheduleType', header: 'Schedule Type', visibility: true },
             { field: 'Amount', header: 'Amount', visibility: true },
@@ -331,7 +334,11 @@ export class ConfirmedComponent implements OnInit {
         this.selectedTotalAmt = 0;
         // console.log(data.value);
         let po = data.value;
-        this.po.totalPoBalance = (po.Amount - po.TotalLinked);
+        console.log('po ', po);
+        if (po) {
+            this.po.revenuBalance = (parseFloat(po.AmountRevenue ? po.AmountRevenue : 0) - parseFloat(po.InvoicedRevenue ? po.InvoicedRevenue : 0));
+            this.po.oopBalance = (parseFloat(po.AmountOOP ? po.AmountOOP : 0) - parseFloat(po.InvoicedOOP ? po.InvoicedOOP : 0));
+        }
         if (po) {
             for (let c = 0; c < this.confirmedILIarray.length; c++) {
                 const element = this.confirmedILIarray[c];
@@ -365,6 +372,7 @@ export class ConfirmedComponent implements OnInit {
                 Id: element.ID,
                 ProjectCode: element.Title,
                 SOWCode: element.SOWCode,
+                SOWValue: element.SOWCode + ' / ' + sowItem.Title,
                 SOWName: sowItem.Title,
                 ProjectMileStone: project ? project.Milestone : '', // this.getMilestones(element),
                 PONumber: element.PO,
@@ -459,7 +467,7 @@ export class ConfirmedComponent implements OnInit {
 
     createColFieldValues() {
         this.confirmedInColArray.ProjectCode = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }));
-        this.confirmedInColArray.SOWCode = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }));
+        this.confirmedInColArray.SOWCode = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }));
         this.confirmedInColArray.ProjectMileStone = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }));
         this.confirmedInColArray.POName = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; }));
         this.confirmedInColArray.ClientLegalEntity = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
@@ -490,16 +498,23 @@ export class ConfirmedComponent implements OnInit {
         console.log('Event ', event);
         console.log('this.selectedAllRowData ', this.selectedAllRowData);
         //this.selectedRowItemData.push(event.data);
-        console.log(this.selectedRowItemData);
-
         this.calculateData();
     }
-
+    uniqueST: boolean = true;
     calculateData() {
         this.selectedTotalAmt = 0;
+        this.uniqueST = true;
         for (let i = 0; i < this.selectedAllRowData.length; i++) {
             const element = this.selectedAllRowData[i];
             this.selectedTotalAmt += element.Amount;
+            let scheduleType = this.selectedAllRowData[0].ScheduleType;
+            if (element.ScheduleType !== scheduleType) {
+                this.uniqueST = false;
+                this.selectedAllRowData.splice(element);
+                this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Please select same Schedule type & try again.' });
+                break;
+            }
+
         }
     }
 
@@ -509,6 +524,8 @@ export class ConfirmedComponent implements OnInit {
 
     onRowUnselect(event) {
         // console.log(event);
+        console.log('this.selectedAllRowData ', this.selectedAllRowData);
+
         let rowUnselectIndex = this.selectedRowItemData.indexOf(event.data);
         this.selectedRowItemData.splice(rowUnselectIndex, 1);
         // console.log(this.selectedRowItemData);
@@ -563,8 +580,8 @@ export class ConfirmedComponent implements OnInit {
 
         this.items = [
             { label: 'Revert Invoice', command: (e) => this.openMenuContent(e, data) },
-            { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
+            { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
         ];
 
     }
@@ -581,9 +598,12 @@ export class ConfirmedComponent implements OnInit {
         if (this.confirmDialog.title.toLowerCase() === 'revert invoice') {
             // this.confirm1();
             let pInfo = this.getPIByPC(this.selectedRowItem);
-            if (pInfo.ProjectType.includes("Rolling")) {
-                this.isHourlyProject = true;
+            if (pInfo.hasOwnProperty('ProjectType')) {
+                if (pInfo.ProjectType.includes("Rolling")) {
+                    this.isHourlyProject = true;
+                }
             }
+
             console.log('pInfo ', pInfo);
             this.revertInvModal = true;
         } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
@@ -617,12 +637,12 @@ export class ConfirmedComponent implements OnInit {
                     });
 
                     this.minProformaDate = new Date(Math.max.apply(null, this.selectedAllRowData.map(e => e.ScheduledDate)));
+                    this.proformaModal = true;
 
                     var cle = this.getCLEObj(this.selectedPurchaseNumber.ClientLegalEntity);
                     this.generateProformaNumber(cle);
                     this.getPOCNamesForEditInv(cle);
 
-                    this.proformaModal = true;
 
                 }
                 else {
@@ -709,8 +729,8 @@ export class ConfirmedComponent implements OnInit {
         let proformaDate = '';
         let sType: string = 'Proforma';
         let isOOP: boolean = false;
-        if (this.addToProforma_form.value.ProformaType) {
-            isOOP = this.addToProforma_form.value.ProformaType.value.toLowerCase() === 'oop' ? true : false;
+        if (this.selectedAllRowData[0].ScheduleType) {
+            isOOP = this.selectedAllRowData[0].ScheduleType.toLowerCase() === 'oop' ? true : false;
         }
         if (cle) {
             cleAcronym = cle.Acronym ? cle.Acronym : '';
@@ -765,13 +785,14 @@ export class ConfirmedComponent implements OnInit {
             obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
             const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);
             if (this.isHourlyProject) {
+                let pInfo = this.getPIByPC(this.selectedRowItem);
                 // Update PI
                 let piObj = {
                     ProjectType: "Deliverable-Writing",
                     IsApproved: "No"
                 }
                 piObj['__metadata'] = { type: 'SP.Data.ProjectInformationListItem' };
-                const piEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectInformation.update.replace("{{Id}}", this.selectedRowItem.Id);
+                const piEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectInformation.update.replace("{{Id}}", pInfo.Id);
                 data.push({
                     objData: piObj,
                     endpoint: piEndpoint,
@@ -851,8 +872,11 @@ export class ConfirmedComponent implements OnInit {
                     endpoint: cleEndpoint,
                     requestPost: false
                 }
-            ]
+            ];
             this.submitForm(data, type);
+            // setInterval(() => {
+            //     this.isPSInnerLoaderHidden = true;
+            // }, 5000);
         }
     }
 
@@ -919,7 +943,8 @@ export class ConfirmedComponent implements OnInit {
             this.proformaModal = false;
             this.isPSInnerLoaderHidden = true;
             this.reload();
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Proforma added.', detail: '', life: 2000 });
+            // this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Proforma added.', detail: '', life: 2000 });
+            this.messageService.add({ key: 'custom', sticky: true, severity: 'success', summary: 'Proforma Added', detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber });
 
         } else {
             this.spServices.getData(batchGuid, sBatchData).subscribe(res => {
@@ -980,16 +1005,17 @@ export class ConfirmedComponent implements OnInit {
 
             retProjects = await this.spOperationsService.executeBatch(batchURL);
             projects = [...projects, ...retProjects];
-            const appendixObj = { dvcode: '', cactusSpCode: '', title: '', amount: '' };
-            selectedProjects.forEach(element => {
-                const project = projects.find(e => e.ProjectCode = element.ProjectCode);
-                let appendix = Object.assign({}, appendixObj);
-                appendix.dvcode = project.WBJID;
-                appendix.cactusSpCode = project.ProjectCode;
-                appendix.title = project.Title;
-                appendix.amount = element.Amount;
-            });
         }
+        const appendixObj = { dvcode: '', cactusSpCode: '', title: '', amount: '' };
+        selectedProjects.forEach(element => {
+            const project = projects.find(e => e.ProjectCode = element.ProjectCode);
+            let appendix = Object.assign({}, appendixObj);
+            appendix.dvcode = project.WBJID;
+            appendix.cactusSpCode = project.ProjectCode;
+            appendix.title = project.Title;
+            appendix.amount = element.Amount;
+            projectAppendix.push(appendix);
+        });
 
         return projectAppendix;
     }

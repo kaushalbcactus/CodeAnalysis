@@ -54,7 +54,7 @@ export class OopComponent implements OnInit {
         endDate: '',
     };
 
-    @ViewChild('timelineRef', {static:true}) timeline: TimelineHistoryComponent;
+    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
     constructor(
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
@@ -167,7 +167,7 @@ export class OopComponent implements OnInit {
     createANBCols() {
         this.oopBasedCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
-            { field: 'SOWCode', header: 'SOW Code/ Name', visibility: true },
+            { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
             { field: 'PONumber', header: 'PO Number/ Name', visibility: true },
             { field: 'ClientName', header: 'Client LE', visibility: true },
@@ -177,6 +177,7 @@ export class OopComponent implements OnInit {
             { field: 'POCName', header: 'POC Name', visibility: true },
 
             { field: 'SOWName', header: 'SOW Name', visibility: false },
+            { field: 'SOWCode', header: 'SOW Code', visibility: false },
             { field: 'POName', header: 'PO Name', visibility: false },
             { field: 'Notes', header: 'Notes', visibility: false },
             { field: 'AddressType', header: 'Address Type', visibility: false },
@@ -198,8 +199,20 @@ export class OopComponent implements OnInit {
     async getRequiredData() {
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
-        let obj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesOOP);
+
+        const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
+        let isManager = false;
+        if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1) {
+            isManager = true;
+        }
+        let obj = Object.assign({}, isManager ? this.fdConstantsService.fdComponent.invoicesOOP : this.fdConstantsService.fdComponent.invoicesOOPCS);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
+        if (!isManager) {
+            obj.filter = obj.filter.replace("{{UserId}}", this.globalService.sharePointPageObject.userId.toString());
+        }
+
+        // let obj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesOOP);
+        // obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
         const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
@@ -246,6 +259,7 @@ export class OopComponent implements OnInit {
                 Id: element.ID,
                 ProjectCode: element.Title,
                 SOWCode: element.SOWCode,
+                SOWValue: element.SOWCode + ' / ' + sowItem.Title,
                 SOWName: sowItem.Title,
                 ProjectMileStone: this.getMilestones(element).Milestone,
                 PONumber: this.getPONumber(element).Number,
@@ -271,6 +285,7 @@ export class OopComponent implements OnInit {
                 Modified: this.datePipe.transform(element.Modified, 'MMM d, y'),
             })
         }
+        this.oopBasedRes = [...this.oopBasedRes];
         this.createColFieldValues();
     }
 
@@ -338,7 +353,7 @@ export class OopComponent implements OnInit {
 
     createColFieldValues() {
         this.oopColArray.ProjectCode = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }));
-        this.oopColArray.SOWCode = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }));
+        this.oopColArray.SOWCode = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }));
         this.oopColArray.ProjectMileStone = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }));
         this.oopColArray.PONumber = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
         this.oopColArray.ClientName = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }));
@@ -440,8 +455,8 @@ export class OopComponent implements OnInit {
         }
         this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });
         this.items.push({ label: 'View Project Details', command: (e) => this.openMenuContent(e, data) });
-        this.items.push({ label: 'Show History', command: (e) => this.openMenuContent(e, data) }); // Added by kaushal on 10.6.19
         this.items.push({ label: 'Details', command: (e) => this.openMenuContent(e, data) });
+        this.items.push({ label: 'Show History', command: (e) => this.openMenuContent(e, data) }); // Added by kaushal on 10.6.19
 
     }
 

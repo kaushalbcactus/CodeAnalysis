@@ -3,6 +3,8 @@ import DecoupledEditor from '@ckeditor/ckeditor5-build-decoupled-document';
 import { CommonService } from '../services/common.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
+import { MessageService } from 'primeng/api';
+
 declare var $: any;
 @Component({
     selector: 'app-editor',
@@ -43,8 +45,12 @@ export class EditorComponent implements OnInit {
     indiaHtmlObject: any = {};
     USHtmlObject: any = {};
     showAppendix = false;
-    constructor(private common: CommonService, private fdConstantsService: FdConstantsService,
-        private fdShareDataService: FDDataShareService) { }
+    constructor(
+        private common: CommonService,
+        private fdConstantsService: FdConstantsService,
+        private fdShareDataService: FDDataShareService,
+        private messageService: MessageService
+    ) { }
 
     ngOnInit() {
 
@@ -70,8 +76,8 @@ export class EditorComponent implements OnInit {
             // designation: 'Medical Editorial Reviewer',
             purchaseOrderNumber: '8300324481',
             Appendix: [{ dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: '4,125.00' },
-             { dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: '4,125.00' },
-             { dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: '4,125.00' }],
+            { dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: '4,125.00' },
+            { dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: '4,125.00' }],
             tax: '39,564.45',
             // centralTax : '39,564.45',
             // stateTax : '19,782.22',
@@ -515,7 +521,7 @@ export class EditorComponent implements OnInit {
             </tbody>
         </table>
         </figure>`,
-        appendixRow : `<tr>
+            appendixRow: `<tr>
         <td>
             [[DvCode]]
         </td>
@@ -911,7 +917,7 @@ export class EditorComponent implements OnInit {
             [[Appendix]]
         </tbody>
     </table>`,
-    appendixRow: `<tr>
+            appendixRow: `<tr>
         <td style="font-weight:normal;">
             [[ProjectCode]]
         </td>
@@ -1597,7 +1603,7 @@ export class EditorComponent implements OnInit {
             [[Appendix]]
         </tbody>
     </table>`,
-    appendixRow: `<tr>
+            appendixRow: `<tr>
     <td>
         [[ProjectCode]]
     </td>
@@ -1736,7 +1742,7 @@ export class EditorComponent implements OnInit {
             USInvoice.appendixCreate = USInvoice.appendixCreate.replace('[[Appendix]]', newArr.join(''));
             USInvoice.appendixCreate = USInvoice.appendixCreate.replace('[[Total]]', invoiceData.Appendix[0].amount);
             USInvoice.appendixCreate = USInvoice.appendixCreate.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
-            invoiceData.usCurrencySymbol);
+                invoiceData.usCurrencySymbol);
         } else {
             this.showAppendix = false;
         }
@@ -1899,7 +1905,7 @@ export class EditorComponent implements OnInit {
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
             for (let i = 0; i < invoiceData.Appendix.length; i++) {
-                JapanInvoice.appendixRow = JapanInvoice.appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].dvcode);
+                JapanInvoice.appendixRow = JapanInvoice.appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].cactusSpCode);
                 JapanInvoice.appendixRow = JapanInvoice.appendixRow.replace('[[Title]]', invoiceData.Appendix[i].title);
                 JapanInvoice.appendixRow = JapanInvoice.appendixRow.replace('[[Amount]]', invoiceData.Appendix[i].amount);
                 JapanInvoice.appendixRow = JapanInvoice.appendixRow.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
@@ -1908,7 +1914,7 @@ export class EditorComponent implements OnInit {
             }
             JapanInvoice.appendixCreate = JapanInvoice.appendixCreate.replace('[[Appendix]]', newArr.join(''));
             JapanInvoice.appendixCreate = JapanInvoice.appendixCreate.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
-            invoiceData.JpnCurrencySymbol);
+                invoiceData.JpnCurrencySymbol);
         } else {
             this.showAppendix = false;
         }
@@ -1972,7 +1978,7 @@ export class EditorComponent implements OnInit {
             JapanObject.appendix = JapanObject.appendix.replace('[[Appendix]]', newArr.join(''));
             JapanObject.appendix = JapanObject.appendix.replace('[[Amount]]', invoiceData.Appendix[0].amount);
             JapanObject.appendix = JapanObject.appendix.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
-            invoiceData.JpnCurrencySymbol);
+                invoiceData.JpnCurrencySymbol);
             delete JapanObject.appendixCreate;
             delete JapanObject.appendixRow;
         } else {
@@ -2055,11 +2061,11 @@ export class EditorComponent implements OnInit {
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
             for (let i = 0; i < invoiceData.Appendix.length; i++) {
-            IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].dvcode);
-            IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[Title]]', invoiceData.Appendix[i].title);
-            IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[ClientPOC]]', invoiceData.Appendix[i].cactusSpCode);
-            IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[Amount]]', invoiceData.Appendix[i].amount);
-            newArr.push(IndiaInvoice.appendixRow);
+                IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].dvcode);
+                IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[Title]]', invoiceData.Appendix[i].title);
+                IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[ClientPOC]]', invoiceData.Appendix[i].cactusSpCode);
+                IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[Amount]]', invoiceData.Appendix[i].amount);
+                newArr.push(IndiaInvoice.appendixRow);
             }
             IndiaInvoice.appendixCreate = IndiaInvoice.appendixCreate.replace('[[Appendix]]', newArr.join(''));
             IndiaInvoice.appendixCreate = IndiaInvoice.appendixCreate.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
@@ -2211,19 +2217,19 @@ export class EditorComponent implements OnInit {
     }
 
     confirm() {
-        const inner = document.getElementById('main_content');
-        const buttons = inner.getElementsByTagName('p-button');
+        // const inner = document.getElementById('main_content');
+        // const buttons = inner.getElementsByTagName('p-button');
         // console.log(buttons);
-        if (buttons.length > 0) {
-            buttons[0].remove();
-            if (this.showAppendix) {
-                buttons[1].remove();
-                buttons[0].remove();
-            } else {
-                buttons[0].remove();
-            }
-        }
-
+        // if (buttons.length > 0) {
+        //     buttons[0].remove();
+        //     if (this.showAppendix) {
+        //         buttons[1].remove();
+        //         buttons[0].remove();
+        //     } else {
+        //         buttons[0].remove();
+        //     }
+        // }
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         if (document.querySelector('.col10') !== null) {
             const el = document.querySelector('.col10');
             el.innerHTML = el.innerHTML.replace(/&nbsp;/g, '');
@@ -2277,7 +2283,9 @@ export class EditorComponent implements OnInit {
             this.japanHtmlObject.invoiceDetail = document.getElementById('invoiceDetails').innerHTML;
             this.japanHtmlObject.paymentInstructions = document.getElementById('paymentInstructions1').innerHTML;
             this.japanHtmlObject.paymentDetails = document.getElementById('paymentInstructions2').innerHTML;
-            this.japanHtmlObject.appendix = document.getElementById('appendix').innerHTML;
+            if (this.showAppendix) {
+                this.japanHtmlObject.appendix = document.getElementById('appendix').innerHTML;
+            }
             obj.saveObj = this.japanHtmlObject;
         } else if (Object.keys(this.IndiaTemplateCopy).length > 0) {
             this.indiaHtmlObject.header = document.getElementById('header').innerHTML;
@@ -2289,17 +2297,23 @@ export class EditorComponent implements OnInit {
             this.indiaHtmlObject.invoiceDetail = document.getElementById('invoiceDetails').innerHTML;
             this.indiaHtmlObject.paymentInstructions = document.getElementById('paymentInstructions1').innerHTML;
             this.indiaHtmlObject.paymentDetails = document.getElementById('paymentInstructions2').innerHTML;
-            this.indiaHtmlObject.appendix = document.getElementById('appendix').innerHTML;
+            if (this.showAppendix) {
+                this.indiaHtmlObject.appendix = document.getElementById('appendix').innerHTML;
+            }
             obj.saveObj = this.indiaHtmlObject;
         }
 
         console.log(obj);
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-        //return obj;
-        this.displayJapan = false;
-        this.displayUS = false;
-        this.displayIndia = false;
-        this.fdShareDataService.callProformaInvoiceEdit(obj);
+
+        setTimeout(async () => {
+            //window.location.reload();
+            await this.fdShareDataService.callProformaInvoiceEdit(obj);
+            this.displayJapan = false;
+            this.displayUS = false;
+            this.displayIndia = false;
+            this.messageService.add({ key: 'editToast', severity: 'success', summary: this.fdConstantsService.fdComponent.selectedEditObject.Type + ' edited successfully.' });
+            // this.currentUserInfo();
+        }, 300);
     }
 }
 
