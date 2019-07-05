@@ -1763,7 +1763,7 @@ export class TimelineHistoryComponent implements OnInit {
           obj.activity_type = 'Attachment';
           obj.activity_sub_type = 'Document added';
           obj.activity_description = 'Document added to ' + displayName;
-          obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + file.ServerRelativeUrl;
+          obj.file_uploaded = file.ServerRelativeUrl;
           items.push(obj);
 
         });
@@ -1894,7 +1894,7 @@ export class TimelineHistoryComponent implements OnInit {
               }
               break;
             case this.globalConstant.sowList.columns.CMLevel1:
-              obj.activity_type = 'SOW updated';
+              obj.activity_type = 'Attachment';
               obj.activity_sub_type = 'CM Level 1 Updated';
               obj.activity_description = 'CM Level 1 Updated to ' + properties.CMLevel1;
               break;

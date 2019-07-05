@@ -19,7 +19,7 @@ export class TimelineConstantsService {
       select: 'Title, ListName',
       top: '4500'
     }
-  }
+  };
   public financeDashboard = {
     invoice: {
       propertiesRequired: ['Status', 'FileURL', 'PaymentURL', 'InvoiceHtml'],
@@ -92,11 +92,11 @@ export class TimelineConstantsService {
         top: '4500'
       }
     }
-  }
+  };
 
   public projectManagement = {
     projectInformation: {
-      propertiesRequired: ['ProjectType', 'Description', 'ConferenceJournal','SOWCode', 'Authors', 'Comments', 'BusinessVertical', 'PrimaryPOC', 'TA', 'Indication', 'Molecule', 'Priority',
+      propertiesRequired: ['Title','ProjectType', 'Description', 'ConferenceJournal','SOWCode', 'Authors', 'Comments', 'BusinessVertical', 'PrimaryPOC', 'TA', 'Indication', 'Molecule', 'Priority',
         'Status', 'IsPubSupport', 'SOWBoxLink', 'SOWLink', 'BD', 'CMLevel1', 'CMLevel2', 'DeliveryLevel1', 'DeliveryLevel2', 'WBJID', 'Milestone',
         'ProposedStartDate', 'ProposedEndDate'],
       getVersions: {
