@@ -38,6 +38,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     DeliveryOptional: [],
     SowOwner: []
   };
+  sowViewDataArray = [];
   addSowForm: FormGroup;
   addAdditionalBudgetForm: FormGroup;
   selectedFile: any;
@@ -932,6 +933,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     }
   }
   setGlobalVariable(sowItem) {
+    this.pmObject.addSOW.ID = sowItem.hasOwnProperty('ID') ? sowItem.ID : 0;
     this.pmObject.addSOW.ClientLegalEntity = sowItem.ClientLegalEntity;
     this.pmObject.addSOW.SOWCode = sowItem.SOWCode;
     this.pmObject.addSOW.BillingEntity = sowItem.BillingEntity;
@@ -978,9 +980,10 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.pmObject.addSOW.Delivery = sowItem.DeliveryLevel2.ID;
     this.pmObject.addSOW.DeliveryText = this.pmService.extractNameFromId([sowItem.DeliveryLevel2.ID]).join(',');
     this.pmObject.addSOW.SOWOwner = sowItem.BD.ID;
-    this.pmObject.addSOW.SOWOwnerText = this.pmService.extractNameFromId([sowItem.BD.ID]).join(',');
+    this.pmObject.addSOW.SOWOwnerText = sowItem.BD.hasOwnProperty('ID') ? this.pmService.extractNameFromId([sowItem.BD.ID]).join(',') : '';
   }
   async viewSOWOnRightSide() {
+    this.sowViewDataArray = [];
     this.pmObject.isSOWRightViewVisible = false;
     let currSelectedSOW;
     if (this.pmObject.selectedSOWTask) {
@@ -990,6 +993,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       const sowItemResult = await this.spServices.readItems(this.constant.listNames.SOW.name, sowItemFilter);
       if (sowItemResult && sowItemResult.length) {
         this.setGlobalVariable(sowItemResult[0]);
+        this.sowViewDataArray.push(this.pmObject.addSOW);
         this.pmObject.isSOWRightViewVisible = true;
       }
     }

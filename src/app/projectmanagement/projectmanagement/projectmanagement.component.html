@@ -292,92 +292,112 @@
 </div>
 <div *ngIf="pmObject.isSOWRightViewVisible" class="ng-right-side-overlay">
     <p-sidebar [(visible)]="pmObject.isSOWRightViewVisible" position="right" styleClass="ui-sidebar-md">
-        <div class="ui-g">
-            <div class="ui-g-6">Client Legal Entity</div>
-            <div class="ui-g-6">{{pmObject.addSOW.ClientLegalEntity}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">SOW Code</div>
-            <div class="ui-g-6">{{pmObject.addSOW.SOWCode}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">Billing Entity</div>
-            <div class="ui-g-6">{{pmObject.addSOW.BillingEntity}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">Practice Area</div>
-            <div class="ui-g-6">{{pmObject.addSOW.PracticeArea}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">Client Point of Contact</div>
-            <div class="ui-g-3">{{pmObject.addSOW.PocText}}</div>
-            <div class="ui-g-3">{{pmObject.addSOW.PocOptionalText}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">SOW Title</div>
-            <div class="ui-g-6">{{pmObject.addSOW.SOWTitle}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">SOW Cretion Date</div>
-            <div class="ui-g-6">{{pmObject.addSOW.SOWCreationDate | date:'medium'}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">SOW Expiry Date</div>
-            <div class="ui-g-6">{{pmObject.addSOW.SOWExpiryDate | date:'medium'}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">Status</div>
-            <div class="ui-g-6">{{pmObject.addSOW.Status}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">Comments</div>
-            <div class="ui-g-6">{{pmObject.addSOW.Comments}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">Currency</div>
-            <div class="ui-g-6">{{pmObject.addSOW.Currency}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-12">Budget</div>
-
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">Total</div>
-            <div class="ui-g-6">{{pmObject.addSOW.Budget.Total}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">Net</div>
-            <div class="ui-g-6">{{pmObject.addSOW.Budget.Net}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">OOP</div>
-            <div class="ui-g-6">{{pmObject.addSOW.Budget.OOP}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">Tax</div>
-            <div class="ui-g-6">{{pmObject.addSOW.Budget.Tax}}</div>
-        </div>
-
-        <div class="ui-g">
-            <div class="ui-g-6">CM1</div>
-            <div class="ui-g-6">{{pmObject.addSOW.CM1Text}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">CM2</div>
-            <div class="ui-g-6">{{pmObject.addSOW.CM2Text}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">Delivery1</div>
-            <div class="ui-g-6">{{pmObject.addSOW.DeliveryOptionalText}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">Delivery2</div>
-            <div class="ui-g-6">{{pmObject.addSOW.DeliveryText}}</div>
-        </div>
-        <div class="ui-g">
-            <div class="ui-g-6">SOW Owner</div>
-            <div class="ui-g-6">{{pmObject.addSOW.SOWOwnerText}}</div>
-        </div>
+        <p-table [value]="sowViewDataArray">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-task style="overflow: auto">
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">SOW ID</td>
+                    <td>{{rowData.ID}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">SOW Code</td>
+                    <td>{{task.SOWCode}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Client Legal Entity</td>
+                    <td>{{task.ClientLegalEntity}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Billing Entity</td>
+                    <td>{{task.BillingEntity}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Practice Area</td>
+                    <td>{{task.PracticeArea}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" [ngStyle]="{'color':'#d7181f'}">Client Point of Contact</td>
+                </tr>
+                <tr>
+                    <td>{{task.PocText}}</td>
+                    <td>{{task.PocOptionalText}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">SOW Title</td>
+                    <td>{{task.SOWTitle}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">SOW Cretion Date</td>
+                    <td>{{task.SOWCreationDate | date:'medium'}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">SOW Expiry Date</td>
+                    <td>{{task.SOWExpiryDate | date:'medium'}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Status</td>
+                    <td>{{task.Status}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Comments</td>
+                    <td>{{task.Comments}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Currency</td>
+                    <td>{{task.Currency}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
+                </tr>
+                <tr>
+                    <td colspan="2" [ngStyle]="{'color':'#d7181f'}">Budget</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Total</td>
+                    <td>{{task.Budget.Total}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Net</td>
+                    <td>{{task.Budget.Net}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">OOP</td>
+                    <td>{{task.Budget.OOP}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Tax</td>
+                    <td>{{task.Budget.Tax}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">CM1</td>
+                    <td>{{task.CM1Text}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">CM2</td>
+                    <td>{{task.CM2Text}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Delivery1</td>
+                    <td>{{task.DeliveryOptionalText}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Delivery2</td>
+                    <td>{{task.DeliveryText}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">SOW Owner</td>
+                    <td>{{task.SOWOwnerText}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
     </p-sidebar>
 </div>
 <p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog>

@@ -92,7 +92,7 @@ export class ConstantsService {
       name: 'TA',
       type: 'SP.Data.TAListItem'
     },
-    Molecules : {
+    Molecules: {
       name: 'Molecules',
       type: 'SP.Data.MoleculesListItem'
     },
@@ -114,8 +114,8 @@ export class ConstantsService {
     },
     // redundant item
     ProjectPO: {
-    	name: 'PO',
-        type: 'SP.Data.POListItem'
+      name: 'PO',
+      type: 'SP.Data.POListItem'
     },
     PO: {
       name: 'PO',
@@ -221,10 +221,10 @@ export class ConstantsService {
       name: 'Services',
       type: 'SP.Data.ServicesListItem'
     },
-        UsState: {
-            name: 'USStates',
-            type: 'SP.Data.USStatesListItem'
-        },
+    UsState: {
+      name: 'USStates',
+      type: 'SP.Data.USStatesListItem'
+    },
     BudgetRateMaster: {
       name: 'BudgetRateMaster',
       type: 'SP.Data.BudgetRateMasterListItem'
@@ -245,19 +245,19 @@ export class ConstantsService {
       name: 'Proforma',
       type: 'SP.Data.ProformaListItem'
     },
-     // redundant
-        OutInvoices: {
-            name: 'Invoices',
-            type: 'SP.Data.InvoicesListItem'
-        },
-        CreditAndDebit: {
-            name: 'CreditAndDebitNote',
-            type: 'SP.Data.CreditAndDebitNoteListItem'
-        },
-        VendorFreelancer: {
-            name: 'VendorFreelancer',
-            type: 'SP.Data.VendorFreelancerListItem'
-        },
+    // redundant
+    OutInvoices: {
+      name: 'Invoices',
+      type: 'SP.Data.InvoicesListItem'
+    },
+    CreditAndDebit: {
+      name: 'CreditAndDebitNote',
+      type: 'SP.Data.CreditAndDebitNoteListItem'
+    },
+    VendorFreelancer: {
+      name: 'VendorFreelancer',
+      type: 'SP.Data.VendorFreelancerListItem'
+    },
   };
 
   public projectStatus = {
@@ -451,7 +451,7 @@ export class ConstantsService {
 
   public projectBudgetBreakupList = {
     status: {
-      ApprovalPending : 'Approval Pending',
+      ApprovalPending: 'Approval Pending',
       Approved: 'Approved',
       Rejected: 'Rejected'
     },
@@ -490,7 +490,7 @@ export class ConstantsService {
       Comments: 'Comments',
       BusinessVertical: 'BusinessVertical',
       CreatedDate: 'CreatedDate',
-      ExpiryDate: 'ExpiryDate' ,
+      ExpiryDate: 'ExpiryDate',
       Status: 'Status',
       SOWLink: 'SOWLink',
       CMLevel1: 'CMLevel1',
@@ -515,23 +515,23 @@ export class ConstantsService {
       TaxBudget: 'TaxBudget'
     }
   };
-  
 
-    public invoicesStatus = {
-        Abandoned: 'Abandoned',
-        Closed: 'Closed',
-        Generated: 'Generated',
-        SentForConfirmation: 'Sent for confirmation',
-        SentForPayment: 'Sent for payment',
-        SentToAP: 'Sent to AP',
-        Paid: 'Paid',
-        Dispute: 'Dispute',
-        AwaitingWriteOff: 'Awaiting Write Off ',
-        ClosedWithWrittenOff: 'Closed with Written Off',
-        ClosedWithCreditNote: 'Closed with Credit Note',
-        AwaitingClosedCreditNote: 'Awaiting Closed Credit Note',
-        AwaitingClosedDebitNote: 'Awaiting Closed Debit Note',
-        ClosedWithDebitNote: 'Closed with Debit Note',
-    };
+
+  public invoicesStatus = {
+    Abandoned: 'Abandoned',
+    Closed: 'Closed',
+    Generated: 'Generated',
+    SentForConfirmation: 'Sent for confirmation',
+    SentForPayment: 'Sent for payment',
+    SentToAP: 'Sent to AP',
+    Paid: 'Paid',
+    Dispute: 'Dispute',
+    AwaitingWriteOff: 'Awaiting Write Off ',
+    ClosedWithWrittenOff: 'Closed with Written Off',
+    ClosedWithCreditNote: 'Closed with Credit Note',
+    AwaitingClosedCreditNote: 'Awaiting Closed Credit Note',
+    AwaitingClosedDebitNote: 'Awaiting Closed Debit Note',
+    ClosedWithDebitNote: 'Closed with Debit Note',
+  };
 
 }
