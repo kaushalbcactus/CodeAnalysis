@@ -48,7 +48,7 @@ export class TaskDetailsDialogComponent implements OnInit {
     ];
     this.data = this.config.data;
     this.DocumentArray = [];
-    debugger;
+    
     if (this.data !== undefined) { 
           this.getComments(this.data.task.pID);
         }
@@ -84,7 +84,7 @@ export class TaskDetailsDialogComponent implements OnInit {
 
     this.currentTask = this.response[0][0];
 
-    debugger;
+    
     this.getDocuments(this.currentTask);
 
     
@@ -98,7 +98,7 @@ export class TaskDetailsDialogComponent implements OnInit {
   // **************************************************************************************************************************************
   async getDocuments(task) {
    
-    debugger;
+    
     if (this.sharedObject.DashboardData.ProjectInformation.ProjectCode === task.ProjectCode) {
       this.ProjectInformation = this.sharedObject.DashboardData.ProjectInformation;
     }
@@ -131,7 +131,7 @@ async getCurrentTaskProjectInformation(ProjectCode) {
 // **************************************************************************************************************************************
 
 async loadDraftDocs(selectedTab) {
-  debugger;
+  
   this.DocumentArray = [];
   var documentsUrl = '';
 
@@ -171,7 +171,7 @@ this.DocumentArray = this.allDocuments.filter(c => c.ListItemAllFields.TaskName 
 
 
   if (this.DocumentArray.length) {
-    debugger;
+    
     this.DocumentArray = this.DocumentArray.sort((a, b) =>
   
       new Date(a.ModifiedDateString).getTime() < new Date(b.ModifiedDateString).getTime() ? 1 : -1
@@ -188,7 +188,7 @@ this.DocumentArray = this.allDocuments.filter(c => c.ListItemAllFields.TaskName 
 // **************************************************************************************************************************************
 
 async getUsers(Ids) {
-  debugger;
+  
   this.batchContents = new Array();
   const batchGuid = this.spServices.generateUUID();
 

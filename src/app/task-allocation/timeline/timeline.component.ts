@@ -127,7 +127,7 @@ export class TimelineComponent implements OnInit,OnDestroy {
 
   }
    ngOnInit() {
-debugger;
+
      if(this.projectDetails !== undefined)
      {
       this.sharedObject.oTaskAllocation.oProjectDetails = this.projectDetails;
@@ -204,7 +204,7 @@ debugger;
 
   public async getMilestones(bFirstLoad) {
 
-    debugger;
+    
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
 
@@ -941,12 +941,12 @@ debugger;
     this.oProjectDetails.allocatedHours = projectHoursAllocated.reduce((a, b) => a + b, 0).toFixed(2);
     this.oProjectDetails.spentHours = projectAvailableHours.reduce((a, b) => a + b, 0).toFixed(2);
     this.oProjectDetails.totalMilestoneBudgetHours = totalMilestoneBudgetHours.reduce((a, b) => a + b, 0);
-    debugger;
+    
     this.oProjectDetails.availableHours = +(+this.oProjectDetails.budgetHours - +this.oProjectDetails.spentHours).toFixed(2);
     this.disableSave = false;
     if (!bFirstLoad) {
       setTimeout(() => {
-        this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Tasks Saved Sucessfully' });
+        this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Tasks Saved Successfully' });
       }, 300);
     }
   }

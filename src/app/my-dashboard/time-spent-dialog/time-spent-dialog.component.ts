@@ -229,7 +229,9 @@ export class TimeSpentDialogComponent implements OnInit {
       this.ref.close(data);
     }
     else {
+      this.modalloaderenable = true;
       await this.saveTimeSpentdb(this.task, this.dateArray)
+      this.modalloaderenable = false;
     }
 
   }
@@ -258,7 +260,7 @@ export class TimeSpentDialogComponent implements OnInit {
       ActualStartDate = task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date(ActualStartDate);
     }
 
-    debugger;
+  
     var timeSpentString = dateArray.map(c => (c.date + ":" + c.time).replace(/ /g, '')).join('\n');
     var timeSpentHours = dateArray.map(c => c.time.split(":")).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
     var timeSpentMin = dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
@@ -273,7 +275,7 @@ export class TimeSpentDialogComponent implements OnInit {
       Status: task.Status === "Not Started" ? "In Progress" : task.Status
     };
     await this.spServices.update(this.constants.listNames.Schedules.name, task.ID, jsonData, "SP.Data.SchedulesListItem");
-    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task Time updated sucessfully.' });
+    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task Time updated successfully.' });
 
   };
 

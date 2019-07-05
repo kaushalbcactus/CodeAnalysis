@@ -1528,6 +1528,8 @@ export class TimelineHistoryComponent implements OnInit {
       // fetch version detail based on version ID
       const version = arrVersions.filter(v => v.VersionId === element.VersionId);
       const versionDetail = version.length > 0 ? version[0] : {};
+      const currentPO = this.arrPO.filter(po => po.Id === versionDetail.POLookup);
+      const currentPODetail = currentPO.length > 0 ? currentPO[0] : { Number: '' };
       const properties = element.changedProperties;
       for (const key in properties) {
         if (properties.hasOwnProperty(key)) {
@@ -1539,49 +1541,49 @@ export class TimelineHistoryComponent implements OnInit {
               if (versionDetail.AmountRevenue) {
                 obj.activity_type = 'Project updated';
                 obj.activity_sub_type = 'Revenue amount updated';
-                obj.activity_description = 'Revenue amount booked for PO ' + versionDetail.POLookup + ' updated to ' + versionDetail.AmountRevenue;
+                obj.activity_description = 'Revenue amount booked for PO ' + currentPODetail.Number + ' updated to ' + versionDetail.AmountRevenue;
               }
               break;
             case this.globalConstant.projectFinanceBreakupList.columns.AmountOOP:
               if (versionDetail.AmountOOP) {
                 obj.activity_type = 'Project updated';
                 obj.activity_sub_type = 'OOP amount updated';
-                obj.activity_description = 'OOP amount booked for PO ' + versionDetail.POLookup + ' updated to ' + versionDetail.AmountOOP;
+                obj.activity_description = 'OOP amount booked for PO ' + currentPODetail.Number + ' updated to ' + versionDetail.AmountOOP;
               }
               break;
             case this.globalConstant.projectFinanceBreakupList.columns.ScheduledRevenue:
               if (versionDetail.ScheduledRevenue) {
                 obj.activity_type = 'Project updated';
                 obj.activity_sub_type = 'Scheduled revenue amount updated';
-                obj.activity_description = 'Scheduled revenue amount booked for PO ' + versionDetail.POLookup + ' updated to ' + versionDetail.ScheduledRevenue;
+                obj.activity_description = 'Scheduled revenue amount booked for PO ' + currentPODetail.Number + ' updated to ' + versionDetail.ScheduledRevenue;
               }
               break;
             case this.globalConstant.projectFinanceBreakupList.columns.ScheduledOOP:
               if (versionDetail.ScheduledOOP) {
                 obj.activity_type = 'Project updated';
                 obj.activity_sub_type = 'Scheduled OOP amount updated';
-                obj.activity_description = 'Scheduled oop amount booked for PO ' + versionDetail.POLookup + ' updated to ' + versionDetail.ScheduledOOP;
+                obj.activity_description = 'Scheduled oop amount booked for PO ' + currentPODetail.Number + ' updated to ' + versionDetail.ScheduledOOP;
               }
               break;
             case this.globalConstant.projectFinanceBreakupList.columns.InvoicedRevenue:
               if (versionDetail.InvoicedRevenue) {
                 obj.activity_type = 'Project updated';
                 obj.activity_sub_type = 'Invoiced revenue amount updated';
-                obj.activity_description = 'Invoiced revenue amount booked for PO ' + versionDetail.POLookup + ' updated to ' + versionDetail.InvoicedRevenue;
+                obj.activity_description = 'Invoiced revenue amount booked for PO ' + currentPODetail.Number + ' updated to ' + versionDetail.InvoicedRevenue;
               }
               break;
             case this.globalConstant.projectFinanceBreakupList.columns.InvoicedOOP:
               if (versionDetail.InvoicedOOP) {
                 obj.activity_type = 'Project updated';
                 obj.activity_sub_type = 'Invoiced OOP amount updated';
-                obj.activity_description = 'Invoiced oop amount booked for PO ' + versionDetail.POLookup + ' updated to ' + versionDetail.InvoicedOOP;
+                obj.activity_description = 'Invoiced oop amount booked for PO ' + currentPODetail.Number + ' updated to ' + versionDetail.InvoicedOOP;
               }
               break;
             case this.globalConstant.projectFinanceBreakupList.columns.Status:
               if (versionDetail.Status === this.globalConstant.projectFinanceBreakupList.status.Deleted) {
                 obj.activity_type = 'Project updated';
                 obj.activity_sub_type = 'Invoice delinked';
-                obj.activity_description = 'Scheduled invoice delinked for PO ' + versionDetail.POLookup;
+                obj.activity_description = 'Scheduled invoice delinked for PO ' + currentPODetail.Number;
               }
               break;
           }
@@ -1755,13 +1757,13 @@ export class TimelineHistoryComponent implements OnInit {
       if (folder.ItemCount > 0) {
         folder.Files.results.forEach(file => {
           const obj = JSON.parse(JSON.stringify(this.objTimelineData));
-          const displayName = folder.Name === 'Communication' ? 'Meeting Notes & Client Comments' : folder.Name;
+          const displayName = folder.Name === 'Communications' ? 'Meeting Notes & Client Comments' : folder.Name;
           obj.date_time = new Date(file.TimeLastModified).toISOString();
           obj.activity_by = file.ModifiedBy.Title ? file.ModifiedBy.Title : file.ModifiedBy;
           obj.activity_type = 'Attachment';
           obj.activity_sub_type = 'Document added';
           obj.activity_description = 'Document added to ' + displayName;
-          obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + file.ServerRelativeUrl;
+          obj.file_uploaded = file.ServerRelativeUrl;
           items.push(obj);
 
         });
@@ -1846,7 +1848,7 @@ export class TimelineHistoryComponent implements OnInit {
             case this.globalConstant.sowList.columns.Comments:
               obj.activity_type = 'SOW updated';
               obj.activity_sub_type = 'Comments updated';
-              obj.activity_description = 'Comments updated to ' + versionDetail.Title;
+              obj.activity_description = 'Comments updated to ' + versionDetail.Comments;
               break;
             case this.globalConstant.sowList.columns.BusinessVertical:
               obj.activity_type = 'SOW updated';
@@ -1892,7 +1894,7 @@ export class TimelineHistoryComponent implements OnInit {
               }
               break;
             case this.globalConstant.sowList.columns.CMLevel1:
-              obj.activity_type = 'SOW updated';
+              obj.activity_type = 'Attachment';
               obj.activity_sub_type = 'CM Level 1 Updated';
               obj.activity_description = 'CM Level 1 Updated to ' + properties.CMLevel1;
               break;

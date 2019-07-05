@@ -14,12 +14,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AddProjectsComponent } from './projectmanagement/add-projects/add-projects.component';
 import { SelectSOWComponent } from './projectmanagement/add-projects/select-sow/select-sow.component';
 import { ProjectAttributesComponent } from './projectmanagement/add-projects/project-attributes/project-attributes.component';
-import { TimelineComponent } from './projectmanagement/add-projects/timeline/timeline.component';
+// import { AddTimelineComponent } from './projectmanagement/add-projects/addtimeline/timeline.component';
+import { AddTimelineComponent } from './projectmanagement/add-projects/addtimeline/addtimeline.component';
 import { FinanceManagementComponent } from './projectmanagement/add-projects/finance-management/finance-management.component';
 import { ManageFinanceComponent } from './projectmanagement/add-projects/manage-finance/manage-finance.component';
-import { StandardprojectComponent } from './projectmanagement/add-projects/timeline/standardproject/standardproject.component';
-import { NonStandardprojectComponent } from './projectmanagement/add-projects/timeline/non-standardproject/non-standardproject.component';
-import { UsercapacityComponent } from './projectmanagement/add-projects/timeline/usercapacity/usercapacity.component';
+import { StandardprojectComponent } from './projectmanagement/add-projects/addtimeline/standardproject/standardproject.component';
+import { NonStandardprojectComponent } from './projectmanagement/add-projects/addtimeline/non-standardproject/non-standardproject.component';
+import { UsercapacityComponent } from './projectmanagement/add-projects/addtimeline/usercapacity/usercapacity.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { PMResolve } from './PMResolve';
@@ -28,6 +29,9 @@ import { CommunicationComponent } from './projectmanagement/communication/commun
 import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/api';
 import { TimelineModule } from '../timeline/timeline.module';
 import { CustomMaterialModule } from '../shared/material.module';
+import { TaskAllocationModule } from '../task-allocation/task-allocation.module';
+import { ProjectTimelineComponent } from './projectmanagement/all-projects/project-timeline/project-timeline.component';
+
 @NgModule({
   declarations: [
     ProjectmanagementComponent,
@@ -40,13 +44,14 @@ import { CustomMaterialModule } from '../shared/material.module';
     AddProjectsComponent,
     SelectSOWComponent,
     ProjectAttributesComponent,
-    TimelineComponent,
+    AddTimelineComponent,
     FinanceManagementComponent,
     ManageFinanceComponent,
     StandardprojectComponent,
     NonStandardprojectComponent,
     UsercapacityComponent,
-    CommunicationComponent],
+    CommunicationComponent,
+    ProjectTimelineComponent],
   imports: [
     CommonModule,
     ProjectManagementRoutingModule,
@@ -57,7 +62,11 @@ import { CustomMaterialModule } from '../shared/material.module';
     ReactiveFormsModule,
     TimelineModule,
     CustomMaterialModule,
-    NgbModule
+    NgbModule,
+    TaskAllocationModule
+  ],
+  exports:[
+    AllProjectsComponent
   ],
   providers: [
     DatePipe,
@@ -66,10 +75,13 @@ import { CustomMaterialModule } from '../shared/material.module';
     PMMainResolve,
     DialogService,
     DynamicDialogConfig,
-    DynamicDialogRef],
+    DynamicDialogRef
+  ],
   entryComponents: [
     ProjectAttributesComponent,
     ManageFinanceComponent,
-    AddProjectsComponent]
+    AddProjectsComponent,
+    ProjectTimelineComponent
+  ]
 })
 export class ProjectmanagementModule { }

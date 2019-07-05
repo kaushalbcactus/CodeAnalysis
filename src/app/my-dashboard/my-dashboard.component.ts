@@ -63,7 +63,7 @@ export class MyDashboardComponent implements OnInit {
 
   async GetCurrentUser() {
     var currentUser = await this.spServices.getUserInfo(this.sharedObject.currentUser.id.toString());
-    debugger;
+ 
 
     //currentUser = JSON.parse(currentUser);
     this.sharedObject.currentUser.id = currentUser.Id;

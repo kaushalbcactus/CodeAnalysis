@@ -43,6 +43,10 @@
        
   }
 
+  ::ng-deep .clock-face__inner{
+    display: none !important;
+  }
+
   
 @media (min-width: 1400px) {
   
@@ -50,7 +54,7 @@
     {
       position: fixed !important;
       width: 100% !important;
-      margin: -3.3vw !important;
+      margin: -62px !important;
     }
   
     
@@ -63,7 +67,7 @@
     {
       position: fixed !important;
       width: 100% !important;
-      margin: -4.6vw !important;
+      margin: -64px !important;
     }
  
   }

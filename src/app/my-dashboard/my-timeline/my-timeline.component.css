@@ -51,7 +51,12 @@
  
 
 
-  
+  ::ng-deep .timeLineButton
+  {
+    position: fixed !important;
+    width: 100% !important;
+    margin: -57px !important;
+  }
 
   
   @media (min-width: 1400px) {
@@ -63,15 +68,10 @@
     }
     ::ng-deep .dropdowninfo
     { 
-      margin: 1.4vw 0 0 62vw !important;
+      margin: 27px 0 0 1180px !important;
       position: absolute !important;
     }
-    ::ng-deep .timeLineButton
-    {
-      position: fixed !important;
-      width: 100% !important;
-      margin: -2.6vw !important;
-    }
+ 
   
     
     :host ::ng-deep #CalendarInnerLoaderText  {
@@ -101,16 +101,11 @@
     ::ng-deep .dropdowninfo
     {
         float: left !important;
-        margin: 2vw 0 0 46vw!important;
+        margin: 27px 0 0 630px !important;
         position: absolute !important;
     }
     
-    ::ng-deep .timeLineButton
-    {
-      position: fixed !important;
-      width: 100% !important;
-      margin: -3.6vw !important;
-    }
+   
   
     :host ::ng-deep  #CalendarInnerLoaderText  {
     -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;

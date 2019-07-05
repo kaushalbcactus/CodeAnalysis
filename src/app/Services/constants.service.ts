@@ -291,7 +291,7 @@ export class ConstantsService {
     taskRating: 'Task Feedback',
     qualitative: 'Qualitative'
   };
-  public currentWebUrl = this.global.currentUser.webAbsoluteUrl;
+  public currentWebUrl = this.global.sharePointPageObject.serverRelativeUrl;
   // ***********************************************************************//
   // Add SOW
   // ***********************************************************************//
@@ -533,5 +533,26 @@ export class ConstantsService {
     AwaitingClosedDebitNote: 'Awaiting Closed Debit Note',
     ClosedWithDebitNote: 'Closed with Debit Note',
   };
+
+    public feedbackPopupComponent = {
+      getTemplates : this.currentWebUrl +
+                           "/_api/web/lists/getbytitle('" + this.listNames.ScorecardTemplate.name + "')/items?"+
+                           "$select=ID,Title,Tooltip"+
+                           "&$filter= IsActive eq 1&$top={{TopCount}}",
+      getTemplateMatrix :  this.currentWebUrl +
+                             "/_api/web/lists/getbytitle('" + this.listNames.ScorecardMatrix.name + "')/items?"+
+                             "$select=ID,Title, ScorecardTemplate/Title, Tooltip&$expand=ScorecardTemplate/Title"+
+                             "&$filter= IsActive eq 1 and ScorecardTemplate/Title eq '{{selectedTemplate}}'&$top={{TopCount}}",
+      addScorecardItem :  this.currentWebUrl + "/_api/web/lists/getbytitle('" + this.listNames.Scorecard.name + "')/items",
+      moveFileUrl :  this.currentWebUrl + "/_api/web/getfilebyserverrelativeurl('{{FileUrl}}')/moveto(newurl='{{NewFileUrl}}',flags=1)",
+      addScorecardRatingItem : this.currentWebUrl + "/_api/web/lists/getbytitle('" + this.listNames.ScorecardRatings.name + "')/items",
+      updateScorecardRatingItem:  this.currentWebUrl + "/_api/web/lists/getbytitle('" + this.listNames.ScorecardRatings.name + "')/items({{ID}})",
+      updateSchedulesListItem:  this.currentWebUrl + "/_api/web/lists/getbytitle('" + this.listNames.Schedules.name + "')/items({{ID}})",
+      notRatedPrevTasks :  this.currentWebUrl +
+                             "/_api/web/lists/getbytitle('" + this.listNames.Schedules.name + "')/items?"+
+                             "$select=ID, Title, ProjectCode, Status, Milestone, AssignedTo/ID, AssignedTo/Title, Actual_x0020_End_x0020_Date, PrevTasks, NextTasks"+
+                             "&$expand=AssignedTo/ID, AssignedTo/Title"+
+                             "&$filter= Title eq '{{PrevTaskTitle}}' and Rated eq 0&$top=1",
+   }
 
 }
