@@ -11,7 +11,8 @@ import { CommunicationComponent } from '../communication/communication.component
 import { ProjectAttributesComponent } from '../add-projects/project-attributes/project-attributes.component';
 import { ManageFinanceComponent } from '../add-projects/manage-finance/manage-finance.component';
 import { TimelineHistoryComponent } from '../../../timeline/timeline-history/timeline-history.component';
-
+import { Router } from '@angular/router';
+import { ProjectTimelineComponent } from './project-timeline/project-timeline.component';
 
 declare var $;
 @Component({
@@ -79,24 +80,25 @@ export class AllProjectsComponent implements OnInit {
     private spServices: SPOperationService,
     private messageService: MessageService,
     public dialogService: DialogService,
-
+    public router: Router
   ) { }
 
   ngOnInit() {
     this.isAllProjectTableHidden = true;
     this.isAllProjectLoaderHidden = false;
     this.popItems = [
-      { label: 'Confirm Project', icon: 'pi pi-check', command: (event) => this.changeProjectStatus(this.selectedProjectObj) },
-      { label: 'Propose Closure', icon: 'pi pi-download', command: (event) => this.changeProjectStatus(this.selectedProjectObj) },
-      { label: 'Audit Project', icon: 'pi pi-download', command: (event) => this.changeProjectStatus(this.selectedProjectObj) },
-      { label: 'Close Project', icon: 'pi pi-times-circle', command: (event) => this.changeProjectStatus(this.selectedProjectObj) },
-      { label: 'View Project', icon: 'pi pi-eye', command: (event) => this.viewProject(this.selectedProjectObj) },
-      { label: 'Edit Project', icon: 'pi pi-pencil', command: (event) => this.editProject(this.selectedProjectObj) },
-      { label: 'Manage Finance', icon: 'pi pi-download', command: (event) => this.manageFinances(this.selectedProjectObj) },
-      { label: 'Move SOW', icon: 'pi pi-download', command: (event) => this.moveSOW(this.selectedProjectObj) },
-      { label: 'Communication', icon: 'pi pi-download', command: (event) => this.communications(this.selectedProjectObj) },
-      { label: 'Show History', icon: 'pi pi-download', command: (event) => this.showTimeline(this.selectedProjectObj) },
-      { label: 'View Details', icon: 'pi pi-download', command: (event) => this.sendOutput.next(this.selectedProjectObj) }
+      { label: 'Confirm Project', command: (event) => this.changeProjectStatus(this.selectedProjectObj) },
+      { label: 'Propose Closure', command: (event) => this.changeProjectStatus(this.selectedProjectObj) },
+      { label: 'Audit Project', command: (event) => this.changeProjectStatus(this.selectedProjectObj) },
+      { label: 'Close Project', command: (event) => this.changeProjectStatus(this.selectedProjectObj) },
+      { label: 'View Project', command: (event) => this.viewProject(this.selectedProjectObj) },
+      { label: 'Edit Project', command: (event) => this.editProject(this.selectedProjectObj) },
+      { label: 'Communications', command: (event) => this.communications(this.selectedProjectObj) },
+      { label: 'Timeline', command: (event) => this.projectTimeline(this.selectedProjectObj) },
+      { label: 'Manage Finance', command: (event) => this.manageFinances(this.selectedProjectObj) },
+      { label: 'Change SOW', command: (event) => this.moveSOW(this.selectedProjectObj) },
+      { label: 'Show History', command: (event) => this.showTimeline(this.selectedProjectObj) },
+      { label: 'View Details', command: (event) => this.sendOutput.next(this.selectedProjectObj) }
     ];
     setTimeout(() => {
       this.getAllProjects();
@@ -262,43 +264,61 @@ export class AllProjectsComponent implements OnInit {
   storeRowData(rowData, menu) {
     this.selectedProjectObj = rowData;
     const status = this.selectedProjectObj.Status;
-    switch (status) {
-      case this.constants.projectStatus.InDiscussion:
-        menu.model[0].visible = true;
-        menu.model[1].visible = false;
-        menu.model[2].visible = false;
-        menu.model[3].visible = false;
-        menu.model[6].visible = true;
-        break;
-      case this.constants.projectStatus.Unallocated:
-      case this.constants.projectStatus.InProgress:
-      case this.constants.projectStatus.ReadyForClient:
-      case this.constants.projectStatus.OnHold:
-      case this.constants.projectStatus.AuthorReview:
-        menu.model[0].visible = false;
-        menu.model[1].visible = true;
-        menu.model[2].visible = false;
-        menu.model[3].visible = false;
-        menu.model[6].visible = true;
-        break;
-      case this.constants.projectStatus.AuditInProgress:
-        menu.model[0].visible = false;
-        menu.model[1].visible = false;
-        menu.model[2].visible = true;
-        menu.model[3].visible = false;
-        menu.model[6].visible = true;
-        break;
-      case this.constants.projectStatus.PendingClosure:
-        menu.model[0].visible = false;
-        menu.model[1].visible = false;
-        menu.model[2].visible = false;
-        menu.model[3].visible = true;
-        menu.model[6].visible = false;
-        break;
-      case this.constants.projectStatus.AwaitingCancelApproval:
-        menu.model[6].visible = false;
-        break;
+    const route = this.router.url;
+    if (route.indexOf('myDashboard') > -1) {
+      menu.model[0].visible = false;
+      menu.model[1].visible = false;
+      menu.model[2].visible = false;
+      menu.model[3].visible = false;
+      menu.model[4].visible = false;
+      menu.model[5].visible = false;
+      menu.model[6].visible = false;
+      menu.model[7].visible = false;
+      menu.model[8].visible = false;
+      menu.model[9].visible = false;
+      menu.model[10].visible = false;
     }
+    else {
+      menu.model[11].visible = false;
+      switch (status) {
+        case this.constants.projectStatus.InDiscussion:
+          menu.model[0].visible = true;
+          menu.model[1].visible = false;
+          menu.model[2].visible = false;
+          menu.model[3].visible = false;
+          menu.model[6].visible = true;
+          break;
+        case this.constants.projectStatus.Unallocated:
+        case this.constants.projectStatus.InProgress:
+        case this.constants.projectStatus.ReadyForClient:
+        case this.constants.projectStatus.OnHold:
+        case this.constants.projectStatus.AuthorReview:
+          menu.model[0].visible = false;
+          menu.model[1].visible = true;
+          menu.model[2].visible = false;
+          menu.model[3].visible = false;
+          menu.model[6].visible = true;
+          break;
+        case this.constants.projectStatus.AuditInProgress:
+          menu.model[0].visible = false;
+          menu.model[1].visible = false;
+          menu.model[2].visible = true;
+          menu.model[3].visible = false;
+          menu.model[6].visible = true;
+          break;
+        case this.constants.projectStatus.PendingClosure:
+          menu.model[0].visible = false;
+          menu.model[1].visible = false;
+          menu.model[2].visible = false;
+          menu.model[3].visible = true;
+          menu.model[6].visible = false;
+          break;
+        case this.constants.projectStatus.AwaitingCancelApproval:
+          menu.model[6].visible = false;
+          break;
+      }
+    }
+
   }
   /**
    * This method is called to change the project status based on current project status.
@@ -550,6 +570,13 @@ export class AllProjectsComponent implements OnInit {
   }
   communications(selectedProjectObj) {
     const ref = this.dialogService.open(CommunicationComponent, {
+      data: {
+        projectObj: selectedProjectObj
+      }
+    });
+  }
+  projectTimeline(selectedProjectObj) {
+    const ref = this.dialogService.open(ProjectTimelineComponent, {
       data: {
         projectObj: selectedProjectObj
       }

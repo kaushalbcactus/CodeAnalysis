@@ -4,7 +4,7 @@ import { SharepointoperationService } from 'src/app/Services/sharepoint-operatio
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { UsercapacityComponent } from '../usercapacity/usercapacity.component';
-import { TimelineComponent } from '../timeline.component';
+import { AddTimelineComponent } from '../addtimeline.component';
 import { DatePipe } from '@angular/common';
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
@@ -85,7 +85,7 @@ export class StandardprojectComponent implements OnInit {
     public pmObject: PMObjectService,
     private constants: ConstantsService,
     private userCapacity: UsercapacityComponent,
-    private timelineObject: TimelineComponent,
+    private timelineObject: AddTimelineComponent,
     public datepipe: DatePipe,
     private ngZone: NgZone,
     private pmConstant: PmconstantService,

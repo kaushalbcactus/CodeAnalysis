@@ -16,7 +16,6 @@ export class DisplayProjectsComponent implements OnInit {
   }
 
   callOutput(event) {
-    alert('Call');
     this.searchProject.getProjectDetails(event);
   }
 

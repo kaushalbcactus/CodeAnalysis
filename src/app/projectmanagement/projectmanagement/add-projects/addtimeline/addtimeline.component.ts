@@ -5,12 +5,12 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { debounceTime } from 'rxjs/operators';
 declare var $;
 @Component({
-  selector: 'app-timeline',
-  templateUrl: './timeline.component.html',
-  styleUrls: ['./timeline.component.css'],
+  selector: 'app-addtimeline',
+  templateUrl: './addtimeline.component.html',
+  styleUrls: ['./addtimeline.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class TimelineComponent implements OnInit {
+export class AddTimelineComponent implements OnInit {
   public timelineAlertMsg: string;
   // tslint:disable-next-line:variable-name
   private _timelineAlert = new Subject<string>();

@@ -1,7 +1,7 @@
 <p-steps [model]="steps" [(activeIndex)]="pmObject.activeIndex" [readonly]="true"></p-steps>
 <app-select-sow *ngIf="pmObject.activeIndex==0"></app-select-sow>
 <app-project-attributes *ngIf="pmObject.activeIndex ==1"></app-project-attributes>
-<app-timeline *ngIf="pmObject.activeIndex==2"></app-timeline>
+<app-addtimeline *ngIf="pmObject.activeIndex==2"></app-addtimeline>
 <app-finance-management *ngIf="pmObject.activeIndex==3" [manageData]="financeManageData" (dataEvent)="receiveData($event)"></app-finance-management>
 <p-dialog [(visible)]="isMangageFinanceVisible" appendTo='body' [modal]="true" [style]="{width: '1300px'}">
    <p-header>

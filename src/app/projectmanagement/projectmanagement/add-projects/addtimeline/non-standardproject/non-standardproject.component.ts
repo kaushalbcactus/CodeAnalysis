@@ -3,7 +3,7 @@ import { SharepointoperationService } from 'src/app/Services/sharepoint-operatio
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
-import { TimelineComponent } from '../timeline.component';
+import { AddTimelineComponent } from '../addtimeline.component';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MessageService } from 'primeng/api';
 declare var $;
@@ -11,7 +11,7 @@ declare var $;
   selector: 'app-non-standardproject',
   templateUrl: './non-standardproject.component.html',
   styleUrls: ['./non-standardproject.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None 
 })
 export class NonStandardprojectComponent implements OnInit {
 
@@ -21,7 +21,7 @@ export class NonStandardprojectComponent implements OnInit {
     private pmConstant: PmconstantService,
     private pmCommonService: PMCommonService,
     private constants: ConstantsService,
-    private timelineObject: TimelineComponent,
+    private timelineObject: AddTimelineComponent,
     private messageService: MessageService) { }
   public nonStandardDeliverableType = [];
   public nonStandardSubType = [];
