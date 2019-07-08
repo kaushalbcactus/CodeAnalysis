@@ -163,8 +163,8 @@
                 </td>
                 <td>
                     <span *ngIf="rowData.MainStatus !=='Planned'">
-                        <p-slideMenu #popupMenu [style]="{'width': '20em'}" [popup]="true" appendTo="body"
-                            [model]="taskMenu"></p-slideMenu>
+                        <p-menu #popupMenu [style]="{'width': '20em'}" [popup]="true" appendTo="body"
+                            [model]="taskMenu"></p-menu>
 
                         <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                             (click)="openPopup(rowData, popupMenu);popupMenu.toggle($event);"></i>

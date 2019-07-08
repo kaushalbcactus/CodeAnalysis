@@ -114,8 +114,8 @@
           </td>
           <td>
             <span>
-              <p-slideMenu #popupMenu [popup]="true" appendTo="body" [model]="projectMenu">
-              </p-slideMenu>
+              <p-menu #popupMenu [popup]="true" appendTo="body" [model]="projectMenu">
+              </p-menu>
 
               <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                 (click)="openPopup(rowData, popupMenu);popupMenu.toggle($event);"></i>
