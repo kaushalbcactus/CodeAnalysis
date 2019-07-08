@@ -6,7 +6,7 @@
 <div [hidden]="isManageFinanceTableHidden">
   <p-accordion [activeIndex]="index">
     <p-accordionTab [selected]="true">
-      <p-header>
+      <p-header class="financeHeader">
         <div class="ui-grid-row">
           <div class="ui-grid-col-2">
             Budget
@@ -98,7 +98,7 @@
       </p-table>
     </p-accordionTab>
     <p-accordionTab>
-      <p-header>
+      <p-header class="financeHeader">
         <div class="ui-grid-row">
           <div class="ui-grid-col-2">
             PO
@@ -180,7 +180,7 @@
                 </tr>
               </ng-template>
             </p-table>
-            <div>PO Information</div>
+            <!-- <div>PO Information</div> -->
             <p-table [value]=poObj.poInfoData>
               <ng-template pTemplate="header">
                 <tr>
@@ -214,7 +214,7 @@
       </div>
     </p-accordionTab>
     <p-accordionTab>
-      <p-header>
+      <p-header class="financeHeader">
         <div class="ui-grid-row">
           <div class="ui-grid-col-2">
             Unassigned

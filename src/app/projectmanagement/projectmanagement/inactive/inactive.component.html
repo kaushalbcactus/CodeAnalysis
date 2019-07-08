@@ -10,7 +10,8 @@
         <p-table #iapTableRef [columns]="displayedColumns" [value]="pmObject.inActiveProjectArray_copy"
             [paginator]="true" [rows]="5" [lazy]="true" (onLazyLoad)="iapLazyLoadTask($event)"
             [totalRecords]="pmObject.totalRecords.InactiveProject" [loading]="pmObject.loading.InactiveProject"
-            [lazyLoadOnInit]="false" [(contextMenuSelection)]="selectedIAPTask" [contextMenu]="iapContextMenu">
+            [lazyLoadOnInit]="false" [(contextMenuSelection)]="selectedIAPTask" >
+            <!-- [contextMenu]="iapContextMenu" -->
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th *ngFor="let col of columns" [pSortableColumn]="col.field">
@@ -46,7 +47,8 @@
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-rowData let-task>
-                <tr [pContextMenuRow]="rowData">
+                <tr >
+                        <!-- [pContextMenuRow]="rowData" -->
                     <td>{{task.ProjectCode}}</td>
                     <td>{{task.ClientLegalEntity}}</td>
                     <td>{{task.POC}}</td>
@@ -67,7 +69,7 @@
             </ng-template>
 
         </p-table>
-        <p-contextMenu #iapContextMenu [model]="iapContextMenuOptions"></p-contextMenu>
+        <!-- <p-contextMenu #iapContextMenu [model]="iapContextMenuOptions"></p-contextMenu> -->
     </div>
 </div>
 <app-timeline-history #timelineRef></app-timeline-history>

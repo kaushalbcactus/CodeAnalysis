@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -18,7 +18,8 @@ declare var $;
 @Component({
   selector: 'app-all-projects',
   templateUrl: './all-projects.component.html',
-  styleUrls: ['./all-projects.component.css']
+  styleUrls: ['./all-projects.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class AllProjectsComponent implements OnInit {
   @Output() sendOutput = new EventEmitter<string>();

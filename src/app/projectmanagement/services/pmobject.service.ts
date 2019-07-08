@@ -8,7 +8,7 @@ export class PMObjectService {
   constructor(
     private globalObject: GlobalService
   ) { }
-  public tabMenuItems:[];
+  public tabMenuItems: any;
   public totalRecords = {
     SendToClient: 0,
     ClientReview: 0,

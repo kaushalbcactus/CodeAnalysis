@@ -19,8 +19,8 @@ declare var $;
 export class SOWComponent implements OnInit {
   @Output() projectItem: EventEmitter<any> = new EventEmitter();
   displayedColumns: any[] = [
-    { field: 'SOWCode', header: 'Sow Code' },
-    { field: 'ShortTitle', header: 'Short Title' },
+    { field: 'SOWCode', header: 'SOW Code' },
+    { field: 'ShortTitle', header: 'SOW Title' },
     { field: 'ClientLegalEntity', header: 'Client Legal Entity' },
     { field: 'POC', header: 'POC' },
     { field: 'CreatedBy', header: 'Created By' },
