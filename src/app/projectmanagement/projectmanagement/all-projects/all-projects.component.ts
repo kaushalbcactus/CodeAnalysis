@@ -150,11 +150,11 @@ export class AllProjectsComponent implements OnInit {
       this.pmObject.allProjectItems = arrResults;
       this.pmObject.countObj.allProjectCount = arrResults.length;
       this.pmObject.totalRecords.AllProject = this.pmObject.countObj.allProjectCount;
-      if(this.pmObject.tabMenuItems.length) {
+      if (this.pmObject.tabMenuItems.length) {
         this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       }
-      
+
     }
     if (this.pmObject.allProjectItems && this.pmObject.allProjectItems.length) {
       const tempAllProjectArray = [];
@@ -594,6 +594,7 @@ export class AllProjectsComponent implements OnInit {
     const projObj: any = selectedProjectObj;
     projObj.isUpdate = true;
     const ref = this.dialogService.open(ManageFinanceComponent, {
+      header: 'Manage Finance - ' + selectedProjectObj.ProjectCode + '(' + selectedProjectObj.Title + ')',
       data: {
         projectObj: projObj
       }
@@ -601,6 +602,7 @@ export class AllProjectsComponent implements OnInit {
   }
   communications(selectedProjectObj) {
     const ref = this.dialogService.open(CommunicationComponent, {
+      header: 'Communications - ' + selectedProjectObj.ProjectCode + '(' + selectedProjectObj.Title + ')',
       data: {
         projectObj: selectedProjectObj
       }
@@ -608,6 +610,7 @@ export class AllProjectsComponent implements OnInit {
   }
   projectTimeline(selectedProjectObj) {
     const ref = this.dialogService.open(ProjectTimelineComponent, {
+      header: 'Project Timeline - ' + selectedProjectObj.ProjectCode + '(' + selectedProjectObj.Title + ')',
       data: {
         projectObj: selectedProjectObj
       }
@@ -744,6 +747,7 @@ export class AllProjectsComponent implements OnInit {
    */
   editProject(projObj) {
     const ref = this.dialogService.open(ProjectAttributesComponent, {
+      header: 'Edit Project - ' + projObj.ProjectCode + '(' + projObj.Title + ')',
       data: {
         projectObj: projObj
       }
