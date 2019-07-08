@@ -208,7 +208,7 @@ export class DeliverableBasedComponent implements OnInit {
     createDBICols() {
         this.deliverableBasedCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
-            { field: 'SOWCode', header: 'SOW Code/ Name', visibility: true },
+            { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
             { field: 'PONumber', header: 'PO Number/ Name', visibility: true },
             { field: 'ClientName', header: 'Client LE', visibility: true },
@@ -218,6 +218,7 @@ export class DeliverableBasedComponent implements OnInit {
             { field: 'POCName', header: 'POC Name', visibility: true },
 
             { field: 'SOWName', header: 'SOW Name', visibility: false },
+            { field: 'SOWCode', header: 'SOW Code', visibility: false },
             { field: 'POName', header: 'PO Name', visibility: false },
             { field: 'Notes', header: 'Notes', visibility: false },
             { field: 'AddressType', header: 'Address Type', visibility: false },
@@ -241,8 +242,16 @@ export class DeliverableBasedComponent implements OnInit {
         this.deliverableBasedRes = [];
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
-        let obj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesDel);
+        const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
+        let isManager = false; 
+        if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1) {
+            isManager = true;
+        }
+        let obj = Object.assign({}, isManager ?  this.fdConstantsService.fdComponent.invoicesDel : this.fdConstantsService.fdComponent.invoicesDelCS);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
+        if(!isManager) {
+            obj.filter = obj.filter.replace("{{UserId}}",this.globalService.sharePointPageObject.userId.toString());
+        }
         const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
@@ -291,13 +300,14 @@ export class DeliverableBasedComponent implements OnInit {
                 Id: element.ID,
                 ProjectCode: element.Title,
                 SOWCode: element.SOWCode,
+                SOWValue: element.SOWCode + ' / ' + sowItem.Title,
                 SOWName: sowItem.Title,
                 ProjectMileStone: this.getMilestones(element).Milestone,
                 PONumber: this.getPONumber(element).Number,
                 PO: element.PO,
                 POCId: element.MainPOC,
                 ClientName: this.getCLE(element),
-                ScheduledDate: this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
+                ScheduledDate: element.ScheduledDate, // this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
                 Amount: element.Amount,
                 Currency: element.Currency,
                 POCName: this.getPOCName(element),
@@ -316,6 +326,7 @@ export class DeliverableBasedComponent implements OnInit {
                 Modified: this.datePipe.transform(element.Modified, 'MMM d, y'),
             })
         }
+        this.deliverableBasedRes = [...this.deliverableBasedRes];
         this.createColFieldValues();
     }
 
@@ -391,12 +402,12 @@ export class DeliverableBasedComponent implements OnInit {
 
     createColFieldValues() {
         this.deliverableBasedColArray.ProjectCode = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }));
-        this.deliverableBasedColArray.SOWCode = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }));
+        this.deliverableBasedColArray.SOWCode = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }));
         this.deliverableBasedColArray.ProjectMileStone = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }));
         this.deliverableBasedColArray.POCName = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }));
         // this.deliverableBasedColArray.ClientName this.uniqueArrayObj(= this.deliverableBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }));
         this.deliverableBasedColArray.ClientName = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b ? b : ''; }));
-        this.deliverableBasedColArray.ScheduledDate = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.ScheduledDate, value: a.ScheduledDate }; return b; }));
+        this.deliverableBasedColArray.ScheduledDate = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }));
         this.deliverableBasedColArray.Amount = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
         this.deliverableBasedColArray.Currency = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
         this.deliverableBasedColArray.PONumber = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
@@ -487,8 +498,8 @@ export class DeliverableBasedComponent implements OnInit {
         }
         this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });
         this.items.push({ label: 'View Project Details', command: (e) => this.openMenuContent(e, data) });
-        this.items.push({ label: 'Show History', command: (e) => this.openMenuContent(e, data) });
         this.items.push({ label: 'Details', command: (e) => this.openMenuContent(e, data) });
+        this.items.push({ label: 'Show History', command: (e) => this.openMenuContent(e, data) });
     }
 
     deliverableModal: boolean = false;
@@ -824,8 +835,13 @@ export class DeliverableBasedComponent implements OnInit {
                 }
             }
         }
+        arrayTo = arrayTo.filter(this.onlyUnique);
         console.log('arrayTo ', arrayTo);
         return arrayTo;
+    }
+
+    onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
     }
 
 

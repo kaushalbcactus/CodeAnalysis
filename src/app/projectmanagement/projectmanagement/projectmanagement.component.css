@@ -295,9 +295,9 @@ label.star:before {
   .custom-select select {
     display: none; /*hide original SELECT element:*/
   }
-  .select-selected {
-    /*background-color: DodgerBlue;*/
-  }
+  /* .select-selected {
+    /*background-color: DodgerBlue;
+  } */
   /*style the arrow inside the select element:*/
   .select-selected:after {
     position: absolute;
@@ -574,7 +574,7 @@ body .ui-table .ui-table-tbody > tr:nth-child(even){
         float: right;
     }
     .ui-dialog-resizable .ui-dialog-content{
-        overflow: scroll;
+        overflow: auto;
         height: 500px;
     }
     
@@ -746,3 +746,22 @@ body .ui-corner-top {
   border-top-right-radius: 0px;
 }
   /* New changes in css 19-6-2019 End */
+
+
+  .allSOW-section table tbody tr td:last-child, 
+  .allProjects-section table tbody tr td:last-child,
+  .projectDataExist table tbody tr td:last-child  {
+    vertical-align: middle;
+
+  }
+
+  .allSOW-section table tbody tr td:last-child p-slidemenu, 
+  .allProjects-section table tbody tr td:last-child p-slidemenu,
+  .projectDataExist table tbody tr td:last-child p-slidemenu {
+    display: none;
+  }
+
+  /* .allSOW-section table tbody tr td:last-child i {
+    padding-top: 5px;
+
+  } */

@@ -19,7 +19,7 @@ import { CommonService } from 'src/app/Services/common.service';
 })
 export class PaidInvoicesComponent implements OnInit {
 
-    outstandingInvoicesRes: any = [];
+    paidInvoicesRes: any = [];
     outstandingInCols: any[];
     msgs: Message[] = [];
 
@@ -68,7 +68,7 @@ export class PaidInvoicesComponent implements OnInit {
         endDate: '',
     };
 
-    @ViewChild('timelineRef', {static:true}) timeline: TimelineHistoryComponent;
+    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
     constructor(
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
@@ -345,6 +345,7 @@ export class PaidInvoicesComponent implements OnInit {
     // Get Proformas InvoiceItemList
     outstandingInv: any = [];
     async getRequiredData() {
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
         let invoicesQuery = '';
@@ -372,10 +373,10 @@ export class PaidInvoicesComponent implements OnInit {
     }
 
     formatData(data: any[]) {
-        this.outstandingInvoicesRes = [];
+        this.paidInvoicesRes = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
-            this.outstandingInvoicesRes.push({
+            this.paidInvoicesRes.push({
                 Id: element.ID,
                 InvoiceStatus: element.Status,
                 InvoiceNumber: element.InvoiceNumber,
@@ -409,8 +410,10 @@ export class PaidInvoicesComponent implements OnInit {
                 Created: element.Created
             })
         }
+        this.paidInvoicesRes = [...this.paidInvoicesRes];
         this.isPSInnerLoaderHidden = true;
         this.createColFieldValues();
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
     // Project PO
@@ -441,7 +444,7 @@ export class PaidInvoicesComponent implements OnInit {
     }
 
     getOutstandingData() {
-        this.outstandingInvoicesRes = [
+        this.paidInvoicesRes = [
             {
                 id: 1,
                 InvoiceStatus: 'Status',
@@ -483,15 +486,15 @@ export class PaidInvoicesComponent implements OnInit {
     }
 
     createColFieldValues() {
-        this.outInvoiceColArray.InvoiceStatus = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }));
-        this.outInvoiceColArray.InvoiceNumber = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }));
-        this.outInvoiceColArray.PONumber = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
-        this.outInvoiceColArray.POName = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; }));
-        this.outInvoiceColArray.ClientLegalEntity = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
-        this.outInvoiceColArray.InvoiceDate = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.InvoiceDate, value: a.InvoiceDate }; return b; }));
-        this.outInvoiceColArray.Amount = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
-        this.outInvoiceColArray.Currency = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
-        this.outInvoiceColArray.POC = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.POC, value: a.POC }; return b; }));
+        this.outInvoiceColArray.InvoiceStatus = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }));
+        this.outInvoiceColArray.InvoiceNumber = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }));
+        this.outInvoiceColArray.PONumber = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
+        this.outInvoiceColArray.POName = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; }));
+        this.outInvoiceColArray.ClientLegalEntity = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
+        this.outInvoiceColArray.InvoiceDate = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.InvoiceDate, value: a.InvoiceDate }; return b; }));
+        this.outInvoiceColArray.Amount = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
+        this.outInvoiceColArray.Currency = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
+        this.outInvoiceColArray.POC = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.POC, value: a.POC }; return b; }));
     }
 
     uniqueArrayObj(array: any) {
@@ -561,8 +564,8 @@ export class PaidInvoicesComponent implements OnInit {
         //     }
         // }
         this.items.push(
-            { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
+            { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
         )
         if (this.items.length === 0) {
             console.log('this.items ', this.items);

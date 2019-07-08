@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
+import { Component, OnInit, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
@@ -6,13 +6,13 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { DatePipe } from '@angular/common';
 import { ConfirmationService, DynamicDialogConfig, MessageService, DynamicDialogRef } from 'primeng/api';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { ThrowStmt } from '@angular/compiler';
 declare var $;
 @Component({
   selector: 'app-manage-finance',
   templateUrl: './manage-finance.component.html',
   styleUrls: ['./manage-finance.component.css'],
-  providers:[MessageService]
+  providers:[MessageService],
+  encapsulation: ViewEncapsulation.None
 })
 export class ManageFinanceComponent implements OnInit {
   @Input() billedBy: any;
@@ -328,7 +328,7 @@ export class ManageFinanceComponent implements OnInit {
         tempPOObj.poId = this.selectedPo;
         const poValue = this.poArray.filter(x => x.ID === this.selectedPo);
         if (poValue && poValue.length) {
-          tempPOObj.poValue = poValue[0].Number + '-' + poValue[0].Name;
+          tempPOObj.poValue = poValue[0].Number + ' - ' + poValue[0].Name;
         }
         tempPOObj.total = 0;
         tempPOObj.revenue = 0;

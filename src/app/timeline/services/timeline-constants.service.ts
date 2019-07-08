@@ -20,6 +20,7 @@ export class TimelineConstantsService {
       top: '4500'
     }
   };
+  // tslint:disable
   public financeDashboard = {
     invoice: {
       propertiesRequired: ['Status', 'FileURL', 'PaymentURL', 'InvoiceHtml'],

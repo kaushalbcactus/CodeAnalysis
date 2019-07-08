@@ -63,8 +63,8 @@ export class ProformaComponent implements OnInit {
     proformatTemplates: any = [];
     proformaAddressType: any = [];
     proformaTypes: any = [];
-    @ViewChild('timelineRef', {static:true}) timeline: TimelineHistoryComponent;
-    @ViewChild('editorRef', {static:true}) editorRef: EditorComponent;
+    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+    @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
     constructor(
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
@@ -345,7 +345,8 @@ export class ProformaComponent implements OnInit {
                 Id: element.ID,
                 ProformaNumber: element.Title,
                 PONumber: this.getPONumber(element).Number,
-                ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM d, y'),
+                ProformaDate: element.ProformaDate,
+                // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM d, y'),
                 ProformaType: element.ProformaType,
                 Amount: element.Amount,
                 Currency: element.Currency,
@@ -368,6 +369,7 @@ export class ProformaComponent implements OnInit {
                 Modified: this.datePipe.transform(element.Modified, 'MMM d, y'),
             })
         }
+        this.proformaRes = [...this.proformaRes];
         this.isPSInnerLoaderHidden = true;
         this.createColFieldValues();
     }
@@ -405,7 +407,7 @@ export class ProformaComponent implements OnInit {
     createColFieldValues() {
         this.proformaColArray.ProformaNumber = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }));
         this.proformaColArray.PONumber = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
-        this.proformaColArray.ProformaDate = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.ProformaDate, value: a.ProformaDate }; return b; }));
+        this.proformaColArray.ProformaDate = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: this.datePipe.transform(a.ProformaDate, "MMM dd, yyyy"), value: a.ProformaDate }; return b; }));
         this.proformaColArray.ProformaType = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.ProformaType, value: a.ProformaType }; return b; }));
         this.proformaColArray.Status = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; }));
         this.proformaColArray.Amount = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
@@ -570,15 +572,39 @@ export class ProformaComponent implements OnInit {
                 this.fdConstantsService.fdComponent.selectedComp = this;
                 switch (data.Template) {
                     case 'US':
+                        this.editorRef.enableButton();
                         this.editorRef.USTemplateCopy = proformaObj.saveObj;
+                        if (this.editorRef.USTemplateCopy.appendix) {
+                            this.editorRef.showAppendix = true;
+                        } else {
+                            this.editorRef.showAppendix = false;
+                        }
+                        this.editorRef.displayJapan = false;
                         this.editorRef.displayUS = true;
+                        this.editorRef.displayIndia = false;
                         break;
                     case 'Japan':
+                        this.editorRef.enableButton();
                         this.editorRef.JapanTemplateCopy = proformaObj.saveObj;
+                        if (this.editorRef.JapanTemplateCopy.appendix) {
+                            this.editorRef.showAppendix = true;
+                        } else {
+                            this.editorRef.showAppendix = false;
+                        }
                         this.editorRef.displayJapan = true;
+                        this.editorRef.displayUS = false;
+                        this.editorRef.displayIndia = false;
                         break;
                     case 'India':
+                        this.editorRef.enableButton();
                         this.editorRef.IndiaTemplateCopy = proformaObj.saveObj;
+                        if (this.editorRef.IndiaTemplateCopy.appendix) {
+                            this.editorRef.showAppendix = true;
+                        } else {
+                            this.editorRef.showAppendix = false;
+                        }
+                        this.editorRef.displayJapan = false;
+                        this.editorRef.displayUS = false;
                         this.editorRef.displayIndia = true;
                         break;
                 }
@@ -834,11 +860,7 @@ export class ProformaComponent implements OnInit {
         data.push(updatePOObj);
 
 
-        ///Update InvoiceLineItem
-        let iliObj = {
-            Status: 'Approved'
-        }
-        iliObj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+
         let iliEndpoint = [];
         let pfs: any = [];
         let pfbs: any = [];
@@ -846,12 +868,6 @@ export class ProformaComponent implements OnInit {
         for (let j = 0; j < this.iliByPidRes.length; j++) {
             const element = this.iliByPidRes[j];
             // iliEndpoint.push()
-            data.push({
-                // Id: element.Id,
-                objData: iliObj,
-                endpoint: this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", element.Id),
-                requestPost: false
-            });
 
             // PF 
             let pfsItem = await this.findpfFrompfRes(element);
@@ -1305,10 +1321,7 @@ export class ProformaComponent implements OnInit {
         }
     }
 
-    batchContents: any = [];
-    async submitForm(dataEndpointArray, type: string) {
-        console.log('Form is submitting');
-
+    async callBatchRequest(dataEndpointArray) {
         this.batchContents = [];
         const batchGuid = this.spServices.generateUUID();
         const changeSetId = this.spServices.generateUUID();
@@ -1327,17 +1340,21 @@ export class ProformaComponent implements OnInit {
         const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
         batchBodyContent.push('--batch_' + batchGuid + '--');
         const sBatchData = batchBodyContent.join('\r\n');
-        const res = await this.spServices.getFDData(batchGuid, sBatchData);
-        // .subscribe(res => {
+        return await this.spServices.getFDData(batchGuid, sBatchData);
+    }
 
-        // });
+
+    batchContents: any = [];
+    async submitForm(dataEndpointArray, type: string) {
+        const res = await this.callBatchRequest(dataEndpointArray);
         const arrResults = res;
         console.log('--oo ', arrResults);
         if (type === "Mark as Sent to Client" || type === "Reject Proforma") {
             let sts = '';
             sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Status changed to "' + sts + '" Successfully.', detail: '', life: 2000 })
-            this.reload();
+            // this.reload();
+            this.refetchData();
         } else if (type === "createProforma") {
             this.proformaModal = false;
             await this.fdDataShareServie.callProformaCreation(arrResults[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, []);
@@ -1347,7 +1364,28 @@ export class ProformaComponent implements OnInit {
         } else if (type === "generateInvoice") {
             const oInv = arrResults[0];
             let proformHtml = this.selectedRowItem.ProformaHtml;
+
+            ////// Invoice line item update
+            ///Update InvoiceLineItem
+            let iliObj = {
+                Status: 'Approved',
+                InvoiceLookup: oInv.ID
+            }
+            let data = [];
+            iliObj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            for (let j = 0; j < this.iliByPidRes.length; j++) {
+                const element = this.iliByPidRes[j];
+                data.push({
+                    // Id: element.Id,
+                    objData: iliObj,
+                    endpoint: this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", element.Id),
+                    requestPost: false
+                });
+            }
+
+            await this.callBatchRequest(data);
             ////// Replace date on specific sections only
+
             if (proformHtml) {
                 const proformaDate = this.datePipe.transform(this.selectedRowItem.ProformaDate, 'MMM d, y');
                 proformHtml = proformHtml.replace(new RegExp("Proforma", "g"), "Invoice");
@@ -1369,23 +1407,27 @@ export class ProformaComponent implements OnInit {
                 await this.spOperations.executeJS(pdfService, pdfCall);
             }
             this.generateInvoiceModal = false;
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Generated.', detail: '', life: 2000 })
+            // this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Generated.', detail: '', life: 2000 });
+            this.messageService.add({ key: 'custom', sticky: true, severity: 'success', summary: 'Invoice Generated', detail: 'Invoice Number: ' + oInv.InvoiceNumber });
             this.reload();
         } else if (type === "replaceProforma") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success.', detail: '', life: 2000 });
             this.replaceProformaModal = false;
-            this.reload();
+            // this.reload();
+            this.refetchData();
         }
         this.isPSInnerLoaderHidden = true;
 
     }
 
-
+    refetchData() {
+        this.getRequiredData();
+    }
 
     reload() {
         setTimeout(() => {
-            //window.location.reload();
-            this.getRequiredData();
+            window.location.reload();
+            // this.getRequiredData();
             // this.currentUserInfo();
         }, 3000);
     }

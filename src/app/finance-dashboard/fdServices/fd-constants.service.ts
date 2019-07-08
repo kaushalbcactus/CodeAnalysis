@@ -69,7 +69,7 @@ export class FdConstantsService {
             top: '5000'
         },
         currency: {
-            select: "ID,Title",
+            select: "ID,Title,Value",
             top: 4500,
             orderby: "Title"
         },
@@ -85,7 +85,7 @@ export class FdConstantsService {
             top: "7"
         },
         budgetRate: {
-            select: "Title, ConversionRate",
+            select: "Title, ConversionRate,Symbol",
             top: "30"
         },
         userGroup: {
@@ -104,6 +104,12 @@ export class FdConstantsService {
         spendingInfo: {
             select: "ID,Title,Number,Header,DateSpend,FiscalYear,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,Notes,InvoiceID,Category,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,AuthorId,EditorId",
             filter: "Status eq '{{Status}}' ",
+            top: 4500,
+            orderby: "{{Status}} desc"
+        },
+        spendingInfoCS: {
+            select: "ID,Title,Number,Header,DateSpend,FiscalYear,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,Notes,InvoiceID,Category,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,AuthorId,EditorId",
+            filter: "Status eq '{{Status}}' and CSId eq {{UserID}}",
             top: 4500,
             orderby: "{{Status}} desc"
         },
@@ -137,10 +143,27 @@ export class FdConstantsService {
             orderby: "ScheduledDate asc",
             expand: "CS/ID,CS/Title"
         },
+        // Schedule Deliverable
+        invoicesDelCS: {
+            // select: "ID,Title,SOWCode,ScheduledDate,FiscalYear,Amount,Currency,MainPOC,AddressType,PO,Status,Template,ScheduleType,SOWCode,CS/ID,CS/Title",
+            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title",
+            filter: "Status eq 'Scheduled' and ScheduleType eq 'revenue' and (ScheduledDate ge '{{StartDate}}' and ScheduledDate le '{{EndDate}}') and CSId eq {{UserID}}",
+            top: 4500,
+            orderby: "ScheduledDate asc",
+            expand: "CS/ID,CS/Title"
+        },
         // Schedule OOP Invoices
         invoicesOOP: {
             select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title",
             filter: "Status eq 'Scheduled' and ScheduleType eq 'oop' and (ScheduledDate ge '{{StartDate}}' and ScheduledDate le '{{EndDate}}')  ",
+            top: 4500,
+            orderby: "ScheduledDate asc",
+            expand: "CS/ID,CS/Title"
+        },
+        // Schedule OOP Invoices
+        invoicesOOPCS: {
+            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title",
+            filter: "Status eq 'Scheduled' and ScheduleType eq 'oop' and (ScheduledDate ge '{{StartDate}}' and ScheduledDate le '{{EndDate}}') and CSId eq {{UserID}}",
             top: 4500,
             orderby: "ScheduledDate asc",
             expand: "CS/ID,CS/Title"

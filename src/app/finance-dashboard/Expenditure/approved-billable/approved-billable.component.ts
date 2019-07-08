@@ -100,7 +100,7 @@ export class ApprovedBillableComponent implements OnInit {
 
         // Get Freelancer 
         this.freelancerVendersRes = await this.fdDataShareServie.getVendorFreelanceData();
-        
+
         this.projectInfo();
         this.poInfo();
         this.projectContacts();
@@ -200,7 +200,7 @@ export class ApprovedBillableComponent implements OnInit {
             { field: 'ClientAmount', header: 'Client Amount', visibility: true },
             { field: 'Status', header: 'Status', visibility: true },
             { field: '', header: '', visibility: true },
-            
+
             { field: 'Category', header: 'Category', visibility: false },
             { field: 'PaymentMode', header: 'Payment Mode', visibility: false },
             { field: 'RequestType', header: 'Request Type', visibility: false },
@@ -337,6 +337,7 @@ export class ApprovedBillableComponent implements OnInit {
                 // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM d, y, hh:mm a')
             })
         }
+        this.approvedBillableRes = [...this.approvedBillableRes];
         this.isPSInnerLoaderHidden = true;
         this.createColFieldValues();
     }
@@ -421,51 +422,46 @@ export class ApprovedBillableComponent implements OnInit {
     }
 
     selectAllRows() {
-        this.selectedAllRowsItem.length === 0 ? this.selectedRowItemData = [] : this.selectedRowItemData;
-        if (this.selectedAllRowsItem.length === this.approvedBillableRes.length) {
-            this.selectedRowItemData = this.selectedAllRowsItem;
-        }
+        // this.selectedAllRowsItem.length === 0 ? this.selectedRowItemData = [] : this.selectedRowItemData;
+        // if (this.selectedAllRowsItem.length === this.approvedBillableRes.length) {
+        //     this.selectedRowItemData = this.selectedAllRowsItem;
+        //     this.selectedAllRowsItem = [];
+        // }
         console.log('in selectAllRows ', this.selectedAllRowsItem);
-        console.log('selectedRowItemData ', this.selectedRowItemData);
-
     }
 
     // CLick on Table Check box to Select All Row Item
     selectedAllRowsItem: any = [];
 
     selectedRowItemData: any = [];
-    selectedRowItemPC: any;
     onRowSelect(event) {
         console.log(event);
-        let selectedRowIndex = this.approvedBillableRes.indexOf(event.data);
         this.selectedRowItemData.push(event.data);
-        this.selectedRowItemPC = event.data.ProjectCode;
-        console.log(this.selectedRowItemData);
+        console.log('this.selectedAllRowsItem ', this.selectedAllRowsItem);
+    }
+
+    onRowUnselect(event) {
+        console.log('this.selectedAllRowsItem ', this.selectedAllRowsItem);
+        let rowUnselectIndex = this.selectedRowItemData.indexOf(event.data);
+        this.selectedRowItemData.splice(rowUnselectIndex, 1);
     }
 
     pcFound: boolean = false;
 
     setValInScheduleOop(selectedLineItems: any) {
+        let amt = 0;
+        for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
+            const element = this.selectedAllRowsItem[i];
+            amt += parseFloat(element.ClientAmount);
+        }
         if (selectedLineItems) {
             console.log('', this.selectedRowItemData[0].ProjectCode);
             this.scheduleOopInvoice_form.controls['ProjectCode'].setValue(this.selectedRowItemData[0].ProjectCode);
             this.scheduleOopInvoice_form.controls['ScheduledType'].setValue('oop');
             this.scheduleOopInvoice_form.controls['Currency'].setValue(this.selectedRowItemData[0].ClientCurrency);
-            this.scheduleOopInvoice_form.controls['Amount'].setValue(this.selectedRowItemData[0].ClientAmount);
-            // this.scheduleOopInvoice_form.get('ProjectCode').setValue(this.selectedRowItemData[0].ProjectCode);
-            // this.scheduleOopInvoice_form.patchValue({
-            //     ProjectCode: this.selecCurrencytedRowItemData[0].ProjectCode,
-            //     ScheduleType: 'OOP',
-            //     Currency: this.selectedRowItemData[0].ClientCurrency,
-            //     Amount: this.selectedRowItemData[0].ClientAmount,
-            // });
+            this.scheduleOopInvoice_form.controls['Amount'].setValue(amt);
             console.log('this.scheduleOopInvoice_form ', this.scheduleOopInvoice_form.getRawValue());
         }
-    }
-
-    onRowUnselect(event) {
-        let rowUnselectIndex = this.selectedRowItemData.indexOf(event.data);
-        this.selectedRowItemData.splice(rowUnselectIndex, 1);
     }
 
     rightSideBar: boolean = false;
@@ -540,21 +536,37 @@ export class ApprovedBillableComponent implements OnInit {
     }
 
     checkApprovedStatus() {
-        let found = this.selectedAllRowsItem.find((item) => {
-            if (item.Status.includes('Approved')) {
-                return item;
+        let sts = true;
+        for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
+            const element = this.selectedAllRowsItem[j];
+            if (!element.Status.includes('Approved')) {
+                sts = false;
+                break;
+            } else {
+                sts = true;
             }
-        })
-        return found ? true : false
+        }
+        return sts;
     }
 
     checkPPStatus() {
-        let found = this.selectedAllRowsItem.find((item) => {
-            if (item.Status.includes('Payment Pending')) {
-                return item;
+        // let found = this.selectedAllRowsItem.find((item) => {
+        //     if (item.Status.includes('Payment Pending')) {
+        //         return item;
+        //     }
+        // })
+        // return found ? true : false
+        let ppSts = true;
+        for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
+            const element = this.selectedAllRowsItem[j];
+            if (!element.Status.includes('Payment Pending')) {
+                ppSts = false;
+                break;
+            } else {
+                ppSts = true;
             }
-        })
-        return found ? true : false
+        }
+        return ppSts;
     }
 
     getCleFromPC() {
@@ -593,18 +605,31 @@ export class ApprovedBillableComponent implements OnInit {
     }
 
     checkUniquePC() {
+        // for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
+        //     const ele = this.selectedAllRowsItem[i];
+        //     for (let j = 0; j < this.selectedRowItemData.length; j++) {
+        //         const element = this.selectedRowItemData[j];
+        //         if (ele.ProjectCode !== element.ProjectCode) {
+        //             this.pcFound = false;
+        //             break;
+        //         } else {
+        //             this.pcFound = true;
+        //         }
+        //     }
+        // }
+
         for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
-            const ele = this.selectedAllRowsItem[i];
-            for (let j = 0; j < this.selectedRowItemData.length; j++) {
-                const element = this.selectedRowItemData[j];
-                if (ele.ProjectCode !== element.ProjectCode) {
-                    this.pcFound = false;
-                    break;
-                } else {
-                    this.pcFound = true;
-                }
+            const element = this.selectedAllRowsItem[i];
+            let selectedPC = this.selectedAllRowsItem[0].ProjectCode;
+            // element.Status.includes('Approved')
+            if (element.ProjectCode !== selectedPC) {
+                this.pcFound = false;
+                break;
+            } else {
+                this.pcFound = true;
             }
         }
+
     }
 
     updateSchedulteOopInvoice() {
@@ -623,6 +648,7 @@ export class ApprovedBillableComponent implements OnInit {
 
     cancelFormSub(type) {
         this.formSubmit.isSubmit = false;
+        this.submitBtn.isClicked = false;
         if (type === 'markAsPayment_form') {
             this.markAsPayment_form.reset();
         } else if (type === 'scheduleOopInvoice_form') {
@@ -638,11 +664,20 @@ export class ApprovedBillableComponent implements OnInit {
         return this.markAsPayment_form.controls;
     }
 
+    oopBalance: number = 0;
     poItem: any;
     poChange(event) {
         console.log('po event ', event.value);
+        this.submitBtn.isClicked = false;
         this.poItem = event.value;
-        this.getPfPfb();
+        this.oopBalance = (this.poItem.AmountOOP - this.poItem.OOPLinked);
+        if (this.oopBalance >= this.scheduleOopInvoice_form.getRawValue().Amount) {
+            this.getPfPfb();
+        } else {
+            this.submitBtn.isClicked = true;
+            this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'OOP Balance must be grater than Scheduled oop Amount.', detail: '', life: 4000 });
+            return;
+        }
     }
     pocItem: any;
     pocChange(event) {
@@ -731,11 +766,11 @@ export class ApprovedBillableComponent implements OnInit {
     }
 
     // PO 
-    getPOData(expenseData) {
-        let poLinkedAmt = parseFloat(expenseData.OOPLinked ? expenseData.OOPLinked : 0) + parseFloat(expenseData.Amount);
-        let poTotalLinkedAmt = parseFloat(expenseData.TotalLinked ? expenseData.TotalLinked : 0) + parseFloat(expenseData.Amount);
-        let poScheduledOOP = parseFloat(expenseData.ScheduledOOP ? expenseData.ScheduledOOP : 0) + parseFloat(expenseData.Amount);
-        let poTotalScheduled = parseFloat(expenseData.TotalScheduled ? expenseData.TotalScheduled : 0) + parseFloat(expenseData.Amount);
+    getPOData(expenseData, amt) {
+        let poLinkedAmt = parseFloat(expenseData.OOPLinked ? expenseData.OOPLinked : 0) + parseFloat(amt);
+        let poTotalLinkedAmt = parseFloat(expenseData.TotalLinked ? expenseData.TotalLinked : 0) + parseFloat(amt);
+        let poScheduledOOP = parseFloat(expenseData.ScheduledOOP ? expenseData.ScheduledOOP : 0) + parseFloat(amt);
+        let poTotalScheduled = parseFloat(expenseData.TotalScheduled ? expenseData.TotalScheduled : 0) + parseFloat(amt);
         let poData = {
             OOPLinked: poLinkedAmt.toFixed(2),
             TotalLinked: poTotalLinkedAmt.toFixed(2),
@@ -924,7 +959,7 @@ export class ApprovedBillableComponent implements OnInit {
                 type: 'POST',
                 listName: this.constantService.listNames.InvoiceLineItems.name
             });
-            let po = this.getPOData(this.poItem);
+            let po = this.getPOData(this.poItem, this.scheduleOopInvoice_form.getRawValue().Amount);
             if (po) {
                 data.push({
                     data: po.objData,

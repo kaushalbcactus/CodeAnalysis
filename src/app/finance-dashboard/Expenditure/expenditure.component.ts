@@ -12,6 +12,7 @@ import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { Subject } from 'rxjs';
 
 @Component({
     selector: 'app-expenditure',
@@ -19,6 +20,9 @@ import { CommonService } from 'src/app/Services/common.service';
     styleUrls: ['./expenditure.component.css']
 })
 export class ExpenditureComponent implements OnInit {
+
+    private eventsSubject: Subject<void> = new Subject<void>();
+
 
     // Show Hide Requesr Expense Modal
     showHideREModal: boolean = false;
@@ -67,7 +71,7 @@ export class ExpenditureComponent implements OnInit {
         private router: Router,
         private spOperationsService: SpOperationsService,
         private commonService: CommonService,
-    ) {}
+    ) { }
 
     async ngOnInit() {
 
@@ -295,6 +299,7 @@ export class ExpenditureComponent implements OnInit {
 
     requestExpense() {
         // Empty Selected Project & Client Array before push
+        // this.eventsSubject.next()
         this.selectedPCArrays = [{ ProjectCode: '' }];
 
         this.biilingEntityInfo();
@@ -645,17 +650,18 @@ export class ExpenditureComponent implements OnInit {
     projectClientIsEmpty: boolean = false;
     onSubmit(type: string) {
         if (type === 'addExpenditure') {
+            this.submitBtn.isClicked = true;
             this.getResCatByCMLevel();
             this.formSubmit.isSubmit = true;
             this.projectClientIsEmpty = this.isEmpty(this.totalLineItems);
             if (this.addExpenditure_form.invalid || this.projectClientIsEmpty) {
+                this.submitBtn.isClicked = false;
                 return;
             }
-            this.submitBtn.isClicked = true;
+
             console.log('form is submitting ..... this.addExpenditure_form ', this.addExpenditure_form.value);
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
             this.uploadFileData();
-            this.uploadCAFileData();
 
         } else if (type === 'createFreelancer') {
             this.formSubmit.isSubmit = true;
@@ -679,12 +685,21 @@ export class ExpenditureComponent implements OnInit {
             this.submitForm(data, type);
         }
     }
+    pcmLevels: any = [];
 
     submitExpediture() {
         if (this.fileUploadedUrl && this.caFileUploadedUrl) {
             this.finalAddEArray = [];
             for (let pi = 0; pi < this.totalLineItems.length; pi++) {
                 const element = this.totalLineItems[pi];
+                this.pcmLevels = [];
+                if (element) {
+                    for (let i = 0; i < element.ProjectCode.CMLevel1.results.length; i++) {
+                        const ele = element.ProjectCode.CMLevel1.results[i];
+                        this.pcmLevels.push(ele);
+                    }
+                    this.pcmLevels.push(element.ProjectCode.CMLevel2);
+                }
                 let finalAmt = element.AmountPerProject;
                 if (this.addExpenditure_form.value.Currency != element.projectItem.Currency) {
                     let cc = this.getConversionRate(this.addExpenditure_form.value.Currency);
@@ -709,6 +724,7 @@ export class ExpenditureComponent implements OnInit {
                     ClientApprovalFileURL: this.caFileUploadedUrl,
                     Notes: this.addExpenditure_form.value.Notes,
                     Category: this.addExpenditure_form.value.Billable,
+                    CSId: { results: this.pcmLevels.map(x => x.ID) },
                     // ApproverFileUrl: '',
                     // PayingEntity: this.addExpenditure_form.value.PayingEntity.Title,
                     RequestType: this.addExpenditure_form.value.PaymentRequest,
@@ -763,15 +779,12 @@ export class ExpenditureComponent implements OnInit {
         }
     }
 
-    uploadFileData(): any {
-        this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
-            if (res.d) {
-                console.log('selected File uploaded .', res.d.ServerRelativeUrl);
-                this.fileUploadedUrl = res.d.ServerRelativeUrl ? res.d.ServerRelativeUrl : '';
-                console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
-                this.uploadCAFileData();
-            }
-        });
+    async uploadFileData() {
+        const res = await this.spOperationsService.uploadFile(this.filePathUrl, this.fileReader.result);
+        console.log('selected File uploaded .', res.ServerRelativeUrl);
+        this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
+        console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
+        this.uploadCAFileData();
     }
 
     // Upload Client Approval File
@@ -802,17 +815,14 @@ export class ExpenditureComponent implements OnInit {
         }
     }
 
-    uploadCAFileData(): any {
-        this.nodeService.uploadFIle(this.cafilePathUrl, this.cafileReader.result).subscribe(res => {
-            if (res.d) {
-                console.log('selected File uploaded .', res.d.ServerRelativeUrl);
-                this.caFileUploadedUrl = res.d.ServerRelativeUrl ? res.d.ServerRelativeUrl : '';
-                if (this.caFileUploadedUrl) {
-                    this.submitExpediture();
-                }
-                console.log('this.caFileUploadedUrl ', this.caFileUploadedUrl);
-            }
-        });
+    async uploadCAFileData() {
+        const res = await this.spOperationsService.uploadFile(this.cafilePathUrl, this.cafileReader.result);
+        console.log('selected File uploaded .', res.ServerRelativeUrl);
+        this.caFileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
+        console.log('this.caFileUploadedUrl ', this.caFileUploadedUrl);
+        if (this.caFileUploadedUrl) {
+            this.submitExpediture();
+        }
     }
 
 
@@ -841,14 +851,9 @@ export class ExpenditureComponent implements OnInit {
         const sBatchData = batchBodyContent.join('\r\n');
         const res = await this.spServices.getFDData(batchGuid, sBatchData);
         console.log('res ', res);
-        console.log('res 2 ', res);
-        // .subscribe(res => {
-        //     const arrResults = res;
-        //     console.log('--oo ', arrResults);
         if (type === "addExpenditure") {
             this.messageService.add({ key: 'fdToast', severity: 'success', summary: 'Success.', detail: '', life: 2000 });
             this.showHideREModal = false;
-            // this.reload();
             for (let k = 0; k < res.length; k++) {
                 const element = res[k];
                 this.sendCreateExpenseMail(element);
@@ -858,12 +863,8 @@ export class ExpenditureComponent implements OnInit {
             this.messageService.add({ key: 'fdToast', severity: 'success', summary: 'Submitted.', detail: '', life: 2000 })
             this.cancelFormSub(type);
             this.getVendorFreelanceData();
-            // this.reload();
         }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-        // });
-
-        // });
     }
 
     replaceContent(mailContent, key, value) {
@@ -910,8 +911,13 @@ export class ExpenditureComponent implements OnInit {
                 }
             }
         }
+        arrayTo = arrayTo.filter(this.onlyUnique);
         console.log('arrayTo ', arrayTo);
         return arrayTo;
+    }
+
+    onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
     }
 
     cmLevelIdList: any = [];
@@ -979,7 +985,12 @@ export class ExpenditureComponent implements OnInit {
         ccUser.push(this.currentUserInfoData.Email);
         let tos = this.getTosList();
         this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
-        this.reload();
+        // this.reload();
+        this.refetchData();
+    }
+
+    refetchData() {
+        this.fdDataShareServie.setExpenseAddObj();
     }
 
 

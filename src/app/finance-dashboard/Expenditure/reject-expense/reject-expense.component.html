@@ -38,6 +38,9 @@
                     <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="pendinExpenseColArray.ProjectCode"
                         defaultLabel="All" appendTo="body" (onChange)="rc.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="pendinExpenseColArray.ClientLegalEntity"
+                        defaultLabel="All" appendTo="body" (onChange)="rc.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Category'" [options]="pendinExpenseColArray.Category"
                         defaultLabel="All" appendTo="body" (onChange)="rc.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
@@ -81,7 +84,12 @@
                 <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
             </td>
             <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" class="ui-resizable-column">
-                {{rowData[col.field]}}
+                <ng-container *ngIf="col.field != 'Modified' &&  col.field != '' ">
+                    {{rowData[col.field]}}
+                </ng-container>
+                <ng-container *ngIf="col.field == 'Modified'">
+                    <p>{{rowData[col.field] | date:'MMM d, y' }}</p>
+                </ng-container>
 
                 <ng-container *ngIf="col.field == ''">
                     <p-menu #popupMenu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>

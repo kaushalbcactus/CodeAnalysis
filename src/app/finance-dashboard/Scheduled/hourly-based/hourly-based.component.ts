@@ -53,7 +53,7 @@ export class HourlyBasedComponent implements OnInit {
 
 
     minScheduleDate: Date = new Date();
-    @ViewChild('timelineRef', {static:true}) timeline: TimelineHistoryComponent;
+    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
     constructor(
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
@@ -174,7 +174,7 @@ export class HourlyBasedComponent implements OnInit {
     createHBCCols() {
         this.hourlyBasedCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
-            { field: 'SOWCode', header: 'SOW Code/ Name', visibility: true },
+            { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
             { field: 'ClientLegalEntity', header: 'Clent LE', visibility: true },
             { field: 'POCName', header: 'POC Name', visibility: true },
@@ -189,20 +189,8 @@ export class HourlyBasedComponent implements OnInit {
             { field: 'PONumber', header: 'PO Number', visibility: false },
             { field: 'POName', header: 'PO Name', visibility: false },
             { field: 'SOWName', header: 'SOW Name', visibility: false },
-            // { field: 'ApprovedBudget', header: 'Approved Budget', visibility: false },
-            // { field: 'RevenueBudget', header: 'Revenue Budget', visibility: false },
-            // { field: 'OOPBudget', header: 'OOP Budget', visibility: false },
-            // { field: 'TaxBudget', header: 'Tax Budget', visibility: false },
-            // { field: 'InvoicesScheduled', header: 'Invoices Scheduled', visibility: false },
-            // { field: 'ScheduledRevenue', header: 'Scheduled Revenue', visibility: false },
-            // { field: 'ScheduledOOP', header: 'Scheduled OOP', visibility: false },
+            { field: 'SOWCode', header: 'SOW Code', visibility: false },
             { field: 'Invoiced', header: 'Invoiced', visibility: false },
-            // { field: 'InvoicedRevenue', header: 'Invoiced Revenue', visibility: false },
-            // { field: 'InvoicedOOP', header: 'Invoiced OOP', visibility: false },
-            // { field: 'InvoicedTax', header: 'Invoiced Tax', visibility: false },
-            // { field: 'BillableExpenses', header: 'Billable Expenses', visibility: false },
-            // { field: 'NonBillableExpenses', header: 'NonBillable Expenses', visibility: false },
-            // { field: 'Realization', header: 'Realization', visibility: false },
         ];
     }
 
@@ -279,6 +267,7 @@ export class HourlyBasedComponent implements OnInit {
                         Id: this.projectCodes[p].ID,
                         ProjectCode: this.projectCodes[p].ProjectCode,
                         SOWCode: this.projectCodes[p].SOWCode,
+                        SOWValue: this.projectCodes[p].SOWCode + ' / ' + sowItem.Title,
                         SOWName: sowItem.Title,
                         ProjectMileStone: this.getMilestones(this.projectCodes[p]),
                         // ProjectMileStone: this.getMilestones(this.projectCodes[p]),
@@ -315,6 +304,7 @@ export class HourlyBasedComponent implements OnInit {
                 }
             }
         }
+        this.hourlyBasedRes = [...this.hourlyBasedRes];
         this.isPSInnerLoaderHidden = true;
         console.log('hourlyBasedRes data ', this.hourlyBasedRes);
         this.createColFieldValues();
@@ -370,7 +360,7 @@ export class HourlyBasedComponent implements OnInit {
 
     createColFieldValues() {
         this.hourlyBasedColArray.ProjectCode = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }));
-        this.hourlyBasedColArray.SOWCode = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }));
+        this.hourlyBasedColArray.SOWCode = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }));
         this.hourlyBasedColArray.ProjectMileStone = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }));
         this.hourlyBasedColArray.ClientLegalEntity = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
         this.hourlyBasedColArray.ProposedEndDate = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ProposedEndDate, value: a.ProposedEndDate }; return b; }));
@@ -394,30 +384,21 @@ export class HourlyBasedComponent implements OnInit {
 
     // CLick on Table Check box to Select All Row Item
     selectedAllRowsItem: any = [];
-
-    selectedRowItemData: any = [];
     selectedRowItemPC: any;
     onRowSelect(event) {
         console.log(event);
-        this.selectedRowItemData.push(event.data);
-        this.selectedRowItemPC = event.data.ProjectCode;
-        console.log(this.selectedRowItemData);
+        console.log(this.selectedAllRowsItem);
     }
 
     onRowUnselect(event) {
-        let rowUnselectIndex = this.selectedRowItemData.indexOf(event.data);
-        this.selectedRowItemData.splice(rowUnselectIndex, 1);
-        console.log(this.selectedRowItemData);
+        console.log(this.selectedAllRowsItem);
     }
 
     selectAllRows() {
-        this.selectedAllRowsItem.length === 0 ? this.selectedRowItemData = [] : this.selectedRowItemData;
         if (this.selectedAllRowsItem.length === this.hourlyBasedRes.length) {
-            this.selectedRowItemData = this.selectedAllRowsItem;
+            //this.selectedRowItemData = this.selectedAllRowsItem;
         }
         console.log('in selectAllRows ', this.selectedAllRowsItem);
-        console.log('selectedRowItemData ', this.selectedRowItemData);
-
     }
 
     confirm1() {
@@ -450,8 +431,8 @@ export class HourlyBasedComponent implements OnInit {
             { label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) },
             { label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) },
             { label: 'View Project Details', command: (e) => this.openMenuContent(e, data) },
-            { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
             { label: 'Details', command: (e) => this.openMenuContent(e, data) },
+            { label: 'Show History', command: (e) => this.openMenuContent(e, data) },
         ];
     }
 
@@ -477,7 +458,7 @@ export class HourlyBasedComponent implements OnInit {
         } else if (this.hourlyDialog.title.toLowerCase() === 'view project details') {
             this.goToProjectDetails(this.selectedRowItem)
         } else if (this.hourlyDialog.title.toLowerCase() === 'show history') {
-            this.timeline.showTimeline(data.Id, 'FD', 'Rolling');
+            this.timeline.showTimeline(data.Id, 'FD', 'HourlyBased');
         } else if (event.item.label === 'Details') {
             this.rightSideBar = !this.rightSideBar;
             return;
@@ -613,12 +594,12 @@ export class HourlyBasedComponent implements OnInit {
         this.poLookupDataObj.TotalScheduled = poObj.TotalScheduled;
         this.poLookupDataObj.ScheduledRevenue = poObj.ScheduledRevenue;
         this.poLookupDataObj.Number = poObj.Number;
-        this.poLookupDataObj.availablePOBudget = parseFloat(poObj.AmountRevenue ? poObj.AmountRevenue : '') - parseFloat(poObj.RevenueLinked ? poObj.RevenueLinked : '');
+        this.poLookupDataObj.availablePOBudget = parseFloat(poObj.AmountRevenue ? poObj.AmountRevenue : 0) - parseFloat(poObj.RevenueLinked ? poObj.RevenueLinked : 0);
         return this.poLookupDataObj;
     }
 
     getSOWObj(sow: any) {
-        this.sowObj.availableSOWBudget = parseFloat(sow.NetBudget ? sow.NetBudget : 0) - parseFloat(sow.TotalLinked ? sow.TotalLinked : 0);
+        this.sowObj.availableSOWBudget = parseFloat(sow.NetBudget ? sow.NetBudget : 0) - parseFloat(sow.RevenueLinked ? sow.RevenueLinked : 0);
     }
 
     pcmLevels: any = [];
@@ -769,7 +750,7 @@ export class HourlyBasedComponent implements OnInit {
 
                 this.submitForm(data, 'confirmInvoice');
             } else {
-                this.messageService.add({ key: 'bottomCenter', severity: 'info', summary: 'Project budget cannot be more than SOW available Budget.', detail: '', life: 4000 })
+                this.messageService.add({ key: 'bottomCenter', severity: 'info', summary: 'Project budget cannot be more than SOW available budget or PO available budget.', detail: '', life: 4000 })
                 this.isPSInnerLoaderHidden = true;
                 this.confirmationModal = false;
                 this.formSubmit.isSubmit = false;
@@ -889,7 +870,8 @@ export class HourlyBasedComponent implements OnInit {
             } else if (type === "editInvoice") {
                 this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Updated.', detail: '', life: 2000 });
                 this.cancelFormSub('editInvoice');
-                this.reload();
+                // this.reload();
+                this.reFetchData();
             }
             this.isPSInnerLoaderHidden = true;
 
@@ -1088,6 +1070,10 @@ export class HourlyBasedComponent implements OnInit {
 
         console.log('arrayTo ', arrayTo);
         return arrayTo;
+    }
+
+    reFetchData() {
+        this.getRequiredData();
     }
 
 

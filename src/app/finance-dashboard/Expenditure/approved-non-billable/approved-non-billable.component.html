@@ -2,6 +2,7 @@
     <div id="scInnerLoader"></div>
     <div id="scInnerLoaderText">Loading...</div>
 </div>
+
 <div class="p-grid">
     <div class="p-col-12 p-md-12 p-lg-12 f-right">
         <div style="display: -webkit-inline-box;">
@@ -114,7 +115,12 @@
             </td>
 
             <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility">
-                {{rowData[col.field]}}
+                <ng-container *ngIf="col.field != 'Modified' &&  col.field != '' ">
+                    {{rowData[col.field]}}
+                </ng-container>
+                <ng-container *ngIf="col.field == 'Modified'">
+                    <p>{{rowData[col.field] | date:'MMM d, y' }}</p>
+                </ng-container>
                 <ng-container *ngIf="col.field == ''">
                     <p-menu #popupMenu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
                     <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
@@ -210,4 +216,4 @@
 </p-dialog>
 
 <!-- Toast Messages -->
-<p-toast position="bottom-right" key="approvedNonBToast"></p-toast>
+<p-toast position="bottom-center" key="approvedNonBToast"></p-toast>

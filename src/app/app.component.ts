@@ -20,24 +20,13 @@ export class AppComponent {
     this.globalObject.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1 ?
       '/sites/medcomcdn/PublishingImages/Images' :
       '/sites/medcomcdn/PublishingImages/Images';
-    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 112 : _spPageContextInfo.userId;
-    this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
+
+    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 8 : _spPageContextInfo.userId;
+    this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
       : _spPageContextInfo.webAbsoluteUrl;
-    // this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 1426 : _spPageContextInfo.userId;
-    // this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/MedicalWriting'
-    // : _spPageContextInfo.webAbsoluteUrl;
-    // this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 222 : _spPageContextInfo.userId;
-    // this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
-    //   : _spPageContextInfo.webAbsoluteUrl;
-    // this.globalObject.sharePointPageObject.serverRelativeUrl = window.location.href.indexOf('localhost') > -1 ?
-    //   '/sites/medcomdev' : _spPageContextInfo.webServerRelativeUrl,
-      // this.globalObject.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1 ?
-      //   '/sites/medcomcdn/PublishingImages/Images' :
-      //   '/sites/medcomcdn/PublishingImages/Images';
-      // this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 88 : _spPageContextInfo.userId;
-      // this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomm'
-      // : _spPageContextInfo.webAbsoluteUrl;
-      // tslint:disable-next-line:no-string-literal
+    this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
+    : _spPageContextInfo.webAbsoluteUrl;
+    this.globalObject.sharePointPageObject.serverRelativeUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
     window['angularComponentReference'] = { component: this, zone: this._ngZone, loadPubSupport: () => this.goToPubSupport(), };
   }
 

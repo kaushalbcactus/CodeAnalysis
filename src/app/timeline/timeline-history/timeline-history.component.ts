@@ -202,6 +202,7 @@ export class TimelineHistoryComponent implements OnInit {
         obj.propertiesRequired = this.constant.projectManagement.projectFinance.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.ProjectFinances.name;
         break;
+      case 'ProjectMgmt_ProjectFromDashboard':
       case 'ProjectMgmt_Project':
         obj.versionUrl = this.constant.projectManagement.projectInformation.getVersions;
         obj.propertiesRequired = this.constant.projectManagement.projectInformation.propertiesRequired;
@@ -260,8 +261,9 @@ export class TimelineHistoryComponent implements OnInit {
       case 'ProjectMgmt_ProjectFinances':
         this.initialRequest = await this.getProjectFinanceVersions(moduleName, clickedItemId, '0', this.top);
         break;
+      case 'ProjectMgmt_ProjectFromDashboard':
       case 'ProjectMgmt_Project':
-        this.initialRequest = await this.getProjectVersions(moduleName, clickedItemId, '0', this.top);
+        this.initialRequest = await this.getProjectVersions(moduleName, clickedItemId, '0', this.top, type);
         break;
       case 'ProjectMgmt_ProjectBudgetBreakup':
         this.initialRequest = await this.getProjectBudgetVersions(moduleName, clickedItemId, '0', this.top);
@@ -772,7 +774,7 @@ export class TimelineHistoryComponent implements OnInit {
             case this.globalConstant.proformaList.columns.ProformaHtml:
               if (versionDetail.FileURL && versionDetail.ProformaHtml) {
                 obj.activity_type = 'Proforma Edited';
-                obj.activity_description = 'Proforma format updated.';
+                obj.activity_description = 'Proforma ' + versionDetail.Title + ' format updated.';
                 obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + versionDetail.FileURL;
               }
               break;
@@ -780,15 +782,15 @@ export class TimelineHistoryComponent implements OnInit {
               switch (properties[key]) {
                 case this.globalConstant.proformaList.status.Rejected:
                   obj.activity_type = 'Proforma Rejected';
-                  obj.activity_description = 'Proforma for project.';
+                  obj.activity_description = 'Proforma ' + versionDetail.Title + ' rejected.';
                   break;
                 case this.globalConstant.proformaList.status.Sent:
                   obj.activity_type = 'Sent to client';
-                  obj.activity_description = 'Proforma sent to client.';
+                  obj.activity_description = 'Proforma ' + versionDetail.Title + ' sent to client.';
                   break;
                 case this.globalConstant.proformaList.status.Created:
                   obj.activity_type = 'Proforma Created';
-                  obj.activity_description = 'Proforma created.';
+                  obj.activity_description = 'Proforma ' + versionDetail.Title + ' created.';
                   break;
               }
           }
@@ -887,7 +889,8 @@ export class TimelineHistoryComponent implements OnInit {
                       activity_type: 'Proforma Rejected',
                       activity_description: 'Proforma for project ' + versionDetail.Title + ' Rejected',
                       date_time: obj.date_time,
-                      activity_by: obj.activity_by
+                      activity_by: obj.activity_by,
+                      file_uploaded: ''
                     };
                     obj.activity_type = 'Invoice Confirmed';
                     obj.activity_description = 'Invoice confirmed for project ' + versionDetail.Title;
@@ -1202,7 +1205,7 @@ export class TimelineHistoryComponent implements OnInit {
   /**
    * fetches project versions
    */
-  async getProjectVersions(moduleName, itemID, skipCount, top) {
+  async getProjectVersions(moduleName, itemID, skipCount, top, type) {
     const batchProjectURL = [];
     let prjBudgetBreakup = {};
     let prjFinanceBreakup = {};
@@ -1218,7 +1221,7 @@ export class TimelineHistoryComponent implements OnInit {
     const arrPrjResult = await this.spStandardService.executeBatch(batchProjectURL);
     const projectVersions = arrPrjResult.length > 0 ? arrPrjResult[0].retItems : {};
 
-    if (projectVersions.length > 0) {
+    if (projectVersions.length > 0 && type !== 'ProjectMgmt_ProjectFromDashboard') {
       const batchURL = [];
 
       const arrPBBReplace = { '{{projectCode}}': projectVersions[0].ProjectCode };
@@ -1464,7 +1467,7 @@ export class TimelineHistoryComponent implements OnInit {
                 obj.activity_type = 'Attachment';
                 obj.activity_sub_type = 'Sow document updated';
                 obj.activity_description = 'Sow document updated to ' + versionDetail.SOWLink;
-                obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + versionDetail.ProjectFolder + 'Finance/SOW/' + versionDetail.SOWLink;
+                obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + versionDetail.ProjectFolder + '/Finance/SOW/' + versionDetail.SOWLink;
               }
               break;
             case this.globalConstant.projectList.columns.Status:
@@ -1878,9 +1881,9 @@ export class TimelineHistoryComponent implements OnInit {
               break;
             case this.globalConstant.sowList.columns.SOWLink:
               if (versionDetail.SOWLink) {
-                let sowListName = this.arrCle.filter(c => c.ClientLegalEntity === versionDetail.ClientLegalEntity);
+                let sowListName = this.arrCle.filter(c => c.Title === versionDetail.ClientLegalEntity);
                 sowListName = sowListName.length > 0 ? sowListName[0].ListName : [];
-                obj.activity_type = 'SOW updated';
+                obj.activity_type = 'Attachment';
                 obj.activity_sub_type = 'SOW document updated';
                 obj.activity_description = 'SOW document Updated to ' + versionDetail.SOWLink;
                 obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + sowListName + '/Finance/SOW/' + versionDetail.SOWLink

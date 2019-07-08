@@ -2,8 +2,12 @@
     width: 200px !important;
 }
 
-body .ui-dialog .ui-dialog-content {
-    height: 100%;
+.ui-dialog-content .ui-widget-content{
+    height: 140px !important;
+}
+
+.ui-dialog-resizable .ui-dialog-content{
+    height: 140px !important;
 }
 
 .addProformaHeight {

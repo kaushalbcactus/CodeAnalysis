@@ -110,7 +110,8 @@ export class RejectExpenseComponent implements OnInit {
 
     createRCECols() {
         this.rejectCancelExpenseCols = [
-            { field: 'ProjectCode', header: 'Project / Client Name', visibility: true },
+            { field: 'ProjectCode', header: 'Project', visibility: true },
+            { field: 'ClientLegalEntity', header: 'Client', visibility: true },
             { field: 'Category', header: 'Category', visibility: true },
             // { field: 'PONumber', header: 'PO Number', visibility:true },
             { field: 'ExpenseType', header: 'Expense Type', visibility: true },
@@ -177,7 +178,7 @@ export class RejectExpenseComponent implements OnInit {
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(sowCodeFromPI.SOWCode);
             this.rejectExpenses.push({
                 Id: element.ID,
-                ProjectCode: element.Title + ' / ' + sowCodeFromPI.ClientLegalEntity,
+                ProjectCode: element.Title,
                 SOWCode: sowCodeFromPI.SOWCode,
                 SOWName: sowItem.Title,
                 ClientLegalEntity: sowCodeFromPI.ClientLegalEntity,
@@ -190,12 +191,12 @@ export class RejectExpenseComponent implements OnInit {
                 CreatedBy: rcCreatedItem ? rcCreatedItem.UserName.Title : '',
                 ModifiedBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
                 Notes: element.Notes,
-                ModifiedDate: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
+                //ModifiedDate: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
                 RequestType: element.RequestType,
                 ApproverComments: element.ApproverComments,
                 Status: element.Status,
                 ActionBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
-                Modified: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
+                Modified: element.Modified, // this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
 
                 FileURL: element.FileURL,
                 ClientApprovalFileURL: element.ClientApprovalFileURL,
@@ -212,6 +213,7 @@ export class RejectExpenseComponent implements OnInit {
 
             })
         }
+        this.rejectExpenses = [...this.rejectExpenses];
         this.isPSInnerLoaderHidden = true;
         this.createColFieldValues();
     }
@@ -228,6 +230,7 @@ export class RejectExpenseComponent implements OnInit {
 
     pendinExpenseColArray = {
         ProjectCode: [],
+        ClientLegalEntity: [],
         SOWCode: [],
         Category: [],
         ExpenseType: [],
@@ -235,24 +238,24 @@ export class RejectExpenseComponent implements OnInit {
         ClientCurrency: [],
         Created: [],
         ModifiedBy: [],
-        ModifiedDate: [],
-        ActionBy: [],
         Modified: [],
+        ActionBy: [],
         CreatedBy: []
     }
 
     createColFieldValues() {
 
         this.pendinExpenseColArray.ProjectCode = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }));
+        this.pendinExpenseColArray.ClientLegalEntity = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
         this.pendinExpenseColArray.SOWCode = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }));
         this.pendinExpenseColArray.Category = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.Category, value: a.Category }; return b; }));
         this.pendinExpenseColArray.ExpenseType = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }));
         this.pendinExpenseColArray.ClientAmount = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ClientAmount, value: a.ClientAmount }; return b; }));
         this.pendinExpenseColArray.ClientCurrency = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }));
         this.pendinExpenseColArray.Created = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.Created, value: a.Created }; return b; }));
-        this.pendinExpenseColArray.ModifiedDate = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }));
+        this.pendinExpenseColArray.Modified = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM d, y'), value: a.Modified }; return b; }));
         this.pendinExpenseColArray.ActionBy = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
-        this.pendinExpenseColArray.Modified = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }));
+        //this.pendinExpenseColArray.Modified = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }));
         this.pendinExpenseColArray.CreatedBy = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }));
     }
 

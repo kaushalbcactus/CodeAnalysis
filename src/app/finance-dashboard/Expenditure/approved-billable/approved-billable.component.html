@@ -19,7 +19,7 @@
             <div class="box">
                 <!-- <button pButton type="button" label="Export" class="ui-button-raised"
                     (click)="fdDataShareServie.convertToExcelFile(ab)"></button> -->
-                    <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(ab)"
+                <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(ab)"
                     title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
             </div>
         </div>
@@ -29,8 +29,8 @@
 
 <div class="financeTable">
 <p-table #ab [columns]="approvedBillableCols" [value]="approvedBillableRes" [paginator]="true" [rows]="10"
-    [resizableColumns]="true" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
-    selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Approved_Billable_Expenses">
+    [(selection)]="selectedAllRowsItem" [resizableColumns]="true" (onRowSelect)="onRowSelect($event)"
+    (onRowUnselect)="onRowUnselect($event)" selectionMode="" exportFilename="Approved_Billable_Expenses">
     <ng-template pTemplate="header" let-columns let-rowData="rowData">
 
         <tr>
@@ -127,8 +127,7 @@
 </p-table>
 </div>
 <!-- Right Side Bar -->
-<p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow: 'auto'}"
-    styleClass="ui-sidebar-md">
+<p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow: 'auto'}" styleClass="ui-sidebar-md">
     <ng-container *ngIf="rightSideBar">
         <app-table-attribute [rowItemData]="rowItemDetails"></app-table-attribute>
     </ng-container>
@@ -154,15 +153,14 @@
                 <div class="ui-g-6 box1">
                     <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
                         yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true"
-                        [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}"
-                        formControlName="DateSpend">
+                        [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="DateSpend">
                     </p-calendar>
                     <div *ngIf="formSubmit.isSubmit && isValidMarkAsPaymentForm.DateSpend.errors">
                         <div *ngIf="isValidMarkAsPaymentForm.DateSpend.errors.required" style="color:red;">Please
                             provide Payment Date.</div>
                     </div>
                 </div>
-				<div class="clear"></div>
+                <div class="clear"></div>
                 <div class="ui-g-6">Payment Mode</div>
                 <div class="ui-g-6">
                     <p-dropdown [options]="paymentModeArray" [showClear]="false" placeholder="Select a Payment Mode"
@@ -242,7 +240,7 @@
 
             </div>
             <div class="ui-g-4">
-                OOP Balance <span *ngIf="poItem">{{poItem.AmountOOP}}</span>
+                OOP Balance <span *ngIf="poItem">{{oopBalance}}</span>
             </div>
 
             <div class="ui-g-4">
