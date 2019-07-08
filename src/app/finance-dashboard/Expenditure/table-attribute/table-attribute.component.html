@@ -1,0 +1,118 @@
+<p-table [value]="rowData">
+    <ng-template pTemplate="header">
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-item>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Project Code</td>
+            <td>{{rowItemData.ProjectCode}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Client Legal Entity</td>
+            <td>{{rowItemData.ClientLegalEntity}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">SOW Code</td>
+            <td>{{rowItemData.SOWCode}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">SOW Name</td>
+            <td>{{rowItemData.SOWName}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Number</td>
+            <td>{{rowItemData.Number}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Category</td>
+            <td>{{rowItemData.Category}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Vendor Name</td>
+            <td>{{rowItemData.VendorName}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Expense Type</td>
+            <td>{{rowItemData.ExpenseType}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Request Type</td>
+            <td>{{rowItemData.RequestType}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Payment Mode</td>
+            <td>{{rowItemData.PaymentMode}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Paying Entity</td>
+            <td>{{rowItemData.PayingEntity}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Client Currency</td>
+            <td>{{rowItemData.ClientCurrency}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Client Amount</td>
+            <td>{{rowItemData.ClientAmount}}</td>
+        </tr>
+        <tr *ngIf="rowItemData.Currency">
+            <td [ngStyle]="{'color':'#d7181f'}">Currency</td>
+            <td>{{rowItemData.Currency}}</td>
+        </tr>
+        <tr *ngIf="rowItemData.Amount">
+            <td [ngStyle]="{'color':'#d7181f'}">Amount</td>
+            <td>{{rowItemData.Amount}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Status</td>
+            <td>{{rowItemData.Status}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Notes</td>
+            <td>{{rowItemData.Notes}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Date Spend</td>
+            <td>{{rowItemData.DateSpend}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Created Date</td>
+            <td>{{rowItemData.Created}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Created By</td>
+            <td>{{rowItemData.CreatedBy}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Modified Date</td>
+            <td>{{rowItemData.Modified}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Modified By</td>
+            <td>{{rowItemData.ModifiedBy}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Approver Comments</td>
+            <td>{{rowItemData.ApproverComments}}</td>
+        </tr>
+
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Approver File Url</td>
+            <td><a href="{{rowItemData.ApproverFileUrl}}" target="_blank" style="color:red">Click here</a>
+            </td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">File URL</td>
+            <td><a href="{{rowItemData.FileURL}}" target="_blank" style="color:red">Click here</a>
+            </td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Client Approval File URL</td>
+            <td><a href="{{rowItemData.ClientApprovalFileURL }}" target="_blank" style="color:red">Click here</a>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>

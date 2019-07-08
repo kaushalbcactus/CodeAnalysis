@@ -1,0 +1,184 @@
+<div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="10px" style="padding:5px;"> </div>
+<!-- **********************************************************************************************************
+                                                         confirm message dialog
+********************************************************************************************************** -->
+
+
+<p-confirmDialog #cd header="Confirmation" icon="pi pi-exclamation-triangle">
+    <p-footer>
+        <button type="button" style="background-color: #C53E3E;border-color:#C53E3E;" pButton icon="pi pi-check"
+            label="Yes" (click)="cd.accept()"></button>
+        <button type="button" style="background-color:silver;border-color:silver" pButton icon="pi pi-times" label="No"
+            (click)="cd.reject()"></button>
+
+    </p-footer>
+</p-confirmDialog>
+<!-- **********************************************************************************************************
+                                                      toaster message dialog
+********************************************************************************************************** -->
+
+
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
+    position="bottom-center">
+</p-toast>
+
+<!-- **********************************************************************************************************
+                                                        Date Options 
+********************************************************************************************************** -->
+
+
+<div fxLayout="row" fxLayoutAlign="space-between  center" fxLayoutGap="10px">
+
+    <div fxLayoutAlign="start center" fxFlex="97" fxLayoutGap="10px">
+        <button pButton type="button" label="Today" [ngClass]="selectedDate ==='Today'  ? 'selectedDateButton':''"
+            class="ui-button-raised ui-button-secondary currenttask"
+            (click)="GetDatabyDateSelection('Today',0)"></button>
+        <button pButton type="button" label="Next 7 Days" [ngClass]="selectedDate ==='Next7'  ? 'selectedDateButton':''"
+            class="ui-button-raised ui-button-secondary currenttask"
+            (click)="GetDatabyDateSelection('Next',7)"></button>
+        <button pButton type="button" label="Next 14 Days" class="ui-button-raised ui-button-secondary currenttask"
+            [ngClass]="selectedDate ==='Next14'  ? 'selectedDateButton':''"
+            (click)="GetDatabyDateSelection('Next',14)"></button>
+        <button pButton type="button" label="Past 7 Days" class="ui-button-raised ui-button-secondary currenttask"
+            [ngClass]="selectedDate ==='Past7'  ? 'selectedDateButton':''"
+            (click)="GetDatabyDateSelection('Past',7)"></button>
+        <button pButton type="button" label="Past 14 Days" class="ui-button-raised ui-button-secondary currenttask"
+            [ngClass]="selectedDate ==='Past14'  ? 'selectedDateButton':''"
+            (click)="GetDatabyDateSelection('Past',14)"></button>
+          
+        <p-calendar [(ngModel)]="rangeDates" selectionMode="range" (onClose)="GetDatabyDateSelection('Custom',0)"
+            [style]="{'width':'130%'}" numberOfMonths='1' appendTo="body" dateFormat="dd M , yy" [showIcon]="true"
+            [disabledDays]="[0,6]" [readonlyInput]="true" placeholder="Select Custom Dates"
+            [style]="{'cursor': 'pointer'}"></p-calendar>
+        <!-- yearRange="{{yearsRange}}"  -->
+    </div>
+    <div fxLayoutAlign="start center" fxFlex="3" fxLayoutGap="10px">
+        <!-- <a style="font-size: 2em;cursor: pointer;"> <i class="fa fa-fw fa-columns"></i></a> -->
+        <i style="font-size: 1.8em;cursor: pointer;" (click)=" taskId.exportCSV();" title="Export To Excel"
+            class="fa fa-fw fa-file-excel-o"></i>
+
+    </div>
+</div>
+
+
+<!-- **********************************************************************************************************
+                                                         loader enable 
+********************************************************************************************************** -->
+<div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" *ngIf="loaderenable">
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
+
+
+
+<!-- **********************************************************************************************************
+                                                          Table View Data
+           ********************************************************************************************************** -->
+
+<div *ngIf="allTasks.length > 0 && !loderenable" style="padding-top: 5px;">
+    <p-table #taskId [columns]="cols" [value]="allTasks" [paginator]="true" [rows]="10" [resizableColumns]="true" [style]="{'font-size': '13px'}"
+        [exportFilename]="TabName ==='MyCompletedTask' ? 'My Completed Tasks':'My Current Tasks'">
+
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th style="width: 4em;">No.</th>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field"
+                    [ngStyle]="{'width': col.field === 'ExpectedTime' || col.field === 'TimeSpent' ? '8em':'auto' }"
+                    pResizableColumn pReorderableColumn>
+                    {{col.header}}
+                    <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+
+                </th>
+                <th style="width: 3em;"></th>
+            </tr>
+            <tr>
+                <th></th>
+                <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
+                    <ng-container *ngIf="col.field">
+
+                        <p-dropdown [disabled]="TabName ==='MyCompletedTask'" *ngSwitchCase="'MainStatus'"
+                            [options]="AllTaskColArray.Status" appendTo="body"
+                            (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
+                        <p-dropdown *ngSwitchCase="'Status'" [options]="AllTaskColArray.TaskStatus" appendTo="body"
+                            (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
+                        <p-dropdown *ngSwitchCase="'DisplayTitle'" [options]="AllTaskColArray.TaskName" appendTo="body"
+                            (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
+                        <p-dropdown [options]="AllTaskColArray.StartDate" *ngSwitchCase="'StartDate'"
+                            [(ngModel)]="selectedStartDate" appendTo="body"
+                            (onChange)="taskId.filter($event.value, col.field, 'equals')">
+                            <ng-template let-startDate pTemplate="selectedItem">
+                                <span *ngIf="startDate.value === null"> {{startDate.label}}</span>
+                                <span *ngIf="startDate.value !== null">
+                                    {{startDate.label | date:'d MMM, y, h:mm a'}}</span>
+                            </ng-template>
+                            <ng-template let-startDate pTemplate="item">
+                                <span *ngIf="startDate.value === null"> {{startDate.label}}</span>
+                                <span *ngIf="startDate.value !== null">
+                                    {{startDate.label | date:'d MMM, y, h:mm a'}}</span>
+                            </ng-template>
+                        </p-dropdown>
+                        <p-dropdown [options]="AllTaskColArray.DueDate" *ngSwitchCase="'DueDate'"
+                            [(ngModel)]="selectedDueDate" appendTo="body"
+                            (onChange)="taskId.filter($event.value, col.field, 'equals')">
+                            <ng-template let-dueDate pTemplate="selectedItem">
+                                <span *ngIf="dueDate.value === null"> {{dueDate.label}}</span>
+                                <span *ngIf="dueDate.value !== null"> {{dueDate.label | date:'d MMM, y, h:mm a'}}</span>
+                            </ng-template>
+                            <ng-template let-dueDate pTemplate="item">
+                                <span *ngIf="dueDate.value === null"> {{dueDate.label}}</span>
+                                <span *ngIf="dueDate.value !== null"> {{dueDate.label | date:'d MMM, y, h:mm a'}}</span>
+                            </ng-template>
+                        </p-dropdown>
+                    </ng-container>
+                </th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+            <tr>
+
+                <td>
+                    {{rowIndex+1}}
+
+
+                </td>
+                <td *ngFor="let col of columns;index as i">
+
+                    <span
+                        *ngIf="col.field !== 'DisplayTitle' && col.field !=='TimeSpent' && col.field !=='StartDate' && col.field !=='DueDate' ">
+                        {{rowData[col.field]}}</span>
+                    <span *ngIf="col.field ==='StartDate' || col.field ==='DueDate' ">
+                        {{rowData[col.field] | date:'d MMM, y, h:mm a'}}</span>
+
+                    <span *ngIf="( col.field ==='TimeSpent' && rowData.MainStatus ==='Planned')">
+                        {{rowData[col.field]}}</span>
+                    <span
+                        *ngIf="col.field === 'DisplayTitle' || (col.field ==='TimeSpent' && rowData.MainStatus !=='Planned')"
+                        (click)="showDialog(rowData,col.field,rowIndex)" style="cursor: pointer;color:#C53E3E;">
+                        {{rowData[col.field]}} <div
+                            *ngIf="col.field === 'DisplayTitle' && tableloaderenable && rowIndex === selectedindex"
+                            id="scTableInnerLoader"></div> </span>
+
+
+                </td>
+                <td>
+                    <span *ngIf="rowData.MainStatus !=='Planned'">
+                        <p-menu #popupMenu [style]="{'width': '20em'}" [popup]="true" appendTo="body"
+                            [model]="taskMenu"></p-menu>
+
+                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
+                            (click)="openPopup(rowData, popupMenu);popupMenu.toggle($event);"></i>
+                    </span>
+                </td>
+            </tr>
+        </ng-template>
+
+    </p-table>
+</div>
+
+<div *ngIf="allTasks.length === 0 && !loaderenable"><span style="font-size: 2em;color:#C53E3E;">No Tasks
+        Available.</span></div>
+        
+<router-outlet></router-outlet>
+
+<app-feedback-popup #feedbackPopup></app-feedback-popup>

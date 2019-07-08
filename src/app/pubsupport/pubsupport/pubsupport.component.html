@@ -1,0 +1,990 @@
+<!-- Loadder -->
+<div></div>
+<div class="tableLoader" [hidden]='isPSInnerLoaderHidden'>
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
+
+<div class="top-title-bottom">
+    <div class="top-left-title">
+        <span>PROJECT LISTING </span>
+    </div>
+    <div class="top-right-title">
+        <p-dropdown [options]="overAllValues" [(ngModel)]="selectedOption" styleClass="custom-dropDown" optionLabel="name" (onChange)="onChangeSelect($event)" ></p-dropdown>
+        <input type="text" (change)="searchClosedProject($event)" *ngIf="showProjectInput" id="projectCodeSelect" placeholder="Project Code" pInputText [(ngModel)]="providedProjectCode"/>
+    </div>
+    <div class="clear">
+    </div>
+</div>
+
+<p-dataTable [value]="pubSupportProjectInfoData" expandableRows="true" #dt rowExpandMode="single"
+    (onRowExpand)="onRowExpand($event)" [paginator]="true" [rows]="10" expandedIcon="fas fa-angle-down"
+    collapsedIcon="fas fa-angle-right" styleClass="custom-pdatatable">
+
+    <p-column expander="true" [style]="{'width':'50px', 'font-size':'larger'}">
+        <ng-template pTemplate let-plistIndex="rowIndex">
+        </ng-template>
+    </p-column>
+    <p-column field="ProjectCode" header="Project Code" [filter]="true" filterMatchMode="contains"
+        filterPlaceholder="Search" sortField="ProjectCode" [sortable]="true">
+        <ng-template pTemplate let-col let-projectCode="rowData" pTemplate="body" let-plistIndex="rowIndex">
+            <a style="color:#d7181f"
+                (click)="goToProjectDetails(projectCode, plistIndex)">{{projectCode[col.field]}}</a>
+        </ng-template>
+    </p-column>
+    <p-column field="ClientLegalEntity" header="Client Legal Entity" [filter]="true" filterMatchMode="contains"
+        filterPlaceholder="Search" sortField="ClientLegalEntity" [sortable]="true">
+    </p-column>
+    <p-column field="DeliverableType" header="Deliverable" [filter]="true" filterMatchMode="contains"
+        filterPlaceholder="Search" sortField="DeliverableType" [sortable]="true"></p-column>
+    <p-column field="PrimaryPOC" header="POC" [filter]="true" filterMatchMode="contains" filterPlaceholder="Search"
+        sortField="PrimaryPOC" [sortable]="true">
+    </p-column>
+    <p-column field="Status" header="Status" [filter]="true" filterMatchMode="contains" filterPlaceholder="Search"
+        sortField="Status" [sortable]="true">
+        <ng-template let-col let-projectCode="rowData" pTemplate="body" let-plistIndex="rowIndex">
+            <!-- <p-progressBar [ngClass]="backgroundColor" [value]="value"></p-progressBar> -->
+            {{projectCode[col.field] }}
+        </ng-template>
+    </p-column>
+    <p-column field="PubSupportStatus" header="Pub Sup Status" [filter]="true" filterMatchMode="contains"
+        filterPlaceholder="Search" sortField="PubSupportStatus" [sortable]="true">
+    </p-column>
+    <p-column field="LastSubmissionDate" header="Last Submission" [filter]="true" filterMatchMode="contains"
+        filterPlaceholder="Search" sortField="LastSubmissionDate" [sortable]="true">
+        <ng-template let-col let-projectCode="rowData" pTemplate="body" let-plistIndex="rowIndex">
+            <!-- <p-progressBar [ngClass]="backgroundColor" [value]="value"></p-progressBar> -->
+            {{projectCode[col.field]  | date:'MMM d, y, hh:mm a' }}
+        </ng-template>
+    </p-column>
+    <p-column field="Authors_and_Author_Forms" header="Authors and Author Forms" filterPlaceholder="Search">
+        <ng-template pTemplate let-i="rowIndex" let-node="rowData">
+            <a style="color:#d7181f" (click)="openAuthorModal(node)" data-target="#authorsModal"
+                data-toggle="modal">Author Details</a>
+        </ng-template>
+    </p-column>
+    <p-column [style]="{'width':'50px'}">
+        <ng-template pTemplate let-i="rowIndex" let-node="rowData">
+            <p-menu #popupMenu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
+            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                (click)="popupMenu.toggle($event);openPopup(node, popupMenu)"></i>
+        </ng-template>
+    </p-column>
+    <ng-template let-car pTemplate="rowexpansion" let-parentIndex="plistIndex">
+        <div *ngIf="showHideJC">
+            <table>
+                <tbody>
+                    <!--Inner Open Main Accordian Start-->
+                    <tr colspan="10" class="model-open main-table-detail">
+                        <td colspan="10" class="main-td-table">
+                            <div><span>Journal/Conference Details</span></div>
+                            <table>
+                                <!--Inner Open Main Accordian Head Start-->
+                                <thead>
+                                    <tr class="header-style">
+                                        <th>No</th>
+                                        <th>Journal/Conference Name</th>
+                                        <th>Type</th>
+                                        <th>Milestone</th>
+                                        <th>Journal <br>Requirement date</th>
+                                        <th colspan="1">Journal Requirement document</th>
+                                        <th>Journal selection <br>date</th>
+                                        <th colspan="3"></th>
+                                    </tr>
+                                </thead>
+                                <!--Inner Open Main Accordian Head End-->
+                                <tbody *ngIf="journal_Conf_data &&journal_Conf_data[0].element.length == 0">
+                                    <tr>
+                                        <td colspan="10"
+                                            style="text-align:center;color:#d7181f;cursor: auto !important;">
+                                            <b>No Data available.</b>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tbody class="inner-hide-detail"
+                                    *ngFor="let item of journal_Conf_data[0].element; let i = index">
+                                    <tr class="model-open inner-first-accordian">
+                                        <td>
+                                            <span>{{i + 1}}</span>
+                                        </td>
+                                        <td>
+                                            <!-- <span> Journal of Pharmacology and<br> Experimental Therapeutics</span> -->
+                                            <span>{{item.Name}}</span>
+                                        </td>
+                                        <td>
+                                            <span>{{item.EntryType}}</span>
+                                        </td>
+                                        <td>
+                                            <span>{{item.Milestone}}</span>
+                                        </td>
+                                        <td>
+                                            <span>{{item.JournalRequirementDate | date:'MMM d, y, hh:mm a'}}</span>
+                                        </td>
+                                        <td>
+                                            <a style="color: red;" *ngIf="item.JournalRequirementURL"
+                                                (click)="downloadFile(item.JournalRequirementURL, 'ProjctCode_JournalRequirement')">Download
+                                                &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
+                                        </td>
+                                        <td colspan="2">
+                                            <span>{{journal_Conf_data[0].project.JournalSelectionDate | date:'MMM d, y, hh:mm a'}}</span>
+                                        </td>
+                                        <td>
+                                            <a (click)="jcViewDetails(i)" class="btn go view_details"
+                                                data-parent="detail_1">
+                                                <i class="pi pi-plus-circle" *ngIf="i+1" style="padding-top: 5px;"></i>
+                                                <i class="pi pi-minus-circle" *ngIf="state && i == showJournalRowIndex"
+                                                    style="padding-top: 5px;"></i>
+                                                View details
+                                            </a>
+
+                                        </td>
+                                        <td colspan="1"></td>
+
+                                    </tr>
+
+                                    <!--Inner Open First View Detail End-->
+                                    <!--View Detail Start-->
+                                    <ng-container *ngIf="state &&  i === showJournalRowIndex">
+                                        <tr class="jcDClass">
+                                            <td colspan="2">
+                                                <label>Submission deadline:</label><br>
+                                                <span><b>{{journal_Conf_details.AbstractSubmissionDeadline | date:'MMM d, y'}}
+                                                    </b></span>
+                                            </td>
+                                            <td colspan="3">
+                                                <label>Conference date: </label><br>
+                                                <span><b>{{journal_Conf_details.CongressDate | date:'MMM d, y'}}</b></span>
+                                            </td>
+                                            <td colspan="3">
+                                                <label>Status: </label><br>
+                                                <span><b>{{journal_Conf_details.Status}}</b></span>
+                                            </td>
+                                            <td colspan="2">
+                                                <label>Journal selection document :</label><br>
+                                                <a style="color: red;"
+                                                    (click)="downloadFile(journal_Conf_data[0].project.JournalSelectionURL, 'ProjctCode_JournalSelection')">Download
+                                                    &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <label>Publication Date: </label><br>
+                                                <span><b>{{journal_Conf_details.PublicationDate | date:'MMM d, y'}}
+                                                    </b></span>
+                                            </td>
+                                            <td colspan="3">
+                                                <label>Published PDF:</label><br>
+                                                <a style="color: red;"
+                                                    (click)="downloadFile(journal_Conf_details.PublicationURL, 'ProjctCode_PublishPdf')">Download
+                                                    &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
+                                            </td>
+                                            <td colspan="3">
+                                                <label>User Name:</label><br>
+                                                <span><b> {{journal_Conf_details.UserName}}</b></span>
+                                            </td>
+                                            <td colspan="2">
+                                                <label>Password: </label><br>
+                                                <span><b>{{journal_Conf_details.Password}}</b></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <label>Publication Title: </label><br>
+                                                <span><b>{{journal_Conf_details.PublicationTitle}}</b></span>
+                                            </td>
+                                            <td colspan="3">
+                                                <label>Citation:</label><br>
+                                                <span><b>{{journal_Conf_details.Citation}}</b></span>
+                                            </td>
+                                            <td colspan="3">
+                                                <label>Comments</label><br>
+                                                <span><b>{{journal_Conf_details.Comments}}</b></span>
+                                            </td>
+                                            <td colspan="2">
+                                                <label>Journal Editor Info: </label><br>
+                                                <span><b> {{journal_Conf_details.JournalEditorInfo}}</b></span>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                    <!--View Detail End-->
+
+                                    <!--Submission Detail Accordian Start-->
+                                    <tr class="model-open accordion">
+                                        <td colspan="10">
+                                            <div class="row container">
+                                                <div class="col-sm-4">
+                                                    <a (click)="showHideSubDetails(i, item)" class="btn go view_details"
+                                                        data-parent="detail_1">
+                                                        <i class="pi pi-chevron-right"
+                                                            [hidden]="showSubDetails && i == showSubDetailsIndex"
+                                                            style="padding-top: 5px;"></i>
+                                                        <i class="pi pi-chevron-down"
+                                                            *ngIf="showSubDetails && i == showSubDetailsIndex"
+                                                            style="padding-top: 5px;"></i>
+                                                        Submission Details
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <ng-container *ngIf="showSubDetails &&  i == showSubDetailsIndex">
+                                        <tr colspan="10" *ngIf="showHideSubDetailsData">
+                                            <td colspan="10" class="submission-inner-table">
+                                                <table>
+                                                    <!--Submission Detail Head Start-->
+                                                    <thead style="color:#d7181f;padding-left:30px;">
+                                                        <tr class="header-style">
+                                                            <th>No</th>
+                                                            <th>Submission Date</th>
+                                                            <th>Submission Package</th>
+                                                            <th>Submission Confirmation</th>
+                                                            <th>Decision</th>
+                                                            <th>Decision Date</th>
+                                                            <th>Decision Document</th>
+                                                            <th></th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <!--Submission Detail Head End-->
+
+                                                    <tbody *ngIf="submission_details_data.length === 0">
+                                                        <tr>
+                                                            <td colspan="9"
+                                                                style="text-align:center;color:#d7181f;cursor: auto !important;">
+                                                                <b>No Submission Detail available.</b>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                    <!--Submission Detail Body Start-->
+                                                    <tbody
+                                                        *ngFor="let s of submission_details_data[0]; let galleyIndex=index;">
+                                                        <tr>
+                                                            <td>
+                                                                <span>{{galleyIndex + 1}}</span>
+                                                            </td>
+                                                            <td width="215">
+                                                                <span>{{s.SubmissionDate | date:'MMM d, y, hh:mm a'}}</span>
+                                                            </td>
+                                                            <td>
+                                                                <a style="color: red;"
+                                                                    (click)="downloadFile(s.SubmissionPkgURL, 'ProjctCode_SubmissionPkg')">Download
+                                                                    &nbsp;<i class="fa fa-download"
+                                                                        aria-hidden="true"></i></a>
+                                                            </td>
+                                                            <td>
+                                                                <a style="color: red;"
+                                                                    (click)="downloadFile(s.SubmissionURL,'ProjctCode_SubmissionConfirmation')">Download
+                                                                    &nbsp;<i class="fa fa-download"
+                                                                        aria-hidden="true"></i></a>
+                                                            </td>
+                                                            <td>
+                                                                <span>{{s.Decision}}</span>
+                                                            </td>
+                                                            <td>
+                                                                <span>{{s.DecisionDate | date:'MMM d, y, hh:mm a'}}</span>
+                                                            </td>
+                                                            <td>
+                                                                <a style="color: red;"
+                                                                    (click)="downloadFile(s.DecisionURL, 'ProjctCode_DecisionDoc')">Download
+                                                                    &nbsp;<i class="fa fa-download"
+                                                                        aria-hidden="true"></i></a>
+                                                            </td>
+                                                            <td>
+                                                                <a *ngIf="s.Decision === 'Accepted'"
+                                                                    (click)="viewGalleyDetails(galleyIndex, s)"
+                                                                    class="btn go view_details" data-parent="detail_1">
+                                                                    <i class="pi pi-plus-circle"
+                                                                        *ngIf="!showHideGalleyDetails"
+                                                                        style="padding-top: 5px;"></i>
+                                                                    <i class="pi pi-minus-circle"
+                                                                        *ngIf="showHideGalleyDetails"
+                                                                        style="padding-top: 5px;"></i>
+                                                                    View galley details
+                                                                </a>
+
+                                                            </td>
+                                                            <td></td>
+                                                        </tr>
+                                                        <ng-container
+                                                            *ngIf="galleyDetailsData.length === 0 && showHideGalleyData && galleyIndex === galleyIndexChecked">
+                                                            <tr>
+                                                                <td colspan="9"
+                                                                    style="text-align:center;color:#d7181f;cursor: auto !important;top: 15px;">
+                                                                    <b>No Galley Details available.</b>
+                                                                </td>
+                                                            </tr>
+                                                        </ng-container>
+                                                        <ng-container
+                                                            *ngIf="showHideGalleyDetails && galleyIndex === galleyIndexChecked && showHideGalleyData">
+                                                            <!--View Gallery Detail Start-->
+                                                            <tr *ngFor="let g of galleyDetailsData[0]; let i=index;">
+                                                                <td></td>
+                                                                <td>
+                                                                    <label>Galley N0.</label><br>
+                                                                    <span><b>{{i + 1}}</b></span>
+                                                                </td>
+                                                                <td>
+                                                                    <label>Galley Date:</label><br>
+                                                                    <span><b>{{g.GalleyDate | date:'MMM d, y, hh:mm a'}}</b></span>
+                                                                </td>
+                                                                <td *ngIf="g.GalleyURL">
+                                                                    <label>Galley Document</label><br>
+                                                                    <a style="color: red;"
+                                                                        (click)="downloadFile(g.GalleyURL, 'ProjctCode_GalleyDoc')">Download
+                                                                        &nbsp;<i class="fa fa-download"
+                                                                            aria-hidden="true"></i></a>
+                                                                </td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                            </tr>
+                                                        </ng-container>
+                                                    </tbody>
+                                                    <!--Submission Detail Body Start-->
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </ng-container>
+                                    <!--Submission Detail Accordian End-->
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <!--Inner Open Main Accordian Start-->
+                </tbody>
+                <!--Main Body Part Start-->
+            </table>
+        </div>
+    </ng-template>
+</p-dataTable>
+
+
+<!-- Toast Messages -->
+<p-toast position="bottom-right" key="myKey1"></p-toast>
+<!-- Modal  -->
+
+<!-- Trigger the modal with a button -->
+<button id="openModalButton" type="button" [hidden]=true class="btn btn-info btn-lg" data-toggle="modal"
+    data-target="#myModal">Open Modal {{selectedModal}}</button>
+
+<button id="closeModalButton" type="button" [hidden]=true class="btn btn-info btn-lg" data-toggle="modal"
+    data-target="#myModal">Close Modal {{selectedModal}}</button>
+
+<div class="container">
+    <div class="modal fade" id="authorsModal" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog" id="authorModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                    <button type="button" class="close" aria-label="Close" data-dismiss="modal" href="#">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <!-- <a href="#" class="btn btn-info" role="button" class="close" data-dismiss="modal">X</a> -->
+                    <h4 class="modal-title">Authors & Authors Form</h4>
+                </div>
+                <div class="modal-body">
+                    <p-tabView>
+                        <p-tabPanel header="Authors">
+                            <p colspan="10" style="text-align:center;color:#d7181f;cursor: auto !important;"
+                                *ngIf="authorsData.length == 0 ">
+                                <b>No Data available.</b>
+                            </p>
+                            <p-table [value]="authorsData" *ngIf="authorsData.length">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Highest Degree</th>
+                                        <th>Address</th>
+                                        <th>Affiliation</th>
+                                        <th colspan="2">Email Address</th>
+                                        <th>Author Type</th>
+                                        <th>Phone No</th>
+                                    </tr>
+                                </ng-template>
+
+                                <ng-template pTemplate="body" let-author>
+                                    <tr>
+                                        <td>{{author.FirstName+ ' '+ author.LastName }}</td>
+                                        <td>{{author.HighestDegree}}</td>
+                                        <td>{{author.Address}}</td>
+                                        <td>{{author.Affiliation}}</td>
+                                        <td colspan="2">{{author.EmailAddress}}</td>
+                                        <td>{{author.AuthorType}}</td>
+                                        <td>{{author.Phone_x0020_No}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </p-tabPanel>
+                        <p-tabPanel header="Authors Forms">
+                            <p colspan="10" style="text-align:center;color:#d7181f;cursor: auto !important;"
+                                *ngIf="authorsFiles.length == 0 ">
+                                <b>No Data available.</b>
+                            </p>
+                            <p-table [value]="authorsFiles" *ngIf="authorsFiles.length">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Project Name</th>
+                                        <th>Last Modified</th>
+                                        <!-- <th>Address</th> -->
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-authorsFile>
+                                    <tr>
+                                        <td>
+                                            <a style="color:#d7181f" href="{{authorsFile.ServerRelativeUrl}}"
+                                                target="_blank">{{authorsFile.Name}}</a>
+                                        </td>
+                                        <td>{{authorsFile.TimeLastModified | date:'MMM d, y, hh:mm a'}}</td>
+                                        <!-- <td>{{author.Address}}</td> -->
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </p-tabPanel>
+                    </p-tabView>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="modal fade" id="myModal" role="dialog" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content" *ngIf="selectedModal == 'Add Journal conference'">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add Journal conference details</h4>
+                </div>
+                <form [formGroup]="journal_Conf_form" (ngSubmit)="onSubmit('addJournal')">
+                    <div class="modal-body">
+                        <!-- <form [formGroup]="journal_Conf_form" (ngSubmit)="onSubmit()"> -->
+                        <div class="row container">
+                            <div class="col-lg-6">
+                                <label for="type">Type :</label>
+                                <select id="type" name="country" class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidConferenceForm.EntryType.errors}"
+                                    (ngModelChange)='onTypeSelected($event)' formControlName="EntryType">
+                                    <option value="">Select</option>
+                                    <option value="journal">Journal</option>
+                                    <option value="conference">Conference</option>
+                                </select>
+                                <div *ngIf="submitted && isValidConferenceForm.EntryType.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="isValidConferenceForm.EntryType.errors.required">Type is required.</div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="name">Name</label>
+                                <input type="text" maxlength="25" id="name" name="name" class="form-control"
+                                    [ngClass]="{ 'is-invalid': submitted && isValidConferenceForm.Name.errors }"
+                                    placeholder="ABC" formControlName="Name">
+                                <div *ngIf="submitted && isValidConferenceForm.Name.errors" class="invalid-feedback">
+                                    <div *ngIf="isValidConferenceForm.Name.errors.required">Name is required.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row container">
+                            <div class="col-lg-6">
+                                <label for="milestone">Milestones:</label>
+                                <select id="type" name="country" class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidConferenceForm.Milestone.errors}"
+                                    formControlName="Milestone">
+                                    <option value="">Select</option>
+                                    <option value="" *ngIf="milestonesList.length == 0"
+                                        [disabled]="milestonesList.length==0">No Milestones.</option>
+                                    <option *ngFor="let milestone of milestonesList; let i = index" [value]="milestone">
+                                        {{milestone}}</option>
+                                </select>
+                                <div *ngIf="submitted && isValidConferenceForm.Milestone.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="isValidConferenceForm.Milestone.errors.required">Milestone is
+                                        required.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label>Comments:</label>
+                                <textarea maxlength="1000" placeholder="Comment text" class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidConferenceForm.Comments.errors}"
+                                    formControlName="Comments"></textarea>
+                                <div *ngIf="submitted && isValidConferenceForm.Comments.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="isValidConferenceForm.Comments.errors.required">Comments are
+                                        required.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="journal_Conf_form.value.EntryType=='journal'">
+                            <div class="row container">
+                                <div class="col-lg-6">
+                                    <label for="factor">Impact factor:</label>
+                                    <input type="text" maxlength="10" id="factor" name="name" placeholder="50%"
+                                        class="form-control"
+                                        [ngClass]="{'is-invalid': submitted && isValidConferenceForm.IF.errors}"
+                                        formControlName="IF">
+                                    <div *ngIf="submitted && isValidConferenceForm.IF.errors" class="invalid-feedback">
+                                        <div *ngIf="isValidConferenceForm.IF.errors.required">Impact
+                                            factor is
+                                            required.</div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label for="rejection_rate">Rejection Rate:</label>
+                                    <input type="text" maxlength="10" id="rejection_rate" name="name" placeholder="20%"
+                                        class="form-control"
+                                        [ngClass]="{'is-invalid': submitted && isValidConferenceForm.RejectionRate.errors}"
+                                        formControlName="RejectionRate">
+                                    <div *ngIf="submitted && isValidConferenceForm.RejectionRate.errors"
+                                        class="invalid-feedback">
+                                        <div *ngIf="isValidConferenceForm.RejectionRate.errors.required">Rejection
+                                            Ration is required.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row container">
+                                <div class="col-lg-6">
+                                    <label for="expected">Expected Review Period:</label>
+                                    <input type="text" maxlength="25" name="Expected Review Period" class="form-control"
+                                        [ngClass]="{'is-invalid': submitted && isValidConferenceForm.ExpectedReviewPeriod.errors}"
+                                        formControlName="ExpectedReviewPeriod" placeholder="12 Months">
+                                    <div *ngIf="submitted && isValidConferenceForm.ExpectedReviewPeriod.errors"
+                                        class="invalid-feedback">
+                                        <div *ngIf="isValidConferenceForm.ExpectedReviewPeriod.errors.required">
+                                            Expected
+                                            Review is required.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label for="Journal">Journal Editor Info:</label>
+                                    <textarea placeholder="Comment text" maxlength="1000" class="form-control"
+                                        [ngClass]="{'is-invalid': submitted && isValidConferenceForm.JournalEditorInfo.errors}"
+                                        formControlName="JournalEditorInfo"></textarea>
+                                    <div *ngIf="submitted && isValidConferenceForm.JournalEditorInfo.errors"
+                                        class="invalid-feedback">
+                                        <div *ngIf="isValidConferenceForm.JournalEditorInfo.errors.required">Journal
+                                            Editor info is
+                                            required.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="journal_Conf_form.value.EntryType=='conference'">
+                            <div class="row container">
+                                <div class="col-lg-6">
+                                    <label for="conference">Conference Date:</label>
+                                    <input type="date" name="CongressDate" class="form-control"
+                                        [ngClass]="{'is-invalid': submitted && isValidConferenceForm.CongressDate.errors}"
+                                        formControlName="CongressDate">
+                                    <div *ngIf="submitted && isValidConferenceForm.CongressDate.errors"
+                                        class="invalid-feedback">
+                                        <div *ngIf="isValidConferenceForm.CongressDate.errors.required">Conference
+                                            Date is required.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    <label for="Submission">Submission Deadline:</label>
+                                    <input type="date" name="AbstractSubmissionDeadline" id="" class="form-control"
+                                        [ngClass]="{'is-invalid': submitted && isValidConferenceForm.AbstractSubmissionDeadline.errors}"
+                                        formControlName="AbstractSubmissionDeadline">
+                                    <div *ngIf="submitted && isValidConferenceForm.AbstractSubmissionDeadline.errors"
+                                        class="invalid-feedback">
+                                        <div *ngIf="isValidConferenceForm.AbstractSubmissionDeadline.errors.required">
+                                            Submission
+                                            Date is required.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" (click)="journal_Conf_form.reset()"
+                            data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger" [disabled]="submitBtn.isSubmit">Submit</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-content" *ngIf="selectedModal == 'Add Authors'">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                        (click)="add_author_form.reset()">&times;</button>
+                    <h4 class="modal-title">Add Authors Details</h4>
+                </div>
+                <form [formGroup]="add_author_form" (ngSubmit)="onSubmit('addAuthor')">
+                    <div class="modal-body">
+                        <div class="row container">
+                            <div class="col-lg-6">
+                                <label for="firstname">First Name:</label>
+                                <input type="text" maxlength="25" id="FirstName" placeholder="ABC" class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidAddAuthorForm.FirstName.errors}"
+                                    formControlName="FirstName">
+                                <div *ngIf="submitted && isValidAddAuthorForm.FirstName.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="isValidAddAuthorForm.FirstName.errors.required">First Name is required.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="lastname">Last Name:</label>
+                                <input type="text" maxlength="25" id="lastname" placeholder="ABC" class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidAddAuthorForm.LastName.errors}"
+                                    formControlName="LastName">
+                                <div *ngIf="submitted && isValidAddAuthorForm.LastName.errors" class="invalid-feedback">
+                                    <div *ngIf="isValidAddAuthorForm.LastName.errors.required">Last Name is required.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row container">
+                            <div class="col-lg-6">
+                                <label for="milestone">Comments:</label>
+                                <textarea maxlength="1000" placeholder="Comment text" class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidAddAuthorForm.Comments.errors}"
+                                    formControlName="Comments"></textarea>
+                                <div *ngIf="submitted && isValidAddAuthorForm.Comments.errors" class="invalid-feedback">
+                                    <div *ngIf="isValidAddAuthorForm.Comments.errors.required">Comment is required.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="degree">Highest Degree:</label>
+                                <input type="text" maxlength="25" id="degree" placeholder="MD" class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidAddAuthorForm.HighestDegree.errors}"
+                                    formControlName="HighestDegree">
+                                <div *ngIf="submitted && isValidAddAuthorForm.HighestDegree.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="isValidAddAuthorForm.HighestDegree.errors.required">Highest Degree
+                                        is
+                                        required.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row container">
+                            <div class="col-lg-6">
+                                <label for="email">Email Address:</label>
+                                <input type="text" maxlength="50" id="email" placeholder="j.watanabe@sschr.jp"
+                                    class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidAddAuthorForm.EmailAddress.errors}"
+                                    formControlName="EmailAddress">
+                                <div *ngIf="submitted && isValidAddAuthorForm.EmailAddress.errors"
+                                    class="invalid-feedback">
+                                    <div>Valid email ID is required.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="Address">Address:</label>
+                                <input type="text" maxlength="50" id="Address"
+                                    placeholder="1007 Shimonagakubo, Nagaizumi-cho, Sunto-gun" class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidAddAuthorForm.Address.errors}"
+                                    formControlName="Address">
+                                <div *ngIf="submitted && isValidAddAuthorForm.Address.errors" class="invalid-feedback">
+                                    <div *ngIf="isValidAddAuthorForm.Address.errors.required">Address is required.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row container">
+                            <div class="col-lg-6">
+                                <label>Affiliation</label>
+                                <textarea maxlength="1000" placeholder="Shizuoka Cancer Centre" class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidAddAuthorForm.Affiliation.errors}"
+                                    formControlName="Affiliation"></textarea>
+                                <div *ngIf="submitted && isValidAddAuthorForm.Affiliation.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="isValidAddAuthorForm.Affiliation.errors.required">Affiliation is
+                                        required.</div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="number">Phone Number:</label>
+                                <input type="text" maxlength="25" id="phoneNumber" placeholder="81-55-989-5222"
+                                    class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidAddAuthorForm.Phone_x0020_No.errors}"
+                                    formControlName="Phone_x0020_No" (keypress)="keyPress($event)">
+                                <div *ngIf="submitted && isValidAddAuthorForm.Phone_x0020_No.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="isValidAddAuthorForm.Phone_x0020_No.errors.required">Phone Number is
+                                        required.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row container">
+                            <div class="col-lg-6">
+                                <label for="Fax">Fax:</label>
+                                <input type="text" maxlength="25" id="Fax" placeholder="81-55-989-5551"
+                                    class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidAddAuthorForm.Fax.errors}"
+                                    formControlName="Fax" (keypress)="keyPress($event)">
+                                <div *ngIf="submitted && isValidAddAuthorForm.Fax.errors" class="invalid-feedback">
+                                    <div *ngIf="isValidAddAuthorForm.Fax.errors.required">Fax is required.</div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <label for="type">Type:</label>
+                                <select id="type" name="type" class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidAddAuthorForm.AuthorType.errors}"
+                                    formControlName="AuthorType">
+                                    <option value="">Select</option>
+                                    <option value="-">-</option>
+                                    <option value="Lead">Lead</option>
+                                    <option value="Correspondence">Correspondence</option>
+                                    <option value="Lead and Correspondence">Lead & Correspondence</option>
+                                </select>
+                                <div *ngIf="submitted && isValidAddAuthorForm.AuthorType.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="isValidAddAuthorForm.AuthorType.errors.required">Type is required.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal"
+                            (click)="add_author_form.reset()">Close</button>
+                        <button type="submit" class="btn btn-danger" [disabled]="submitBtn.isSubmit">Submit</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-content" *ngIf="selectedModal == 'Update Decision details'">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                        (click)="update_decision_details.reset()">&times;</button>
+                    <h4 class="modal-title">Update Decision details</h4>
+                </div>
+                <form [formGroup]="update_decision_details" (ngSubmit)="onSubmit('updateDecision')">
+                    <div class="modal-body">
+                        <div class="row container">
+                            <div class="col-lg-6">
+                                <label for="upload-document">Upload files:</label>
+                                <!-- <button id="upload-document" class="btn">Upload a file</button> -->
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="file" name="myfile" class="form-control" (change)="onFileChange($event)"
+                                    [ngClass]="{'is-invalid': submitted && isValidDecisionForm.file.errors}"
+                                    formControlName="file" #fileInput />
+                                <div *ngIf="submitted && isValidDecisionForm.file.errors" class="invalid-feedback">
+                                    <div *ngIf="isValidDecisionForm.file.errors.required">File is required.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row container">
+                            <div class="col-lg-6">
+                                <label for="type">Decision</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <select id="type" name="Decision" class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidDecisionForm.Decision.errors}"
+                                    formControlName="Decision">
+                                    <option value="">Select</option>
+                                    <option value="Accepted"
+                                        *ngIf="selectedProject.DeliverableType != 'Poster' && selectedProject.DeliverableType != 'Oral Presentation' ">
+                                        Accepted</option>
+                                    <option value="Presented"
+                                        *ngIf="selectedProject.DeliverableType== 'Poster' || selectedProject.DeliverableType== 'Oral Presentation' ">
+                                        Presented</option>
+                                    <option value="Rejected">Rejected</option>
+                                    <option value="Resubmit to same journal"
+                                        *ngIf="selectedProject.DeliverableType != 'Poster' && selectedProject.DeliverableType != 'Oral Presentation' && selectedProject.DeliverableType != 'Abstract'  ">
+                                        Resubmit to same journal</option>
+                                </select>
+                                <div *ngIf="submitted && isValidDecisionForm.Decision.errors" class="invalid-feedback">
+                                    <div *ngIf="isValidDecisionForm.Decision.errors.required">Decision is required.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal"
+                            (click)="update_decision_details.reset()">Close</button>
+                        <button type="submit" class="btn btn-danger" [disabled]="submitBtn.isSubmit">Submit</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-content" *ngIf="selectedModal == 'Update Author forms & emails'">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                        (click)="update_author_form.reset();noFileMsg = '' ">&times;</button>
+                    <!-- (click)="update_author_form.reset()" -->
+                    <h4 class="modal-title">Update Author forms & emails</h4>
+                </div>
+                <form [formGroup]="update_author_form" (ngSubmit)="onSubmit('updateAuthor')">
+                    <!-- <form [formGroup]="update_author_form" (ngSubmit)="onSubmit('updateAuthor')"> -->
+                    <div class="modal-body">
+                        <div class="row container" *ngIf="!selectedType">
+                            <div class="col-lg-6">
+                                <label for="upload-document">Upload files: </label>
+                                <!-- <button id="upload-document" class="btn">Upload a file</button> -->
+                            </div>
+                            <div class="col-lg-6">
+                                <input type="file" name="myfile" class="form-control" id="myfile"
+                                    (change)="onFileChange($event)" #fileInput placeholder="updateAuthorForms"
+                                    [ngClass]="{'is-invalid': submitted && isValidUpdateAuthorForm.file.errors}"
+                                    formControlName="file">
+                                <div *ngIf="submitted && isValidUpdateAuthorForm.file.errors" class="invalid-feedback">
+                                    <div *ngIf="isValidUpdateAuthorForm.file.errors.required ">File is required.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row container" *ngIf="!update_author_form.value.file">
+                            <div class="col-lg-6">
+                                <label for="type">Select from Existing Author Forms:</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <select id="type" name="existingAuthorList" class="form-control"
+                                    [(ngModel)]="selectedType"
+                                    (ngModelChange)="updateAuthorFormsFiles(selectedType, $event)"
+                                    [ngClass]="{'is-invalid': submitted && isValidUpdateAuthorForm.existingAuthorList.errors}"
+                                    formControlName="existingAuthorList">
+                                    <option value="">Select</option>
+                                    <ng-container *ngFor="let projctCode of projectCodeRes; let i = index">
+                                        <option *ngIf="projctCode.ProjectCode !=selectedProject.ProjectCode"
+                                            [ngValue]="projctCode"> {{projctCode.ProjectCode}}
+                                        </option>
+                                    </ng-container>
+                                </select>
+                                <div *ngIf="submitted && isValidUpdateAuthorForm.existingAuthorList.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="isValidUpdateAuthorForm.existingAuthorList.errors.required">Existing
+                                        author is required.</div>
+                                </div>
+                                <div style="color:#d7181f;">{{noFileMsg}}</div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- (click)="update_author_form.reset(); submitted = false;" -->
+                        <button type="button" class="btn btn-default" data-dismiss="modal"
+                            (click)="update_author_form.reset();selectedType = '';noFileMsg = '' ">Close</button>
+                        <button type="submit" class="btn btn-danger"  [disabled]="submitBtn.isSubmit">Submit</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-content" *ngIf="selectedModal == 'Update Publication details'">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                        (click)="update_publication_form.reset()">&times;</button>
+                    <h4 class="modal-title">Update Publication details</h4>
+                </div>
+                <form [formGroup]="update_publication_form" (ngSubmit)="onSubmit('updatePublication')">
+                    <div class="modal-body">
+                        <div class="row container">
+                            <div class="col-lg-6">Publication Title:</div>
+                            <div class="col-lg-6">
+                                <!-- <label for="publication">Publication Title:</label> -->
+                                <textarea maxlength="1000" placeholder="Title" class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidUpdatePublicationForm.PublicationTitle.errors}"
+                                    formControlName="PublicationTitle"></textarea>
+                                <div *ngIf="submitted && isValidUpdatePublicationForm.PublicationTitle.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="isValidUpdatePublicationForm.PublicationTitle.errors.required">Title is
+                                        required.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">Citation:</div>
+                            <div class="col-lg-6">
+                                <!-- <label for="Citation">Citation:</label> -->
+                                <textarea maxlength="1000" placeholder="Title" class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidUpdatePublicationForm.Citation.errors}"
+                                    formControlName="Citation"></textarea>
+                                <div *ngIf="submitted && isValidUpdatePublicationForm.Citation.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="isValidUpdatePublicationForm.Citation.errors.required">Citation is
+                                        required.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row container">
+                            <div class="col-lg-6">
+                                <label for="type">PDF Available?</label>
+                            </div>
+                            <div class="col-lg-6">
+                                <select id="type" name="country" class="form-control"
+                                    [ngClass]="{'is-invalid': submitted && isValidUpdatePublicationForm.PDFAvailable.errors}"
+                                    formControlName="PDFAvailable">
+                                    <option value="">Select</option>
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
+                                <div *ngIf="submitted && isValidUpdatePublicationForm.PDFAvailable.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="isValidUpdatePublicationForm.PDFAvailable.errors.required">Is PDF File
+                                        available?</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row container">
+                            <div class="col-lg-6">Upload Published paper:</div>
+                            <div class="col-lg-6">
+                                <input type="file" name="myfile" class="form-control" id="myfile"
+                                    (change)="onFileChange($event)" #fileInput
+                                    [ngClass]="{'is-invalid': submitted && isValidUpdatePublicationForm.PublicationURL.errors}"
+                                    formControlName="PublicationURL" />
+                                <div *ngIf="submitted && isValidUpdatePublicationForm.PublicationURL.errors"
+                                    class="invalid-feedback">
+                                    <div *ngIf="isValidUpdatePublicationForm.PublicationURL.errors.required">File is
+                                        required.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal"
+                            (click)="update_publication_form.reset()">Close</button>
+                        <button type="submit" class="btn btn-danger" [disabled]="submitBtn.isSubmit">Submit</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-content" *ngIf="selectedModal == 'Override Galley'">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"
+                        (click)="galley_form.reset()">&times;</button>
+                    <h4 class="modal-title">Override Galley</h4>
+                </div>
+                <form [formGroup]="galley_form" (ngSubmit)="onSubmit('galley')">
+                    <div class="modal-body">
+                        <div class="row container">
+                            <div class="col-lg-12">
+                                <label for="upload-document">Upload file to enable Update
+                                    Publication details option:</label>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <label>Upload a file</label>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <input type="file" name="myfile" class="form-control" id="myfile"
+                                    (change)="onFileChange($event)" #fileInput
+                                    [ngClass]="{'is-invalid': submitted && isValidGalleyForm.GalleyURL.errors}"
+                                    formControlName="GalleyURL" />
+                                <div *ngIf="submitted && isValidGalleyForm.GalleyURL.errors" class="invalid-feedback">
+                                    <div *ngIf="isValidGalleyForm.GalleyURL.errors.required">File is
+                                        required.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal"
+                            (click)="galley_form.reset()">Close</button>
+                        <button type="submit" class="btn btn-danger" [disabled]="submitBtn.isSubmit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

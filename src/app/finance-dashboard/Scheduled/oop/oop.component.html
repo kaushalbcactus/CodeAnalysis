@@ -1,0 +1,218 @@
+<!-- Loadder -->
+<div class="tableLoader" [hidden]='isPSInnerLoaderHidden'>
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
+
+<!-- Export -->
+<div class="ui-g">
+    <div class="ui-g-3"></div>
+    <div class="ui-g-3"></div>
+    <div class="ui-g-3"></div>
+    <div class="ui-g-3 f-right">
+        <div class="box" style="display: -webkit-inline-box;">
+            <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(oop)"></button> -->
+            <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(oop)"
+                title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+        </div>
+    </div>
+</div>
+<div class="financeTable">
+<p-table #oop [columns]="oopBasedCols" [value]="oopBasedRes" [paginator]="true" [rows]="10" [resizableColumns]="true"
+    (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode=""
+    [(selection)]="selectedAllRowsItem" exportFilename="OOP_Expenses">
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th>S.No</th>
+            <th style="width: 2.25em">
+                <p-tableHeaderCheckbox (click)="selectAllRows()"></p-tableHeaderCheckbox>
+            </th>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn pReorderableColumn
+                [hidden]="!col.visibility">
+                {{col.header}}
+                <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+            </th>
+        </tr>
+        <tr>
+            <th></th>
+            <th></th>
+            <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
+                <ng-container *ngIf="col.field">
+                    <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="oopColArray.ProjectCode" defaultLabel="All"
+                        appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'SOWValue'" [options]="oopColArray.SOWCode" defaultLabel="All"
+                        appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ProjectMileStone'" [options]="oopColArray.ProjectMileStone"
+                        defaultLabel="All" appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'PONumber'" [options]="oopColArray.PONumber" defaultLabel="All"
+                        appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientName'" [options]="oopColArray.ClientName" defaultLabel="All"
+                        appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Amount'" [options]="oopColArray.Amount" defaultLabel="All"
+                        appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Currency'" [options]="oopColArray.Currency" defaultLabel="All"
+                        appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ScheduledDate'" [options]="oopColArray.ScheduledDate"
+                        defaultLabel="All" appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'POC'" [options]="oopColArray.POC" defaultLabel="All" appendTo="body"
+                        (onChange)="oop.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                </ng-container>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr>
+            <td>
+                {{rowIndex+1}}
+            </td>
+            <td>
+                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+            </td>
+            <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility">
+                <ng-container *ngIf="col.field != 'ScheduledDate' &&  col.field != '' ">
+                    {{rowData[col.field]}}
+                </ng-container>
+                <ng-container *ngIf="col.field == 'ScheduledDate'">
+                    <p>{{rowData[col.field] | date:'MMM d, y' }}</p>
+                </ng-container>
+                <ng-container *ngIf="col.field == ''">
+                    <div *ngIf="rowData.showMenu === true">
+                        <p-menu #popupMenu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu">
+                        </p-menu>
+                        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                            (click)="popupMenu.toggle($event);openPopup(rowData, popupMenu)"></i>
+                    </div>
+                </ng-container>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+</div>
+<!-- Table End -->
+
+<!-- Right Side Bar -->
+<p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
+    <ng-container *ngIf="rightSideBar">
+        <app-ili-table-attribute [rowItemData]="selectedRowItem"></app-ili-table-attribute>
+    </ng-container>
+</p-sidebar>
+
+<!-- Context Menu -->
+<!-- <p-contextMenu #cm [model]="items"></p-contextMenu> -->
+<!-- Context Menu End -->
+
+<!-- Toast Messages -->
+<p-toast position="bottom-right" key="myKey1"></p-toast>
+<p-toast position="bottom-center" key="bottomCenter"></p-toast>
+<!-- Toast Message End -->
+
+<!-- Confirmation Deliverable -->
+<p-confirmDialog key="oopConfirm" [style]="{width: '50vw'}"></p-confirmDialog>
+
+<!-- <button type="button" (click)="confirm1()" pButton icon="pi pi-check" label="Confirm"></button> -->
+
+<!-- Approve Accept Reject Modal -->
+<p-dialog header="Edit Invoice" [(visible)]="deliverableModal" [modal]="true" [draggable]="false" [responsive]="true"
+    [style]="{'width': '55%', 'top':'0px'}" [maximizable]="false" [baseZIndex]="10000"
+    (onHide)="cancelFormSub('editDeliverable')">
+
+    <form id="myform" [formGroup]="editOop_form">
+        <div class="ui-g">
+            <div class="ui-g-6">Project/SOW Code</div>
+            <div class="ui-g-6">
+                <input type="text" pInputText formControlName="ProjectCode" />
+                <div *ngIf="formSubmit.isSubmit && isValidEditDeliverableForm.ProjectCode.errors">
+                    <div *ngIf="isValidEditDeliverableForm.ProjectCode.errors.required" style="color:red;">Please
+                        provide Project Code.</div>
+                </div>
+            </div>
+            <div class="ui-g-6">PO Number</div>
+            <div class="ui-g-6">
+                <input type="text" pInputText formControlName="PONumber" />
+                <div *ngIf="formSubmit.isSubmit && isValidEditDeliverableForm.PONumber.errors">
+                    <div *ngIf="isValidEditDeliverableForm.PONumber.errors.required" style="color:red;">Please
+                        provide PO Number.</div>
+                </div>
+            </div>
+            <div class="ui-g-6">Schedule Type</div>
+            <div class="ui-g-6">
+                <input type="text" pInputText formControlName="ScheduledType" />
+                <div *ngIf="formSubmit.isSubmit && isValidEditDeliverableForm.ScheduledType.errors">
+                    <div *ngIf="isValidEditDeliverableForm.ScheduledType.errors.required" style="color:red;">Please
+                        provide Scheduled Type.</div>
+                </div>
+            </div>
+            <div class="ui-g-6">Amount</div>
+            <div class="ui-g-6">
+                <input type="text" pInputText formControlName="Amount" />
+                <div *ngIf="formSubmit.isSubmit && isValidEditDeliverableForm.Amount.errors">
+                    <div *ngIf="isValidEditDeliverableForm.Amount.errors.required" style="color:red;">Please
+                        provide Amount.</div>
+                </div>
+            </div>
+            <div class="ui-g-6">Currency</div>
+            <div class="ui-g-6">
+                <input type="text" pInputText formControlName="Currency" />
+                <div *ngIf="formSubmit.isSubmit && isValidEditDeliverableForm.Currency.errors">
+                    <div *ngIf="isValidEditDeliverableForm.Currency.errors.required" style="color:red;">Please
+                        provide Currency.</div>
+                </div>
+            </div>
+
+            <div class="ui-g-6">POC Name</div>
+            <div class="ui-g-6">
+                <p-dropdown [options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name"
+                    [filter]="true" optionLabel="FullName">
+                    <ng-template let-item pTemplate="item">
+                        <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                            <div style="font-size:14px;float:left;margin-top:4px">{{item.label }}</div>
+                        </div>
+                    </ng-template>
+                </p-dropdown>
+                <div *ngIf="formSubmit.isSubmit && isValidEditDeliverableForm.POCName.errors">
+                    <div *ngIf="isValidEditDeliverableForm.POCName.errors.required" style="color:red;">Please
+                        provide POC Name.</div>
+                </div>
+            </div>
+            <div class="ui-g-6">Address Type</div>
+            <div class="ui-g-6">
+                <p-dropdown [options]="addressTypes" formControlName="AddressType" placeholder="Select a Address Type"
+                    optionLabel="label">
+                </p-dropdown>
+                <div *ngIf="formSubmit.isSubmit && isValidEditDeliverableForm.AddressType.errors">
+                    <div *ngIf="isValidEditDeliverableForm.AddressType.errors.required" style="color:red;">Please
+                        provide Address type.</div>
+                </div>
+            </div>
+            <div class="ui-g-6">Schedule Date</div>
+            <div class="ug-g-6">
+                <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
+                    yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" [minDate]="minScheduleDate"
+                    (onFocus)="updateCalendarUI(fromCalendar)" #fromCalendar
+                    [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="ScheduledDate">
+                </p-calendar>
+                <div *ngIf="formSubmit.isSubmit && isValidEditDeliverableForm.ScheduledDate.errors">
+                    <div *ngIf="isValidEditDeliverableForm.ScheduledDate.errors.required" style="color:red;">Please
+                        provide Schedule Date.</div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+    <p-footer>
+        <button pButton type="button" type="button" label="Save" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('editDeliverable')"></button>
+        <button pButton type="button" type="button" label="Cancel" (click)="cancelFormSub('editDeliverable')"></button>
+    </p-footer>
+    <br><br><br><br>
+</p-dialog>
+<app-timeline-history #timelineRef></app-timeline-history>

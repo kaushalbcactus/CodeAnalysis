@@ -1,0 +1,110 @@
+<div class="tableLoader" [hidden]='isPSInnerLoaderHidden'>
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
+<div class="ui-g">
+    <div class="ui-g-3"></div>
+    <div class="ui-g-3"></div>
+    <div class="ui-g-3"></div>
+    <div class="ui-g-3 f-right">
+        <div class="box" style="display: -webkit-inline-box;">
+            <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(rc)"></button> -->
+            <i style="font-size: 1.8em;cursor: pointer;" (click)="fdDataShareServie.convertToExcelFile(rc)"
+            title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+        </div>
+    </div>
+</div>
+<div class="financeTable">
+<p-table #rc [columns]="rejectCancelExpenseCols" [value]="rejectExpenses" [paginator]="true" [rows]="10"
+    exportFilename="Cancelled_Reject_Expenses" [resizableColumns]="true">
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th>S.No</th>
+            <th style="width: 2.25em">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn pReorderableColumn
+                [hidden]="!col.visibility">
+                {{col.header}}
+                <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+
+            </th>
+        </tr>
+        <tr>
+            <th></th>
+            <th></th>
+            <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
+                <ng-container *ngIf="col.field">
+                    <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="pendinExpenseColArray.ProjectCode"
+                        defaultLabel="All" appendTo="body" (onChange)="rc.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="pendinExpenseColArray.ClientLegalEntity"
+                        defaultLabel="All" appendTo="body" (onChange)="rc.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Category'" [options]="pendinExpenseColArray.Category"
+                        defaultLabel="All" appendTo="body" (onChange)="rc.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ExpenseType'" [options]="pendinExpenseColArray.ExpenseType"
+                        defaultLabel="All" appendTo="body" (onChange)="rc.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientAmount'" [options]="pendinExpenseColArray.ClientAmount"
+                        defaultLabel="All" appendTo="body" (onChange)="rc.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientCurrency'" [options]="pendinExpenseColArray.ClientCurrency"
+                        defaultLabel="All" appendTo="body" (onChange)="rc.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Created'" [options]="pendinExpenseColArray.Created"
+                        defaultLabel="All" appendTo="body" (onChange)="rc.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'CreatedBy'" [options]="pendinExpenseColArray.CreatedBy"
+                        defaultLabel="All" appendTo="body" (onChange)="rc.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ActionedBy'" [options]="pendinExpenseColArray.ActionedBy"
+                        defaultLabel="All" appendTo="body" (onChange)="rc.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'RejectionDate'" [options]="pendinExpenseColArray.RejectionDate"
+                        defaultLabel="All" appendTo="body" (onChange)="rc.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ActionBy'" [options]="pendinExpenseColArray.ActionBy"
+                        defaultLabel="All" appendTo="body" (onChange)="rc.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Modified'" [options]="pendinExpenseColArray.Modified"
+                        defaultLabel="All" appendTo="body" (onChange)="rc.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                </ng-container>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr>
+            <td>
+                {{rowIndex+1}}
+            </td>
+            <td>
+                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+            </td>
+            <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" class="ui-resizable-column">
+                <ng-container *ngIf="col.field != 'Modified' &&  col.field != '' ">
+                    {{rowData[col.field]}}
+                </ng-container>
+                <ng-container *ngIf="col.field == 'Modified'">
+                    <p>{{rowData[col.field] | date:'MMM d, y' }}</p>
+                </ng-container>
+
+                <ng-container *ngIf="col.field == ''">
+                    <p-menu #popupMenu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
+                    <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                        (click)="popupMenu.toggle($event);openTableAtt(rowData, popupMenu)"></i>
+                </ng-container>
+
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+</div>
+<!-- Right Side Bar -->
+<p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
+    <ng-container *ngIf="rightSideBar">
+        <app-table-attribute [rowItemData]="rowItemDetails"></app-table-attribute>
+    </ng-container>
+</p-sidebar>

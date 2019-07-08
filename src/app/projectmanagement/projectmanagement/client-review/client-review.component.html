@@ -1,0 +1,88 @@
+<div class="alertBox">
+    <!-- <ngb-alert *ngIf="crSuccessMessage" type="success" (close)="crSuccessMessage = null">{{ crSuccessMessage }}
+    </ngb-alert>
+    <ngb-alert *ngIf="crErrorMessage" type="danger" (close)="crErrorMessage = null">{{ crErrorMessage }}</ngb-alert> -->
+</div>
+<div class="wrap-table100" [hidden]="isCRFilterHidden">
+    <label class="checkbox-container no-padding-left no-cursor-pointer">
+        <div class="floatLeft legendColor smalldot blueColor"></div>
+        Today’s delivery
+    </label>
+    <label class="checkbox-container no-padding-left no-cursor-pointer">
+        <div class="floatLeft legendColor smalldot greenColor"></div>
+        Next 5 days
+    </label>
+    <label class="checkbox-container no-padding-left no-cursor-pointer">
+        <div class="floatLeft legendColor smalldot redColor"></div>
+        Overdue
+    </label>
+    <div class="tableLoader" [hidden]='isCRInnerLoaderHidden'>
+        <div id="scInnerLoader"></div>
+        <div id="scInnerLoaderText">Loading...</div>
+    </div>
+    <div class="noDataMessage" [hidden]='crHideNoDataMessage'>
+        No Tasks Found.
+    </div>
+    <div class="table100 slaExist ver4 m-b-110" [hidden]="isCRTableHidden">
+        <p-table #crTableRef [columns]="displayedColumns" [value]="pmObject.clientReviewArray_copy" [paginator]="true"
+            [rows]="5" [lazy]="true" (onLazyLoad)="crLazyLoadTask($event)"
+            [totalRecords]="pmObject.totalRecords.ClientReview" [loading]="pmObject.loading.ClientReview"
+            [lazyLoadOnInit]="false">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                        {{ col.header }}
+                        <p-sortIcon [field]="col.field"></p-sortIcon>
+                    </th>
+                    <th class="lastColumnWidth"></th>
+                </tr>
+                <tr>
+                    <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                        <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="crArrays.projectCodeArray"
+                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="crArrays.clientLegalEntityArray"
+                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'POC'" [options]="crArrays.POCArray" defaultLabel="All"
+                            (onChange)="crTableRef.filter($event.value, col.field, 'in')"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="crArrays.deliveryTypeArray"
+                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'DueDate'" [options]="crArrays.dueDateArray" defaultLabel="All"
+                            (onChange)="crTableRef.filter($event.value, col.field, 'in')"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'Milestone'" [options]="crArrays.milestoneArray"
+                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'DeliveryDate'" [options]="crArrays.deliveryDateArray"
+                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                    </th>
+                    <th class="lastColumnWidth"></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-task>
+                <tr [pContextMenuRow]="rowData">
+                    <td>
+                        <span
+                            [ngClass]="{dot : true,'blueColor' : task.isBlueIndicator,'redColor': task.isRedIndicator,'greenColor': task.isGreenIndicator}"></span>
+                    </td>
+                    <td>{{task.ProjectCode}}</td>
+                    <td>{{task.ClientLegalEntity}}</td>
+                    <td>{{task.POC}}</td>
+                    <td>{{task.DeliverableType}}</td>
+                    <td>{{task.DueDate}}</td>
+                    <td>{{task.Milestone}}</td>
+                    <td>{{task.DeliveryDate}}</td>
+                    <td>
+                        <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu
+                            [model]="popItems" [popup]="true" appendTo="body">
+                        </p-menu>
+                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
+                            (click)="storeRowData(rowData); menu.toggle($event);"></i>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

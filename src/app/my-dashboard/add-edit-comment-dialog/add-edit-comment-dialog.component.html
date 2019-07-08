@@ -1,0 +1,83 @@
+ 
+<div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
+  <div id="modalInnerLoader"></div>
+  <div id="modalInnerLoaderText">Loading...</div>
+</div>
+<p-toast styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
+position="bottom-center">
+</p-toast>
+<div [ngClass]="{'currentTaskButton' : config.data === undefined , 'timeLineButton': config.data !== undefined}" fxLayout="row" fxLayoutAlign="end center" *ngIf="!modalloaderenable">
+
+  <button *ngIf="!MarkComplete" type="button" pButton icon="pi pi-check" id="savecomment" style="margin-right: 5px;" (click)="saveComment(false)"
+    label="Save Comment"></button>
+
+    <button   *ngIf="MarkComplete" [disabled]="disableComment" type="button" pButton icon="pi pi-check" id="savewithoutcomment" (click)="saveComment(true)" [ngStyle]="{'margin-right': '5px;','cursor': disableComment===false ? 'pointer':'not-allowed'}" (click)="saveComment()"
+    label="Save without Comment"></button>
+    <button   *ngIf="MarkComplete" [disabled]="!disableComment" type="button" pButton icon="pi pi-save" id="savewithoutcomment" (click)="saveComment(true)" [ngStyle]="{'margin-right': '5px;','cursor': disableComment === true ? 'pointer':'not-allowed'}" (click)="saveComment()"
+    label="Save with Comment"></button>
+
+  <button type="button" pButton icon="pi pi-times" (click)="cancelComment();" label="Cancel" class="ui-button-secondary"
+    style="background-color:ghostwhite;"></button>
+</div>
+ 
+
+
+
+<div [hidden]="modalloaderenable">
+  <span *ngIf="commentsdb.length === 0 && !MarkComplete" style="color: #c53e3e;font-size: 1.5em;">* No notes or comment present for
+    current task. </span>
+  <div *ngIf="commentsdb.length > 0">
+
+    <div>
+      <div class="main-card mb-3 card">
+        <div class="card-body">
+          <h5 class="card-title" style="font-weight: bold;color:#c53e3e;margin-bottom: 0rem;"><span>Comments</span><span
+              *ngIf="commentsdb.length > 0" style="float: right;font-size: 0.9em;">Total Comments :
+              {{commentsdb.length}}</span></h5>
+          <div class="scroll-area-sm"
+            [ngStyle]="{'height': commentsdb.length > 3 ? '40vh': commentsdb.length <= 3 ?'20vh' :'20vh'}">
+            <div class="scrollbar-container">
+              <perfect-scrollbar class="ps-show-limits">
+                <div style="position: static;" class="ps ps--active-y">
+                  <div class="ps-content">
+                    <div class="vertical-timeline vertical-timeline--animate vertical-timeline--one-column">
+                      <div class="vertical-timeline-item vertical-timeline-element"
+                        *ngFor="let comment of commentsdb; let even = even; let odd = odd">
+                        <div><span class="vertical-timeline-element-icon bounce-in"><i
+                              class="badge badge-dot badge-dot-xl "
+                              [ngClass]="{'badge-odd' :odd, 'badge-even':even }"></i></span>
+                          <div class="vertical-timeline-element-content bounce-in">
+                            <div class="timeline-title" [innerHTML]="comment.TaskComments"></div>
+                            <p style="color: #ff0000;font-size: 13px;">{{comment.TaskName}},&nbsp; <span
+                                style="color: #c53e3e;">{{comment.AssignedTo.Title}}</span></p><span
+                              class="vertical-timeline-element-date"
+                              style="text-align: left;">{{comment.DueDate| date:'MMM d, y'}}<br>
+                              {{comment.DueDate| date:'hh:mm a'}}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+                    <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+                  </div>
+                  <div class="ps__rail-y" style="top: 0px; height: 200px; right: 0px;">
+                    <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 39px;"></div>
+                  </div>
+                </div>
+              </perfect-scrollbar>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div [ngStyle]="{'border': modalInnerLoader ? '': '1px solid #dfdfdf'}">
+
+    <div id="toolbar-container"></div>
+    <div id="editor" style="padding:0.5vw;min-height: 20vh;">
+    </div>
+  </div>
+
+</div>

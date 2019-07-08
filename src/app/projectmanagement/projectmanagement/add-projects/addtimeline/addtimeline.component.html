@@ -1,0 +1,35 @@
+<div class="timeline-top-section">
+  <div class="container">
+    <div class="row">
+      <div class="md-col-12 col-xs-12 col-lg-12">
+        <!-- <ngb-alert *ngIf="timelineAlertMsg" type="warning" (close)="timelineAlertMsg = null">
+          {{ timelineAlertMsg }}
+        </ngb-alert> -->
+      </div>
+    </div>
+    <div class="row">
+      <div class="md-col-12 col-xs-12 col-lg-12">
+        <div class="timeline-radiobutton-section">
+          <div class="floatLeft">
+            <input id="standardTimeline" name="timelineradio" type="radio" (click)="isTimelineChecked('standard')"
+              checked />
+          </div>
+          <div class="floatLeft catHeader">Standard</div>
+          <div class="floatLeft">
+            <input id="nonStandardTimeline" name="timelineradio" (click)="isTimelineChecked('nonstandard')"
+              type="radio" />
+          </div>
+          <div class="floatLeft catHeader">Non Standard</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="clearBoth"></div>
+  <div *ngIf="pmObject.isStandardChecked">
+    <app-standardproject></app-standardproject>
+  </div>
+  <div class="clearBoth"></div>
+  <div *ngIf="!pmObject.isStandardChecked">
+    <app-non-standardproject></app-non-standardproject>
+  </div>
+</div>

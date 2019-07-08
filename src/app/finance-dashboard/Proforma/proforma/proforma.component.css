@@ -1,0 +1,42 @@
+#cle .ng-tns-c5-21 .ui-dropdown .ui-widget .ui-state-default .ui-corner-all .ui-helper-clearfix .ui-dropdown-clearable{
+    width: 200px !important;
+}
+
+.ui-dialog-content .ui-widget-content{
+    height: 140px !important;
+}
+
+.ui-dialog-resizable .ui-dialog-content{
+    height: 140px !important;
+}
+
+.addProformaHeight {
+    max-height: 530px;
+}
+
+::ng-deep .financeTable .ui-table table, .ui-table table
+{  table-layout:auto !important;
+}
+::ng-deep .ui-table-tablewrapper {
+    width: auto!important;
+}
+
+::ng-deep .ui-table-resizable {
+    padding-bottom: 1px;
+    /* overflow: auto; */
+    width: auto !important;
+}
+.ui-table .ui-table-tbody > tr, .ui-table .ui-table-thead > tr > th, .ui-table .ui-table-tfoot > tr > td{
+    max-width: 300px !important;
+    font-size: 12px;
+    padding: 0px !important;
+    padding-left: 4px !important;
+    color: black;
+    text-transform: capitalize;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis !important;
+    border-width: 1px;
+}
+
+  table td {border:inset 1px #000;}

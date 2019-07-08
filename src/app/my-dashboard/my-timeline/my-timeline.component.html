@@ -1,0 +1,309 @@
+<!--**************************************************************************************************
+//  Plus icon to add booking
+************************************************************************************************** -->
+
+<button type="button" #hiddenButton id="hiddenButton" style="display: none" pButton icon="fa fa-fw fa-list" label="Show"
+    (click)="menuPopup.toggle($event)"></button>
+  
+<p-menu #menuPopup [appendTo]="apeendMenuTest" class='menuPopup' [style]="{'width':'16em'}" [popup]="true" [model]="items"></p-menu>
+
+
+
+
+<!--**************************************************************************************************
+//  color codes for different status
+************************************************************************************************** -->
+
+
+
+<div  class="dropdowninfo" style=" position: absolute !important; right:310px; margin-top: 27px;" >
+    <i class="pi pi-info-circle" (click)="op2.show($event)" style="font-size:2em;cursor: pointer; vertical-align: middle;"></i>
+    <p-overlayPanel appendTo="body" #op2 [dismissable]="true" [style]="{'padding':'0em 0em 1em 1em'}">
+        <span style="font-size:1.5em;font-weight: 500;color:#C53E3E">Task : </span>
+        <div>
+            <div class="input-color">
+                <label>Planned</label>
+                <div class="color-box" style="background-color: #FFD34E;"></div>
+            </div>
+            <div class="input-color">
+                <label>Not Started</label>
+                <div class="color-box" style="background-color: #5F6273;"></div>
+            </div>
+            <div class="input-color">
+                <label>In Progress</label>
+                <div class="color-box" style="background-color: #6EDC6C;"></div>
+            </div>
+            <div class="input-color">
+                <label>Completed</label>
+                <div class="color-box" style="background-color: #3498DB;"></div>
+            </div>
+            <div class="input-color">
+                <label>Auto Closed</label>
+                <div class="color-box" style="background-color: #8183CC;"></div>
+            </div>
+            <div class="input-color">
+                <label>On Hold</label>
+                <div class="color-box" style="background-color: #FF3E56;"></div>
+            </div>
+        </div>
+        <span style="font-size:1.5em;font-weight: 500;color:#C53E3E">Adhoc : </span>
+        <div>
+            <div class="input-color">
+                        <label>Leave</label>
+                        <div class="color-box" style="background-color: #D6CFC7;"></div>
+                    </div>
+            <div class="input-color">
+                <label>Client Meeting / Training</label>
+                <div class="color-box" style="background-color: 	 #ff8566;"></div>
+            </div>
+            <div class="input-color">
+                <label>Internal Meeting</label>
+                <div class="color-box" style="background-color: #795C32;"></div>
+            </div>
+            <div class="input-color">
+                <label>Training</label>
+                <div class="color-box" style="background-color: rgb(68, 92, 173);"></div>
+            </div>
+            <div class="input-color">
+                <label>Admin</label>
+                <div class="color-box" style="background-color: rgb(235, 89, 45);"></div>
+            </div>
+            
+        </div>
+    </p-overlayPanel>
+    
+    <p-dropdown [style]="{'min-width':'10.5em'}" appendTo="body" [options]="taskTypes" (onChange)="onTaskTypeChange()"
+        [(ngModel)]="selectedType" optionLabel="name"></p-dropdown>
+        <div #apeendMenuTest> </div>
+</div>
+<!--**************************************************************************************************
+//  loader for event fetch
+************************************************************************************************** -->
+
+<div *ngIf="CalendarLoader">
+    <div id="CalendarInnerLoader"></div>
+    <div id="CalendarInnerLoaderText">Loading...</div>
+</div>
+
+<!--**************************************************************************************************
+// full calendar 
+************************************************************************************************** -->
+
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
+position="bottom-center">
+</p-toast>
+
+<p-fullCalendar #calendar [ngStyle]="{'margin':'1em;'}"  [events]="events" [options]="options">
+</p-fullCalendar>
+
+<ng-template #calendarPopover>
+
+    <h3>{{toolData .title}}</h3>
+
+  </ng-template>
+
+<!--**************************************************************************************************
+//  dialog to to display data
+************************************************************************************************** -->
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+
+<p-dialog *ngIf="taskdisplay" header="{{taskName}}" [contentStyle]="{'max-height':'90vh'}" [style]="{'width':task.Task === 'Adhoc' ? '80vw': '100vw'}"
+    [positionTop]="task.Task === 'Adhoc' ? '': '0'"  [modal]="true" [draggable]="false"
+    appendTo='body'  [closable]="false" [(visible)]="taskdisplay">
+
+    <div class="timeLineButton" fxLayout="row" fxLayoutAlign="end center"  >
+
+           
+        
+            <button type="button" pButton icon="pi pi-save" id="saveTime" style="margin-right:5px" (click)="UpdateTask()"  
+              [disabled]="task.Status === SelectedStatus  ||  SelectedStatus === undefined" label="Update"></button>
+            <button type="button"  pButton icon="pi pi-times" (click)="taskdisplay=false" label="Cancel" class="ui-button-secondary"
+              style="background-color:ghostwhite;"></button>
+          
+          </div>
+
+ <!--*************************************************************************************************
+//  dialog to show adhoc data
+************************************************************************************************** -->
+
+    <div *ngIf="task.Task === 'Adhoc'">
+    <table   style="width:100%;margin:10px 0px 0px 0px;">
+            <tr>
+                <th>Client Name:</th>
+                <td>{{task.Entity}}</td>
+                <th>Type :</th>
+                <td>
+                     {{task.Comments}}
+                </td>
+            </tr>
+            <tr>
+                <th>Start Date:</th>
+                <td>{{task.StartDate | date :'medium'}}</td>
+                <th>End Date:</th>
+                <td>{{task.DueDate | date:'medium'}}</td>
+            </tr>
+            <tr>
+                <!-- <th>Status:</th>
+                <td>{{task.Status}}</td> -->
+                <th>Time Spent:</th>
+                <td>{{task.TimeSpent}} Hours</td>
+                <th>Comments : </th>
+                <td>
+                   {{task.TaskComments}}
+                </td>
+            </tr>
+        </table>
+
+</div>
+
+<!--**************************************************************************************************
+//  dialog to load different component 
+************************************************************************************************** -->
+
+    <mat-accordion *ngIf="task.Task !== 'Adhoc'">
+        <!--****************************************************************************************** 
+        //  dialog to display task proeprties
+        ****************************************************************************************** -->
+
+        <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)">
+            <mat-expansion-panel-header>
+                <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+                    <mat-icon >event_note</mat-icon>&nbsp;&nbsp; Task Properties
+                </mat-panel-title>
+                <ng-template matExpansionPanelContent>
+
+
+                    <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center"
+                        [hidden]="!modalloaderenable">
+                        <div id="modalInnerLoader"></div>
+                        <div id="modalInnerLoaderText">Loading...</div>
+                    </div>
+
+
+
+                    <table [hidden]="modalloaderenable" style="width:100%;margin:10px 0px 0px 0px;">
+                        <tr>
+                            <th>Project Name:</th>
+                            <td>{{task.ProjectName}}</td>
+                            <th>Assigned To:</th>
+                            <td>{{task.AssignedTo}}</td>
+                        </tr>
+                        <tr>
+                            <th>Start Date:</th>
+                            <td>{{task.StartDate | date :'medium'}}</td>
+                            <th>End Date:</th>
+                            <td>{{task.DueDate | date:'medium'}}</td>
+                        </tr>
+                        <tr>
+                            <th>Milestone:</th>
+                            <td>{{task.Milestone}}</td>
+                            <th>Task & Scope:</th>
+                            <td>{{task.Task}}</td>
+                        </tr>
+                        <tr>
+                            <th>Status:</th>
+                            <td>
+                              
+                                <span *ngIf="task.Status !== 'Not Started' && task.Status !== 'In Progress'"> {{task.Status}} </span>
+                                <p-dropdown  [hidden]="task.Status !== 'Not Started' && task.Status !== 'In Progress'"    [options]="statusOptions" [(ngModel)]="SelectedStatus" appendTo="body" [style]="{'width':'100%'}"></p-dropdown>
+
+                            </td>
+                            <th>Time Spent:</th>
+                            <td>{{task.TimeSpent}} Hours</td>
+                        </tr>
+                        <tr>
+                            <th>Previous Tasks:</th>
+                            <td>
+                                <div *ngFor="let task of tasks">
+                                    <span *ngIf="task.TaskType === 'Previous Task'">
+                                        {{task.Title}} ({{task.AssignedTo.Title}} - {{task.Status}})
+                                    </span>
+                                </div>
+                            </td>
+                            <th>Next Tasks:</th>
+                            <td>
+                                <div *ngFor="let task of tasks">
+                                    <span *ngIf="task.TaskType === 'Next Task'">
+                                        {{task.Title}} ({{task.AssignedTo.Title}} - {{task.Status}})
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </ng-template>
+            </mat-expansion-panel-header>
+
+
+        </mat-expansion-panel>
+
+        <!--****************************************************************************************** 
+        //  dialog to display Time spent
+        ****************************************************************************************** -->
+
+        <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)">
+            <mat-expansion-panel-header>
+                <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+                    <mat-icon >timer</mat-icon>&nbsp;&nbsp; Time Spent
+                </mat-panel-title>
+
+                <ng-template matExpansionPanelContent>
+                    <app-time-spent-dialog [taskData]="task"></app-time-spent-dialog>
+                </ng-template>
+
+            </mat-expansion-panel-header>
+
+
+        </mat-expansion-panel>
+
+        <!--****************************************************************************************** 
+        //  dialog to add /view comment
+        ****************************************************************************************** -->
+
+        <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)">
+            <mat-expansion-panel-header>
+                <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+                    <mat-icon >comment</mat-icon> &nbsp;&nbsp; View / Add Comments
+                </mat-panel-title>
+
+                <ng-template matExpansionPanelContent>
+                    <app-add-edit-comment-dialog [taskData]="task"></app-add-edit-comment-dialog>
+                </ng-template>
+
+            </mat-expansion-panel-header>
+
+
+        </mat-expansion-panel>
+
+        <!--****************************************************************************************** 
+        //  dialog to add /view Document
+        ****************************************************************************************** -->
+
+        <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)">
+            <mat-expansion-panel-header>
+                <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+                    <mat-icon >folder</mat-icon> &nbsp;&nbsp; View / Add Documents
+                </mat-panel-title>
+
+            </mat-expansion-panel-header>
+            <ng-template matExpansionPanelContent>
+                <app-view-upload-document-dialog [taskData]="task"></app-view-upload-document-dialog>
+            </ng-template>
+
+        </mat-expansion-panel>
+    </mat-accordion>
+
+
+<!--**************************************************************************************************
+//  footer button for adhoc task
+************************************************************************************************** -->
+<p-footer *ngIf="task.Task === 'Adhoc'">
+        <!-- <button type="button" pButton icon="fa fa-trash" (click)="MarkAsDelete(); taskdisplay=false" label="Delete" style=" background-color: #C53E3E !important;
+        border:1px solid #C53E3E;"></button> -->
+        <button type="button" pButton icon="pi pi-times" (click)="taskdisplay=false" label="Close" class="ui-button-secondary"></button>
+    </p-footer>
+</p-dialog>
+
+
+<app-feedback-popup #feedbackPopup></app-feedback-popup>
+
+

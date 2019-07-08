@@ -1,0 +1,445 @@
+<!-- <p-button style="margin-right: 10px;" type="button" (click)="showDialog()" label="US Template"></p-button>
+<p-button style="margin-right: 10px;" type="button" (click)="showDialog1()" label="Japan Template"></p-button>
+<p-button type="button" (click)="showDialog2()" label="India Template"></p-button>
+
+<div style="margin-top: 10px;display: flex;">
+    <p-button type="button" (click)="createUSProforma()" label="US Proforma"></p-button>
+</div>
+<div style="margin-top: 10px;display: flex;">
+    <p-button type="button" (click)="createJapanProforma()" label="Japan Proforma"></p-button>
+</div>
+<div style="margin-top: 10px;display: flex;">
+    <p-button type="button" (click)="createIndiaProforma()" label="India Proforma"></p-button>
+</div> -->
+
+<p-dialog header="Edit" [draggable]="false" [modal]="true" [(visible)]="displayUS" [style]="{width: '1200px'}">
+
+    <header id=header [innerHTML]=USTemplateCopy.header>
+    </header>
+
+    <div id="main_content">
+        <div style='height:1300px;'>
+            <table style="margin: 15px 0">
+                <tbody>
+                    <tr>
+                        <td class="table-heading">
+                            CONTACT DETAILS</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p class="invButton" style="float: right">
+                <p-button class="editBtn" type="button" (click)="editable('contact_details')" label="edit"></p-button>
+            </p>
+
+            <div class="contact_details-table">
+                <div id="contact_details">
+                    <table id="contactDetails1" [innerHTML]='USTemplateCopy.contactDetails'>
+                    </table>
+                    <table id="contactDetails2" style="width:44%;" [innerHTML]='USTemplateCopy.contactDetails2'>
+                    </table>
+                </div>
+            </div>
+
+            <table style="margin: 15px 0">
+                <tbody>
+                    <tr>
+                        <td class="table-heading">
+                            PURCHASE ORDER DETAIL</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- <p style="float: right">
+                <p-button type="button" (click)="editable('purchaseOrder')" label="edit"></p-button>
+            </p> -->
+
+            <p id="purchaseOrder" class="purchaseOrder">
+                <tr>
+                    <td>
+                        <p id="purchaseOrderDetails" [innerHTML]='USTemplateCopy.purchaseOrder'>
+                        </p>
+                    </td>
+                </tr>
+            </p>
+
+
+            <table style="margin: 15px 0">
+                <tbody>
+                    <tr>
+                        <td class="table-heading">
+                            PROFORMA DETAIL
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="invoice-table proformaDetail">
+                <!-- <p style="float: right">
+                <p-button type="button" (click)="editable('invoiceDetail')" label="edit"></p-button>
+            </p> -->
+
+                <div id="invoiceDetail" style="margin-bottom: 20px;">
+                    <table id="invoiceDetails" border="0" cellspacing="0" cellpadding="0"
+                        [innerHTML]='USTemplateCopy.invoiceDetail'>
+                    </table>
+                    <p style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
+                </div>
+            </div>
+
+            <tbody>
+                <tr>
+                    <td>
+                        <label style="font-size: 18px;font-weight: bold;margin-left: 0;">
+                            PAYMENT INSTRUCTIONS
+                        </label>
+                    </td>
+                </tr>
+            </tbody>
+
+            <p class="invButton" style="float: right">
+                <p-button type="button" class="editBtn" (click)="editable('paymentInstructions')" label="edit">
+                </p-button>
+            </p>
+
+            <tbody>
+                <tr>
+                    <td style="font-size:14px">
+                        <div id="paymentInstructions" [innerHTML]='USTemplateCopy.paymentInstructions'>
+                        </div>
+                        <div id="paymentDetails" [innerHTML]='USTemplateCopy.paymentDetails'>
+                        </div>
+
+                    </td>
+                </tr>
+            </tbody>
+        </div>
+
+        <div *ngIf="showAppendix">
+            <table style="margin: 15px 0">
+                <tbody>
+                    <tr>
+                        <td class="table-heading">
+                            APPENDIX 1</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="invoice-table">
+                <p class="invButton" style="float: right">
+                    <p-button type="button" class="editBtn" (click)="editable('appendix')" label="edit"></p-button>
+                </p>
+                <div id="appendix" class="col4" [innerHTML]="USTemplateCopy.appendix">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="footer" [innerHTML]=USTemplateCopy.footer>
+    </footer>
+
+    <p-footer>
+        <p-button type="button" (click)="confirm()" label="Confirm"></p-button>
+    </p-footer>
+
+</p-dialog>
+
+<p-dialog header="Edit" [modal]="true" [(visible)]="displayJapan" [style]="{width: '1200px'}">
+
+    <header id="header" [innerHTML]=JapanTemplateCopy.header>
+    </header>
+
+    <div id="main_content">
+        <div style="height:1300px;">
+            <table style="margin: 15px 0">
+                <tbody>
+                    <tr>
+                        <td class="table-heading">
+                            CONTACT DETAILS</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p class="invButton" style="float: right">
+                <p-button type="button" class="editBtn" (click)="editable('contact_details')" label="edit"></p-button>
+            </p>
+
+            <div class="contact_details_japan">
+                <div id="contact_details" [innerHTML]='JapanTemplateCopy.contactDetails'>
+                </div>
+            </div>
+
+            <table style="margin: 15px 0">
+                <tbody>
+                    <tr>
+                        <td class="table-heading">
+                            PURCHASE ORDER DETAIL</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- <p style="float: right">
+            <p-button type="button" (click)="editable('purchaseOrder')" label="edit"></p-button>
+        </p> -->
+
+            <p id="purchaseOrder" class="purchaseOrder">
+                <tr>
+                    <td>
+                        <p id="purchaseOrderDetails" [innerHTML]='JapanTemplateCopy.purchaseOrder'>
+                        </p>
+                    </td>
+                </tr>
+            </p>
+
+
+            <table style="margin: 15px 0">
+                <tbody>
+                    <tr>
+                        <td class="table-heading">
+                            PROFORMA DETAIL
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="invoice-table proformaDetail">
+                <!-- <p style="float: right">
+                <p-button type="button" (click)="editable('invoiceDetail')" label="edit"></p-button>
+            </p> -->
+
+                <div id="invoiceDetail" style="margin-bottom: 10px;">
+                    <table border="0" cellspacing="0" cellpadding="0" id="invoiceDetails"
+                        [innerHTML]='JapanTemplateCopy.invoiceDetail'>
+                    </table>
+                    <p style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
+                </div>
+            </div>
+
+            <tbody>
+                <tr>
+                    <td>
+                        <label style="font-size: 18px;font-weight: bold;margin-left: 0;">
+                            PAYMENT INSTRUCTIONS
+                        </label>
+                    </td>
+                </tr>
+            </tbody>
+
+            <p class="invButton" style="float: right">
+                <p-button type="button" class="editBtn" (click)="editable('paymentInstructions')" label="edit">
+                </p-button>
+            </p>
+
+            <tbody class="paymentDetails">
+                <tr>
+                    <td style="font-size:14px">
+                        <div class="paymentInstructions" id="paymentInstructions1"
+                            [innerHTML]='JapanTemplateCopy.paymentInstructions'>
+                        </div>
+                        <ul id="paymentInstructions2" [innerHTML]='JapanTemplateCopy.paymentDetails'>
+                        </ul>
+
+                    </td>
+                </tr>
+            </tbody>
+            <table class="signature-table">
+                <!-- <tr>
+                <td>
+                    <img src="stamp.png">
+                </td>
+            </tr> -->
+
+                <tr>
+                    <td>
+                        <p style="font-size:15px;margin-top: 60px">
+                            カクタス・コミュニケーションズ株式会社</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="font-size:15px">
+                            〒101-0061 東京都千代田区神田三崎町2-4-1</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="font-size:15px">
+                            TUG-Iビル4階</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p style="font-size:15px">
+                            代表取締役 湯浅 誠</p>
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+
+        <div *ngIf="showAppendix">
+            <table style="margin: 15px 0">
+                <tbody>
+                    <tr>
+                        <td class="table-heading">
+                            APPENDIX 1</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="invoice-table">
+                <p class="invButton"  style="float: right">
+                    <p-button type="button" class="editBtn" (click)="editable('appendix')" label="edit"></p-button>
+                </p>
+                <div id="appendix" class="col3" [innerHTML]="JapanTemplateCopy.appendix">
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer" [innerHTML]=JapanTemplateCopy.footer>
+    </footer>
+
+    <p-footer>
+        <p-button type="button" (click)="confirm()" label="Confirm"></p-button>
+    </p-footer>
+
+</p-dialog>
+
+<p-dialog header="Edit" [modal]="true" [(visible)]="displayIndia" [style]="{width: '1200px'}">
+
+    <header id=header [innerHTML]=IndiaTemplateCopy.header>
+    </header>
+
+    <div id="main_content" class="indContact">
+        <div style="height:1300px;">
+            <table style="margin: 15px 0;">
+                <tbody>
+                    <tr>
+                        <td class="table-heading">
+                            CONTACT DETAILS</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p class="invButton" style="float: right">
+                <p-button type="button" class="editBtn" (click)="editable('contact_details')" label="edit"></p-button>
+            </p>
+
+            <div class="contact_details-table">
+                <div id="contact_details">
+                    <table id="contactDetails1" style="width:54%;" [innerHTML]='IndiaTemplateCopy.contactDetails1'>
+                    </table>
+                    <table id="contactDetails2" style="width:40%;" [innerHTML]='IndiaTemplateCopy.contactDetails2'>
+                    </table>
+                    <table id="address" [innerHTML]='IndiaTemplateCopy.address'>
+                    </table>
+                </div>
+            </div>
+
+            <table style="margin: 15px 0">
+                <tbody>
+                    <tr>
+                        <td class="table-heading">REFERENCE DETAILS</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- <p style="float: right">
+                <p-button type="button" (click)="editable('referenceDetail')" label="edit"></p-button>
+            </p> -->
+
+            <div id="referenceDetail" class="referenceDetail">
+                <table>
+                    <tbody id="purchaseOrderDetails" [innerHTML]='IndiaTemplateCopy.purchaseOrder'>
+
+                    </tbody>
+                </table>
+            </div>
+
+
+            <table style="margin: 15px 0">
+                <tbody>
+                    <tr>
+                        <td class="table-heading">
+                            PROFORMA DETAIL
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="invoice-table proformaDetail">
+                <div id="invoiceDetail" style="margin-bottom: 20px;">
+                    <table border="0" cellspacing="0" cellpadding="0" id="invoiceDetails"
+                        [innerHTML]='IndiaTemplateCopy.invoiceDetail'>
+                    </table>
+                    <p style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
+                </div>
+            </div>
+
+            <tbody>
+                <tr>
+                    <td>
+                        <label style="font-size: 18px;font-weight: bold;margin-left: 0;">
+                            PAYMENT INSTRUCTIONS
+                        </label>
+                    </td>
+                </tr>
+            </tbody>
+
+            <p class="invButton" style="float: right">
+                <p-button type="button" class="editBtn" (click)="editable('paymentInstructions')" label="edit">
+                </p-button>
+            </p>
+
+            <tbody>
+                <tr>
+                    <td style="font-size:14px">
+                        <div id="paymentInstructions" id="paymentInstructions1"
+                            [innerHTML]='IndiaTemplateCopy.paymentInstructions'>
+                        </div>
+                        <div class="paymentDetails">
+                            <ul id="paymentInstructions2" [innerHTML]='IndiaTemplateCopy.paymentDetails'>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </div>
+
+        <div *ngIf="showAppendix">
+            <table style="margin: 15px 0">
+                <tbody>
+                    <tr>
+                        <td class="table-heading">
+                            APPENDIX 1</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div  class="invoice-table appendix">
+                <p class="invButton" style="float: right">
+                    <p-button type="button" class="editBtn" (click)="editable('appendix')" label="edit"></p-button>
+                </p>
+                <div id="appendix" class="col4" [innerHTML]="IndiaTemplateCopy.appendix">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer id="footer" [innerHTML]=IndiaTemplateCopy.footer>
+    </footer>
+
+    <p-footer>
+        <p-button type="button" (click)="confirm()" label="Confirm"></p-button>
+    </p-footer>
+
+</p-dialog>
+
+<p-dialog header="Edit {{heading}}" [draggable]="false" appendTo='body' [modal]="true" [(visible)]="editor"
+    (onHide)="close()" [style]="{width: '1200px', top:'0px'}">
+    <app-section-editor *ngIf="editor" [editableData]="data" (editdata)="getData($event)"></app-section-editor>
+</p-dialog>
+
+<p-toast position="bottom-right" key="editToast"></p-toast>
+
+<!-- <pre>{{ saveObject|json}}</pre> -->

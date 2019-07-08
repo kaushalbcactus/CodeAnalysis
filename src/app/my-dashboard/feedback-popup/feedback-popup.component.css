@@ -1,0 +1,32 @@
+.star {
+  font-size: 1.5rem;
+  color: #9E9E9E;
+}
+.filled {
+  color: #4CAF50;
+}
+.modal-header {
+  display: block;
+  text-align: center;
+}
+.example-full-width {
+  width: 100%;
+}
+.scrollTable {
+  display: block;
+  max-height: 200px;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+textarea{font-family: inherit}
+.save-rating{background-color: #B71C1C!important;padding: 12px 50px!important;color: #fff!important;border-radius: 4px!important;border: none!important;font-size: 16px!important;margin: 0px 6px!important;cursor: pointer!important}
+.save-rating:hover{background-color: #D92121!important;transition: 0.3s ease-in!important}
+.cancel-rating{background-color: #FAFAFA!important;padding: 12px 50px!important;color: #222222!important;border-radius: 4px!important;border: none!important;font-size: 16px!important;margin: 0px 6px!important;cursor: pointer!important}
+.cancel-rating:hover{background-color: #D7D7D7;transition: 0.3s ease-in}
+.ratework-popup{width: 100%;background: #fff;}
+.ratework-popup .popup-header{font-size: 34px;line-height: 42px;text-align: center;margin: 10px auto}
+
+.popup-con{padding: 30px}
+.grey-default-c{color: #787878;margin: 0px auto 10px;text-align: left}
+table.popup-rating-row tr td{border-collapse: collapse;padding: 5px 0px;text-align: left}
+

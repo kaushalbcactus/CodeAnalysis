@@ -1,0 +1,222 @@
+<!-- Loadder -->
+<div class="tableLoader" [hidden]='isPSInnerLoaderHidden'>
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
+
+<!-- Export -->
+<div class="ui-g">
+    <div class="ui-g-3"></div>
+    <div class="ui-g-3"></div>
+    <div class="ui-g-3"></div>
+    <div class="ui-g-3 f-right">
+        <div class="box" style="display: -webkit-inline-box;">
+            <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(hb)"></button> -->
+            <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(hb)"
+                title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Table Start -->
+<div class="financeTable">
+<p-table #hb [columns]="hourlyBasedCols" [value]="hourlyBasedRes" [paginator]="true" [rows]="10"
+    [resizableColumns]="true" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
+    selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Hourly_Based_Expenses">
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th>S.No</th>
+            <th style="width: 2.25em">
+                <p-tableHeaderCheckbox (click)="selectAllRows()"></p-tableHeaderCheckbox>
+            </th>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn pReorderableColumn
+                [hidden]="!col.visibility">
+                {{col.header}}
+                <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+
+            </th>
+        </tr>
+        <tr>
+            <th></th>
+            <th></th>
+            <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
+                <ng-container *ngIf="col.field">
+                    <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="hourlyBasedColArray.ProjectCode"
+                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'SOWValue'" [options]="hourlyBasedColArray.SOWCode" defaultLabel="All"
+                        appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ProjectMileStone'" [options]="hourlyBasedColArray.ProjectMileStone"
+                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="hourlyBasedColArray.ClientLegalEntity"
+                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ProposedEndDate'" [options]="hourlyBasedColArray.ProposedEndDate"
+                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ScheduledDate'" [options]="hourlyBasedColArray.ScheduledDate"
+                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Rate'" [options]="hourlyBasedColArray.Rate" defaultLabel="All"
+                        appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'HoursSpent'" [options]="hourlyBasedColArray.HoursSpent"
+                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'TotalInvoice'" [options]="hourlyBasedColArray.TotalInvoice"
+                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Currency'" [options]="hourlyBasedColArray.Currency"
+                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'POCName'" [options]="hourlyBasedColArray.POCName" defaultLabel="All"
+                        appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+
+                </ng-container>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr>
+            <td>
+                {{rowIndex+1}}
+            </td>
+            <td>
+                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+            </td>
+            <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility">
+                {{rowData[col.field]}}
+                <ng-container *ngIf="col.field == ''">
+                    <p-menu #popupMenu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
+                    <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                        (click)="popupMenu.toggle($event);openPopup(rowData, popupMenu)"></i>
+                </ng-container>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+</div>
+<!-- Table End -->
+
+<!-- Right Side Bar -->
+<p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
+    <ng-container *ngIf="rightSideBar">
+        <app-pf-table-attribute [rowItemData]="selectedRowItem"></app-pf-table-attribute>
+    </ng-container>
+</p-sidebar>
+
+
+<!-- Context Menu -->
+<!-- <p-contextMenu #cm [model]="items"></p-contextMenu> -->
+<!-- Context Menu End -->
+
+
+<!-- Toast Messages -->
+<p-toast position="bottom-right" key="myKey1"></p-toast>
+<p-toast position="bottom-center" key="bottomCenter"></p-toast>
+<!-- Toast Message End -->
+
+<!-- Confirmation Hourly Based -->
+<!-- <p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog> -->
+<p-dialog header="Approve For Billing" [(visible)]="confirmationModal" [modal]="true" [draggable]="false"
+    [responsive]="true" [style]="{'width': '40%', 'top':'0px'}" [maximizable]="false"
+    (onHide)="cancelFormSub('confirmationModal')">
+
+    <form id="myform" [formGroup]="confirmHourlybased_form">
+        <div class="ui-g">
+            <div class="ui-g-12">
+                <label>Are you sure you want to approve billing and send for auditing project ? </label>
+            </div>
+
+            <div class="ui-g-12">
+                Project bugdet hours - <b>{{confirmHourlybased_form.value.BudgetHrs}}</b>
+            </div>
+
+            <div class="ui-g-12">
+                <span>Approved time spent - <b>{{confirmHourlybased_form.value.HoursSpent}}</b></span>
+            </div>
+
+            <div class="ui-g-12">
+                <span>On approval the budget hours will be updated to the approved time spent for the project.</span>
+            </div>
+
+            <div class="ui-g-6">Approval Date ({{confirmHourlybased_form.value.approvalDate}})</div>
+            <div class="ui-g-6">
+                <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
+                    yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" [minDate]="minScheduleDate"
+                    (onFocus)="updateCalendarUI(fromCalendar)" #fromCalendar
+                    [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="approvalDate">
+                </p-calendar>
+                <div *ngIf="formSubmit.isSubmit && isValidConfirmForm.approvalDate.errors">
+                    <div *ngIf="isValidEditDeliverableForm.approvalDate.errors.required" style="color:red;">Please
+                        provide Approval Date.</div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+    <p-footer>
+        <button pButton type="button" type="button" label="Approve" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('confirmInvoice')"></button>
+        <button pButton type="button" type="button" label="Cancel"
+            (click)="cancelFormSub('confirmationModal')"></button>
+    </p-footer>
+</p-dialog>
+
+<!-- <button type="button" (click)="confirm1()" pButton icon="pi pi-check" label="Confirm"></button> -->
+
+<!-- Approve Accept Reject Modal -->
+<p-dialog header="Edit Invoice" [(visible)]="hourlyModal" [modal]="true" [draggable]="false" [responsive]="true"
+    [style]="{'width': '40%', 'top':'0px'}" [maximizable]="false" [baseZIndex]="10000"
+    (onHide)="cancelFormSub('editDeliverable')">
+
+    <form id="myform" [formGroup]="editHourly_form">
+        <div class="ui-g">
+            <div class="ui-g-6">Project/SOW Code</div>
+            <div class="ui-g-6">
+                <input type="text" pInputText formControlName="ProjectCode" />
+
+            </div>
+
+            <div class="ui-g-6">POC Name</div>
+            <div class="ui-g-6">
+                <input type="text" pInputText formControlName="POCName" />
+
+            </div>
+
+            <div class="ui-g-6">Currency</div>
+            <div class="ui-g-6">
+                <input type="text" pInputText formControlName="Currency" />
+
+            </div>
+            <div class="ui-g-6">Rate</div>
+            <div class="ui-g-6">
+                <input type="text" pInputText formControlName="Rate" />
+                <div *ngIf="formSubmit.isSubmit && isValidEdithourlyForm.Rate.errors">
+                    <div *ngIf="isValidEdithourlyForm.Rate.errors.required" style="color:red;">Please
+                        provide Rate.</div>
+                </div>
+            </div>
+            <div class="ui-g-6">Hours Spent</div>
+            <div class="ui-g-6">
+                <input type="text" pInputText formControlName="HoursSpent" (keypress)="onlyNumberKey($event)"
+                    maxlength="15" />
+                <div *ngIf="formSubmit.isSubmit && isValidEdithourlyForm.HoursSpent.errors">
+                    <div *ngIf="isValidEdithourlyForm.HoursSpent.errors.required" style="color:red;">Please
+                        provide Hours Spent.</div>
+                </div>
+            </div>
+
+
+        </div>
+    </form>
+    <p-footer>
+        <button pButton type="button" type="button" label="Save" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('editInvoice')"></button>
+        <button pButton type="button" type="button" label="Cancel" (click)="cancelFormSub('editHourly')"></button>
+    </p-footer>
+</p-dialog>
+<app-timeline-history #timelineRef></app-timeline-history>

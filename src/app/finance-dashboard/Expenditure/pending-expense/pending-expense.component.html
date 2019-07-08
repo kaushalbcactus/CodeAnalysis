@@ -1,0 +1,285 @@
+<div class="tableLoader" [hidden]='isPSInnerLoaderHidden'>
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
+
+<div class="p-grid">
+    <div class="p-col-12 p-md-12 p-lg-12 f-right">
+        <div style="display: -webkit-inline-box;">
+            <div class="box" style="margin-right: 20px">
+                <button type="button" pButton label="Approve Expense" (click)="approveExpense('approve')"></button>
+            </div>
+            <div class="box" style="margin-right: 20px">
+                <button type="button" pButton label="Reject Expense" (click)="approveExpense('reject')"></button>
+            </div>
+            <div class="box">
+                <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(dt2)"></button> -->
+                <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(dt2)"
+                    title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+            </div>
+        </div>
+    </div>
+    <div style="clear: both;"></div>
+</div>
+<div class="financeTable">
+<p-table #dt2 [columns]="pendingExpeseCols" [value]="pendingExpenses" [resizableColumns]="true" [paginator]="true"
+    [rows]="10" exportFilename="PendingExpenses" (onRowSelect)="onRowSelect($event)"
+    (onRowUnselect)="onRowUnselect($event)" selectionMode="" [(selection)]="selectedAllRowsItem">
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th>S.No</th>
+            <th style="width: 2.25em">
+                <p-tableHeaderCheckbox (click)="selectAllRows()"></p-tableHeaderCheckbox>
+            </th>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn pReorderableColumn
+                [hidden]="!col.visibility">
+                {{col.header}}
+                <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+            </th>
+        </tr>
+        <tr>
+            <th></th>
+            <th></th>
+            <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility" class="ui-fluid">
+                <!-- <input pInputText type="text" style="width:100%;"
+                                        (input)="dt2.filter($event.target.value, col.field, col.filterMatchMode)"
+                                        [value]="dt2.filters[col.field]?.value"> -->
+                <!-- <p-dropdown [options]="[{id:1,name:'Rahul'}]" [style]="{'width':'100%'}"
+                                        (onChange)="dt.filter($event.value, col.field, 'in')"></p-dropdown> -->
+                <!-- {{col.field}} -->
+                <ng-container *ngIf="col.field">
+                    <p-multiSelect *ngSwitchCase="'RequestType'" [options]="pendinExpenseColArray.RequestType"
+                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'"
+                        [options]="pendinExpenseColArray.ClientLegalEntity" defaultLabel="All" appendTo="body"
+                        (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="pendinExpenseColArray.ProjectCode"
+                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="pendinExpenseColArray.SOWCode"
+                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'SOWName'" [options]="pendinExpenseColArray.SOWName"
+                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Category'" [options]="pendinExpenseColArray.Category"
+                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'PONumber'" [options]="pendinExpenseColArray.PONumber"
+                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ExpenseType'" [options]="pendinExpenseColArray.ExpenseType"
+                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientAmount'" [options]="pendinExpenseColArray.ClientAmount"
+                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientCurrency'" [options]="pendinExpenseColArray.ClientCurrency"
+                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Created'" [options]="pendinExpenseColArray.Created"
+                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'CreatedBy'" [options]="pendinExpenseColArray.CreatedBy"
+                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ModifiedBy'" [options]="pendinExpenseColArray.ModifiedBy"
+                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Modified'" [options]="pendinExpenseColArray.ModifiedDate"
+                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'VendorName'" [options]="pendinExpenseColArray.VendorName"
+                    defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                </p-multiSelect>
+                    <!-- <p-dropdown [options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">
+                                            <ng-template let-item pTemplate="item">
+                                                <span>{{item.value}}</span>
+                                            </ng-template>
+                                        </p-dropdown> -->
+                </ng-container>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr>
+            <td>
+                {{rowIndex+1}}
+            </td>
+            <td>
+                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+            </td>
+            <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" class="ui-resizable-column">
+                <ng-container *ngIf="col.field != 'Created' && col.field != 'Modified' &&  col.field != '' ">
+                    {{rowData[col.field]}}
+                </ng-container>
+                <ng-container *ngIf="col.field == 'Created' || col.field == 'Modified'">
+                    <p>{{rowData[col.field] | date:'MMM d, y' }}</p>
+                </ng-container>
+                <ng-container *ngIf="col.field == ''">
+                    <p-menu #popupMenu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu">
+                    </p-menu>
+                    <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                        (click)="popupMenu.toggle($event);openPopup(rowData, popupMenu)"></i>
+                </ng-container>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+</div>
+<!-- Table End  -->
+
+<!-- Right Side Bar -->
+<p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
+    <ng-container *ngIf="rightSideBar">
+        <app-table-attribute [rowItemData]="selectedRowItem"></app-table-attribute>
+    </ng-container>
+</p-sidebar>
+
+<!-- <p-menu [model]="items1"></p-menu> -->
+
+<!-- Context Menu Start -->
+<p-contextMenu #cm [model]="items"></p-contextMenu>
+<!-- Context Menu End -->
+
+<!-- Approve Accept Reject Modal -->
+<p-dialog header="{{cancelRejectDialog.title}}" [(visible)]="displayModal" [modal]="true" [draggable]="false"
+    [responsive]="true" [contentStyle]="{'max-height':'450px'}" [style]="{'width': '50%'}"
+    (onHide)="cancelFormSub('cancelReject_form')">
+
+    <form id="myform" [formGroup]="cancelReject_form"
+        *ngIf="cancelRejectDialog.title === 'Cancel Expense' || cancelRejectDialog.title === 'Reject Expense'  ">
+        <div class="ui-g">
+            <div class="ui-g-6">Are you sure you want to {{cancelRejectDialog.text}} this expense ?</div>
+            <div class="ui-g-6">
+                <p-radioButton name="ce" value="Yes" label="Yes" inputId="preopt1" (onClick)="isExpenseRej()"
+                    formControlName="isCancel">
+                </p-radioButton>&nbsp;
+                <p-radioButton name="ce" value="No" label="No" inputId="preopt2" (onClick)="isExpenseRej()"
+                    formControlName="isCancel">
+                </p-radioButton>
+                <div *ngIf="formSubmit.isSubmit && isValidCancelExpeseForm.isCancel.errors">
+                    <div *ngIf="isValidCancelExpeseForm.isCancel.errors.required" style="color:red;">Please select your
+                        Confirmation.</div>
+                </div>
+            </div>
+            <div class="ui-g-6">Comments</div>
+            <div class="ui-g-6">
+                <span class="ui-float-label">
+                    <textarea [rows]="4" [cols]="30" pInputTextarea autoResize="autoResize"
+                        formControlName="ApproverComments"></textarea>
+                    <!-- <label for="float-input">Comment</label> -->
+                </span>
+                <div *ngIf="formSubmit.isSubmit && isValidCancelExpeseForm.ApproverComments.errors">
+                    <div *ngIf="isValidCancelExpeseForm.ApproverComments.errors.required" style="color:red;">Comments
+                        are
+                        required.</div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <p-footer *ngIf="cancelRejectDialog.title === 'Cancel Expense' || cancelRejectDialog.title === 'Reject Expense'  ">
+        <button pButton type="button" label="{{cancelRejectDialog.title}}" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit(cancelRejectDialog.title)"></button>
+    </p-footer>
+
+    <form id="myform" [formGroup]="approveExpense_form"
+        *ngIf="cancelRejectDialog.title === 'Approve Expense' || cancelRejectDialog.title === 'Approve Expense'  ">
+        <div class="ui-g">
+            <div class="ui-g-6">Paying Entity</div>
+            <div class="ui-g-6">
+                <p-dropdown [options]="billingEntityData" virtualScroll="true" itemSize="30" [showClear]="false"
+                    placeholder="Select a Billing Entity" [style]="{'width':'100%'}" formControlName="PayingEntity"
+                    (onChange)="selectedBE($event.value)" optionLabel="Title">
+                </p-dropdown>
+                <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.PayingEntity.errors">
+                    <div *ngIf="isValidApproveExpeseForm.PayingEntity.errors.required" style="color:red;">Paying
+                        entity is required.</div>
+                </div>
+            </div>
+            <div *ngIf="selectedRowItem.RequestType === 'Credit Card'">
+                <div class="ui-g-6">Reference Number</div>
+                <div class="ui-g-6">
+                    <input type="text" pInputText formControlName="Number" />
+                    <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.Number.errors">
+                        <div *ngIf="isValidApproveExpeseForm.Number.errors.required" style="color:red;">Please
+                            provide Reference number.</div>
+                    </div>
+                </div>
+                <div class="ui-g-6">Payment Date</div>
+                <div class="ui-g-6 pl-0">
+                    <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
+                        yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true"
+                        [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [appendTo]="body"
+                        formControlName="DateSpend">
+                    </p-calendar>
+                    <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.DateSpend.errors">
+                        <div *ngIf="isValidApproveExpeseForm.DateSpend.errors.required" style="color:red;">Please
+                            provide Payment Date.</div>
+                    </div>
+                </div>
+                <div class="ui-g-6">Payment Mode</div>
+                <div class="ui-g-6">
+                    <p-dropdown [options]="paymentModeArray" [showClear]="false" placeholder="Select a Payment Mode"
+                        [style]="{'width':'100%'}" formControlName="PaymentMode" optionLabel="value"
+                        (onChange)="selectedPaymentMode($event.value)" onfocus='this.size=10;'>
+                    </p-dropdown>
+                    <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.PaymentMode.errors">
+                        <div *ngIf="isValidApproveExpeseForm.PaymentMode.errors.required" style="color:red;">Please
+                            provide Payment Mode.</div>
+                    </div>
+                </div>
+
+
+                <!-- <div class="p-grid">
+                    <div class="p-col-4">
+                        <div class="box">
+                            Payment Mode
+                        </div>
+                    </div>
+                    <div class="p-col-4">
+                        <div class="box">
+                            <p-dropdown [options]="paymentModeArray" [showClear]="false" placeholder="Select a Payment Mode"
+                                [style]="{'width':'100%'}" formControlName="PaymentMode" optionLabel="value"
+                                (onChange)="selectedPaymentMode($event.value)" onfocus='this.size=10;'>
+                            </p-dropdown>
+                        </div>
+                    </div>
+                </div> -->
+
+
+                <div class="ui-g-6">Notes</div>
+                <div class="ui-g-6">
+                    <textarea [rows]="4" [cols]="30" pInputTextarea autoResize="autoResize"
+                        formControlName="ApproverComments"></textarea>
+                    <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.ApproverComments.errors">
+                        <div *ngIf="isValidApproveExpeseForm.ApproverComments.errors.required" style="color:red;">Please
+                            provide Note.</div>
+                    </div>
+                </div>
+                <div class="ui-g-6">Upload File</div>
+                <div class="ui-g-6">
+                    <input type="file" name="myfile" class="form-control" id="myfile"
+                        (change)="onFileChange($event, 'ApprovedExpenseFiles')" #fileInput
+                        formControlName="ApproverFileUrl" />
+                    <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.ApproverFileUrl.errors">
+                        <div *ngIf="isValidApproveExpeseForm.ApproverFileUrl.errors.required" style="color:red;">Please
+                            provide file.</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div [ngStyle]="{'margin-top':selectedRowItem.RequestType !== 'Credit Card' ? '45%' : '0px' }"></div>
+
+        </div>
+    </form>
+    <p-footer *ngIf="cancelRejectDialog.title === 'Approve Expense'">
+        <button pButton type="button" label="{{cancelRejectDialog.title}}" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit(cancelRejectDialog.title)"></button>
+    </p-footer>
+</p-dialog>
+
+<!-- <button (click)="getReq()" pButton type="button">CLienk Me</button> -->

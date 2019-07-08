@@ -1,0 +1,71 @@
+@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import "~jsgantt-improved/dist/jsgantt.css";
+@import "~@ng-select/ng-select/themes/default.theme.css";
+@import '@fullcalendar/core/main.css';
+@import '@fullcalendar/daygrid/main.css';
+@import '@fullcalendar/timegrid/main.css';
+@import '@fullcalendar/list/main.css';
+
+@import '@fullcalendar/bootstrap/main.css';
+
+@font-face {
+    font-family: 'Helvetica';
+    url:('/fonts/HelveticaNeue.ttf')  format('truetype'), /* Safari, Android, iOS */
+}
+body{
+    font-family:  Helvetica;
+    font-size: 14px;
+}
+
+ 
+button.ui-datepicker-trigger.ui-calendar-button {
+	width: 30px !important;
+    min-width: 30px !important;
+}
+
+button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable {
+	    padding: 5px !important;
+} 
+ 
+
+
+#scInnerLoader{
+    border: 10px solid #f3f3f3 !important;
+    border-radius: 50% !important;
+    border-top: 10px solid red !important;
+    border-bottom: 10px solid red !important;
+    width: 100px !important;
+    height: 100px !important;
+    -webkit-animation: spin 2s linear infinite !important;
+    animation: spin 2s linear infinite !important;
+    margin: 0 auto  !important;
+    position: relative !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+   
+  }
+  
+  #scInnerLoaderText{
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal !important;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal !important;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal !important;
+    animation: loading-text-opacity 2s linear 0s infinite normal !important;
+    color: black !important;
+    font-family: "Helvetica Neue, "Helvetica", ""arial" !important;
+    font-size: 10px !important;
+    font-weight: bold !important;
+    opacity: 0.5 !important;
+    text-align: center !important;
+    text-transform: uppercase !important;
+    top: 0 !important;
+   
+  }
+  
+  /* Added for timeline */
+.ui-table-scrollable-header{
+    overflow: visible!important;
+}
+.ui-table.ui-widget {
+    margin-top: 20px;
+}
+

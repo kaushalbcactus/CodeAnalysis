@@ -1,0 +1,83 @@
+ 
+ <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" *ngIf="loaderenable"  >
+    <div id="capacityInnerLoader"></div>
+    <div id="capacityInnerLoaderText">Loading...</div>
+</div>
+
+
+  
+<table   [hidden]="oCapacity.arrUserDetails.length === 0 && loaderenable" class=" table-bordered table-striped header-fixed"   id="capacityTable">
+    <thead class="tableHeader" *ngIf="!loaderenable">
+            <tr style="border : 1px solid #cdcdcd">
+                <td>
+                    Resouce(s) / Date(s)
+                </td>
+                <td title = "{{date | date : 'EEE d MMM yyyy'}}"   *ngFor="let date of oCapacity.arrDateFormat">
+                    {{date | date : "d MMM"}}
+                </td>
+                <td class="unallocated">
+                    Total Un-Allocated
+                </td>
+                <td class="allocated">
+                    Total Allocated
+                </td>
+            </tr>
+    </thead>
+    <tbody class="capacityBody">
+        <tr *ngFor="let user of oCapacity.arrUserDetails">
+            <td>
+            <table class="table-bordered table-striped tbl" >
+                <tbody>
+                    <tr class="UserTasksRow">
+                        <td>
+                            <table>
+                            <tbody>
+                                <tr *ngIf="!loaderenable" class="{{user.uid}}taskrow" [ngStyle]="{'height':height}">
+                                    <td [ngStyle]="{'vertical-align':verticalAlign}">
+                                        <div>  {{user.userName}} </div>
+                                        <div class="{{user.uid}}more more" (click)="changeHeight(user,$event)" *ngIf="user.tasks.length > 3 && user.dates.length <= 10">More</div>
+                                        <div class="{{user.uid}}less less" style="display: none" (click)="changeHeight(user,$event)">Less</div>
+                                    </td>
+                                    
+                                    <td [ngStyle]="{'vertical-align':verticalAlign}" *ngFor="let date of user.dates"  class="tableCell" [ngClass]="{'colorLeave': date.userCapacity==='Leave','colorFullAllocated':date.userCapacity === 'NotAvailable','colorAvailable':date.userCapacity === 'Available'}" >
+                                        <div class="wrap">
+                                            <div class="taskCount right">{{date.taskCount}}</div>
+                                            <div class="availableHrs center"> {{date.displayAvailableHrs}} </div>
+                                        </div>
+                                    </td>
+                                    <td class="unallocated" [ngStyle]="{'vertical-align':verticalAlign}">
+                                        <div class="center"> {{user.displayTotalUnAllocated}}</div>
+                                    </td>
+                                    <td class="allocated" [ngStyle]="{'vertical-align':verticalAlign}">
+                                        <div class="center">{{user.displayTotalAllocated}}</div>
+                                    </td>
+                                </tr>
+                               <!-- {{user.tasks |json}} -->
+                                <tr *ngIf="user.dates.length <= 10" style="position: absolute;
+                                left: 0;
+                                z-index: 200;
+                                top: 20px;">
+                                    <td *ngIf="!loaderenable" style="padding: 0px;
+                                    border: none;">
+                                        <div class="taskBar"  *ngFor="let task of user.tasks" 
+                                        [ngStyle]="{width: gettaskCSS(task.cssWidth), left: gettaskCSS(task.cssLeft),top: gettaskCSS(task.cssTop), display: task.cssWidth === '0px' ? none : gettaskCSS(task.cssHide)}"
+                                        [ngClass]="{'plannedTask':task.Status==='Not Confirmed','confirmedTask':task.Status!=='Not confirmed'}" >
+                                                {{task.TotalAllocated}} : {{task.ProjectCode}}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                   
+                </tbody>
+            </table>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+  
+  
+  
+  

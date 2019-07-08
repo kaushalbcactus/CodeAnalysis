@@ -1,0 +1,28 @@
+<!-- Tabmenu list -->
+<!-- <div class="ui-g">
+    <div class="ui-g-8">
+        <p-tabMenu [model]="fdConstantsService.fdComponent.tabs.scheduleMenu"></p-tabMenu>
+    </div>
+    <div class="ui-g-4 f-left">
+        <p-calendar [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="dd M , yy"
+            placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()"
+            (onClearClick)="setDefault()" [style]="{width:'100%'}"></p-calendar>
+    </div>
+</div> -->
+<div class="ui-g ui-fluid mtb-20">
+    <div class="ui-g-12 ui-md-8">
+        <p-tabMenu [model]="fdConstantsService.fdComponent.tabs.scheduleMenu"></p-tabMenu>
+    </div>
+    <div style="clear: both;"></div>
+    <div class="ui-g-12 ui-md-4">
+        <p-calendar id="scheduledDR" [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true"
+            dateFormat="dd M , yy" placeholder="Select Start & End Date" showButtonBar="true"
+            (onClose)="SelectedDateRange()" (onClearClick)="setDefault()" [style]="{width:'100%'}" 
+            mask="true" showButtonPanel="true">
+            <!-- <p-footer>Cutom footer with custom buttons</p-footer> -->
+        </p-calendar>
+        <div style="clear: both;"></div>
+    </div>
+</div>
+
+<router-outlet></router-outlet>

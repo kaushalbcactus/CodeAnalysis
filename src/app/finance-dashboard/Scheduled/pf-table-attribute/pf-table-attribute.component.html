@@ -1,0 +1,168 @@
+<div class="financeTable">
+<p-table [value]="rowData">
+    <ng-template pTemplate="header">
+        <tr>
+            <th>Name</th>
+            <th>Value</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-item style="overflow: auto">
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">ID</td>
+            <td>{{rowItemData.Id}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Project Code</td>
+            <td>{{rowItemData.ProjectCode}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">SOW Code</td>
+            <td>{{rowItemData.SOWCode}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">SOW Name</td>
+            <td>{{rowItemData.SOWName}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Project MileStones</td>
+            <td>{{rowItemData.ProjectMileStone}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">PO Number</td>
+            <td>{{rowItemData.PONumber}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">PO</td>
+            <td>{{rowItemData.PO}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">POC Name</td>
+            <td>{{rowItemData.POCName}}</td>
+        </tr>
+        <!-- <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">PF ID</td>
+            <td>{{rowItemData.PFID}}</td>
+        </tr> -->
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Client LE</td>
+            <td>{{rowItemData.ClientLegalEntity}}</td>
+        </tr>
+        <tr *ngIf="rowItemData.ScheduledDate">
+            <td [ngStyle]="{'color':'#d7181f'}">Scheduled Date</td>
+            <td>{{rowItemData.ScheduledDate}}</td>
+        </tr>
+        <tr *ngIf="rowItemData.ProposedEndDate">
+            <td [ngStyle]="{'color':'#d7181f'}">Proposed End Date</td>
+            <td>{{rowItemData.ProposedEndDate}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Amount</td>
+            <td>{{rowItemData.Amount}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Currency</td>
+            <td>{{rowItemData.Currency}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Rate</td>
+            <td>{{rowItemData.Rate}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Hours Spent</td>
+            <td>{{rowItemData.HoursSpent}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Budget Hrs</td>
+            <td>{{rowItemData.BudgetHrs}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Template</td>
+            <td>{{rowItemData.Template}}</td>
+        </tr>
+        <tr *ngIf="rowItemData.TotalInvoice">
+            <td [ngStyle]="{'color':'#d7181f'}">Total Invoice</td>
+            <td>{{rowItemData.TotalInvoice}}</td>
+        </tr>
+
+        <!-- <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Approved Budget</td>
+            <td>{{rowItemData.ApprovedBudget}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Revenue Budget</td>
+            <td>{{rowItemData.RevenueBudget}}</td>
+        </tr>
+
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">OOP Budget</td>
+            <td>{{rowItemData.OOPBudget}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Tax Budget</td>
+            <td>{{rowItemData.TaxBudget}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Invoices Scheduled</td>
+            <td>{{rowItemData.InvoicesScheduled}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Scheduled Revenue</td>
+            <td>{{rowItemData.ScheduledRevenue}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Scheduled OOP</td>
+            <td>{{rowItemData.ScheduledOOP}}</td>
+        </tr> -->
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Invoiced</td>
+            <td>{{rowItemData.Invoiced}}</td>
+        </tr>
+        <!-- <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Invoiced Revenue</td>
+            <td>{{rowItemData.InvoicedRevenue}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Invoiced OOP</td>
+            <td>{{rowItemData.InvoicedOOP}}</td>
+        </tr>
+
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Invoiced Tax</td>
+            <td>{{rowItemData.InvoicedTax}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Billable Expenses</td>
+            <td>{{rowItemData.BillableExpenses}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Non Billable Expenses</td>
+            <td>{{rowItemData.NonBillableExpenses}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Realization</td>
+            <td>{{rowItemData.Realization}}</td>
+        </tr> -->
+
+        <!-- <tr>
+      <td [ngStyle]="{'color':'#d7181f'}">Approver Comments</td>
+      <td>{{rowItemData.ApproverComments}}</td>
+    </tr> -->
+
+        <!-- <tr>
+      <td [ngStyle]="{'color':'#d7181f'}">Approver File Url</td>
+      <td><a href="{{rowItemData.ApproverFileUrl}}" target="_blank" style="color:red">Click here</a>
+      </td>
+    </tr>
+    <tr>
+      <td [ngStyle]="{'color':'#d7181f'}">File URL</td>
+      <td><a href="{{rowItemData.FileURL}}" target="_blank" style="color:red">Click here</a>
+      </td>
+    </tr>
+    <tr>
+      <td [ngStyle]="{'color':'#d7181f'}">Client Approval File URL</td>
+      <td><a href="{{rowItemData.ClientApprovalFileURL }}" target="_blank" style="color:red">Click here</a>
+      </td>
+    </tr> -->
+    </ng-template>
+</p-table>
+</div>

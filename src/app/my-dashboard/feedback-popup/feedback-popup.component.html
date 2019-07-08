@@ -1,0 +1,82 @@
+<!-- Modal Dialog for Rating Feedback-->
+<ng-template #popupContent let-modal>
+  <div class="modal-header">
+    <div class="ratework-popup" [hidden] = 'hidePopupTable'>
+      <div class="modal-title popup-header">Rate Work</div>
+      <div class="customer-detail">
+        Average rating:
+        <div class="cd-rating ">
+          <span id="#">{{global.templateMatrix.averageRating}}</span>
+          <div class="star-white fa-star fa"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-body popup-con">
+    <div class="ratework-popup" [hidden] = 'hidePopupTable'>
+      <table class="table popup-rating-row" id="templates">
+        <tbody>
+          <tr>
+            <td class="grey-default-c">Template</td>
+            <td>
+              <ng-select [items]="global.templateMatrix.templates" bindLabel="Title" placeholder="Select Template"
+                [(ngModel)]="global.templateMatrix.selectedTemplate" (change)="getTemplateMatrix()" [clearable]="false">
+                <ng-template ng-option-tmp let-item="item">
+                  <div [title]="item.Tooltip">{{item.Title}}</div>
+                </ng-template>
+              </ng-select>
+            </td>
+          </tr>
+          <tr>
+            <td  class="grey-default-c">Task</td>
+            <td>
+              {{global.templateMatrix.task}}
+            </td>
+          </tr>
+          <tr>
+            <td  class="grey-default-c">Resource</td>
+            <td>
+              {{global.templateMatrix.assignedTo}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table popup-rating-row scrollTable" id="templateMatrix">
+        <tbody>
+          <tr *ngFor="let element of global.templateMatrix.selectedTemplateDetails">
+            <ng-container *ngIf="element.question !== ''">
+              <td  class="grey-default-c" [title]="element.tooltip">
+                {{element.question}}
+              </td>
+              <td class="stars">
+                <!-- <ngb-rating [(rate)]="element.rating" min="0" max="5" (rateChange)="updateRating(element, $event)">
+                  <ng-template let-fill="fill" let-index="index">
+                    <span class="star" [class.filled]="fill === 100">&#9733;</span>
+                  </ng-template>
+                </ngb-rating> -->
+                <p-rating [(ngModel)]="element.rating" [cancel]="false" (onRate)="updateRating(element, $event)"></p-rating>
+              </td>
+            </ng-container>
+          </tr>
+        </tbody>
+      </table>
+      <mat-form-field class="example-full-width" >
+        <textarea #popupComments maxlength="1000" matInput placeholder="Comments" class="example-full-width" [(ngModel)]="global.templateMatrix.feedback"></textarea>
+        <mat-hint align="start"><strong>Please share your feedback</strong> </mat-hint>
+        <mat-hint align="end">{{popupComments.value.length}} / 1000</mat-hint>
+      </mat-form-field>
+    </div>
+    <div class="tablePopupLoader" [hidden] = 'hidePopupLoader'>
+        <div id="mainLoader"></div>
+        <div id="mainLoaderText">Loading...</div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <div class="floatRight" [hidden] = 'hidePopupTable'>
+      <button type="button" class="btn btn-light button cancel-rating" (click)="closeFeedback()">Cancel</button>
+      <button type="button" class="btn btn-light button save-rating" [disabled]="global.templateMatrix.selectedTemplate.Title !== '' && global.templateMatrix.averageRating >= 1? false : true"
+        (click)="saveRatingFeedback()">Submit</button>
+    </div>
+  </div>
+</ng-template>
+

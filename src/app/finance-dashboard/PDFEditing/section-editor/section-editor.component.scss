@@ -1,0 +1,24 @@
+@media (min-width: 1400px) {
+    ::ng-deep .storagebutton
+    {
+        position: fixed;
+        width: 100%;
+        margin: -2.6vw;
+    }   
+
+    .saveBtn{
+        position: fixed;top: 8px;right: 20px;width: 17%;
+    }
+}
+   
+
+@media (min-width: 1025px) and (max-width: 1400px) {  
+    ::ng-deep .storagebutton
+    {
+        position: fixed;
+        width: 100%;
+        margin: -3.6vw;
+    }
+}
+
+

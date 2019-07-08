@@ -1,0 +1,199 @@
+.footer{
+    position: absolute;
+right:  80px;
+bottom: 30px;
+}
+
+
+.milestones{
+
+    border:1px solid #cdcdcd;
+    border-radius: 4px;
+    padding: 2vh;
+    flex-wrap: wrap;
+}
+
+:host ::ng-deep button {
+    margin-right: .25em;
+}
+
+/* :host ::ng-deep .custom-toast .ui-toast-message {
+    color: #ffffff;
+    background: #FC466B;
+    background: -webkit-linear-gradient(to right, #3F5EFB, #FC466B);
+    background: linear-gradient(to right, #3F5EFB, #FC466B);
+    width:25vw;
+}
+
+:host ::ng-deep .custom-toast .ui-toast-close-icon {
+    color: #ffffff;
+} */
+
+.mat-expansion-panel-header-title
+{
+  width:10%;
+}
+
+.mat-expansion-panel-header-title > h4
+{
+ 
+  margin-top: 11px;
+}
+
+.mat-expansion-panel-header-title > h3
+{
+  
+  margin-top: 8px;
+}
+
+.mat-expansion-panel-spacing {
+ margin: 0px;
+}
+
+.basic-container {
+  padding: 30px;
+}
+
+.version-info {
+  font-size: 8pt;
+  float: right;
+}
+.milestones-item > span, .submilestones-item > span, .task-item > span
+{
+    padding:5px;
+    background-color: #cdcdcd;
+    font-size: 13px;
+    margin: 5px;
+    cursor: pointer;
+    min-width: 90px;
+    text-align: center;
+}
+
+:root {
+  /* setting var for nav height, you can do this however you want */
+  --sticky-nav-height: 40px;
+}
+ 
+.sticky-nav-wrapper {
+  /* set min height on wrapper so that the page
+     doesn't awkwardly snap and lose height */
+  min-height: var(--sticky-nav-height);
+}
+ 
+.sticky-nav {
+  height: var(--sticky-nav-height);
+ 
+  /* other styles */
+}
+
+::ng-deep  .ui-dialog .ui-dialog-titlebar 
+{
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+
+.btn-primary {
+    color: #00A1FF;
+    border-color:#00A1FF;
+    background:white;
+  }
+  
+.btn-default {
+    color: gray;
+    border-color:gray;
+  }
+
+
+#dropZone {
+    border: 2px dashed #bbb;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    text-align: center;
+    font: 14pt bold arial;
+    color: #bbb;
+    
+  }
+
+  .submilestoneLine, .taskLine
+  {
+    cursor: pointer;
+  }
+
+  ::ng-deep #milestonetext
+  {
+    font: 21px bold arial;
+  }
+
+  ::ng-deep .storagebutton {
+    top: 10px;
+    right: 30px;
+  }
+
+  #graphInnerLoader{
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid red;
+    border-bottom: 10px solid red;
+    width: 100px;
+    height: 100px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+   
+  }
+  
+  #graphInnerLoaderText{
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, "Helvetica", ""arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
+   
+  }
+
+  .refreshGraph {
+    position: absolute;
+    BACKGROUND: bottom;
+  }
+
+  .taskDropArea {
+    max-height: 300px;
+  }
+
+  .submilestonesDropArea {
+    max-height: 350px;
+  }
+
+
+  @media (min-width: 1400px) {
+  
+    ::ng-deep .storagebutton
+    {
+      position: fixed;
+      width: 100%;
+      /* margin: -2.6vw; */
+    }
+  
+  }
+ 
+  
+  @media (min-width: 1025px) and (max-width: 1400px) {
+    
+    ::ng-deep .storagebutton
+    {
+      position: fixed;
+      width: 100%;
+      /* margin: -3.6vw; */
+    }
+  }

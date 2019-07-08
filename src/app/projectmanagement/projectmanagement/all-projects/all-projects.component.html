@@ -1,0 +1,346 @@
+<div class="tableLoader" [hidden]='isAllProjectLoaderHidden'>
+    <div id="allProjectLoader"></div>
+    <div id="allProjectLoaderText">Loading...</div>
+</div>
+<div class="allProjects-section" [hidden]='isAllProjectTableHidden'>
+    <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.allProjectsArrayCopy" [paginator]="true"
+        [rows]="5" [lazy]="true" [totalRecords]="pmObject.totalRecords.AllProject"
+        [loading]="pmObject.loading.AllProject" (onLazyLoad)="lazyLoadTask($event)" [lazyLoadOnInit]="false">
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                    {{ col.header }}
+                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                </th>
+                <th class="lastColumnWidth"></th>
+            </tr>
+            <tr>
+                <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                    <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allProjects.sowCodeArray" defaultLabel="All"
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ProjectCode'" [(ngModel)]="pmObject.columnFilter.ProjectCode"
+                        [options]="allProjects.projectCodeArray" defaultLabel="All"
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="allProjects.shortTitleArray"
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="allProjects.clientLegalEntityArray"
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="allProjects.deliveryTypeArray"
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ProjectType'" [options]="allProjects.projectTypeArray"
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Status'" [options]="allProjects.statusArray" defaultLabel="All"
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'CreatedBy'" [options]="allProjects.createdByArray" defaultLabel="All"
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'CreatedDate'" [options]="allProjects.createdDateArray"
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                    </p-multiSelect>
+                </th>
+                <th class="lastColumnWidth"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-task>
+            <tr>
+                <td>{{task.SOWCode}}</td>
+                <td>{{task.ProjectCode}}</td>
+                <td>{{task.ShortTitle}}</td>
+                <td>{{task.ClientLegalEntity}}</td>
+                <td>{{task.DeliverableType}}</td>
+                <td>{{task.ProjectType}}</td>
+                <td
+                    [ngClass]="{'blueColor' : task.isBlueIndicator,'redColor': task.isRedIndicator,'greenColor': task.isGreenIndicator}">
+                    {{task.Status}}</td>
+                <td>{{task.CreatedBy}}</td>
+                <td>{{task.CreatedDate}}</td>
+                <td>
+                    <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu class="projectSlider"
+                        [model]="popItems" [popup]="true" appendTo="body"></p-menu>
+                    <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
+                        (click)="storeRowData(rowData,menu); menu.toggle($event);"></i>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+    <div *ngIf="pmObject.isProjectRightSideVisible" class="ng-right-side-overlay">
+        <p-sidebar [(visible)]="pmObject.isProjectRightSideVisible" position="right" styleClass="ui-sidebar-md">
+            <p-table [value]="projectViewDataArray">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData let-task style="overflow: auto">
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Project ID</td>
+                        <td>{{task.ProjectAttributes.ID}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">SOW Code</td>
+                        <td>{{task.SOWSelect.SOWCode}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Project Code</td>
+                        <td>{{task.ProjectAttributes.ProjectCode}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">ClientLegalEntity</td>
+                        <td>{{task.ProjectAttributes.ClientLegalEntity}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Sub Division</td>
+                        <td>{{task.ProjectAttributes.SubDivision}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Billing Entity</td>
+                        <td>{{task.ProjectAttributes.BillingEntity}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Billed By</td>
+                        <td>{{task.ProjectAttributes.BilledBy}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Practice Area</td>
+                        <td>{{task.ProjectAttributes.PracticeArea}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Priority</td>
+                        <td>{{task.ProjectAttributes.Priority}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Project Status</td>
+                        <td>{{task.ProjectAttributes.ProjectStatus}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" [ngStyle]="{'color':'#d7181f'}">Client POC</td>
+                    </tr>
+                    <tr>
+                        <td>{{task.ProjectAttributes.PointOfContact1}}</td>
+                        <td>{{task.ProjectAttributes.PointOfContact2}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Molecule</td>
+                        <td>{{task.ProjectAttributes.Molecule}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Therapeutic Area</td>
+                        <td>{{task.ProjectAttributes.TherapeuticArea}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Indication</td>
+                        <td>{{task.ProjectAttributes.Indication}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">PUB Support Required</td>
+                        <td>{{task.ProjectAttributes.PUBSupportRequired}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">PUB Support Status</td>
+                        <td>{{task.ProjectAttributes.PUBSupportStatus}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Project Title</td>
+                        <td>{{task.ProjectAttributes.ProjectTitle}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Alternate ID/ Short Title</td>
+                        <td>{{task.ProjectAttributes.AlternateShortTitle}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">End Use of Deliverable</td>
+                        <td>{{task.ProjectAttributes.EndUseofDeliverable}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">SOW Box Link</td>
+                        <td>{{task.ProjectAttributes.SOWBoxLink}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Conference / Journal</td>
+                        <td>{{task.ProjectAttributes.ConferenceJournal}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Authors</td>
+                        <td>{{task.ProjectAttributes.Authors}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Comments</td>
+                        <td>{{task.ProjectAttributes.Comments}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
+                    </tr>
+                    <tr *ngIf="task.Timeline.Standard.IsStandard">
+                        <td colspan="2" [ngStyle]="{'color':'#d7181f'}" align="center">Standard Project</td>
+                    </tr>
+                    <tr *ngIf="task.Timeline.Standard.IsStandard">
+                        <td [ngStyle]="{'color':'#d7181f'}">Service</td>
+                        <td>{{task.Timeline.Standard.Service}}</td>
+                    </tr>
+                    <tr *ngIf="task.Timeline.Standard.IsStandard">
+                        <td [ngStyle]="{'color':'#d7181f'}">Proposed Start Date</td>
+                        <td>{{task.Timeline.Standard.ProposedStartDate | date:'medium'}}</td>
+                    </tr>
+                    <tr *ngIf="task.Timeline.Standard.IsStandard">
+                        <td [ngStyle]="{'color':'#d7181f'}">Proposed End Date</td>
+                        <td>{{task.Timeline.Standard.ProposedEndDate | date:'medium'}}</td>
+                    </tr>
+                    <tr *ngIf="task.Timeline.NonStandard.IsStandard">
+                        <td colspan="2" [ngStyle]="{'color':'#d7181f'}" align="center">Non Standard Project</td>
+                    </tr>
+                    <tr *ngIf="task.Timeline.NonStandard.IsStandard">
+                        <td [ngStyle]="{'color':'#d7181f'}">Deliverable Type</td>
+                        <td>{{task.Timeline.NonStandard.DeliverableType}}</td>
+                    </tr>
+                    <tr *ngIf="task.Timeline.NonStandard.IsStandard">
+                        <td [ngStyle]="{'color':'#d7181f'}">Sub Type</td>
+                        <td>{{task.Timeline.NonStandard.SubDeliverable}}</td>
+                    </tr>
+                    <tr *ngIf="task.Timeline.NonStandard.IsStandard">
+                        <td [ngStyle]="{'color':'#d7181f'}">Service</td>
+                        <td>{{task.Timeline.NonStandard.Service}}</td>
+                    </tr>
+                    <tr *ngIf="task.Timeline.NonStandard.IsStandard">
+                        <td [ngStyle]="{'color':'#d7181f'}">Proposed Start Date</td>
+                        <td>{{task.Timeline.NonStandard.ProposedStartDate | date:'medium'}}</td>
+                    </tr>
+                    <tr *ngIf="task.Timeline.NonStandard.IsStandard">
+                        <td [ngStyle]="{'color':'#d7181f'}">Proposed End Date</td>
+                        <td>{{task.Timeline.NonStandard.ProposedEndDate | date:'medium'}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">currency</td>
+                        <td>{{task.FinanceManagement.Currency}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Budget Hours</td>
+                        <td>{{task.FinanceManagement.BudgetHours}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" [ngStyle]="{'color':'#d7181f'}" align="center">Budget</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Total</td>
+                        <td>{{task.FinanceManagement.Budget.Total}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Revenue</td>
+                        <td>{{task.FinanceManagement.Budget.Net}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">OOP</td>
+                        <td>{{task.FinanceManagement.Budget.OOP}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Tax</td>
+                        <td>{{task.FinanceManagement.Budget.Tax}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Active CM1</td>
+                        <td>{{task.FinanceManagement.ActiveCM1}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Active CM2</td>
+                        <td>{{task.FinanceManagement.ActiveCM2}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Active Delivery1</td>
+                        <td>{{task.FinanceManagement.ActiveDelivery1}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Active Delivery 2</td>
+                        <td>{{task.FinanceManagement.ActiveDelivery2}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-sidebar>
+    </div>
+    <div *ngIf="pmObject.isAuditRollingVisible">
+        <p-dialog [(visible)]="pmObject.isAuditRollingVisible" [modal]="true" [style]="{width: '1300px'}">
+            <p-header>
+                Audit Rolling Project.
+            </p-header>
+            <div class="audit-rolling-section">
+                <div class="formContentChecklist">
+                    <div class="formRow">
+                        <div class="attrCheckListContentHeader"></div>
+                        <div class="attrCheckListContentHeader">
+                            Parameters
+                        </div>
+                        <div class="attrCheckListContentHeader">Comments</div>
+                    </div>
+                    <div class="formRow">
+                        <div class="attrCheckListHeader">
+                            <input type="checkbox"> </div>
+                        <div class="attrCheckListContent">
+                            All files uploaded correctly
+                        </div>
+                        <div class="attrCheckListContent">
+                            <textarea rows="1" cols="30"></textarea>
+                        </div>
+                    </div>
+                    <div class="formRow">
+                        <div class="attrCheckListHeader">
+                            <input type="checkbox"> </div>
+                        <div class="attrCheckListContent">
+                            All tasks completed and hrs updated
+                        </div>
+                        <div class="attrCheckListContent">
+                            <textarea rows="1" cols="30"></textarea>
+                        </div>
+                    </div>
+                    <div class="formRow">
+                        <div class="attrCheckListHeader">
+                            <input type="checkbox"> </div>
+                        <div class="attrCheckListContent">
+                            All necessary project details updated
+                        </div>
+                        <div class="attrCheckListContent">
+                            <textarea rows="1" cols="30"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="error" *ngIf="checkList.addRollingProjectError">{{checkList.addRollingProjectErrorMsg}}</div>
+            <p-footer>
+                <p-button class="mr-5" (click)="auditComplete()" label="Confirm"></p-button>
+                <p-button class="mr-5" (click)="closeDialog()" label="Cancel"></p-button>
+            </p-footer>
+        </p-dialog>
+    </div>
+    <div *ngIf="pmObject.isMoveProjectToSOWVisible">
+        <p-dialog [(visible)]="pmObject.isMoveProjectToSOWVisible" [modal]="true" [style]="{width: '900px'}">
+            <p-header>
+                Move Project To SOW
+            </p-header>
+            <div class="ui-grid-col-2">SOW Code</div>
+            <div class="ui-grid-col-4">
+                <p-dropdown [(ngModel)]="newSelectedSOW" [options]="sowDropDownArray" placeholder="Please Select"
+                    [showClear]="true" [filter]="true"></p-dropdown>
+            </div>
+            <p-footer>
+                <p-button class="mr-5" (click)="performSOWMove()" label="Move"></p-button>
+                <p-button class="mr-5" (click)="closeMoveSOW()" label="Cancel"></p-button>
+            </p-footer>
+        </p-dialog>
+    </div>
+    <p-toast position="bottom-right" key="allProject"></p-toast>
+</div>
+<app-timeline-history #timelineRef></app-timeline-history>
