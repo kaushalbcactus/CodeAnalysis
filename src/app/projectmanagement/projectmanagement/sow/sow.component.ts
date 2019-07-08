@@ -10,6 +10,7 @@ import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/time
 import { AddProjectsComponent } from '../add-projects/add-projects.component';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router } from '@angular/router';
+import { PMCommonService } from '../../services/pmcommon.service';
 declare var $;
 @Component({
   selector: 'app-sow',
@@ -72,6 +73,7 @@ export class SOWComponent implements OnInit {
   isPipelineProjectTableHidden = true;
   isInActiveProjectTableHidden = true;
   popItems: MenuItem[];
+  sowViewDataArray = [];
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   step: number;
   constructor(
@@ -83,7 +85,8 @@ export class SOWComponent implements OnInit {
     public dialogService: DialogService,
     private spServices: SPOperationService,
     private constants: ConstantsService,
-    private router: Router
+    private router: Router,
+    private pmService: PMCommonService
   ) { }
 
   ngOnInit() {
@@ -144,7 +147,23 @@ export class SOWComponent implements OnInit {
     this.dataService.publish('call-EditSOW');
   }
   viewSOW(task) {
-    this.dataService.publish('call-RightView-SOW');
+    this.viewSOWOnRightSide();
+  }
+  async viewSOWOnRightSide() {
+    this.sowViewDataArray = [];
+    this.pmObject.isSOWRightViewVisible = false;
+    let currSelectedSOW;
+    if (this.pmObject.selectedSOWTask) {
+      currSelectedSOW = this.pmObject.selectedSOWTask;
+      const sowItemFilter = Object.assign({}, this.pmConstant.SOW_QUERY.SOW_BY_ID);
+      sowItemFilter.filter = sowItemFilter.filter.replace(/{{Id}}/gi, currSelectedSOW.ID);
+      const sowItemResult = await this.spServices.readItems(this.constants.listNames.SOW.name, sowItemFilter);
+      if (sowItemResult && sowItemResult.length) {
+        this.pmService.setGlobalVariable(sowItemResult[0]);
+        this.sowViewDataArray.push(this.pmObject.addSOW);
+        this.pmObject.isSOWRightViewVisible = true;
+      }
+    }
   }
   closeSOW(task) {
     this.dataService.publish('call-Close-SOW');

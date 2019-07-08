@@ -38,7 +38,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     DeliveryOptional: [],
     SowOwner: []
   };
-  sowViewDataArray = [];
   addSowForm: FormGroup;
   addAdditionalBudgetForm: FormGroup;
   selectedFile: any;
@@ -60,7 +59,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   ) { }
   ngOnInit() {
     this.subscription = this.dataService.on('call-EditSOW').subscribe(() => this.getEditSOWData());
-    this.subscription = this.dataService.on('call-RightView-SOW').subscribe(() => this.viewSOWOnRightSide());
     this.subscription = this.dataService.on('call-Close-SOW').subscribe(() => this.closeSOW());
     this.pmObject.isAddSOWVisible = false;
     this.pmObject.isSOWRightViewVisible = false;
@@ -813,7 +811,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           this.pmObject.addSOW.Budget.Net = sowItemResult[0].NetBudget ? sowItemResult[0].NetBudget : 0;
           this.pmObject.addSOW.Budget.OOP = sowItemResult[0].OOPBudget ? sowItemResult[0].OOPBudget : 0;
           this.pmObject.addSOW.Budget.Tax = sowItemResult[0].TaxBudget ? sowItemResult[0].TaxBudget : 0;
-          this.setGlobalVariable(sowItemResult[0]);
+          this.pmService.setGlobalVariable(sowItemResult[0]);
         }
       }
       const batchURL = [];
@@ -921,7 +919,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.addSowForm.controls.tax.disable();
       this.addSowForm.controls.clientLegalEntity.disable();
       this.addSowForm.controls.sowCreationDate.disable();
-      this.setGlobalVariable(sowItem);
+      this.pmService.setGlobalVariable(sowItem);
       this.pmObject.addSOW.isSOWCodeDisabled = true;
       this.pmObject.addSOW.isStatusDisabled = false;
       this.pmObject.addSOW.ID = currSelectedSOW.ID;
@@ -931,72 +929,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.isAddSOWVisible = true;
     }
   }
-  setGlobalVariable(sowItem) {
-    this.pmObject.addSOW.ID = sowItem.hasOwnProperty('ID') ? sowItem.ID : 0;
-    this.pmObject.addSOW.ClientLegalEntity = sowItem.ClientLegalEntity;
-    this.pmObject.addSOW.SOWCode = sowItem.SOWCode;
-    this.pmObject.addSOW.BillingEntity = sowItem.BillingEntity;
-    this.pmObject.addSOW.PracticeArea = sowItem.BusinessVertical.split(';#');
-    this.pmObject.addSOW.Poc = sowItem.PrimaryPOC;
-    this.pmObject.addSOW.PocText = this.pmService.extractNamefromPOC([sowItem.PrimaryPOC]).join(',');
-    const oldAdditonalPocArray = sowItem.AdditionalPOC ? sowItem.AdditionalPOC.split(';#') : null;
-    const newAdditionalPocArray = [];
-    if (oldAdditonalPocArray && oldAdditonalPocArray.length) {
-      oldAdditonalPocArray.forEach(element => {
-        newAdditionalPocArray.push(Number(element));
-      });
-    }
-    this.pmObject.addSOW.PocOptional = newAdditionalPocArray;
-    this.pmObject.addSOW.PocOptionalText = this.pmService.extractNamefromPOC(newAdditionalPocArray).join(',');
-    this.pmObject.addSOW.SOWTitle = sowItem.Title;
-    this.pmObject.addSOW.SOWCreationDate = new Date(sowItem.CreatedDate);
-    this.pmObject.addSOW.SOWExpiryDate = new Date(sowItem.ExpiryDate);
-    this.pmObject.addSOW.Status = sowItem.Status;
-    this.pmObject.addSOW.Comments = sowItem.Comments ? sowItem.Comments : '';
-    this.pmObject.addSOW.Currency = sowItem.Currency;
-    this.pmObject.addSOW.Budget.Total = sowItem.TotalBudget ? sowItem.TotalBudget : 0;
-    this.pmObject.addSOW.Budget.Net = sowItem.NetBudget ? sowItem.NetBudget : 0;
-    this.pmObject.addSOW.Budget.OOP = sowItem.NetBudget ? sowItem.NetBudget : 0;
-    this.pmObject.addSOW.Budget.Tax = sowItem.NetBudget ? sowItem.NetBudget : 0;
-    const cm1Array = [];
-    const delivery1Array = [];
-    if (sowItem.CMLevel1.results && sowItem.CMLevel1.results.length) {
-      sowItem.CMLevel1.results.forEach(element => {
-        cm1Array.push(element.ID);
-      });
-    }
-    if (sowItem.DeliveryLevel1.results && sowItem.DeliveryLevel1.results.length) {
-      sowItem.DeliveryLevel1.results.forEach(element => {
-        delivery1Array.push(element.ID);
-      });
-    }
-    this.pmObject.addSOW.CM1 = cm1Array;
-    this.pmObject.addSOW.CM1Text = this.pmService.extractNameFromId(cm1Array).join(',');
-    this.pmObject.addSOW.CM2 = sowItem.CMLevel2.ID;
-    this.pmObject.addSOW.CM2Text = this.pmService.extractNameFromId([sowItem.CMLevel2.ID]).join(',');
-    this.pmObject.addSOW.DeliveryOptional = delivery1Array;
-    this.pmObject.addSOW.DeliveryOptionalText = this.pmService.extractNameFromId(delivery1Array).join(',');
-    this.pmObject.addSOW.Delivery = sowItem.DeliveryLevel2.ID;
-    this.pmObject.addSOW.DeliveryText = this.pmService.extractNameFromId([sowItem.DeliveryLevel2.ID]).join(',');
-    this.pmObject.addSOW.SOWOwner = sowItem.BD.ID;
-    this.pmObject.addSOW.SOWOwnerText = sowItem.BD.hasOwnProperty('ID') ? this.pmService.extractNameFromId([sowItem.BD.ID]).join(',') : '';
-  }
-  async viewSOWOnRightSide() {
-    this.sowViewDataArray = [];
-    this.pmObject.isSOWRightViewVisible = false;
-    let currSelectedSOW;
-    if (this.pmObject.selectedSOWTask) {
-      currSelectedSOW = this.pmObject.selectedSOWTask;
-      const sowItemFilter = Object.assign({}, this.pmConstant.SOW_QUERY.SOW_BY_ID);
-      sowItemFilter.filter = sowItemFilter.filter.replace(/{{Id}}/gi, currSelectedSOW.ID);
-      const sowItemResult = await this.spServices.readItems(this.constant.listNames.SOW.name, sowItemFilter);
-      if (sowItemResult && sowItemResult.length) {
-        this.setGlobalVariable(sowItemResult[0]);
-        this.sowViewDataArray.push(this.pmObject.addSOW);
-        this.pmObject.isSOWRightViewVisible = true;
-      }
-    }
-  }
+
   closeSOW() {
     this.pmObject.isSOWCloseVisible = true;
     this.confirmationService.confirm({
@@ -1041,7 +974,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     const arrResults = await this.spServices.executeBatch(batchURL);
     if (arrResults && arrResults.length) {
       const sowItem = arrResults[0].retItems[0];
-      this.setGlobalVariable(sowItem);
+      this.pmService.setGlobalVariable(sowItem);
       this.pmObject.addSOW.ID = currSelectedSOW.ID;
       this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'SOW Closed Successfully.' });
       setTimeout(() => {

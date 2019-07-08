@@ -705,4 +705,54 @@ export class PMCommonService {
     }
     return res;
   }
+  setGlobalVariable(sowItem) {
+    this.pmObject.addSOW.ID = sowItem.hasOwnProperty('ID') ? sowItem.ID : 0;
+    this.pmObject.addSOW.ClientLegalEntity = sowItem.ClientLegalEntity;
+    this.pmObject.addSOW.SOWCode = sowItem.SOWCode;
+    this.pmObject.addSOW.BillingEntity = sowItem.BillingEntity;
+    this.pmObject.addSOW.PracticeArea = sowItem.BusinessVertical.split(';#');
+    this.pmObject.addSOW.Poc = sowItem.PrimaryPOC;
+    this.pmObject.addSOW.PocText = this.extractNamefromPOC([sowItem.PrimaryPOC]).join(',');
+    const oldAdditonalPocArray = sowItem.AdditionalPOC ? sowItem.AdditionalPOC.split(';#') : null;
+    const newAdditionalPocArray = [];
+    if (oldAdditonalPocArray && oldAdditonalPocArray.length) {
+      oldAdditonalPocArray.forEach(element => {
+        newAdditionalPocArray.push(Number(element));
+      });
+    }
+    this.pmObject.addSOW.PocOptional = newAdditionalPocArray;
+    this.pmObject.addSOW.PocOptionalText = this.extractNamefromPOC(newAdditionalPocArray).join(',');
+    this.pmObject.addSOW.SOWTitle = sowItem.Title;
+    this.pmObject.addSOW.SOWCreationDate = new Date(sowItem.CreatedDate);
+    this.pmObject.addSOW.SOWExpiryDate = new Date(sowItem.ExpiryDate);
+    this.pmObject.addSOW.Status = sowItem.Status;
+    this.pmObject.addSOW.Comments = sowItem.Comments ? sowItem.Comments : '';
+    this.pmObject.addSOW.Currency = sowItem.Currency;
+    this.pmObject.addSOW.Budget.Total = sowItem.TotalBudget ? sowItem.TotalBudget : 0;
+    this.pmObject.addSOW.Budget.Net = sowItem.NetBudget ? sowItem.NetBudget : 0;
+    this.pmObject.addSOW.Budget.OOP = sowItem.NetBudget ? sowItem.NetBudget : 0;
+    this.pmObject.addSOW.Budget.Tax = sowItem.NetBudget ? sowItem.NetBudget : 0;
+    const cm1Array = [];
+    const delivery1Array = [];
+    if (sowItem.CMLevel1.results && sowItem.CMLevel1.results.length) {
+      sowItem.CMLevel1.results.forEach(element => {
+        cm1Array.push(element.ID);
+      });
+    }
+    if (sowItem.DeliveryLevel1.results && sowItem.DeliveryLevel1.results.length) {
+      sowItem.DeliveryLevel1.results.forEach(element => {
+        delivery1Array.push(element.ID);
+      });
+    }
+    this.pmObject.addSOW.CM1 = cm1Array;
+    this.pmObject.addSOW.CM1Text = this.extractNameFromId(cm1Array).join(',');
+    this.pmObject.addSOW.CM2 = sowItem.CMLevel2.ID;
+    this.pmObject.addSOW.CM2Text = this.extractNameFromId([sowItem.CMLevel2.ID]).join(',');
+    this.pmObject.addSOW.DeliveryOptional = delivery1Array;
+    this.pmObject.addSOW.DeliveryOptionalText = this.extractNameFromId(delivery1Array).join(',');
+    this.pmObject.addSOW.Delivery = sowItem.DeliveryLevel2.ID;
+    this.pmObject.addSOW.DeliveryText = this.extractNameFromId([sowItem.DeliveryLevel2.ID]).join(',');
+    this.pmObject.addSOW.SOWOwner = sowItem.BD.ID;
+    this.pmObject.addSOW.SOWOwnerText = sowItem.BD.hasOwnProperty('ID') ? this.extractNameFromId([sowItem.BD.ID]).join(',') : '';
+  }
 }
