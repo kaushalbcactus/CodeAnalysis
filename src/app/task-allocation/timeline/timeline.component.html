@@ -135,7 +135,7 @@
                    <span style="color:#dc2038;cursor: pointer;" *ngIf="rowData.type ==='task'" (click)="ViewTaskDetails(rowData)">  {{rowData.pName}}</span>
 
                   <div id="nextMilestone" title="Set as Current Milestone" (click)="setAsNextMilestoneCall()" *ngIf="rowData.isNext === true" style="display: inline;"
-                    [hidden]=" rowData.type==='milestone' && (oProjectDetails.status ==='In Discussion' || rowData.status === 'Completed' || rowData.pID === -1)">
+                    [hidden]=" (rowData.type==='milestone' && (oProjectDetails.status ==='In Discussion' || rowData.status === 'Completed' || rowData.pID === -1)) || projectDetails">
                     <i class="pi pi-check" style="font-size: 2em;vertical-align: middle;"></i>
                   </div>
                 </td>

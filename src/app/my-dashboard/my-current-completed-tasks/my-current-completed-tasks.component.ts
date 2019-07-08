@@ -100,8 +100,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
   }
   ngOnDestroy()
   {
-    
-     // this.popupMenu.hide();
+
   }
 
 
