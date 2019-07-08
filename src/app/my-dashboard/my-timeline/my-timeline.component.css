@@ -39,6 +39,10 @@
     font-size: 2.2em !important;
   }
 
+  ::ng-deep .fc-left .fc-icon {
+    font-size: 1.5em !important;
+  }
+
 
   ::ng-deep .fc-icon-plus:before {
     content: "\e90d" !important;

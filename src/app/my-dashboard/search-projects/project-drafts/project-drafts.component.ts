@@ -48,7 +48,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   activeItem: MenuItem;
   ngOnInit() {
 
-debugger;
+    debugger;
     this.loaderenable = true;
     this.DocumentArray = [];
     this.data = this.milestoneData;
@@ -56,8 +56,7 @@ debugger;
     console.log("data");
     console.log(this.data);
 
-    if(this.milestoneData.Milestones !== null && this.milestoneData.Milestones !== undefined )
-    {
+    if (this.milestoneData.Milestones) {
       this.milestoneData.Milestones.split(';#').filter(c => c !== "").forEach(element => {
         this.menuItems.push({ label: element, icon: 'pi pi-inbox', command: (e) => this.onChange(e) })
       });
@@ -68,11 +67,10 @@ debugger;
       // this.loadDraftDocs(this.selectedTab);
       this.loaderenable = true;
     }
-    else
-    {
-      this.loaderenable=false;
+    else {
+      this.loaderenable = false;
     }
-  
+
 
     this.dbcols = [
       { field: 'Name', header: 'Document Name' },
@@ -82,7 +80,6 @@ debugger;
       { field: 'ModifiedDateString', header: 'Uploaded Date' },
     ];
 
-  
   }
   ngOnDestroy(): void {
     // ... some clean up logic
@@ -196,8 +193,7 @@ debugger;
         );
       }
     }
-    else
-    {
+    else {
       this.loaderenable = false;
     }
 

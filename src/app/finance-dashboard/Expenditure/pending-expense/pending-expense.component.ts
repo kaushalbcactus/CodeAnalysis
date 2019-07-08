@@ -225,7 +225,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             { field: 'ApproverComments', header: 'Approver Comments', visibility: false },
             { field: 'ApproverFileUrl', header: 'Approver File Url', visibility: false },
             { field: 'PayingEntity', header: 'Paying Entity', visibility: false },
-
             { field: 'AuthorId', header: 'Author Id', visibility: false },
 
             { field: 'DollarAmount', header: 'Dollar Amount', visibility: false },

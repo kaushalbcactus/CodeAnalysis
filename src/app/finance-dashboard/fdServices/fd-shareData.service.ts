@@ -107,7 +107,6 @@ export class FDDataShareService {
 
     setData(data: any) {
         console.log(data.length);
-
         if (data[0]) {
             this.projectContactData.next(data[0]);
         }
