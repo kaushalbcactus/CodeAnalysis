@@ -188,7 +188,8 @@ export class AllProjectsComponent implements OnInit {
         projObj.ConferenceJournal = task.ConferenceJournal ? task.ConferenceJournal : '';
         projObj.Comments = task.Comments ? task.Comments : '';
         projObj.PO = task.PO;
-        projObj.Milestone = task.Milestones ? task.Milestones : '';
+        projObj.Milestone = task.Milestone ? task.Milestone : '';
+        projObj.Milestones = task.Milestones ? task.Milestones : '';
         projObj.Molecule = task.Molecule ? task.Molecule : '';
         projObj.Indication = task.Indication ? task.Indication : '';
         projObj.IsPubSupport = task.IsPubSupport ? task.IsPubSupport : '';

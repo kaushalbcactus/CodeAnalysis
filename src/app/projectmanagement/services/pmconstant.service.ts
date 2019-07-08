@@ -85,7 +85,7 @@ export class PmconstantService {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,'
         + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
-        + 'Description, ConferenceJournal, Comments, PO, Milestones, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
+        + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
         + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
@@ -100,7 +100,7 @@ export class PmconstantService {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,'
         + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
-        + 'Description, ConferenceJournal, Comments, PO, Milestones, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
+        + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
         + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
