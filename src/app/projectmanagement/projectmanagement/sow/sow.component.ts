@@ -354,28 +354,37 @@ export class SOWComponent implements OnInit {
     }
   }
   async getBudget(projectArray) {
-    const batchURL = [];
+    let batchURL = [];
     const options = {
       data: null,
       url: '',
       type: '',
       listName: ''
     };
+    let batchResults = [];
+    let finalArray = [];
     if (projectArray && projectArray.length) {
-      projectArray.forEach(element => {
-        const projectFinanceGet = Object.assign({}, options);
-        const projectFinanceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE);
-        projectFinanceFilter.filter = projectFinanceFilter.filter.replace(/{{projectCode}}/gi,
-          element.ProjectCode);
-        projectFinanceGet.url = this.spServices.getReadURL(this.constants.listNames.ProjectFinances.name,
-          projectFinanceFilter);
-        projectFinanceGet.type = 'GET';
-        projectFinanceGet.listName = this.constants.listNames.ProjectFinances.name;
-        batchURL.push(projectFinanceGet);
-      });
+      for (const element of projectArray) {
+        if (batchURL.length < 100) {
+          const projectFinanceGet = Object.assign({}, options);
+          const projectFinanceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE);
+          projectFinanceFilter.filter = projectFinanceFilter.filter.replace(/{{projectCode}}/gi,
+            element.ProjectCode);
+          projectFinanceGet.url = this.spServices.getReadURL(this.constants.listNames.ProjectFinances.name,
+            projectFinanceFilter);
+          projectFinanceGet.type = 'GET';
+          projectFinanceGet.listName = this.constants.listNames.ProjectFinances.name;
+          batchURL.push(projectFinanceGet);
+          if (batchURL.length === 99) {
+            batchResults = await this.spServices.executeBatch(batchURL);
+            finalArray = [...finalArray, ...batchResults];
+            batchURL = [];
+          }
+        }
+      }
     }
-    const batchResults = await this.spServices.executeBatch(batchURL);
-    return batchResults;
+    console.log('batch length: ' + batchURL.length);
+    return finalArray;
   }
   activeProjectlazyLoadTask(event) {
     const activeProjectArray = this.pmObject.allProjects.activeProjectArray;

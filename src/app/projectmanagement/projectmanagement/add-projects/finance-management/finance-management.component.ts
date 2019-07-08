@@ -526,9 +526,11 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     }
   }
   async addItemToScheduleList(response) {
+    let batchResults = [];
     this.milestoneArray = [];
     this.taskArray = [];
-    const batchURL = [];
+    let batchURL = [];
+    let finalArray = [];
     let counter = 0;
     const options = {
       data: null,
@@ -562,38 +564,54 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
       const milestones = this.pmObject.addProject.Timeline.Standard.standardArray;
       const projectCode = this.pmObject.addProject.ProjectAttributes.ProjectCode;
       for (let milestoneIndex = 0; milestoneIndex < milestones.length; milestoneIndex = milestoneIndex + 2) {
-        const milestoneObj = milestones[milestoneIndex];
-        this.milestoneArray.push(milestoneObj.data);
-        const milestonedata = this.getMilestoneData(milestoneObj, projectCode);
-        const milestoneCreate = Object.assign({}, options);
-        milestoneCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
-        milestoneCreate.data = milestonedata;
-        milestoneCreate.type = 'POST';
-        milestoneCreate.listName = this.constant.listNames.Schedules.name;
-        counter += 1;
-        batchURL.push(milestoneCreate);
-        // create the milestone folder.
-        const milestoneFolderBody = {
-          __metadata: { type: 'SP.Folder' },
-          ServerRelativeUrl: response[11].listName + '/' + milestoneObj.data.Name
-        };
-        const createForderObj = Object.assign({}, options);
-        createForderObj.data = milestoneFolderBody;
-        // createForderObj.listName = element;
-        createForderObj.type = 'POST';
-        createForderObj.url = this.spServices.getFolderCreationURL();
-        counter += 1;
-        batchURL.push(createForderObj);
+        if (batchURL.length < 100) {
+          const milestoneObj = milestones[milestoneIndex];
+          this.milestoneArray.push(milestoneObj.data);
+          const milestonedata = this.getMilestoneData(milestoneObj, projectCode);
+          const milestoneCreate = Object.assign({}, options);
+          milestoneCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+          milestoneCreate.data = milestonedata;
+          milestoneCreate.type = 'POST';
+          milestoneCreate.listName = this.constant.listNames.Schedules.name;
+          counter += 1;
+          batchURL.push(milestoneCreate);
+          // create the milestone folder.
+          const milestoneFolderBody = {
+            __metadata: { type: 'SP.Folder' },
+            ServerRelativeUrl: response[11].listName + '/' + milestoneObj.data.Name
+          };
+          const createForderObj = Object.assign({}, options);
+          createForderObj.data = milestoneFolderBody;
+          // createForderObj.listName = element;
+          createForderObj.type = 'POST';
+          createForderObj.url = this.spServices.getFolderCreationURL();
+          counter += 1;
+          batchURL.push(createForderObj);
 
-        if (milestoneObj.SubMilestones) {
-          // tslint:disable-next-line:prefer-for-of
-          for (let subMilestoneIndex = 0; subMilestoneIndex < milestoneObj.children.length; subMilestoneIndex++) {
-            const submilestone = milestoneObj.children[subMilestoneIndex];
+          if (milestoneObj.SubMilestones) {
+            // tslint:disable-next-line:prefer-for-of
+            for (let subMilestoneIndex = 0; subMilestoneIndex < milestoneObj.children.length; subMilestoneIndex++) {
+              const submilestone = milestoneObj.children[subMilestoneIndex];
+              // tslint:disable-next-line:forin
+              for (const taskIndex in submilestone.children) {
+                const task = submilestone.children[taskIndex];
+                this.taskArray.push(task.data);
+                const taskdata = this.getTaskData(task, projectCode, milestoneObj, submilestone);
+                const taskCreate = Object.assign({}, options);
+                taskCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+                taskCreate.data = taskdata;
+                taskCreate.type = 'POST';
+                taskCreate.listName = this.constant.listNames.Schedules.name;
+                counter += 1;
+                batchURL.push(taskCreate);
+              }
+            }
+          } else {
             // tslint:disable-next-line:forin
-            for (const taskIndex in submilestone.children) {
-              const task = submilestone.children[taskIndex];
+            for (const taskIndex in milestoneObj.children) {
+              const task = milestoneObj.children[taskIndex];
               this.taskArray.push(task.data);
-              const taskdata = this.getTaskData(task, projectCode, milestoneObj, submilestone);
+              const taskdata = this.getTaskData(task, projectCode, milestoneObj, null);
               const taskCreate = Object.assign({}, options);
               taskCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
               taskCreate.data = taskdata;
@@ -603,48 +621,40 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
               batchURL.push(taskCreate);
             }
           }
-        } else {
-          // tslint:disable-next-line:forin
-          for (const taskIndex in milestoneObj.children) {
-            const task = milestoneObj.children[taskIndex];
-            this.taskArray.push(task.data);
-            const taskdata = this.getTaskData(task, projectCode, milestoneObj, null);
-            const taskCreate = Object.assign({}, options);
-            taskCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
-            taskCreate.data = taskdata;
-            taskCreate.type = 'POST';
-            taskCreate.listName = this.constant.listNames.Schedules.name;
-            counter += 1;
-            batchURL.push(taskCreate);
+          const taskObj = milestones[milestoneIndex + 1];
+          taskObj.data.Hours = 0;
+          taskObj.data.UseTaskDays = 'Yes';
+          taskObj.data.TaskDays = taskObj.data.Days;
+          taskObj.data.TaskName = taskObj.data.Name;
+          taskObj.data.Task = taskObj.data.Name;
+          taskObj.data.NextTasks = '';
+          taskObj.data.PrevTasks = projectCode + ' ' + milestoneObj.MilestoneName + ' SC';
+          taskObj.data.Skill = 'CS';
+          taskObj.data.assignedUserTimeZone = (new Date()).getTimezoneOffset() / 60 * -1;
+          taskObj.data.userId = this.globalObject.sharePointPageObject.userId;
+          const crData = this.getTaskData(taskObj, projectCode, milestoneObj, null);
+          const crCreate = Object.assign({}, options);
+          crCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+          crCreate.data = crData;
+          crCreate.type = 'POST';
+          crCreate.listName = this.constant.listNames.Schedules.name;
+          counter += 1;
+          batchURL.push(crCreate);
+          if (batchURL.length === 99) {
+            batchResults = await this.spServices.executeBatch(batchURL);
+            console.log(batchResults);
+            finalArray = [...finalArray, ...batchResults];
+            batchURL = [];
           }
         }
-        const taskObj = milestones[milestoneIndex + 1];
-        taskObj.data.Hours = 0;
-        taskObj.data.UseTaskDays = 'Yes';
-        taskObj.data.TaskDays = taskObj.data.Days;
-        taskObj.data.TaskName = taskObj.data.Name;
-        taskObj.data.Task = taskObj.data.Name;
-        taskObj.data.NextTasks = '';
-        taskObj.data.PrevTasks = projectCode + ' ' + milestoneObj.MilestoneName + ' SC';
-        taskObj.data.Skill = 'CS';
-        taskObj.data.assignedUserTimeZone = (new Date()).getTimezoneOffset() / 60 * -1;
-        taskObj.data.userId = this.globalObject.sharePointPageObject.userId;
-        const crData = this.getTaskData(taskObj, projectCode, milestoneObj, null);
-        const crCreate = Object.assign({}, options);
-        crCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
-        crCreate.data = crData;
-        crCreate.type = 'POST';
-        crCreate.listName = this.constant.listNames.Schedules.name;
-        counter += 1;
-        batchURL.push(crCreate);
       }
     }
-    const result = await this.spServices.executeBatch(batchURL);
-    console.log(result);
-    this.moveMilestoneAndTask(result);
+    this.moveMilestoneAndTask(finalArray);
   }
   async moveMilestoneAndTask(results) {
-    const batchURL = [];
+    let batchURL = [];
+    let batchResults = [];
+    let finalArray = [];
     const options = {
       data: null,
       url: '',
@@ -652,47 +662,53 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
       listName: ''
     };
     if (results && results.length && this.pmObject.addProject.Timeline.Standard.IsStandard) {
-      results.forEach(response => {
-        const fileUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-          '/Lists/' + this.constant.listNames.Schedules.name + '/' + response.retItems.ID + '_.000';
-        let moveFileUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-          '/Lists/' + this.constant.listNames.Schedules.name + '/' +
-          this.pmObject.addProject.ProjectAttributes.ProjectCode;
-        if (response.retItems.Milestone === 'Select one') {
-          moveFileUrl = moveFileUrl + '/' + response.retItems.ID + '_.000';
-          const milestoneURL = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-            '/_api/Web/Lists/getByTitle(\'' + this.constant.listNames.Schedules.name + '\')/Items' +
-            '(' + response.retItems.ID + ')';
-          const moveData = {
-            __metadata: { type: this.constant.listNames.Schedules.type },
-            FileLeafRef: response.retItems.Title
-          };
-          const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-            '/_api/web/getfolderbyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\')';
-          const moveMileObj = Object.assign({}, options);
-          moveMileObj.url = url;
-          moveMileObj.type = 'POST';
-          moveMileObj.listName = this.constant.listNames.Schedules.name;
-          batchURL.push(moveMileObj);
-          const moveMilewithDataObj = Object.assign({}, options);
-          moveMilewithDataObj.url = milestoneURL;
-          moveMilewithDataObj.data = moveData;
-          moveMilewithDataObj.type = 'PATCH';
-          moveMilewithDataObj.listName = this.constant.listNames.Schedules.name;
-          batchURL.push(moveMilewithDataObj);
-        } else {
-          moveFileUrl = moveFileUrl + '/' + response.retItems.Milestone + '/' + response.retItems.ID + '_.000';
-          const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-            '/_api/web/getfilebyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\',flags=1)';
-          const moveTaskObj = Object.assign({}, options);
-          moveTaskObj.url = url;
-          moveTaskObj.type = 'POST';
-          moveTaskObj.listName = this.constant.listNames.Schedules.name;
-          batchURL.push(moveTaskObj);
+      for (const response of results) {
+        if (batchURL.length < 100) {
+          const fileUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+            '/Lists/' + this.constant.listNames.Schedules.name + '/' + response.retItems.ID + '_.000';
+          let moveFileUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+            '/Lists/' + this.constant.listNames.Schedules.name + '/' +
+            this.pmObject.addProject.ProjectAttributes.ProjectCode;
+          if (response.retItems.Milestone === 'Select one') {
+            moveFileUrl = moveFileUrl + '/' + response.retItems.ID + '_.000';
+            const milestoneURL = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+              '/_api/Web/Lists/getByTitle(\'' + this.constant.listNames.Schedules.name + '\')/Items' +
+              '(' + response.retItems.ID + ')';
+            const moveData = {
+              __metadata: { type: this.constant.listNames.Schedules.type },
+              FileLeafRef: response.retItems.Title
+            };
+            const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+              '/_api/web/getfolderbyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\')';
+            const moveMileObj = Object.assign({}, options);
+            moveMileObj.url = url;
+            moveMileObj.type = 'POST';
+            moveMileObj.listName = this.constant.listNames.Schedules.name;
+            batchURL.push(moveMileObj);
+            const moveMilewithDataObj = Object.assign({}, options);
+            moveMilewithDataObj.url = milestoneURL;
+            moveMilewithDataObj.data = moveData;
+            moveMilewithDataObj.type = 'PATCH';
+            moveMilewithDataObj.listName = this.constant.listNames.Schedules.name;
+            batchURL.push(moveMilewithDataObj);
+          } else {
+            moveFileUrl = moveFileUrl + '/' + response.retItems.Milestone + '/' + response.retItems.ID + '_.000';
+            const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+              '/_api/web/getfilebyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\',flags=1)';
+            const moveTaskObj = Object.assign({}, options);
+            moveTaskObj.url = url;
+            moveTaskObj.type = 'POST';
+            moveTaskObj.listName = this.constant.listNames.Schedules.name;
+            batchURL.push(moveTaskObj);
+          }
+          if (batchURL.length === 99) {
+            batchResults = await this.spServices.executeBatch(batchURL);
+            console.log(batchResults);
+            finalArray = [...finalArray, ...batchResults];
+            batchURL = [];
+          }
         }
-      });
-      const res = await this.spServices.executeBatch(batchURL);
-      console.log(res);
+      }
     }
     this.isFinanceManagementLoaderHidden = true;
     this.isFinanceManagementTableHidden = true;
