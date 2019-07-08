@@ -58,6 +58,7 @@
     margin: -50px !important;
   }
 
+ 
   
   @media (min-width: 1400px) {
   
@@ -66,11 +67,11 @@
         margin: 32px 0em 0em 186px !important
      
     }
-    ::ng-deep .dropdowninfo
+    /* ::ng-deep .dropdowninfo
     { 
       margin: 27px 0 0 1180px !important;
       position: absolute !important;
-    }
+    } */
  
   
     
@@ -90,6 +91,8 @@
 }
   }
  
+
+ 
   
   @media (min-width: 1025px) and (max-width: 1400px) {
   
@@ -98,12 +101,12 @@
       margin: 33px 0em 0em 195px !important; 
      
     }
-    ::ng-deep .dropdowninfo
+    /* ::ng-deep .dropdowninfo
     {
         float: left !important;
         margin: 27px 0 0 630px !important;
         position: absolute !important;
-    }
+    } */
     
    
   

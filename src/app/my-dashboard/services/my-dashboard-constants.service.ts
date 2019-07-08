@@ -256,7 +256,7 @@ export class MyDashboardConstantsService {
     const batchGuid = this.spServices.generateUUID();
 
     let previousTask = Object.assign({}, this.mydashboardComponent.previousTaskStatus);
-    previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi, this.sharedObject.currentUser.id.toString());
+    previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
 
     const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
