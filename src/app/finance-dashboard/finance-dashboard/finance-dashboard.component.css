@@ -227,7 +227,7 @@ body .ui-datepicker table td > a.ui-state-active:hover{
 
 /*Invoice*/
 
-body {font-size: 16px; color: #333;background-color: #fff;}
+/* body {font-size: 16px; color: #333;background-color: #fff;}
 body .ui-widget {font-family: Verdana !important;}
 body .ui-widget-content p {font-size: 16px;}
 table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
@@ -249,7 +249,7 @@ table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
 .contact_details-table table:first-child p{margin: 0;line-height: 24px;font-size: 16px;}
 .contact_details-table table:first-child tr td{margin: 0;line-height: 24px;font-size: 16px;padding: 0 !important;border:none !important}
 p span{display: inline-flex;}
-.contact-detail-table-left {/* padding-left: 30px; */width: 50%;float: left;margin-bottom: 20px;}
+.contact-detail-table-left {padding-left: 30px;width: 50%;float: left;margin-bottom: 20px;}
 .contact-detail-table-left p,
 .contact-detail-table-right p {margin: 0;line-height: 24px;font-size: 16px;}
 .contact-detail-table-right {float: right;text-align: left;width: 50%;}
@@ -269,7 +269,8 @@ ul{line-height: 26px;padding-left:20px;list-style: unset;}
 .invoice-table table thead tr th{padding: 10px 12px;}
 .invoice-table table tbody tr td{text-align: center;font-size: 16px;padding: 16px 0;border:1px solid #000;}
 .invoice-table table tfoot tr td{text-align: center;font-size: 16px;padding: 16px 0;font-weight: bold;}
-.invoice-table table tbody tr td:last-child{font-weight: bold;width: 14%;}
+.invoice-table table tbody tr td:last-child{font-weight: bold;width: 14%;text-align: right;}
+.invoice-table table tbody tr td:first-child{text-align: left;padding: 16px 10px;}
 .invoice-table table tbody tr:last-child td:last-child{width: 12%;}
 
 .invoice-table table tbody tr:last-child td:last-child{font-weight: bold;}
@@ -280,7 +281,7 @@ ul{line-height: 26px;padding-left:20px;list-style: unset;}
 .footer-table a{text-decoration: none;color: blue;}
 
 .signature-table{float: right;text-align: right;margin-right: 10px;
-    background-image: url(../../../assets/stamp.png); background-repeat: no-repeat;background-position: right;} 
+    background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M5U1nFCgVaguRgo4S0B3-L67nYrXIgtxcYoJEba9w); background-repeat: no-repeat;background-position: right;} 
 .signature-table p{margin:0;line-height: 24px;}
 .paymentInstructions label {font-size: 16px;font-weight: bold;display: table;margin-top: 20px;}
 .ui-dialog-resizable .ui-dialog-content{
@@ -305,10 +306,6 @@ ul{line-height: 26px;padding-left:20px;list-style: unset;}
 .col4 table tr:nth-child(3) td:first-child,.col4 table tr:nth-child(3) td:nth-child(2),.col4 table tr:nth-child(3) td:nth-child(3)
 { text-align: left ; padding: 0 15px;}
 
-
-
-.col6{}
-
 .col10 figure table tr:first-child td{font-weight: bold;}
 .col10 figure table tr:first-child td:first-child{width:5%;}
 .col10 figure table tr:first-child td:nth-child(2){width:13%;}
@@ -328,10 +325,138 @@ footer table:first-child tr td{font-size: 14px;text-align: center;}
 .proformaDetail3 table tbody tr:nth-child(3) td:nth-child(3) {font-weight: bold;}
 .proformaDetail2 table tbody tr:first-child td:nth-child(2),.proformaDetail2 table tbody tr:nth-child(2) td:nth-child(2){text-align: left;padding: 16px 10px;}
 .proformaDetail2 table tbody tr:nth-child(3) td:nth-child(2){font-weight: bold;}
-.proformaDetail table tbody tr:first-child td:nth-child(2){text-align: left;padding: 16px 10px;}
+.proformaDetail table tbody tr td:nth-child(2){text-align: left;padding: 16px 10px;}
+.proformaDetail table tbody tr:last-child td:nth-child(2){text-align: center;}
 .proformaDetail table tbody tr:nth-child(2) td:nth-child(2) { font-weight: bold;}
 .pl-0{padding-left: 0px}
-.mb-15{margin-bottom: 15px;}
+.mb-15{margin-bottom: 15px;} */
+
+
+/*Header */
+
+body .ui-widget {font-family: Verdana !important;}
+body .ui-widget-content p {font-size: 16px;}
+body p {margin:0;line-height:1.5;}
+table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
+.logo-img{width: auto; margin: auto;margin-bottom: 20px;}
+.header-left{width: 50%;padding-left: 40px;font-size: 15px;line-height: 2;font-weight: 500;margin: 0;text-align: left;}
+.header-left label{font-size: 26px; font-weight: 500}
+.header-right{width:10%; text-align:right; display:table-cell;}
+.header-right-label {margin-right: 40px;float: right;}
+.header-right p, .header-right-label p{font-weight: bold;}
+.header-center {font-size: 22px;font-weight: 500;}
+header div table tbody tr{background: #c5d3e5}
+#header label {text-transform: uppercase;}
+#header .header-left span {
+  width: 115px !important;
+  display: inline-block; 
+}
+#header .header-left.indHeader span {
+  width: 145px !important;
+}
+
+/*Footer */
+body {font-size: 16px; color: #333;background-color: #fff;font-family: Verdana !important;}
+body .ui-widget {font-family: Verdana !important;}
+body .ui-widget-content p {font-size: 16px;}
+body p {margin:0;line-height:1.5;}
+table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
+.footer-table{background: #c5d3e5;text-align: center;font-size: 15px;line-height: 24px;}
+.footer-table a{text-decoration: none;color: blue;}
+footer table:first-child{margin-top:10px}
+footer table:first-child tr td{font-size: 14px;text-align: center;}
+
+/*Content*/
+body {font-size: 16px; color: #333;background-color: #fff;font-family: Verdana !important;}
+table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
+body p {margin:0;line-height:1.5;}
+.table-heading{width: 100%;  text-align: center;font-weight: bold;background: #d8d8d8; font-size: 16px;
+color: #000; padding: 10px;}
+.contact_details_japan{height:60px;}
+.contact_details p,.contact_details_japan p{padding-top: 3px;padding-bottom: 3px;}
+.contact_details-table table:first-child{width: 47%;float: left;margin-bottom: 20px;}
+.contact_details-table table:nth-child(2){float: right;text-align: left;width: 44%;display: grid}
+.contact_details-table figure:nth-child(3) table{width: 100%;}
+.referenceDetail figure,.appendix figure,.contact_details-table figure,figure{display: contents;}
+.contact_details-table table:first-child p{margin: 0;line-height: 24px;font-size: 16px;}
+.contact_details-table table:first-child tr td{margin: 0;line-height: 24px;font-size: 16px;
+  border: none !important;
+  padding: 5px;}
+p span{display: inline-flex;}
+.contact-detail-table-left {width: 50%;float: left;margin-bottom: 20px;}
+.contact-detail-table-left p,
+.contact-detail-table-right p {margin: 0;line-height: 24px;font-size: 15px;}
+.contact-detail-table-right {float: right;text-align: left;width: 50%;}
+.purchaseOrder p{height:25px;font-size: 16px;}
+.referenceDetail {height: 50px; font-size: 16px;}
+.referenceDetail table {width: 94%;}
+.contact-detail-table{padding-left: 30px;}
+.contact-detail-table p{margin: 0;line-height: 24px;font-size: 16px;}
+ul{line-height: 26px;padding-left:20px;list-style: unset;}
+.paymentDetails,.column-flex{display: inline-flex;}
+.paymentDetails ul{padding-left: 10px;}
+.invoice-table{border-collapse: collapse;width: 100%;}
+.invoice-table table {width: 100%};
+.invoice-table td{border:1px solid #000;padding: 0}
+.invoice-table th{border:1px solid #000;padding: 0}
+.invoice-table table thead tr{text-align: center; font-size: 16px; font-weight: bold;}
+.invoice-table table thead tr th{padding: 10px 12px; text-align: center}
+.invoice-table table tbody tr td{text-align: left;font-size: 16px;padding: 16px 10px;border:1px solid #000;}
+.invoice-table table tfoot tr td{text-align: center;font-size: 16px;padding: 16px 10px;font-weight: bold;}
+.invoice-table table tbody tr:last-child td:last-child{font-weight: bold;}
+.invoice-table table tbody tr td:last-child{font-weight: bold;width: 14%;text-align: right;}
+.invoice-table table tbody tr td:first-child{text-align: left;}
+.appendix table tbody tr:last-child td{font-weight: normal;}
+.appendix table tbody tr td:last-child{font-weight: bold;}
+.signature-table{float: right;text-align: right;margin-right: 10px;
+background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M5U1nFCgVaguRgo4S0B3-L67nYrXIgtxcYoJEba9w);
+ background-repeat: no-repeat;background-position: right;}
+.signature-table p{margin:0;line-height: 24px;}
+.paymentInstructions label {font-size: 16px;font-weight: bold;display: table;margin-top: 20px;}
+.col3 table tr:first-child td:first-child{width:10%;}
+.col3 table tr:first-child td:nth-child(2){width:34%;}
+.col4 table tr:first-child td:first-child{width:16%;}
+.col10 figure table tr:first-child td{font-weight: bold;}
+.col10 figure table tr:first-child td:first-child{width:5%;}
+.col10 figure table tr:first-child td:nth-child(2){width:13%;}
+.col10 figure table tr:first-child td:nth-child(3){width:8%;}
+.col10 figure table tr:first-child td:nth-child(4){width:10%;}
+.col10 figure table tr:first-child td:nth-child(5){width:12%;}
+.col10 figure table tr:first-child td:nth-child(6){width:10%;}
+.col10 figure table tr:first-child td:nth-child(7){width:9%;}
+.col10 figure table tr:first-child td:nth-child(8){width:11%;}
+.col10 figure table tr:first-child td:nth-child(9){width:9%;}
+.col10 figure table tr:first-child td:nth-child(10){width:13%;}
+.proformaDetail table tbody tr td{text-align: left;padding: 16px 10px;}
+.proformaDetail table tbody tr:last-child td:nth-child(2){text-align: center; font-weight: bold;}
+.indiaPurchase td:first-child p strong {
+  width: 235px;
+  display: inline-block;
+}
+#contact_details table tbody tr td p strong, #contact_details p strong {
+  display:inline-block;
+  width: 150px;
+}
+#contact_details table tbody tr td p + p {
+  padding-left: 150px;
+}
+.indContact #contact_details table:first-child tbody tr td p strong,
+.indContact #contact_details table:last-child tbody tr td p strong {
+  width: 160px;
+}
+.indContact #contact_details table:nth-child(2) tbody tr td p strong {
+  width: 125px;
+}
+.indContact #contact_details table:nth-child(2) tbody tr td a {
+  margin-left: -5px;
+}
+.indContact #contact_details table:last-child#address {
+ margin-left: 5px;
+}
+.indContact #contact_details table:last-child tbody tr td p + p {
+  padding-left: 160px;
+}
+
 
 /* calnder control spacing */
 

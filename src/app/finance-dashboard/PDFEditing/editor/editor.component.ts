@@ -68,10 +68,10 @@ export class EditorComponent implements OnInit {
             company: 'AstraZeneca UK Ltd',
             clientcontact1: 'Strachan , Gordon',
             clientcontact2: 'Global Publications Lead - Oncology',
-            address1: '', // 'PO Box 30 , Slik Road Business Park',
-            address2: '', // 'Macclesfield , GB , SK10 2NA',
-            address3: '', // 'United Kingdom',
-            address4: '', // 'United Kingdom',
+            address1: 'PO Box 30 , Slik Road Business Park',
+            address2: 'Macclesfield , GB , SK10 2NA',
+            address3: 'United Kingdom',
+            address4: 'United Kingdom',
             phone: '+44 (0) 16255170000',
             // designation: 'Medical Editorial Reviewer',
             purchaseOrderNumber: '8300324481',
@@ -94,9 +94,9 @@ export class EditorComponent implements OnInit {
             <tbody>
                 <tr style="background-color: #c5d3e5;">
         <td class="header-left">
-        Proforma No : &nbsp;&nbsp;&nbsp;[[InvoiceNumber]] <br />
-          Proforma Date : [[InvoiceDate]] <br />
-          Currency : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[CurrencyName]] ([[CurrencySymbol]]) <br />
+        <span>Proforma No</span> : [[InvoiceNumber]] <br />
+        <span>Proforma Date</span> : [[InvoiceDate]] <br />
+        <span>Currency</span> : [[CurrencyName]] ([[CurrencySymbol]]) <br />
           <label>[[Invoice]]</label>
         </td>
         <td class="header-right">
@@ -155,27 +155,24 @@ export class EditorComponent implements OnInit {
                 <tbody>
                 <tr>
                     <td>
-                        <p><strong>Company : </strong>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[Company]]</p>
+                        <p><strong>Company : </strong>[[Company]]</p>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <p><strong>Client Contact : </strong>&nbsp;&nbsp;[[ClientContact1]]</p>
+                        <p><strong>Client Contact : </strong>[[ClientContact1]]</p>
                         [[ClientContact]]
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <p><strong>Email : </strong>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">[[Email]]</a>
+                        <p><strong>Email : </strong><a href="#">[[Email]]</a>
                         </p>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <p><strong>Phone : </strong>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[Phone]]
+                        <p><strong>Phone : </strong>[[Phone]]
                         </p>
                     </td>
                 </tr>
@@ -185,7 +182,7 @@ export class EditorComponent implements OnInit {
                 <tbody>
                 <tr>
                     <td>
-                        <p><strong>Address : </strong>&nbsp;&nbsp;[[Address1]]</p>
+                        <p><strong>Address : </strong>[[Address1]]</p>
                         [[AddressMulti]]
                     </td>
                 </tr>
@@ -350,9 +347,9 @@ export class EditorComponent implements OnInit {
             <tbody>
                 <tr style="background-color: #c5d3e5;">
         <td class="header-left">
-        Proforma No : &nbsp;&nbsp;&nbsp;[[InvoiceNumber]] <br />
-        Proforma Date : [[InvoiceDate]] <br />
-          Currency : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[CurrencyName]] ([[CurrencySymbol]]) <br />
+        <span>Proforma No</span> : [[InvoiceNumber]] <br />
+        <span>Proforma Date</span> : [[InvoiceDate]] <br />
+        <span>Currency</span> : [[CurrencyName]] ([[CurrencySymbol]]) <br />
           <label>[[Invoice]]</label>
       </td>
       <td class="header-right">
@@ -395,27 +392,24 @@ export class EditorComponent implements OnInit {
             contactDetails: `<tbody>
         <tr>
             <td>
-                <p><strong>Company : </strong>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[Company]]</p>
+                <p><strong>Company : </strong>[[Company]]</p>
             </td>
         </tr>
         <tr>
             <td>
-                <p><strong>Client Contact : </strong>&nbsp;&nbsp;[[ClientContact1]]</p>
+                <p><strong>Client Contact : </strong>[[ClientContact1]]</p>
                 [[ClientContact]]
             </td>
         </tr>
         <tr>
             <td>
-                <p><strong>Email : </strong>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="#">[[Email]]</a>
+                <p><strong>Email : </strong><a href="#">[[Email]]</a>
                 </p>
             </td>
         </tr>
         <tr>
             <td>
-                <p><strong>Phone : </strong>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[Phone]]
+                <p><strong>Phone : </strong>[[Phone]]
                 </p>
             </td>
         </tr>
@@ -423,19 +417,15 @@ export class EditorComponent implements OnInit {
             contactDetails2: `<tbody>
         <tr>
             <td>
-                <p><strong>Address : </strong>&nbsp;&nbsp;[[Address1]]</p>
+                <p><strong>Address : </strong>[[Address1]]</p>
                 [[AddressMulti]]
             </td>
         </tr>
         </tbody>`,
-            address2: `<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;[[Address2]]</p>`,
-            address3: `<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;[[Address3]]</p>`,
-            address4: `<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;[[Address4]]</p>`,
-            clientcontact2: `<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[ClientContact2]]</p>`,
+            address2: `<p>[[Address2]]</p>`,
+            address3: `<p>[[Address3]]</p>`,
+            address4: `<p>[[Address4]]</p>`,
+            clientcontact2: `<p>[[ClientContact2]]</p>`,
             purchaseOrder: `<strong>Purchase Order number : </strong>[[PurchaseOrderNumber]]`,
             invoiceDetail: `<thead>
             <tr>
@@ -544,9 +534,9 @@ export class EditorComponent implements OnInit {
             <tbody>
                 <tr style="background: #c5d3e5;">
         <td class="header-left">
-        Proforma No : &nbsp;&nbsp;&nbsp;&nbsp;[[InvoiceNumber]] <br />
-        Proforma Date : [[InvoiceDate]] <br />
-        Currency : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[CurrencyName]] ([[CurrencySymbol]]) <br />
+        <span>Proforma No</span> : [[InvoiceNumber]] <br />
+        <span>Proforma Date</span> : [[InvoiceDate]] <br />
+        <span>Currency</span> : [[CurrencyName]] ([[CurrencySymbol]]) <br />
           <label>[[Invoice]]</label>
         </td>
         <td class="header-right">
@@ -599,10 +589,9 @@ export class EditorComponent implements OnInit {
         </table>
         <div class="contact_details_japan">
         <div id="contact_details">
-        <p><strong>Company : </strong>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[Company]]</p>
+        <p><strong>Company : </strong>[[Company]]</p>
         <p><strong>Client Contact : </strong>
-        <span style="display: inline-flex;">&nbsp;&nbsp;[[ClientContact1]]</span>
+        [[ClientContact1]]
         </p>
         </div>
         </div>
@@ -791,9 +780,9 @@ export class EditorComponent implements OnInit {
             <tbody>
                 <tr style="background: #c5d3e5;">
         <td class="header-left">
-        Proforma No : &nbsp;&nbsp;&nbsp;&nbsp;[[InvoiceNumber]] <br />
-        Proforma Date : &nbsp;[[InvoiceDate]] <br />
-        Currency : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[CurrencyName]] ([[CurrencySymbol]]) <br />
+        <span>Proforma No</span> : [[InvoiceNumber]] <br />
+        <span>Proforma Date</span> : [[InvoiceDate]] <br />
+        <span>Currency</span> : [[CurrencyName]] ([[CurrencySymbol]]) <br />
           <label>[[Invoice]]</label>
         </td>
         <td class="header-right">
@@ -831,10 +820,8 @@ export class EditorComponent implements OnInit {
         </td></tr>
         </table>
         </div>`,
-            contactDetails: `<p><strong>Company : </strong>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[Company]]</p>
-        <p><strong>Client Contact : </strong>
-        <span style="display: inline-flex;">&nbsp;&nbsp;[[ClientContact1]]</span>
+            contactDetails: `<p><strong>Company : </strong>[[Company]]</p>
+        <p><strong>Client Contact : </strong>[[ClientContact1]]
         </p>`,
             purchaseOrder: `<strong> Purchase Order number : </strong> [[PurchaseOrderNumber]] `,
             invoiceDetail: `<thead>
@@ -935,41 +922,50 @@ export class EditorComponent implements OnInit {
             <head>
                 <title></title>
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-                <style>body {font-size: 16px; color: #333;background-color: #fff;font-family: Verdana !important;}
-                body .ui-widget {font-family: Verdana !important;}
-                body .ui-widget-content p {font-size: 16px;}
-                body p {margin:0;line-height:1.5;}
-                table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
-                .logo-img{width: auto; margin: auto;margin-bottom: 20px;}
-                .header-left{width: 50%;padding-left: 40px;font-size: 15px;line-height: 2;font-weight: 500;margin: 0;text-align: left;}
-                .header-left label{font-size: 26px; font-weight: 500}
-                .header-right{width:10%; text-align:right; display:table-cell;}
-                .header-right-label {margin-right: 40px;float: right;}
-                .header-right p, .header-right-label p{font-weight: bold;}
-                .header-center {font-size: 22px;font-weight: 500;}
-                header div table tbody tr{background: #c5d3e5}
-                #header label {text-transform: uppercase;}
-        </style>
-        </head>
-        <body>
-        [[HeaderContent]]
-        </body>
-        </html>`;
+                <style>
+                    body .ui-widget {font-family: Verdana !important;}
+                    body .ui-widget-content p {font-size: 16px;}
+                    body p {margin:0;line-height:1.5;}
+                    table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
+                    .logo-img{width: auto; margin: auto;margin-bottom: 20px;}
+                    .header-left{width: 50%;padding-left: 40px;font-size: 15px;line-height: 2;font-weight: 500;margin: 0;text-align: left;}
+                    .header-left label{font-size: 26px; font-weight: 500}
+                    .header-right{width:10%; text-align:right; display:table-cell;}
+                    .header-right-label {margin-right: 40px;float: right;}
+                    .header-right p, .header-right-label p{font-weight: bold;}
+                    .header-center {font-size: 22px;font-weight: 500;}
+                    header div table tbody tr{background: #c5d3e5}
+                    #header label {text-transform: uppercase;}
+                    #header .header-left span {
+                        width: 115px !important;
+                        display: inline-block; 
+                    }
+                    #header .header-left.indHeader span {
+                        width: 145px !important;
+                    }
+                </style>
+            </head>
+            <body>
+            [[HeaderContent]]
+            </body>
+            </html>`;
 
         this.footerStyle = `<!DOCTYPE html>
     <html>
         <head>
             <title></title>
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-            <style>body {font-size: 16px; color: #333;background-color: #fff;font-family: Verdana !important;}
-            body .ui-widget {font-family: Verdana !important;}
-            body .ui-widget-content p {font-size: 16px;}
-            body p {margin:0;line-height:1.5;}
-            table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
-            .footer-table{background: #c5d3e5;text-align: center;font-size: 15px;line-height: 24px;}
-            .footer-table a{text-decoration: none;color: blue;}
-            footer table:first-child{margin-top:10px}
-            footer table:first-child tr td{font-size: 14px;text-align: center;}</style>
+            <style>
+                body {font-size: 16px; color: #333;background-color: #fff;font-family: Verdana !important;}
+                body .ui-widget {font-family: Verdana !important;}
+                body .ui-widget-content p {font-size: 16px;}
+                body p {margin:0;line-height:1.5;}
+                table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
+                .footer-table{background: #c5d3e5;text-align: center;font-size: 15px;line-height: 24px;}
+                .footer-table a{text-decoration: none;color: blue;}
+                footer table:first-child{margin-top:10px}
+                footer table:first-child tr td{font-size: 14px;text-align: center;}
+            </style>
     </head>
     <body>
     [[FooterContent]]
@@ -980,67 +976,98 @@ export class EditorComponent implements OnInit {
             <head>
                 <title></title>
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-                <style>body {font-size: 16px; color: #333;background-color: #fff;font-family: Verdana !important;}
-                table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
-                body p {margin:0;line-height:1.5;}
-                .table-heading{width: 100%;  text-align: center;font-weight: bold;background: #d8d8d8; font-size: 16px;
-                color: #000; padding: 10px;}
-                .contact_details_japan{height:60px;}
-                .contact_details p,.contact_details_japan p{padding-top: 3px;padding-bottom: 3px;}
-                .contact_details-table table:first-child{width: 47%;float: left;margin-bottom: 20px;}
-                .contact_details-table table:nth-child(2){float: right;text-align: left;width: 44%;display: grid}
-                .contact_details-table figure:nth-child(3) table{width: 100%;}
-                .referenceDetail figure,.appendix figure,.contact_details-table figure,figure{display: contents;}
-                .contact_details-table table:first-child p{margin: 0;line-height: 24px;font-size: 16px;}
-                .contact_details-table table:first-child tr td{margin: 0;line-height: 24px;font-size: 16px;}
-                p span{display: inline-flex;}
-                .contact-detail-table-left {/* padding-left: 30px; */width: 50%;float: left;margin-bottom: 20px;}
-                .contact-detail-table-left p,
-                .contact-detail-table-right p {margin: 0;line-height: 24px;font-size: 15px;}
-                .contact-detail-table-right {float: right;text-align: left;width: 50%;}
-                .purchaseOrder p{height:25px;font-size: 16px;}
-                .referenceDetail {height: 50px; font-size: 16px;}
-                .referenceDetail table {width: 94%;}
-                .contact-detail-table{padding-left: 30px;}
-                .contact-detail-table p{margin: 0;line-height: 24px;font-size: 16px;}
-                ul{line-height: 26px;padding-left:20px;list-style: unset;}
-                .paymentDetails,.column-flex{display: inline-flex;}
-                .paymentDetails ul{padding-left: 10px;}
-                .invoice-table{border-collapse: collapse;width: 100%;}
-                .invoice-table table {width: 100%};
-                .invoice-table td{border:1px solid #000;padding: 0}
-                .invoice-table th{border:1px solid #000;padding: 0}
-                .invoice-table table thead tr{text-align: center; font-size: 16px; font-weight: bold;}
-                .invoice-table table thead tr th{padding: 10px 12px;}
-                .invoice-table table tbody tr td{text-align: center;font-size: 16px;padding: 15px 0;border:1px solid #000;}
-                .invoice-table table tfoot tr td{text-align: center;font-size: 16px;padding: 15px 0;font-weight: bold;}
-                .invoice-table table tbody tr:last-child td:last-child{font-weight: bold;}
-                .invoice-table table tbody tr td:last-child{font-weight: bold;width: 14%;}
-                .appendix table tbody tr:last-child td{font-weight: normal;}
-                .appendix table tbody tr td:last-child{font-weight: bold;}
-                .signature-table{float: right;text-align: right;margin-right: 10px;
-                background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M5U1nFCgVaguRgo4S0B3-L67nYrXIgtxcYoJEba9w);
-                 background-repeat: no-repeat;background-position: right;}
-                .signature-table p{margin:0;line-height: 24px;}
-                .paymentInstructions label {font-size: 16px;font-weight: bold;display: table;margin-top: 20px;}
-                .col3 table tr:first-child td:first-child{width:10%;}
-                .col3 table tr:first-child td:nth-child(2){width:34%;}
-                .col4 table tr:first-child td:first-child{width:16%;}
-                .col6{}
-                .col10 figure table tr:first-child td{font-weight: bold;}
-                .col10 figure table tr:first-child td:first-child{width:5%;}
-                .col10 figure table tr:first-child td:nth-child(2){width:13%;}
-                .col10 figure table tr:first-child td:nth-child(3){width:8%;}
-                .col10 figure table tr:first-child td:nth-child(4){width:10%;}
-                .col10 figure table tr:first-child td:nth-child(5){width:12%;}
-                .col10 figure table tr:first-child td:nth-child(6){width:10%;}
-                .col10 figure table tr:first-child td:nth-child(7){width:9%;}
-                .col10 figure table tr:first-child td:nth-child(8){width:11%;}
-                .col10 figure table tr:first-child td:nth-child(9){width:9%;}
-                .col10 figure table tr:first-child td:nth-child(10){width:13%;}
-                .proformaDetail table tbody tr:first-child td:nth-child(2){text-align: left;padding: 16px 10px;}
-            </style>
-        </head>
+                <style>
+                    body {font-size: 16px; color: #333;background-color: #fff;font-family: Verdana !important;}
+                    table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
+                    body p {margin:0;line-height:1.5;}
+                    .table-heading{width: 100%;  text-align: center;font-weight: bold;background: #d8d8d8; font-size: 16px;
+                    color: #000; padding: 10px;}
+                    .contact_details_japan{height:60px;}
+                    .contact_details p,.contact_details_japan p{padding-top: 3px;padding-bottom: 3px;}
+                    .contact_details-table table:first-child{width: 47%;float: left;margin-bottom: 20px;}
+                    .contact_details-table table:nth-child(2){float: right;text-align: left;width: 44%;display: grid}
+                    .contact_details-table figure:nth-child(3) table{width: 100%;}
+                    .referenceDetail figure,.appendix figure,.contact_details-table figure,figure{display: contents;}
+                    .contact_details-table table:first-child p{margin: 0;line-height: 24px;font-size: 16px;}
+                    .contact_details-table table:first-child tr td{margin: 0;line-height: 24px;font-size: 16px;
+                    border: none !important;
+                    padding: 5px;}
+                    p span{display: inline-flex;}
+                    .contact-detail-table-left {width: 50%;float: left;margin-bottom: 20px;}
+                    .contact-detail-table-left p,
+                    .contact-detail-table-right p {margin: 0;line-height: 24px;font-size: 15px;}
+                    .contact-detail-table-right {float: right;text-align: left;width: 50%;}
+                    .purchaseOrder p{height:25px;font-size: 16px;}
+                    .referenceDetail {height: 50px; font-size: 16px;}
+                    .referenceDetail table {width: 94%;}
+                    .contact-detail-table{padding-left: 30px;}
+                    .contact-detail-table p{margin: 0;line-height: 24px;font-size: 16px;}
+                    ul{line-height: 26px;padding-left:20px;list-style: unset;}
+                    .paymentDetails,.column-flex{display: inline-flex;}
+                    .paymentDetails ul{padding-left: 10px;}
+                    .invoice-table{border-collapse: collapse;width: 100%;}
+                    .invoice-table table {width: 100%};
+                    .invoice-table td{border:1px solid #000;padding: 0}
+                    .invoice-table th{border:1px solid #000;padding: 0}
+                    .invoice-table table thead tr{text-align: center; font-size: 16px; font-weight: bold;}
+                    .invoice-table table thead tr th{padding: 10px 12px; text-align: center}
+                    .invoice-table table tbody tr td{text-align: left;font-size: 16px;padding: 16px 10px;border:1px solid #000;}
+                    .invoice-table table tfoot tr td{text-align: center;font-size: 16px;padding: 16px 10px;font-weight: bold;}
+                    .invoice-table table tbody tr:last-child td:last-child{font-weight: bold;}
+                    .invoice-table table tbody tr td:last-child{font-weight: bold;width: 14%;text-align: right;}
+                    .invoice-table table tbody tr td:first-child{text-align: left;}
+                    .appendix table tbody tr:last-child td{font-weight: normal;}
+                    .appendix table tbody tr td:last-child{font-weight: bold;}
+                    .signature-table{float: right;text-align: right;margin-right: 10px;
+                    background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M5U1nFCgVaguRgo4S0B3-L67nYrXIgtxcYoJEba9w);
+                    background-repeat: no-repeat;background-position: right;}
+                    .signature-table p{margin:0;line-height: 24px;}
+                    .paymentInstructions label {font-size: 16px;font-weight: bold;display: table;margin-top: 20px;}
+                    .col3 table tr:first-child td:first-child{width:10%;}
+                    .col3 table tr:first-child td:nth-child(2){width:34%;}
+                    .col4 table tr:first-child td:first-child{width:16%;}
+                    .col10 figure table tr:first-child td{font-weight: bold;}
+                    .col10 figure table tr:first-child td:first-child{width:5%;}
+                    .col10 figure table tr:first-child td:nth-child(2){width:13%;}
+                    .col10 figure table tr:first-child td:nth-child(3){width:8%;}
+                    .col10 figure table tr:first-child td:nth-child(4){width:10%;}
+                    .col10 figure table tr:first-child td:nth-child(5){width:12%;}
+                    .col10 figure table tr:first-child td:nth-child(6){width:10%;}
+                    .col10 figure table tr:first-child td:nth-child(7){width:9%;}
+                    .col10 figure table tr:first-child td:nth-child(8){width:11%;}
+                    .col10 figure table tr:first-child td:nth-child(9){width:9%;}
+                    .col10 figure table tr:first-child td:nth-child(10){width:13%;}
+                    .proformaDetail table tbody tr td{text-align: left;padding: 16px 10px;}
+                    .proformaDetail table tbody tr:last-child td:nth-child(2){text-align: center; font-weight: bold;}
+                    .indiaPurchase td:first-child p strong {
+                        width: 235px;
+                        display: inline-block;
+                    }
+                    #contact_details table tbody tr td p strong, #contact_details p strong {
+                    display:inline-block;
+                    width: 150px;
+                    }
+                    #contact_details table tbody tr td p + p {
+                    padding-left: 150px;
+                    }
+                    .indContact #contact_details table:first-child tbody tr td p strong,
+                    .indContact #contact_details table:last-child tbody tr td p strong {
+                    width: 160px;
+                    }
+                    .indContact #contact_details table:nth-child(2) tbody tr td p strong {
+                    width: 125px;
+                    }
+                    .indContact #contact_details table:nth-child(2) tbody tr td a {
+                    margin-left: -5px;
+                    }
+                    .indContact #contact_details table:last-child#address {
+                    margin-left: 5px;
+                    }
+                    .indContact #contact_details table:last-child tbody tr td p + p {
+                    padding-left: 160px;
+                    }
+                </style>
+            </head>
         <body>
         `;
 
@@ -1050,16 +1077,16 @@ export class EditorComponent implements OnInit {
         <table cellpadding="15" cellspacing="0">
             <tbody>
                 <tr style="background: #c5d3e5;">
-        <td class="header-left">
+        <td class="header-left indHeader">
         <span>
               <img style="margin-bottom: 20px;" class="logo-img"
               src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWR1GHbosaFDvGM_F_SztpwBdGEOEaYmMAnQ38DJfzQAvA">
         </span>
         <p>
-            GST Proforma No: <br />
-            Proforma No: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[InvoiceNumber]] <br />
-            Proforma Date : &nbsp;&nbsp;&nbsp;[[InvoiceDate]]<br />
-            Currency : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[CurrencyName]] ([[CurrencySymbol]])</p>
+            <span>GST Proforma No</span> : <br />
+            <span>Proforma No</span> : [[InvoiceNumber]] <br />
+            <span>Proforma Date</span> : [[InvoiceDate]]<br />
+            <span>Currency</span> : [[CurrencyName]] ([[CurrencySymbol]])</p>
         </td>
         <td class="header-center">
             <label>TAX Proforma</label>
@@ -1105,7 +1132,7 @@ export class EditorComponent implements OnInit {
         </table>
         </div>
         </footer>`,
-            maincontent: `<div id="main_content">
+            maincontent: `<div id="main_content" class="indContact">
         <div style="height:1300px;">
         <table style="margin: 15px 0;">
             <tbody>
@@ -1122,14 +1149,12 @@ export class EditorComponent implements OnInit {
                 <tbody>
             <tr>
                 <td>
-                    <p><strong>Company : </strong>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [[Company]]</p>
+                    <p><strong>Company : </strong>[[Company]]</p>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <p><strong>Client Contact : </strong>
-                        <span>&nbsp;&nbsp;&nbsp;[[ClientContact]]</span>
+                    <p><strong>Client Contact : </strong>[[ClientContact]]
                     </p>
                 </td>
             </tr>
@@ -1150,8 +1175,7 @@ export class EditorComponent implements OnInit {
             <tbody>
             <tr>
                 <td>
-                    <p><strong>Phone : </strong>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[Phone]]
+                    <p><strong>Phone : </strong>[[Phone]]
                 </td>
             </tr>
             <tr>
@@ -1161,7 +1185,7 @@ export class EditorComponent implements OnInit {
             </tr>
             <tr>
                 <td>
-                    <p><strong>Email : </strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <p><strong>Email : </strong>
                     <a href="#">[[Email]]</a>
                     </p>
                 </td>
@@ -1172,8 +1196,7 @@ export class EditorComponent implements OnInit {
             <tbody>
             <tr>
             <td>
-                <p><strong>Address : </strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;[[Address1]]</p>[[AddressMulti]]
+                <p><strong>Address : </strong>[[Address1]]</p>[[AddressMulti]]
             </td>
             </tr>
             </tbody>
@@ -1190,26 +1213,26 @@ export class EditorComponent implements OnInit {
         </table>
     
         <div id="referenceDetail" class="referenceDetail">
-            <table>
+            <table >
                 <tbody>
-                <tr>
-                <td style="width: 40%; float: left;text-align: left;">
-                    <p style="font-size:15px">
-                    <strong> Purchase Order number : </strong>  [[PurchaseOrderNumber]]  </p>
-                </td>
-                <td style="width: 40%; float: left;text-align: left;">
-                    <p style="font-size:15px">
-                    <strong> GST no : </strong> 27AACCC1194L1ZI  </p>
-                </td>
-            </tr>
-            <tr>
-                <td style="width: 40%; float: left;text-align: left;">
-                    <p style="font-size:15px;margin: 0;">
-                    <strong> PAN No : </strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AACCC1194L  </p>
-                </td>
-            </tr>
-            </tbody>
+                <tr class="indiaPurchase">
+                    <td style="width: 40%; float: left;text-align: left;">
+                        <p style="font-size:15px">
+                        <strong> Purchase Order number : </strong>  [[PurchaseOrderNumber]]  </p>
+                    </td>
+                    <td style="width: 40%; float: left;text-align: left;">
+                        <p style="font-size:15px">
+                        <strong> GST no : </strong> 27AACCC1194L1ZI  </p>
+                    </td>
+                </tr>
+                <tr class="indiaPurchase">
+                    <td style="width: 40%; float: left;text-align: left;">
+                        <p style="font-size:15px;margin: 0;">
+                        <strong> PAN No : </strong> AACCC1194L  </p>
+                    </td>
+                    <td></td>
+                </tr>
+                </tbody>
             </table>
         </div>
     
@@ -1361,20 +1384,20 @@ export class EditorComponent implements OnInit {
         </table>
             </div>
         </div>`,
-            header: `<div>
+            header: `<div id=header>
         <table cellpadding="15" cellspacing="0">
             <tbody>
                 <tr style="background: #c5d3e5;">
-        <td class="header-left">
+        <td class="header-left indHeader">
         <span>
               <img style="margin-bottom: 20px;" class="logo-img"
               src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWR1GHbosaFDvGM_F_SztpwBdGEOEaYmMAnQ38DJfzQAvA">
         </span>
         <p>
-            GST Proforma No: <br />
-            Proforma No: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[InvoiceNumber]] <br />
-            Proforma Date : &nbsp;&nbsp;&nbsp;[[InvoiceDate]]<br />
-            Currency : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[CurrencyName]] ([[CurrencySymbol]])</p>
+            <span>GST Proforma No</span> : <br />
+            <span>Proforma No</span> : [[InvoiceNumber]] <br />
+            <span>Proforma Date</span> : [[InvoiceDate]]<br />
+            <span>Currency</span> : [[CurrencyName]] ([[CurrencySymbol]])</p>
         </td>
         <td class="header-center">
             <label>TAX Proforma</label>
@@ -1420,14 +1443,12 @@ export class EditorComponent implements OnInit {
             contactDetails1: `<tbody>
             <tr>
                 <td>
-                    <p><strong>Company : </strong>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [[Company]]</p>
+                    <p><strong>Company : </strong>[[Company]]</p>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <p><strong>Client Contact : </strong>
-                        <span>&nbsp;&nbsp;&nbsp;[[ClientContact]]</span>
+                    <p><strong>Client Contact : </strong>[[ClientContact]]
                     </p>
                 </td>
             </tr>
@@ -1443,21 +1464,15 @@ export class EditorComponent implements OnInit {
                 </td>
             </tr>
         </tbody>`,
-            address2: `<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[Address2]]</p>`,
-            address3: `<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[Address3]],</p>`,
-            address4: `<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[Address4]]</p>`,
-            address5: `<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[Address5]],</p>`,
-            address6: `<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[Address6]]</p>`,
+            address2: `<p>[[Address2]]</p>`,
+            address3: `<p>[[Address3]],</p>`,
+            address4: `<p>[[Address4]]</p>`,
+            address5: `<p>[[Address5]],</p>`,
+            address6: `<p>[[Address6]]</p>`,
             contactDetails2: `<tbody>
             <tr>
                 <td>
-                    <p><strong>Phone : </strong>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[[Phone]]
+                    <p><strong>Phone : </strong>[[Phone]]
                 </td>
             </tr>
             <tr>
@@ -1467,7 +1482,7 @@ export class EditorComponent implements OnInit {
             </tr>
             <tr>
                 <td>
-                    <p><strong>Email : </strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <p><strong>Email : </strong>
                     <a href="#">[[Email]]</a>
                     </p>
                 </td>
@@ -1476,27 +1491,26 @@ export class EditorComponent implements OnInit {
             address: `<tbody>
         <tr>
         <td>
-            <p><strong>Address : </strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;[[Address1]]</p>[[AddressMulti]]
+            <p><strong>Address : </strong>[[Address1]]</p>[[AddressMulti]]
         </td>
         </tr>
         </tbody>`,
-            purchaseOrder: `<tr>
+            purchaseOrder: `<tr class=indiaPurchase>
                 <td style="width: 40%; float: left;text-align: left;">
                     <p style="font-size:15px">
-                    <strong> Purchase Order number : </strong> [[PurchaseOrderNumber]]  </p>
+                    <strong> Purchase Order number : </strong>[[PurchaseOrderNumber]]</p>
                 </td>
                 <td style="width: 40%; float: left;text-align: left;">
                     <p style="font-size:15px">
-                    <strong> GST no : </strong> 27AACCC1194L1ZI  </p>
+                    <strong> GST no : </strong>27AACCC1194L1ZI</p>
                 </td>
             </tr>
-            <tr>
+            <tr class=indiaPurchase>
                 <td style="width: 40%; float: left;text-align: left;">
                     <p style="font-size:15px;margin: 0;">
-                    <strong> PAN No : </strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AACCC1194L  </p>
+                    <strong> PAN No : </strong>AACCC1194L</p>
                 </td>
+                <td></td>
             </tr>`,
             invoiceDetail: `<thead>
         <tr style="text-align: center; font-size: 16px; font-weight: bold;">
@@ -1553,8 +1567,7 @@ export class EditorComponent implements OnInit {
         </tr> -->
         <tr>
             <td></td>
-            <td></td>
-            <td style="text-align: center;font-weight: bold; font-size: 16px;">
+            <td colspan="2" style="text-align: center;font-weight: bold; font-size: 16px;">
                 Total
             </td>
             <td>
@@ -2216,19 +2229,27 @@ export class EditorComponent implements OnInit {
         document.getElementById('appendix').className = data.class;
     }
 
+    disableButton() {
+        const items: any = document.querySelectorAll('.invButton');
+        let i = 0;
+        const l = items.length;
+
+        for (i; i < l; i++) {
+            items[i].style.display = 'none';
+        }
+    }
+    enableButton() {
+        const items: any = document.querySelectorAll('.invButton');
+        let i = 0;
+        const l = items.length;
+
+        for (i; i < l; i++) {
+            items[i].style.display = 'inline-block';
+        }
+    }
+
     confirm() {
-        // const inner = document.getElementById('main_content');
-        // const buttons = inner.getElementsByTagName('p-button');
-        // console.log(buttons);
-        // if (buttons.length > 0) {
-        //     buttons[0].remove();
-        //     if (this.showAppendix) {
-        //         buttons[1].remove();
-        //         buttons[0].remove();
-        //     } else {
-        //         buttons[0].remove();
-        //     }
-        // }
+        this.disableButton();
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         if (document.querySelector('.col10') !== null) {
             const el = document.querySelector('.col10');
@@ -2278,7 +2299,7 @@ export class EditorComponent implements OnInit {
         } else if (Object.keys(this.JapanTemplateCopy).length > 0) {
             this.japanHtmlObject.header = document.getElementById('header').innerHTML;
             this.japanHtmlObject.footer = document.getElementById('footer').innerHTML;
-            this.japanHtmlObject.contactDetails = document.getElementById('contactDetails').innerHTML;
+            this.japanHtmlObject.contactDetails = document.getElementById('contact_details').innerHTML;
             this.japanHtmlObject.purchaseOrder = document.getElementById('purchaseOrderDetails').innerHTML;
             this.japanHtmlObject.invoiceDetail = document.getElementById('invoiceDetails').innerHTML;
             this.japanHtmlObject.paymentInstructions = document.getElementById('paymentInstructions1').innerHTML;
@@ -2314,6 +2335,18 @@ export class EditorComponent implements OnInit {
             this.messageService.add({ key: 'editToast', severity: 'success', summary: this.fdConstantsService.fdComponent.selectedEditObject.Type + ' edited successfully.' });
             // this.currentUserInfo();
         }, 300);
+    }
+
+    createUSProforma() {
+        this.createUSInvoice(this.invoicedata);
+    }
+
+    createJapanProforma() {
+        this.createJapanInvoice(this.invoicedata);
+    }
+
+    createIndiaProforma() {
+        this.createIndiaInvoice(this.invoicedata);
     }
 }
 

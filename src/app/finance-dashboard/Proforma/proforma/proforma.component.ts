@@ -572,6 +572,7 @@ export class ProformaComponent implements OnInit {
                 this.fdConstantsService.fdComponent.selectedComp = this;
                 switch (data.Template) {
                     case 'US':
+                        this.editorRef.enableButton();
                         this.editorRef.USTemplateCopy = proformaObj.saveObj;
                         if (this.editorRef.USTemplateCopy.appendix) {
                             this.editorRef.showAppendix = true;
@@ -583,6 +584,7 @@ export class ProformaComponent implements OnInit {
                         this.editorRef.displayIndia = false;
                         break;
                     case 'Japan':
+                        this.editorRef.enableButton();
                         this.editorRef.JapanTemplateCopy = proformaObj.saveObj;
                         if (this.editorRef.JapanTemplateCopy.appendix) {
                             this.editorRef.showAppendix = true;
@@ -594,6 +596,7 @@ export class ProformaComponent implements OnInit {
                         this.editorRef.displayIndia = false;
                         break;
                     case 'India':
+                        this.editorRef.enableButton();
                         this.editorRef.IndiaTemplateCopy = proformaObj.saveObj;
                         if (this.editorRef.IndiaTemplateCopy.appendix) {
                             this.editorRef.showAppendix = true;

@@ -1,16 +1,16 @@
-<!-- <p-button style="margin-right: 10px;" type="button" (click)="showDialog()" label="US Template"></p-button>
+<p-button style="margin-right: 10px;" type="button" (click)="showDialog()" label="US Template"></p-button>
 <p-button style="margin-right: 10px;" type="button" (click)="showDialog1()" label="Japan Template"></p-button>
 <p-button type="button" (click)="showDialog2()" label="India Template"></p-button>
 
 <div style="margin-top: 10px;display: flex;">
-    <p-button type="button" (click)="createUSInvoice()" label="US Proforma"></p-button>
+    <p-button type="button" (click)="createUSProforma()" label="US Proforma"></p-button>
 </div>
 <div style="margin-top: 10px;display: flex;">
-    <p-button type="button" (click)="createJapanInvoice()" label="Japan Proforma"></p-button>
+    <p-button type="button" (click)="createJapanProforma()" label="Japan Proforma"></p-button>
 </div>
 <div style="margin-top: 10px;display: flex;">
-    <p-button type="button" (click)="createIndiaInvoice()" label="India Proforma"></p-button>
-</div> -->
+    <p-button type="button" (click)="createIndiaProforma()" label="India Proforma"></p-button>
+</div>
 
 <p-dialog header="Edit" [draggable]="false" [modal]="true" [(visible)]="displayUS" [style]="{width: '1200px'}">
 
@@ -28,7 +28,7 @@
                 </tbody>
             </table>
 
-            <p style="float: right">
+            <p class="invButton" style="float: right">
                 <p-button class="editBtn" type="button" (click)="editable('contact_details')" label="edit"></p-button>
             </p>
 
@@ -97,7 +97,7 @@
                 </tr>
             </tbody>
 
-            <p style="float: right">
+            <p class="invButton" style="float: right">
                 <p-button type="button" class="editBtn" (click)="editable('paymentInstructions')" label="edit">
                 </p-button>
             </p>
@@ -126,7 +126,7 @@
             </table>
 
             <div class="invoice-table">
-                <p style="float: right">
+                <p class="invButton" style="float: right">
                     <p-button type="button" class="editBtn" (click)="editable('appendix')" label="edit"></p-button>
                 </p>
                 <div id="appendix" class="col4" [innerHTML]="USTemplateCopy.appendix">
@@ -160,7 +160,7 @@
                 </tbody>
             </table>
 
-            <p style="float: right">
+            <p class="invButton" style="float: right">
                 <p-button type="button" class="editBtn" (click)="editable('contact_details')" label="edit"></p-button>
             </p>
 
@@ -202,7 +202,7 @@
                 </tbody>
             </table>
 
-            <div class="invoice-table proformaDetail2">
+            <div class="invoice-table proformaDetail">
                 <!-- <p style="float: right">
                 <p-button type="button" (click)="editable('invoiceDetail')" label="edit"></p-button>
             </p> -->
@@ -225,7 +225,7 @@
                 </tr>
             </tbody>
 
-            <p style="float: right">
+            <p class="invButton" style="float: right">
                 <p-button type="button" class="editBtn" (click)="editable('paymentInstructions')" label="edit">
                 </p-button>
             </p>
@@ -288,7 +288,7 @@
             </table>
 
             <div class="invoice-table">
-                <p style="float: right">
+                <p class="invButton"  style="float: right">
                     <p-button type="button" class="editBtn" (click)="editable('appendix')" label="edit"></p-button>
                 </p>
                 <div id="appendix" class="col3" [innerHTML]="JapanTemplateCopy.appendix">
@@ -310,7 +310,7 @@
     <header id=header [innerHTML]=IndiaTemplateCopy.header>
     </header>
 
-    <div id="main_content">
+    <div id="main_content" class="indContact">
         <div style="height:1300px;">
             <table style="margin: 15px 0;">
                 <tbody>
@@ -321,7 +321,7 @@
                 </tbody>
             </table>
 
-            <p style="float: right">
+            <p class="invButton" style="float: right">
                 <p-button type="button" class="editBtn" (click)="editable('contact_details')" label="edit"></p-button>
             </p>
 
@@ -367,7 +367,7 @@
                 </tbody>
             </table>
 
-            <div class="invoice-table proformaDetail2 proformaDetail3">
+            <div class="invoice-table proformaDetail">
                 <div id="invoiceDetail" style="margin-bottom: 20px;">
                     <table border="0" cellspacing="0" cellpadding="0" id="invoiceDetails"
                         [innerHTML]='IndiaTemplateCopy.invoiceDetail'>
@@ -386,7 +386,7 @@
                 </tr>
             </tbody>
 
-            <p style="float: right">
+            <p class="invButton" style="float: right">
                 <p-button type="button" class="editBtn" (click)="editable('paymentInstructions')" label="edit">
                 </p-button>
             </p>
@@ -416,8 +416,8 @@
                 </tbody>
             </table>
 
-            <div class="invoice-table appendix">
-                <p style="float: right">
+            <div  class="invoice-table appendix">
+                <p class="invButton" style="float: right">
                     <p-button type="button" class="editBtn" (click)="editable('appendix')" label="edit"></p-button>
                 </p>
                 <div id="appendix" class="col4" [innerHTML]="IndiaTemplateCopy.appendix">
@@ -436,7 +436,7 @@
 </p-dialog>
 
 <p-dialog header="Edit {{heading}}" [draggable]="false" appendTo='body' [modal]="true" [(visible)]="editor"
-    (onHide)="close()" [style]="{width: '1200px'}">
+    (onHide)="close()" [style]="{width: '1200px', top:'0px'}">
     <app-section-editor *ngIf="editor" [editableData]="data" (editdata)="getData($event)"></app-section-editor>
 </p-dialog>
 

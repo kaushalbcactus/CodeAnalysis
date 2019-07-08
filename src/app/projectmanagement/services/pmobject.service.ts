@@ -8,6 +8,7 @@ export class PMObjectService {
   constructor(
     private globalObject: GlobalService
   ) { }
+  public tabMenuItems:[];
   public totalRecords = {
     SendToClient: 0,
     ClientReview: 0,
@@ -479,7 +480,6 @@ export class PMObjectService {
   public isSOWCloseVisible = false;
   public selectedSOWTask;
   public isUserAllowed = true;
-  public tabMenuItems: any;
   public isAddProjectVisible = false;
   public isProjectRightSideVisible = false;
   public isAuditRollingVisible = false;
@@ -489,3 +489,6 @@ export class PMObjectService {
     ProjectCode: []
   };
 }
+
+
+
