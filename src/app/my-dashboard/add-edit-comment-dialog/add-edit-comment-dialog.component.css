@@ -33,28 +33,22 @@
   
   @media (min-width: 1400px) {
   
-    ::ng-deep .timeLineButton
-    {
-      position: fixed !important;
-      width: 100% !important;
-      margin: -53px !important;
-    }
   
     ::ng-deep .currentTaskButton
     {
       margin: 4px 0px 4px 0px !important;
     }
   }
- 
-  
-  @media (min-width: 1025px) and (max-width: 1400px) {
-    
-    ::ng-deep .timeLineButton
+  ::ng-deep .timeLineButton
     {
       position: fixed !important;
       width: 100% !important;
-      margin: -55px !important;
+      margin: -50px !important;
     }
+  
+  @media (min-width: 1025px) and (max-width: 1400px) {
+    
+   
     ::ng-deep .currentTaskButton
     {
       margin: 4px 0px 4px 0px !important;

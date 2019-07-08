@@ -202,6 +202,7 @@ export class TimelineHistoryComponent implements OnInit {
         obj.propertiesRequired = this.constant.projectManagement.projectFinance.propertiesRequired;
         obj.entityType = moduleName + '_' + this.globalConstant.listNames.ProjectFinances.name;
         break;
+      case 'ProjectMgmt_ProjectFromDashboard':
       case 'ProjectMgmt_Project':
         obj.versionUrl = this.constant.projectManagement.projectInformation.getVersions;
         obj.propertiesRequired = this.constant.projectManagement.projectInformation.propertiesRequired;
@@ -260,8 +261,9 @@ export class TimelineHistoryComponent implements OnInit {
       case 'ProjectMgmt_ProjectFinances':
         this.initialRequest = await this.getProjectFinanceVersions(moduleName, clickedItemId, '0', this.top);
         break;
+      case 'ProjectMgmt_ProjectFromDashboard':
       case 'ProjectMgmt_Project':
-        this.initialRequest = await this.getProjectVersions(moduleName, clickedItemId, '0', this.top);
+        this.initialRequest = await this.getProjectVersions(moduleName, clickedItemId, '0', this.top, type);
         break;
       case 'ProjectMgmt_ProjectBudgetBreakup':
         this.initialRequest = await this.getProjectBudgetVersions(moduleName, clickedItemId, '0', this.top);
@@ -1203,7 +1205,7 @@ export class TimelineHistoryComponent implements OnInit {
   /**
    * fetches project versions
    */
-  async getProjectVersions(moduleName, itemID, skipCount, top) {
+  async getProjectVersions(moduleName, itemID, skipCount, top, type) {
     const batchProjectURL = [];
     let prjBudgetBreakup = {};
     let prjFinanceBreakup = {};
@@ -1219,7 +1221,7 @@ export class TimelineHistoryComponent implements OnInit {
     const arrPrjResult = await this.spStandardService.executeBatch(batchProjectURL);
     const projectVersions = arrPrjResult.length > 0 ? arrPrjResult[0].retItems : {};
 
-    if (projectVersions.length > 0) {
+    if (projectVersions.length > 0 && type !== 'ProjectMgmt_ProjectFromDashboard') {
       const batchURL = [];
 
       const arrPBBReplace = { '{{projectCode}}': projectVersions[0].ProjectCode };

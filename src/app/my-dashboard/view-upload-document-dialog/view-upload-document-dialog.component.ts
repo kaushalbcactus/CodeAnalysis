@@ -13,7 +13,7 @@ import { GlobalService } from 'src/app/Services/global.service';
   templateUrl: './view-upload-document-dialog.component.html',
   styleUrls: ['./view-upload-document-dialog.component.css']
 })
-export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
+export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   selectedTab: string;
   data: any;
   status: any;
@@ -45,21 +45,19 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
   items: MenuItem[];
   activeItem: MenuItem;
   ngOnInit() {
+    debugger;
 
-    
-    this.loaderenable=true;
+    this.loaderenable = true;
     this.DocumentArray = [];
     this.data = this.config.data === undefined ? this.taskData : this.config.data;
     if (this.data !== undefined) {
 
       this.status = this.data.Status;
-      this.selectedTask = this.config.data === undefined ? this.taskData :  this.data.task;
+      this.selectedTask = this.config.data === undefined ? this.taskData : this.data.task;
 
-      }
+    }
 
     if (this.selectedTask.PrevTasks) {
-
-
       this.items = [
         { label: 'For ' + this.selectedTask.Task, icon: 'fa fa-tasks', command: (e) => this.onChange(e) },
         { label: 'My Drafts', icon: 'fa fa-envelope-open', command: (e) => this.onChange(e) },
@@ -71,26 +69,29 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
       this.prevTask = this.items[0].label;
       this.selectedTab = 'My Drafts';
     }
-    if (this.selectedTask.IsSearchProject) {
-      this.items = [
-        { label: 'Source Docs', icon: 'fa fa-folder-open', command: (e) => this.onChange(e) },
-        { label: 'References', icon: 'fa fa-fw fa-book', command: (e) => this.onChange(e) },
-        { label: 'Meeting Notes & Client Comments', icon: 'fa fa-comments-o', command: (e) => this.onChange(e) },
-        { label: 'Emails', icon: 'fa fa-envelope', command: (e) => this.onChange(e) }];
-      this.activeItem = this.items[0];
-      this.selectedTab = 'Source Docs';
-    }
     else {
-      this.items = [
+      if (this.selectedTask.IsSearchProject) {
+        this.items = [
+          { label: 'Source Docs', icon: 'fa fa-folder-open', command: (e) => this.onChange(e) },
+          { label: 'References', icon: 'fa fa-fw fa-book', command: (e) => this.onChange(e) },
+          { label: 'Meeting Notes & Client Comments', icon: 'fa fa-comments-o', command: (e) => this.onChange(e) },
+          { label: 'Emails', icon: 'fa fa-envelope', command: (e) => this.onChange(e) }];
+        this.activeItem = this.items[0];
+        this.selectedTab = 'Source Docs';
+      }
+      else {
+        this.items = [
 
-        { label: 'My Drafts', icon: 'fa fa-envelope-open', command: (e) => this.onChange(e) },
-        { label: 'Source Docs', icon: 'fa fa-folder-open', command: (e) => this.onChange(e) },
-        { label: 'References', icon: 'fa fa-fw fa-book', command: (e) => this.onChange(e) },
-        { label: 'Meeting Notes & Client Comments', icon: 'fa fa-comments-o', command: (e) => this.onChange(e) },
-        { label: 'Emails', icon: 'fa fa-envelope', command: (e) => this.onChange(e) }];
-      this.activeItem = this.items[0];
-      this.selectedTab = 'My Drafts';
+          { label: 'My Drafts', icon: 'fa fa-envelope-open', command: (e) => this.onChange(e) },
+          { label: 'Source Docs', icon: 'fa fa-folder-open', command: (e) => this.onChange(e) },
+          { label: 'References', icon: 'fa fa-fw fa-book', command: (e) => this.onChange(e) },
+          { label: 'Meeting Notes & Client Comments', icon: 'fa fa-comments-o', command: (e) => this.onChange(e) },
+          { label: 'Emails', icon: 'fa fa-envelope', command: (e) => this.onChange(e) }];
+        this.activeItem = this.items[0];
+        this.selectedTab = 'My Drafts';
+      }
     }
+
 
 
 
@@ -109,8 +110,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
 
   }
 
-  ngOnDestroy() { 
-   }
+  ngOnDestroy() {
+  }
   // *************************************************************************************************************************************
   //  onchange call when modal open
   // *************************************************************************************************************************************
@@ -125,7 +126,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
 
   //     this.status = this.data.status;
   //     this.selectedTask = this.config.data === undefined ? this.taskData :  this.data.task;
-  
+
   //   }
 
   //   if (this.selectedTask.PrevTasks) {
@@ -153,7 +154,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
   //     this.selectedTab = 'My Drafts';
   //   }
 
-   
+
 
   //   this.dbcols = [
   //     { field: 'Name', header: 'Document Name' },
@@ -177,7 +178,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
   // **************************************************************************************************************************************
 
   onChange(event) {
-    
+    debugger;
     this.loaderenable = true;
     this.selectedDocuments = [];
     this.DocumentArray = [];
@@ -199,7 +200,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
 
     this.loadDraftDocs(this.selectedTab);
     this.cols = header;
-    
+
   }
 
 
@@ -210,7 +211,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
   async getDocuments(task) {
     const header = this.dbcols.slice(0);
     header.splice(1, 1);
-    this.cols=header;
+    this.cols = header;
 
     if (task.Title) {
       if (this.sharedObject.DashboardData.ProjectInformation.ProjectCode === task.ProjectCode) {
@@ -220,7 +221,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
         await this.getCurrentTaskProjectInformation(task.ProjectCode, true)
         this.ProjectInformation = this.sharedObject.DashboardData.ProjectInformation;
       }
- 
+
       this.loadDraftDocs(this.selectedTab);
     }
 
@@ -310,7 +311,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
         new Date(a.ModifiedDateString).getTime() < new Date(b.ModifiedDateString).getTime() ? 1 : -1
       );
     }
-   
+
     this.selectedDocuments = [];
 
 
@@ -321,7 +322,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
   // **************************************************************************************************************************************
 
   async getUsers(Ids) {
-    
+
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
 
@@ -360,14 +361,14 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
           const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + listName + "')/items(" + +(element.ListItemAllFields.ID) + ")";
           //var test = await  this.updateDocumentProperties(true,element);
           this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(objPost), false);
-          
+
         }
       });
       if (bSelectedNewFiles) {
 
         const jsonData = {
           __metadata: { type: 'SP.Data.SchedulesListItem' },
-          FinalDocSubmit : true
+          FinalDocSubmit: true
         }
 
         const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(this.selectedTask.ID) + ")";
@@ -378,7 +379,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
         const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
         batchBodyContent.push('--batch_' + batchGuid + '--');
         const batchBodyContents = batchBodyContent.join('\r\n');
-        
+
         const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
         const responseInLines = response.split('\n');
         this.selectedDocuments = [];
@@ -462,7 +463,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit,OnDestroy {
           "&@TargetFileName='" + filename + "'&$expand=ListItemAllFields";
 
         this.nodeService.uploadFIle(filePathUrl, this.fileReader.result).subscribe(res => {
-         
+
           uploadedFiles.push(res.d);
           if (event.files.length === uploadedFiles.length) {
             if (this.selectedTab === 'My Drafts') {

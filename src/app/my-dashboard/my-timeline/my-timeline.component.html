@@ -93,8 +93,14 @@
 position="bottom-center">
 </p-toast>
 
-<p-fullCalendar #calendar [ngStyle]="{'margin':'1em;'}" [events]="events" [options]="options">
+<p-fullCalendar #calendar [ngStyle]="{'margin':'1em;'}"  [events]="events" [options]="options">
 </p-fullCalendar>
+
+<ng-template #calendarPopover>
+
+    <h3>{{toolData .title}}</h3>
+
+  </ng-template>
 
 <!--**************************************************************************************************
 //  dialog to to display data
@@ -161,8 +167,8 @@ position="bottom-center">
 
         <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)">
             <mat-expansion-panel-header>
-                <mat-panel-title style="color:#000000;">
-                    <mat-icon style="padding: 4px 0px 0px 0px;">event_note</mat-icon>&nbsp;&nbsp; Task Properties
+                <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+                    <mat-icon >event_note</mat-icon>&nbsp;&nbsp; Task Properties
                 </mat-panel-title>
                 <ng-template matExpansionPanelContent>
 
@@ -236,8 +242,8 @@ position="bottom-center">
 
         <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)">
             <mat-expansion-panel-header>
-                <mat-panel-title style="color:#000000;">
-                    <mat-icon style="padding: 4px 0px 0px 0px;">timer</mat-icon>&nbsp;&nbsp; Time Spent
+                <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+                    <mat-icon >timer</mat-icon>&nbsp;&nbsp; Time Spent
                 </mat-panel-title>
 
                 <ng-template matExpansionPanelContent>
@@ -255,8 +261,8 @@ position="bottom-center">
 
         <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)">
             <mat-expansion-panel-header>
-                <mat-panel-title style="color:#000000;">
-                    <mat-icon style="padding: 4px 0px 0px 0px;">comment</mat-icon> &nbsp;&nbsp; View / Add Comments
+                <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+                    <mat-icon >comment</mat-icon> &nbsp;&nbsp; View / Add Comments
                 </mat-panel-title>
 
                 <ng-template matExpansionPanelContent>
@@ -274,8 +280,8 @@ position="bottom-center">
 
         <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)">
             <mat-expansion-panel-header>
-                <mat-panel-title style="color:#000000;">
-                    <mat-icon style="padding: 4px 0px 0px 0px;">folder</mat-icon> &nbsp;&nbsp; View / Add Documents
+                <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+                    <mat-icon >folder</mat-icon> &nbsp;&nbsp; View / Add Documents
                 </mat-panel-title>
 
             </mat-expansion-panel-header>

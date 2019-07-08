@@ -76,7 +76,7 @@
            ********************************************************************************************************** -->
 
 <div *ngIf="allTasks.length > 0 && !loderenable" style="padding-top: 5px;">
-    <p-table #taskId [columns]="cols" [value]="allTasks" [paginator]="true" [rows]="10" [resizableColumns]="true"
+    <p-table #taskId [columns]="cols" [value]="allTasks" [paginator]="true" [rows]="10" [resizableColumns]="true" [style]="{'font-size': '13px'}"
         [exportFilename]="TabName ==='MyCompletedTask' ? 'My Completed Tasks':'My Current Tasks'">
 
         <ng-template pTemplate="header" let-columns>
