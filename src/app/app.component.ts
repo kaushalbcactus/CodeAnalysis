@@ -25,13 +25,18 @@ export class AppComponent {
     this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
       : _spPageContextInfo.webAbsoluteUrl;
     this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
-    : _spPageContextInfo.webAbsoluteUrl;
+    : _spPageContextInfo.siteServerRelativeUrl;
     this.globalObject.sharePointPageObject.serverRelativeUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
     window['angularComponentReference'] = { component: this, zone: this._ngZone, loadPubSupport: () => this.goToPubSupport(), };
+    window['fdComponentReference'] = { component: this, zone: this._ngZone, loadFD: () => this.goToFD(), };
   }
 
   goToPubSupport() {
     this.router.navigate(['/pubSupport']);
+  }
+
+  goToFD() {
+    this.router.navigate(['/financeDashboard']);
   }
 
   // tslint:disable-next-line:use-life-cycle-interface

@@ -1,11 +1,3 @@
-.ui-slidemenu.ui-slidemenu-dynamic .ui-slidemenu-wrapper {
-    height: auto !important;
-}
-
-.ui-slidemenu.ui-slidemenu-dynamic .ui-slidemenu-wrapper .ui-slidemenu-content {
-    height: 350px !important;
-}
-
 .ui-dialog-content.ui-widget-content {
     height: 100%;
-}
+} 

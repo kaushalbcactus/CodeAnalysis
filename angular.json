@@ -27,7 +27,8 @@
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/primeng/resources/themes/nova-light/theme.css",
               "node_modules/primeng/resources/primeng.min.css",
-              "node_modules/primeicons/primeicons.css"
+              "node_modules/primeicons/primeicons.css",
+              "node_modules/primeflex/primeflex.css"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
@@ -114,6 +115,18 @@
               "vendorChunk": false,
               "buildOptimizer": true,
               "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/FD/"
+            } ,
+            "uatFD": {
+              "optimization": true,
+              "outputHashing": "bundles",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomUAT/AngularModules/FD/"
             }
           }
         },
