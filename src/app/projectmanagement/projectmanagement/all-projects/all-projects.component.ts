@@ -278,7 +278,7 @@ export class AllProjectsComponent implements OnInit {
       menu.model[7].visible = false;
       menu.model[8].visible = false;
       menu.model[9].visible = false;
-      menu.model[10].visible = false;
+      // menu.model[10].visible = false;
     } else {
       menu.model[11].visible = false;
       switch (status) {
@@ -594,7 +594,12 @@ export class AllProjectsComponent implements OnInit {
     });
   }
   showTimeline(selectedProjectObj) {
-    this.timeline.showTimeline(selectedProjectObj.ID, 'ProjectMgmt', 'Project');
+    const route = this.router.url;
+    if (route.indexOf('myDashboard') > -1) {
+      this.timeline.showTimeline(selectedProjectObj.ID, 'ProjectMgmt', 'ProjectFromDashboard');
+    } else {
+      this.timeline.showTimeline(selectedProjectObj.ID, 'ProjectMgmt', 'Project');
+    }
   }
   /**
    * This method is used to complete the audit.
