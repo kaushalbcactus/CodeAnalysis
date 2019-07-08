@@ -60,7 +60,7 @@ export class PendingAllocationComponent implements OnInit {
     milestoneArray: [],
     statusArray: []
   };
-  @ViewChild('timelineRef', {static:true}) timeline: TimelineHistoryComponent;
+  @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   constructor(
     public globalObject: GlobalService,
     private commonService: CommonService,
@@ -83,7 +83,7 @@ export class PendingAllocationComponent implements OnInit {
       },
       {
         label: 'Show History', icon: 'pi pi-download', target: '_blank',
-        command: (task) =>  this.timeline.showTimeline(this.selectedPATask.ID, 'ProjectMgmt', 'Project')
+        command: (task) => this.timeline.showTimeline(this.selectedPATask.ID, 'ProjectMgmt', 'Project')
       }
     ];
     this.pmObject.sendToClientArray = [];
@@ -104,9 +104,11 @@ export class PendingAllocationComponent implements OnInit {
     this.fetchPendingProjects();
   }
   async fetchPendingProjects() {
-    this.paArrays.projectItems = await this.spServices.read('' + this.Constant.listNames.ProjectInformation.name + '',
-      this.pmConstant.pInfoPendingAllocationIndiviualViewOptions);
-    // this.dataService.getCount(this.taskItems.length);
+    // this.paArrays.projectItems = await this.spServices.read('' + this.Constant.listNames.ProjectInformation.name + '',
+    //   this.pmConstant.pInfoPendingAllocationIndiviualViewOptions);
+    this.paArrays.projectItems = this.pmObject.allProjectItems.filter(x => x.Status === this.Constant.projectStatus.Unallocated);
+    this.pmObject.countObj.paCount = this.paArrays.projectItems.length;
+    this.pmObject.totalRecords.PendingAllocation = this.pmObject.countObj.paCount;
     const projectCodeTempArray = [];
     const clientLegalEntityTempArray = [];
     const POCTempArray = [];
@@ -117,6 +119,8 @@ export class PendingAllocationComponent implements OnInit {
     const milestoneTempArray = [];
     const statusTempArray = [];
     if (this.paArrays.projectItems.length) {
+      this.pmObject.tabMenuItems[4].label = 'Pending Allocation (' + this.pmObject.countObj.paCount + ')';
+      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       const tempPAArray = [];
       // Iterate each CR Task
       for (const task of this.paArrays.projectItems) {
@@ -131,8 +135,7 @@ export class PendingAllocationComponent implements OnInit {
         paObj.Milestone = task.Milestone != null ? task.Milestone : '-';
         paObj.Status = task.Status;
         paObj.PrimaryResourceText = this.commonService.returnText(task.PrimaryResMembers.results);
-        // tslint:disable-next-line:only-arrow-functions
-        const poc = this.pmObject.projectContactsItems.filter(function(obj) {
+        const poc = this.pmObject.projectContactsItems.filter((obj) => {
           return (obj.ID === task.PrimaryPOC);
         });
         paObj.POC = poc.length > 0 ? poc[0].FullName : '';

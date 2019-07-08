@@ -37,6 +37,8 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
   selectedFile;
   fileReader;
   filePathUrl: any;
+  isFinanceManagementLoaderHidden = false;
+  isFinanceManagementTableHidden = true;
   constructor(
     public pmObject: PMObjectService,
     private pmConstant: PmconstantService,
@@ -48,11 +50,17 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     private router: Router
   ) { }
   ngOnInit() {
-    this.setHeaderColumn();
-    this.budgethours = this.pmObject.addProject.Timeline.Standard.IsStandard ?
-      this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours :
-      this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours;
-    this.pmObject.addProject.FinanceManagement.BudgetHours = this.budgethours;
+    this.isFinanceManagementLoaderHidden = false;
+    this.isFinanceManagementTableHidden = true;
+    setTimeout(() => {
+      this.setHeaderColumn();
+      this.budgethours = this.pmObject.addProject.Timeline.Standard.IsStandard ?
+        this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours :
+        this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours;
+      this.pmObject.addProject.FinanceManagement.BudgetHours = this.budgethours;
+      this.isFinanceManagementLoaderHidden = true;
+      this.isFinanceManagementTableHidden = false;
+    }, 500);
   }
   ngOnChanges(changes: SimpleChanges) {
     if (this.manageData && this.manageData.length) {
@@ -89,8 +97,16 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
   /**
    * This method is used to save project.
    */
-  async saveProject() {
+  saveProject() {
     // verify the project code.
+    this.isFinanceManagementLoaderHidden = false;
+    this.isFinanceManagementTableHidden = true;
+    setTimeout(() => {
+      this.validateAndSave();
+    }, 500);
+
+  }
+  async validateAndSave() {
     const isFormValid = this.validateForm();
     if (isFormValid) {
       const newProjectCode = await this.verifyAndUpdateProjectCode();
@@ -442,7 +458,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
           Amount: element.amount,
           Currency: addObj.FinanceManagement.Currency,
           PO: element.poId,
-          Status: element.status === 'Not Saved' ? 'Sheduled' :  element.status,
+          Status: element.status === 'Not Saved' ? 'Sheduled' : element.status,
           ScheduleType: element.type,
           MainPOC: element.poc,
           AddressType: element.address,
@@ -625,19 +641,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     }
     const result = await this.spServices.executeBatch(batchURL);
     console.log(result);
-    if (result && result.length && this.pmObject.addProject.Timeline.Standard.IsStandard) {
-      this.moveMilestoneAndTask(result);
-    }
-    if (result && result.length && this.pmObject.addProject.Timeline.NonStandard.IsStandard) {
-      this.messageService.add({
-        key: 'custom', severity: 'success', summary: 'Success Message',
-        detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
-      });
-      setTimeout(() => {
-        this.pmObject.isAddProjectVisible = false;
-        this.router.navigate(['/projectmanagement/allProjects']);
-      }, 500);
-    }
+    this.moveMilestoneAndTask(result);
   }
   async moveMilestoneAndTask(results) {
     const batchURL = [];
@@ -647,55 +651,59 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
       type: '',
       listName: ''
     };
-    results.forEach(response => {
-      const fileUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-        '/Lists/' + this.constant.listNames.Schedules.name + '/' + response.retItems.ID + '_.000';
-      let moveFileUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-        '/Lists/' + this.constant.listNames.Schedules.name + '/' +
-        this.pmObject.addProject.ProjectAttributes.ProjectCode;
-      if (response.retItems.Milestone === 'Select one') {
-        moveFileUrl = moveFileUrl + '/' + response.retItems.ID + '_.000';
-        const milestoneURL = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-          '/_api/Web/Lists/getByTitle(\'' + this.constant.listNames.Schedules.name + '\')/Items' +
-          '(' + response.retItems.ID + ')';
-        const moveData = {
-          __metadata: { type: this.constant.listNames.Schedules.type },
-          FileLeafRef: response.retItems.Title
-        };
-        const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-          '/_api/web/getfolderbyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\')';
-        const moveMileObj = Object.assign({}, options);
-        moveMileObj.url = url;
-        moveMileObj.type = 'POST';
-        moveMileObj.listName = this.constant.listNames.Schedules.name;
-        batchURL.push(moveMileObj);
-        const moveMilewithDataObj = Object.assign({}, options);
-        moveMilewithDataObj.url = milestoneURL;
-        moveMilewithDataObj.data = moveData;
-        moveMilewithDataObj.type = 'PATCH';
-        moveMilewithDataObj.listName = this.constant.listNames.Schedules.name;
-        batchURL.push(moveMilewithDataObj);
-      } else {
-        moveFileUrl = moveFileUrl + '/' + response.retItems.Milestone + '/' + response.retItems.ID + '_.000';
-        const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
-          '/_api/web/getfilebyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\',flags=1)';
-        const moveTaskObj = Object.assign({}, options);
-        moveTaskObj.url = url;
-        moveTaskObj.type = 'POST';
-        moveTaskObj.listName = this.constant.listNames.Schedules.name;
-        batchURL.push(moveTaskObj);
-      }
-    });
-    const res = await this.spServices.executeBatch(batchURL);
+    if (results && results.length && this.pmObject.addProject.Timeline.Standard.IsStandard) {
+      results.forEach(response => {
+        const fileUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+          '/Lists/' + this.constant.listNames.Schedules.name + '/' + response.retItems.ID + '_.000';
+        let moveFileUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+          '/Lists/' + this.constant.listNames.Schedules.name + '/' +
+          this.pmObject.addProject.ProjectAttributes.ProjectCode;
+        if (response.retItems.Milestone === 'Select one') {
+          moveFileUrl = moveFileUrl + '/' + response.retItems.ID + '_.000';
+          const milestoneURL = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+            '/_api/Web/Lists/getByTitle(\'' + this.constant.listNames.Schedules.name + '\')/Items' +
+            '(' + response.retItems.ID + ')';
+          const moveData = {
+            __metadata: { type: this.constant.listNames.Schedules.type },
+            FileLeafRef: response.retItems.Title
+          };
+          const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+            '/_api/web/getfolderbyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\')';
+          const moveMileObj = Object.assign({}, options);
+          moveMileObj.url = url;
+          moveMileObj.type = 'POST';
+          moveMileObj.listName = this.constant.listNames.Schedules.name;
+          batchURL.push(moveMileObj);
+          const moveMilewithDataObj = Object.assign({}, options);
+          moveMilewithDataObj.url = milestoneURL;
+          moveMilewithDataObj.data = moveData;
+          moveMilewithDataObj.type = 'PATCH';
+          moveMilewithDataObj.listName = this.constant.listNames.Schedules.name;
+          batchURL.push(moveMilewithDataObj);
+        } else {
+          moveFileUrl = moveFileUrl + '/' + response.retItems.Milestone + '/' + response.retItems.ID + '_.000';
+          const url = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+            '/_api/web/getfilebyserverrelativeurl(\'' + fileUrl + '\')/moveto(newurl=\'' + moveFileUrl + '\',flags=1)';
+          const moveTaskObj = Object.assign({}, options);
+          moveTaskObj.url = url;
+          moveTaskObj.type = 'POST';
+          moveTaskObj.listName = this.constant.listNames.Schedules.name;
+          batchURL.push(moveTaskObj);
+        }
+      });
+      const res = await this.spServices.executeBatch(batchURL);
+      console.log(res);
+    }
+    this.isFinanceManagementLoaderHidden = true;
+    this.isFinanceManagementTableHidden = true;
     this.messageService.add({
       key: 'custom', severity: 'success', summary: 'Success Message',
       detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
     });
     setTimeout(() => {
       this.pmObject.isAddProjectVisible = false;
-      this.router.navigate(['/projectmanagement/allProjects']);
+      this.router.navigate(['/projectMgmt/allProjects']);
     }, 500);
-    console.log(res);
   }
   /**
    * This function is used to get the milestone obj.

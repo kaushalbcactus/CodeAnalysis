@@ -87,9 +87,11 @@ export class PmconstantService {
         + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
-        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService',
+        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,'
+        + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
-        + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title',
+        + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title'
+        + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
       filter: '(Status ne \'Closed\') and Status ne (\'Cancelled\')',
       orderby: 'Modified desc',
       top: 4500
@@ -100,9 +102,11 @@ export class PmconstantService {
         + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
-        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService',
+        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService'
+        + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
-        + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title',
+        + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title'
+        + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
       // tslint:disable-next-line:max-line-length
       filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllOperationresources/Id eq ' + this.global.sharePointPageObject.userId + ')',
       orderby: 'Modified desc',
@@ -194,7 +198,7 @@ export class PmconstantService {
       top: 4900
     },
     PROJECT_CONTANTCS: {
-      select: 'ID,Title,ClientLegalEntity,Address,Designation,EmailAddress,FName,ID,LName,Phone',
+      select: 'ID,Title,ClientLegalEntity,Address,Designation,EmailAddress,FName,ID,LName,Phone, FullName',
       orderby: 'Title',
       top: 4900
     },

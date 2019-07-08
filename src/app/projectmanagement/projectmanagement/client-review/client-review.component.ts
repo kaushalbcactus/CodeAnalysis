@@ -33,7 +33,7 @@ export class ClientReviewComponent implements OnInit {
     { field: 'DueDate' },
     { field: 'Milestone' },
     { field: 'DeliveryDate' }];
-  @ViewChild('crTableRef', {static:true}) crRef: ElementRef;
+  @ViewChild('crTableRef', {static: true}) crRef: ElementRef;
   // tslint:disable-next-line:variable-name
   private _success = new Subject<string>();
   // tslint:disable-next-line:variable-name
@@ -187,6 +187,10 @@ export class ClientReviewComponent implements OnInit {
     const milestoneTempArray = [];
     const deliveryDateTempArray = [];
     if (this.crArrays.taskItems.length) {
+      this.pmObject.countObj.crCount = this.crArrays.taskItems.length;
+      this.pmObject.totalRecords.ClientReview = this.pmObject.countObj.crCount;
+      this.pmObject.tabMenuItems[3].label = 'Client Review (' + this.pmObject.countObj.crCount + ')';
+      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       const tempCRArray = [];
       const batchContents = new Array();
       const batchGuid = this.spServices.generateUUID();
@@ -199,7 +203,7 @@ export class ClientReviewComponent implements OnInit {
         crObj.NextTasks = task.NextTasks;
         crObj.PreviousTask = task.PrevTasks;
         // tslint:disable-next-line:only-arrow-functions
-        const projectObj = this.pmObject.projectInformationItems.filter( (obj) => {
+        const projectObj = this.pmObject.allProjectItems.filter( (obj) => {
           return obj.ProjectCode === task.ProjectCode;
         });
         if (projectObj.length) {
@@ -317,7 +321,7 @@ export class ClientReviewComponent implements OnInit {
     if (isActionRequired) {
       await this.spServices.update(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
       const projectInfoOptions = { Status: 'Unallocated' };
-      const projectID = this.pmObject.projectInformationItems.filter(item => item.ProjectCode === task.ProjectCode);
+      const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
       await this.spServices.update(this.Constant.listNames.ProjectInformation.name, projectID[0].ID,
         projectInfoOptions, this.Constant.listNames.ProjectInformation.type);
       this.changeSuccessMessage(task.Title + ' is completed Sucessfully');

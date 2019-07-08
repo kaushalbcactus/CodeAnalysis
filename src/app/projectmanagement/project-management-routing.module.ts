@@ -17,7 +17,7 @@ const appRoutes: Routes = [
   component: ProjectmanagementComponent,
   resolve: {pmData: PMMainResolve},
   children: [
-    {path: '', redirectTo: 'allSOW' , pathMatch: 'prefix' },
+    {path: '', redirectTo: 'allProjects' , pathMatch: 'prefix' },
     {path: 'allSOW', component: SOWComponent, resolve: { pmData: PMResolve } },
     {path: 'allProjects', component: AllProjectsComponent, resolve: { pmData: PMResolve }},
     {path: 'sendToClient', component: SendToClientComponent, resolve: { pmData: PMResolve }},

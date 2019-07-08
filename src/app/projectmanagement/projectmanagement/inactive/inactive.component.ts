@@ -69,7 +69,7 @@ export class InactiveComponent implements OnInit {
     private spServices: SharepointoperationService,
     private pmConstant: PmconstantService
   ) { }
-  @ViewChild('timelineRef', {static:true}) timeline: TimelineHistoryComponent;
+  @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   ngOnInit() {
     this.isIAPInnerLoaderHidden = false;
     this.isIAPFilterHidden = false;
@@ -84,7 +84,7 @@ export class InactiveComponent implements OnInit {
       },
       {
         label: 'Show History', icon: 'pi pi-download', target: '_blank',
-        command: (task) =>  this.timeline.showTimeline(this.selectedIAPTask.ID, 'ProjectMgmt', 'Project')
+        command: (task) => this.timeline.showTimeline(this.selectedIAPTask.ID, 'ProjectMgmt', 'Project')
       }
     ];
     this.pmObject.sendToClientArray = [];
@@ -105,8 +105,11 @@ export class InactiveComponent implements OnInit {
     this.fetchPendingProjects();
   }
   async fetchPendingProjects() {
-    this.iapArrays.projectItems = await this.spServices.read('' + this.Constant.listNames.ProjectInformation.name + '',
-      this.pmConstant.pInfoInactiveProjectIndiviualViewOptions);
+    // this.iapArrays.projectItems = await this.spServices.read('' + this.Constant.listNames.ProjectInformation.name + '',
+    //   this.pmConstant.pInfoInactiveProjectIndiviualViewOptions);
+    this.iapArrays.projectItems = this.pmObject.allProjectItems.filter(x =>
+      x.Status === this.Constant.projectStatus.OnHold ||
+      x.Status === this.Constant.projectStatus.InDiscussion);
     const projectCodeTempArray = [];
     const clientLegalEntityTempArray = [];
     const POCTempArray = [];
@@ -118,7 +121,10 @@ export class InactiveComponent implements OnInit {
     const statusTempArray = [];
     if (this.iapArrays.projectItems.length) {
       const tempPAArray = [];
-
+      this.pmObject.countObj.iapCount = this.iapArrays.projectItems.length;
+      this.pmObject.totalRecords.InactiveProject = this.pmObject.countObj.iapCount;
+      this.pmObject.tabMenuItems[5].label = 'Inactive Projects (' + this.pmObject.countObj.iapCount + ')';
+      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       // Iterate each CR Task
       for (const task of this.iapArrays.projectItems) {
         const paObj = $.extend(true, {}, this.pmObject.paObj);

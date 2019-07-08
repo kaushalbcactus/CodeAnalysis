@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { PMObjectService } from '../../services/pmobject.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
+import { PmconstantService } from '../../services/pmconstant.service';
 
 @Component({
   selector: 'app-add-projects',
@@ -13,7 +16,10 @@ export class AddProjectsComponent implements OnInit {
   isMangageFinanceVisible = false;
   financeManageData;
   constructor(
-    public pmObject: PMObjectService
+    public pmObject: PMObjectService,
+    private spServices: SPOperationService,
+    private constants: ConstantsService,
+    private pmConstant: PmconstantService
   ) { }
 
   ngOnInit() {
@@ -23,7 +29,7 @@ export class AddProjectsComponent implements OnInit {
   /**
    * This method is used to set up the steps for project management.
    */
-  setProjectSteps() {
+  async setProjectSteps() {
     this.steps = [{
       label: 'Select Sow',
       command: (event: any) => {
@@ -48,7 +54,20 @@ export class AddProjectsComponent implements OnInit {
         this.pmObject.activeIndex = event.index;
       }
     }
-  ];
+    ];
+    let arrResults = [];
+    if (this.pmObject.userRights.isMangers
+      || this.pmObject.userRights.isHaveSOWFullAccess
+      || this.pmObject.userRights.isHaveSOWBudgetManager) {
+      const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW);
+      arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
+    } else {
+      const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
+      arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
+    }
+    if (arrResults && arrResults.length) {
+      this.pmObject.allSOWItems = arrResults;
+    }
   }
   /**
    * This method is used to show the manage finance component.

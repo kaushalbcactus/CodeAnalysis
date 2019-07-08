@@ -127,7 +127,7 @@ export class AllProjectsComponent implements OnInit {
   /**
    * This method is used to get all projects based on current user credentials.
    */
-  getAllProjects() {
+  async getAllProjects() {
     const sowCodeTempArray = [];
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
@@ -137,6 +137,22 @@ export class AllProjectsComponent implements OnInit {
     const statusTempArray = [];
     const createdByTempArray = [];
     const createDateTempArray = [];
+    let arrResults = [];
+    // Get all project information based on current user.
+    if (this.pmObject.userRights.isMangers || this.pmObject.userRights.isHaveProjectFullAccess) {
+      const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.ALL_PROJECT_INFORMATION);
+      arrResults = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectManageFilter);
+    } else {
+      const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION);
+      arrResults = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectManageFilter);
+    }
+    if (arrResults && arrResults.length) {
+      this.pmObject.allProjectItems = arrResults;
+      this.pmObject.countObj.allProjectCount = arrResults.length;
+      this.pmObject.totalRecords.AllProject = this.pmObject.countObj.allProjectCount;
+      this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';
+      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+    }
     if (this.pmObject.allProjectItems && this.pmObject.allProjectItems.length) {
       const tempAllProjectArray = [];
       for (const task of this.pmObject.allProjectItems) {

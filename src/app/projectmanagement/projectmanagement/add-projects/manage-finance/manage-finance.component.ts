@@ -11,7 +11,7 @@ declare var $;
   selector: 'app-manage-finance',
   templateUrl: './manage-finance.component.html',
   styleUrls: ['./manage-finance.component.css'],
-  providers:[MessageService],
+  providers: [MessageService],
   encapsulation: ViewEncapsulation.None
 })
 export class ManageFinanceComponent implements OnInit {

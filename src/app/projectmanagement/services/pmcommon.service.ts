@@ -295,22 +295,6 @@ export class PMCommonService {
     const arrResults = await this.getItems();
     if (arrResults && arrResults.length) {
       this.pmObject.resourceCatItems = arrResults[0].retItems;
-      this.pmObject.projectContactsItems = arrResults[1].retItems;
-      this.pmObject.projectInformationItems = arrResults[2].retItems;
-      this.pmObject.countObj.scCount = arrResults[3].retItems.length;
-      this.pmObject.countObj.crCount = arrResults[4].retItems.length;
-      this.pmObject.countObj.paCount = arrResults[5].retItems.length;
-      this.pmObject.countObj.iapCount = arrResults[6].retItems.length;
-      this.pmObject.countObj.allProjectCount = arrResults[7].retItems.length;
-      this.pmObject.allProjectItems = arrResults[7].retItems;
-      this.pmObject.countObj.allSOWCount = arrResults[8].retItems.length;
-      this.pmObject.allSOWItems = arrResults[8].retItems;
-      this.pmObject.totalRecords.SendToClient = this.pmObject.countObj.scCount;
-      this.pmObject.totalRecords.ClientReview = this.pmObject.countObj.crCount;
-      this.pmObject.totalRecords.PendingAllocation = this.pmObject.countObj.paCount;
-      this.pmObject.totalRecords.InactiveProject = this.pmObject.countObj.iapCount;
-      this.pmObject.totalRecords.AllProject = this.pmObject.countObj.allProjectCount;
-      this.pmObject.totalRecords.AllSOW = this.pmObject.countObj.allSOWCount;
       if (this.pmObject.resourceCatItems.length) {
         if (this.pmObject.resourceCatItems[0].Role === this.pmConstant.resourCatConstant.CMLevel1 ||
           this.pmObject.resourceCatItems[0].Role === this.pmConstant.resourCatConstant.CMLevel2) {
@@ -318,37 +302,38 @@ export class PMCommonService {
           // this.bindMenuItems();
         }
       }
-      this.pmObject.oProjectCreation.oProjectInfo.billingEntity = arrResults[9].retItems;
+      this.pmObject.oProjectCreation.oProjectInfo.billingEntity = arrResults[1].retItems;
       this.pmObject.oProjectCreation.oProjectInfo.practiceArea = [];
-      arrResults[10].retItems.forEach(element => {
+      arrResults[2].retItems.forEach(element => {
         this.pmObject.oProjectCreation.oProjectInfo.practiceArea.push({ label: element.Title, value: element.Title });
       });
-      this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities = arrResults[11].retItems;
+      this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities = arrResults[3].retItems;
 
       this.pmObject.oProjectCreation.oProjectInfo.currency = [];
-      arrResults[12].retItems.forEach(element => {
+      arrResults[4].retItems.forEach(element => {
         this.pmObject.oProjectCreation.oProjectInfo.currency.push({ label: element.Title, value: element.Title });
       });
       this.pmObject.oProjectCreation.oProjectInfo.molecule = []; // getListItemsByColumn('Molecules', defaultQuery, "Title");
-      arrResults[14].retItems.forEach(element => {
+      arrResults[5].retItems.forEach(element => {
         this.pmObject.oProjectCreation.oProjectInfo.molecule.push({ label: element.Title, value: element.Title });
       });
       this.pmObject.oProjectCreation.oProjectInfo.projectType = []; // getListItemsByColumn('ProjectType', defaultQuery, "Title");
-      arrResults[16].retItems.forEach(element => {
+      arrResults[6].retItems.forEach(element => {
         this.pmObject.oProjectCreation.oProjectInfo.projectType.push({ label: element.Title, value: element.Title });
       });
       this.pmObject.oProjectCreation.oProjectInfo.subDeliverable = []; // getListItemsByColumn('SubDeliverables', defaultQuery, "Title");
-      arrResults[17].retItems.forEach(element => {
+      arrResults[7].retItems.forEach(element => {
         this.pmObject.oProjectCreation.oProjectInfo.subDeliverable.push({ label: element.Title, value: element.Title });
       });
       this.pmObject.oProjectCreation.oProjectInfo.ta = []; // getListItemsByColumn('TA', defaultQuery, "Title");
-      arrResults[18].retItems.forEach(element => {
+      arrResults[8].retItems.forEach(element => {
         this.pmObject.oProjectCreation.oProjectInfo.ta.push({ label: element.Title, value: element.Title });
       });
-      if (arrResults[19].retItems && arrResults[19].retItems.length) {
-        this.pmObject.oProjectManagement.oResourcesCat = arrResults[19].retItems;
+      if (arrResults[9].retItems && arrResults[9].retItems.length) {
+        this.pmObject.oProjectManagement.oResourcesCat = arrResults[9].retItems;
       }
-      this.setResources(arrResults[19].retItems);
+      this.setResources(arrResults[9].retItems);
+      this.pmObject.projectContactsItems = arrResults[10].retItems;
     }
   }
 
@@ -435,194 +420,78 @@ export class PMCommonService {
     resourceGet.type = 'GET';
     resourceGet.listName = this.constant.listNames.ResourceCategorization.name;
     batchURL.push(resourceGet);
-    // Get all the Project Contacts. ##1
-    const projectGet = Object.assign({}, options);
-    projectGet.url = this.spServices.getReadURL('' + this.constant.listNames.ProjectContacts.name + '',
-      this.pmConstant.projectContactQueryOptions);
-    projectGet.type = 'GET';
-    projectGet.listName = this.constant.listNames.ProjectContacts.name;
-    batchURL.push(projectGet);
-    // Get all the Project Information ## 2
-    const projectInfoGet = Object.assign({}, options);
-    projectInfoGet.url = this.spServices.getReadURL('' + this.constant.listNames.ProjectInformation.name + '',
-      this.pmConstant.projectInformationQueryOptions);
-    projectInfoGet.type = 'GET';
-    projectInfoGet.listName = this.constant.listNames.ProjectInformation.name;
-    batchURL.push(projectInfoGet);
-    // Get all the send to Client Task ## 3
-    const scGet = Object.assign({}, options);
-    scGet.url = this.spServices.getReadURL('' + this.constant.listNames.Schedules.name + '',
-      this.getSCCount(startDateString, endDateString));
-    scGet.type = 'GET';
-    scGet.listName = this.constant.listNames.Schedules.name;
-    batchURL.push(scGet);
-    // Get all the Client Review Task ## 4
-    const crGet = Object.assign({}, options);
-    crGet.url = this.spServices.getReadURL('' + this.constant.listNames.Schedules.name + '',
-      this.getCRCount());
-    crGet.type = 'GET';
-    crGet.listName = this.constant.listNames.Schedules.name;
-    batchURL.push(crGet);
-    // Get all the Pending allocation Projects. ##5
-    const paGet = Object.assign({}, options);
-    paGet.url = this.spServices.getReadURL('' + this.constant.listNames.ProjectInformation.name + '',
-      this.pmConstant.pInfoPendingAllocationIndiviualViewOptions);
-    paGet.type = 'GET',
-      paGet.listName = this.constant.listNames.ProjectInformation.name;
-    batchURL.push(paGet);
-    // Get all the Project Inactive Projects  ##6
-    const piaGet = Object.assign({}, options);
-    piaGet.url = this.spServices.getReadURL('' + this.constant.listNames.ProjectInformation.name + '',
-      this.pmConstant.pInfoInactiveProjectIndiviualViewOptions);
-    piaGet.type = 'GET';
-    piaGet.listName = this.constant.listNames.ProjectInformation.name;
-    batchURL.push(piaGet);
-    // Get all project information based on current user ##7
-    if (this.pmObject.userRights.isMangers || this.pmObject.userRights.isHaveProjectFullAccess) {
-      const projectManagerGet = Object.assign({}, options);
-      projectManagerGet.url = this.spServices.getReadURL('' + this.constant.listNames.ProjectInformation.name + '',
-        this.pmConstant.PM_QUERY.ALL_PROJECT_INFORMATION);
-      projectManagerGet.type = 'GET';
-      projectManagerGet.listName = this.constant.listNames.ProjectInformation.name;
-      batchURL.push(projectManagerGet);
-    } else {
-      const userSpecificProjectInformationGet = Object.assign({}, options);
-      userSpecificProjectInformationGet.url = this.spServices.getReadURL('' + this.constant.listNames.ProjectInformation.name + '',
-        this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION);
-      userSpecificProjectInformationGet.type = 'GET';
-      userSpecificProjectInformationGet.listName = this.constant.listNames.ProjectInformation.name;
-      batchURL.push(userSpecificProjectInformationGet);
-    }
-    // Get all SOW information based on current user ##8
-    if (this.pmObject.userRights.isMangers
-      || this.pmObject.userRights.isHaveSOWFullAccess
-      || this.pmObject.userRights.isHaveSOWBudgetManager) {
-      const allSOWEndPoint = Object.assign({}, options);
-      allSOWEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.SOW.name + '',
-        this.pmConstant.SOW_QUERY.ALL_SOW);
-      allSOWEndPoint.type = 'GET';
-      allSOWEndPoint.listName = this.constant.listNames.SOW.name;
-      batchURL.push(allSOWEndPoint);
-    } else {
-      const userSpecificSOWEndPoint = Object.assign({}, options);
-      userSpecificSOWEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.SOW.name + '',
-        this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
-      userSpecificSOWEndPoint.type = 'GET';
-      userSpecificSOWEndPoint.listName = this.constant.listNames.SOW.name;
-      batchURL.push(userSpecificSOWEndPoint);
-    }
-    // Get Billing Entity  ##9
+    // Get Billing Entity  ##1
     const billingEndPoint = Object.assign({}, options);
     billingEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.BillingEntity.name + '',
       this.pmConstant.DROP_DOWN_QUERY.BILLING_ENTITY);
     billingEndPoint.type = 'GET';
     billingEndPoint.listName = this.constant.listNames.BillingEntity.name;
     batchURL.push(billingEndPoint);
-    // Get Practice Area  ##10
+    // Get Practice Area  ##2
     const practiceAreaEndPoint = Object.assign({}, options);
     practiceAreaEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.BusinessVerticals.name + '',
       this.pmConstant.DROP_DOWN_QUERY.PRACTICE_AREA);
     practiceAreaEndPoint.type = 'GET',
       practiceAreaEndPoint.listName = this.constant.listNames.BusinessVerticals.name;
     batchURL.push(practiceAreaEndPoint);
-    // Get Client Legal Entity ##11
+    // Get Client Legal Entity ##3
     const clientLegalEntityEndPoint = Object.assign({}, options);
     clientLegalEntityEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.ClientLegalEntity.name + '',
       this.pmConstant.DROP_DOWN_QUERY.CLIENT_LEGAL_ENTITY);
     clientLegalEntityEndPoint.type = 'GET',
       clientLegalEntityEndPoint.listName = this.constant.listNames.ClientLegalEntity.name;
     batchURL.push(clientLegalEntityEndPoint);
-    // Get Budget Rate Master ## 12
+    // Get Budget Rate Master ## 4
     const budgetRateMasterEndPoint = Object.assign({}, options);
     budgetRateMasterEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.BudgetRateMaster.name + '',
       this.pmConstant.DROP_DOWN_QUERY.BUDGET_RATE_MASTER);
     budgetRateMasterEndPoint.type = 'GET',
       budgetRateMasterEndPoint.listName = this.constant.listNames.BudgetRateMaster.name;
     batchURL.push(budgetRateMasterEndPoint);
-    // Get deliveryType ## 13
-    const deliveryTypeEndPoint = Object.assign({}, options);
-    deliveryTypeEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.DeliverableType.name + '',
-      this.pmConstant.DROP_DOWN_QUERY.DELIVERY_TYPE);
-    deliveryTypeEndPoint.type = 'GET';
-    deliveryTypeEndPoint.listName = this.constant.listNames.DeliverableType.name;
-    batchURL.push(deliveryTypeEndPoint);
-    // Get Molecules ## 14
+    // Get Molecules ## 5
     const moleculesEndPoint = Object.assign({}, options);
     moleculesEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.Molecules.name + '',
       this.pmConstant.DROP_DOWN_QUERY.MOLECULES);
     moleculesEndPoint.type = 'GET';
     moleculesEndPoint.listName = this.constant.listNames.Molecules.name;
     batchURL.push(moleculesEndPoint);
-    // Get projectContancts ##15
-    const projectContactsEndPoint = Object.assign({}, options);
-    projectContactsEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.ProjectContacts.name + '',
-      this.pmConstant.DROP_DOWN_QUERY.PROJECT_CONTANTCS);
-    projectContactsEndPoint.type = 'GET';
-    projectContactsEndPoint.listName = this.constant.listNames.ProjectContacts.name;
-    batchURL.push(projectContactsEndPoint);
-    // Get projectType ## 16
+    // Get projectType ## 6
     const projectTypeEndPoint = Object.assign({}, options);
     projectTypeEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.ProjectType.name + '',
       this.pmConstant.DROP_DOWN_QUERY.PROJECT_TYPE);
     projectTypeEndPoint.type = 'GET';
     projectTypeEndPoint.listName = this.constant.listNames.ProjectType.name;
     batchURL.push(projectTypeEndPoint);
-    // Get subdeliverables ## 17
+    // Get subdeliverables ## 7
     const subdeliverablesEndPoint = Object.assign({}, options);
     subdeliverablesEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.SubDeliverables.name + '',
       this.pmConstant.DROP_DOWN_QUERY.SUBDELIVERABLES);
     subdeliverablesEndPoint.type = 'GET';
     subdeliverablesEndPoint.listName = this.constant.listNames.SubDeliverables.name;
     batchURL.push(subdeliverablesEndPoint);
-    // Get TA ## 18
+    // Get TA ## 8
     const taEndPoint = Object.assign({}, options);
     taEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.TA.name + '',
       this.pmConstant.DROP_DOWN_QUERY.TA);
     taEndPoint.type = 'GET';
     taEndPoint.listName = this.constant.listNames.TA.name;
     batchURL.push(taEndPoint);
-    // Get Resources. ##19
+    // Get Resources. ##9
     const resourCatEndPoint = Object.assign({}, options);
     resourCatEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.ResourceCategorization.name + '',
       this.pmConstant.TIMELINE_QUERY.STANDARD_RESOURCES_CATEGORIZATION);
     resourCatEndPoint.type = 'GET';
     resourCatEndPoint.listName = this.constant.listNames.ResourceCategorization.name;
     batchURL.push(resourCatEndPoint);
+    // Get projectContancts ##10
+    const projectContactsEndPoint = Object.assign({}, options);
+    projectContactsEndPoint.url = this.spServices.getReadURL('' + this.constant.listNames.ProjectContacts.name + '',
+      this.pmConstant.DROP_DOWN_QUERY.PROJECT_CONTANTCS);
+    projectContactsEndPoint.type = 'GET';
+    projectContactsEndPoint.listName = this.constant.listNames.ProjectContacts.name;
+    batchURL.push(projectContactsEndPoint);
     const arrResults = await this.spServices.executeBatch(batchURL);
     return arrResults;
-  }
-  /**
-   * This metod is used to get the send to client count
-   * @param startDateString Start date required as string
-   * @param endDateString end date required as string.
-   */
-  getSCCount(startDateString, endDateString) {
-    const currentFilter = 'AssignedTo eq ' + this.globalObject.sharePointPageObject.userId + ' and ' +
-      '(Status eq \'Not Started\') and (Task eq \'Send to client\') and ' +
-      '((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString + '\') and ' +
-      ' (DueDate ge \'' + startDateString + '\' and DueDate le \'' + endDateString + '\'))';
-
-    const queryOptions = {
-      select: 'ID,Title,ProjectCode,StartDate,DueDate,PreviousTaskClosureDate,Milestone,PrevTasks',
-      filter: currentFilter,
-      top: 4200
-    };
-    return queryOptions;
-  }
-  /**
-   * This method is used to get the CR count base.
-   */
-  getCRCount() {
-    const currentFilter = 'AssignedTo eq ' + this.globalObject.sharePointPageObject.userId + ' and ' +
-      '(Status eq \'Not Started\') and (Task eq \'Client Review\') and '
-      + 'PreviousTaskClosureDate ne null ';
-
-    const queryOptions = {
-      select: 'ID,Title,ProjectCode,StartDate,DueDate,PreviousTaskClosureDate,Milestone,PrevTasks',
-      filter: currentFilter,
-      top: 4200
-    };
-    return queryOptions;
   }
   /**
    * This function is used to extract the name from Id.
@@ -789,7 +658,7 @@ export class PMCommonService {
           break;
         case this.constant.SKILL_LEVEL.QC:
           data.QCId = {
-            results : [resource.UserName.ID]
+            results: [resource.UserName.ID]
           };
           break;
       }

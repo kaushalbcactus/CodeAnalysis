@@ -86,10 +86,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    */
   bindMenuItems() {
     this.pmObject.tabMenuItems = [
-      // tslint:disable-next-line:max-line-length
+      { label: 'All Projects (' + this.pmObject.countObj.allProjectCount + ')',  routerLink: 'allProjects' },
       { label: 'All SOW (' + this.pmObject.countObj.allSOWCount + ')',  routerLink: 'allSOW', routerLinkActiveOptions: { exact: true } },
       // tslint:disable-next-line:max-line-length
-      { label: 'All Projects (' + this.pmObject.countObj.allProjectCount + ')',  routerLink: 'allProjects' },
       { label: 'Send to Client (' + this.pmObject.countObj.scCount + ')',  routerLink: 'sendToClient' },
       { label: 'Client Review (' + this.pmObject.countObj.crCount + ')',  routerLink: 'clientReview' },
       // tslint:disable-next-line:max-line-length

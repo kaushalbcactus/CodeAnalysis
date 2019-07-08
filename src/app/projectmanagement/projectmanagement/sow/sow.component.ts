@@ -100,15 +100,15 @@ export class SOWComponent implements OnInit {
     }, 500);
     this.popItems = [
       {
-        label: 'View SOW',  target: '_blank',
+        label: 'View SOW', target: '_blank',
         command: (event) => this.viewSOW(this.pmObject.selectedSOWTask)
       },
       {
-        label: 'Edit SOW',  target: '_blank',
+        label: 'Edit SOW', target: '_blank',
         command: (event) => this.editSOW(this.pmObject.selectedSOWTask)
       },
       {
-        label: 'Update Budget',  target: '_blank',
+        label: 'Update Budget', target: '_blank',
         command: (event) => this.addBudgetSOW(this.pmObject.selectedSOWTask)
       },
       {
@@ -120,11 +120,11 @@ export class SOWComponent implements OnInit {
         command: (event) => this.addProjectSOW(this.pmObject.selectedSOWTask)
       },
       {
-        label: 'Close SOW',  target: '_blank',
+        label: 'Close SOW', target: '_blank',
         command: (event) => this.closeSOW(this.pmObject.selectedSOWTask)
       },
       {
-        label: 'Show History',  target: '_blank',
+        label: 'Show History', target: '_blank',
         command: (task) => this.timeline.showTimeline(this.pmObject.selectedSOWTask.ID, 'ProjectMgmt', 'SOW')
       }
     ];
@@ -161,13 +161,30 @@ export class SOWComponent implements OnInit {
   /**
    * This method is used to show all sow.
    */
-  getAllSOW() {
+  async getAllSOW() {
     const sowCodeTempArray = [];
     const shortTitleTempArray = [];
     const clientLegalEntityTempArray = [];
     const pocTempArray = [];
     const createdByTempArray = [];
     const createDateTempArray = [];
+    let arrResults = [];
+    if (this.pmObject.userRights.isMangers
+      || this.pmObject.userRights.isHaveSOWFullAccess
+      || this.pmObject.userRights.isHaveSOWBudgetManager) {
+      const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW);
+      arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
+    } else {
+      const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
+      arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
+    }
+    if (arrResults && arrResults.length) {
+      this.pmObject.allSOWItems = arrResults;
+      this.pmObject.countObj.allSOWCount = this.pmObject.allSOWItems.length;
+      this.pmObject.totalRecords.AllSOW = this.pmObject.countObj.allSOWCount;
+      this.pmObject.tabMenuItems[1].label = 'All SOW (' + this.pmObject.countObj.allSOWCount + ')';
+      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+    }
     if (this.pmObject.allSOWItems && this.pmObject.allSOWItems.length) {
       const tempAllSOWArray = [];
       for (const task of this.pmObject.allSOWItems) {

@@ -151,7 +151,7 @@ export class SendToClientComponent implements OnInit {
     if (isActionRequired) {
       await this.spServices.update(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
       const projectInfoOptions = { Status: 'Author Review' };
-      const projectID = this.pmObject.projectInformationItems.filter(item => item.ProjectCode === task.ProjectCode);
+      const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
       await this.spServices.update(this.Constant.listNames.ProjectInformation.name, projectID[0].ID, projectInfoOptions,
         this.Constant.listNames.ProjectInformation.type);
       // check whether next task is null or not.
@@ -245,12 +245,6 @@ export class SendToClientComponent implements OnInit {
     const endDate = new Date(this.queryEndDate.setHours(23, 59, 59, 0));
     const startDateString = new Date(this.commonService.formatDate(startDate) + ' 00:00:00').toISOString();
     const endDateString = new Date(this.commonService.formatDate(endDate) + ' 23:59:00').toISOString();
-
-    // const currentFilter = '((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString
-    // + '\') and (DueDate ge \'' + startDateString + '\' and DueDate le \'' + endDateString
-    // + '\')) and (Status eq \'Not Started\') and (Task eq \'Send to client\')'
-    // + ' and AssignedTo eq ' + this.csObject.sharePointPageObject.userId + '';
-
     const currentFilter = 'AssignedTo eq ' + this.globalObject.sharePointPageObject.userId + ' and ' +
       '(Status eq \'Not Started\') and (Task eq \'Send to client\') and ' +
       '((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString + '\') and ' +
@@ -274,6 +268,10 @@ export class SendToClientComponent implements OnInit {
     const previousTaskOwnerTempArray = [];
     const previousTaskStatusTempArray = [];
     if (this.scArrays.taskItems && this.scArrays.taskItems.length) {
+      this.pmObject.countObj.scCount = this.scArrays.taskItems.length;
+      this.pmObject.totalRecords.ClientReview = this.pmObject.countObj.scCount;
+      this.pmObject.tabMenuItems[2].label = 'Send to Client (' + this.pmObject.countObj.scCount + ')';
+      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       const tempSendToClientArray = [];
       const batchContents = new Array();
       const batchGuid = this.spServices.generateUUID();
@@ -285,7 +283,7 @@ export class SendToClientComponent implements OnInit {
         scObj.NextTasks = task.NextTasks;
         scObj.PreviousTask = task.PrevTasks;
         // tslint:disable-next-line:only-arrow-functions
-        const projectObj = this.pmObject.projectInformationItems.filter((obj) => {
+        const projectObj = this.pmObject.allProjectItems.filter((obj) => {
           return obj.ProjectCode === task.ProjectCode;
         });
         if (projectObj.length) {
