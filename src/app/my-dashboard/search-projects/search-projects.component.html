@@ -55,7 +55,7 @@
 ************************************************************************************************ -->
 
   <div *ngIf="!loaderenable && tableviewenable" style="padding-top: 5px;">
-    <p-table #project [columns]="cols" [value]="ProjectList" [resizableColumns]="true" [exportFilename]="ProjectList" [paginator]="true" [rows]="10"  >
+    <p-table #project [columns]="cols" [value]="ProjectList" [resizableColumns]="true" [exportFilename]="ProjectList" [paginator]="true" [rows]="10" [style]="{'font-size':'12px'}"  >
 
       <ng-template pTemplate="header" let-columns>
         <tr>
@@ -114,8 +114,8 @@
           </td>
           <td>
             <span>
-              <p-slideMenu #popupMenu [popup]="true" appendTo="body" [model]="projectMenu">
-              </p-slideMenu>
+              <p-menu #popupMenu [popup]="true" appendTo="body" [model]="projectMenu">
+              </p-menu>
 
               <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                 (click)="openPopup(rowData, popupMenu);popupMenu.toggle($event);"></i>
@@ -142,8 +142,8 @@
 
     <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)">
       <mat-expansion-panel-header>
-        <mat-panel-title style="color:#000000;">
-          <mat-icon style="padding: 4px 0px 0px 0px;">event_note</mat-icon>&nbsp;&nbsp; Project Properties
+        <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+          <mat-icon>event_note</mat-icon>&nbsp;&nbsp; Project Properties
         </mat-panel-title>
         <ng-template matExpansionPanelContent>
 
@@ -246,8 +246,8 @@
 
     <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)">
       <mat-expansion-panel-header>
-        <mat-panel-title style="color:#000000;">
-          <mat-icon style="padding: 4px 0px 0px 0px;">event_note</mat-icon>&nbsp;&nbsp; Project Resources
+        <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+          <mat-icon>event_note</mat-icon>&nbsp;&nbsp; Project Resources
         </mat-panel-title>
         <ng-template matExpansionPanelContent>
 
@@ -299,8 +299,8 @@
       ****************************************************************************************** -->
     <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)">
       <mat-expansion-panel-header>
-        <mat-panel-title style="color:#000000;">
-          <mat-icon style="padding: 4px 0px 0px 0px;">folder</mat-icon> &nbsp;&nbsp; Shared Documents
+        <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+          <mat-icon>folder</mat-icon> &nbsp;&nbsp; Shared Documents
         </mat-panel-title>
       </mat-expansion-panel-header>
       <ng-template matExpansionPanelContent>
@@ -316,7 +316,7 @@
 
     <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)">
       <mat-expansion-panel-header>
-        <mat-panel-title style="color:#000000;">
+        <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
           <mat-icon style="vertical-align: middle;">timeline</mat-icon> &nbsp;&nbsp; Project Timeline
         </mat-panel-title>
 
@@ -332,8 +332,8 @@
         ****************************************************************************************** -->
     <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)">
       <mat-expansion-panel-header>
-        <mat-panel-title style="color:#000000;">
-          <mat-icon style="padding: 4px 0px 0px 0px;">folder</mat-icon> &nbsp;&nbsp; Project Drafts
+        <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
+          <mat-icon >folder</mat-icon> &nbsp;&nbsp; Project Drafts
         </mat-panel-title>
 
       </mat-expansion-panel-header>

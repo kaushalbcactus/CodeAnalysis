@@ -219,7 +219,7 @@ export class TimeBookingDialogComponent implements OnInit {
     const batchGuid = this.spServices.generateUUID();
     let AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimelineForBooking);
     var minDate = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 4);
-    AllMilestones.filter = AllMilestones.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.id.toString());
+    AllMilestones.filter = AllMilestones.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
     AllMilestones.filter += AllMilestones.filterNotCompleted;
 
     AllMilestones.filter += AllMilestones.filterDate.replace(/{{startDateString}}/gi, startDate).replace(/{{endDateString}}/gi, endDate);

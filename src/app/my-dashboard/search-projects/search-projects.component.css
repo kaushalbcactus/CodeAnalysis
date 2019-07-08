@@ -37,9 +37,10 @@
     background-color: #cdcdcd !important;
     border-bottom-right-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
-    font-size: 1.5em !important;
+    font-size: 1em !important;
     font-weight: 500 !important;
 }
+
 .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]).cdk-keyboard-focused, .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]).cdk-program-focused, .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]):hover
 {
     background-color: #ededed !important;

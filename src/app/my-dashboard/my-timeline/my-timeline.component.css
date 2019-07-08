@@ -21,10 +21,10 @@
   -webkit-transform: translateY(-50%);
   transform: translateY(-50%);
 }
-
+/* 
  :host ::ng-deep .ui-menuitem   {
     width: 100% !important;
-}
+} */
 
 ::ng-deep .fc-center,::ng-deep .fc-left, ::ng-deep .fc-right
 {
@@ -55,22 +55,23 @@
   {
     position: fixed !important;
     width: 100% !important;
-    margin: -57px !important;
+    margin: -50px !important;
   }
 
+ 
   
   @media (min-width: 1400px) {
   
-    ::ng-deep .ui-menu
+  :host  ::ng-deep .ui-menu
     {
         margin: 32px 0em 0em 186px !important
      
     }
-    ::ng-deep .dropdowninfo
+    /* ::ng-deep .dropdowninfo
     { 
       margin: 27px 0 0 1180px !important;
       position: absolute !important;
-    }
+    } */
  
   
     
@@ -90,20 +91,22 @@
 }
   }
  
+
+ 
   
   @media (min-width: 1025px) and (max-width: 1400px) {
   
-    ::ng-deep .ui-menu
+  :host  ::ng-deep .ui-menu
     {
       margin: 33px 0em 0em 195px !important; 
      
     }
-    ::ng-deep .dropdowninfo
+    /* ::ng-deep .dropdowninfo
     {
         float: left !important;
         margin: 27px 0 0 630px !important;
         position: absolute !important;
-    }
+    } */
     
    
   
@@ -236,7 +239,7 @@
 }
 ::ng-deep .ui-dialog-title
 {
-    font-size: 1.5em !important;
+    font-size: 1em !important;
     color: #C53E3E !important;
 }
 ::ng-deep .mat-expansion-panel-header
@@ -245,7 +248,7 @@
     background-color: #cdcdcd !important;
     border-bottom-right-radius: 0px !important;
     border-bottom-left-radius: 0px !important;
-    font-size: 1.5em !important;
+    font-size: 1em !important;
     font-weight: 500 !important;
 }
 .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]).cdk-keyboard-focused, .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]).cdk-program-focused, .mat-expansion-panel:not(.mat-expanded) .mat-expansion-panel-header:not([aria-disabled=true]):hover
@@ -292,5 +295,107 @@ table, th, td {
   
 }
 
-  
- 
+
+::ng-deep .popper,
+::ng-deep .tooltip {
+  position: absolute  !important;
+  z-index: 9999  !important;
+  background: #ffffa9  !important;
+  color: black  !important;
+  width: 150px  !important;
+  border-radius: 3px  !important;
+  box-shadow: 0 0 2px rgba(0,0,0,0.5)  !important;
+  padding: 10px  !important;
+  text-align: center  !important;
+  opacity: 1  !important;
+}
+::ng-deep .style5 .tooltip {
+  /* background: #1E252B  !important; */
+  /* color: #FFFFFF  !important; */
+  max-width: 200px  !important;
+  width: auto  !important;
+  font-size: .8rem  !important;
+  padding: .5em 1em  !important;
+}
+
+::ng-deep .tooltip-inner {
+  background-color :#ffffa9  !important;
+  color: black  !important;
+}
+
+::ng-deep .popper .popper__arrow,
+::ng-deep .tooltip .tooltip-arrow {
+  width: 0  !important;
+  height: 0  !important;
+  border-style: solid  !important;
+  position: absolute  !important;
+  margin: 5px  !important;
+}
+
+::ng-deep .tooltip .tooltip-arrow,
+::ng-deep .popper .popper__arrow {
+  border-color: #ffffa9  !important;
+}
+::ng-deep .style5 .tooltip .tooltip-arrow {
+  border-color: #1E252B  !important;
+}
+::ng-deep .popper[x-placement^="top"],
+::ng-deep .tooltip[x-placement^="top"] {
+  margin-bottom: 5px  !important;
+}
+::ng-deep .popper[x-placement^="top"] .popper__arrow,
+::ng-deep .tooltip[x-placement^="top"] .tooltip-arrow {
+  border-width: 5px 5px 0 5px  !important;
+  border-left-color: transparent  !important;
+  border-right-color: transparent  !important;
+  border-bottom-color: transparent  !important;
+  bottom: -5px  !important;
+  left: calc(50% - 5px)  !important;
+  margin-top: 0  !important;
+  margin-bottom: 0  !important;
+}
+::ng-deep .popper[x-placement^="bottom"],
+::ng-deep .tooltip[x-placement^="bottom"] {
+  margin-top: 5px  !important;
+}
+::ng-deep .tooltip[x-placement^="bottom"] .tooltip-arrow,
+::ng-deep .popper[x-placement^="bottom"] .popper__arrow {
+  border-width: 0 5px 5px 5px  !important;
+  border-left-color: transparent  !important;
+  border-right-color: transparent  !important;
+  border-top-color: transparent  !important;
+  top: -5px  !important;
+  left: calc(50% - 5px)  !important;
+  margin-top: 0  !important;
+  margin-bottom: 0  !important;
+}
+::ng-deep .tooltip[x-placement^="right"],
+::ng-deep .popper[x-placement^="right"] {
+  margin-left: 5px  !important;
+}
+::ng-deep .popper[x-placement^="right"] .popper__arrow,
+::ng-deep .tooltip[x-placement^="right"] .tooltip-arrow {
+  border-width: 5px 5px 5px 0  !important;
+  border-left-color: transparent  !important;
+  border-top-color: transparent  !important;
+  border-bottom-color: transparent  !important;
+  left: -5px  !important;
+  top: calc(50% - 5px)  !important;
+  margin-left: 0  !important;
+  margin-right: 0  !important;
+}
+::ng-deep .popper[x-placement^="left"],
+::ng-deep .tooltip[x-placement^="left"] {
+  margin-right: 5px  !important;
+}
+::ng-deep .popper[x-placement^="left"] .popper__arrow,
+::ng-deep .tooltip[x-placement^="left"] .tooltip-arrow {
+  border-width: 5px 0 5px 5px  !important;
+  border-top-color: transparent  !important;
+  border-right-color: transparent  !important;
+  border-bottom-color: transparent  !important;
+  right: -5px  !important;
+  top: calc(50% - 5px)  !important;
+  margin-left: 0  !important;
+  margin-right: 0  !important;
+}

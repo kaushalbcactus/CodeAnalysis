@@ -62,8 +62,8 @@
                 <td>{{task.CreatedBy}}</td>
                 <td>{{task.CreatedDate}}</td>
                 <td>
-                    <p-slideMenu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu class="projectSlider"
-                        [model]="popItems" [popup]="true" appendTo="body"></p-slideMenu>
+                    <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu class="projectSlider"
+                        [model]="popItems" [popup]="true" appendTo="body"></p-menu>
                     <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                         (click)="storeRowData(rowData,menu); menu.toggle($event);"></i>
                 </td>

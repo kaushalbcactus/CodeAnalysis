@@ -100,8 +100,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
   }
   ngOnDestroy()
   {
-    
-     // this.popupMenu.hide();
+
   }
 
 
@@ -223,7 +222,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
     const batchGuid = this.spServices.generateUUID();
 
     let mytasks = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTasks);
-    mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.id.toString());
+    mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
     mytasks.filter += status === 'MyCompletedTask' ? mytasks.filterCompleted : mytasks.filterStatus;
     // mytasks.filter += mytasks.filterStatus;
     mytasks.filter += mytasks.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
@@ -510,7 +509,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
     const batchGuid = this.spServices.generateUUID();
 
     let previousTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousTaskStatus);
-    previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi, this.sharedObject.currentUser.id.toString());
+    previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
 
     const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);

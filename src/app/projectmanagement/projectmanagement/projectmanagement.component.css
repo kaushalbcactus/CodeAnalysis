@@ -755,9 +755,9 @@ body .ui-corner-top {
 
   }
 
-  .allSOW-section table tbody tr td:last-child p-slidemenu, 
-  .allProjects-section table tbody tr td:last-child p-slidemenu,
-  .projectDataExist table tbody tr td:last-child p-slidemenu {
+  .allSOW-section table tbody tr td:last-child p-menu, 
+  .allProjects-section table tbody tr td:last-child p-menu,
+  .projectDataExist table tbody tr td:last-child p-menu {
     display: none;
   }
 
@@ -765,3 +765,13 @@ body .ui-corner-top {
     padding-top: 5px;
 
   } */
+
+  .custom-table-container .ui-button.ui-button-icon-only .ui-button-text {
+    padding: 0.429em !important;
+  }
+
+  .custom-table-container .ui-button.ui-button-icon-only span.ui-clickable {
+    color: #ffffff !important;
+  }
+
+  

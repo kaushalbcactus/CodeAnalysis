@@ -13,6 +13,8 @@ import { BlockTimeDialogComponent } from '../block-time-dialog/block-time-dialog
 import { DatePipe } from '@angular/common';
 import { FeedbackPopupComponent } from '../feedback-popup/feedback-popup.component';
 
+declare var Tooltip: any;
+
 @Component({
   selector: 'app-my-timeline',
   templateUrl: './my-timeline.component.html',
@@ -48,6 +50,7 @@ export class MyTimelineComponent implements OnInit {
   SelectedStatus: string;
   allLeaves: any;
   EnableEditDate: any;
+  toolData: any;
   constructor(private myDashboardConstantsService: MyDashboardConstantsService,
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -124,6 +127,28 @@ export class MyTimelineComponent implements OnInit {
           },
         }
       },
+      eventMouseEnter: function(event, jsEvent, view) {
+        
+        event.el.Tooltip.show();
+    },
+    
+    eventMouseLeave: function(event, jsEvent, view) {
+      
+        event.el.Tooltip.hide();
+    },
+
+    eventRender: function(info) {
+      
+      var tooltip = new Tooltip(info.el, {
+        title: info.event.title,
+        placement: 'top',
+        trigger: 'hover',
+        container: 'body'
+      });
+
+      info.el.Tooltip = tooltip;
+    },
+ 
       eventClick: async function (eventInfo) {
 
       
@@ -227,7 +252,7 @@ export class MyTimelineComponent implements OnInit {
 
 
     let MyTimeline = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimeline);
-    MyTimeline.filter = MyTimeline.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.id.toString());
+    MyTimeline.filter = MyTimeline.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
     MyTimeline.filter += this.selectedType.name === 'Completed' ? MyTimeline.filterCompleted : this.selectedType.name === 'Not Completed' ? MyTimeline.filterNotCompleted : this.selectedType.name === 'Planned' ? MyTimeline.filterPlanned : this.selectedType.name === 'Adhoc' ? MyTimeline.filterAdhoc : MyTimeline.filterAll;
     //  MyTimeline.filter.substring(0, MyTimeline.filter.lastIndexOf("and"));
     MyTimeline.filter += MyTimeline.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
@@ -240,7 +265,7 @@ export class MyTimelineComponent implements OnInit {
 
 
     let MyLeaves = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
-    MyLeaves.filter = MyLeaves.filter.replace(/{{currentUser}}/gi, this.sharedObject.currentUser.id.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
+    MyLeaves.filter = MyLeaves.filter.replace(/{{currentUser}}/gi, this.sharedObject.sharePointPageObject.userId.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
 
     const myLeavesUrl = this.spServices.getReadURL('' + this.constants.listNames.LeaveCalendar.name + '', MyLeaves);
     this.spServices.getBatchBodyGet(batchContents, batchGuid, myLeavesUrl);
@@ -532,6 +557,8 @@ export class MyTimelineComponent implements OnInit {
   // *************************************************************************************************************************************
 
   async UpdateTask() {
+
+    debugger;
     this.CalendarLoader = true;
     if (this.step !== 0) {
       this.batchContents = new Array();
@@ -564,40 +591,47 @@ export class MyTimelineComponent implements OnInit {
     var stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
 
     if (stval === "Completed" || stval === "AllowCompletion" || stval === "Auto Closed") {
-      this.CalendarLoader = false;
-      this.confirmationService.confirm({
-        message: 'Are you sure that you want to proceed?',
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        accept: async () => {
-          this.SelectedStatus = undefined;
-          this.taskdisplay = false;
-          this.CalendarLoader = true;
-          var response = await this.myDashboardConstantsService.CompleteTask(task);
 
-          if (response) {
-            this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
+      if (task.Status === 'Completed' && !task.FinalDocSubmit) {
+        this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'No Final Document Found' });
+        task.Status = earlierStaus;
+        this.CalendarLoader = false;
 
-          }
-          else {
-            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated successfully.' });
-
-            if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1 && task.Status === 'Completed') {
-              this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
+        return false;
+      }
+      else
+      {
+        this.CalendarLoader = false;
+        this.confirmationService.confirm({
+          message: 'Are you sure that you want to proceed?',
+          header: 'Confirmation',
+          icon: 'pi pi-exclamation-triangle',
+          accept: async () => {
+            this.SelectedStatus = undefined;
+            this.taskdisplay = false;
+            this.CalendarLoader = true;
+            var response = await this.myDashboardConstantsService.CompleteTask(task);
+  
+            if (response) {
+              this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
+  
             }
-
+            else {
+              this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated successfully.' });
+  
+              if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1 && task.Status === 'Completed') {
+                this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
+              }
+            }
+            this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start, this.fullCalendar.calendar.state.dateProfile.currentRange.end);
+          },
+          reject: () => {
+            task.Status = earlierStaus;
           }
+        });
+      }
 
-          this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start, this.fullCalendar.calendar.state.dateProfile.currentRange.end);
-
-
-        
-
-        },
-        reject: () => {
-          task.Status = earlierStaus;
-        }
-      });
+     
     }
     else {
       this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Previous task should be completed.' });
@@ -605,6 +639,17 @@ export class MyTimelineComponent implements OnInit {
       this.CalendarLoader = false;
     }
   };
+
+
+  mouseOver(event, content){
+
+    var data = event.detail.event.data;
+
+    this.toolData = data;
+
+    console.log(this.toolData);
+
+  }
 
 }
 

@@ -644,7 +644,7 @@ export class ManageFinanceComponent implements OnInit {
         tempPOObj.poId = poItem.POLookup;
         const poValue = this.poArray.filter(x => x.ID === poItem.POLookup);
         if (poValue && poValue.length) {
-          tempPOObj.poValue = poValue[0].Number + '-' + poValue[0].Name;
+          tempPOObj.poValue = poValue[0].Number + ' - ' + poValue[0].Name;
         }
         tempPOObj.total = poItem.Amount;
         tempPOObj.revenue = poItem.AmountRevenue;
