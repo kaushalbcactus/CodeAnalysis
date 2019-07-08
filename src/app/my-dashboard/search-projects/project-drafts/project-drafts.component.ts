@@ -56,7 +56,7 @@ debugger;
     console.log("data");
     console.log(this.data);
 
-    if(this.milestoneData.Milestones !== null)
+    if(this.milestoneData.Milestones !== null && this.milestoneData.Milestones !== undefined )
     {
       this.milestoneData.Milestones.split(';#').filter(c => c !== "").forEach(element => {
         this.menuItems.push({ label: element, icon: 'pi pi-inbox', command: (e) => this.onChange(e) })
