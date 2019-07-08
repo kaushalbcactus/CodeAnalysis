@@ -94,9 +94,7 @@ export class SOWComponent implements OnInit {
     this.isAllSOWLoaderHidden = false;
     this.pmObject.isAddSOWVisible = false;
     this.pmObject.selectedSOWTask = '';
-    // this.pmObject.tabMenuItems[0].label = 'All SOW (900)';
-    // this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
-    // this.pmObject.countObj.allSOWCount = 900;
+
 
     setTimeout(() => {
       this.getAllSOW();
@@ -201,8 +199,10 @@ export class SOWComponent implements OnInit {
       this.pmObject.allSOWItems = arrResults;
       this.pmObject.countObj.allSOWCount = this.pmObject.allSOWItems.length;
       this.pmObject.totalRecords.AllSOW = this.pmObject.countObj.allSOWCount;
-      this.pmObject.tabMenuItems[1].label = 'All SOW (' + this.pmObject.countObj.allSOWCount + ')';
-      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+      if (this.pmObject.tabMenuItems.length) {
+        this.pmObject.tabMenuItems[1].label = 'All SOW (' + this.pmObject.countObj.allSOWCount + ')';
+        this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+      }
     }
     if (this.pmObject.allSOWItems && this.pmObject.allSOWItems.length) {
       const tempAllSOWArray = [];
@@ -244,8 +244,15 @@ export class SOWComponent implements OnInit {
     const allSOWArray = this.pmObject.allSOWArray;
     this.commonService.lazyLoadTask(event, allSOWArray, this.filterColumns, this.pmConstant.filterAction.ALL_SOW);
   }
-  storeRowData(rowData) {
+  storeRowData(rowData, menu) {
     this.pmObject.selectedSOWTask = rowData;
+    const route = this.router.url;
+    if (route.indexOf('myDashboard') > -1) {
+      menu.model[1].visible = false;
+      menu.model[2].visible = false;
+      menu.model[4].visible = false;
+      menu.model[5].visible = false;
+    }
   }
   getActiveProject() {
     this.activeProjectLoader = false;

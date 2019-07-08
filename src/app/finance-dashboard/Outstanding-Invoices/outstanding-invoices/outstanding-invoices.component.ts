@@ -619,7 +619,7 @@ export class OutstandingInvoicesComponent implements OnInit {
                 console.log('selectedFile ', this.selectedFile);
                 console.log('this.fileReader  ', this.fileReader.result);
                 let folderPath: string = '/Finance/Invoice/' + folderName + '/';
-                let cleListName = this.globalService.sharePointPageObject.webRelativeUrl + this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity);
+                let cleListName = this.globalService.sharePointPageObject.webRelativeUrl + '/' + this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity);
                 this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl(" + "'" + cleListName + '' + folderPath + "'" + ")/Files/add(url=@TargetFileName,overwrite='true')?" +
                     "&@TargetFileName='" + this.selectedFile.name + "'";
                 // this.uploadFileData('');

@@ -150,8 +150,11 @@ export class AllProjectsComponent implements OnInit {
       this.pmObject.allProjectItems = arrResults;
       this.pmObject.countObj.allProjectCount = arrResults.length;
       this.pmObject.totalRecords.AllProject = this.pmObject.countObj.allProjectCount;
-      this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';
-      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+      if(this.pmObject.tabMenuItems.length) {
+        this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';
+        this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+      }
+      
     }
     if (this.pmObject.allProjectItems && this.pmObject.allProjectItems.length) {
       const tempAllProjectArray = [];
