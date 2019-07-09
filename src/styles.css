@@ -40,7 +40,7 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
     animation: spin 2s linear infinite !important;
     margin: 0 auto  !important;
     position: relative !important;
-    top: 50% !important;
+    top: 30% !important;
     transform: translateY(-50%) !important;
    
   }
@@ -57,8 +57,8 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
     opacity: 0.5 !important;
     text-align: center !important;
     text-transform: uppercase !important;
-    top: 0 !important;
-   
+    top: 35% !important;
+    position: relative;
   }
   
   /* Added for timeline */

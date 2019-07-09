@@ -527,7 +527,8 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
   opacity: 0.5;
   text-align: center;
   text-transform: uppercase;
-  top: 0;
+  top: 30%;
+  position: relative;
   margin-bottom: 1%;
 }
 /* Added by Kaushal on 7.6.2019 */

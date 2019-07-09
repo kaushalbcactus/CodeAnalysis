@@ -417,7 +417,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.paidInvoicesRes = [...this.paidInvoicesRes];
         this.isPSInnerLoaderHidden = true;
         this.createColFieldValues();
-        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
     }
 
     // Project PO
