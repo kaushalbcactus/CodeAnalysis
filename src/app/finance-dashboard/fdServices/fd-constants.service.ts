@@ -31,18 +31,18 @@ export class FdConstantsService {
         selectedComp: null,
         isPSInnerLoaderHidden: false,
         projectInfo: {
-            select: "ID,ProjectCode,ProjectType,WBJID,Title,Year,ClientLegalEntity,SOWCode,ProposedEndDate,PrimaryPOC,NextSCDate,Status,Milestone,Milestones,AdditionalPOCLookup/ID,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail,PMLevel1/ID,PMLevel1/Title,PMLevel2/ID,PMLevel2/Title, PMLevel2/EMail&$expand=AdditionalPOCLookup,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail,PMLevel1/ID,PMLevel1/Title,PMLevel2/ID,PMLevel2/Title,PMLevel2/EMail",
+            select: "ID,ProjectCode,ProjectType,WBJID,Title,Year,ClientLegalEntity,SOWCode,ProposedEndDate,PrimaryPOC,NextSCDate,Status,Milestone,Milestones,BusinessVertical,AdditionalPOCLookup/ID,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail",
             filter: "Status ne 'In Discussion' and Status ne 'cancelled' and Status ne 'Pending Closure' and Status ne 'closed' and Status ne 'Awaiting Cancel Approval'",
             orderby: "ProjectCode",
             top: 4500,
-            expand: "AdditionalPOCLookup,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail,PMLevel1/ID,PMLevel1/Title,PMLevel2/ID,PMLevel2/Title,PMLevel2/EMail"
+            expand: "AdditionalPOCLookup,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail"
         },
         projectInfoCode: {
-            select: "ID,ProjectCode,ProjectType,WBJID,Title,Year,ClientLegalEntity,SOWCode,ProposedEndDate,PrimaryPOC,NextSCDate,Status,Milestone,AdditionalPOCLookup/ID,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail,PMLevel1/ID,PMLevel1/Title,PMLevel2/ID,PMLevel2/Title, PMLevel2/EMail&$expand=AdditionalPOCLookup,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail,PMLevel1/ID,PMLevel1/Title,PMLevel2/ID,PMLevel2/Title,PMLevel2/EMail",
+            select: "ID,ProjectCode,ProjectType,WBJID,Title,Year,ClientLegalEntity,SOWCode,ProposedEndDate,PrimaryPOC,NextSCDate,Status,Milestone,BusinessVertical,AdditionalPOCLookup/ID,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail",
             filter: "ProjectCode eq {{ProjectCode}}",
             orderby: "ProjectCode",
             top: 4500,
-            expand: "AdditionalPOCLookup,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail,PMLevel1/ID,PMLevel1/Title,PMLevel2/ID,PMLevel2/Title,PMLevel2/EMail"
+            expand: "AdditionalPOCLookup,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail"
         },
         projectPO: {
             select: "ID,Title,Name,Amount,ClientLegalEntity,Status,POExpiryDate,Currency,AmountRevenue,TotalLinked,RevenueLinked,TotalScheduled,ScheduledRevenue,Number,ScheduledOOP,InvoicedOOP, InvoicedRevenue, AmountOOP, POCLookup, OOPLinked,TotalInvoiced",
@@ -200,6 +200,12 @@ export class FdConstantsService {
             select: "ID,POLookup,ProjectNumber",
             filter: "ProjectNumber eq '{{ProjectCode}}' and Status ne 'Deleted' ",
             // top: 1
+        },
+
+        projectFinanceBreakupForPO: {
+            select: "ID,POLookup,ProjectNumber",
+            filter: "ProjectNumber eq '{{ProjectCode}}' and Status ne 'Deleted' ",
+            top: 1
         },
 
         sowByProjectCode: {

@@ -4,6 +4,9 @@ import { CommonService } from '../services/common.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { MessageService } from 'primeng/api';
+import { GlobalService } from 'src/app/Services/global.service';
+import { SpOperationsService } from 'src/app/Services/sp-operations.service';
+
 
 declare var $: any;
 @Component({
@@ -49,7 +52,9 @@ export class EditorComponent implements OnInit {
         private common: CommonService,
         private fdConstantsService: FdConstantsService,
         private fdShareDataService: FDDataShareService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private globalObject: GlobalService,
+        private spOperationsServices: SpOperationsService
     ) { }
 
     ngOnInit() {
@@ -297,7 +302,7 @@ export class EditorComponent implements OnInit {
             </tr>
         </tbody>
         </div>
-        [[APPENDIX]]
+        [[Appendix]]
         </div>`,
             appendixCreate: `<table style="margin: 15px 0">
         <tbody>
@@ -320,7 +325,7 @@ export class EditorComponent implements OnInit {
                         Cactus SP Code
                     </th>
                     <th>
-                        Project title
+                        Project Title
                     </th>
                     <th>
                         Amount
@@ -491,7 +496,7 @@ export class EditorComponent implements OnInit {
                         Cactus SP Code
                     </th>
                     <th>
-                        Project title
+                        Project Title
                     </th>
                     <th>
                         Amount
@@ -651,22 +656,22 @@ export class EditorComponent implements OnInit {
             </tr>
             <tr>
                 <td>
-                    <p style="text-align: center;font-size: 16px;margin: 15px 0;">[[InvoiceDate]]</p>
+                    <p>[[InvoiceDate]]</p>
                 </td>
                 <td>
-                    <p style="padding-left: 15px;font-size: 16px;">Consumption Tax @ 8%</p>
+                    <p>Consumption Tax @ 8%</p>
                 </td>
                 <td>
-                    <p style="font-size: 16px;text-align: center;font-weight: bold;">[[CurrencySymbol]] [[ConsumptionTax]]</p>
+                    <p>[[CurrencySymbol]] [[ConsumptionTax]]</p>
                 </td>
             </tr>
             <tr>
                 <td></td>
-                <td style="text-align: center;font-weight: bold; font-size: 16px;">
+                <td>
                     <p>Total</p>
                 </td>
                 <td>
-                    <p style="text-align: center;font-weight: bold; font-size: 16px;">[[CurrencySymbol]] [[Total]]</p>
+                    <p>[[CurrencySymbol]] [[Total]]</p>
                 </td>
             </tr>
             </tbody>
@@ -743,7 +748,7 @@ export class EditorComponent implements OnInit {
     
         </table>
         </div>
-        [[APPENDIX]]
+        [[Appendix]]
         </div>`,
             appendixCreate: `<table style="margin: 15px 0">
         <tbody>
@@ -1348,7 +1353,7 @@ export class EditorComponent implements OnInit {
             </tr>
         </tbody>
         </div>
-        [[APPENDIX]]
+        [[Appendix]]
         </div>`,
             appendixCreate: `<table style="margin: 15px 0">
         <tbody>
@@ -1365,13 +1370,13 @@ export class EditorComponent implements OnInit {
         <thead>
             <tr style="text-align: center; font-size: 16px; font-weight: bold;">
                 <th>
+                    Short Title
+                </th>
+                <th>
                     Project Code
                 </th>
                 <th style="width: 50%;">
                     Title
-                </th>
-                <th>
-                    Client POC
                 </th>
                 <th>
                     Amount
@@ -1467,8 +1472,6 @@ export class EditorComponent implements OnInit {
             address2: `<p>[[Address2]]</p>`,
             address3: `<p>[[Address3]],</p>`,
             address4: `<p>[[Address4]]</p>`,
-            address5: `<p>[[Address5]],</p>`,
-            address6: `<p>[[Address6]]</p>`,
             contactDetails2: `<tbody>
             <tr>
                 <td>
@@ -1553,18 +1556,7 @@ export class EditorComponent implements OnInit {
                 [[CurrencySymbol]] [[CentralTax]]
             </td>
         </tr>
-        <!-- <tr>
-            <td>
-                [[InvoiceDate]]
-            </td>
-            <td>
-                State Tax @ 9.00%
-            </td>
-            <td></td>
-            <td>
-                [[CurrencySymbol]] [[StateTax]]
-            </td>
-        </tr> -->
+        
         <tr>
             <td></td>
             <td colspan="2" style="text-align: center;font-weight: bold; font-size: 16px;">
@@ -1599,13 +1591,14 @@ export class EditorComponent implements OnInit {
         <thead>
             <tr style="text-align: center; font-size: 16px; font-weight: bold;">
                 <th>
+                    Short Title
+                </th>
+                
+                <th>
                     Project Code
                 </th>
                 <th style="width: 50%;">
                     Title
-                </th>
-                <th>
-                    Client POC
                 </th>
                 <th>
                     Amount
@@ -1618,16 +1611,17 @@ export class EditorComponent implements OnInit {
     </table>`,
             appendixRow: `<tr>
     <td>
+        [[DVCode]]
+    </td>
+    <td>
         [[ProjectCode]]
     </td>
     <td>
         [[Title]]
     </td>
-    <td>
-        [[ClientPOC]]
-    </td>
+    
     <td style="font-weight: bold;">
-       [[CurrencySymbol]] [[Amount]]
+        [[CurrencySymbol]] [[Amount]]
     </td>
     </tr>`
         };
@@ -1771,10 +1765,10 @@ export class EditorComponent implements OnInit {
         let outerData: string = USInvoice.maincontent;
         const appendix: string = USInvoice.appendixCreate;
         if (!this.showAppendix) {
-            outerData = USInvoice.maincontent.replace('[[APPENDIX]]', '');
+            outerData = USInvoice.maincontent.replace('[[Appendix]]', '');
             contentObj = contentObj + outerData + '</body></html>';
         } else {
-            outerData = USInvoice.maincontent.replace('[[APPENDIX]]', appendix);
+            outerData = USInvoice.maincontent.replace('[[Appendix]]', appendix);
             contentObj = contentObj + outerData + '</body></html>';
             console.log('Main Content Html', contentObj);
 
@@ -1858,11 +1852,6 @@ export class EditorComponent implements OnInit {
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
             USObject.appendix = USObject.appendix.replace('[[Appendix]]', newArr.join(''));
-
-            // USObject.appendix = USObject.appendix.replace('[[DvCode]]', invoiceData.Appendix[0].dvcode);
-            // USObject.appendix = USObject.appendix.replace('[[CactusSpCode]]', invoiceData.Appendix[0].cactusSpCode);
-            // USObject.appendix = USObject.appendix.replace('[[ProjectTitle]]', invoiceData.Appendix[0].title);
-            // USObject.appendix = USObject.appendix.replace('[[Amount]]', invoiceData.Appendix[0].amount);
             USObject.appendix = USObject.appendix.replace('[[Total]]', invoiceData.Appendix[0].amount);
             USObject.appendix = USObject.appendix.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                 invoiceData.usCurrencySymbol);
@@ -1942,10 +1931,10 @@ export class EditorComponent implements OnInit {
         let outerData: string = JapanInvoice.maincontent;
         const appendix: string = JapanInvoice.appendixCreate;
         if (!this.showAppendix) {
-            outerData = JapanInvoice.maincontent.replace('[[APPENDIX]]', '');
+            outerData = JapanInvoice.maincontent.replace('[[Appendix]]', '');
             contentObj = contentObj + outerData + '</body></html>';
         } else {
-            outerData = JapanInvoice.maincontent.replace('[[APPENDIX]]', appendix);
+            outerData = JapanInvoice.maincontent.replace('[[Appendix]]', appendix);
             contentObj = contentObj + outerData + '</body></html>';
             console.log('Main Content Html', contentObj);
 
@@ -2074,9 +2063,9 @@ export class EditorComponent implements OnInit {
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
             for (let i = 0; i < invoiceData.Appendix.length; i++) {
-                IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].dvcode);
+                IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].cactusSpCode);
                 IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[Title]]', invoiceData.Appendix[i].title);
-                IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[ClientPOC]]', invoiceData.Appendix[i].cactusSpCode);
+                IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[DVCode]]', invoiceData.Appendix[i].dvcode);
                 IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[Amount]]', invoiceData.Appendix[i].amount);
                 newArr.push(IndiaInvoice.appendixRow);
             }
@@ -2101,10 +2090,10 @@ export class EditorComponent implements OnInit {
         let outerData: string = IndiaInvoice.maincontent;
         const appendix: string = IndiaInvoice.appendixCreate;
         if (!this.showAppendix) {
-            outerData = IndiaInvoice.maincontent.replace('[[APPENDIX]]', '');
+            outerData = IndiaInvoice.maincontent.replace('[[Appendix]]', '');
             contentObj = contentObj + outerData + '</body></html>';
         } else {
-            outerData = IndiaInvoice.maincontent.replace('[[APPENDIX]]', appendix);
+            outerData = IndiaInvoice.maincontent.replace('[[Appendix]]', appendix);
             contentObj = contentObj + outerData + '</body></html>';
             console.log('Main Content Html', contentObj);
 
@@ -2202,8 +2191,6 @@ export class EditorComponent implements OnInit {
         delete this.indiaHtmlObject.address2;
         delete this.indiaHtmlObject.address3;
         delete this.indiaHtmlObject.address4;
-        delete this.indiaHtmlObject.address5;
-        delete this.indiaHtmlObject.address6;
 
         const obj: any = {};
         obj.pdf = this.originalInvoice;
@@ -2327,26 +2314,63 @@ export class EditorComponent implements OnInit {
         console.log(obj);
 
         setTimeout(async () => {
-            //window.location.reload();
             await this.fdShareDataService.callProformaInvoiceEdit(obj);
             this.displayJapan = false;
             this.displayUS = false;
             this.displayIndia = false;
             this.messageService.add({ key: 'editToast', severity: 'success', summary: this.fdConstantsService.fdComponent.selectedEditObject.Type + ' edited successfully.' });
-            // this.currentUserInfo();
         }, 300);
     }
 
-    createUSProforma() {
-        this.createUSInvoice(this.invoicedata);
+    async createUSProforma() {
+        
+        const objReturn: any = this.createUSInvoice(this.invoicedata);
+        const pdfContent: any = objReturn.pdf;
+        pdfContent.Code = "TestingOnQAUS";
+        pdfContent.WebUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
+        pdfContent.ID = '';
+        pdfContent.Type = 'Proforma';
+        pdfContent.ListName = 'ADFC';
+        pdfContent.HtmlContent = JSON.stringify(objReturn);
+        this.fdConstantsService.fdComponent.selectedEditObject.Code = "TestingOnQAUS";
+        this.fdConstantsService.fdComponent.selectedEditObject.ListName = "Flip";
+        ///// Call service 
+        const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+        await this.spOperationsServices.executeJS(pdfService, pdfContent);
+
     }
 
-    createJapanProforma() {
-        this.createJapanInvoice(this.invoicedata);
+    async createJapanProforma() {
+
+        const objReturn: any = this.createJapanInvoice(this.invoicedata);
+        const pdfContent: any = objReturn.pdf;
+        pdfContent.Code = "TestingOnQAJapan";
+        pdfContent.WebUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
+        pdfContent.ID = '';
+        pdfContent.Type = 'Proforma';
+        pdfContent.ListName = 'ADFC';
+        pdfContent.HtmlContent = JSON.stringify(objReturn);
+        this.fdConstantsService.fdComponent.selectedEditObject.Code = "TestingOnQAJapan";
+        this.fdConstantsService.fdComponent.selectedEditObject.ListName = "Flip";
+         ///// Call service 
+         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+         await this.spOperationsServices.executeJS(pdfService, pdfContent);
     }
 
-    createIndiaProforma() {
-        this.createIndiaInvoice(this.invoicedata);
+    async createIndiaProforma() {
+        const objReturn: any = this.createIndiaInvoice(this.invoicedata);
+        const pdfContent: any = objReturn.pdf;
+        pdfContent.Code = "TestingOnQAIndia";
+        pdfContent.WebUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
+        pdfContent.ID = '';
+        pdfContent.Type = 'Proforma';
+        pdfContent.ListName = 'ADFC';
+        pdfContent.HtmlContent = JSON.stringify(objReturn);
+        this.fdConstantsService.fdComponent.selectedEditObject.Code = "TestingOnQAIndia";
+        this.fdConstantsService.fdComponent.selectedEditObject.ListName = "Flip";
+         ///// Call service 
+         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+         await this.spOperationsServices.executeJS(pdfService, pdfContent);
     }
 }
 

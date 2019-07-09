@@ -73,14 +73,14 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     async ngOnInit() {
 
         // SetDefault Values
-        if (this.fdDataShareServie.DateRange.startDate) {
-            this.DateRange = this.fdDataShareServie.DateRange;
+        if (this.fdDataShareServie.expenseDateRange.startDate) {
+            this.DateRange = this.fdDataShareServie.expenseDateRange;
         } else {
             const last3Days = this.commonService.getLastWorkingDay(65, new Date());
             this.rangeDates = [last3Days, new Date()];
             this.DateRange.startDate = new Date(this.datePipe.transform(this.rangeDates[0], "yyyy-MM-dd") + " 00:00:00").toISOString();
             this.DateRange.endDate = new Date(this.datePipe.transform(this.rangeDates[1], "yyyy-MM-dd") + " 23:59:00").toISOString();
-            this.fdDataShareServie.DateRange = this.DateRange;
+            this.fdDataShareServie.expenseDateRange = this.DateRange;
         }
 
 
@@ -185,6 +185,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
 
     // On load get Required Data
     async getRequiredData() {
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
         // let speInfoObj = {
@@ -266,6 +267,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         this.approvedNonBillableRes = [...this.approvedNonBillableRes];
         this.isPSInnerLoaderHidden = true;
         this.createColFieldValues();
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
     getVendorNameById(ele) {
@@ -556,7 +558,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         if (type === 'markAsPayment_form') {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Payment marked.', detail: '', life: 2000 });
             this.markAsPaymentModal = false;
-            this.reload();
+            this.reFetchData();
         }
         this.isPSInnerLoaderHidden = true;
         this.submitBtn.isClicked = false;
@@ -564,11 +566,9 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         // });
     }
 
-    reload() {
+    reFetchData() {
         setTimeout(() => {
-            // window.location.reload();
             this.getRequiredData();
-            // this.currentUserInfo();
         }, 3000);
     }
 

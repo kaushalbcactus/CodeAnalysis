@@ -13,8 +13,10 @@ import { Observable, Subject } from 'rxjs';
 })
 export class FDDataShareService {
     private subject = new Subject<any>();
+    private expenseCreate = new Subject<any>();
+    private scheduledDate = new Subject<any>();
 
-    sendDateRange(message: any) {
+    sendExpenseDateRange(message: any) {
         this.subject.next(message);
     }
 
@@ -28,14 +30,28 @@ export class FDDataShareService {
 
     // For Expense 
     setExpenseAddObj() {
-        this.subject.next();
+        this.expenseCreate.next();
     }
 
     getAddExpenseSuccess(): Observable<any> {
-        return this.subject.asObservable();
+        return this.expenseCreate.asObservable();
     }
 
-    public DateRange: any = {
+    // For Scheduled 
+    setScheduleAddObj(date: any) {
+        this.scheduledDate.next(date);
+    }
+
+    getScheduleDateRange(): Observable<any> {
+        return this.scheduledDate.asObservable();
+    }
+
+    public expenseDateRange: any = {
+        startDate: '',
+        endDate: '',
+    };
+
+    public scheduleDateRange: any = {
         startDate: '',
         endDate: '',
     };
@@ -401,7 +417,7 @@ export class FDDataShareService {
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-        this.fdConstantsService.fdComponent.selectedComp.reload();
+        this.fdConstantsService.fdComponent.selectedComp.reFetchData();
     }
     bdtRate: any = [];
     getProformaPDFObject(oProformaObj, cleData, projectContactsData, purchaseOrdersList, projectAppendix) {

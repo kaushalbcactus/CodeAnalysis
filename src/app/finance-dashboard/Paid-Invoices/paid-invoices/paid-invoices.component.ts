@@ -97,7 +97,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.rangeDates = [last3Days, new Date()];
         this.DateRange.startDate = new Date(this.datePipe.transform(this.rangeDates[0], "yyyy-MM-dd") + " 00:00:00").toISOString();
         this.DateRange.endDate = new Date(this.datePipe.transform(this.rangeDates[1], "yyyy-MM-dd") + " 23:59:00").toISOString();
-        this.fdDataShareServie.DateRange = this.DateRange;
+        // this.fdDataShareServie.DateRange = this.DateRange;
 
         //Get  User Info 
         this.currentUserInfo();
@@ -270,8 +270,9 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             startDate: startDate,
             endDate: endDate
         }
-        this.fdDataShareServie.DateRange = obj;
-        this.fdDataShareServie.sendDateRange(obj);
+        this.DateRange = obj;
+        // this.fdDataShareServie.sendDateRange(obj);
+        this.getRequiredData();
     }
 
     setDefaultDateRange() {
@@ -283,8 +284,9 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
                 startDate: startDate,
                 endDate: endDate
             }
-            this.fdDataShareServie.DateRange = obj;
-            this.fdDataShareServie.sendDateRange(obj);
+            this.DateRange = obj;
+            // this.fdDataShareServie.sendDateRange(obj);
+            this.getRequiredData();
             console.log('startDate ' + startDate + ' endDate' + endDate)
         }
     }
@@ -379,12 +381,13 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.paidInvoicesRes = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
+            let poItem = this.getPONumber(element);
             this.paidInvoicesRes.push({
                 Id: element.ID,
                 InvoiceStatus: element.Status,
                 InvoiceNumber: element.InvoiceNumber,
-                PONumber: this.getPONumber(element),
-                POName: this.getPOName(element).Name + ' / ' + this.getPOName(element).Number,
+                PONumber: poItem.Number,
+                POName: poItem.Name + ' / ' + poItem.Number,
                 ClientLegalEntity: element.ClientLegalEntity,
                 InvoiceDate: element.InvoiceDate,
                 Amount: element.Amount,
@@ -426,7 +429,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
                 return x;
             }
         })
-        return found ? found.Number : ''
+        return found ? found : ''
     }
     getPOName(poId) {
         let found = this.purchaseOrdersList.find((x) => {

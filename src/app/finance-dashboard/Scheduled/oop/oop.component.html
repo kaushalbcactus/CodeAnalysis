@@ -39,30 +39,30 @@
             <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                 <ng-container *ngIf="col.field">
                     <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="oopColArray.ProjectCode" defaultLabel="All"
-                        appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                         (onChange)="oop.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'SOWValue'" [options]="oopColArray.SOWCode" defaultLabel="All"
-                        appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                         (onChange)="oop.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProjectMileStone'" [options]="oopColArray.ProjectMileStone"
-                        defaultLabel="All" appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="oop.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'PONumber'" [options]="oopColArray.PONumber" defaultLabel="All"
-                        appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                         (onChange)="oop.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ClientName'" [options]="oopColArray.ClientName" defaultLabel="All"
-                        appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                         (onChange)="oop.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Amount'" [options]="oopColArray.Amount" defaultLabel="All"
-                        appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                         (onChange)="oop.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Currency'" [options]="oopColArray.Currency" defaultLabel="All"
-                        appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                         (onChange)="oop.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ScheduledDate'" [options]="oopColArray.ScheduledDate"
-                        defaultLabel="All" appendTo="body" (onChange)="oop.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="oop.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'POC'" [options]="oopColArray.POC" defaultLabel="All" appendTo="body"
+                    <p-multiSelect *ngSwitchCase="'POC'" [options]="oopColArray.POC" defaultLabel="All" 
                         (onChange)="oop.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                 </ng-container>

@@ -252,8 +252,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             startDate: startDate,
             endDate: endDate
         }
-        this.fdDataShareServie.DateRange = obj;
-        this.fdDataShareServie.sendDateRange(obj);
+        this.fdDataShareServie.expenseDateRange = obj;
+        this.fdDataShareServie.sendExpenseDateRange(obj);
     }
 
     setDefaultDateRange() {
@@ -265,8 +265,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                 startDate: startDate,
                 endDate: endDate
             }
-            this.fdDataShareServie.DateRange = obj;
-            this.fdDataShareServie.sendDateRange(obj);
+            this.fdDataShareServie.expenseDateRange = obj;
+            this.fdDataShareServie.sendExpenseDateRange(obj);
             console.log('startDate ' + startDate + ' endDate' + endDate)
         }
     }
@@ -974,7 +974,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     getResourceData(ele) {
         let found = this.rcData.find((x) => {
-            if (x.ID == ele.ID) {
+            if (x.UserName.ID == ele.ID) {
                 return x;
             }
         })
@@ -1005,25 +1005,14 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         ccUser.push(this.currentUserInfoData.Email);
         let tos = this.getTosList();
         this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
-        // this.reload();
-        this.refetchData();
+        this.reFetchData();
     }
 
-    refetchData() {
+    reFetchData() {
         this.fdDataShareServie.setExpenseAddObj();
 
         // Unscribe all subscribtion
         this.subscription.unsubscribe();
-    }
-
-
-
-    reload() {
-        setTimeout(() => {
-            window.location.reload();
-            // this.getRequiredData();
-            // this.currentUserInfo();
-        }, 3000);
     }
 
     // Tab Action
@@ -1053,7 +1042,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         //    this.navigationSubscription.unsubscribe();
         // }
         // this.projectInfoData.unsubscribe();
-        this.fdDataShareServie.DateRange = {
+        this.fdDataShareServie.expenseDateRange = {
             startDate: '',
             endDate: '',
         }

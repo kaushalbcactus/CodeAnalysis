@@ -78,14 +78,14 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
         // SetDefault Values
-        if (this.fdDataShareServie.DateRange.startDate) {
-            this.DateRange = this.fdDataShareServie.DateRange;
+        if (this.fdDataShareServie.expenseDateRange.startDate) {
+            this.DateRange = this.fdDataShareServie.expenseDateRange;
         } else {
             const last3Days = this.commonService.getLastWorkingDay(65, new Date());
             this.rangeDates = [last3Days, new Date()];
             this.DateRange.startDate = new Date(this.datePipe.transform(this.rangeDates[0], "yyyy-MM-dd") + " 00:00:00").toISOString();
             this.DateRange.endDate = new Date(this.datePipe.transform(this.rangeDates[1], "yyyy-MM-dd") + " 23:59:00").toISOString();
-            this.fdDataShareServie.DateRange = this.DateRange;
+            this.fdDataShareServie.expenseDateRange = this.DateRange;
         }
 
         this.createABCols();
@@ -254,6 +254,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
     // On load get Required Data
     async getRequiredData() {
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
         // let speInfoObj = {
@@ -345,6 +346,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.approvedBillableRes = [...this.approvedBillableRes];
         this.isPSInnerLoaderHidden = true;
         this.createColFieldValues();
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
     getCreatedModifiedByFromRC(id) {
@@ -1056,12 +1058,12 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         } else if (type === 'updateScheduledOopLineItem') {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'OOP Invoice is Scheduled.', detail: '', life: 2000 });
             this.scheduleOopModal = false;
-            this.reload();
+            this.reFetchData();
         } else if (type === "markAsPayment_form") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Updated.', detail: '', life: 2000 });
             this.isPSInnerLoaderHidden = true;
             this.markAsPaymentModal = false;
-            this.reload();
+            this.reFetchData();
         }
     }
 
@@ -1087,19 +1089,14 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.submitForm(this.updateSpeLineItems, 'updateScheduledOopLineItem');
     }
 
-    reload() {
+    reFetchData() {
         setTimeout(async () => {
             // Refetch PO/CLE Data
             await this.fdDataShareServie.getClePO();
             // Fetch latest PO & CLE
             this.poInfo();
             this.cleInfo();
-
-            // window.location.reload();
             this.getRequiredData();
-
-
-
         }, 3000);
     }
 

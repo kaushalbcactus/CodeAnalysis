@@ -350,10 +350,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.proformaRes = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
+            let poItem = this.getPONumber(element)
             this.proformaRes.push({
                 Id: element.ID,
                 ProformaNumber: element.Title,
-                PONumber: this.getPONumber(element).Number,
+                PONumber: poItem.Number,
+                POName: poItem.Name,
                 ProformaDate: element.ProformaDate,
                 // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM d, y'),
                 ProformaType: element.ProformaType,
@@ -362,7 +364,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 POC: this.getPOCName(element),
                 Status: element.Status,
                 AddressType: element.AddressType,
-                POName: this.getPONumber(element).Name,
                 MainPOC: element.MainPOC,
                 ClientLegalEntity: element.ClientLegalEntity,
                 AdditionalInfo: element.AdditionalInfo,
@@ -1362,13 +1363,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
             let sts = '';
             sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Status changed to "' + sts + '" Successfully.', detail: '', life: 2000 })
-            // this.reload();
-            this.refetchData();
+            this.reFetchData();
         } else if (type === "createProforma") {
             this.proformaModal = false;
             await this.fdDataShareServie.callProformaCreation(arrResults[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, []);
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Proforma Created.', detail: '', life: 2000 })
-            this.reload();
+            this.reFetchData();
 
         } else if (type === "generateInvoice") {
             const oInv = arrResults[0];
@@ -1418,29 +1418,28 @@ export class ProformaComponent implements OnInit, OnDestroy {
             this.generateInvoiceModal = false;
             // this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Generated.', detail: '', life: 2000 });
             this.messageService.add({ key: 'custom', sticky: true, severity: 'success', summary: 'Invoice Generated', detail: 'Invoice Number: ' + oInv.InvoiceNumber });
-            this.reload();
+            this.reFetchData();
         } else if (type === "replaceProforma") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success.', detail: '', life: 2000 });
             this.replaceProformaModal = false;
-            // this.reload();
-            this.refetchData();
+            this.reFetchData();
         }
         this.isPSInnerLoaderHidden = true;
 
     }
 
-    refetchData() {
-        this.getRequiredData();
+    reFetchData() {
+        // this.getRequiredData();
+        setTimeout(async () => {
+            // Refetch PO/CLE Data
+            await this.fdDataShareServie.getClePO();
+            // Fetch latest PO & CLE
+            this.poInfo();
+            this.cleInfo();
+            
+            this.getRequiredData();
+        },300);
     }
-
-    reload() {
-        setTimeout(() => {
-            window.location.reload();
-            // this.getRequiredData();
-            // this.currentUserInfo();
-        }, 3000);
-    }
-
     onlyNumberKey(event) {
         // return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57;
         let charCode = (event.which) ? event.which : event.keyCode;

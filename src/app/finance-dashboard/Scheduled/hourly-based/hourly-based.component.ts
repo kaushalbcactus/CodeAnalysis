@@ -182,6 +182,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
             { field: 'ClientLegalEntity', header: 'Clent LE', visibility: true },
+            { field: 'PONumber', header: 'PO Number', visibility: true },
+            { field: 'POName', header: 'PO Name', visibility: true },
             { field: 'POCName', header: 'POC Name', visibility: true },
             { field: 'Currency', header: 'Currency', visibility: true },
             { field: 'Rate', header: 'Rate', visibility: true },
@@ -191,8 +193,6 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
             { field: 'ProposedEndDate', header: 'Proposed End Date', visibility: false },
             { field: 'Modified', header: 'Modified', visibility: false },
-            { field: 'PONumber', header: 'PO Number', visibility: false },
-            { field: 'POName', header: 'PO Name', visibility: false },
             { field: 'SOWName', header: 'SOW Name', visibility: false },
             { field: 'SOWCode', header: 'SOW Code', visibility: false },
             { field: 'Invoiced', header: 'Invoiced', visibility: false },
@@ -268,6 +268,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             for (let pf = 0; pf < data.length; pf++) {
                 if (this.projectCodes[p].ProjectCode == data[pf][0].Title) {
                     let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(this.projectCodes[p].SOWCode);
+                    let poDetail = await this.getPONumber(this.projectCodes[p]);
                     this.hourlyBasedRes.push({
                         Id: this.projectCodes[p].ID,
                         ProjectCode: this.projectCodes[p].ProjectCode,
@@ -279,7 +280,9 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                         ClientLegalEntity: this.projectCodes[p].ClientLegalEntity,
                         ProposedEndDate: this.datePipe.transform(this.projectCodes[p].ProposedEndDate, 'MMM d, y, hh:mm a'),
                         POCName: this.getPOCName(this.projectCodes[p].PrimaryPOC),
-                        PONumber: this.projectCodes[p].PrimaryPOC,
+                        // PONumber: this.projectCodes[p].PrimaryPOC,
+                        POName: poDetail.Name,
+                        PONumber: poDetail.Number,
                         // ScheduledDate: this.datePipe.transform(element.ScheduledDate, 'MMM d, y, hh:mm a'),
                         PFID: data[pf][0].ID,
                         Currency: data[pf][0].Currency,
@@ -339,6 +342,35 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         return found ? found.ClientLegalEntity : '';
     }
 
+    // Project PO
+    async getPONumber(pf) {
+        // Get Finance Brekup List
+        let obj1 = {
+            filter: this.fdConstantsService.fdComponent.projectFinanceBreakupForPO.filter.replace("{{ProjectCode}}", pf.ProjectCode),
+            select: this.fdConstantsService.fdComponent.projectFinanceBreakupForPO.select,
+            top: this.fdConstantsService.fdComponent.projectFinanceBreakupForPO.top,
+        }
+        let pfbUrl = this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinanceBreakup.name + '', obj1);
+        let endPoints = [{ endPointsUrl: pfbUrl }];
+        const res = await this.getProjectBudgetBreakup(endPoints, 'poDetails');
+        let poByPfb = res[0];
+        let found = this.purchaseOrdersList.find((x) => {
+            if (x.ID === poByPfb.POLookup) {
+                return x;
+            }
+        })
+        return found ? found : ''
+    }
+
+    getPODetailsByPF(poId) {
+        let found = this.purchaseOrdersList.find((x) => {
+            if (x.ID === poId.PO) {
+                return x;
+            }
+        })
+        return found ? found : ''
+    }
+
     getPOCName(poc: any) {
         let found = this.projectContactsData.find((x) => {
             if (x.ID === poc) {
@@ -353,12 +385,10 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         SOWCode: [],
         ProjectMileStone: [],
         ClientLegalEntity: [],
-        ProposedEndDate: [],
+        PONumber: [],
         POName: [],
-        ScheduledDate: [],
         Rate: [],
         HoursSpent: [],
-        TotalInvoice: [],
         Currency: [],
         POCName: [],
     }
@@ -368,11 +398,10 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         this.hourlyBasedColArray.SOWCode = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }));
         this.hourlyBasedColArray.ProjectMileStone = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }));
         this.hourlyBasedColArray.ClientLegalEntity = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
-        this.hourlyBasedColArray.ProposedEndDate = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ProposedEndDate, value: a.ProposedEndDate }; return b; }));
-        this.hourlyBasedColArray.ScheduledDate = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ScheduledDate, value: a.ScheduledDate }; return b; }));
+        this.hourlyBasedColArray.PONumber = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
+        this.hourlyBasedColArray.POName = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; }));
         this.hourlyBasedColArray.Rate = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.Rate, value: a.Rate }; return b; }));
         this.hourlyBasedColArray.HoursSpent = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.HoursSpent, value: a.HoursSpent }; return b; }));
-        this.hourlyBasedColArray.TotalInvoice = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.TotalInvoice, value: a.TotalInvoice }; return b; }));
         this.hourlyBasedColArray.Currency = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
         this.hourlyBasedColArray.POCName = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }));
     }
@@ -526,7 +555,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
         let endPoints = [{ endPointsUrl: pbuUrl }, { endPointsUrl: pfbUrl }, { endPointsUrl: sowUrl }];
 
-        this.getProjectBudgetBreakup(endPoints);
+        this.getProjectBudgetBreakup(endPoints, 'updateModal');
         const last3Days = this.commonService.getLastWorkingDay(3, new Date());
         this.minScheduleDate = last3Days;
     }
@@ -540,7 +569,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         return found ? found : '';
     }
 
-    async getProjectBudgetBreakup(endPoints) {
+    async getProjectBudgetBreakup(endPoints, type: string) {
         this.hBQuery = [];
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
@@ -554,9 +583,12 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         let arrResults: any = [];
         const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
         arrResults = res;
-        if (arrResults.length) {
+        if (arrResults.length && type === 'updateModal') {
             console.log('arrResults ', arrResults);
             this.setValue(arrResults);
+        } else if (arrResults.length && type === 'poDetails') {
+            console.log('arrResults in poDetails ', arrResults);
+            return arrResults[0];
         }
         // });
     }
@@ -870,12 +902,10 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         if (type === "confirmInvoice") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice is Confirmed.', detail: '', life: 2000 });
             // this.cancelFormSub('confirmationModal');
-            // this.reload();
             this.sendCreateExpenseMail();
         } else if (type === "editInvoice") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Updated.', detail: '', life: 2000 });
             this.cancelFormSub('editInvoice');
-            // this.reload();
             this.reFetchData();
         }
         this.isPSInnerLoaderHidden = true;
@@ -1004,11 +1034,6 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     }
 
     sendCreateExpenseMail() {
-        // let isCleData = this.getCleByPC(expense.projectCode);
-        // let isCleData = this.cleForselectedPI;
-        // let author = this.getAuthor(expense.AuthorId);
-        // let val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.ProjectCode + ' (' + isCleData.ClientLegalEntity + ')' : expense.ProjectCode;
-        // var mailTemplate =  data.Status === "Approved" ? "ApproveExpense" :  data.Status === "Cancelled" ? "CancelExpense" : "RejectExpense";
 
         // Confirmation Mail 
         var mailSubject = this.selectedRowItem.ProjectCode + "/" + this.selectedRowItem.ClientLegalEntity + ": Confirmed line item for billing";
@@ -1035,7 +1060,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         this.spOperationsService.sendMail(this.getTosList('i').join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.spOperationsService.sendMail(this.getTosList('pc').join(','), this.currentUserInfoData.Email, pcmailSubject, pcmailContent, ccUser.join(','));
         this.isPSInnerLoaderHidden = true;
-        this.reload();
+        this.reFetchData();
     }
 
     getTosList(type: string) {
@@ -1084,20 +1109,9 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             // Fetch latest PO & CLE
             this.poInfo();
             this.cleInfo();
-            
+
             this.getRequiredData();
-        },300);
-    }
-
-
-    reload() {
-        setTimeout(() => {
-            window.location.reload();
-            // this.getRequiredData();
-
-            // this.getPCForSentToAMForApproval();
-            // this.currentUserInfo();
-        }, 3000);
+        }, 300);
     }
 
     onlyNumberKey(event) {
