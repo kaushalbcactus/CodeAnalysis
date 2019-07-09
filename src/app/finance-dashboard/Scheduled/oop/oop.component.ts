@@ -69,7 +69,7 @@ export class OopComponent implements OnInit, OnDestroy {
         private messageService: MessageService,
         private commonService: CommonService,
     ) {
-        this.subscription.add(this.fdDataShareServie.getDateRange().subscribe(date => {
+        this.subscription.add(this.fdDataShareServie.getScheduleDateRange().subscribe(date => {
             this.DateRange = date;
             console.log('this.DateRange ', this.DateRange);
             this.getRequiredData();
@@ -78,15 +78,15 @@ export class OopComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         // SetDefault Values
-        if (this.fdDataShareServie.DateRange.startDate) {
-            this.DateRange = this.fdDataShareServie.DateRange;
+        if (this.fdDataShareServie.scheduleDateRange.startDate) {
+            this.DateRange = this.fdDataShareServie.scheduleDateRange;
         } else {
             const next3Months = this.commonService.getNextWorkingDay(65, new Date());
             const last1Year = this.commonService.getLastWorkingDay(260, new Date());
             this.rangeDates = [last1Year, next3Months];
             this.DateRange.startDate = new Date(this.datePipe.transform(this.rangeDates[0], "yyyy-MM-dd") + " 00:00:00").toISOString();
             this.DateRange.endDate = new Date(this.datePipe.transform(this.rangeDates[1], "yyyy-MM-dd") + " 23:59:00").toISOString();
-            this.fdDataShareServie.DateRange = this.DateRange;
+            this.fdDataShareServie.scheduleDateRange = this.DateRange;
         }
 
         // Get Projects
@@ -202,6 +202,7 @@ export class OopComponent implements OnInit, OnDestroy {
     }
 
     async getRequiredData() {
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
 
@@ -292,6 +293,7 @@ export class OopComponent implements OnInit, OnDestroy {
         }
         this.oopBasedRes = [...this.oopBasedRes];
         this.createColFieldValues();
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
     // Project Current Milestones

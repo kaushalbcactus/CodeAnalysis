@@ -252,8 +252,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             startDate: startDate,
             endDate: endDate
         }
-        this.fdDataShareServie.DateRange = obj;
-        this.fdDataShareServie.sendDateRange(obj);
+        this.fdDataShareServie.expenseDateRange = obj;
+        this.fdDataShareServie.sendExpenseDateRange(obj);
     }
 
     setDefaultDateRange() {
@@ -265,8 +265,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                 startDate: startDate,
                 endDate: endDate
             }
-            this.fdDataShareServie.DateRange = obj;
-            this.fdDataShareServie.sendDateRange(obj);
+            this.fdDataShareServie.expenseDateRange = obj;
+            this.fdDataShareServie.sendExpenseDateRange(obj);
             console.log('startDate ' + startDate + ' endDate' + endDate)
         }
     }
@@ -1042,7 +1042,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         //    this.navigationSubscription.unsubscribe();
         // }
         // this.projectInfoData.unsubscribe();
-        this.fdDataShareServie.DateRange = {
+        this.fdDataShareServie.expenseDateRange = {
             startDate: '',
             endDate: '',
         }

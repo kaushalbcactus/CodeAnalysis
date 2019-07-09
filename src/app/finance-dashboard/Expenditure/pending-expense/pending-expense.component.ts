@@ -88,7 +88,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private spOperationsService: SpOperationsService,
     ) {
-        this.subscription.add(this.fdDataShareServie.getDateRange().subscribe(date => {
+        this.subscription.add(this.fdDataShareServie.getAddExpenseSuccess().subscribe(date => {
             console.log('I called when expense created success...... ');
             this.getRequiredData();
         }));
