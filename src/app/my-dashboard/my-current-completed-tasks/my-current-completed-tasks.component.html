@@ -45,7 +45,7 @@
         <button pButton type="button" label="Past 14 Days" class="ui-button-raised ui-button-secondary currenttask"
             [ngClass]="selectedDate ==='Past14'  ? 'selectedDateButton':''"
             (click)="GetDatabyDateSelection('Past',14)"></button>
-          
+
         <p-calendar [(ngModel)]="rangeDates" selectionMode="range" (onClose)="GetDatabyDateSelection('Custom',0)"
             [style]="{'width':'130%'}" numberOfMonths='1' appendTo="body" dateFormat="dd M , yy" [showIcon]="true"
             [disabledDays]="[0,6]" [readonlyInput]="true" placeholder="Select Custom Dates"
@@ -76,7 +76,8 @@
            ********************************************************************************************************** -->
 
 <div *ngIf="allTasks.length > 0 && !loderenable" style="padding-top: 5px;">
-    <p-table #taskId [columns]="cols" [value]="allTasks" [paginator]="true" [rows]="10" [resizableColumns]="true" [style]="{'font-size': '13px'}"
+    <p-table #taskId [columns]="cols" [value]="allTasks" [paginator]="true" [rows]="10" [resizableColumns]="true"
+        [style]="{'font-size': '13px'}"
         [exportFilename]="TabName ==='MyCompletedTask' ? 'My Completed Tasks':'My Current Tasks'">
 
         <ng-template pTemplate="header" let-columns>
@@ -96,14 +97,14 @@
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
                     <ng-container *ngIf="col.field">
 
-                        <p-dropdown [disabled]="TabName ==='MyCompletedTask'" *ngSwitchCase="'MainStatus'"
+                        <p-dropdown [disabled]="TabName ==='MyCompletedTask'" filter="true" *ngSwitchCase="'MainStatus'"
                             [options]="AllTaskColArray.Status" appendTo="body"
                             (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
-                        <p-dropdown *ngSwitchCase="'Status'" [options]="AllTaskColArray.TaskStatus" appendTo="body"
+                        <p-dropdown *ngSwitchCase="'Status'" filter="true" [options]="AllTaskColArray.TaskStatus" appendTo="body"
                             (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
-                        <p-dropdown *ngSwitchCase="'DisplayTitle'" [options]="AllTaskColArray.TaskName" appendTo="body"
+                        <p-dropdown filter="true" *ngSwitchCase="'DisplayTitle'" [options]="AllTaskColArray.TaskName" appendTo="body"
                             (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
-                        <p-dropdown [options]="AllTaskColArray.StartDate" *ngSwitchCase="'StartDate'"
+                        <p-dropdown    [options]="AllTaskColArray.StartDate" *ngSwitchCase="'StartDate'"
                             [(ngModel)]="selectedStartDate" appendTo="body"
                             (onChange)="taskId.filter($event.value, col.field, 'equals')">
                             <ng-template let-startDate pTemplate="selectedItem">
@@ -117,7 +118,7 @@
                                     {{startDate.label | date:'d MMM, y, h:mm a'}}</span>
                             </ng-template>
                         </p-dropdown>
-                        <p-dropdown [options]="AllTaskColArray.DueDate" *ngSwitchCase="'DueDate'"
+                        <p-dropdown   [options]="AllTaskColArray.DueDate" *ngSwitchCase="'DueDate'"
                             [(ngModel)]="selectedDueDate" appendTo="body"
                             (onChange)="taskId.filter($event.value, col.field, 'equals')">
                             <ng-template let-dueDate pTemplate="selectedItem">
@@ -178,7 +179,10 @@
 
 <div *ngIf="allTasks.length === 0 && !loaderenable"><span style="font-size: 2em;color:#C53E3E;">No Tasks
         Available.</span></div>
-        
+
+
+
+
 <router-outlet></router-outlet>
 
 <app-feedback-popup #feedbackPopup></app-feedback-popup>

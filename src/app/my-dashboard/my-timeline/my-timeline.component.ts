@@ -88,7 +88,7 @@ export class MyTimelineComponent implements OnInit {
       // listPlugin
       plugins: [dayGridPlugin, timeGridPlugin, bootstrapPlugin, interactionPlugin],
       defaultDate: new Date(),
-      // weekends: false,
+      weekends: false,
       header: {
         left: ' prev title next',
         center: '',
@@ -127,31 +127,31 @@ export class MyTimelineComponent implements OnInit {
           },
         }
       },
-      eventMouseEnter: function(event, jsEvent, view) {
-        
+      eventMouseEnter: function (event, jsEvent, view) {
+
         event.el.Tooltip.show();
-    },
-    
-    eventMouseLeave: function(event, jsEvent, view) {
-      
+      },
+
+      eventMouseLeave: function (event, jsEvent, view) {
+
         event.el.Tooltip.hide();
-    },
+      },
 
-    eventRender: function(info) {
-      
-      var tooltip = new Tooltip(info.el, {
-        title: info.event.title,
-        placement: 'top',
-        trigger: 'hover',
-        container: 'body'
-      });
+      eventRender: function (info) {
 
-      info.el.Tooltip = tooltip;
-    },
- 
+        var tooltip = new Tooltip(info.el, {
+          title: info.event.title,
+          placement: 'top',
+          trigger: 'hover',
+          container: 'body'
+        });
+
+        info.el.Tooltip = tooltip;
+      },
+
       eventClick: async function (eventInfo) {
 
-      
+
         self.EnableEditDate = self.EnableEditDate === undefined ? await self.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3) : self.EnableEditDate;
         if (eventInfo.event.backgroundColor !== '#D6CFC7') {
           self.modalloaderenable = true;
@@ -237,7 +237,9 @@ export class MyTimelineComponent implements OnInit {
     var filterDates = [];
 
     if (firstLoad) {
-      startDate = new Date(new Date().setDate((new Date().getDate() - new Date().getDay()) + 1)), endDate = new Date(new Date().setDate((new Date().getDate() - new Date().getDay()) + 5));
+      debugger;
+      startDate = new Date(new Date().setDate((new Date().getDate() - new Date().getDay()))),
+        endDate = new Date(new Date().setDate((new Date().getDate() - new Date().getDay()) + 6));
     }
 
     filterDates = await this.getStartEndDates(startDate, endDate);
@@ -277,12 +279,12 @@ export class MyTimelineComponent implements OnInit {
     this.allLeaves = this.response[1] !== "" ? this.response[1] : [];
     this.events = [];
     this.allTasks.forEach(element => {
-
+      debugger;
       const eventObj = {
-        "title": element.Task === 'Adhoc' ? element.Entity + "-" + element.Comments + " : " + element.TimeSpent : element.ExpectedTime !== null ? element.Title + " : " + element.ExpectedTime : element.Title,
+        "title": element.Task === 'Adhoc' ? element.Entity + "-" + element.Comments + " : " + element.TimeSpent : element.SubMilestones ? element.SubMilestones === "Default" ? (element.ExpectedTime ? element.Title + " : " + element.ExpectedTime : element.Title) : element.ExpectedTime ? element.Title + ' - ' + element.SubMilestones + " : " + element.ExpectedTime : element.Title + ' - ' + element.SubMilestones : element.Title,
         "id": element.Id,
         "start": new Date(element.StartDate),
-        "end": new Date(this.datePipe.transform(element.StartDate,"yyyy-MM-dd")).getTime() !==  new Date(this.datePipe.transform(element.DueDate,"yyyy-MM-dd")).getTime() ?new Date(new Date(element.DueDate).setDate(new Date(element.DueDate).getDate()+1)): new Date(element.DueDate),
+        "end": new Date(this.datePipe.transform(element.StartDate, "yyyy-MM-dd")).getTime() !== new Date(this.datePipe.transform(element.DueDate, "yyyy-MM-dd")).getTime() ? new Date(new Date(element.DueDate).setDate(new Date(element.DueDate).getDate() + 1)) : new Date(element.DueDate),
         "backgroundColor": element.Status === 'Not Confirmed' ? "#FFD34E" : element.Status === 'Not Started' ? "#5F6273" : element.Status === 'In Progress' ? "#6EDC6C" : element.Status === 'Auto Closed' ? "#8183CC" : element.Status === 'On Hold' ? "#FF3E56" : (element.Status === 'Completed' && element.Task === 'Adhoc') ? element.Comments === "Administrative Work" ?
           '#eb592d' : element.Comments === "Client meeting / client training" ? '#ff8566' : element.Comments === "Internal meeting" ? '#795C32' : '#445cad' : "#3498DB",
         allDay: element.TATStatus === "Yes" ? true : false
@@ -296,7 +298,7 @@ export class MyTimelineComponent implements OnInit {
         "title": element.Title,
         "id": element.Id,
         "start": new Date(element.EventDate),
-        "end": new Date(this.datePipe.transform(element.EventDate,"yyyy-MM-dd")).getTime() !==  new Date(this.datePipe.transform(element.EndDate,"yyyy-MM-dd")).getTime() ? new Date(new Date(element.EndDate).setDate(new Date(element.EndDate).getDate()+1)) : new Date(element.EndDate),
+        "end": new Date(this.datePipe.transform(element.EventDate, "yyyy-MM-dd")).getTime() !== new Date(this.datePipe.transform(element.EndDate, "yyyy-MM-dd")).getTime() ? new Date(new Date(element.EndDate).setDate(new Date(element.EndDate).getDate() + 1)) : new Date(element.EndDate),
         "backgroundColor": "#D6CFC7",
         allDay: true,
       }
@@ -304,10 +306,9 @@ export class MyTimelineComponent implements OnInit {
 
     });
 
-
+    this.events = [...this.events];
     this.CalendarLoader = false;
 
-    this.events = [...this.events];
   }
 
 
@@ -423,6 +424,13 @@ export class MyTimelineComponent implements OnInit {
   }
 
 
+  cancel() {
+
+    this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start, this.fullCalendar.calendar.state.dateProfile.currentRange.end);
+
+  }
+
+
 
   // *************************************************************************************************************************************
   // Get Next Previous task from current task 
@@ -495,7 +503,7 @@ export class MyTimelineComponent implements OnInit {
     });
     ref.onClose.subscribe(async (blockTimeobj: any) => {
       if (blockTimeobj) {
-       
+
         this.CalendarLoader = true;
         if (event === 'Leave') {
 
@@ -599,8 +607,7 @@ export class MyTimelineComponent implements OnInit {
 
         return false;
       }
-      else
-      {
+      else {
         this.CalendarLoader = false;
         this.confirmationService.confirm({
           message: 'Are you sure that you want to proceed?',
@@ -611,14 +618,14 @@ export class MyTimelineComponent implements OnInit {
             this.taskdisplay = false;
             this.CalendarLoader = true;
             var response = await this.myDashboardConstantsService.CompleteTask(task);
-  
+
             if (response) {
               this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
-  
+
             }
             else {
               this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated successfully.' });
-  
+
               if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1 && task.Status === 'Completed') {
                 this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
               }
@@ -631,7 +638,7 @@ export class MyTimelineComponent implements OnInit {
         });
       }
 
-     
+
     }
     else {
       this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Previous task should be completed.' });
@@ -639,17 +646,5 @@ export class MyTimelineComponent implements OnInit {
       this.CalendarLoader = false;
     }
   };
-
-
-  mouseOver(event, content){
-
-    var data = event.detail.event.data;
-
-    this.toolData = data;
-
-    console.log(this.toolData);
-
-  }
-
 }
 
