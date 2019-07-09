@@ -301,6 +301,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   async createSOW() {
     if (this.addSowForm.valid) {
       // get all the value from form.
+      this.pmObject.isMainLoaderHidden = false;
       this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity ? this.addSowForm.value.clientLegalEntity :
         this.pmObject.addSOW.ClientLegalEntity;
       this.pmObject.addSOW.SOWCode = this.addSowForm.value.sowCode ? this.addSowForm.value.sowCode + '-SOW' : this.pmObject.addSOW.SOWCode;
@@ -637,6 +638,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         const retResults = await this.spServices.updateItem(this.constant.listNames.ClientLegalEntity.name, cID, clientLegalInfo,
           this.constant.listNames.ClientLegalEntity.type);
         this.addUpdateSOWsendEmail(sowObj, this.constant.SOW_STATUS.APPROVED);
+        this.pmObject.isMainLoaderHidden = true;
         this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'SOW Created Successfully.' });
         setTimeout(() => {
           this.pmObject.isAddSOWVisible = false;
@@ -653,6 +655,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       await this.spServices.updateItem(this.constant.listNames.SOW.name, sowObj.ID, data, this.constant.listNames.SOW.type);
       this.addUpdateSOWsendEmail(sowObj, this.constant.SOW_STATUS.UPDATE);
       this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'SOW Updated Successfully.' });
+      this.pmObject.isMainLoaderHidden = true;
       setTimeout(() => {
         this.pmObject.isAddSOWVisible = false;
         this.router.navigate(['/projectMgmt/allSOW']);
@@ -797,6 +800,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   async addAdditionalBudget() {
     if (this.addAdditionalBudgetForm.valid) {
       // get the budget from SOW list based on SOWID.
+      this.pmObject.isMainLoaderHidden = false;
       const d = new Date();
       const today = this.pmService.toISODateString(d);
       let currSelectedSOW;
@@ -873,6 +877,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       const res = await this.spServices.executeBatch(batchURL);
       if (sowItemResult && sowItemResult.length) {
         this.updateBudgetEmail(this.pmObject.addSOW);
+        this.pmObject.isMainLoaderHidden = true;
         this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Budget updated Successfully.' });
         console.log(res);
         setTimeout(() => {

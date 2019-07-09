@@ -37,8 +37,6 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
   selectedFile;
   fileReader;
   filePathUrl: any;
-  isFinanceManagementLoaderHidden = false;
-  isFinanceManagementTableHidden = true;
   constructor(
     public pmObject: PMObjectService,
     private pmConstant: PmconstantService,
@@ -50,16 +48,12 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     private router: Router
   ) { }
   ngOnInit() {
-    this.isFinanceManagementLoaderHidden = false;
-    this.isFinanceManagementTableHidden = true;
     setTimeout(() => {
       this.setHeaderColumn();
       this.budgethours = this.pmObject.addProject.Timeline.Standard.IsStandard ?
         this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours :
         this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours;
       this.pmObject.addProject.FinanceManagement.BudgetHours = this.budgethours;
-      this.isFinanceManagementLoaderHidden = true;
-      this.isFinanceManagementTableHidden = false;
     }, 500);
   }
   ngOnChanges(changes: SimpleChanges) {
@@ -99,8 +93,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
    */
   saveProject() {
     // verify the project code.
-    this.isFinanceManagementLoaderHidden = false;
-    this.isFinanceManagementTableHidden = true;
+    this.pmObject.isMainLoaderHidden = false;
     setTimeout(() => {
       this.validateAndSave();
     }, 500);
@@ -710,8 +703,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
         }
       }
     }
-    this.isFinanceManagementLoaderHidden = true;
-    this.isFinanceManagementTableHidden = true;
+    this.pmObject.isMainLoaderHidden = true;
     this.messageService.add({
       key: 'custom', severity: 'success', summary: 'Success Message',
       detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode

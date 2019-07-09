@@ -4,7 +4,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem, MessageService, DialogService, SelectItem } from 'primeng/api';
+import { MenuItem, MessageService, DialogService, SelectItem, ConfirmationService } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommunicationComponent } from '../communication/communication.component';
@@ -64,6 +64,7 @@ export class AllProjectsComponent implements OnInit {
   };
   isAllProjectLoaderHidden = true;
   isAllProjectTableHidden = true;
+  addRollingProjectArray: any[];
   public checkList = {
     addRollingProjectError: false,
     addRollingProjectErrorMsg: ''
@@ -82,7 +83,8 @@ export class AllProjectsComponent implements OnInit {
     private spServices: SPOperationService,
     private messageService: MessageService,
     public dialogService: DialogService,
-    public router: Router
+    public router: Router,
+    private confirmationService: ConfirmationService
   ) { }
 
   ngOnInit() {
@@ -349,110 +351,181 @@ export class AllProjectsComponent implements OnInit {
     const status = this.selectedProjectObj.Status;
     const result = await this.getGetIds(selectedProjectObj.ProjectCode);
     if (result && result.length) {
-      const batchURL = [];
-      const options = {
-        data: null,
-        url: '',
-        type: '',
-        listName: ''
-      };
       switch (status) {
         case this.constants.projectStatus.InDiscussion:
-          const piUdateData = {
-            __metadata: {
-              type: this.constants.listNames.ProjectInformation.type
-            },
-            Status: this.constants.projectStatus.Unallocated,
-            PrevStatus: status,
-            ActualStartDate: new Date()
-          };
-          const piUpdate = Object.assign({}, options);
-          piUpdate.data = piUdateData;
-          piUpdate.listName = this.constants.listNames.ProjectInformation.name;
-          piUpdate.type = 'PATCH';
-          piUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, this.selectedProjectObj.ID);
-          batchURL.push(piUpdate);
-          const prjBudgetBreakupData = {
-            __metadata: {
-              type: this.constants.listNames.ProjectBudgetBreakup.type
-            },
-            Status: this.constants.STATUS.APPROVED,
-            ApprovalDate: new Date()
-          };
-          const prjBudgetBreakupUpdate = Object.assign({}, options);
-          prjBudgetBreakupUpdate.data = prjBudgetBreakupData;
-          prjBudgetBreakupUpdate.listName = this.constants.listNames.ProjectBudgetBreakup.name;
-          prjBudgetBreakupUpdate.type = 'PATCH';
-          prjBudgetBreakupUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectBudgetBreakup.name,
-            this.Ids.projectBudgetBreakUPID);
-          batchURL.push(prjBudgetBreakupUpdate);
+          this.confirmationService.confirm({
+            header: 'Change Status of Project -' + selectedProjectObj.ProjectCode + '',
+            icon: 'pi pi-exclamation-triangle',
+            message: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
+              + ' from ' + status + ' to ' + this.constants.projectStatus.Unallocated + '?',
+            accept: () => {
+              this.changeProjectStatusUnallocated();
+            }
+          });
           break;
         case this.constants.projectStatus.Unallocated:
         case this.constants.projectStatus.InProgress:
         case this.constants.projectStatus.ReadyForClient:
         case this.constants.projectStatus.OnHold:
         case this.constants.projectStatus.AuthorReview:
-          const pinfoUdateData = {
-            __metadata: {
-              type: this.constants.listNames.ProjectInformation.type
-            },
-            PrevStatus: status,
-            Status: this.constants.projectStatus.AuditInProgress,
-            ProposedEndDate: new Date()
-          };
-          const piInfoUpdate = Object.assign({}, options);
-          piInfoUpdate.data = pinfoUdateData;
-          piInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
-          piInfoUpdate.type = 'PATCH';
-          piInfoUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name,
-            this.selectedProjectObj.ID);
-          batchURL.push(piInfoUpdate);
-          // This function is used to calculate the hour spent for particular projects.
-          const hourSpent = await this.getTotalHours(this.selectedProjectObj.ProjectCode);
-          const projectFinaceData = {
-            __metadata: {
-              type: this.constants.listNames.ProjectFinances.type
-            },
-            HoursSpent: hourSpent,
-          };
-          const projectFinanceUpdate = Object.assign({}, options);
-          projectFinanceUpdate.data = projectFinaceData;
-          projectFinanceUpdate.listName = this.constants.listNames.ProjectFinances.name;
-          projectFinanceUpdate.type = 'PATCH';
-          projectFinanceUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectFinances.name,
-            this.Ids.projectFinanceID);
-          batchURL.push(projectFinanceUpdate);
+          this.confirmationService.confirm({
+            header: 'Change Status of Project -' + selectedProjectObj.ProjectCode + '',
+            icon: 'pi pi-exclamation-triangle',
+            message: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
+              + ' from ' + status + ' to ' + this.constants.projectStatus.AuditInProgress + '?',
+            accept: () => {
+              this.changeProjectStatusAuditInProgress();
+            }
+          });
           break;
         case this.constants.projectStatus.AuditInProgress:
+          this.addRollingProjectArray = [
+            { parameter: 'All files uploaded correctly' },
+            { parameter: 'All tasks completed and hrs updated' },
+            { parameter: 'All necessary project details updated' },
+          ];
           this.pmObject.isAuditRollingVisible = true;
           break;
         case this.constants.projectStatus.PendingClosure:
-          const picloseUdateData = {
-            __metadata: {
-              type: this.constants.listNames.ProjectInformation.type
-            },
-            Status: this.constants.projectStatus.Closed,
-            ActualEndDate: new Date(),
-            PrevStatus: status,
-          };
-          const picloseUpdate = Object.assign({}, options);
-          picloseUpdate.data = picloseUdateData;
-          picloseUpdate.listName = this.constants.listNames.ProjectInformation.name;
-          picloseUpdate.type = 'PATCH';
-          picloseUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name,
-            this.selectedProjectObj.ID);
-          batchURL.push(picloseUpdate);
+          this.confirmationService.confirm({
+            header: 'Change Status of Project -' + selectedProjectObj.ProjectCode + '',
+            icon: 'pi pi-exclamation-triangle',
+            message: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
+              + ' from ' + status + ' to ' + this.constants.projectStatus.Closed + '?',
+            accept: () => {
+              this.changeProjectStatusAuditInProgress();
+            }
+          });
           break;
       }
-      if (status !== this.constants.projectStatus.AuditInProgress) {
-        const sResult = await this.spServices.executeBatch(batchURL);
-        this.sendEmailBasedOnStatus(status);
-        this.messageService.add({
-          key: 'allProject', severity: 'success', summary: 'Success Message',
-          detail: 'Project Updated Successfully.'
-        });
-      }
     }
+  }
+  async changeProjectStatusClose() {
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const picloseUdateData = {
+      __metadata: {
+        type: this.constants.listNames.ProjectInformation.type
+      },
+      Status: this.constants.projectStatus.Closed,
+      ActualEndDate: new Date(),
+      PrevStatus: status,
+    };
+    const picloseUpdate = Object.assign({}, options);
+    picloseUpdate.data = picloseUdateData;
+    picloseUpdate.listName = this.constants.listNames.ProjectInformation.name;
+    picloseUpdate.type = 'PATCH';
+    picloseUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name,
+      this.selectedProjectObj.ID);
+    batchURL.push(picloseUpdate);
+    const sResult = await this.spServices.executeBatch(batchURL);
+    this.sendEmailBasedOnStatus(status);
+    this.messageService.add({
+      key: 'allProject', severity: 'success', summary: 'Success Message',
+      detail: 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.'
+    });
+    setTimeout(() => {
+      this.router.navigate(['/projectMgmt/allProjects']);
+    }, 500);
+  }
+  async changeProjectStatusUnallocated() {
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const piUdateData = {
+      __metadata: {
+        type: this.constants.listNames.ProjectInformation.type
+      },
+      Status: this.constants.projectStatus.Unallocated,
+      PrevStatus: status,
+      ActualStartDate: new Date()
+    };
+    const piUpdate = Object.assign({}, options);
+    piUpdate.data = piUdateData;
+    piUpdate.listName = this.constants.listNames.ProjectInformation.name;
+    piUpdate.type = 'PATCH';
+    piUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, this.selectedProjectObj.ID);
+    batchURL.push(piUpdate);
+    const prjBudgetBreakupData = {
+      __metadata: {
+        type: this.constants.listNames.ProjectBudgetBreakup.type
+      },
+      Status: this.constants.STATUS.APPROVED,
+      ApprovalDate: new Date()
+    };
+    const prjBudgetBreakupUpdate = Object.assign({}, options);
+    prjBudgetBreakupUpdate.data = prjBudgetBreakupData;
+    prjBudgetBreakupUpdate.listName = this.constants.listNames.ProjectBudgetBreakup.name;
+    prjBudgetBreakupUpdate.type = 'PATCH';
+    prjBudgetBreakupUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectBudgetBreakup.name,
+      this.Ids.projectBudgetBreakUPID);
+    batchURL.push(prjBudgetBreakupUpdate);
+    const sResult = await this.spServices.executeBatch(batchURL);
+    this.sendEmailBasedOnStatus(status);
+    this.messageService.add({
+      key: 'allProject', severity: 'success', summary: 'Success Message',
+      detail: 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.'
+    });
+    setTimeout(() => {
+      this.router.navigate(['/projectMgmt/allProjects']);
+    }, 500);
+  }
+  async changeProjectStatusAuditInProgress() {
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const pinfoUdateData = {
+      __metadata: {
+        type: this.constants.listNames.ProjectInformation.type
+      },
+      PrevStatus: status,
+      Status: this.constants.projectStatus.AuditInProgress,
+      ProposedEndDate: new Date()
+    };
+    const piInfoUpdate = Object.assign({}, options);
+    piInfoUpdate.data = pinfoUdateData;
+    piInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
+    piInfoUpdate.type = 'PATCH';
+    piInfoUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name,
+      this.selectedProjectObj.ID);
+    batchURL.push(piInfoUpdate);
+    // This function is used to calculate the hour spent for particular projects.
+    const hourSpent = await this.getTotalHours(this.selectedProjectObj.ProjectCode);
+    const projectFinaceData = {
+      __metadata: {
+        type: this.constants.listNames.ProjectFinances.type
+      },
+      HoursSpent: hourSpent,
+    };
+    const projectFinanceUpdate = Object.assign({}, options);
+    projectFinanceUpdate.data = projectFinaceData;
+    projectFinanceUpdate.listName = this.constants.listNames.ProjectFinances.name;
+    projectFinanceUpdate.type = 'PATCH';
+    projectFinanceUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectFinances.name,
+      this.Ids.projectFinanceID);
+    batchURL.push(projectFinanceUpdate);
+    const sResult = await this.spServices.executeBatch(batchURL);
+    this.sendEmailBasedOnStatus(status);
+    this.messageService.add({
+      key: 'allProject', severity: 'success', summary: 'Success Message',
+      detail: 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.'
+    });
+    setTimeout(() => {
+      this.router.navigate(['/projectMgmt/allProjects']);
+    }, 500);
   }
   async getGetIds(projectCode) {
     const batchURL = [];
@@ -628,10 +701,10 @@ export class AllProjectsComponent implements OnInit {
    * This method is used to complete the audit.
    */
   async auditComplete() {
-    const formValue = $('.audit-rolling-section .formContentChecklist');
+    const formValue = $('.audit-rolling-section');
     const oInput = $('.audit-rolling-section .formContentChecklist input');
-    const oContent = $('.audit-rolling-section .formContentChecklist .formRow .attrCheckListContent');
-    const oTextArea = $('.audit-rolling-section .formContentChecklist .formRow .attrCheckListContent textarea');
+    const oContent = $('.audit-rolling-section .formContentChecklist td:nth-child(2)');
+    const oTextArea = $('.audit-rolling-section .formContentChecklist  textarea');
     let bFlag = true;
     const arrData = [];
     const nCount = oInput.length;
@@ -666,9 +739,17 @@ export class AllProjectsComponent implements OnInit {
         PrevStatus: this.selectedProjectObj.Status,
       };
       const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectInformation.name,
-        this.selectedProjectObj.ID, piUdpate, this.constants.listNames.ProjectInformation.type);
+      this.selectedProjectObj.ID, piUdpate, this.constants.listNames.ProjectInformation.type);
+      this.checkList.addRollingProjectError = false;
       this.pmObject.isAuditRollingVisible = false;
       this.sendEmailBasedOnStatus(this.selectedProjectObj.Status);
+      this.messageService.add({
+        key: 'allProject', severity: 'success', summary: 'Success Message',
+        detail: 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.'
+      });
+      setTimeout(() => {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }, 500);
     }
   }
   /**
@@ -766,6 +847,7 @@ export class AllProjectsComponent implements OnInit {
    * This method is used to transfer the project from one sow code to another sow code.
    */
   async performSOWMove() {
+    this.pmObject.isMainLoaderHidden = false;
     const projObject = this.selectedProjectObj;
     const isValid = await this.validateSOWBudgetForProjectMovement(this.newSelectedSOW, projObject);
     if (isValid) {
@@ -839,6 +921,7 @@ export class AllProjectsComponent implements OnInit {
         batchURL.push(projectInfoUpdate);
       }
       const sResult = await this.spServices.executeBatch(batchURL);
+      this.pmObject.isMainLoaderHidden = true;
       this.messageService.add({
         key: 'allProject', severity: 'success', summary: 'Success Message',
         detail: 'Project move to under new SOW Code - ' + this.newSelectedSOW + ''
