@@ -48,8 +48,14 @@ position="bottom-center">
                               [ngClass]="{'badge-odd' :odd, 'badge-even':even }"></i></span>
                           <div class="vertical-timeline-element-content bounce-in">
                             <div class="timeline-title" [innerHTML]="comment.TaskComments"></div>
-                            <p style="color: #ff0000;font-size: 13px;">{{comment.TaskName}},&nbsp; <span
-                                style="color: #c53e3e;">{{comment.AssignedTo.Title}}</span></p><span
+                            <p style="color: #ff0000;font-size: 13px;">{{comment.TaskName}} 
+                              <span *ngIf="comment.SubMilestones">
+                                -  {{comment.SubMilestones}}
+                              </span>
+                              
+                              
+                              <span
+                                style="color: #c53e3e;"> ,&nbsp; {{comment.AssignedTo.Title}}</span></p><span
                               class="vertical-timeline-element-date"
                               style="text-align: left;">{{comment.DueDate| date:'MMM d, y'}}<br>
                               {{comment.DueDate| date:'hh:mm a'}}</span>

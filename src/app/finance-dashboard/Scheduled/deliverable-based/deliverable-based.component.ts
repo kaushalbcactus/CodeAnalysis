@@ -79,7 +79,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         private commonService: CommonService,
         private spOperationsService: SpOperationsService,
     ) {
-        this.subscription.add(this.fdDataShareServie.getDateRange().subscribe(date => {
+        this.subscription.add(this.fdDataShareServie.getScheduleDateRange().subscribe(date => {
             this.DateRange = date;
             console.log('this.DateRange ', this.DateRange);
             this.getRequiredData();
@@ -88,15 +88,15 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
         // SetDefault Values
-        if (this.fdDataShareServie.DateRange.startDate) {
-            this.DateRange = this.fdDataShareServie.DateRange;
+        if (this.fdDataShareServie.scheduleDateRange.startDate) {
+            this.DateRange = this.fdDataShareServie.scheduleDateRange;
         } else {
             const next3Months = this.commonService.getNextWorkingDay(65, new Date());
             const last1Year = this.commonService.getLastWorkingDay(260, new Date());
             this.rangeDates = [last1Year, next3Months];
             this.DateRange.startDate = new Date(this.datePipe.transform(this.rangeDates[0], "yyyy-MM-dd") + " 00:00:00").toISOString();
             this.DateRange.endDate = new Date(this.datePipe.transform(this.rangeDates[1], "yyyy-MM-dd") + " 23:59:00").toISOString();
-            this.fdDataShareServie.DateRange = this.DateRange;
+            this.fdDataShareServie.scheduleDateRange = this.DateRange;
         }
 
         // Get Projects
@@ -276,13 +276,11 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             for (let j = 0; j < arrResults.length; j++) {
                 const element = arrResults[j];
                 console.log('-- deliverable based ', element);
-                this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
                 this.formatData(element);
             }
         }
-        // });
-
     }
+    
     showMenu(element) {
         const project = this.projectInfoData.find((x) => {
             if (x.ProjectCode == element.Title) {
@@ -333,6 +331,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         }
         this.deliverableBasedRes = [...this.deliverableBasedRes];
         this.createColFieldValues();
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
     // Project PO

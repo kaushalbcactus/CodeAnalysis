@@ -87,7 +87,7 @@ export class MyDashboardConstantsService {
     },
     Milestone: {
 
-      select: "ID,Title,AssignedTo/Id,AssignedTo/Title,DueDate,TaskComments",
+      select: "ID,Title,AssignedTo/Id,AssignedTo/Title,DueDate,TaskComments,SubMilestones",
       expand: "AssignedTo",
       orderby: "DueDate desc",
       filter: "ProjectCode eq '{{ProjectCode}}' and Milestone eq '{{Milestone}}'"

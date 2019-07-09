@@ -80,7 +80,7 @@ position="bottom-center">
           </td>
           <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
             <p-dropdown fxLayout="row wrap" filter="true" *ngIf="rowData.isEditable" [options]="rowData.dbMilestones"
-              [(ngModel)]="rowData.Milestone" (ngModelChange)="getAllMilestones($event,rowData)" [style]="{ width: '100%', overflow: 'visible',border:'none'}">
+              [(ngModel)]="rowData.Milestone" (ngModelChange)="SetMilestone($event,rowData)" [style]="{ width: '100%', overflow: 'visible',border:'none'}">
             </p-dropdown>
 
             <span fxLayout="row wrap" *ngIf="!rowData.isEditable"> {{rowData.Milestone}} </span>

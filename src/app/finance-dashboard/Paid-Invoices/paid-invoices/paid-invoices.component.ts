@@ -97,7 +97,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.rangeDates = [last3Days, new Date()];
         this.DateRange.startDate = new Date(this.datePipe.transform(this.rangeDates[0], "yyyy-MM-dd") + " 00:00:00").toISOString();
         this.DateRange.endDate = new Date(this.datePipe.transform(this.rangeDates[1], "yyyy-MM-dd") + " 23:59:00").toISOString();
-        this.fdDataShareServie.DateRange = this.DateRange;
+        // this.fdDataShareServie.DateRange = this.DateRange;
 
         //Get  User Info 
         this.currentUserInfo();
@@ -270,8 +270,9 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             startDate: startDate,
             endDate: endDate
         }
-        this.fdDataShareServie.DateRange = obj;
-        this.fdDataShareServie.sendDateRange(obj);
+        this.DateRange = obj;
+        // this.fdDataShareServie.sendDateRange(obj);
+        this.getRequiredData();
     }
 
     setDefaultDateRange() {
@@ -283,8 +284,9 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
                 startDate: startDate,
                 endDate: endDate
             }
-            this.fdDataShareServie.DateRange = obj;
-            this.fdDataShareServie.sendDateRange(obj);
+            this.DateRange = obj;
+            // this.fdDataShareServie.sendDateRange(obj);
+            this.getRequiredData();
             console.log('startDate ' + startDate + ' endDate' + endDate)
         }
     }
