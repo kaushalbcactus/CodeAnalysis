@@ -6,11 +6,12 @@ declare const _spPageContextInfo;
 
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+<<<<<<< HEAD
   title = 'Medcom SPA';
   // tslint:disable-next-line:variable-name
   constructor(public globalObject: GlobalService, private router: Router, private _ngZone: NgZone) { }
