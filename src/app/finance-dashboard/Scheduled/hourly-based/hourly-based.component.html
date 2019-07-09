@@ -48,16 +48,16 @@
                          (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProjectMileStone'" [options]="hourlyBasedColArray.ProjectMileStone"
-                        defaultLabel="All"  (onChange)="hb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All" (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="hourlyBasedColArray.ClientLegalEntity"
-                        defaultLabel="All"  (onChange)="hb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All" (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ProposedEndDate'" [options]="hourlyBasedColArray.ProposedEndDate"
-                        defaultLabel="All"  (onChange)="hb.filter($event.value, col.field, 'in')">
+                    <p-multiSelect *ngSwitchCase="'PONumber'" [options]="hourlyBasedColArray.PONumber"
+                        defaultLabel="All" (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ScheduledDate'" [options]="hourlyBasedColArray.ScheduledDate"
-                        defaultLabel="All"  (onChange)="hb.filter($event.value, col.field, 'in')">
+                    <p-multiSelect *ngSwitchCase="'POName'" [options]="hourlyBasedColArray.POName"
+                        defaultLabel="All" (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Rate'" [options]="hourlyBasedColArray.Rate" defaultLabel="All"
                          (onChange)="hb.filter($event.value, col.field, 'in')">

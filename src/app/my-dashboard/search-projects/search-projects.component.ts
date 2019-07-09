@@ -8,6 +8,7 @@ import { ProjectDraftsComponent } from './project-drafts/project-drafts.componen
 import { TimelineComponent } from 'src/app/task-allocation/timeline/timeline.component';
 import { ViewUploadDocumentDialogComponent } from '../view-upload-document-dialog/view-upload-document-dialog.component';
 import { Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-search-projects',
@@ -70,11 +71,13 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     deliverable: [],
     account: [],
   };
+ 
 
   constructor(public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
     private spServices: SharepointoperationService,
+    private datePipe: DatePipe,
     public sharedObject: GlobalService, public router: Router) { }
 
   ngOnInit() {
@@ -136,8 +139,9 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
     this.ProjectColArray.CreatedBy.push.apply(this.ProjectColArray.CreatedBy, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; })));
 
-    this.ProjectColArray.Created.push.apply(this.ProjectColArray.Created, this.myDashboardConstantsService.getUniqueDates(this.ProjectList.map(a => a.Created)));
 
+    this.myDashboardConstantsService.uniqueArrayObj(this.ProjectColArray.map(a => { let b = { label: this.datePipe.transform(a.Created, "d MMM, y, h:mm a"), value: a.Created }; return b; }));
+ 
     this.loaderenable = false;
     this.tableviewenable = true;
   }

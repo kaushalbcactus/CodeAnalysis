@@ -92,9 +92,10 @@
 <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
 position="bottom-center">
 </p-toast>
-
+ 
 <p-fullCalendar #calendar [ngStyle]="{'margin':'1em;'}"  [events]="events" [options]="options">
 </p-fullCalendar>
+ 
 
 <ng-template #calendarPopover>
 
@@ -117,7 +118,7 @@ position="bottom-center">
         
             <button type="button" pButton icon="pi pi-save" id="saveTime" style="margin-right:5px" (click)="UpdateTask()"  
               [disabled]="task.Status === SelectedStatus  ||  SelectedStatus === undefined" label="Update"></button>
-            <button type="button"  pButton icon="pi pi-times" (click)="taskdisplay=false" label="Cancel" class="ui-button-secondary"
+            <button type="button"  pButton icon="pi pi-times" (click)="cancel();taskdisplay=false" label="Cancel" class="ui-button-secondary"
               style="background-color:ghostwhite;"></button>
           
           </div>

@@ -202,7 +202,6 @@ export class SpOperationsService {
                 console.log(data);
             },
             error: function (error) {
-                // createProformaRequestInProgress = false;
                 console.log(error);
             }
         });

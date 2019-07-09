@@ -311,7 +311,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 PONumber: this.getPONumber(element).Number,
                 PO: element.PO,
                 POCId: element.MainPOC,
-                ClientName: this.getCLE(element),
+                ClientName: this.getMilestones(element).ClientLegalEntity,//this.getCLE(element),
                 ScheduledDate: element.ScheduledDate, // this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
                 Amount: element.Amount,
                 Currency: element.Currency,
@@ -381,16 +381,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             }
         })
         return found ? found : '';
-    }
-
-    // Project Client
-    getCLE(pc: any) {
-        let found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == pc.Title) {
-                return x.ClientLegalEntity;
-            }
-        });
-        return found ? found.ClientLegalEntity : '';
     }
 
     getCSDetails(res) {

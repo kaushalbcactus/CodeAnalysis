@@ -23,12 +23,12 @@ import { SlideMenu } from 'primeng/primeng';
   providers: [DatePipe, MessageService],
 
 })
-export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
+export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   selectedDueDate: DateObj;
   selectedStartDate: DateObj;
-  @ViewChild('popupMenu',{static: true})
-  popupMenu:SlideMenu;
+  @ViewChild('popupMenu', { static: true })
+  popupMenu: SlideMenu;
   thenpopupMenu: SlideMenu;
   thenBlock: Table;
   public loderenable: boolean = false;
@@ -98,9 +98,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
     this.myDashboardConstantsService.getEmailTemplate();
 
   }
-  ngOnDestroy()
-  {
-
+  ngOnDestroy() {
   }
 
 
@@ -118,8 +116,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
         { label: 'Mark Complete', icon: 'pi pi-fw pi-check', command: (e) => this.checkCompleteTask(data) },
       ];
     }
-
-
   }
 
   // *************************************************************************************************************************************
@@ -137,7 +133,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
 
       this.allTasks = [];
       this.loaderenable = true;
-      this.rangeDates[1] = this.rangeDates[1] === null ? this.rangeDates[0] : this.rangeDates[1]; 
+      this.rangeDates[1] = this.rangeDates[1] === null ? this.rangeDates[0] : this.rangeDates[1];
       var dates = this.CalculateDatesDiffernce(event, days);
       this.getStatusFilterDropDownValue(this.TabName, dates);
     }
@@ -147,9 +143,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
       var dates = this.CalculateDatesDiffernce(event, days);
       this.getStatusFilterDropDownValue(this.TabName, dates);
     }
-
-
-
   }
 
   // *************************************************************************************************************************************
@@ -236,7 +229,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
 
 
       // this.allTasks.map(c => c.TimeSpent = c.TimeSpent === null ? 0 : c.TimeSpent.split('.')[0] < 10 ?"0" + c.TimeSpent.split('.')[0] +":" + c.TimeSpent.split('.')[1] : c.TimeSpent.split('.')[0] +":" + c.TimeSpent.split('.')[1]);
-    
+
       this.allTasks.map(c => c.TimeSpent = c.TimeSpent === null ? 0 : parseFloat(c.TimeSpent));
 
       this.allTasks.map(c => c.StartDate = new Date(this.datePipe.transform(c.StartDate, 'd MMM, y, h:mm a')));
@@ -258,10 +251,26 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
           var data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === element.ProjectCode);
 
           if (data !== undefined) {
-            element.DisplayTitle = element.Title + '(' + data.WBJID + ')';
+            if (element.SubMilestones) {
+
+              if (element.SubMilestones === "Default") {
+                element.DisplayTitle = element.Title + ' ( ' + data.WBJID + ')';
+              }
+              else {
+                element.DisplayTitle = element.Title + ' - ' + element.SubMilestones + ' ( ' + data.WBJID + ')';
+              }
+            }
+            else {
+              element.DisplayTitle = element.Title + ' (' + data.WBJID + ')';
+            }
           }
           else {
-            element.DisplayTitle = element.Title;
+            if (element.SubMilestones) {
+              element.DisplayTitle = element.Title + ' - ' + element.SubMilestones;
+            }
+            else {
+              element.DisplayTitle = element.Title;
+            }
           }
         });
       }
@@ -293,8 +302,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
   createColFieldValues() {
     this.AllTaskColArray.TaskStatus.push.apply(this.AllTaskColArray.TaskStatus, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
     this.AllTaskColArray.TaskName.push.apply(this.AllTaskColArray.TaskName, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.DisplayTitle, value: a.DisplayTitle }; return b; })));
-    this.AllTaskColArray.StartDate.push.apply(this.AllTaskColArray.StartDate, this.myDashboardConstantsService.getUniqueDates(this.allTasks.map(a => a.StartDate)));
-    this.AllTaskColArray.DueDate.push.apply(this.AllTaskColArray.DueDate, this.myDashboardConstantsService.getUniqueDates(this.allTasks.map(a => a.DueDate)));
+
+    this.AllTaskColArray.StartDate.push.apply(this.AllTaskColArray.StartDate, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: this.datePipe.transform(a.StartDate, "d MMM, y, h:mm a"), value: a.StartDate }; return b; })));
+    this.AllTaskColArray.DueDate.push.apply(this.AllTaskColArray.DueDate, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: this.datePipe.transform(a.DueDate, "d MMM, y, h:mm a"), value: a.DueDate }; return b; })));
+
     this.loaderenable = false;
     this.thenBlock = this.taskId;
     this.thenpopupMenu = this.popupMenu;
@@ -356,7 +367,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
   // *************************************************************************************************************************************
 
   async showDialog(task, type, row) {
-   
+
     this.modalloaderenable = true;
     this.selectedTask = task.DisplayTitle;
     this.selectedindex = row;
@@ -451,15 +462,15 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
     });
     ref.onClose.subscribe(async (Commentobj: any) => {
 
-     
+
       if (Commentobj) {
         if (Commentobj.IsMarkComplete) {
-          this.loaderenable= true;
-          task.TaskComments = Commentobj.comment; 
-          task.Status="Completed";
+          this.loaderenable = true;
+          task.TaskComments = Commentobj.comment;
+          task.Status = "Completed";
           var response = await this.myDashboardConstantsService.CompleteTask(task);
           if (response) {
-            this.loaderenable= false;
+            this.loaderenable = false;
             this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
           }
           else {
@@ -588,7 +599,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
 
   async checkCompleteTask(task) {
 
-  
+
     var stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
 
     if (stval === "Completed" || stval === "AllowCompletion" || stval === "Auto Closed") {
@@ -603,12 +614,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
           message: 'Are you sure that you want to proceed?',
           header: 'Confirmation',
           icon: 'pi pi-exclamation-triangle',
-          accept: ()  => {
-           
+          accept: () => {
+
             this.callComplete(task);
 
-            this.loaderenable= true;
-            
+            this.loaderenable = true;
+
             // this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Please upload the document and mark as final.' });
           },
           reject: () => {
@@ -628,9 +639,9 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
 
 
   async callComplete(task) {
-    task.Status="Completed";
+    task.Status = "Completed";
     var response = await this.myDashboardConstantsService.CompleteTask(task);
- 
+
 
     if (response) {
       this.loaderenable = false;
@@ -644,7 +655,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
         this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
       }
     }
-  
+
   }
 
 
@@ -676,7 +687,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit,OnDestroy {
   //     this.GetDatabyDateSelection(this.selectedTab, this.days);
   //   }
 
-   
+
   // }
 
 }

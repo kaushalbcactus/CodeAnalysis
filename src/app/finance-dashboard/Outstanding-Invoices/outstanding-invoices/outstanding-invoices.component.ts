@@ -344,6 +344,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         this.outstandingInvoicesRes = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
+            let poItem = this.getPONumber(element);
             this.outstandingInvoicesRes.push({
                 Id: element.ID,
                 Amount: element.Amount,
@@ -356,11 +357,11 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 InvoiceNumber: element.InvoiceNumber,
                 MainPOC: element.MainPOC,
                 InvoiceStatus: element.Status,
-                PONumber: this.getPONumber(element),
-                POName: this.getPOName(element),
+                PONumber: poItem.Number,
+                POName: poItem.Name,
                 POC: this.getPOCName(element),
                 PO: element.PO,
-                Title: element.Title,
+                Title: element.InvoiceTitle,
                 Template: element.Template,
                 InvoiceHtml: element.InvoiceHtml,
                 showMenu: true, // (element.Status === 'Sent to AP' || element.Status === 'Generated') ?  true : false
@@ -392,7 +393,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 return x;
             }
         })
-        return found ? found.Number : ''
+        return found ? found : ''
     }
     getPOName(poId) {
         let found = this.purchaseOrdersList.find((x) => {
@@ -441,6 +442,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     }
 
     outInvoiceColArray = {
+        ClientLegalEntity:[],
         InvoiceStatus: [],
         InvoiceNumber: [],
         PONumber: [],
@@ -452,6 +454,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     }
 
     createColFieldValues() {
+        this.outInvoiceColArray.ClientLegalEntity = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
         this.outInvoiceColArray.InvoiceStatus = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }));
         this.outInvoiceColArray.InvoiceNumber = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }));
         this.outInvoiceColArray.PONumber = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));

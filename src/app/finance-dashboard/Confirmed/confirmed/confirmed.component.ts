@@ -388,7 +388,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 SOWValue: element.SOWCode + ' / ' + sowItem.Title,
                 SOWName: sowItem.Title,
                 ProjectMileStone: project ? project.Milestone : '', // this.getMilestones(element),
-                PONumber: element.PO,
+                PONumber: this.getPONumber(element).Number,
+                POName: this.getPONumber(element).Name,
                 ClientLegalEntity: this.selectedPurchaseNumber.ClientLegalEntity,
                 ScheduledDate: element.ScheduledDate, // this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
                 ScheduleType: element.ScheduleType,
@@ -397,7 +398,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 POCName: this.getPOCName(element),
                 AddressType: element.AddressType,
                 ProjectTitle: project ? project.Title : '',
-                POName: element.POName,
                 CS: this.getCSDetails(element.CS.results),
                 TaggedDate: element.TaggedDate,
                 Status: element.Status,
@@ -461,6 +461,16 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             title.push(element.Title);
         }
         return title.toString();
+    }
+
+    // Project PO
+    getPONumber(poId) {
+        let found = this.purchaseOrdersList.find((x) => {
+            if (x.ID === poId.PO) {
+                return x;
+            }
+        })
+        return found ? found : ''
     }
 
     confirmedInColArray = {

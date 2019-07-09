@@ -6,6 +6,8 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { DatePipe } from '@angular/common';
 import { ConfirmationService, DynamicDialogConfig, MessageService, DynamicDialogRef } from 'primeng/api';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
+import { CommonService } from 'src/app/Services/common.service';
 declare var $;
 @Component({
   selector: 'app-manage-finance',
@@ -23,8 +25,6 @@ export class ManageFinanceComponent implements OnInit {
   existPOInvoiceArray: any = [];
   existPODataArray: any = [];
   isBudgetHoursDisabled = true;
-  isManageFinanceLoaderHidden = false;
-  isManageFinanceTableHidden = true;
   sowNumber = '';
   budgetData = [];
   budgetObj = {
@@ -62,7 +62,9 @@ export class ManageFinanceComponent implements OnInit {
     status: '',
     poc: '',
     address: '',
-    isExsitInv: false
+    isExsitInv: false,
+    isInvoiceItemEdit: false,
+    isInvoiceItemConfirm: false
   };
   poHeader = {
     total: 0,
@@ -120,7 +122,9 @@ export class ManageFinanceComponent implements OnInit {
     private confirmationService: ConfirmationService,
     private config: DynamicDialogConfig,
     private dynamicDialogRef: DynamicDialogRef,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private pmCommonService: PMCommonService,
+    private commonService: CommonService
   ) {
     this.addPOForm = frmbuilder.group({
       poDate: ['', Validators.required],
@@ -136,8 +140,6 @@ export class ManageFinanceComponent implements OnInit {
     this.pmObject.addProject.FinanceManagement.UnassignedArray = [];
     this.sowNumber = this.pmObject.addProject.SOWSelect.SOWCode;
     this.isBudgetHoursDisabled = true;
-    this.isManageFinanceTableHidden = true;
-    this.isManageFinanceLoaderHidden = false;
     this.address = [
       { label: 'POC', value: 'POC' },
       { label: 'Client', value: 'Client' }
@@ -147,8 +149,8 @@ export class ManageFinanceComponent implements OnInit {
       { label: 'No', value: 'No' }
     ];
     if (this.config && this.config.hasOwnProperty('data')) {
+      this.pmObject.isMainLoaderHidden = false;
       setTimeout(() => {
-        this.isManageFinanceLoaderHidden = false;
         this.projObj = this.config.data.projectObj;
         this.isPOEdit = true;
         // this.setBudget();
@@ -244,8 +246,6 @@ export class ManageFinanceComponent implements OnInit {
     this.pmObject.addProject.FinanceManagement.OverNightRequest = this.selectedOverNightRequest;
     this.budgetData.push(this.budgetObj);
     this.unassignedBudget.push(this.unassignedBudgetobj);
-    this.isManageFinanceTableHidden = false;
-    this.isManageFinanceLoaderHidden = true;
   }
   /**
    * This method is used to add the budget to project.
@@ -559,24 +559,10 @@ export class ManageFinanceComponent implements OnInit {
     this.pmObject.addProject.FinanceManagement.UnassignedArray = this.unassignedBudget;
     this.budgetOutputData.emit(this.savePOArray);
   }
-  /**
-   * This method is used to extract the POC Name from pocId's
-   * @param ids please provide the array of poc id's
-   */
-  extractNamefromPOC(ids) {
-    const tempArray = [];
-    this.pmObject.projectContactsItems.forEach((element) => {
-      ids.forEach(tempOjb => {
-        if (element.ID === tempOjb) {
-          tempArray.push(element.FullName);
-        }
-      });
-    });
-    return tempArray;
-  }
   async editManageFinances(projObj) {
     this.poData = [];
     this.isBudgetHoursDisabled = false;
+    this.sowNumber = projObj.SOWCode;
     const batchURL = [];
     const options = {
       data: null,
@@ -639,7 +625,8 @@ export class ManageFinanceComponent implements OnInit {
       this.poHeader.tax = this.existBudgetArray.retItems[0].TaxBudget;
       this.poHeader.oop = this.existBudgetArray.retItems[0].OOPBudget;
       // add appropriate value for unassigned project.
-      this.existPOArray.retItems.forEach((poItem, index) => {
+      for (let index = 0; index < this.existPOArray.retItems.length; index++) {
+        const poItem = this.existPOArray.retItems[index];
         const tempPOObj = $.extend(true, {}, this.poObj);
         tempPOObj.poId = poItem.POLookup;
         const poValue = this.poArray.filter(x => x.ID === poItem.POLookup);
@@ -667,32 +654,88 @@ export class ManageFinanceComponent implements OnInit {
         tempObj.poInfo.push(tempPOObj);
         this.poData.push(tempObj);
         const inoviceItems = this.existPOInvoiceArray.retItems.filter(x => x.PO === poItem.POLookup);
+        // get Invoice number & performa number.
+        const invoicePermormaNumberArray = await this.getInvoiceProformaNumber(inoviceItems);
         inoviceItems.forEach(invoiceItem => {
           const invoiceObj = $.extend(true, {}, this.poAddObj);
+          const invoiceNumber = invoicePermormaNumberArray
+            .filter(c => c.listName === this.constant.listNames.Invoices.name)
+            .filter(x => x.retItems[0].ID === invoiceItem.InvoiceLookup);
+          const proformaNumber = invoicePermormaNumberArray
+            .filter(c => c.listName === this.constant.listNames.Proforma.name)
+            .filter(d => d.retItems[0].ID === invoiceItem.ProformaLookup);
           invoiceObj.poId = invoiceItem.PO;
-          invoiceObj.inv_number = '';
-          invoiceObj.prf_number = '';
+          invoiceObj.inv_number = invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
+            ? invoiceNumber[0].retItems[0].InvoiceNumber : '';
+          invoiceObj.prf_number = proformaNumber && proformaNumber.length && proformaNumber[0].retItems && proformaNumber[0].retItems.length
+            ? proformaNumber[0].retItems[0].Title : '';
           invoiceObj.date = new Date(this.datePipe.transform(invoiceItem.ScheduledDate, 'MMM d, y'));
           invoiceObj.amount = invoiceItem.Amount;
           invoiceObj.type = invoiceItem.ScheduleType;
           invoiceObj.status = invoiceItem.Status;
-          invoiceObj.poc = invoiceItem.MainPOC;
+          invoiceObj.poc = invoiceItem.MainPOC ? this.pmCommonService.extractNamefromPOC([invoiceItem.MainPOC]) : '';
           invoiceObj.address = invoiceItem.AddressType;
           invoiceObj.isExsitInv = true;
+          if (invoiceObj.status === 'Sheduled') {
+            invoiceObj.isInvoiceItemConfirm = true;
+            invoiceObj.isInvoiceItemEdit = true;
+          }
           this.poData[index].poInfoData.push(invoiceObj);
         });
-      });
+      }
       this.existPODataArray = this.poData;
       this.showPo = true;
-      this.isManageFinanceLoaderHidden = true;
-      this.isManageFinanceTableHidden = false;
+      this.pmObject.isMainLoaderHidden = true;
     }
+  }
+  async getInvoiceProformaNumber(inoviceItems) {
+    const uniqueInvoiceItems = this.commonService.unique(inoviceItems, 'InvoiceLookup');
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    for (const invoiceItem of uniqueInvoiceItems) {
+      // Get InoviceItems  ##0;
+      const inoviceGet = Object.assign({}, options);
+      const invoiceFilter = Object.assign({}, this.pmConstant.QUERY.INVOICES_BY_INVOICELOOKUP);
+      invoiceFilter.filter = invoiceFilter.filter.replace(/{{invoiceLookup}}/gi,
+        invoiceItem.InvoiceLookup);
+      inoviceGet.url = this.spServices.getReadURL(this.constant.listNames.Invoices.name,
+        invoiceFilter);
+      inoviceGet.type = 'GET';
+      inoviceGet.listName = this.constant.listNames.Invoices.name;
+      batchURL.push(inoviceGet);
+      // Get Proforma  ##1;
+      const proformaGet = Object.assign({}, options);
+      const proformaFilter = Object.assign({}, this.pmConstant.QUERY.PROFORMA_BY_PROFORMALOOKUP);
+      proformaFilter.filter = proformaFilter.filter.replace(/{{proformaLookup}}/gi,
+        invoiceItem.ProformaLookup);
+      proformaGet.url = this.spServices.getReadURL(this.constant.listNames.Proforma.name,
+        proformaFilter);
+      proformaGet.type = 'GET';
+      proformaGet.listName = this.constant.listNames.Proforma.name;
+      batchURL.push(proformaGet);
+    }
+    const invoiceProformaResult = await this.spServices.executeBatch(batchURL);
+    if (invoiceProformaResult && invoiceProformaResult.length) {
+      return invoiceProformaResult;
+    }
+  }
+  confirmInvoiceItem(rowData) {
+    console.log(rowData);
+  }
+  editInvoiceItem(rowData) {
+    console.log(rowData);
   }
   async saveUpdatePO() {
     // this.pmObject.addProject.FinanceManagement.POListArray = this.poArray;
     // this.pmObject.addProject.FinanceManagement.POArray = this.poData;
     // this.pmObject.addProject.FinanceManagement.BudgetArray = this.budgetData;
     // this.pmObject.addProject.FinanceManagement.UnassignedArray = this.unassignedBudget;
+    this.pmObject.isMainLoaderHidden = false;
     const batchURL = [];
     const options = {
       data: null,
@@ -811,9 +854,10 @@ export class ManageFinanceComponent implements OnInit {
     });
     console.log(batchURL);
     await this.spServices.executeBatch(batchURL);
+    this.pmObject.isMainLoaderHidden = true;
     this.messageService.add({
       key: 'custom', severity: 'success', summary: 'Success Message',
-      detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
+      detail: 'Budget Updated Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
     });
     setTimeout(() => {
       this.dynamicDialogRef.close();
