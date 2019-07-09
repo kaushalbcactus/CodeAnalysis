@@ -354,7 +354,7 @@ export class TimelineHistoryComponent implements OnInit {
   async creationComplete(moduleName) {
     if (this.initialRequest.length > 0) {
       this.initialRequest.forEach(returnTypes => {
-        if (returnTypes.retItems.length > 0) {
+        if (returnTypes.retItems && returnTypes.retItems.length > 0) {
           this.timelineBaseObj['timelineprocess_' + returnTypes.listName] = [];
           returnTypes.retItems.forEach(element => {
             const childObj = JSON.parse(JSON.stringify(this.ObjTimeline));
@@ -1251,15 +1251,22 @@ export class TimelineHistoryComponent implements OnInit {
       batchURL.push(getDocuments);
 
       const arrResult = await this.spStandardService.executeBatch(batchURL);
-      prjBudgetBreakup = arrResult.length > 0 ? arrResult[0] : {};
-      prjFinanceBreakup = arrResult.length > 1 ? arrResult[1] : {};
-      prjInvoiceLineItems = arrResult.length > 2 ? arrResult[2] : {};
-      prjFinance = arrResult.length > 3 ? arrResult[3] : {};
-      invoicePrfVersions = this.getProjectProformaInvoices(prjInvoiceLineItems, moduleName);
-      prjDocuments = arrResult.length > 4 ? {
-        listName: arrResult[4].listName,
-        retItems: [arrResult[4].retItems]
-      } : {};
+      if (type !== 'ProjectMgmt_ProjectFromDashboard') {
+        prjBudgetBreakup = arrResult.length > 0 ? arrResult[0] : {};
+        prjFinanceBreakup = arrResult.length > 1 ? arrResult[1] : {};
+        prjInvoiceLineItems = arrResult.length > 2 ? arrResult[2] : {};
+        prjFinance = arrResult.length > 3 ? arrResult[3] : {};
+        invoicePrfVersions = this.getProjectProformaInvoices(prjInvoiceLineItems, moduleName);
+        prjDocuments = arrResult.length > 4 ? {
+          listName: arrResult[4].listName,
+          retItems: [arrResult[4].retItems]
+        } : {};
+      } else {
+        prjDocuments = arrResult.length > 0 ? {
+          listName: arrResult[0].listName,
+          retItems: [arrResult[0].retItems]
+        } : {};
+      }
     }
     const arrReturnResult = [projectVersions, prjBudgetBreakup, prjFinanceBreakup, prjFinance,
       prjInvoiceLineItems, ...invoicePrfVersions, prjDocuments];
