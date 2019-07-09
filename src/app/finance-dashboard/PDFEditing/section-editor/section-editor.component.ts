@@ -71,21 +71,13 @@ obj;
     if (count === 10) {
       this.customClass = 'col10';
     }
-
-    // console.log(document.getElementById('table1').innerHTML.replace(/&nbsp;/g, ''));
-    // console.log(document.getElementById('table1').innerHTML);
-
     this.htmldata = this.editor.getData();
     this.obj = {
       htmldata: this.htmldata,
       class: this.customClass
     };
-    // this.htmldata = document.querySelector('.document-editor__editable').innerHTML;
     console.log(this.htmldata);
     this.editdata.emit(this.obj);
-    // console.log(this.myEditor.getData());
-    // console.log(document.getElementById('edit'));
-    // document.getElementById(this.elementId).innerHTML = this.myEditor.getData();
-    // this.editable = false;
+    
   }
 }

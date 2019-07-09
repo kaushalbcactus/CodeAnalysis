@@ -401,7 +401,7 @@ export class FDDataShareService {
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-        this.fdConstantsService.fdComponent.selectedComp.reload();
+        this.fdConstantsService.fdComponent.selectedComp.reFetchData();
     }
     bdtRate: any = [];
     getProformaPDFObject(oProformaObj, cleData, projectContactsData, purchaseOrdersList, projectAppendix) {

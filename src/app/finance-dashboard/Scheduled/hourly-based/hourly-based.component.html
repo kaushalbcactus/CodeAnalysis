@@ -42,37 +42,37 @@
             <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                 <ng-container *ngIf="col.field">
                     <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="hourlyBasedColArray.ProjectCode"
-                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'SOWValue'" [options]="hourlyBasedColArray.SOWCode" defaultLabel="All"
-                        appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                         (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProjectMileStone'" [options]="hourlyBasedColArray.ProjectMileStone"
-                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="hourlyBasedColArray.ClientLegalEntity"
-                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProposedEndDate'" [options]="hourlyBasedColArray.ProposedEndDate"
-                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ScheduledDate'" [options]="hourlyBasedColArray.ScheduledDate"
-                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Rate'" [options]="hourlyBasedColArray.Rate" defaultLabel="All"
-                        appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                         (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'HoursSpent'" [options]="hourlyBasedColArray.HoursSpent"
-                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'TotalInvoice'" [options]="hourlyBasedColArray.TotalInvoice"
-                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Currency'" [options]="hourlyBasedColArray.Currency"
-                        defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'POCName'" [options]="hourlyBasedColArray.POCName" defaultLabel="All"
-                        appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
+                         (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
 
                 </ng-container>

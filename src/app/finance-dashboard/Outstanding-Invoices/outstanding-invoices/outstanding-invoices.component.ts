@@ -894,32 +894,29 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         if (type === "creditDebit") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success.', detail: '', life: 2000 });
             this.creditOrDebitModal = false;
-            this.reload();
+            this.reFetchData();
         } else if (type === "sentToAP") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Status Changed.', detail: '', life: 2000 })
-            this.reload();
+            this.reFetchData();
         } else if (type === "disputeInvoice") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Submitted.', detail: '', life: 2000 })
             this.disputeInvoiceModal = false;
-            // this.reload();
         } else if (type === "paymentResoved") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success.', detail: '', life: 2000 })
             this.paymentResovedModal = false;
-            this.reload();
+            this.reFetchData();
         } else if (type === "replaceInvoice") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success.', detail: '', life: 2000 })
             this.replaceInvoiceModal = false;
-            this.reload();
+            this.reFetchData();
         }
         this.isPSInnerLoaderHidden = true;
         // });
     }
 
-    reload() {
+    reFetchData() {
         setTimeout(() => {
-            // window.location.reload();
             this.getRequiredData();
-            // this.currentUserInfo();
         }, 3000);
     }
 

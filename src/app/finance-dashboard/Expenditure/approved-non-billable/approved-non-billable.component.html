@@ -63,43 +63,43 @@
             <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                 <ng-container *ngIf="col.field">
                     <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="anonBillableColArray.ProjectCode"
-                        defaultLabel="All" appendTo="body" (onChange)="anb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="anb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Number'" [options]="anonBillableColArray.Number" defaultLabel="All"
-                        appendTo="body" (onChange)="anb.filter($event.value, col.field, 'in')">
+                         (onChange)="anb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'DateSpend'" [options]="anonBillableColArray.DateSpend"
-                        defaultLabel="All" appendTo="body" (onChange)="anb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="anb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ExpenseType'" [options]="anonBillableColArray.ExpenseType"
-                        defaultLabel="All" appendTo="body" (onChange)="anb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="anb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'PaymentMode'" [options]="anonBillableColArray.PaymentMode"
-                        defaultLabel="All" appendTo="body" (onChange)="anb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="anb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ClientAmount'" [options]="anonBillableColArray.ClientAmount"
-                        defaultLabel="All" appendTo="body" (onChange)="anb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="anb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ClientCurrency'" [options]="anonBillableColArray.ClientCurrency"
-                        defaultLabel="All" appendTo="body" (onChange)="anb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="anb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'PayingEntity'" [options]="anonBillableColArray.PayingEntity"
-                        defaultLabel="All" appendTo="body" (onChange)="anb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="anb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Status'" [options]="anonBillableColArray.Status" defaultLabel="All"
-                        appendTo="body" (onChange)="anb.filter($event.value, col.field, 'in')">
+                         (onChange)="anb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'SpendDate'" [options]="anonBillableColArray.SpendDate"
-                        defaultLabel="All" appendTo="body" (onChange)="anb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="anb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Created'" [options]="anonBillableColArray.Created" defaultLabel="All"
-                        appendTo="body" (onChange)="anb.filter($event.value, col.field, 'in')">
+                         (onChange)="anb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ModifiedBy'" [options]="anonBillableColArray.ModifiedBy"
-                        defaultLabel="All" appendTo="body" (onChange)="anb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="anb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Modified'" [options]="anonBillableColArray.Modified"
-                        defaultLabel="All" appendTo="body" (onChange)="anb.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="anb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                 </ng-container>
             </th>

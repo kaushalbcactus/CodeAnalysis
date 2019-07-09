@@ -974,7 +974,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     getResourceData(ele) {
         let found = this.rcData.find((x) => {
-            if (x.ID == ele.ID) {
+            if (x.UserName.ID == ele.ID) {
                 return x;
             }
         })
@@ -1005,25 +1005,14 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         ccUser.push(this.currentUserInfoData.Email);
         let tos = this.getTosList();
         this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
-        // this.reload();
-        this.refetchData();
+        this.reFetchData();
     }
 
-    refetchData() {
+    reFetchData() {
         this.fdDataShareServie.setExpenseAddObj();
 
         // Unscribe all subscribtion
         this.subscription.unsubscribe();
-    }
-
-
-
-    reload() {
-        setTimeout(() => {
-            window.location.reload();
-            // this.getRequiredData();
-            // this.currentUserInfo();
-        }, 3000);
     }
 
     // Tab Action

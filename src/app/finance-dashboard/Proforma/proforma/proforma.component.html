@@ -52,28 +52,28 @@
                 <ng-container *ngIf="col.field">
             <td></td>
             <p-multiSelect *ngSwitchCase="'ProformaNumber'" [options]="proformaColArray.ProformaNumber"
-                defaultLabel="All" appendTo="body" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                defaultLabel="All"  (onChange)="pfc.filter($event.value, col.field, 'in')">
             </p-multiSelect>
             <p-multiSelect *ngSwitchCase="'PONumber'" [options]="proformaColArray.PONumber" defaultLabel="All"
-                appendTo="body" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                 (onChange)="pfc.filter($event.value, col.field, 'in')">
             </p-multiSelect>
             <p-multiSelect *ngSwitchCase="'ProformaDate'" [options]="proformaColArray.ProformaDate" defaultLabel="All"
-                appendTo="body" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                 (onChange)="pfc.filter($event.value, col.field, 'in')">
             </p-multiSelect>
             <p-multiSelect *ngSwitchCase="'ProformaType'" [options]="proformaColArray.ProformaType" defaultLabel="All"
-                appendTo="body" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                 (onChange)="pfc.filter($event.value, col.field, 'in')">
             </p-multiSelect>
             <p-multiSelect *ngSwitchCase="'Amount'" [options]="proformaColArray.Amount" defaultLabel="All"
-                appendTo="body" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                 (onChange)="pfc.filter($event.value, col.field, 'in')">
             </p-multiSelect>
             <p-multiSelect *ngSwitchCase="'Currency'" [options]="proformaColArray.Currency" defaultLabel="All"
-                appendTo="body" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                 (onChange)="pfc.filter($event.value, col.field, 'in')">
             </p-multiSelect>
-            <p-multiSelect *ngSwitchCase="'POC'" [options]="proformaColArray.POC" defaultLabel="All" appendTo="body"
+            <p-multiSelect *ngSwitchCase="'POC'" [options]="proformaColArray.POC" defaultLabel="All" 
                 (onChange)="pfc.filter($event.value, col.field, 'in')">
             </p-multiSelect>
             <p-multiSelect *ngSwitchCase="'Status'" [options]="proformaColArray.Status" defaultLabel="All"
-                appendTo="body" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                 (onChange)="pfc.filter($event.value, col.field, 'in')">
             </p-multiSelect>
 
             <!-- <p-dropdown [options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">

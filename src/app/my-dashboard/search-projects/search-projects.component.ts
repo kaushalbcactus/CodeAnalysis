@@ -274,9 +274,6 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
     this.projectResource.CMMembers =  this.response[1].map(c=>c).map(c=>c.CMLevel1).map(c=>c.results).length  > 0 ? this.response[1].map(c=>c).map(c=>c.CMLevel1).map(c=>c.results)[0].map(c=>c.Title) + ", " + this.response[1][0].CMLevel2.Title : this.response[1][0].CMLevel2.Title;
 
-
-    //this.projectResource.PMMembers =  this.response[1].map(c=>c).map(c=>c.PMLevel1).map(c=>c.results).length  > 0 ? this.response[1].map(c=>c).map(c=>c.PMLevel1).map(c=>c.results)[0].map(c=>c.Title) + ", " + this.response[1][0].PMLevel2.Title : this.response[1][0].PMLevel2.Title;
-
     // this.projectResource.map(c => c.PMMembers = this.response[1].DeliveryLevel1.results.length > 0 ? this.response[1].DeliveryLevel1.results.map(e => e.Title) + ", " + this.response[1].DeliveryLevel2.results.Title : this.response[1].DeliveryLevel2.results.Title);
 
     this.projectResource.PrimaryResource = this.response[0].map(c=>c).map(c=> c.PrimaryResMembers).find(c=>c.results) !== undefined ? this.response[0].map(c=>c).map(c=> c.PrimaryResMembers).map(c=>c.results)[0].map(e => e.Title) : '';

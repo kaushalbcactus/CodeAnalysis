@@ -279,7 +279,7 @@ export class OopComponent implements OnInit, OnDestroy {
                 showMenu: this.showMenu(element),
 
                 CS: this.getCSDetails(element.CS.results),
-                PracticeArea: element.PracticeArea,
+                PracticeArea: this.getPracticeArea(element).BusinessVertical,
                 POName: this.getPONumber(element).Name,
                 TaggedDate: element.TaggedDate,
                 Status: element.Status,
@@ -296,6 +296,16 @@ export class OopComponent implements OnInit, OnDestroy {
 
     // Project Current Milestones
     getMilestones(pc: any) {
+        let found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode == pc.Title) {
+                return x;
+            }
+        })
+        return found ? found : '';
+    }
+
+     // Project Current Milestones
+     getPracticeArea(pc: any) {
         let found = this.projectInfoData.find((x) => {
             if (x.ProjectCode == pc.Title) {
                 return x;
@@ -627,22 +637,20 @@ export class OopComponent implements OnInit, OnDestroy {
         console.log('--oo ', arrResults);
         if (type === "confirmInvoice") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice is Confirmed.', detail: '', life: 2000 })
-            this.reload();
+            this.reFetchData();
         } else if (type === "editDeliverable") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Updated.', detail: '', life: 2000 })
             this.cancelFormSub('editDeliverable');
-            this.reload();
+            this.reFetchData();
         }
         this.isPSInnerLoaderHidden = true;
 
         // });
     }
 
-    reload() {
+    reFetchData() {
         setTimeout(() => {
-            // window.location.reload();
             this.getRequiredData();
-            // this.currentUserInfo();
         }, 3000);
     }
 

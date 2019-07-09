@@ -556,7 +556,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         if (type === 'markAsPayment_form') {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Payment marked.', detail: '', life: 2000 });
             this.markAsPaymentModal = false;
-            this.reload();
+            this.reFetchData();
         }
         this.isPSInnerLoaderHidden = true;
         this.submitBtn.isClicked = false;
@@ -564,11 +564,9 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         // });
     }
 
-    reload() {
+    reFetchData() {
         setTimeout(() => {
-            // window.location.reload();
             this.getRequiredData();
-            // this.currentUserInfo();
         }, 3000);
     }
 

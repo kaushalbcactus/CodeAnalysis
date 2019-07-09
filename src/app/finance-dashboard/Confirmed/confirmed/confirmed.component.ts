@@ -9,7 +9,6 @@ import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { formatDate, DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
-import { MAX_LENGTH_VALIDATOR, MaxLengthValidator } from '@angular/forms/src/directives/validators';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
 import { SpOperationsService } from 'src/app/Services/sp-operations.service';
@@ -955,7 +954,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             await this.fdDataShareServie.callProformaCreation(retCall[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, projectAppendix);
             this.proformaModal = false;
             this.isPSInnerLoaderHidden = true;
-            // this.reload();
             this.reFetchData();
             // this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Proforma added.', detail: '', life: 2000 });
             this.messageService.add({ key: 'custom', sticky: true, severity: 'success', summary: 'Proforma Added', detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber });
@@ -966,11 +964,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             console.log('--oo ', arrResults);
             if (type === "revertInvoice") {
                 this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Reverted the invoice from Confirmed to Scheduled.', detail: '', life: 2000 })
-                // this.reload();
                 this.reFetchData();
             } else if (type === "editInvoice") {
                 this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Updated.', detail: '', life: 2000 })
-                // this.reload();
                 this.reFetchData();
             }
             this.isPSInnerLoaderHidden = true;
@@ -1047,14 +1043,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.getRequiredData();
         }, 300);
     }
-
-    reload() {
-        setTimeout(() => {
-            //// Implement refresh change 
-            window.location.reload();
-        }, 3000);
-    }
-
     onlyNumberKey(event) {
         // return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57;
         let charCode = (event.which) ? event.which : event.keyCode;

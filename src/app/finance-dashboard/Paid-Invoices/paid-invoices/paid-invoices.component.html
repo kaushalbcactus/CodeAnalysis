@@ -36,31 +36,31 @@
                     <ng-container *ngIf="col.field">
                 <td></td>
                 <p-multiSelect *ngSwitchCase="'InvoiceStatus'" [options]="outInvoiceColArray.InvoiceStatus"
-                    defaultLabel="All" appendTo="body" (onChange)="pi.filter($event.value, col.field, 'in')">
+                    defaultLabel="All"  (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'InvoiceNumber'" [options]="outInvoiceColArray.InvoiceNumber"
-                    defaultLabel="All" appendTo="body" (onChange)="pi.filter($event.value, col.field, 'in')">
+                    defaultLabel="All"  (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'PONumber'" [options]="outInvoiceColArray.PONumber" defaultLabel="All"
-                    appendTo="body" (onChange)="pi.filter($event.value, col.field, 'in')">
+                     (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'POName'" [options]="outInvoiceColArray.POName" defaultLabel="All"
-                    appendTo="body" (onChange)="pi.filter($event.value, col.field, 'in')">
+                     (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="outInvoiceColArray.ClientLegalEntity"
-                    defaultLabel="All" appendTo="body" (onChange)="pi.filter($event.value, col.field, 'in')">
+                    defaultLabel="All"  (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'InvoiceDate'" [options]="outInvoiceColArray.InvoiceDate"
-                    defaultLabel="All" appendTo="body" (onChange)="pi.filter($event.value, col.field, 'in')">
+                    defaultLabel="All"  (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'Amount'" [options]="outInvoiceColArray.Amount" defaultLabel="All"
-                    appendTo="body" (onChange)="pi.filter($event.value, col.field, 'in')">
+                     (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'Currency'" [options]="outInvoiceColArray.Currency" defaultLabel="All"
-                    appendTo="body" (onChange)="pi.filter($event.value, col.field, 'in')">
+                     (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'POC'" [options]="outInvoiceColArray.POC" defaultLabel="All"
-                    appendTo="body" (onChange)="pi.filter($event.value, col.field, 'in')">
+                     (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
 
                 <!-- <p-dropdown [options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">

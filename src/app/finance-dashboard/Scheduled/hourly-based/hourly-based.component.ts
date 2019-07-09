@@ -870,12 +870,10 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         if (type === "confirmInvoice") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice is Confirmed.', detail: '', life: 2000 });
             // this.cancelFormSub('confirmationModal');
-            // this.reload();
             this.sendCreateExpenseMail();
         } else if (type === "editInvoice") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Updated.', detail: '', life: 2000 });
             this.cancelFormSub('editInvoice');
-            // this.reload();
             this.reFetchData();
         }
         this.isPSInnerLoaderHidden = true;
@@ -1004,11 +1002,6 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     }
 
     sendCreateExpenseMail() {
-        // let isCleData = this.getCleByPC(expense.projectCode);
-        // let isCleData = this.cleForselectedPI;
-        // let author = this.getAuthor(expense.AuthorId);
-        // let val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.ProjectCode + ' (' + isCleData.ClientLegalEntity + ')' : expense.ProjectCode;
-        // var mailTemplate =  data.Status === "Approved" ? "ApproveExpense" :  data.Status === "Cancelled" ? "CancelExpense" : "RejectExpense";
 
         // Confirmation Mail 
         var mailSubject = this.selectedRowItem.ProjectCode + "/" + this.selectedRowItem.ClientLegalEntity + ": Confirmed line item for billing";
@@ -1035,7 +1028,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         this.spOperationsService.sendMail(this.getTosList('i').join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.spOperationsService.sendMail(this.getTosList('pc').join(','), this.currentUserInfoData.Email, pcmailSubject, pcmailContent, ccUser.join(','));
         this.isPSInnerLoaderHidden = true;
-        this.reload();
+        this.reFetchData();
     }
 
     getTosList(type: string) {
@@ -1087,17 +1080,6 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             
             this.getRequiredData();
         },300);
-    }
-
-
-    reload() {
-        setTimeout(() => {
-            window.location.reload();
-            // this.getRequiredData();
-
-            // this.getPCForSentToAMForApproval();
-            // this.currentUserInfo();
-        }, 3000);
     }
 
     onlyNumberKey(event) {

@@ -1056,12 +1056,12 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         } else if (type === 'updateScheduledOopLineItem') {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'OOP Invoice is Scheduled.', detail: '', life: 2000 });
             this.scheduleOopModal = false;
-            this.reload();
+            this.reFetchData();
         } else if (type === "markAsPayment_form") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Updated.', detail: '', life: 2000 });
             this.isPSInnerLoaderHidden = true;
             this.markAsPaymentModal = false;
-            this.reload();
+            this.reFetchData();
         }
     }
 
@@ -1087,19 +1087,14 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.submitForm(this.updateSpeLineItems, 'updateScheduledOopLineItem');
     }
 
-    reload() {
+    reFetchData() {
         setTimeout(async () => {
             // Refetch PO/CLE Data
             await this.fdDataShareServie.getClePO();
             // Fetch latest PO & CLE
             this.poInfo();
             this.cleInfo();
-
-            // window.location.reload();
             this.getRequiredData();
-
-
-
         }, 3000);
     }
 

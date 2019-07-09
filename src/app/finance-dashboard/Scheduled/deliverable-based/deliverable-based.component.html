@@ -38,32 +38,32 @@
             <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                 <ng-container *ngIf="col.field">
                     <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="deliverableBasedColArray.ProjectCode"
-                        defaultLabel="All" appendTo="body" (onChange)="db.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'SOWValue'" [options]="deliverableBasedColArray.SOWCode"
-                        defaultLabel="All" appendTo="body" (onChange)="db.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProjectMileStone'"
-                        [options]="deliverableBasedColArray.ProjectMileStone" defaultLabel="All" appendTo="body"
+                        [options]="deliverableBasedColArray.ProjectMileStone" defaultLabel="All" 
                         (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'PONumber'" [options]="deliverableBasedColArray.PONumber"
-                        defaultLabel="All" appendTo="body" (onChange)="db.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ClientName'" [options]="deliverableBasedColArray.ClientName"
-                        defaultLabel="All" appendTo="body" (onChange)="db.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Amount'" [options]="deliverableBasedColArray.Amount"
-                        defaultLabel="All" appendTo="body" (onChange)="db.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Currency'" [options]="deliverableBasedColArray.Currency"
-                        defaultLabel="All" appendTo="body" (onChange)="db.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ScheduledDate'" [options]="deliverableBasedColArray.ScheduledDate"
-                        defaultLabel="All" appendTo="body" (onChange)="db.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'POCName'" [options]="deliverableBasedColArray.POCName"
-                        defaultLabel="All" appendTo="body" (onChange)="db.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                 </ng-container>
             </th>

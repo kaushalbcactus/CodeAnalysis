@@ -320,7 +320,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 showMenu: this.showMenu(element),
 
                 CS: this.getCSDetails(element.CS.results),
-                PracticeArea: element.PracticeArea,
+                PracticeArea: this.getPracticeArea(element).BusinessVertical,
                 POName: this.getPONumber(element).Name,
                 TaggedDate: element.TaggedDate,
                 Status: element.Status,
@@ -365,6 +365,16 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     // Project Current Milestones
     getMilestones(pc: any) {
+        let found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode == pc.Title) {
+                return x;
+            }
+        })
+        return found ? found : '';
+    }
+
+     // Project Current Milestones
+     getPracticeArea(pc: any) {
         let found = this.projectInfoData.find((x) => {
             if (x.ProjectCode == pc.Title) {
                 return x;
@@ -667,10 +677,9 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         if (type === "confirmInvoice") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice is Confirmed.', detail: '', life: 2000 });
             this.sendCreateExpenseMail();
-            // this.reload();
         } else if (type === "editInvoice") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Updated.', detail: '', life: 2000 })
-            this.reload();
+            this.reFetchData();
         }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         // });
@@ -774,7 +783,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     getResourceData(ele) {
         let found = this.rcData.find((x) => {
-            if (x.ID == ele.ID) {
+            if (x.UserName.ID == ele.ID) {
                 return x;
             }
         })
@@ -806,7 +815,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         ccUser.push(this.currentUserInfoData.Email);
         let tos = this.getTosList();
         this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
-        this.reload();
+        this.reFetchData();
     }
 
     getTosList() {
@@ -850,11 +859,9 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     }
 
 
-    reload() {
+    reFetchData() {
         setTimeout(() => {
-            // window.location.reload();
             this.getRequiredData();
-            // this.currentUserInfo();
         }, 3000);
     }
 

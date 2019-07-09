@@ -803,13 +803,11 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             this.displayModal = false;
             // this.sendCreateExpenseMail(this.selectedRowItem, type);
             this.sendMailToSelectedLineItems(type);
-            // this.reload();
         } else if (type === "Cancel Expense" || type === "Reject Expense") {
             this.messageService.add({ key: 'fdToast', severity: 'success', summary: 'Submitted.', detail: '', life: 2000 })
             this.displayModal = false;
             // this.sendCreateExpenseMail(this.selectedRowItem, type);
             this.sendMailToSelectedLineItems(type);
-            // this.reload();
         }
         this.isPSInnerLoaderHidden = true;
         // });
@@ -988,7 +986,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         let tos = this.getTosList();
         this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.isPSInnerLoaderHidden = false;
-        // this.reload();
         this.reFetchData();
     }
 
@@ -1036,14 +1033,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.getRequiredData();
     }
 
-
-    // reload() {
-    //     setTimeout(() => {
-    //         window.location.reload();
-    //         // this.getRequiredData();
-    //         // this.currentUserInfo();
-    //     }, 3000);
-    // }
 
     // Export to Excel
     convertToExcelFile(cnf1) {
