@@ -354,7 +354,7 @@ export class TimelineHistoryComponent implements OnInit {
   async creationComplete(moduleName) {
     if (this.initialRequest.length > 0) {
       this.initialRequest.forEach(returnTypes => {
-        if (returnTypes.retItems.length > 0) {
+        if (returnTypes.retItems && returnTypes.retItems.length > 0) {
           this.timelineBaseObj['timelineprocess_' + returnTypes.listName] = [];
           returnTypes.retItems.forEach(element => {
             const childObj = JSON.parse(JSON.stringify(this.ObjTimeline));
@@ -1221,29 +1221,29 @@ export class TimelineHistoryComponent implements OnInit {
     const arrPrjResult = await this.spStandardService.executeBatch(batchProjectURL);
     const projectVersions = arrPrjResult.length > 0 ? arrPrjResult[0].retItems : {};
 
-    if (projectVersions.length > 0 && type !== 'ProjectMgmt_ProjectFromDashboard') {
+    if (projectVersions.length > 0) {
       const batchURL = [];
+      if (type !== 'ProjectMgmt_ProjectFromDashboard') {
+        const arrPBBReplace = { '{{projectCode}}': projectVersions[0].ProjectCode };
+        const getPrjBudgetBreakupData = this.getBatchRequest(this.globalConstant.listNames.ProjectBudgetBreakup.name, 'filterItem',
+          this.constant.projectManagement.projectBudgetBreakup.getProjBreakupInfo, arrPBBReplace, moduleName);
+        batchURL.push(getPrjBudgetBreakupData);
 
-      const arrPBBReplace = { '{{projectCode}}': projectVersions[0].ProjectCode };
-      const getPrjBudgetBreakupData = this.getBatchRequest(this.globalConstant.listNames.ProjectBudgetBreakup.name, 'filterItem',
-        this.constant.projectManagement.projectBudgetBreakup.getProjBreakupInfo, arrPBBReplace, moduleName);
-      batchURL.push(getPrjBudgetBreakupData);
+        const arrPFBReplace = { '{{projectCode}}': projectVersions[0].ProjectCode };
+        const getPrjFinanceBreakupData = this.getBatchRequest(this.globalConstant.listNames.ProjectFinanceBreakup.name, 'filterItem',
+          this.constant.projectManagement.projectFinanceBreakup.getProjFinanceBreakupInfo, arrPFBReplace, moduleName);
+        batchURL.push(getPrjFinanceBreakupData);
 
-      const arrPFBReplace = { '{{projectCode}}': projectVersions[0].ProjectCode };
-      const getPrjFinanceBreakupData = this.getBatchRequest(this.globalConstant.listNames.ProjectFinanceBreakup.name, 'filterItem',
-        this.constant.projectManagement.projectFinanceBreakup.getProjFinanceBreakupInfo, arrPFBReplace, moduleName);
-      batchURL.push(getPrjFinanceBreakupData);
+        const arrInvLineItemReplace = { '{{projectCode}}': projectVersions[0].ProjectCode };
+        const getInvLineItemDataVer = this.getBatchRequest(this.globalConstant.listNames.InvoiceLineItems.name, 'filterItem',
+          this.constant.projectManagement.invoiceLineItems.getInvoiceLineItems, arrInvLineItemReplace, moduleName);
+        batchURL.push(getInvLineItemDataVer);
 
-      const arrInvLineItemReplace = { '{{projectCode}}': projectVersions[0].ProjectCode };
-      const getInvLineItemDataVer = this.getBatchRequest(this.globalConstant.listNames.InvoiceLineItems.name, 'filterItem',
-        this.constant.projectManagement.invoiceLineItems.getInvoiceLineItems, arrInvLineItemReplace, moduleName);
-      batchURL.push(getInvLineItemDataVer);
-
-      const arrPFReplace = { '{{projectCode}}': projectVersions[0].ProjectCode };
-      const getPrjFinanceData = this.getBatchRequest(this.globalConstant.listNames.ProjectFinances.name, 'filterItem',
-        this.constant.financeDashboard.projectFinance.getProjFinanceInfo, arrPFReplace, moduleName);
-      batchURL.push(getPrjFinanceData);
-
+        const arrPFReplace = { '{{projectCode}}': projectVersions[0].ProjectCode };
+        const getPrjFinanceData = this.getBatchRequest(this.globalConstant.listNames.ProjectFinances.name, 'filterItem',
+          this.constant.financeDashboard.projectFinance.getProjFinanceInfo, arrPFReplace, moduleName);
+        batchURL.push(getPrjFinanceData);
+      }
       const getDocuments = Object.assign({}, this.options);
       getDocuments.url = this.spStandardService.getSubFolderFilesURL(projectVersions[0].ProjectFolder, 3);
       getDocuments.listName = moduleName + '_Documents';
@@ -1251,15 +1251,22 @@ export class TimelineHistoryComponent implements OnInit {
       batchURL.push(getDocuments);
 
       const arrResult = await this.spStandardService.executeBatch(batchURL);
-      prjBudgetBreakup = arrResult.length > 0 ? arrResult[0] : {};
-      prjFinanceBreakup = arrResult.length > 1 ? arrResult[1] : {};
-      prjInvoiceLineItems = arrResult.length > 2 ? arrResult[2] : {};
-      prjFinance = arrResult.length > 3 ? arrResult[3] : {};
-      invoicePrfVersions = this.getProjectProformaInvoices(prjInvoiceLineItems, moduleName);
-      prjDocuments = arrResult.length > 4 ? {
-        listName: arrResult[4].listName,
-        retItems: [arrResult[4].retItems]
-      } : {};
+      if (type !== 'ProjectMgmt_ProjectFromDashboard') {
+        prjBudgetBreakup = arrResult.length > 0 ? arrResult[0] : {};
+        prjFinanceBreakup = arrResult.length > 1 ? arrResult[1] : {};
+        prjInvoiceLineItems = arrResult.length > 2 ? arrResult[2] : {};
+        prjFinance = arrResult.length > 3 ? arrResult[3] : {};
+        invoicePrfVersions = this.getProjectProformaInvoices(prjInvoiceLineItems, moduleName);
+        prjDocuments = arrResult.length > 4 ? {
+          listName: arrResult[4].listName,
+          retItems: [arrResult[4].retItems]
+        } : {};
+      } else {
+        prjDocuments = arrResult.length > 0 ? {
+          listName: arrResult[0].listName,
+          retItems: [arrResult[0].retItems]
+        } : {};
+      }
     }
     const arrReturnResult = [projectVersions, prjBudgetBreakup, prjFinanceBreakup, prjFinance,
       prjInvoiceLineItems, ...invoicePrfVersions, prjDocuments];
