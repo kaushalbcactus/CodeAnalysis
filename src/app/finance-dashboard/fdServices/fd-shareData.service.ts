@@ -417,7 +417,7 @@ export class FDDataShareService {
         }
 
         let addressArr = address.split(";#");
-        if (addressArr.length > 1) {
+        if (addressArr.length <= 1) {
             addressArr = ['', '', '', ''];
         }
         let val = '';

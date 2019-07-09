@@ -661,11 +661,16 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                     this.minProformaDate = new Date(Math.max.apply(null, this.selectedAllRowData.map(e => e.ScheduledDate)));
                     this.proformaModal = true;
 
+                    if (this.selectedAllRowData[0].Template === 'US') {
+                        this.isTemplate4US = true
+                    }
+                    else {
+                        this.isTemplate4US = false;
+                    }
+
                     var cle = this.getCLEObj(this.selectedPurchaseNumber.ClientLegalEntity);
                     this.generateProformaNumber(cle);
                     this.getPOCNamesForEditInv(cle);
-
-
                 }
                 else {
                     this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Proforma cant be generated on Expired PO' });
@@ -995,7 +1000,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         const callProjects = [];
         selectedProjects.forEach(element => {
             if (projectProcessed.indexOf(element.ProjectCode) === -1) {
-                const project = this.projectInfoData.find(e => e.ProjectCode = element.ProjectCode);
+                const project = this.projectInfoData.find(e => e.ProjectCode === element.ProjectCode);
                 if (project) {
                     projects.push(project);
                     projectProcessed.push(project.ProjectCode);
@@ -1030,7 +1035,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }
         const appendixObj = { dvcode: '', cactusSpCode: '', title: '', amount: '' };
         selectedProjects.forEach(element => {
-            const project = projects.find(e => e.ProjectCode = element.ProjectCode);
+            const project = projects.find(e => e.ProjectCode === element.ProjectCode);
             let appendix = Object.assign({}, appendixObj);
             appendix.dvcode = project.WBJID;
             appendix.cactusSpCode = project.ProjectCode;

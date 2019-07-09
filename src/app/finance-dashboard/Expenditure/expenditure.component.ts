@@ -610,6 +610,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             this.addSts = false;
             this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Your entered amount greater than actual Amount.', detail: '', life: 4000 });
             this.totalLineItems[index].AmountPerProject = 0;
+            this.totalLineItems = [...this.totalLineItems];
         }
 
 
