@@ -1,9 +1,5 @@
 <p class="error" *ngIf="error">{{errorMsg}}</p>
-<div [hidden]='isManageFinanceLoaderHidden'>
-  <div id="mainLoader"></div>
-  <div id="mainLoaderText">Loading...</div>
-</div>
-<div [hidden]="isManageFinanceTableHidden">
+<div>
   <p-accordion [activeIndex]="index">
     <p-accordionTab [selected]="true">
       <p-header class="financeHeader">

@@ -1,4 +1,4 @@
-<div class="tableLoader" [hidden]='isAllProjectLoaderHidden'>
+<div [hidden]='isAllProjectLoaderHidden'>
     <div id="allProjectLoader"></div>
     <div id="allProjectLoaderText">Loading...</div>
 </div>
@@ -277,48 +277,27 @@
             <p-header>
                 Audit Rolling Project.
             </p-header>
-            <div class="audit-rolling-section">
-                <div class="formContentChecklist">
-                    <div class="formRow">
-                        <div class="attrCheckListContentHeader"></div>
-                        <div class="attrCheckListContentHeader">
-                            Parameters
-                        </div>
-                        <div class="attrCheckListContentHeader">Comments</div>
-                    </div>
-                    <div class="formRow">
-                        <div class="attrCheckListHeader">
-                            <input type="checkbox"> </div>
-                        <div class="attrCheckListContent">
-                            All files uploaded correctly
-                        </div>
-                        <div class="attrCheckListContent">
-                            <textarea rows="1" cols="30"></textarea>
-                        </div>
-                    </div>
-                    <div class="formRow">
-                        <div class="attrCheckListHeader">
-                            <input type="checkbox"> </div>
-                        <div class="attrCheckListContent">
-                            All tasks completed and hrs updated
-                        </div>
-                        <div class="attrCheckListContent">
-                            <textarea rows="1" cols="30"></textarea>
-                        </div>
-                    </div>
-                    <div class="formRow">
-                        <div class="attrCheckListHeader">
-                            <input type="checkbox"> </div>
-                        <div class="attrCheckListContent">
-                            All necessary project details updated
-                        </div>
-                        <div class="attrCheckListContent">
-                            <textarea rows="1" cols="30"></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="error" *ngIf="checkList.addRollingProjectError">{{checkList.addRollingProjectErrorMsg}}</div>
+            <p-table [value]="addRollingProjectArray" class="audit-rolling-section">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th></th>
+                        <th>Parameters</th>
+                        <th>Comments</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData let-task style="overflow: auto">
+                    <tr class="formContentChecklist">
+                        <td><input type="checkbox"></td>
+                        <td>{{task.parameter}}</td>
+                        <td><textarea rows="1" cols="30"></textarea></td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="footer">
+                    <tr *ngIf="checkList.addRollingProjectError">
+                        <td colspan="3" class="error">{{checkList.addRollingProjectErrorMsg}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
             <p-footer>
                 <p-button class="mr-5" (click)="auditComplete()" label="Confirm"></p-button>
                 <p-button class="mr-5" (click)="closeDialog()" label="Cancel"></p-button>

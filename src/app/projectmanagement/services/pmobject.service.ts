@@ -205,7 +205,7 @@ export class PMObjectService {
     isHaveSOWFullAccess: false,
     isHaveSOWBudgetManager: false
   };
-  public isMainLoaderHidden;
+  public isMainLoaderHidden = true;
   public activeIndex = 0;
   public isStandardChecked = true;
   public addProject = {

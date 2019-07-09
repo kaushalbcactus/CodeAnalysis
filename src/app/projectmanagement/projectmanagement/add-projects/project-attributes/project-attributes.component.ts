@@ -6,7 +6,7 @@ import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.ser
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
-import { DynamicDialogConfig, MessageService } from 'primeng/api';
+import { DynamicDialogConfig, MessageService, DynamicDialogRef } from 'primeng/api';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 @Component({
   selector: 'app-project-attributes',
@@ -40,7 +40,8 @@ export class ProjectAttributesComponent implements OnInit {
     private pmConstant: PmconstantService,
     private config: DynamicDialogConfig,
     private pmCommonService: PMCommonService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private dynamicDialogRef: DynamicDialogRef
   ) { }
   ngOnInit() {
     this.initForm();
@@ -360,6 +361,7 @@ export class ProjectAttributesComponent implements OnInit {
     this.setFieldProperties(this.pmObject.addProject.ProjectAttributes, null, false);
   }
   async saveEditProject() {
+    this.pmObject.isMainLoaderHidden = false;
     this.setFormFieldValue();
     if (this.selectedFile) {
       await this.pmCommonService.submitFile(this.selectedFile, this.fileReader);
@@ -367,11 +369,14 @@ export class ProjectAttributesComponent implements OnInit {
     const projectInfo = this.pmCommonService.getProjectData(this.pmObject.addProject, false);
     await this.spServices.updateItem(this.constant.listNames.ProjectInformation.name, this.projObj.ID, projectInfo,
       this.constant.listNames.ProjectInformation.type);
+    this.pmObject.isMainLoaderHidden = true;
     this.messageService.add({
       key: 'custom', severity: 'success', summary: 'Success Message',
       detail: 'Project Updated Successfully for the projectcode - ' + this.projObj.ProjectCode
     });
-    this.isProjectAttributeTableHidden = true;
+    setTimeout(() => {
+      this.dynamicDialogRef.close();
+    }, 500);
   }
   /**
    * This method is called when file is selected
