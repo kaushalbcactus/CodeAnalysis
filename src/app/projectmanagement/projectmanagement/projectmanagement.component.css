@@ -593,7 +593,7 @@ body .ui-table .ui-table-tbody > tr:nth-child(even){
         margin-bottom: 10px;
     }
     .error{
-        color: red;
+        color: red !important;
     }
     .ng-right-side-overlay .ui-sidebar {
         /* background-color: #B13E3E !important;
@@ -611,26 +611,6 @@ body .ui-table .ui-table-tbody > tr:nth-child(even){
         display: inline;
         padding-right: 2px;
         color: #D7181F;
-    }
-    .formContentChecklist {
-        display: table;
-        border-collapse: collapse;
-        width: 550px;
-        margin-bottom: 10px;
-    }
-    .formRow {
-        display: table-row;
-    }
-    .formRow > div {
-        display: table-cell;
-        border: 1px solid rgb(171, 171, 171);
-    }
-    .attrCheckListContent {
-        padding: 10px;
-        width: 250px;
-        box-sizing: border-box;
-        text-align: left;
-        vertical-align: top;
     }
     .ui-dynamicdialog {
         height: 550px !important;
@@ -773,5 +753,14 @@ body .ui-corner-top {
   .custom-table-container .ui-button.ui-button-icon-only span.ui-clickable {
     color: #ffffff !important;
   }
-
+  .tableLoader{
+    position: fixed; /* or absolute */
+    /* top: 20%;
+    left: 50%;
+    z-index: 9999; */
+    width:100%;
+    left:0;right:0;top:0;bottom:0;
+    background-color: rgba(255,255,255,0.7);
+    z-index:9999;
+  }
   

@@ -70,37 +70,25 @@
           <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
             <ng-container *ngIf="col.field">
 
-              <p-dropdown *ngSwitchCase="'SOWCode'" [options]="ProjectColArray.SOWCode" appendTo="body"
+              <p-dropdown filter="true" *ngSwitchCase="'SOWCode'" [options]="ProjectColArray.SOWCode" appendTo="body"
                 (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown *ngSwitchCase="'ProjectCode'" [options]="ProjectColArray.ProjectCode" appendTo="body"
+              <p-dropdown filter="true" *ngSwitchCase="'ProjectCode'" [options]="ProjectColArray.ProjectCode" appendTo="body"
                 (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown *ngSwitchCase="'WBJID'" [options]="ProjectColArray.WBJID" appendTo="body"
+              <p-dropdown filter="true" *ngSwitchCase="'WBJID'" [options]="ProjectColArray.WBJID" appendTo="body"
                 (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown *ngSwitchCase="'ClientLegalEntity'" [options]="ProjectColArray.ClientLegalEntity"
+              <p-dropdown filter="true" *ngSwitchCase="'ClientLegalEntity'" [options]="ProjectColArray.ClientLegalEntity"
                 appendTo="body" (onChange)="project.filter($event.value, col.field, 'equals')">
               </p-dropdown>
-              <p-dropdown *ngSwitchCase="'DeliverableType'" [options]="ProjectColArray.DeliverableType" appendTo="body"
+              <p-dropdown filter="true" *ngSwitchCase="'DeliverableType'" [options]="ProjectColArray.DeliverableType" appendTo="body"
                 (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown *ngSwitchCase="'ProjectType'" [options]="ProjectColArray.ProjectType" appendTo="body"
+              <p-dropdown filter="true" *ngSwitchCase="'ProjectType'" [options]="ProjectColArray.ProjectType" appendTo="body"
                 (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown *ngSwitchCase="'Status'" [options]="ProjectColArray.Status" appendTo="body"
+              <p-dropdown filter="true" *ngSwitchCase="'Status'" [options]="ProjectColArray.Status" appendTo="body"
                 (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown *ngSwitchCase="'CreatedBy'" [options]="ProjectColArray.CreatedBy" appendTo="body"
+              <p-dropdown filter="true" *ngSwitchCase="'CreatedBy'" [options]="ProjectColArray.CreatedBy" appendTo="body"
                 (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-
-              <p-dropdown [options]="ProjectColArray.Created" *ngSwitchCase="'Created'" [(ngModel)]="selectedDate"
-                appendTo="body" (onChange)="project.filter($event.value, col.field, 'equals')">
-                <ng-template let-sDate pTemplate="selectedItem">
-                  <span *ngIf="sDate.value === null"> {{sDate.label}}</span>
-                  <span *ngIf="sDate.value !== null"> {{sDate.label | date:'d MMM, y, h:mm a'}}</span>
-                </ng-template>
-                <ng-template let-sDate pTemplate="item">
-                  <span *ngIf="sDate.value === null"> {{sDate.label}}</span>
-                  <span *ngIf="sDate.value !== null"> {{sDate.label | date:'d MMM, y, h:mm a'}}</span>
-                </ng-template>
-              </p-dropdown>
-
-
+                <p-dropdown filter="true" *ngSwitchCase="'Created'" [options]="ProjectColArray.Created" appendTo="body"
+                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
             </ng-container>
           </th>
           <th></th>

@@ -16,6 +16,10 @@
         </div>
     </div>
 </div> -->
+<div class="tableLoader" [hidden]='pmObject.isMainLoaderHidden'>
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
 <div class="custom-table-container">
     <p-splitButton label="Add Project" icon="pi pi-plus-circle" (onClick)="displayAddProject()" [model]="buttons">
     </p-splitButton>

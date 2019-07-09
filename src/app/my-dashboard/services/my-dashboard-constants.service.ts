@@ -30,7 +30,7 @@ export class MyDashboardConstantsService {
   mydashboardComponent = {
 
     MyTasks: {
-      select: "ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments",
+      select: "ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones",
       orderby: "DueDate asc",
       filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and (Task ne 'Time Booking') and",
       filterStatus: "(Status ne 'Completed') and (Status ne 'Auto Closed')  and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
@@ -63,7 +63,7 @@ export class MyDashboardConstantsService {
       top: "4500"
     },
     previousNextTask: {
-      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
+      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
       filter: '',
       expand: "AssignedTo/Title"
     },
@@ -122,7 +122,7 @@ export class MyDashboardConstantsService {
     },
 
     MyTimeline: {
-      select: "ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity",
+      select: "ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,SubMilestones",
       orderby: "DueDate asc",
       filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and  (Task ne 'Time Booking') and ",
       filterNotCompleted: "(Status ne 'Completed') and (Status ne 'Not Confirmed') and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
@@ -592,7 +592,7 @@ export class MyDashboardConstantsService {
       });
       objEmailBody.push({
         "key": "@@Val2@@",
-        "value": element.Title
+        "value": element.SubMilestones ?  element.Title + " - " + element.SubMilestones :element.Title 
       });
       objEmailBody.push({
         "key": "@@Val3@@",
@@ -616,7 +616,7 @@ export class MyDashboardConstantsService {
       });
       objEmailBody.push({
         "key": "@@Val8@@",
-        "value": element.TaskComments === undefined ? '' : element.TaskComments
+        "value": task.TaskComments  ? task.TaskComments :''
       });
       objEmailBody.push({
         "key": "@@Val0@@",
@@ -766,21 +766,9 @@ export class MyDashboardConstantsService {
   }
 
   //*************************************************************************************************
-  //  Return unique objects  dates 
+  //   Get Task Documents
   //*************************************************************************************************
 
-  getUniqueDates(arr) {
-
-    let uniqueArray = arr
-      .map(function (date) { return date.getTime() })
-      .filter(function (date, i, array) {
-        return array.indexOf(date) === i;
-      })
-      .map(function (time) { return new Date(time); });
-
-    var data = uniqueArray.map(a => { let b = { label: a, value: a }; return b; })
-    return data;
-  }
 
   getTaskDocument(folderUrl, documentUrl, previousTask) {
     let documents = [];

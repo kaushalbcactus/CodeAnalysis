@@ -23,8 +23,6 @@ export class ManageFinanceComponent implements OnInit {
   existPOInvoiceArray: any = [];
   existPODataArray: any = [];
   isBudgetHoursDisabled = true;
-  isManageFinanceLoaderHidden = false;
-  isManageFinanceTableHidden = true;
   sowNumber = '';
   budgetData = [];
   budgetObj = {
@@ -136,8 +134,6 @@ export class ManageFinanceComponent implements OnInit {
     this.pmObject.addProject.FinanceManagement.UnassignedArray = [];
     this.sowNumber = this.pmObject.addProject.SOWSelect.SOWCode;
     this.isBudgetHoursDisabled = true;
-    this.isManageFinanceTableHidden = true;
-    this.isManageFinanceLoaderHidden = false;
     this.address = [
       { label: 'POC', value: 'POC' },
       { label: 'Client', value: 'Client' }
@@ -147,8 +143,8 @@ export class ManageFinanceComponent implements OnInit {
       { label: 'No', value: 'No' }
     ];
     if (this.config && this.config.hasOwnProperty('data')) {
+      this.pmObject.isMainLoaderHidden = false;
       setTimeout(() => {
-        this.isManageFinanceLoaderHidden = false;
         this.projObj = this.config.data.projectObj;
         this.isPOEdit = true;
         // this.setBudget();
@@ -244,8 +240,6 @@ export class ManageFinanceComponent implements OnInit {
     this.pmObject.addProject.FinanceManagement.OverNightRequest = this.selectedOverNightRequest;
     this.budgetData.push(this.budgetObj);
     this.unassignedBudget.push(this.unassignedBudgetobj);
-    this.isManageFinanceTableHidden = false;
-    this.isManageFinanceLoaderHidden = true;
   }
   /**
    * This method is used to add the budget to project.
@@ -684,8 +678,7 @@ export class ManageFinanceComponent implements OnInit {
       });
       this.existPODataArray = this.poData;
       this.showPo = true;
-      this.isManageFinanceLoaderHidden = true;
-      this.isManageFinanceTableHidden = false;
+      this.pmObject.isMainLoaderHidden = true;
     }
   }
   async saveUpdatePO() {
@@ -693,6 +686,7 @@ export class ManageFinanceComponent implements OnInit {
     // this.pmObject.addProject.FinanceManagement.POArray = this.poData;
     // this.pmObject.addProject.FinanceManagement.BudgetArray = this.budgetData;
     // this.pmObject.addProject.FinanceManagement.UnassignedArray = this.unassignedBudget;
+    this.pmObject.isMainLoaderHidden = false;
     const batchURL = [];
     const options = {
       data: null,
@@ -811,9 +805,10 @@ export class ManageFinanceComponent implements OnInit {
     });
     console.log(batchURL);
     await this.spServices.executeBatch(batchURL);
+    this.pmObject.isMainLoaderHidden = true;
     this.messageService.add({
       key: 'custom', severity: 'success', summary: 'Success Message',
-      detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
+      detail: 'Budget Updated Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
     });
     setTimeout(() => {
       this.dynamicDialogRef.close();
