@@ -85,12 +85,13 @@ export class PmconstantService {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,'
         + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
+        // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
         + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
-        + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title'
+        + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
       filter: '(Status ne \'Closed\') and Status ne (\'Cancelled\')',
       orderby: 'Modified desc',
@@ -100,12 +101,13 @@ export class PmconstantService {
       // tslint:disable-next-line:max-line-length
       select: 'ID,Title,ProjectCode,DeliverableType,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,'
         + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
+        // tslint:disable-next-line:max-line-length
         + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
         + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
-        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService'
+        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
-        + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title'
+        + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
       // tslint:disable-next-line:max-line-length
       filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllOperationresources/Id eq ' + this.global.sharePointPageObject.userId + ')',
@@ -342,7 +344,8 @@ export class PmconstantService {
       filter: 'ProjectNumber eq \'{{projectCode}}\''
     },
     INVOICE_LINE_ITEMS_BY_PROJECTCODE: {
-      select: 'ID, Title, ScheduledDate,Amount, Currency, PO, MainPOC, AddressType, SOWCode, ScheduleType, Status',
+      select: 'ID, Title, ScheduledDate,Amount, Currency, PO, MainPOC, AddressType, SOWCode, ScheduleType, Status, ProformaLookup,'
+        + ' InvoiceLookup',
       filter: 'Title eq \'{{projectCode}}\''
     }
   };
@@ -382,6 +385,14 @@ export class PmconstantService {
         + ' and ((RejectionDate gt datetime\'{{rejectionStartDate}}\' and RejectionDate lt datetime\'{{rejectionEndDate}}\')'
         + ' or (ProposedStartDate gt datetime\'{{proposedStartDate}}\' and ProposedStartDate lt datetime\'{{proposedEndDate}}\')))) ',
       top: 4900
+    },
+    INVOICES_BY_INVOICELOOKUP: {
+      select: 'ID, Title, FileURL, InvoiceNumber',
+      filter: 'ID eq \'{{invoiceLookup}}\''
+    },
+    PROFORMA_BY_PROFORMALOOKUP: {
+      select: 'ID, Title, FileURL',
+      filter: 'ID eq \'{{proformaLookup}}\''
     }
   };
   public PROJECT_TYPE = {
