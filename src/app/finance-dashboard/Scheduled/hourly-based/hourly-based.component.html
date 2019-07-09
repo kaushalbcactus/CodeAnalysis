@@ -53,10 +53,10 @@
                     <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="hourlyBasedColArray.ClientLegalEntity"
                         defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ProposedEndDate'" [options]="hourlyBasedColArray.ProposedEndDate"
+                    <p-multiSelect *ngSwitchCase="'PONumber'" [options]="hourlyBasedColArray.PONumber"
                         defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ScheduledDate'" [options]="hourlyBasedColArray.ScheduledDate"
+                    <p-multiSelect *ngSwitchCase="'POName'" [options]="hourlyBasedColArray.POName"
                         defaultLabel="All" appendTo="body" (onChange)="hb.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Rate'" [options]="hourlyBasedColArray.Rate" defaultLabel="All"

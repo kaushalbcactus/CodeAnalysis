@@ -79,22 +79,6 @@
             <td>{{rowItemData.DateSpend}}</td>
         </tr>
         <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Created Date</td>
-            <td>{{rowItemData.Created}}</td>
-        </tr>
-        <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Created By</td>
-            <td>{{rowItemData.CreatedBy}}</td>
-        </tr>
-        <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Modified Date</td>
-            <td>{{rowItemData.Modified}}</td>
-        </tr>
-        <tr>
-            <td [ngStyle]="{'color':'#d7181f'}">Modified By</td>
-            <td>{{rowItemData.ModifiedBy}}</td>
-        </tr>
-        <tr>
             <td [ngStyle]="{'color':'#d7181f'}">Approver Comments</td>
             <td>{{rowItemData.ApproverComments}}</td>
         </tr>
@@ -114,5 +98,22 @@
             <td><a href="{{rowItemData.ClientApprovalFileURL }}" target="_blank" style="color:red">Click here</a>
             </td>
         </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Created Date</td>
+            <td>{{rowItemData.Created | date:'medium'}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Created By</td>
+            <td>{{rowItemData.CreatedBy}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Modified Date</td>
+            <td>{{rowItemData.Modified | date:'medium'}}</td>
+        </tr>
+        <tr>
+            <td [ngStyle]="{'color':'#d7181f'}">Modified By</td>
+            <td>{{rowItemData.ModifiedBy}}</td>
+        </tr>
+
     </ng-template>
 </p-table>

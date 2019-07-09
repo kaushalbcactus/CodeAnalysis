@@ -379,12 +379,13 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.paidInvoicesRes = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
+            let poItem = this.getPONumber(element);
             this.paidInvoicesRes.push({
                 Id: element.ID,
                 InvoiceStatus: element.Status,
                 InvoiceNumber: element.InvoiceNumber,
-                PONumber: this.getPONumber(element),
-                POName: this.getPOName(element).Name + ' / ' + this.getPOName(element).Number,
+                PONumber: poItem.Number,
+                POName: poItem.Name + ' / ' + poItem.Number,
                 ClientLegalEntity: element.ClientLegalEntity,
                 InvoiceDate: element.InvoiceDate,
                 Amount: element.Amount,
@@ -426,7 +427,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
                 return x;
             }
         })
-        return found ? found.Number : ''
+        return found ? found : ''
     }
     getPOName(poId) {
         let found = this.purchaseOrdersList.find((x) => {

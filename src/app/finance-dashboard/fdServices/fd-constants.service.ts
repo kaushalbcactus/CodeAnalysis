@@ -202,6 +202,12 @@ export class FdConstantsService {
             // top: 1
         },
 
+        projectFinanceBreakupForPO: {
+            select: "ID,POLookup,ProjectNumber",
+            filter: "ProjectNumber eq '{{ProjectCode}}' and Status ne 'Deleted' ",
+            top: 1
+        },
+
         sowByProjectCode: {
             select: "ID, Title, ClientLegalEntity, SOWTitle, Currency, TotalBudget, NetBudget, OOPBudget, TaxBudget, Status, PrimaryPOC, TotalLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, RevenueLinked",
             filter: "SOWCode eq '{{SOWCode}}' and Status ne 'Deleted'",

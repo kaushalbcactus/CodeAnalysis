@@ -350,10 +350,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.proformaRes = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
+            let poItem = this.getPONumber(element)
             this.proformaRes.push({
                 Id: element.ID,
                 ProformaNumber: element.Title,
-                PONumber: this.getPONumber(element).Number,
+                PONumber: poItem.Number,
+                POName: poItem.Name,
                 ProformaDate: element.ProformaDate,
                 // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM d, y'),
                 ProformaType: element.ProformaType,
@@ -362,7 +364,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 POC: this.getPOCName(element),
                 Status: element.Status,
                 AddressType: element.AddressType,
-                POName: this.getPONumber(element).Name,
                 MainPOC: element.MainPOC,
                 ClientLegalEntity: element.ClientLegalEntity,
                 AdditionalInfo: element.AdditionalInfo,
