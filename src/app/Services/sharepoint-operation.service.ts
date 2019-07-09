@@ -286,17 +286,23 @@ export class SharepointoperationService {
     }
     // ----------SHAREPOINT LIST CORE----------
     // CREATE item - SharePoint list name, and JS object to stringify for save
-    create(listName: string, jsonBody: any, type: string): Promise<any> {
+   async create(listName: string, jsonBody: any, type: string): Promise<any> {
         const url = this.apiUrl.replace('{0}', listName);
-        // append metadata
+        // append metadata 
         if (!jsonBody.__metadata) {
             jsonBody.__metadata = {
                 type: type
             };
         }
-        debugger;
         const data = JSON.stringify(jsonBody);
-        return this.http.post(url, data, this.options).toPromise().then(function (res: Response) {
+        let headers = new Headers();
+        headers.append('Content-Type', this.jsonHeader);
+        headers.append('Accept', this.jsonHeader);
+        if ($('#__REQUESTDIGEST').val()) {
+            headers.append('X-RequestDigest', $('#__REQUESTDIGEST').val());
+        }
+        const options = new RequestOptions({ headers: headers });
+         return await this.http.post(url, data, options).toPromise().then(function (res: Response) {
             return res.json();
         }).catch(this.handleError);
     }

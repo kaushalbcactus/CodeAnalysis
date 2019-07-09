@@ -46,6 +46,7 @@ export class BlockTimeDialogComponent implements OnInit {
   maxDate: Date;
   mode: any;
   halfDayEnable: boolean = false;
+  eventEndDated: any;
 
   constructor(public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
@@ -125,32 +126,28 @@ export class BlockTimeDialogComponent implements OnInit {
 
   async saveBooking() {
 
-    if ((this.SelectedClientLegalEntity === undefined && this.data.timeblockType !== 'Admin') && (this.SelectedClientLegalEntity === undefined && this.data.timeblockType !== 'Internal Meeting') && (this.SelectedClientLegalEntity === undefined && this.data.timeblockType !== 'Training')) {
+    if ((!this.SelectedClientLegalEntity && this.data.timeblockType !== 'Admin') && ( !this.SelectedClientLegalEntity  && this.data.timeblockType !== 'Internal Meeting') && (!this.SelectedClientLegalEntity  && this.data.timeblockType !== 'Training')) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Client.' });
       return false;
     }
-    else if (this.SelectedClientLegalEntity === null) {
+    else if (!this.SelectedClientLegalEntity) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Client.' });
       return false;
 
     }
-    else if (this.eventDate === undefined) {
+    else if ( !this.eventDate) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select  Date.' });
       return false;
     }
-    else if (this.starttime === undefined) {
+    else if (!this.starttime) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Define Start Time.' });
       return false;
     }
-    else if (this.endtime === undefined && this.data.timeblockType !== 'Admin') {
+    else if (!this.endtime  && this.data.timeblockType !== 'Admin') {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Define End Time.' });
       return false;
     }
-    else if (this.commment === undefined) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
-      return false;
-    }
-    else if (this.commment === "") {
+    else if (!this.commment) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
       return false;
     }
@@ -215,15 +212,15 @@ export class BlockTimeDialogComponent implements OnInit {
   async saveLeave() {
 
 
-    if (this.eventDate === undefined) {
+    if (!this.eventDate) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Start Date.' });
       return false;
     }
-    else if (this.eventEndDate === undefined) {
+    else if (!this.eventEndDate) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select End Date.' });
       return false;
     }
-    else if (this.commment === undefined) {
+    else if (!this.commment) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
       return false;
     }

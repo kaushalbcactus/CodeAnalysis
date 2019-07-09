@@ -94,7 +94,7 @@ export class TimeBookingDialogComponent implements OnInit {
   AddNewRow() {
     console.log(this.UserMilestones);
     const newMilestone = {
-      ID: -1, Entity: '', Project: '', Milestone: '', type: "task", dbClientLegalEntities: this.dbClientLegalEntities, dbProjects: [{ label: 'Select Project', value: null }], dbMilestones: [{ label: 'Select Milestone', value: null }], isEditable: true, TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: new Date(this.datePipe.transform(this.MainminDate, 'yyyy-MM-dd')).getTime() <= new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() ? true : false }))
+      ID: -1, Entity: '', ProjectCode: '', Milestone: '', type: "task", dbClientLegalEntities: this.dbClientLegalEntities, dbProjects: [{ label: 'Select Project', value: null }], dbMilestones: [{ label: 'Select Milestone', value: null }], isEditable: true, TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: new Date(this.datePipe.transform(this.MainminDate, 'yyyy-MM-dd')).getTime() <= new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() ? true : false }))
     }
 
     this.UserMilestones.push(newMilestone);
@@ -114,6 +114,7 @@ export class TimeBookingDialogComponent implements OnInit {
 
 
   async getAllProjects(client, rowData) {
+    rowData.dbProjects= [{ label: 'Select Project', value: null }];
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
     let ProjectInformations = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
@@ -135,6 +136,8 @@ export class TimeBookingDialogComponent implements OnInit {
 
   async getAllMilestones(projectCode, rowData) {
   debugger;
+    rowData.dbMilestones=  [{ label: 'Select Milestone', value: null }]
+    rowData.ProjectCode =projectCode;
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
     let AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.AllMilestones);
@@ -155,6 +158,7 @@ export class TimeBookingDialogComponent implements OnInit {
 
   }
 
+ 
 
   //*************************************************************************************************
   //  Get week days   //*************************************************************************************************
@@ -230,7 +234,9 @@ export class TimeBookingDialogComponent implements OnInit {
 
     this.allTasks = this.response[0];
 
-    var tempMilestones = this.allTasks.map(o => new Object({ Entity: o.Entity, ProjectCode: o.ProjectCode === "Adhoc" ? '-' : o.ProjectCode, Milestone: o.Milestone === 'Select one' ? o.Comments : o.Milestone, type: o.Entity === null ? 'task' : 'Adhoc', TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: new Date(this.datePipe.transform(minDate, 'yyyy-MM-dd')).getTime() < new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() ? true : false })) }));
+    console.log(this.allTasks);
+
+    var tempMilestones = this.allTasks.map(o => new Object({ID: o.ID,  Entity: o.Entity, ProjectCode: o.ProjectCode === "Adhoc" ? '-' : o.ProjectCode, Milestone: o.Milestone === 'Select one' ? o.Comments : o.Milestone, type: o.Entity === null ? 'task' : 'Adhoc', TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: new Date(this.datePipe.transform(minDate, 'yyyy-MM-dd')).getTime() < new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() ? true : false })) }));
 
     this.UserMilestones = tempMilestones.length > 0 ? this.getUnique(tempMilestones, 'ProjectCode') : [];
 
@@ -330,16 +336,14 @@ export class TimeBookingDialogComponent implements OnInit {
     this.projetInformations = this.response[0];
     console.log(this.projetInformations);
 
-
+     debugger;
     if (this.UserMilestones !== undefined) {
       this.projetInformations.forEach(element => {
-
+ 
         this.UserMilestones.filter(c => c.ProjectCode === element.ProjectCode).map(c => c.Entity = element.ClientLegalEntity);
 
-        this.UserMilestones.filter(c => c.ProjectCode === element.ProjectCode).map(c => c.ID = element.ID);
-
-
-        this.UserMilestones.filter(c => c.ProjectCode === element.ProjectCode).map(c => c.ProjectCodeTitle = element.ProjectCode + " (" + element.WBJID + ")");
+        this.UserMilestones.filter(c => c.ProjectCode === element.ProjectCode).map(c => 
+          c.ProjectCodeTitle = c.ProjectCode + " (" + element.WBJID + ")");
 
       });
 
@@ -395,7 +399,7 @@ export class TimeBookingDialogComponent implements OnInit {
         }
       }
       else {
-        if (dbTasks[i].Milestone !== "" || dbTasks[i].ProjectCode !== "" || dbTasks[i].Entity !== "") {
+        if (dbTasks[i].Milestone && dbTasks[i].ProjectCode && dbTasks[i].Entity) {
           const obj = {
             __metadata: {
               'type': 'SP.Data.SchedulesListItem'
