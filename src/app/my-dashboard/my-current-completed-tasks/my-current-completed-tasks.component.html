@@ -104,32 +104,11 @@
                             (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
                         <p-dropdown filter="true" *ngSwitchCase="'DisplayTitle'" [options]="AllTaskColArray.TaskName" appendTo="body"
                             (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
-                        <p-dropdown    [options]="AllTaskColArray.StartDate" *ngSwitchCase="'StartDate'"
-                            [(ngModel)]="selectedStartDate" appendTo="body"
-                            (onChange)="taskId.filter($event.value, col.field, 'equals')">
-                            <ng-template let-startDate pTemplate="selectedItem">
-                                <span *ngIf="startDate.value === null"> {{startDate.label}}</span>
-                                <span *ngIf="startDate.value !== null">
-                                    {{startDate.label | date:'d MMM, y, h:mm a'}}</span>
-                            </ng-template>
-                            <ng-template let-startDate pTemplate="item">
-                                <span *ngIf="startDate.value === null"> {{startDate.label}}</span>
-                                <span *ngIf="startDate.value !== null">
-                                    {{startDate.label | date:'d MMM, y, h:mm a'}}</span>
-                            </ng-template>
-                        </p-dropdown>
-                        <p-dropdown   [options]="AllTaskColArray.DueDate" *ngSwitchCase="'DueDate'"
-                            [(ngModel)]="selectedDueDate" appendTo="body"
-                            (onChange)="taskId.filter($event.value, col.field, 'equals')">
-                            <ng-template let-dueDate pTemplate="selectedItem">
-                                <span *ngIf="dueDate.value === null"> {{dueDate.label}}</span>
-                                <span *ngIf="dueDate.value !== null"> {{dueDate.label | date:'d MMM, y, h:mm a'}}</span>
-                            </ng-template>
-                            <ng-template let-dueDate pTemplate="item">
-                                <span *ngIf="dueDate.value === null"> {{dueDate.label}}</span>
-                                <span *ngIf="dueDate.value !== null"> {{dueDate.label | date:'d MMM, y, h:mm a'}}</span>
-                            </ng-template>
-                        </p-dropdown>
+                        <p-dropdown filter="true" *ngSwitchCase="'StartDate'" [options]="AllTaskColArray.StartDate" appendTo="body"
+                        (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
+
+                        <p-dropdown filter="true" *ngSwitchCase="'DueDate'" [options]="AllTaskColArray.DueDate" appendTo="body"
+                        (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
                     </ng-container>
                 </th>
                 <th></th>

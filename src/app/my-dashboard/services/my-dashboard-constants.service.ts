@@ -63,7 +63,7 @@ export class MyDashboardConstantsService {
       top: "4500"
     },
     previousNextTask: {
-      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
+      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
       filter: '',
       expand: "AssignedTo/Title"
     },
@@ -592,7 +592,7 @@ export class MyDashboardConstantsService {
       });
       objEmailBody.push({
         "key": "@@Val2@@",
-        "value": element.Title
+        "value": element.SubMilestones ?  element.Title + " - " + element.SubMilestones :element.Title 
       });
       objEmailBody.push({
         "key": "@@Val3@@",
@@ -616,7 +616,7 @@ export class MyDashboardConstantsService {
       });
       objEmailBody.push({
         "key": "@@Val8@@",
-        "value": element.TaskComments === undefined ? '' : element.TaskComments
+        "value": task.TaskComments  ? task.TaskComments :''
       });
       objEmailBody.push({
         "key": "@@Val0@@",
@@ -766,21 +766,9 @@ export class MyDashboardConstantsService {
   }
 
   //*************************************************************************************************
-  //  Return unique objects  dates 
+  //   Get Task Documents
   //*************************************************************************************************
 
-  getUniqueDates(arr) {
-
-    let uniqueArray = arr
-      .map(function (date) { return date.getTime() })
-      .filter(function (date, i, array) {
-        return array.indexOf(date) === i;
-      })
-      .map(function (time) { return new Date(time); });
-
-    var data = uniqueArray.map(a => { let b = { label: a, value: a }; return b; })
-    return data;
-  }
 
   getTaskDocument(folderUrl, documentUrl, previousTask) {
     let documents = [];

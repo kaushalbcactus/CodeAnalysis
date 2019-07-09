@@ -7,9 +7,9 @@
   </div>
 
 
-  <!-- <p-toast styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
+  <p-toast styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
 position="bottom-center">
-</p-toast> -->
+</p-toast>
   
 
 <p-fileUpload   [style]="{'margin-top':'1vh'}"  *ngIf="!loaderenable && (selectedTab === 'My Drafts' || selectedTab ==='Source Docs' || selectedTab ==='References' || selectedTab ==='Meeting Notes & Client Comments')" customUpload="true"     (uploadHandler)="uploadDocuments($event,selectedTab)"

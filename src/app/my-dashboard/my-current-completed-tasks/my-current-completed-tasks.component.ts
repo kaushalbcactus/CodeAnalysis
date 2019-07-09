@@ -302,8 +302,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
   createColFieldValues() {
     this.AllTaskColArray.TaskStatus.push.apply(this.AllTaskColArray.TaskStatus, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
     this.AllTaskColArray.TaskName.push.apply(this.AllTaskColArray.TaskName, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.DisplayTitle, value: a.DisplayTitle }; return b; })));
-    this.AllTaskColArray.StartDate.push.apply(this.AllTaskColArray.StartDate, this.myDashboardConstantsService.getUniqueDates(this.allTasks.map(a => a.StartDate)));
-    this.AllTaskColArray.DueDate.push.apply(this.AllTaskColArray.DueDate, this.myDashboardConstantsService.getUniqueDates(this.allTasks.map(a => a.DueDate)));
+
+    this.AllTaskColArray.StartDate.push.apply(this.AllTaskColArray.StartDate, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: this.datePipe.transform(a.StartDate, "d MMM, y, h:mm a"), value: a.StartDate }; return b; })));
+    this.AllTaskColArray.DueDate.push.apply(this.AllTaskColArray.DueDate, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: this.datePipe.transform(a.DueDate, "d MMM, y, h:mm a"), value: a.DueDate }; return b; })));
+
     this.loaderenable = false;
     this.thenBlock = this.taskId;
     this.thenpopupMenu = this.popupMenu;
