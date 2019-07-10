@@ -50,7 +50,7 @@
             <input [attr.disabled]=true [(ngModel)]="hourlyBudgetHours" type="number" style="width:100%" pInputText>
           </div>
           <div class="ui-grid-col-2">
-            <p-button class="mr-5" [hidden]="isAddRateButtonHidden" label="Add Rate to Project"
+            <p-button type="button" class="mr-5" [hidden]="isAddRateButtonHidden" label="Add Rate to Project"
               (click)="addRateToProject();">
             </p-button>
           </div>
@@ -79,7 +79,7 @@
           <tr>
             <td>
               <p-button class="mt-20" [hidden]="isAddBudgetButtonHidden" label="Add Budget to Project"
-                (click)="addBudgetToProject()" type="Submit">
+                (click)="addBudgetToProject()" type="button">
               </p-button>
             </td>
             <td><input [attr.disabled]=true type="number" style="width:100%" pInputText></td>
@@ -121,7 +121,7 @@
           <p-dropdown [options]="poList" placeholder="Select Po" [(ngModel)]="selectedPo"></p-dropdown>
         </div>
         <div class="ui-grid-col-4">
-          <p-button class="mr-5" label="Add Po to Project" (click)="addPoToProject()">
+          <p-button type="button" class="mr-5" label="Add Po to Project" (click)="addPoToProject()">
           </p-button>
         </div>
       </div>
@@ -256,7 +256,7 @@
           </tr>
           <tr>
             <td>
-              <p-button class="mt-20" label="Remove Invoices From project" type="Submit"></p-button>
+              <p-button class="mt-20" label="Remove Invoices From project" type="button"></p-button>
             </td>
           </tr>
         </ng-template>
@@ -309,7 +309,7 @@
     </div>
     <div class="error" *ngIf="addInvoiceError">{{addInvoiceErrorMsg}}</div>
     <div class="ui-grid-row mt-20" style="float:right">
-      <p-button class="mr-5" type="Submit" value="Post Data" label="Add"></p-button>
+      <p-button class="mr-5" type="button" value="Post Data" label="Add"></p-button>
       <p-button class="mr-5" type="button" (click)="showAddInvoiceDetails=false" label="Cancel"></p-button>
     </div>
   </form>
