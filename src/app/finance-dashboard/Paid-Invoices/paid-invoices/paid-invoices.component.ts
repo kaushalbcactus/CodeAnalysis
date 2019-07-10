@@ -374,7 +374,8 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             this.formatData(arrResults[0]);
             console.log(arrResults);
         }
-        // });
+        this.isPSInnerLoaderHidden = true;
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
     formatData(data: any[]) {

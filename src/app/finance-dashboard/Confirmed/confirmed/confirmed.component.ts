@@ -266,6 +266,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     // Get Confirmed InvoiceItemList
     confirmedILIarray: any = [];
     async getRequiredData() {
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         this.confirmedRes = [];
         this.po.revenuBalance = '';
         this.po.oopBalance = '';
@@ -293,6 +294,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.getPOListItems(arrResults[0]);
             this.confirmedILIarray = arrResults[0];
         }
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         // });
     }
     purchaseOrders: any = [];
@@ -398,7 +400,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 POCName: this.getPOCName(element),
                 AddressType: element.AddressType,
                 ProjectTitle: project ? project.Title : '',
-                CS: this.getCSDetails(element.CS.results),
+                CS: this.getCSDetails(element),
                 TaggedDate: element.TaggedDate,
                 Status: element.Status,
                 ProformaLookup: element.ProformaLookup,
@@ -455,12 +457,16 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     getCSDetails(res) {
-        let title = [];
-        for (let i = 0; i < res.length; i++) {
-            const element = res[i];
-            title.push(element.Title);
+        if (res.hasOwnProperty('CS') && res.CS.hasOwnProperty('results') && res.CS.results.length) {
+            let title = [];
+            for (let i = 0; i < res.length; i++) {
+                const element = res[i];
+                title.push(element.Title);
+            }
+            return title.toString();
+        } else {
+            return '';
         }
-        return title.toString();
     }
 
     // Project PO
