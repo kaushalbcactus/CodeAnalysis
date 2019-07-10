@@ -492,7 +492,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         } else if (this.hourlyDialog.title.toLowerCase() === 'view project details') {
             this.goToProjectDetails(this.selectedRowItem)
         } else if (this.hourlyDialog.title.toLowerCase() === 'show history') {
-            this.timeline.showTimeline(data.Id, 'FD', 'HourlyBased');
+            this.timeline.showTimeline(data.Id, 'FD', 'Rolling');
         } else if (event.item.label === 'Details') {
             this.rightSideBar = !this.rightSideBar;
             return;

@@ -81,17 +81,16 @@ export class TimelineHistoryComponent implements OnInit {
     /**
      * fetches project contacts and po on page load
      */
-
-    this.initialize();
-
   }
 
   // #region component initialization
   async initialize() {
-    const result = await this.getCommonData();
-    this.arrProjectContacts = result.projectContacts;
-    this.arrPO = result.po;
-    this.arrCle = result.cle;
+    if (this.arrPO.length === 0) {
+      const result = await this.getCommonData();
+      this.arrProjectContacts = result.projectContacts;
+      this.arrPO = result.po;
+      this.arrCle = result.cle;
+    }
   }
 
   /**
@@ -134,15 +133,15 @@ export class TimelineHistoryComponent implements OnInit {
   // #endregion
 
   // #region timeline initialization
-  showTimeline(id, moduleName, type) {
+  async showTimeline(id, moduleName, type) {
     this.reset();
     this.initialRequestOngoing = true;
-    // this.loading = true;
     this.hideLoader = false;
     this.displayBody = true;
     this.timelineBaseObj = JSON.parse(JSON.stringify(this.ObjTimeline));
     this.requestType = type;
-    setTimeout(() => {
+    setTimeout(async () => {
+      await this.initialize();
       this.initializeTimeline(id, moduleName, type);
     }, 500);
   }
