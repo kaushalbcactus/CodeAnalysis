@@ -191,14 +191,14 @@
   </form>
   <div *ngIf="!showEditSave">
     <div class="mt-20" style="float: left">
-      <p-button class="mr-5" (click)="goToSow()" label="Back"></p-button>
+      <p-button class="mr-5" type="button" (click)="goToSow()" type="button" label="Back"></p-button>
     </div>
     <div class="mt-20" style="float: right">
-      <p-button class="mr-5" (click)="goToTimeline(addProjectAttributesForm.value)" label="Continue To Timeline">
+      <p-button class="mr-5" type="button" (click)="goToTimeline(addProjectAttributesForm.value)" label="Continue To Timeline">
       </p-button>
     </div>
   </div>
   <div *ngIf="showEditSave">
-    <p-button class="mr-5" (click)="saveEditProject()" label="Save" style="float: right;"></p-button>
+    <p-button class="mr-5" type="button" (click)="saveEditProject()" label="Save" style="float: right;"></p-button>
   </div>
 </div>

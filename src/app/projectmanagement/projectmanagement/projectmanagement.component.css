@@ -503,7 +503,7 @@ body .ui-table .ui-table-tbody > tr:nth-child(even){
       margin-bottom: 1%;
     }
     :focus {outline:none;}
-    #s4-workspace {overflow: hidden !important;}
+    /* #s4-workspace {overflow: hidden !important;} */
     .resetRouting{cursor: pointer; font-size: 24px;}
     .legends{display: inline-flex !important}
     .legends .legendSection .legendName{ padding-left: 5px }
@@ -762,5 +762,9 @@ body .ui-corner-top {
     left:0;right:0;top:0;bottom:0;
     background-color: rgba(255,255,255,0.7);
     z-index:9999;
+  }
+  .excelIcon {
+    float: right !important;
+    margin-top: 10px !important;
   }
   

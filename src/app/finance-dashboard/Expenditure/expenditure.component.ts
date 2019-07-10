@@ -211,7 +211,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             Amount: ['', Validators.required],
             // PaymentMode: new FormControl('', Validators.required),
             SpendType: ['', Validators.required],
-            Notes: ['', Validators.required],
+            Notes: [''],
             FileURL: ['', Validators.required],
             CAFileURL: ['', Validators.required],
             // ProjectCode: ['', Validators.required],
@@ -228,7 +228,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             BilledTo: ['', Validators.required],
             CreditPeriod: ['', Validators.required],
             ContractStartDate: ['', Validators.required],
-            ContractEndDate: ['', Validators.required],
+            ContractEndDate: [''],
             BillingTerms: ['', Validators.required],
             WLA: ['', Validators.required],
             // File: new FormControl('', Validators.required),
@@ -608,12 +608,23 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             this.addSts = totalAmt === expenditureAmt ? true : false;
         } else {
             this.addSts = false;
+            val = 0;
+            // this.totalLineItems[index].AmountPerProject = '';
             this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Your entered amount greater than actual Amount.', detail: '', life: 4000 });
-            this.totalLineItems[index].AmountPerProject = 0;
-            this.totalLineItems = [...this.totalLineItems];
+            let obj: any = this.totalLineItems[index];
+            obj.AmountPerProject = val;
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+            this.totalLineItems[index] = obj;
+            const arrItems = this.totalLineItems;
+            this.totalLineItems = [...[]];
+            
+            setTimeout(async () => {
+                this.totalLineItems = [...arrItems];
+                this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+            }, 300);
         }
 
-
+        
         // Currency Conversion
         // for (let pi = 0; pi < this.totalLineItems.length; pi++) {
         //     const element = this.totalLineItems[pi];

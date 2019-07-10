@@ -30,7 +30,7 @@
     </div>
     <div class="table100 slaExist ver4 m-b-110" [hidden]="isSCTableHidden">
         <p-table #sendToClientTableRef [columns]="displayedColumns" [value]="pmObject.sendToClientArray_copy"
-            [paginator]="true" [rows]="5" [lazy]="true" (onLazyLoad)="lazyLoadTask($event)"
+            [paginator]="true" [rows]="10" [lazy]="true" (onLazyLoad)="lazyLoadTask($event)"
             [totalRecords]="pmObject.totalRecords.SendToClient" [loading]="pmObject.loading.SendToClient"
             [lazyLoadOnInit]="false">
             <ng-template pTemplate="header" let-columns>

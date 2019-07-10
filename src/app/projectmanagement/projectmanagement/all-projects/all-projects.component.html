@@ -3,11 +3,16 @@
     <div id="allProjectLoaderText">Loading...</div>
 </div>
 <div class="allProjects-section" [hidden]='isAllProjectTableHidden'>
-    <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.allProjectsArrayCopy" [paginator]="true"
-        [rows]="5" [lazy]="true" [totalRecords]="pmObject.totalRecords.AllProject"
-        [loading]="pmObject.loading.AllProject" (onLazyLoad)="lazyLoadTask($event)" [lazyLoadOnInit]="false">
+    <div class="box excelIcon">
+        <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(allProjectRef)"
+            title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+    </div>
+    <div class="clear"></div>
+    <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.allProjectsArray" [paginator]="true"
+        [rows]="10" selectionMode="" exportFilename="All Projects">
         <ng-template pTemplate="header" let-columns>
             <tr>
+                <th class="lastColumnWidth">S.No</th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field">
                     {{ col.header }}
                     <p-sortIcon [field]="col.field"></p-sortIcon>
@@ -15,6 +20,7 @@
                 <th class="lastColumnWidth"></th>
             </tr>
             <tr>
+                <th class="lastColumnWidth"></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field">
                     <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allProjects.sowCodeArray" defaultLabel="All"
                         (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
@@ -48,8 +54,9 @@
                 <th class="lastColumnWidth"></th>
             </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-rowData let-task>
+        <ng-template pTemplate="body" let-rowData let-task let-rowIndex="rowIndex">
             <tr>
+                <td>{{rowIndex+1}}</td>
                 <td>{{task.SOWCode}}</td>
                 <td>{{task.ProjectCode}}</td>
                 <td>{{task.ShortTitle}}</td>
@@ -299,8 +306,8 @@
                 </ng-template>
             </p-table>
             <p-footer>
-                <p-button class="mr-5" (click)="auditComplete()" label="Confirm"></p-button>
-                <p-button class="mr-5" (click)="closeDialog()" label="Cancel"></p-button>
+                <p-button type="button" class="mr-5" (click)="auditComplete()" label="Confirm"></p-button>
+                <p-button type="button" class="mr-5" (click)="closeDialog()" label="Cancel"></p-button>
             </p-footer>
         </p-dialog>
     </div>
@@ -315,8 +322,8 @@
                     [showClear]="true" [filter]="true"></p-dropdown>
             </div>
             <p-footer>
-                <p-button class="mr-5" (click)="performSOWMove()" label="Move"></p-button>
-                <p-button class="mr-5" (click)="closeMoveSOW()" label="Cancel"></p-button>
+                <p-button type="button" class="mr-5" (click)="performSOWMove()" label="Move"></p-button>
+                <p-button type="button" class="mr-5" (click)="closeMoveSOW()" label="Cancel"></p-button>
             </p-footer>
         </p-dialog>
     </div>

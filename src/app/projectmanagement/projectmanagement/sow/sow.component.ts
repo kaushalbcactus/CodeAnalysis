@@ -86,7 +86,7 @@ export class SOWComponent implements OnInit {
     private spServices: SPOperationService,
     private constants: ConstantsService,
     private router: Router,
-    private pmService: PMCommonService
+    public pmCommonService: PMCommonService
   ) { }
 
   ngOnInit() {
@@ -157,7 +157,7 @@ export class SOWComponent implements OnInit {
       sowItemFilter.filter = sowItemFilter.filter.replace(/{{Id}}/gi, currSelectedSOW.ID);
       const sowItemResult = await this.spServices.readItems(this.constants.listNames.SOW.name, sowItemFilter);
       if (sowItemResult && sowItemResult.length) {
-        this.pmService.setGlobalVariable(sowItemResult[0]);
+        this.pmCommonService.setGlobalVariable(sowItemResult[0]);
         this.sowViewDataArray.push(this.pmObject.addSOW);
         this.pmObject.isSOWRightViewVisible = true;
       }
@@ -234,8 +234,6 @@ export class SOWComponent implements OnInit {
       this.allSOW.createdByArray = this.commonService.unique(createdByTempArray, 'value');
       this.allSOW.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
       this.pmObject.allSOWArray = tempAllSOWArray;
-      this.pmObject.totalRecords.AllSOW = tempAllSOWArray.length;
-      this.pmObject.allSOWArrayCopy = tempAllSOWArray.splice(0, 5);
       this.isAllSOWLoaderHidden = true;
       this.isAllSOWTableHidden = false;
     }

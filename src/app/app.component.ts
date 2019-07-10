@@ -22,15 +22,19 @@ export class AppComponent {
       '/sites/medcomcdn/PublishingImages/Images';
 
     this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 8 : _spPageContextInfo.userId;
-    this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
+    this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
       : _spPageContextInfo.webAbsoluteUrl;
-    this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
+    this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
     : _spPageContextInfo.siteServerRelativeUrl;
     this.globalObject.sharePointPageObject.serverRelativeUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
     // tslint:disable-next-line:no-string-literal
     window['angularComponentReference'] = { component: this, zone: this._ngZone, loadPubSupport: () => this.goToPubSupport(), };
     // tslint:disable-next-line:no-string-literal
     window['fdComponentReference'] = { component: this, zone: this._ngZone, loadFD: () => this.goToFD(), };
+
+    window['pmComponentReference'] = { component: this, zone: this._ngZone, loadPM: () => this.goToPM(), };
+
+    window['myDashboardComponentReference'] = { component: this, zone: this._ngZone, loadMyDashboard: () => this.goToMyDashboard(), };
   }
 
   goToPubSupport() {
@@ -39,6 +43,14 @@ export class AppComponent {
 
   goToFD() {
     this.router.navigate(['/financeDashboard']);
+  }
+
+  goToPM() {
+    this.router.navigate(['/projectMgmt']);
+  }
+
+  goToMyDashboard() {
+    this.router.navigate(['/myDashboard']);
   }
 
   // tslint:disable-next-line:use-life-cycle-interface

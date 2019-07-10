@@ -757,4 +757,15 @@ export class PMCommonService {
     this.pmObject.addSOW.SOWOwner = sowItem.BD.ID;
     this.pmObject.addSOW.SOWOwnerText = sowItem.BD.hasOwnProperty('ID') ? this.extractNameFromId([sowItem.BD.ID]).join(',') : '';
   }
+  convertToExcelFile(cnf1) {
+    if (Array.isArray(cnf1._selection)) {
+      if (cnf1._selection.length) {
+        cnf1.exportCSV({ selectionOnly: true });
+      } else {
+        cnf1.exportCSV();
+      }
+    } else {
+      cnf1.exportCSV();
+    }
+  }
 }
