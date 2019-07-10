@@ -4,7 +4,7 @@
         <div id="scInnerLoaderText">Loading...</div>
     </div>
     <div class="noDataMessage" [hidden]='iapHideNoDataMessage'>
-        No Tasks Found.
+        No Project Found.
     </div>
     <div class="table100 projectDataExist ver4 m-b-110" [hidden]="isIAPTableHidden">
         <div class="box excelIcon">
@@ -13,7 +13,7 @@
         </div>
         <div class="clear"></div>
         <p-table #iapTableRef [columns]="displayedColumns" [value]="pmObject.inActiveProjectArray" [paginator]="true"
-            [rows]="5" selectionMode="" exportFilename="Pending Allocation">
+            [rows]="5" selectionMode="" exportFilename="Inactive Projects">
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="lastColumnWidth">S.No</th>
