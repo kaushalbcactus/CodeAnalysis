@@ -1376,9 +1376,9 @@ export class TimelineHistoryComponent implements OnInit {
               break;
             case this.globalConstant.projectList.columns.IsPubSupport:
               obj.activity_type = 'Project updated';
-              obj.activity_sub_type = 'Pubsupport status updated';
-              obj.activity_description = versionDetail.IsPubSupport === 'Yes' ? 'Project updated as pubsupport' :
-                'Project updated as Non pubsupport';
+              obj.activity_sub_type = 'Pubsupport updated';
+              obj.activity_description = versionDetail.IsPubSupport === 'Yes' ? 'Pubsupport module enabled' :
+                'Pubsupport module disabled';
               break;
             case this.globalConstant.projectList.columns.Milestone:
               if (versionDetail.Milestone) {
@@ -1481,6 +1481,11 @@ export class TimelineHistoryComponent implements OnInit {
               obj.activity_type = 'Project updated';
               obj.activity_sub_type = 'Status updated';
               obj.activity_description = 'Status Updated to ' + versionDetail.Status;
+              break;
+            case this.globalConstant.projectList.columns.PubSupportStatus:
+              obj.activity_type = 'Project updated';
+              obj.activity_sub_type = 'Pubsupport status updated';
+              obj.activity_description = 'Pubsupport Status Updated to ' + versionDetail.PubSupportStatus;
               break;
             case this.globalConstant.projectList.columns.TA:
               obj.activity_type = 'Project updated';
