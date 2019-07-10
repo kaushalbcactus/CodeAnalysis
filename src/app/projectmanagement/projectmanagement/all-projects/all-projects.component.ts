@@ -79,7 +79,7 @@ export class AllProjectsComponent implements OnInit {
     private commonService: CommonService,
     private constants: ConstantsService,
     private pmConstant: PmconstantService,
-    private pmCommonService: PMCommonService,
+    public pmCommonService: PMCommonService,
     private spServices: SPOperationService,
     private messageService: MessageService,
     public dialogService: DialogService,

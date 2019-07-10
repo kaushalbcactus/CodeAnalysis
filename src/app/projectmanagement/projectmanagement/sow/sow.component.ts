@@ -86,7 +86,7 @@ export class SOWComponent implements OnInit {
     private spServices: SPOperationService,
     private constants: ConstantsService,
     private router: Router,
-    private pmCommonService: PMCommonService
+    public pmCommonService: PMCommonService
   ) { }
 
   ngOnInit() {
