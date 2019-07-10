@@ -91,7 +91,7 @@ export class SendToClientComponent implements OnInit {
     setTimeout(() => {
       this.hideNoDataMessage = true;
       this.callSendToClient();
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   constructor(
     private spServices: SharepointoperationService,
@@ -190,7 +190,7 @@ export class SendToClientComponent implements OnInit {
     this.hideNoDataMessage = true;
     setTimeout(() => {
       this.isFilterchecked();
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   isFilterchecked() {
     this.pmObject.sendToClientArray = [];

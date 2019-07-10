@@ -54,7 +54,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
         this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours :
         this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours;
       this.pmObject.addProject.FinanceManagement.BudgetHours = this.budgethours;
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   ngOnChanges(changes: SimpleChanges) {
     if (this.manageData && this.manageData.length) {
@@ -96,7 +96,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     this.pmObject.isMainLoaderHidden = false;
     setTimeout(() => {
       this.validateAndSave();
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
 
   }
   async validateAndSave() {
@@ -711,7 +711,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     setTimeout(() => {
       this.pmObject.isAddProjectVisible = false;
       this.router.navigate(['/projectMgmt/allProjects']);
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   /**
    * This function is used to get the milestone obj.

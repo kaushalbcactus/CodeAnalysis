@@ -98,7 +98,7 @@ export class SOWComponent implements OnInit {
 
     setTimeout(() => {
       this.getAllSOW();
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
     this.popItems = [
       {
         label: 'View SOW', target: '_blank',
@@ -259,21 +259,21 @@ export class SOWComponent implements OnInit {
     this.isActiveProjectTableHidden = true;
     setTimeout(() => {
       this.loadProjectTable(this.pmConstant.filterAction.ACTIVE_PROJECT);
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   getPipelineProject() {
     this.pipelineProjectLoader = false;
     this.isPipelineProjectTableHidden = true;
     setTimeout(() => {
       this.loadProjectTable(this.pmConstant.filterAction.PIPELINE_PROJECT);
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   getInactiveProject() {
     this.inActiveProjectLoader = false;
     this.isInActiveProjectTableHidden = true;
     setTimeout(() => {
       this.loadProjectTable(this.pmConstant.filterAction.INACTIVE_PROJECT);
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   async loadProjectTable(projectFilter) {
     let projectInformationFilter: any = {};

@@ -311,7 +311,8 @@ export class ConstantsService {
     APPROVED: 'Approved',
     APPROVAL_PENDING: 'Approval Pending',
     NOT_CONFIRMED: 'Not Confirmed',
-    CLOSED_PROJECT: 'CloseProject'
+    CLOSED_PROJECT: 'CloseProject',
+    CONFIRMED: 'Confirmed'
   };
   public SKILL_LEVEL = {
     WRITER: 'Writer',
@@ -324,7 +325,8 @@ export class ConstantsService {
     SOW_BUDGET_UPDATED: 'SOWBudgetUpdated',
     AUDIT_PROJECT: 'AuditProject',
     CLOSE_PROJECT: 'CloseProject',
-    NOTIFY_PM: 'NotifyPM'
+    NOTIFY_PM: 'NotifyPM',
+    INVOICE_CONFIRM: 'ConfirmInvoice'
   };
   public invoiceList = {
     status: {

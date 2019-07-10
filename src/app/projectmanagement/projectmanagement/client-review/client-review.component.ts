@@ -97,7 +97,7 @@ export class ClientReviewComponent implements OnInit {
     setTimeout(() => {
       this.crHideNoDataMessage = true;
       this.getCRClient();
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   getCRClient() {
     const filter = 'AssignedTo eq ' + this.globalObject.sharePointPageObject.userId
@@ -110,7 +110,7 @@ export class ClientReviewComponent implements OnInit {
     this.crHideNoDataMessage = true;
     setTimeout(() => {
       this.isFilterchecked();
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   isFilterchecked() {
     this.pmObject.clientReviewArray = [];

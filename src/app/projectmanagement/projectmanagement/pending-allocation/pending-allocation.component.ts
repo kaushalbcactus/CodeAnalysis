@@ -98,7 +98,7 @@ export class PendingAllocationComponent implements OnInit {
     setTimeout(() => {
       this.paHideNoDataMessage = true;
       this.getPendingProjects();
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   getPendingProjects() {
     this.fetchPendingProjects();

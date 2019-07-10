@@ -25,6 +25,7 @@ export class ManageFinanceComponent implements OnInit {
   existPOInvoiceArray: any = [];
   existPODataArray: any = [];
   isBudgetHoursDisabled = true;
+  isInvoiceEdit = false;
   sowNumber = '';
   budgetData = [];
   budgetObj = {
@@ -64,7 +65,10 @@ export class ManageFinanceComponent implements OnInit {
     address: '',
     isExsitInv: false,
     isInvoiceItemEdit: false,
-    isInvoiceItemConfirm: false
+    isInvoiceItemConfirm: false,
+    currency: '',
+    pocText: '',
+    Id: 0
   };
   poHeader = {
     total: 0,
@@ -112,6 +116,7 @@ export class ManageFinanceComponent implements OnInit {
   isAddRateButtonHidden = false;
   projObj;
   isPOEdit = false;
+  invoiceObj;
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -149,13 +154,12 @@ export class ManageFinanceComponent implements OnInit {
       { label: 'No', value: 'No' }
     ];
     if (this.config && this.config.hasOwnProperty('data')) {
-      this.pmObject.isMainLoaderHidden = false;
       setTimeout(() => {
         this.projObj = this.config.data.projectObj;
         this.isPOEdit = true;
         // this.setBudget();
         this.editManageFinances(this.projObj);
-      }, 500);
+      }, this.pmConstant.TIME_OUT);
     } else {
       this.isPOEdit = false;
       this.setBudget();
@@ -458,6 +462,7 @@ export class ManageFinanceComponent implements OnInit {
       tempPOObj.type = 'revenue';
       tempPOObj.status = this.constant.STATUS.NOT_STARTED;
       tempPOObj.poc = this.addPOForm.value.primarypoc;
+      tempPOObj.pocText = this.pmCommonService.extractNamefromPOC([tempPOObj.poc]);
       tempPOObj.address = this.addPOForm.value.address;
       tempPOObj.isExsitInv = false;
       if (tempPOObj.amount > retPOInfo.total) {
@@ -560,6 +565,7 @@ export class ManageFinanceComponent implements OnInit {
     this.budgetOutputData.emit(this.savePOArray);
   }
   async editManageFinances(projObj) {
+    this.pmObject.isMainLoaderHidden = false;
     this.poData = [];
     this.isBudgetHoursDisabled = false;
     this.sowNumber = projObj.SOWCode;
@@ -660,10 +666,11 @@ export class ManageFinanceComponent implements OnInit {
           const invoiceObj = $.extend(true, {}, this.poAddObj);
           const invoiceNumber = invoicePermormaNumberArray
             .filter(c => c.listName === this.constant.listNames.Invoices.name)
-            .filter(x => x.retItems[0].ID === invoiceItem.InvoiceLookup);
+            .filter(x => x.retItems && x.retItems.length && x.retItems[0].ID === invoiceItem.InvoiceLookup);
           const proformaNumber = invoicePermormaNumberArray
             .filter(c => c.listName === this.constant.listNames.Proforma.name)
-            .filter(d => d.retItems[0].ID === invoiceItem.ProformaLookup);
+            .filter(d => d.retItems && d.retItems.length && d.retItems[0].ID === invoiceItem.ProformaLookup);
+          invoiceObj.Id = invoiceItem.ID;
           invoiceObj.poId = invoiceItem.PO;
           invoiceObj.inv_number = invoiceNumber && invoiceNumber.length && invoiceNumber[0].retItems && invoiceNumber[0].retItems.length
             ? invoiceNumber[0].retItems[0].InvoiceNumber : '';
@@ -673,9 +680,11 @@ export class ManageFinanceComponent implements OnInit {
           invoiceObj.amount = invoiceItem.Amount;
           invoiceObj.type = invoiceItem.ScheduleType;
           invoiceObj.status = invoiceItem.Status;
-          invoiceObj.poc = invoiceItem.MainPOC ? this.pmCommonService.extractNamefromPOC([invoiceItem.MainPOC]) : '';
+          invoiceObj.poc = invoiceItem.MainPOC;
+          invoiceObj.pocText = invoiceItem.MainPOC ? this.pmCommonService.extractNamefromPOC([invoiceItem.MainPOC]) : '';
           invoiceObj.address = invoiceItem.AddressType;
           invoiceObj.isExsitInv = true;
+          invoiceObj.currency = this.existBudgetArray.retItems[0].Currency;
           if (invoiceObj.status === 'Sheduled') {
             invoiceObj.isInvoiceItemConfirm = true;
             invoiceObj.isInvoiceItemEdit = true;
@@ -725,10 +734,92 @@ export class ManageFinanceComponent implements OnInit {
     }
   }
   confirmInvoiceItem(rowData) {
+    this.invoiceObj = rowData;
     console.log(rowData);
+    this.confirmationService.confirm({
+      header: 'Confirm the Inovice',
+      icon: 'pi pi-exclamation-triangle',
+      message: 'Are you sure you want to confirm the invoice',
+      accept: () => {
+        this.commitInvoiceItem(rowData);
+      }
+    });
+  }
+  async commitInvoiceItem(rowData) {
+    const data = {
+      Status: this.constant.STATUS.CONFIRMED
+    };
+    const result = await this.spServices.updateItem(this.constant.listNames.InvoiceLineItems.name,
+      rowData.Id, data, this.constant.listNames.InvoiceLineItems.type);
+    const objEmailBody = [];
+    const mailSubject = '';
+    objEmailBody.push({
+      key: '@@Val2@@',
+      value: this.projObj.ProjectCode
+    });
+    objEmailBody.push({
+      key: '@@Val3@@',
+      value: this.projObj.ClientLegalEntity
+    });
+    objEmailBody.push({
+      key: '@@Val4@@',
+      value: rowData.poId
+    });
+    objEmailBody.push({
+      key: '@@Val5@@',
+      value: new Date(this.datePipe.transform(rowData.date, 'MMM d, y'))
+    });
+    objEmailBody.push({
+      key: '@@Val6@@',
+      value: rowData.currency + ' ' + rowData.amount
+    });
+    let arrayTo = [];
+    let tempArray = [];
+    tempArray = tempArray.concat(this.projObj.CMLevel1ID,
+      this.projObj.CMLevel2ID, this.projObj.DeliveryLevel1ID, this.projObj.DeliveryLevel2ID);
+    arrayTo = this.pmCommonService.getEmailId(tempArray);
+    this.pmCommonService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.APPROVED_SOW, objEmailBody,
+      mailSubject, arrayTo, this.pmObject.currLoginInfo.Email);
+    this.messageService.add({
+      key: 'custom', severity: 'success', summary: 'Success Message',
+      detail: 'Invoice Line Items Confirmed Successfully'
+    });
+    this.dynamicDialogRef.close();
   }
   editInvoiceItem(rowData) {
     console.log(rowData);
+    this.invoiceObj = rowData;
+    this.primaryPoc = [];
+    const poc = this.pmObject.projectContactsItems.filter((obj) =>
+      obj.ClientLegalEntity === this.projObj.ClientLegalEntity);
+    if (poc && poc.length) {
+      poc.forEach(element => {
+        this.primaryPoc.push({ label: element.FullName, value: element.ID });
+      });
+    }
+    this.addPOForm.get('poDate').setValue(rowData.date);
+    this.addPOForm.get('primarypoc').setValue(rowData.poc);
+    this.addPOForm.get('address').setValue(rowData.address);
+    this.isInvoiceEdit = true;
+  }
+  async saveInvoiceEdit() {
+    const date = this.addPOForm.get('poDate').value;
+    const primaryPoc = this.addPOForm.get('primarypoc').value;
+    const address = this.addPOForm.get('address').value;
+    const data = {
+      ScheduledDate: new Date(date),
+      MainPOC: primaryPoc,
+      AddressType: address
+    };
+    const result = await this.spServices.updateItem(this.constant.listNames.InvoiceLineItems.name,
+      this.invoiceObj.Id, data, this.constant.listNames.InvoiceLineItems.type);
+    this.messageService.add({
+      key: 'custom', severity: 'success', summary: 'Success Message',
+      detail: 'Invoice Line Items updated Successfully'
+    });
+    setTimeout(() => {
+      this.isInvoiceEdit = false;
+    }, this.pmConstant.TIME_OUT);
   }
   async saveUpdatePO() {
     // this.pmObject.addProject.FinanceManagement.POListArray = this.poArray;
@@ -861,7 +952,7 @@ export class ManageFinanceComponent implements OnInit {
     });
     setTimeout(() => {
       this.dynamicDialogRef.close();
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   /**
    * This method is used to get Project Finances Update data

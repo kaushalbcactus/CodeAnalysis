@@ -643,7 +643,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         setTimeout(() => {
           this.pmObject.isAddSOWVisible = false;
           this.router.navigate(['/projectMgmt/allSOW']);
-        }, 500);
+        }, this.pmConstant.TIME_OUT);
       }
     } else { // Update SOW
       switch (sowObj.Status) {
@@ -659,7 +659,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.pmObject.isAddSOWVisible = false;
         this.router.navigate(['/projectMgmt/allSOW']);
-      }, 500);
+      }, this.pmConstant.TIME_OUT);
     }
   }
   async updateParentSOWBudget(obj, predecessor, budget) {
@@ -882,7 +882,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         console.log(res);
         setTimeout(() => {
           this.closeAdditonalPop();
-        }, 500);
+        }, this.pmConstant.TIME_OUT);
       }
     } else {
       this.validateAllFormFields(this.addAdditionalBudgetForm);
@@ -984,7 +984,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'SOW Closed Successfully.' });
       setTimeout(() => {
         this.addUpdateSOWsendEmail(this.pmObject.addSOW, this.constant.SOW_STATUS.CLOSED);
-      }, 500);
+      }, this.pmConstant.TIME_OUT);
     }
   }
 }
