@@ -9,6 +9,7 @@ import { TimelineComponent } from 'src/app/task-allocation/timeline/timeline.com
 import { ViewUploadDocumentDialogComponent } from '../view-upload-document-dialog/view-upload-document-dialog.component';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { TimelineHistoryComponent } from './../../timeline/timeline-history/timeline-history.component';
 
 @Component({
   selector: 'app-search-projects',
@@ -25,7 +26,10 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
   @ViewChild(ViewUploadDocumentDialogComponent, {static: true})
   viewUploadDocumentDialogComponent: ViewUploadDocumentDialogComponent;
-  
+
+  @ViewChild('timelineRef', { static: true })
+  timeline: TimelineHistoryComponent;
+
   selectedDate: DateObj;
   ProjectTitle: any = '';
   ProjectCode: any = '';
@@ -108,10 +112,10 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
   openPopup(data) {
     this.projectMenu = [
-      { label: 'View Details', icon: 'pi pi-info-circle', command: (e) => this.getProjectDetails(data) }
+      { label: 'View Details', command: (e) => this.getProjectDetails(data) },
+      { label: 'Show History', command: (event) => this.showTimeline(data) },
     ];
   }
-
 
   onCancel(){
     this.projectDraftsComponent.ngOnDestroy();
@@ -299,6 +303,15 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
 
     this.projectResource.PubSupport = this.response[0].map(c=>c).map(c=> c.PSMembers).find(c=>c.results) !== undefined ?  this.response[0].map(c=>c).map(c=> c.PSMembers).map(c=>c.results)[0].map(e => e.Title) : '';
+  }
+
+  showTimeline(selectedProjectObj) {
+    const route = this.router.url;
+    if (route.indexOf('myDashboard') > -1) {
+      this.timeline.showTimeline(selectedProjectObj.ID, 'ProjectMgmt', 'ProjectFromDashboard');
+    } else {
+      this.timeline.showTimeline(selectedProjectObj.ID, 'ProjectMgmt', 'Project');
+    }
   }
 }
 
