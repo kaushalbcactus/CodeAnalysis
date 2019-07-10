@@ -389,15 +389,18 @@ export class ConstantsService {
       ReadyForClient: 'Ready for Client',
       AuthorReview: 'Author Review',
       OnHold: 'On Hold',
-      Submitted: 'Submitted',
-      Galleyed: 'Galleyed',
-      Published: 'Published',
       AuditInProgress: 'Audit In Progress',
       Closed: 'Closed',
       Cancelled: 'Cancelled',
       AwaitingCancelApproval: 'Awaiting Cancel Approval',
       PendingClosure: 'Pending Closure',
-      SentToAMForApproval: 'Sent to AM for Approval'
+      SentToAMForApproval: 'Sent to AM for Approval',
+      Selected: 'Selected',
+      Galleyed: 'Galleyed',
+      Submitted: 'Submitted',
+      Published: 'Published',
+      Accepted: 'Accepted',
+      Rejected: 'Rejected'
     },
     columns: {
       Title: 'Title',
@@ -425,7 +428,8 @@ export class ConstantsService {
       ConferenceJournal: 'ConferenceJournal',
       Authors: 'Authors',
       Comments: 'Comments',
-      SOWCode: 'SOWCode'
+      SOWCode: 'SOWCode',
+      PubSupportStatus: 'PubSupportStatus'
     }
   };
 
