@@ -1,5 +1,5 @@
 <div class="wrap-table100" [hidden]="isPAFilterHidden">
-    <div  [hidden]='isPAInnerLoaderHidden'>
+    <div [hidden]='isPAInnerLoaderHidden'>
         <div id="scInnerLoader"></div>
         <div id="scInnerLoaderText">Loading...</div>
     </div>
@@ -7,12 +7,16 @@
         No Tasks Found.
     </div>
     <div class="table100 projectDataExist ver4 m-b-110" [hidden]="isPATableHidden">
-        <p-table #paTableRef [columns]="displayedColumns" [value]="pmObject.pendingAllocationArray_copy"
-            [paginator]="true" [rows]="5" [lazy]="true" (onLazyLoad)="paLazyLoadTask($event)"
-            [totalRecords]="pmObject.totalRecords.PendingAllocation" [loading]="pmObject.loading.PendingAllocation"
-            [lazyLoadOnInit]="false">
+        <div class="box excelIcon">
+            <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(paTableRef)"
+                title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+        </div>
+        <div class="clear"></div>
+        <p-table #paTableRef [columns]="displayedColumns" [value]="pmObject.pendingAllocationArray" [paginator]="true"
+            [rows]="10" selectionMode="" exportFilename="Pending Allocation">
             <ng-template pTemplate="header" let-columns>
                 <tr>
+                    <th class="lastColumnWidth">S.No</th>
                     <th *ngFor="let col of columns" [pSortableColumn]="col.field">
                         {{ col.header }}
                         <p-sortIcon [field]="col.field"></p-sortIcon>
@@ -20,6 +24,7 @@
                     <th class="lastColumnWidth"></th>
                 </tr>
                 <tr>
+                    <th class="lastColumnWidth"></th>
                     <th *ngFor="let col of columns" [ngSwitch]="col.field">
                         <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="paArrays.projectCodeArray"
                             defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')">
@@ -45,8 +50,9 @@
                     <th class="lastColumnWidth"></th>
                 </tr>
             </ng-template>
-            <ng-template pTemplate="body" let-rowData let-task>
-                <tr [pContextMenuRow]="rowData">
+            <ng-template pTemplate="body" let-rowData let-task let-rowIndex="rowIndex">
+                <tr>
+                    <td>{{rowIndex+1}}</td>
                     <td>{{task.ProjectCode}}</td>
                     <td>{{task.ClientLegalEntity}}</td>
                     <td>{{task.POC}}</td>
@@ -57,8 +63,8 @@
                     <td>{{task.Milestone}}</td>
                     <td>{{task.Status}}</td>
                     <td>
-                        <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu
-                            [model]="popItems" [popup]="true" appendTo="body">
+                        <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems"
+                            [popup]="true" appendTo="body">
                         </p-menu>
                         <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                             (click)="storeRowData(rowData); menu.toggle($event);"></i>

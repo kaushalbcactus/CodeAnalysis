@@ -266,8 +266,6 @@ export class AllProjectsComponent implements OnInit {
       this.allProjects.createdByArray = this.commonService.unique(createdByTempArray, 'value');
       this.allProjects.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
       this.pmObject.allProjectsArray = tempAllProjectArray;
-      this.pmObject.totalRecords.AllProject = tempAllProjectArray.length;
-      this.pmObject.allProjectsArrayCopy = tempAllProjectArray.splice(0, 5);
       this.isAllProjectLoaderHidden = true;
       this.isAllProjectTableHidden = false;
     }
