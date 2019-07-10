@@ -278,7 +278,7 @@
 </div>
 <p-dialog header="Add Invoice Details" appendTo='body' [(visible)]="showAddInvoiceDetails"
   [style]="{width: '500px',height:'500px'}">
-  <form [formGroup]='addPOForm' (ngSubmit)="addInvoiceDetails()">
+  <form [formGroup]='addPOForm' >
     <div class="ui-grid-row mt-20">
       <div class="ui-grid-col-3">Date</div>
       <p-calendar  class="pcalendarClass" formControlName="poDate" [disabledDays]="[0,6]"   [readonlyInput]="true"  
@@ -309,7 +309,7 @@
     </div>
     <div class="error" *ngIf="addInvoiceError">{{addInvoiceErrorMsg}}</div>
     <div class="ui-grid-row mt-20" style="float:right">
-      <p-button class="mr-5" type="button" value="Post Data" label="Add"></p-button>
+      <p-button class="mr-5" (click)="addInvoiceDetails()" type="button" value="Post Data" label="Add"></p-button>
       <p-button class="mr-5" type="button" (click)="showAddInvoiceDetails=false" label="Cancel"></p-button>
     </div>
   </form>
