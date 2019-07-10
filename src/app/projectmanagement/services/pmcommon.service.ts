@@ -541,7 +541,9 @@ export class PMCommonService {
     const arrayTo = [];
     this.pmObject.oProjectManagement.oResourcesCat.forEach(element => {
       tempArray.forEach(tempOjb => {
-        if (element.UserName && element.UserName.ID === tempOjb) {
+        if (tempOjb.hasOwnProperty('ID') && element.UserName && element.UserName.ID === tempOjb.ID) {
+          arrayTo.push(element.UserName.EMail);
+        } else if (element.UserName.ID === tempOjb) {
           arrayTo.push(element.UserName.EMail);
         }
       });

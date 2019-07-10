@@ -124,7 +124,7 @@ export class AllProjectsComponent implements OnInit {
         this.lazyLoadTask(event);
       }
       this.pmObject.columnFilter.ProjectCode = [];
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   /**
    * This method is used to get all projects based on current user credentials.
@@ -431,7 +431,7 @@ export class AllProjectsComponent implements OnInit {
     });
     setTimeout(() => {
       this.router.navigate(['/projectMgmt/allProjects']);
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   async changeProjectStatusUnallocated() {
     const batchURL = [];
@@ -477,7 +477,7 @@ export class AllProjectsComponent implements OnInit {
     });
     setTimeout(() => {
       this.router.navigate(['/projectMgmt/allProjects']);
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   async changeProjectStatusAuditInProgress() {
     const batchURL = [];
@@ -525,7 +525,7 @@ export class AllProjectsComponent implements OnInit {
     });
     setTimeout(() => {
       this.router.navigate(['/projectMgmt/allProjects']);
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   async getGetIds(projectCode) {
     const batchURL = [];
@@ -749,7 +749,7 @@ export class AllProjectsComponent implements OnInit {
       });
       setTimeout(() => {
         this.router.navigate(['/projectMgmt/allProjects']);
-      }, 500);
+      }, this.pmConstant.TIME_OUT);
     }
   }
   /**
@@ -928,7 +928,7 @@ export class AllProjectsComponent implements OnInit {
       });
       setTimeout(() => {
         this.closeMoveSOW();
-      }, 500);
+      }, this.pmConstant.TIME_OUT);
     }
   }
   /**

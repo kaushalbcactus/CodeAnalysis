@@ -37,7 +37,7 @@ export class SelectSOWComponent implements OnInit {
     this.isSelectSOWTableHidden = true;
     setTimeout(() => {
       this.getSelectSOW();
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
     if (this.pmObject.addProject.SOWSelect.GlobalFilterValue) {
       this.lazyLoadTask(this.pmObject.addProject.SOWSelect.GlobalFilterEvent);
     }

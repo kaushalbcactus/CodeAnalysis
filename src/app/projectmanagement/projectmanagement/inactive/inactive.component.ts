@@ -99,7 +99,7 @@ export class InactiveComponent implements OnInit {
     setTimeout(() => {
       this.iapHideNoDataMessage = true;
       this.getPendingProjects();
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   getPendingProjects() {
     this.fetchPendingProjects();
