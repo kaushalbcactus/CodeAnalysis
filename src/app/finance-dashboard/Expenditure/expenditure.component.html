@@ -214,43 +214,46 @@
             </div>
         </div>
     </form>
+    <div class="ui-g">
+        <div class="ui-g-4"></div>
+        <div class="ui-g-8">
+            <table style="width: 100%;">
+                <tr>
+                    <th width="35%" style="border: none">Project / Client </th>
+                    <th style="border: none">Amount</th>
+                    <th style="border: none">
+                        <i class="pi pi-plus-circle" style="font-size: 3em;color:#c53e3e;" (click)="addProjectAmtItem()"></i>
+                    </th>
+                </tr>
+                <tr *ngFor="let p of totalLineItems; let i = index">
+                    <td>
+                        <p-dropdown [options]="piCleData" [group]="true" virtualScroll="true" itemSize="31"
+                            filter="true" placeholder="Select a Project Code / Client" [style]="{'width':'100%'}"
+                            [(ngModel)]="p.ProjectCode" (onChange)="selectedProjectCode($event.value, i)">
+                            <ng-template let-group pTemplate="group">
+                                <span style="margin-left:.25em">{{group.label}}</span>
+                            </ng-template>
+                        </p-dropdown>
+                    </td>
+                    <td>
+                        <input id="input" type="text" (keypress)="onlyNumberKey($event)" pInputText [(ngModel)]="p.AmountPerProject" maxlength="15"
+                            (input)="enteredAmt($event.target.value, i)" />
+                    </td>
+                    <td>
+                        <!-- <button pButtontype="button" label="Add" (click)="addProjectAmtItem()" class="ui-button-rounded"></button> -->
+
+                    </td>
+                </tr>
+                <div *ngIf="formSubmit.isSubmit && projectClientIsEmpty" style="color:red;">
+                    Please select Project/Client & add Amount.
+                </div>
+            </table>
+        </div>
+        <!-- <div class="ui-g-4">Col3</div> -->
+    </div>
 
     <div class="p-grid">
-        <table style="width: 100%;">
-            <tr>
-                <th width="35%" style="border: none">Project / Client </th>
-                <th style="border: none">Amount</th>
-            </tr>
-            <tr *ngFor="let p of totalLineItems; let i = index">
-                <td>
-                    <div class="p-grid">
-                        <div class="p-col-12">
-                            <div class="box">
-                                <p-dropdown [options]="piCleData" [group]="true" virtualScroll="true" itemSize="31"
-                                    filter="true" placeholder="Select a Project Code / Client"
-                                    [style]="{'width':'100%'}" [(ngModel)]="p.ProjectCode"
-                                    (onChange)="selectedProjectCode($event.value, i)">
-                                    <ng-template let-group pTemplate="group">
-                                        <span style="margin-left:.25em">{{group.label}}</span>
-                                    </ng-template>
-                                </p-dropdown>
-                            </div>
-                        </div>
-                    </div>
-                </td>
-                <td>
-                    <input id="input" type="text" (keypress)="onlyNumberKey($event)" pInputText
-                        [(ngModel)]="p.AmountPerProject" maxlength="15" (input)="enteredAmt($event.target.value, i)" />
-                </td>
-            </tr>
-            <div *ngIf="formSubmit.isSubmit && projectClientIsEmpty" style="color:red;">
-                Please select Project/Client & add Amount.
-            </div>
-            <tr>
-                <button pButton type="button" type="button" label="Add" (click)="addProjectAmtItem()"
-                    class="ui-button-rounded"></button>
-            </tr>
-        </table>
+
     </div>
 
 
