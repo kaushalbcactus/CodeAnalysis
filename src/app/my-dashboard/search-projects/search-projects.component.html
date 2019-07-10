@@ -4,7 +4,7 @@
 
   <div fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="10px">
     <div></div>
-    <form class="SearchForm" #SearchForm="ngForm" (ngSubmit)="SearchProject()">
+    <form class="SearchForm" #SearchForm="ngForm">
 
       <div fxLayout="row" class="SearchBox" fxLayoutAlign="space-around center" fxLayoutGap="10px">
         <span style="color: #c53e3e; font-weight: 500;font-size:1.2em;"> Search Project</span>
@@ -20,7 +20,7 @@
           <label for="float-input">By Short Title</label>
         </span>
 
-        <button pButton type="submit" [disabled]="ProjectCode ==='' && ProjectTitle===''"
+        <button pButton type="button" (click)="SearchProject()" [disabled]="ProjectCode ==='' && ProjectTitle===''"
           [ngStyle]="{'cursor': ProjectCode ==='' && ProjectTitle==='' ? 'not-allowed':'pointer'}" icon="pi pi-search"
           label="Search" class="ui-button-danger"></button>
       </div>
