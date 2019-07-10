@@ -93,8 +93,8 @@ export class ScheduledComponent implements OnInit {
       startDate: startDate,
       endDate: endDate
     }
-    this.fdDataShareServie.DateRange = obj;
-    this.fdDataShareServie.sendDateRange(obj);
+    this.fdDataShareServie.scheduleDateRange = obj;
+    this.fdDataShareServie.setScheduleAddObj(obj);
   }
 
   setDefaultDateRange() {
@@ -106,8 +106,8 @@ export class ScheduledComponent implements OnInit {
         startDate: startDate,
         endDate: endDate
       }
-      this.fdDataShareServie.DateRange = obj;
-      this.fdDataShareServie.sendDateRange(obj);
+      this.fdDataShareServie.scheduleDateRange = obj;
+      this.fdDataShareServie.setScheduleAddObj(obj);
       console.log('startDate ' + startDate + ' endDate' + endDate)
     }
   }

@@ -225,10 +225,10 @@
                 </tr>
             </tbody>
 
-            <p class="invButton" style="float: right">
+            <!-- <p class="invButton" style="float: right">
                 <p-button type="button" class="editBtn" (click)="editable('paymentInstructions')" label="edit">
                 </p-button>
-            </p>
+            </p> -->
 
             <tbody class="paymentDetails">
                 <tr>
@@ -394,7 +394,8 @@
             <tbody>
                 <tr>
                     <td style="font-size:14px">
-                        <div id="paymentInstructions" id="paymentInstructions1"
+                        <div id="paymentInstructions" 
+                        
                             [innerHTML]='IndiaTemplateCopy.paymentInstructions'>
                         </div>
                         <div class="paymentDetails">

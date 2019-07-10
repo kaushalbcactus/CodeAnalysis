@@ -87,7 +87,7 @@ export class MyDashboardConstantsService {
     },
     Milestone: {
 
-      select: "ID,Title,AssignedTo/Id,AssignedTo/Title,DueDate,TaskComments",
+      select: "ID,Title,AssignedTo/Id,AssignedTo/Title,DueDate,TaskComments,SubMilestones",
       expand: "AssignedTo",
       orderby: "DueDate desc",
       filter: "ProjectCode eq '{{ProjectCode}}' and Milestone eq '{{Milestone}}'"
@@ -178,15 +178,10 @@ export class MyDashboardConstantsService {
     },
     ProjectResource:
     {
-      select: 'ID,Title,ProjectCode,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,PMLevel1/ID,PMLevel1/Title,PMLevel2/ID,PMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
-      expand: "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,PMLevel1/ID,PMLevel1/Title,PMLevel2/ID,PMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title",
+      select: 'ID,Title,ProjectCode,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
+      expand: "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title",
       filter: "ID eq {{projectId}}",
     }
-
-
-
-
-
   }
 
   // var endpoint = _spPageContextInfo.webAbsoluteUrl

@@ -6,10 +6,10 @@
 <div class="p-grid">
     <div class="p-col-12 p-md-12 p-lg-12 f-right">
         <div style="display: -webkit-inline-box;">
-            <div class="box" style="margin-right: 20px">
+            <div *ngIf="showApproveReject" class="box" style="margin-right: 20px">
                 <button type="button" pButton label="Approve Expense" (click)="approveExpense('approve')"></button>
             </div>
-            <div class="box" style="margin-right: 20px">
+            <div *ngIf="showApproveReject" class="box" style="margin-right: 20px">
                 <button type="button" pButton label="Reject Expense" (click)="approveExpense('reject')"></button>
             </div>
             <div class="box">
@@ -49,50 +49,50 @@
                 <!-- {{col.field}} -->
                 <ng-container *ngIf="col.field">
                     <p-multiSelect *ngSwitchCase="'RequestType'" [options]="pendinExpenseColArray.RequestType"
-                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ClientLegalEntity'"
-                        [options]="pendinExpenseColArray.ClientLegalEntity" defaultLabel="All" appendTo="body"
+                        [options]="pendinExpenseColArray.ClientLegalEntity" defaultLabel="All" 
                         (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="pendinExpenseColArray.ProjectCode"
-                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="pendinExpenseColArray.SOWCode"
-                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'SOWName'" [options]="pendinExpenseColArray.SOWName"
-                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Category'" [options]="pendinExpenseColArray.Category"
-                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'PONumber'" [options]="pendinExpenseColArray.PONumber"
-                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ExpenseType'" [options]="pendinExpenseColArray.ExpenseType"
-                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ClientAmount'" [options]="pendinExpenseColArray.ClientAmount"
-                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ClientCurrency'" [options]="pendinExpenseColArray.ClientCurrency"
-                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Created'" [options]="pendinExpenseColArray.Created"
-                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'CreatedBy'" [options]="pendinExpenseColArray.CreatedBy"
-                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ModifiedBy'" [options]="pendinExpenseColArray.ModifiedBy"
-                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Modified'" [options]="pendinExpenseColArray.ModifiedDate"
-                        defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        defaultLabel="All"  (onChange)="dt2.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'VendorName'" [options]="pendinExpenseColArray.VendorName"
-                    defaultLabel="All" appendTo="body" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                    defaultLabel="All"  (onChange)="dt2.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                     <!-- <p-dropdown [options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">
                                             <ng-template let-item pTemplate="item">

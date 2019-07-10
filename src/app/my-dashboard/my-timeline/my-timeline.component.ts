@@ -128,7 +128,7 @@ export class MyTimelineComponent implements OnInit {
         }
       },
       eventMouseEnter: function (event, jsEvent, view) {
-
+      
         event.el.Tooltip.show();
       },
 
@@ -279,12 +279,16 @@ export class MyTimelineComponent implements OnInit {
     this.allLeaves = this.response[1] !== "" ? this.response[1] : [];
     this.events = [];
     this.allTasks.forEach(element => {
-      debugger;
+
+      if (element.SubMilestones) {
+        element.SubMilestones = element.SubMilestones === "Default" ? null : element.SubMilestones
+      }
+
       const eventObj = {
-        "title": element.Task === 'Adhoc' ? element.Entity + "-" + element.Comments + " : " + element.TimeSpent : element.SubMilestones ? element.SubMilestones === "Default" ? (element.ExpectedTime ? element.Title + " : " + element.ExpectedTime : element.Title) : element.ExpectedTime ? element.Title + ' - ' + element.SubMilestones + " : " + element.ExpectedTime : element.Title + ' - ' + element.SubMilestones : element.Title,
+        "title": element.Task === 'Adhoc' ? element.Entity + "-" + element.Comments + " : " + element.TimeSpent : element.SubMilestones ? element.ExpectedTime ? element.Title + ' - ' + element.SubMilestones + " : " + element.ExpectedTime : element.Title + ' - ' + element.SubMilestones : element.ExpectedTime ? element.Title + " : " + element.ExpectedTime : element.Title,
         "id": element.Id,
         "start": new Date(element.StartDate),
-        "end": new Date(this.datePipe.transform(element.StartDate, "yyyy-MM-dd")).getTime() !== new Date(this.datePipe.transform(element.DueDate, "yyyy-MM-dd")).getTime() ? new Date(new Date(element.DueDate).setDate(new Date(element.DueDate).getDate() + 1)) : new Date(element.DueDate),
+        "end": element.TATStatus === "Yes" && new Date(this.datePipe.transform(element.StartDate, "yyyy-MM-dd")).getTime() !== new Date(this.datePipe.transform(element.DueDate, "yyyy-MM-dd")).getTime() ? new Date(new Date(element.DueDate).setDate(new Date(element.DueDate).getDate() + 1)) : new Date(element.DueDate),
         "backgroundColor": element.Status === 'Not Confirmed' ? "#FFD34E" : element.Status === 'Not Started' ? "#5F6273" : element.Status === 'In Progress' ? "#6EDC6C" : element.Status === 'Auto Closed' ? "#8183CC" : element.Status === 'On Hold' ? "#FF3E56" : (element.Status === 'Completed' && element.Task === 'Adhoc') ? element.Comments === "Administrative Work" ?
           '#eb592d' : element.Comments === "Client meeting / client training" ? '#ff8566' : element.Comments === "Internal meeting" ? '#795C32' : '#445cad' : "#3498DB",
         allDay: element.TATStatus === "Yes" ? true : false
@@ -308,6 +312,8 @@ export class MyTimelineComponent implements OnInit {
 
     this.events = [...this.events];
     this.CalendarLoader = false;
+
+    console.log(this.events);
 
   }
 

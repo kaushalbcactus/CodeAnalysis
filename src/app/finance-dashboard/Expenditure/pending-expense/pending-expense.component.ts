@@ -71,6 +71,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     // Observable 
     subscriptionPE: Subscription;
 
+    showApproveReject:boolean = false;
+
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
 
@@ -88,7 +90,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private spOperationsService: SpOperationsService,
     ) {
-        this.subscription.add(this.fdDataShareServie.getDateRange().subscribe(date => {
+        this.subscription.add(this.fdDataShareServie.getAddExpenseSuccess().subscribe(date => {
             console.log('I called when expense created success...... ');
             this.getRequiredData();
         }));
@@ -96,6 +98,15 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
         let snapData = this.route.snapshot.data['fdData'];
+
+
+        const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
+        if(groups.indexOf('ExpenseApprovers') > -1) {
+            this.showApproveReject = true;
+        }
+        else {
+            this.showApproveReject = false;
+        }
         
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         // Check PI list
@@ -483,12 +494,22 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         console.log('Row data  ', data);
         // console.log('pubSupportSts  ', pubSupportSts);
 
-        this.items = [
-            { label: 'Approve Expense', command: (e) => this.openMenuContent(e, data) },
-            { label: 'Cancel Expense', command: (e) => this.openMenuContent(e, data) },
-            { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) },
-            { label: 'Details', command: (e) => this.openMenuContent(e, data) },
-        ];
+        const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
+        if(groups.indexOf('ExpenseApprovers') > -1) {
+            this.items = [
+                { label: 'Approve Expense', command: (e) => this.openMenuContent(e, data) },
+                { label: 'Cancel Expense', command: (e) => this.openMenuContent(e, data) },
+                { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) },
+                { label: 'Details', command: (e) => this.openMenuContent(e, data) },
+            ];
+        }
+        else {
+            this.items = [
+                { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) },
+                { label: 'Details', command: (e) => this.openMenuContent(e, data) },
+            ];
+        }
+        
     }
 
     // CLick on Table Check box to Select All Row Item
@@ -803,13 +824,11 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             this.displayModal = false;
             // this.sendCreateExpenseMail(this.selectedRowItem, type);
             this.sendMailToSelectedLineItems(type);
-            // this.reload();
         } else if (type === "Cancel Expense" || type === "Reject Expense") {
             this.messageService.add({ key: 'fdToast', severity: 'success', summary: 'Submitted.', detail: '', life: 2000 })
             this.displayModal = false;
             // this.sendCreateExpenseMail(this.selectedRowItem, type);
             this.sendMailToSelectedLineItems(type);
-            // this.reload();
         }
         this.isPSInnerLoaderHidden = true;
         // });
@@ -988,7 +1007,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         let tos = this.getTosList();
         this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.isPSInnerLoaderHidden = false;
-        // this.reload();
         this.reFetchData();
     }
 
@@ -1036,14 +1054,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.getRequiredData();
     }
 
-
-    // reload() {
-    //     setTimeout(() => {
-    //         window.location.reload();
-    //         // this.getRequiredData();
-    //         // this.currentUserInfo();
-    //     }, 3000);
-    // }
 
     // Export to Excel
     convertToExcelFile(cnf1) {
