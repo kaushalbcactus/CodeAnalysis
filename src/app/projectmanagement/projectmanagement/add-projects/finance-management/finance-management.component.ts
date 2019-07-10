@@ -641,20 +641,23 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
           }
         }
       }
+    } else {
+      batchResults = await this.spServices.executeBatch(batchURL);
+      finalArray = [...finalArray, ...batchResults];
     }
     this.moveMilestoneAndTask(finalArray);
   }
   async moveMilestoneAndTask(results) {
-    let batchURL = [];
-    let batchResults = [];
-    let finalArray = [];
-    const options = {
-      data: null,
-      url: '',
-      type: '',
-      listName: ''
-    };
     if (results && results.length && this.pmObject.addProject.Timeline.Standard.IsStandard) {
+      let batchURL = [];
+      let batchResults = [];
+      let finalArray = [];
+      const options = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
       for (const response of results) {
         if (batchURL.length < 100) {
           const fileUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl +

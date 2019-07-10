@@ -257,8 +257,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         if (arrResults.length) {
             this.formatData(arrResults);
         }
-        // });
-
+        this.isPSInnerLoaderHidden = true;
     }
 
     async formatData(data: any[]) {

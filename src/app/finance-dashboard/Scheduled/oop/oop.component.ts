@@ -240,8 +240,7 @@ export class OopComponent implements OnInit, OnDestroy {
                 this.formatData(element);
             }
         }
-        // });
-
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
     showMenu(element) {
         const project = this.projectInfoData.find((x) => {
@@ -261,17 +260,19 @@ export class OopComponent implements OnInit, OnDestroy {
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
+            let poItem = await this.getPONumber(element);
+            let piInfo = await this.getMilestones(element);
             this.oopBasedRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
                 SOWCode: element.SOWCode,
                 SOWValue: element.SOWCode + ' / ' + sowItem.Title,
                 SOWName: sowItem.Title,
-                ProjectMileStone: this.getMilestones(element).Milestone,
-                PONumber: this.getPONumber(element).Number,
+                ProjectMileStone: piInfo.Milestone,
+                PONumber: poItem.Number,
                 PO: element.PO,
                 POCId: element.MainPOC,
-                ClientName: this.getCLE(element),
+                ClientName: piInfo.ClientLegalEntity,
                 ScheduledDate: element.ScheduledDate,// this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
                 Amount: element.Amount,
                 Currency: element.Currency,
@@ -279,9 +280,9 @@ export class OopComponent implements OnInit, OnDestroy {
                 AddressType: element.AddressType,
                 showMenu: this.showMenu(element),
 
-                CS: this.getCSDetails(element.CS.results),
+                CS: this.getCSDetails(element),
                 PracticeArea: this.getPracticeArea(element).BusinessVertical,
-                POName: this.getPONumber(element).Name,
+                POName: poItem.Name,
                 TaggedDate: element.TaggedDate,
                 Status: element.Status,
                 ProformaLookup: element.ProformaLookup,
@@ -306,8 +307,8 @@ export class OopComponent implements OnInit, OnDestroy {
         return found ? found : '';
     }
 
-     // Project Current Milestones
-     getPracticeArea(pc: any) {
+    // Project Current Milestones
+    getPracticeArea(pc: any) {
         let found = this.projectInfoData.find((x) => {
             if (x.ProjectCode == pc.Title) {
                 return x;
@@ -347,12 +348,16 @@ export class OopComponent implements OnInit, OnDestroy {
     }
 
     getCSDetails(res) {
-        let title = [];
-        for (let i = 0; i < res.length; i++) {
-            const element = res[i];
-            title.push(element.Title);
+        if (res.hasOwnProperty('CS') && res.CS.hasOwnProperty('results') && res.CS.results.length) {
+            let title = [];
+            for (let i = 0; i < res.length; i++) {
+                const element = res[i];
+                title.push(element.Title);
+            }
+            return title.toString();
+        } else {
+            return '';
         }
-        return title.toString();
     }
 
 

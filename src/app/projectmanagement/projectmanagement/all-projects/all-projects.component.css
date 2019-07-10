@@ -41,3 +41,16 @@
       top: 0;
       margin-bottom: 1%;
     }
+
+  .lastColumnWidth {
+    width: 50px;
+  }
+
+  .excelIcon {
+    float: right !important;
+    margin-top: 10px !important;
+  }
+
+  body .ui-table .ui-table-tbody > tr > td {
+    word-break: break-all;
+  }

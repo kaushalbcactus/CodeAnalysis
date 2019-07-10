@@ -57,14 +57,19 @@ export class NonStandardprojectComponent implements OnInit {
       const next10Year = currentYear + 10;
       const prev5Year = currentYear - 5;
       this.yearRange = '' + prev5Year + ' : ' + next10Year + '';
-      this.getProjectManagement();
-      this.setFieldProperties();
+      if (!this.pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked) {
+        this.getProjectManagement();
+        this.setFieldProperties();
+      } else {
+        this.setDropdownField();
+      }
     }, this.pmConstant.TIME_OUT);
     this.isNonStandardLoaderHidden = true;
     this.isNonStandardTableHidden = false;
   }
   // tslint:disable
   private async getProjectManagement() {
+    this.pmObject.isMainLoaderHidden = false;
     const batchContents = new Array();
     const batchGuid = this.spService.generateUUID();
     const oCurrentDate = new Date();
@@ -119,6 +124,7 @@ export class NonStandardprojectComponent implements OnInit {
         });
       }
     }
+    this.pmObject.isMainLoaderHidden = true;
   }
   onDeliverableTypeChange() {
     this.changedProjectCode(this.selectedDeliverableType);

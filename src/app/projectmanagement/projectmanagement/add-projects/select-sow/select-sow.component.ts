@@ -66,7 +66,7 @@ export class SelectSOWComponent implements OnInit {
         sowObj.InvoicedRevenue = task.InvoicedRevenue ? task.InvoicedRevenue : 0;
         sowObj.ClientLegalEntity = task.ClientLegalEntity;
         // tslint:disable-next-line:only-arrow-functions
-        const poc = this.pmObject.projectContactsItems.filter(function(obj) {
+        const poc = this.pmObject.projectContactsItems.filter((obj) => {
           return (obj.ID === task.PrimaryPOC);
         });
         sowObj.SOWOwner = poc.length > 0 ? poc[0].FullName : '';
@@ -78,7 +78,7 @@ export class SelectSOWComponent implements OnInit {
       this.selectSOW.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');
       this.selectSOW.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
       this.selectSOW.sowOwnerArray = this.commonService.unique(sowOwnerTempArray, 'value');
-      this.pmObject.selectSOWArray = tempAllSOWArray;
+      this.pmObject.selectSOWArray = Object.assign([], tempAllSOWArray);
       this.pmObject.totalRecords.SelectSOW = tempAllSOWArray.length;
       this.pmObject.selectSOWArrayCopy = tempAllSOWArray.slice(0, 5);
       this.isSelectSOWLoaderHidden = true;

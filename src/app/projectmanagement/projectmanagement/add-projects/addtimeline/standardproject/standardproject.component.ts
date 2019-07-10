@@ -125,12 +125,15 @@ export class StandardprojectComponent implements OnInit {
     const next10Year = currentYear + 10;
     const prev5Year = currentYear - 5;
     this.yearRange = '' + prev5Year + ' : ' + next10Year + '';
-    this.standardServices = [];
     this.minProposedDate = new Date();
-    if (this.pmObject.addProject.ProjectAttributes.ClientLegalEntity) {
+    if (this.pmObject.addProject.ProjectAttributes.ClientLegalEntity
+      && !this.pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked) {
+      this.standardServices = [];
       this.getProjectManagement();
       this.getStandardTemplate();
       this.userProperties = this.spService.getUserInfo(this.sharedObject.sharePointPageObject.userId);
+    } else {
+      this.setDropdownField();
     }
     $('.iframe-spinner-section', window.parent.document).hide();
     $('.timeline-top-section').show();
@@ -675,8 +678,8 @@ export class StandardprojectComponent implements OnInit {
       milestoneObj.data.clientReviewEndDate = this.setDefaultPMHours(this.calcBusinessNextDate(milestoneObj.data.clientReviewStartDate, milestoneObj.data.ClientReviewDays === 1 ? 0 : milestoneObj.data.ClientReviewDays));
       this.standardFiles.push(milestoneObj);
       this.pmObject.addProject.Timeline.Standard.Milestones += milestoneObj.MilestoneName;
-      if(index < orginalMilestone.length -1) {
-        this.pmObject.addProject.Timeline.Standard.Milestones+= ';#';
+      if (index < orginalMilestone.length - 1) {
+        this.pmObject.addProject.Timeline.Standard.Milestones += ';#';
       }
       StartDate = this.setClientReview(milestoneObj, true);
       if (index < orginalMilestone.length) {
