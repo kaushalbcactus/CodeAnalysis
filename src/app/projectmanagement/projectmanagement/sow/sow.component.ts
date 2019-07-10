@@ -86,7 +86,7 @@ export class SOWComponent implements OnInit {
     private spServices: SPOperationService,
     private constants: ConstantsService,
     private router: Router,
-    private pmService: PMCommonService
+    public pmCommonService: PMCommonService
   ) { }
 
   ngOnInit() {
@@ -98,7 +98,7 @@ export class SOWComponent implements OnInit {
 
     setTimeout(() => {
       this.getAllSOW();
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
     this.popItems = [
       {
         label: 'View SOW', target: '_blank',
@@ -157,7 +157,7 @@ export class SOWComponent implements OnInit {
       sowItemFilter.filter = sowItemFilter.filter.replace(/{{Id}}/gi, currSelectedSOW.ID);
       const sowItemResult = await this.spServices.readItems(this.constants.listNames.SOW.name, sowItemFilter);
       if (sowItemResult && sowItemResult.length) {
-        this.pmService.setGlobalVariable(sowItemResult[0]);
+        this.pmCommonService.setGlobalVariable(sowItemResult[0]);
         this.sowViewDataArray.push(this.pmObject.addSOW);
         this.pmObject.isSOWRightViewVisible = true;
       }
@@ -234,8 +234,6 @@ export class SOWComponent implements OnInit {
       this.allSOW.createdByArray = this.commonService.unique(createdByTempArray, 'value');
       this.allSOW.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
       this.pmObject.allSOWArray = tempAllSOWArray;
-      this.pmObject.totalRecords.AllSOW = tempAllSOWArray.length;
-      this.pmObject.allSOWArrayCopy = tempAllSOWArray.splice(0, 5);
       this.isAllSOWLoaderHidden = true;
       this.isAllSOWTableHidden = false;
     }
@@ -259,21 +257,21 @@ export class SOWComponent implements OnInit {
     this.isActiveProjectTableHidden = true;
     setTimeout(() => {
       this.loadProjectTable(this.pmConstant.filterAction.ACTIVE_PROJECT);
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   getPipelineProject() {
     this.pipelineProjectLoader = false;
     this.isPipelineProjectTableHidden = true;
     setTimeout(() => {
       this.loadProjectTable(this.pmConstant.filterAction.PIPELINE_PROJECT);
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   getInactiveProject() {
     this.inActiveProjectLoader = false;
     this.isInActiveProjectTableHidden = true;
     setTimeout(() => {
       this.loadProjectTable(this.pmConstant.filterAction.INACTIVE_PROJECT);
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   async loadProjectTable(projectFilter) {
     let projectInformationFilter: any = {};

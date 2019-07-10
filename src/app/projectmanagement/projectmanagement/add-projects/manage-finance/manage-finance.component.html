@@ -199,13 +199,13 @@
                   <td>{{rowData.amount}}</td>
                   <td>{{rowData.type}}</td>
                   <td>{{rowData.status}}</td>
-                  <td>{{rowData.poc}}</td>
+                  <td>{{rowData.pocText}}</td>
                   <td>{{rowData.address}}</td>
                   <td>
-                    <i *ngIf="rowData.isInvoiceItemConfirm"  class="pi pi-check"
-                       style="font-size:2em;cursor: pointer;" (click)="confirmInvoiceItem(rowData)"></i>
-                    <i *ngIf="rowData.isInvoiceItemEdit"  class="pi pi-pencil"
-                       style="font-size:2em;cursor: pointer;" (click)="editInvoiceItem(rowData)"></i>
+                    <i *ngIf="rowData.isInvoiceItemConfirm"  class="pi pi-check"  style="font-size:2em;cursor: pointer;"
+                      (click)="confirmInvoiceItem(rowData)"></i>
+                    <i *ngIf="rowData.isInvoiceItemEdit"  class="pi pi-pencil"  style="font-size:2em;cursor: pointer;"
+                      (click)="editInvoiceItem(rowData)"></i>
                   </td>
                 </tr>
               </ng-template>
@@ -314,3 +314,36 @@
     </div>
   </form>
 </p-dialog>
+<div *ngIf="isInvoiceEdit">
+  <form [formGroup]='addPOForm'>
+    <p-dialog header="Edit Invoice Items" appendTo='body' [(visible)]="isInvoiceEdit">
+      <div class="ui-grid-row mt-20">
+        <div class="ui-grid-col-3">Date</div>
+        <p-calendar  class="pcalendarClass" formControlName="poDate" [disabledDays]="[0,6]"   [readonlyInput]="true"  
+          dateFormat="dd M, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"   [showIcon]="true"
+            [showOnFocus]="false"   [monthNavigator]="true"   [yearNavigator]="true"    
+          yearRange="{{pmObject.yearRange}}" [inputStyle]="{'width': '80%', 'min-width': '80%'}"
+           inputStyleClass="ngPrime-red">
+        </p-calendar>
+        <div class="error" *ngIf="!addPOForm.controls['poDate'].valid&&addPOForm.controls['poDate'].touched">
+          Please select date.</div>
+      </div>
+      <div class="ui-grid-row mt-20">
+        <div class="ui-grid-col-3">Primary POC</div>
+        <p-dropdown [options]="primaryPoc" formControlName="primarypoc" placeholder="Select POC"></p-dropdown>
+        <div class="error" *ngIf="!addPOForm.controls['primarypoc'].valid&&addPOForm.controls['primarypoc'].touched">
+          Please select poc.</div>
+      </div>
+      <div class="ui-grid-row mt-20">
+        <div class="ui-grid-col-3">Address</div>
+        <p-dropdown [options]="address" formControlName="address" placeholder="Select Address"></p-dropdown>
+        <div class="error" *ngIf="!addPOForm.controls['address'].valid&&addPOForm.controls['address'].touched">
+          Please select address</div>
+      </div>
+      <div class="ui-grid-row mt-20" style="float:right">
+        <p-button class="mr-5" type="button" (click)="saveInvoiceEdit()" value="Post Data" label="Update"></p-button>
+        <p-button class="mr-5" type="button" (click)="isInvoiceEdit=false" label="Cancel"></p-button>
+      </div>
+    </p-dialog>
+  </form>
+</div>

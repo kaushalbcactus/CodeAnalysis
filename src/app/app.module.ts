@@ -31,7 +31,7 @@ import { MessageService } from 'primeng/api';
   declarations: [
     AppComponent
   ],
-  providers: [DataService,TimelineHistoryComponent, DatePipe, MessageService],
+  providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

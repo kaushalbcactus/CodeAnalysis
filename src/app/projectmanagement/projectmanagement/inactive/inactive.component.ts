@@ -10,6 +10,7 @@ import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { Command } from 'selenium-webdriver';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
+import { PMCommonService } from '../../services/pmcommon.service';
 declare var $: any;
 @Component({
   selector: 'app-inactive',
@@ -67,7 +68,8 @@ export class InactiveComponent implements OnInit {
     private commonService: CommonService,
     private Constant: ConstantsService,
     private spServices: SharepointoperationService,
-    private pmConstant: PmconstantService
+    private pmConstant: PmconstantService,
+    public pmCommonService: PMCommonService
   ) { }
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   ngOnInit() {
@@ -99,7 +101,7 @@ export class InactiveComponent implements OnInit {
     setTimeout(() => {
       this.iapHideNoDataMessage = true;
       this.getPendingProjects();
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   getPendingProjects() {
     this.fetchPendingProjects();
@@ -165,7 +167,6 @@ export class InactiveComponent implements OnInit {
       this.iapArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
       this.iapArrays.statusArray = this.commonService.unique(statusTempArray, 'value');
       this.pmObject.inActiveProjectArray = tempPAArray;
-      this.pmObject.inActiveProjectArray_copy = tempPAArray.slice(0, 5);
       this.isIAPTableHidden = false;
       this.isIAPInnerLoaderHidden = true;
       this.isIAPTableHidden = false;

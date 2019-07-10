@@ -32,8 +32,7 @@
                     </p-radioButton>&nbsp;
                     <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.PaymentRequest.errors">
                         <div *ngIf="isValidExpenditureForm.PaymentRequest.errors.required" style="color:red;">
-                            Payment
-                            Request is required.</div>
+                            Payment Request is required.</div>
                     </div>
                 </div>
             </div>
@@ -173,10 +172,10 @@
             <div class="p-col-8">
                 <div class="box">
                     <textarea rows="3" cols="40" pInputTextarea formControlName="Notes"></textarea>
-                    <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.Notes.errors">
+                    <!-- <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.Notes.errors">
                         <div *ngIf="isValidExpenditureForm.Notes.errors.required" style="color:red;">Note is
                             required.</div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -207,7 +206,7 @@
                     <input type="file" name="myfile" class="form-control" id="myfile"
                         (change)="caOnFileChange($event, 'ClientApproval')" #fileInput formControlName="CAFileURL" />
                     <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.CAFileURL.errors">
-                        <div *ngIf="isValidExpenditureForm.CAFileURL.errors.required" style="color:red;">File is
+                        <div *ngIf="isValidExpenditureForm.CAFileURL.errors.required" style="color:red;">Approval file is
                             required.</div>
                     </div>
                 </div>
@@ -281,7 +280,7 @@
                     <input type="text" pInputText formControlName="Title" style="width: 100%;" maxlength="30" />
                     <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.Title.errors">
                         <div *ngIf="isValidCreateFreelancerForm.Title.errors.required" style="color:red;">
-                            Please provide Title.</div>
+                            Please provide Name.</div>
                     </div>
                 </div>
             </div>
@@ -398,10 +397,10 @@
                         [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}"
                         formControlName="ContractEndDate">
                     </p-calendar>
-                    <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.ContractEndDate.errors">
+                    <!-- <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.ContractEndDate.errors">
                         <div *ngIf="isValidCreateFreelancerForm.ContractEndDate.errors.required" style="color:red;">
                             Please provide End Date.</div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 

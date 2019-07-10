@@ -11,7 +11,7 @@ declare var $;
   selector: 'app-non-standardproject',
   templateUrl: './non-standardproject.component.html',
   styleUrls: ['./non-standardproject.component.css'],
-  encapsulation: ViewEncapsulation.None 
+  encapsulation: ViewEncapsulation.None
 })
 export class NonStandardprojectComponent implements OnInit {
 
@@ -59,7 +59,7 @@ export class NonStandardprojectComponent implements OnInit {
       this.yearRange = '' + prev5Year + ' : ' + next10Year + '';
       this.getProjectManagement();
       this.setFieldProperties();
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
     this.isNonStandardLoaderHidden = true;
     this.isNonStandardTableHidden = false;
   }

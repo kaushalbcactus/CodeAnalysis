@@ -68,7 +68,7 @@ export class ProjectAttributesComponent implements OnInit {
           this.showEditSave = false;
         }
       }
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   async setFieldProperties(projObj, sowObj, isCreate) {
     if (isCreate) {
@@ -376,7 +376,7 @@ export class ProjectAttributesComponent implements OnInit {
     });
     setTimeout(() => {
       this.dynamicDialogRef.close();
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   /**
    * This method is called when file is selected

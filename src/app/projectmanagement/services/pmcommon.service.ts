@@ -541,7 +541,9 @@ export class PMCommonService {
     const arrayTo = [];
     this.pmObject.oProjectManagement.oResourcesCat.forEach(element => {
       tempArray.forEach(tempOjb => {
-        if (element.UserName && element.UserName.ID === tempOjb) {
+        if (tempOjb.hasOwnProperty('ID') && element.UserName && element.UserName.ID === tempOjb.ID) {
+          arrayTo.push(element.UserName.EMail);
+        } else if (element.UserName.ID === tempOjb) {
           arrayTo.push(element.UserName.EMail);
         }
       });
@@ -754,5 +756,16 @@ export class PMCommonService {
     this.pmObject.addSOW.DeliveryText = this.extractNameFromId([sowItem.DeliveryLevel2.ID]).join(',');
     this.pmObject.addSOW.SOWOwner = sowItem.BD.ID;
     this.pmObject.addSOW.SOWOwnerText = sowItem.BD.hasOwnProperty('ID') ? this.extractNameFromId([sowItem.BD.ID]).join(',') : '';
+  }
+  convertToExcelFile(cnf1) {
+    if (Array.isArray(cnf1._selection)) {
+      if (cnf1._selection.length) {
+        cnf1.exportCSV({ selectionOnly: true });
+      } else {
+        cnf1.exportCSV();
+      }
+    } else {
+      cnf1.exportCSV();
+    }
   }
 }

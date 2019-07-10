@@ -25,7 +25,7 @@
     </div>
     <div class="table100 slaExist ver4 m-b-110" [hidden]="isCRTableHidden">
         <p-table #crTableRef [columns]="displayedColumns" [value]="pmObject.clientReviewArray_copy" [paginator]="true"
-            [rows]="5" [lazy]="true" (onLazyLoad)="crLazyLoadTask($event)"
+            [rows]="10" [lazy]="true" (onLazyLoad)="crLazyLoadTask($event)"
             [totalRecords]="pmObject.totalRecords.ClientReview" [loading]="pmObject.loading.ClientReview"
             [lazyLoadOnInit]="false">
             <ng-template pTemplate="header" let-columns>

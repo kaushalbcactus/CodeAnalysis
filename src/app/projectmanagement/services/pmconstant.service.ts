@@ -126,7 +126,7 @@ export class PmconstantService {
       top: 4500
     },
     USER_SPECIFIC_SOW: {
-      select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget'
+      select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget,'
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, InvoicedRevenue,'
         + 'BillingEntity',
       expand: 'Author/Id,Author/Title',
@@ -399,4 +399,5 @@ export class PmconstantService {
     HOURLY: 'Hourly',
     DELIVERABLE: 'Deliverable'
   };
+  public TIME_OUT = 500;
 }

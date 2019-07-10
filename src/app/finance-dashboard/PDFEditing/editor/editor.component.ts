@@ -595,9 +595,7 @@ export class EditorComponent implements OnInit {
         <div class="contact_details_japan">
         <div id="contact_details">
         <p><strong>Company : </strong>[[Company]]</p>
-        <p><strong>Client Contact : </strong>
-        [[ClientContact1]]
-        </p>
+        <p><strong>Client Contact : </strong>[[ClientContact1]]</p>
         </div>
         </div>
         <table style="margin: 15px 0">
@@ -705,7 +703,7 @@ export class EditorComponent implements OnInit {
                         振込手数料はお客様ご負担でお願いいたします
                     </li>
                     <li>
-                    この請求書が届いてから<span class="paymentDetails">60</span>日以内にお支払いをお願いいたします
+                    この請求書が届いてから<span id="paymentInstructions">60</span>日以内にお支払いをお願いいたします
                     </li>
                     <li>
                         正式な書類として弊社の電子押印で発行しております
@@ -826,8 +824,7 @@ export class EditorComponent implements OnInit {
         </table>
         </div>`,
             contactDetails: `<p><strong>Company : </strong>[[Company]]</p>
-        <p><strong>Client Contact : </strong>[[ClientContact1]]
-        </p>`,
+        <p><strong>Client Contact : </strong>[[ClientContact1]]</p>`,
             purchaseOrder: `<strong> Purchase Order number : </strong> [[PurchaseOrderNumber]] `,
             invoiceDetail: `<thead>
             <tr>
@@ -886,7 +883,7 @@ export class EditorComponent implements OnInit {
             振込手数料はお客様ご負担でお願いいたします
         </li>
         <li>
-        この請求書が届いてから<span class="paymentDetails">60</span>日以内にお支払いをお願いいたします
+        この請求書が届いてから<span id="paymentInstructions">60</span>日以内にお支払いをお願いいたします
         </li>
         <li>
             正式な書類として弊社の電子押印で発行しております
@@ -1150,7 +1147,7 @@ export class EditorComponent implements OnInit {
     
         <div class="contact_details-table">
             <div id="contact_details">
-                <table style="width:54%;">
+                <table id="contactDetails1" style="width:54%;">
                 <tbody>
             <tr>
                 <td>
@@ -1159,8 +1156,7 @@ export class EditorComponent implements OnInit {
             </tr>
             <tr>
                 <td>
-                    <p><strong>Client Contact : </strong>[[ClientContact]]
-                    </p>
+                    <p><strong>Client Contact : </strong>[[ClientContact]]</p>
                 </td>
             </tr>
             <tr>
@@ -1176,7 +1172,7 @@ export class EditorComponent implements OnInit {
             </tr>
             </tbody>
             </table>
-            <table style="width:40%;">
+            <table id="contactDetails2" style="width:40%;">
             <tbody>
             <tr>
                 <td>
@@ -1197,7 +1193,7 @@ export class EditorComponent implements OnInit {
             </tr>
             </tbody>
             </table>
-            <table>
+            <table id="address">
             <tbody>
             <tr>
             <td>
@@ -1453,8 +1449,7 @@ export class EditorComponent implements OnInit {
             </tr>
             <tr>
                 <td>
-                    <p><strong>Client Contact : </strong>[[ClientContact]]
-                    </p>
+                    <p><strong>Client Contact : </strong>[[ClientContact]]</p>
                 </td>
             </tr>
             <tr>
@@ -2072,13 +2067,10 @@ export class EditorComponent implements OnInit {
             IndiaInvoice.appendixCreate = IndiaInvoice.appendixCreate.replace('[[Appendix]]', newArr.join(''));
             IndiaInvoice.appendixCreate = IndiaInvoice.appendixCreate.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                 invoiceData.IndCurrencySymbol);
-            delete IndiaInvoice.appendixCreate;
-            delete IndiaInvoice.appendixRow;
+            
         } else {
             this.showAppendix = false;
-            delete IndiaInvoice.appendix;
-            delete IndiaInvoice.appendixCreate;
-            delete IndiaInvoice.appendixRow;
+            
         }
 
         let headerObj: any = this.headerstyle;

@@ -3,11 +3,16 @@
     <div id="allSOWLoaderText">Loading...</div>
 </div>
 <div class="allSOW-section" [hidden]='isAllSOWTableHidden'>
-    <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.allSOWArrayCopy" [paginator]="true"
-        [rows]="5" [lazy]="true" [totalRecords]="pmObject.totalRecords.AllSOW" [loading]="pmObject.loading.AllSOW"
-        (onLazyLoad)="lazyLoadTask($event)" [lazyLoadOnInit]="false">
+    <div class="box excelIcon">
+        <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(allProjectRef)"
+            title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+    </div>
+    <div class="clear"></div>
+    <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.allSOWArray" [paginator]="true" [rows]="10"
+        selectionMode="" exportFilename="All SOW">
         <ng-template pTemplate="header" let-columns>
             <tr>
+                <th class="lastColumnWidth">S.No</th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field">
                     {{ col.header }}
                     <p-sortIcon [field]="col.field"></p-sortIcon>
@@ -15,6 +20,7 @@
                 <th class="lastColumnWidth"></th>
             </tr>
             <tr>
+                <th class="lastColumnWidth"></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field">
                     <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allSOW.sowCodeArray" defaultLabel="All"
                         (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
@@ -38,8 +44,9 @@
                 <th class="lastColumnWidth"></th>
             </tr>
         </ng-template>
-        <ng-template pTemplate="body" let-rowData let-task>
+        <ng-template pTemplate="body" let-rowData let-task let-rowIndex="rowIndex">
             <tr>
+                <td>{{rowIndex+1}}</td>
                 <td>{{task.SOWCode}}</td>
                 <td>{{task.ShortTitle}}</td>
                 <td>{{task.ClientLegalEntity}}</td>

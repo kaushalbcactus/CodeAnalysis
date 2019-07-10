@@ -9,6 +9,7 @@ import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
+import { PMCommonService } from '../../services/pmcommon.service';
 declare var $: any;
 @Component({
   selector: 'app-pending-allocation',
@@ -67,7 +68,8 @@ export class PendingAllocationComponent implements OnInit {
     private Constant: ConstantsService,
     private spServices: SharepointoperationService,
     public pmObject: PMObjectService,
-    private pmConstant: PmconstantService) { }
+    private pmConstant: PmconstantService,
+    public pmCommonService: PMCommonService) { }
 
   ngOnInit() {
     this.isPAInnerLoaderHidden = false;
@@ -98,7 +100,7 @@ export class PendingAllocationComponent implements OnInit {
     setTimeout(() => {
       this.paHideNoDataMessage = true;
       this.getPendingProjects();
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   getPendingProjects() {
     this.fetchPendingProjects();
@@ -161,7 +163,6 @@ export class PendingAllocationComponent implements OnInit {
       this.paArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
       this.paArrays.statusArray = this.commonService.unique(statusTempArray, 'value');
       this.pmObject.pendingAllocationArray = tempPAArray;
-      this.pmObject.pendingAllocationArray_copy = tempPAArray.slice(0, 5);
       this.isPATableHidden = false;
       this.isPAInnerLoaderHidden = true;
       this.isPATableHidden = false;

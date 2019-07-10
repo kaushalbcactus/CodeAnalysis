@@ -34,6 +34,7 @@ import { TaskAllocationModule } from '../task-allocation/task-allocation.module'
 import { FeedbackPopupComponent } from './feedback-popup/feedback-popup.component';
 import { MyprojectsComponent } from './myprojects/myprojects.component';
 import { DisplayProjectsComponent } from './myprojects/display-projects/display-projects.component';
+import { TimelineModule } from '../timeline/timeline.module';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -75,7 +76,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NgxGraphModule,
     NgxChartsModule,
     ProjectmanagementModule,
-    TaskAllocationModule
+    TaskAllocationModule,
+    TimelineModule
   ],
 
   providers: [ConfirmationService, DatePipe, DialogService, DynamicDialogConfig, DynamicDialogRef, FeedbackPopupComponent,  {

@@ -79,7 +79,7 @@ export class AllProjectsComponent implements OnInit {
     private commonService: CommonService,
     private constants: ConstantsService,
     private pmConstant: PmconstantService,
-    private pmCommonService: PMCommonService,
+    public pmCommonService: PMCommonService,
     private spServices: SPOperationService,
     private messageService: MessageService,
     public dialogService: DialogService,
@@ -124,7 +124,7 @@ export class AllProjectsComponent implements OnInit {
         this.lazyLoadTask(event);
       }
       this.pmObject.columnFilter.ProjectCode = [];
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   /**
    * This method is used to get all projects based on current user credentials.
@@ -266,8 +266,6 @@ export class AllProjectsComponent implements OnInit {
       this.allProjects.createdByArray = this.commonService.unique(createdByTempArray, 'value');
       this.allProjects.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
       this.pmObject.allProjectsArray = tempAllProjectArray;
-      this.pmObject.totalRecords.AllProject = tempAllProjectArray.length;
-      this.pmObject.allProjectsArrayCopy = tempAllProjectArray.splice(0, 5);
       this.isAllProjectLoaderHidden = true;
       this.isAllProjectTableHidden = false;
     }
@@ -431,7 +429,7 @@ export class AllProjectsComponent implements OnInit {
     });
     setTimeout(() => {
       this.router.navigate(['/projectMgmt/allProjects']);
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   async changeProjectStatusUnallocated() {
     const batchURL = [];
@@ -477,7 +475,7 @@ export class AllProjectsComponent implements OnInit {
     });
     setTimeout(() => {
       this.router.navigate(['/projectMgmt/allProjects']);
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   async changeProjectStatusAuditInProgress() {
     const batchURL = [];
@@ -525,7 +523,7 @@ export class AllProjectsComponent implements OnInit {
     });
     setTimeout(() => {
       this.router.navigate(['/projectMgmt/allProjects']);
-    }, 500);
+    }, this.pmConstant.TIME_OUT);
   }
   async getGetIds(projectCode) {
     const batchURL = [];
@@ -749,7 +747,7 @@ export class AllProjectsComponent implements OnInit {
       });
       setTimeout(() => {
         this.router.navigate(['/projectMgmt/allProjects']);
-      }, 500);
+      }, this.pmConstant.TIME_OUT);
     }
   }
   /**
@@ -928,7 +926,7 @@ export class AllProjectsComponent implements OnInit {
       });
       setTimeout(() => {
         this.closeMoveSOW();
-      }, 500);
+      }, this.pmConstant.TIME_OUT);
     }
   }
   /**

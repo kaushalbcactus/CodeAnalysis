@@ -440,3 +440,11 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
 .ui-table.ui-widget {
     margin-top: 20px;
 }
+
+.ui-table-resizable .ui-table-thead>tr>th{
+  overflow: visible!important;
+}
+
+.financeTable div.ui-table-wrapper {
+  min-height: 440px;
+}

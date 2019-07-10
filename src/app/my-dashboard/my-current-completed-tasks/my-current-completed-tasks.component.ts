@@ -275,7 +275,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
         });
       }
 
-      this.AllTaskColArray = this.route.snapshot.data.type === 'MyCompletedTask' ? { Status: [{ label: 'Closed', value: 'Closed' }], TaskStatus: [{ label: 'All', value: null }], TaskName: [{ label: 'All', value: null }], StartDate: [{ label: 'All', value: null }], DueDate: [{ label: 'All', value: null }] } : { Status: [{ label: 'All', value: null }, { label: 'Not Completed', value: 'Not Completed' }, { label: 'Planned', value: 'Planned' }], TaskStatus: [{ label: 'All', value: null }], TaskName: [{ label: 'All', value: null }], StartDate: [{ label: 'All', value: null }], DueDate: [{ label: 'All', value: null }] };
+      this.AllTaskColArray = this.route.snapshot.data.type === 'MyCompletedTask' ? { Status: [{ label: 'Closed', value: 'Closed' }], TaskStatus: [{ label: 'All', value: null }], TaskName: [{ label: 'All', value: null }], StartDate: [{ label: 'All', value: null }], DueDate: [{ label: 'All', value: null }] } : { Status: [{ label: 'All', value: null }], TaskStatus: [{ label: 'All', value: null }], TaskName: [{ label: 'All', value: null }], StartDate: [{ label: 'All', value: null }], DueDate: [{ label: 'All', value: null }] };
       this.createColFieldValues();
 
     }
@@ -283,28 +283,28 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
       this.loaderenable = false;
       this.thenBlock = this.taskId;
     }
-
-    console.log(this.allTasks);
   }
-
-
 
   // *************************************************************************************************************************************
   // Column filter for search 
   // *************************************************************************************************************************************
 
-
-
-  // AllTaskColArray = this.route.snapshot.data.type ==='MyCompletedTask' ? { Status: [{ label: 'Closed', value: 'Closed' }], TaskStatus: [{ label: 'All', value: null }], TaskName: [{ label: 'All', value: null }], StartDate: [{ label: 'All', value: null }], DueDate: [{ label: 'All', value: null }] } : { Status: [{ label: 'All', value: null }, { label: 'Not Completed', value: 'Not Completed' }, { label: 'Planned', value: 'Planned' }], TaskStatus: [{ label: 'All', value: null }], TaskName: [{ label: 'All', value: null }], StartDate: [{ label: 'All', value: null }], DueDate: [{ label: 'All', value: null }] };
-
-
-
   createColFieldValues() {
     this.AllTaskColArray.TaskStatus.push.apply(this.AllTaskColArray.TaskStatus, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
     this.AllTaskColArray.TaskName.push.apply(this.AllTaskColArray.TaskName, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.DisplayTitle, value: a.DisplayTitle }; return b; })));
-
+    this.AllTaskColArray.Status.push.apply(this.AllTaskColArray.Status, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.MainStatus, value: a.MainStatus }; return b; })));
     this.AllTaskColArray.StartDate.push.apply(this.AllTaskColArray.StartDate, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: this.datePipe.transform(a.StartDate, "d MMM, y, h:mm a"), value: a.StartDate }; return b; })));
     this.AllTaskColArray.DueDate.push.apply(this.AllTaskColArray.DueDate, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: this.datePipe.transform(a.DueDate, "d MMM, y, h:mm a"), value: a.DueDate }; return b; })));
+
+
+    this.AllTaskColArray.StartDate = this.AllTaskColArray.StartDate.sort((a, b) =>
+    new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
+    );
+
+    this.AllTaskColArray.DueDate = this.AllTaskColArray.DueDate.sort((a, b) =>
+    new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
+    );
+
 
     this.loaderenable = false;
     this.thenBlock = this.taskId;
@@ -599,7 +599,17 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   async checkCompleteTask(task) {
 
+      this.batchContents = new Array();
+      const batchGuid = this.spServices.generateUUID();
 
+      let TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
+      TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, task.ID);
+
+      const TaskDetailsUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TaskDetails);
+      this.spServices.getBatchBodyGet(this.batchContents, batchGuid, TaskDetailsUrl);
+      this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    debugger
+    console.log(this.response);
     var stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
 
     if (stval === "Completed" || stval === "AllowCompletion" || stval === "Auto Closed") {
@@ -608,7 +618,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
         this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'No Final Document Found' });
         return false;
       }
-      if (task.TaskComments) {
+      if (this.response[0][0].TaskComments) {
 
         this.confirmationService.confirm({
           message: 'Are you sure that you want to proceed?',
