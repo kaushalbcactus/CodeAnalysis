@@ -159,8 +159,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             { field: 'Status', header: 'Status', visibility: true },
             { field: 'ApproverComments', header: 'Approver Comments', visibility: true },
             { field: 'Modified', header: 'Approval / Billable Date', visibility: true },
-            { field: '', header: '', visibility: true },
-
+            
             { field: 'Category', header: 'Category', visibility: false },
             { field: 'RequestType', header: 'Request Type', visibility: false },
             { field: 'DateSpend', header: 'Date Spend', visibility: false },
@@ -174,12 +173,13 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             { field: 'ApproverComments', header: 'Approver Comments', visibility: false },
             { field: 'ApproverFileUrl', header: 'Approver File Url', visibility: false },
             { field: 'PayingEntity', header: 'Paying Entity', visibility: false },
-            { field: 'VendorFreelancer', header: 'Vendor Freelancer', visibility: false },
-            { field: 'AuthorId', header: 'Author Id', visibility: false },
-            { field: 'RequestType', header: 'Request Type', visibility: false },
-            { field: 'DollarAmount', header: 'Dollar Amount', visibility: false },
-            { field: 'InvoiceID', header: 'Invoice ID', visibility: false },
-            { field: 'POLookup', header: 'PO Lookup', visibility: false },
+            // { field: 'VendorFreelancer', header: 'Vendor Freelancer', visibility: false },
+            // { field: 'AuthorId', header: 'Author Id', visibility: false },
+            // { field: 'RequestType', header: 'Request Type', visibility: false },
+            // { field: 'DollarAmount', header: 'Dollar Amount', visibility: false },
+            // { field: 'InvoiceID', header: 'Invoice ID', visibility: false },
+            // { field: 'POLookup', header: 'PO Lookup', visibility: false },
+            { field: '', header: '', visibility: true },
         ];
     }
 

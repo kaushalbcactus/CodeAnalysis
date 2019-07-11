@@ -295,8 +295,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             { field: 'Currency', header: 'Currency', visibility: true },
             { field: 'POC', header: 'POC', visibility: true },
             { field: 'Status', header: 'Status', visibility: true },
-            { field: '', header: '', visibility: true },
-
+            
             { field: 'AddressType', header: 'AddressType', visibility: false },
             { field: 'PO', header: 'PO Name', visibility: false },
             { field: 'MainPOC', header: 'MainPOC', visibility: false },
@@ -306,12 +305,13 @@ export class ProformaComponent implements OnInit, OnDestroy {
             { field: 'FileURL', header: 'FileURL', visibility: false },
             { field: 'ProformaHtml', header: 'ProformaHtml', visibility: false },
             { field: 'ProformaTitle', header: 'ProformaTitle', visibility: false },
-            { field: 'InvoiceLookup', header: 'InvoiceLookup', visibility: false },
+            // { field: 'InvoiceLookup', header: 'InvoiceLookup', visibility: false },
             // { field: 'LineItemsLookup', header: 'LineItemsLookup', visibility: false },
             { field: 'Reason', header: 'Reason', visibility: false },
             { field: 'State', header: 'State', visibility: false },
             { field: 'Modified', header: 'Modified', visibility: false },
             { field: 'ModifiedBy', header: 'Modified By', visibility: false },
+            { field: '', header: '', visibility: true },
         ];
     }
 

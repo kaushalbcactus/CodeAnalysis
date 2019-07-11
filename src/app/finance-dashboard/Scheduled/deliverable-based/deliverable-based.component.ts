@@ -231,7 +231,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             // { field: 'TaggedDate', header: 'Tagged Date', visibility: false },
             { field: 'Status', header: 'Status', visibility: false },
             { field: 'ScheduleType', header: 'Schedule Type', visibility: false },
-            { field: 'InvoiceLookup', header: 'Invoice Lookup', visibility: false },
+            // { field: 'InvoiceLookup', header: 'Invoice Lookup', visibility: false },
             { field: 'Template', header: 'Template', visibility: false },
             { field: 'Modified', header: 'Modified Date', visibility: false },
             { field: 'ModifiedBy', header: 'Modified By', visibility: false },

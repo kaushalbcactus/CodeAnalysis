@@ -251,7 +251,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             { field: 'Status', header: 'Status', visibility: false },
             // { field: 'ProformaLookup', header: 'Proforma Lookup', visibility: false },
             { field: 'ScheduleType', header: 'Schedule Type', visibility: false },
-            { field: 'InvoiceLookup', header: 'Invoice Lookup', visibility: false },
+            // { field: 'InvoiceLookup', header: 'Invoice Lookup', visibility: false },
             { field: 'Template', header: 'Template', visibility: false },
             { field: 'Modified', header: 'Modified', visibility: false },
             { field: 'PracticeArea', header: 'Practice Area', visibility: false },

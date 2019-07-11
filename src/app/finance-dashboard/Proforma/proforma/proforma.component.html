@@ -26,99 +26,100 @@
 
 <!-- <button (click)="checkSelectedRowData()">Check Data</button> -->
 <div class="financeTable">
-<p-table #pfc [columns]="proformaCols" [value]="proformaRes" [paginator]="true" [rows]="10"
-    [(selection)]="selectedRowData" selectionMode="multiple" (onRowSelect)="onRowSelect($event)"
-    [resizableColumns]="true" exportFilename="Proformas">
-    <ng-template pTemplate="header" let-columns>
+    <p-table #pfc [columns]="proformaCols" [value]="proformaRes" [paginator]="true" [rows]="10"
+        [(selection)]="selectedRowData" selectionMode="multiple" (onRowSelect)="onRowSelect($event)"
+        [resizableColumns]="true" exportFilename="Proformas">
+        <ng-template pTemplate="header" let-columns>
 
-        <tr>
-            <th>S.No</th>
-            <th style="width: 2.25em">
-                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-            </th>
-            <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn pReorderableColumn
-                [hidden]="!col.visibility">
-                {{col.header}}
-                <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
-            </th>
-        </tr>
+            <tr>
+                <th>S.No</th>
+                <th style="width: 2.25em">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" pResizableColumn pReorderableColumn
+                    [hidden]="!col.visibility">
+                    {{col.header}}
+                    <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
+                </th>
+            </tr>
 
-        <tr>
-            <th></th>
-            <th></th>
-            <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
-                <ng-container *ngIf="col.field">
-            <td></td>
-            <p-multiSelect *ngSwitchCase="'ProformaNumber'" [options]="proformaColArray.ProformaNumber"
-                defaultLabel="All"  (onChange)="pfc.filter($event.value, col.field, 'in')">
-            </p-multiSelect>
-            <p-multiSelect *ngSwitchCase="'PONumber'" [options]="proformaColArray.PONumber" defaultLabel="All"
-                 (onChange)="pfc.filter($event.value, col.field, 'in')">
-            </p-multiSelect>
-            <p-multiSelect *ngSwitchCase="'ProformaDate'" [options]="proformaColArray.ProformaDate" defaultLabel="All"
-                 (onChange)="pfc.filter($event.value, col.field, 'in')">
-            </p-multiSelect>
-            <p-multiSelect *ngSwitchCase="'ProformaType'" [options]="proformaColArray.ProformaType" defaultLabel="All"
-                 (onChange)="pfc.filter($event.value, col.field, 'in')">
-            </p-multiSelect>
-            <p-multiSelect *ngSwitchCase="'Amount'" [options]="proformaColArray.Amount" defaultLabel="All"
-                 (onChange)="pfc.filter($event.value, col.field, 'in')">
-            </p-multiSelect>
-            <p-multiSelect *ngSwitchCase="'Currency'" [options]="proformaColArray.Currency" defaultLabel="All"
-                 (onChange)="pfc.filter($event.value, col.field, 'in')">
-            </p-multiSelect>
-            <p-multiSelect *ngSwitchCase="'POC'" [options]="proformaColArray.POC" defaultLabel="All" 
-                (onChange)="pfc.filter($event.value, col.field, 'in')">
-            </p-multiSelect>
-            <p-multiSelect *ngSwitchCase="'Status'" [options]="proformaColArray.Status" defaultLabel="All"
-                 (onChange)="pfc.filter($event.value, col.field, 'in')">
-            </p-multiSelect>
+            <tr>
+                <th></th>
+                <th></th>
+                <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
+                    <ng-container *ngIf="col.field">
+                <td></td>
+                <p-multiSelect *ngSwitchCase="'ProformaNumber'" [options]="proformaColArray.ProformaNumber"
+                    defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                </p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'PONumber'" [options]="proformaColArray.PONumber" defaultLabel="All"
+                    (onChange)="pfc.filter($event.value, col.field, 'in')">
+                </p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'ProformaDate'" [options]="proformaColArray.ProformaDate"
+                    defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                </p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'ProformaType'" [options]="proformaColArray.ProformaType"
+                    defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                </p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Amount'" [options]="proformaColArray.Amount" defaultLabel="All"
+                    (onChange)="pfc.filter($event.value, col.field, 'in')">
+                </p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Currency'" [options]="proformaColArray.Currency" defaultLabel="All"
+                    (onChange)="pfc.filter($event.value, col.field, 'in')">
+                </p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'POC'" [options]="proformaColArray.POC" defaultLabel="All"
+                    (onChange)="pfc.filter($event.value, col.field, 'in')">
+                </p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Status'" [options]="proformaColArray.Status" defaultLabel="All"
+                    (onChange)="pfc.filter($event.value, col.field, 'in')">
+                </p-multiSelect>
 
-            <!-- <p-dropdown [options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">
+                <!-- <p-dropdown [options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">
                 <ng-template let-item pTemplate="item">
                   <span>{{item.value}}</span>
                 </ng-template>
               </p-dropdown> -->
-            </ng-container>
-            </th>
-        </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
-        <tr>
-            <td>
-                {{rowIndex+1}}
-            </td>
-            <td>
-                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
-            </td>
-            <td *ngFor="let col of columns;index as i" class="ui-resizable-column" [hidden]="!col.visibility">
-                <ng-container
-                    *ngIf="col.field != 'ProformaNumber' &&  col.field != '' && col.field !== 'ProformaDate' ">
-                    {{rowData[col.field]}}
                 </ng-container>
-                <ng-container *ngIf="col.field == 'ProformaDate'">
-                    <p>{{rowData[col.field] | date:'MMM d, y' }}</p>
-                </ng-container>
-                <ng-container *ngIf="col.field == 'ProformaNumber'">
-                    <a *ngIf="rowData['FileURL']" [href]="rowData['FileURL']" target="_blank">
-                        {{rowData[col.field]}}</a>
-                    <p *ngIf="!rowData['FileURL'] ">{{rowData[col.field]}}</p>
-                </ng-container>
-                <ng-container *ngIf="col.field == ''">
-                    <p-menu #popupMenu [popup]="true"  [model]="items" styleClass="borderMenu"></p-menu>
-                    <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                        (click)="popupMenu.toggle($event);openPopup(rowData, popupMenu)"></i>
-                </ng-container>
-            </td>
-        </tr>
-    </ng-template>
-</p-table>
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+            <tr>
+                <td>
+                    {{rowIndex+1}}
+                </td>
+                <td>
+                    <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                </td>
+                <td *ngFor="let col of columns;index as i" class="ui-resizable-column" [hidden]="!col.visibility">
+                    <ng-container
+                        *ngIf="col.field != 'ProformaNumber' &&  col.field != '' && col.field !== 'ProformaDate' ">
+                        {{rowData[col.field]}}
+                    </ng-container>
+                    <ng-container *ngIf="col.field == 'ProformaDate'">
+                        <p>{{rowData[col.field] | date:'MMM d, y' }}</p>
+                    </ng-container>
+                    <ng-container *ngIf="col.field == 'ProformaNumber'">
+                        <a *ngIf="rowData['FileURL']" [href]="rowData['FileURL']" target="_blank">
+                            {{rowData[col.field]}}</a>
+                        <p *ngIf="!rowData['FileURL'] ">{{rowData[col.field]}}</p>
+                    </ng-container>
+                    <ng-container *ngIf="col.field == ''">
+                        <div>
+                            <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu"></p-menu>
+                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                                (click)="popupMenu.toggle($event);openPopup(rowData, popupMenu)"></i>
+                        </div>
+                    </ng-container>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
 </div>
 <!-- Table End  -->
 
 <!-- Right Side Bar -->
-<p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow:'auto'}"
-    styleClass="ui-sidebar-md">
+<p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
     <ng-container *ngIf="rightSideBar">
         <app-pro-table-attribute [rowItemData]="selectedRowItem"></app-pro-table-attribute>
     </ng-container>
@@ -137,8 +138,7 @@
 
 <!-- Replace Proforma -->
 <p-dialog header="Replace Proforma" [(visible)]="replaceProformaModal" [modal]="true" [draggable]="false"
-    [responsive]="true" [style]="{'width': '30%'}" [maximizable]="false" 
-    (onHide)="cancelFormSub('replaceProforma')">
+    [responsive]="true" [style]="{'width': '30%'}" [maximizable]="false" (onHide)="cancelFormSub('replaceProforma')">
     <form id="myform" [formGroup]="replaceProforma_form">
         <div class="ui-g">
             <div class="ui-g-6">

@@ -302,14 +302,13 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             { field: 'Amount', header: 'Amount', visibility: true },
             { field: 'Currency', header: 'Currency', visibility: true },
             { field: 'POC', header: 'POC', visibility: true },
-            { field: '', header: '', visibility: true },
-
+            
             { field: 'PONNumber', header: 'PO Number', visibility: false },
             { field: 'PaymentURL', header: 'Payment URL', visibility: false },
             { field: 'MainPOC', header: 'Main POC', visibility: false },
             { field: 'Template', header: 'Template', visibility: false },
-            { field: 'ProformaLookup', header: 'Proforma Lookup', visibility: false },
-            { field: 'LineItemsLookup', header: 'LineItems Lookup', visibility: false },
+            // { field: 'ProformaLookup', header: 'Proforma Lookup', visibility: false },
+            // { field: 'LineItemsLookup', header: 'LineItems Lookup', visibility: false },
             { field: 'DisputeReason', header: 'Dispute Reason', visibility: false },
             { field: 'DisputeComments', header: 'Dispute Comments', visibility: false },
             { field: 'Reason', header: 'Reason', visibility: false },
@@ -319,9 +318,10 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             { field: 'TaggedAmount', header: 'Tagged Amount', visibility: false },
             { field: 'IsTaggedFully', header: 'Is Tagged Fully', visibility: false },
             { field: 'Modified', header: 'Modified', visibility: false },
-            { field: 'AdditionalPOC', header: 'Additional POC', visibility: false },
+            // { field: 'AdditionalPOC', header: 'Additional POC', visibility: false },
             { field: 'Created', header: 'Created', visibility: false },
-
+            { field: '', header: '', visibility: true },
+            
         ];
     }
 

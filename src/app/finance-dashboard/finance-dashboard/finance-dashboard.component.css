@@ -494,14 +494,14 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
   position: relative;
 }
 
-.financeTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div >i {
+.financeTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div > i {
   top: 0px !important;
 }
 
 .financeTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
-  top: 0 !important;
+  top: 0px !important;
   left: inherit !important;
-  right: 40 !important;
+  right: 40px !important;
 }
 
 

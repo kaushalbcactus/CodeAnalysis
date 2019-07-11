@@ -236,11 +236,11 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             { field: 'ApproverComments', header: 'Approver Comments', visibility: false },
             { field: 'ApproverFileUrl', header: 'Approver File Url', visibility: false },
             { field: 'PayingEntity', header: 'Paying Entity', visibility: false },
-            { field: 'AuthorId', header: 'Author Id', visibility: false },
+            // { field: 'AuthorId', header: 'Author Id', visibility: false },
 
-            { field: 'DollarAmount', header: 'Dollar Amount', visibility: false },
-            { field: 'InvoiceID', header: 'Invoice ID', visibility: false },
-            { field: 'POLookup', header: 'PO Lookup', visibility: false },
+            // { field: 'DollarAmount', header: 'Dollar Amount', visibility: false },
+            // { field: 'InvoiceID', header: 'Invoice ID', visibility: false },
+            // { field: 'POLookup', header: 'PO Lookup', visibility: false },
             { field: '', header: '', visibility: true },
         ];
     }
@@ -498,14 +498,14 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         if(groups.indexOf('ExpenseApprovers') > -1) {
             this.items = [
                 { label: 'Approve Expense', command: (e) => this.openMenuContent(e, data) },
-                { label: 'Cancel Expense', command: (e) => this.openMenuContent(e, data) },
                 { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) },
+                { label: 'Cancel Expense', command: (e) => this.openMenuContent(e, data) },
                 { label: 'Details', command: (e) => this.openMenuContent(e, data) },
             ];
         }
         else {
             this.items = [
-                { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) },
+                { label: 'Cancel Expense', command: (e) => this.openMenuContent(e, data) },
                 { label: 'Details', command: (e) => this.openMenuContent(e, data) },
             ];
         }
