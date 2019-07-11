@@ -67,7 +67,7 @@
                     [ngClass]="{'blueColor' : task.isBlueIndicator,'redColor': task.isRedIndicator,'greenColor': task.isGreenIndicator}">
                     {{task.Status}}</td>
                 <td>{{task.CreatedBy}}</td>
-                <td>{{task.CreatedDate}}</td>
+                <td>{{task.CreatedDate | date:'MMM dd yyyy hh:mm:ss aa'}}</td>
                 <td>
                     <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu class="projectSlider"
                         [model]="popItems" [popup]="true" appendTo="body"></p-menu>
@@ -261,19 +261,19 @@
                     </tr>
                     <tr>
                         <td [ngStyle]="{'color':'#d7181f'}">Active CM1</td>
-                        <td>{{task.FinanceManagement.ActiveCM1}}</td>
+                        <td>{{task.ProjectAttributes.ActiveCM1Text}}</td>
                     </tr>
                     <tr>
                         <td [ngStyle]="{'color':'#d7181f'}">Active CM2</td>
-                        <td>{{task.FinanceManagement.ActiveCM2}}</td>
+                        <td>{{task.ProjectAttributes.ActiveCM2Text}}</td>
                     </tr>
                     <tr>
                         <td [ngStyle]="{'color':'#d7181f'}">Active Delivery1</td>
-                        <td>{{task.FinanceManagement.ActiveDelivery1}}</td>
+                        <td>{{task.ProjectAttributes.ActiveDelivery1Text}}</td>
                     </tr>
                     <tr>
                         <td [ngStyle]="{'color':'#d7181f'}">Active Delivery 2</td>
-                        <td>{{task.FinanceManagement.ActiveDelivery2}}</td>
+                        <td>{{task.ProjectAttributes.ActiveDelivery2Text}}</td>
                     </tr>
                 </ng-template>
             </p-table>

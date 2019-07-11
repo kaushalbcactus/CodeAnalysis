@@ -541,9 +541,9 @@ export class PMCommonService {
     const arrayTo = [];
     this.pmObject.oProjectManagement.oResourcesCat.forEach(element => {
       tempArray.forEach(tempOjb => {
-        if (tempOjb.hasOwnProperty('ID') && element.UserName && element.UserName.ID === tempOjb.ID) {
+        if (tempOjb && tempOjb.hasOwnProperty('ID') && element.UserName && element.UserName.ID === tempOjb.ID) {
           arrayTo.push(element.UserName.EMail);
-        } else if (element.UserName.ID === tempOjb) {
+        } else if (tempOjb && element.UserName.ID === tempOjb) {
           arrayTo.push(element.UserName.EMail);
         }
       });
@@ -732,19 +732,15 @@ export class PMCommonService {
     this.pmObject.addSOW.Currency = sowItem.Currency;
     this.pmObject.addSOW.Budget.Total = sowItem.TotalBudget ? sowItem.TotalBudget : 0;
     this.pmObject.addSOW.Budget.Net = sowItem.NetBudget ? sowItem.NetBudget : 0;
-    this.pmObject.addSOW.Budget.OOP = sowItem.NetBudget ? sowItem.NetBudget : 0;
-    this.pmObject.addSOW.Budget.Tax = sowItem.NetBudget ? sowItem.NetBudget : 0;
-    const cm1Array = [];
-    const delivery1Array = [];
+    this.pmObject.addSOW.Budget.OOP = sowItem.OOPBudget ? sowItem.OOPBudget : 0;
+    this.pmObject.addSOW.Budget.Tax = sowItem.TaxBudget ? sowItem.TaxBudget : 0;
+    let cm1Array = [];
+    let delivery1Array = [];
     if (sowItem.CMLevel1.results && sowItem.CMLevel1.results.length) {
-      sowItem.CMLevel1.results.forEach(element => {
-        cm1Array.push(element.ID);
-      });
+      cm1Array = this.getIds(sowItem.CMLevel1.results);
     }
     if (sowItem.DeliveryLevel1.results && sowItem.DeliveryLevel1.results.length) {
-      sowItem.DeliveryLevel1.results.forEach(element => {
-        delivery1Array.push(element.ID);
-      });
+      delivery1Array = this.getIds(sowItem.DeliveryLevel1.results);
     }
     this.pmObject.addSOW.CM1 = cm1Array;
     this.pmObject.addSOW.CM1Text = this.extractNameFromId(cm1Array).join(',');
@@ -768,7 +764,13 @@ export class PMCommonService {
       cnf1.exportCSV();
     }
   }
-
+  getIds(array) {
+    const tempArray = [];
+    array.forEach(element => {
+      tempArray.push(element.ID);
+    });
+    return tempArray;
+  }
   async getProjects() {
     let arrResults: any = [];
     if (this.pmObject.userRights.isMangers || this.pmObject.userRights.isHaveProjectFullAccess) {

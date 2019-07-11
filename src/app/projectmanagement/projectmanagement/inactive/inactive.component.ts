@@ -109,7 +109,7 @@ export class InactiveComponent implements OnInit {
   async fetchPendingProjects() {
     // this.iapArrays.projectItems = await this.spServices.read('' + this.Constant.listNames.ProjectInformation.name + '',
     //   this.pmConstant.pInfoInactiveProjectIndiviualViewOptions);
-    if(!this.pmObject.allProjectItems.length) {
+    if (!this.pmObject.allProjectItems.length) {
       let arrResults: any = [];
       // Get all project information based on current user.
       arrResults = await this.pmCommonService.getProjects();

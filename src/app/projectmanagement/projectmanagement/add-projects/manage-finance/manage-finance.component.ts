@@ -779,7 +779,7 @@ export class ManageFinanceComponent implements OnInit {
       this.projObj.CMLevel2ID, this.projObj.DeliveryLevel1ID, this.projObj.DeliveryLevel2ID);
     arrayTo = this.pmCommonService.getEmailId(tempArray);
     this.pmCommonService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.APPROVED_SOW, objEmailBody,
-      mailSubject, arrayTo, this.pmObject.currLoginInfo.Email);
+      mailSubject, arrayTo, [this.pmObject.currLoginInfo.Email]);
     this.messageService.add({
       key: 'custom', severity: 'success', summary: 'Success Message',
       detail: 'Invoice Line Items Confirmed Successfully'

@@ -108,7 +108,7 @@ export class PendingAllocationComponent implements OnInit {
   async fetchPendingProjects() {
     // this.paArrays.projectItems = await this.spServices.read('' + this.Constant.listNames.ProjectInformation.name + '',
     //   this.pmConstant.pInfoPendingAllocationIndiviualViewOptions);
-    if(!this.pmObject.allProjectItems.length) {
+    if (!this.pmObject.allProjectItems.length) {
       let arrResults: any = [];
       // Get all project information based on current user.
       arrResults = await this.pmCommonService.getProjects();

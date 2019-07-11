@@ -84,6 +84,7 @@ export class CommunicationComponent implements OnInit {
       this.documentArray.map(c => c.ModifiedDateString = this.datePipe.transform(c.ListItemAllFields.Modified, 'MMM d, y, h:mm a'));
       const header = this.dbcols.slice(0);
       this.cols = header;
+      this.selectedDocuments = [];
     }
     this.loaderenable = false;
   }
