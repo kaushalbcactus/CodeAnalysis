@@ -84,14 +84,14 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    */
   bindMenuItems() {
     this.pmObject.tabMenuItems = [
-      { label: 'All Projects (' + this.pmObject.countObj.allProjectCount + ')', routerLink: 'allProjects' },
-      { label: 'All SOW (' + this.pmObject.countObj.allSOWCount + ')', routerLink: 'allSOW', routerLinkActiveOptions: { exact: true } },
+      { label: 'All Projects', routerLink: 'allProjects' },
+      { label: 'All SOW', routerLink: 'allSOW', routerLinkActiveOptions: { exact: true } },
       // tslint:disable-next-line:max-line-length
-      { label: 'Send to Client (' + this.pmObject.countObj.scCount + ')', routerLink: 'sendToClient' },
-      { label: 'Client Review (' + this.pmObject.countObj.crCount + ')', routerLink: 'clientReview' },
+      { label: 'Send to Client', routerLink: 'sendToClient' },
+      { label: 'Client Review', routerLink: 'clientReview' },
       // tslint:disable-next-line:max-line-length
-      { label: 'Pending Allocation (' + this.pmObject.countObj.paCount + ')', routerLink: 'pendingAllocation' },
-      { label: 'Inactive Projects (' + this.pmObject.countObj.iapCount + ')', routerLink: 'inActive' }
+      { label: 'Pending Allocation', routerLink: 'pendingAllocation' },
+      { label: 'Inactive Projects', routerLink: 'inActive' }
     ];
     if (this.pmObject.userRights.isHaveSOWBudgetManager) {
       this.buttons = [

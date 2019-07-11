@@ -18,7 +18,7 @@
 <div class="financeTable">
 <p-table #db [columns]="deliverableBasedCols" [value]="deliverableBasedRes" [paginator]="true" [rows]="10"
     [resizableColumns]="true" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
-    selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Deliverable_Based_Expenses">
+    selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Deliverable_Based_InvoiceLineItems">
     <ng-template pTemplate="header" let-columns>
         <tr>
             <th>S.No</th>

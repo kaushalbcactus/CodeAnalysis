@@ -13,6 +13,7 @@ import { ManageFinanceComponent } from '../add-projects/manage-finance/manage-fi
 import { TimelineHistoryComponent } from '../../../timeline/timeline-history/timeline-history.component';
 import { Router } from '@angular/router';
 import { ProjectTimelineComponent } from './project-timeline/project-timeline.component';
+import { GlobalService } from 'src/app/Services/global.service';
 
 declare var $;
 @Component({
@@ -84,7 +85,8 @@ export class AllProjectsComponent implements OnInit {
     private messageService: MessageService,
     public dialogService: DialogService,
     public router: Router,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private globalObject: GlobalService
   ) { }
 
   ngOnInit() {
@@ -101,8 +103,10 @@ export class AllProjectsComponent implements OnInit {
       { label: 'Timeline', command: (event) => this.projectTimeline(this.selectedProjectObj) },
       { label: 'Manage Finance', command: (event) => this.manageFinances(this.selectedProjectObj) },
       { label: 'Change SOW', command: (event) => this.moveSOW(this.selectedProjectObj) },
+      { label: 'Go to Allocation', command: (event) => this.goToAllocationPage(this.selectedProjectObj) },
       { label: 'Show History', command: (event) => this.showTimeline(this.selectedProjectObj) },
-      { label: 'View Details', command: (event) => this.sendOutput.next(this.selectedProjectObj) }
+      { label: 'View Details', command: (event) => this.sendOutput.next(this.selectedProjectObj) },
+      { label: 'Cancel Project', command: (event) => this.changeProjectStatus(this.selectedProjectObj) },
     ];
     setTimeout(() => {
       this.getAllProjects();
@@ -139,17 +143,16 @@ export class AllProjectsComponent implements OnInit {
     const statusTempArray = [];
     const createdByTempArray = [];
     const createDateTempArray = [];
-    let arrResults = [];
-    // Get all project information based on current user.
-    if (this.pmObject.userRights.isMangers || this.pmObject.userRights.isHaveProjectFullAccess) {
-      const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.ALL_PROJECT_INFORMATION);
-      arrResults = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectManageFilter);
-    } else {
-      const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION);
-      arrResults = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectManageFilter);
-    }
-    if (arrResults && arrResults.length) {
+    let arrResults: any = [];
+    if (!this.pmObject.allProjectItems.length) {
+      // Get all project information based on current user.
+      arrResults = await this.pmCommonService.getProjects();
       this.pmObject.allProjectItems = arrResults;
+    }
+    // Get all project information based on current user.
+    arrResults = this.pmCommonService.getProjects();
+    this.pmObject.allProjectItems = arrResults;
+    if (this.pmObject.allProjectItems.length) {
       this.pmObject.countObj.allProjectCount = arrResults.length;
       this.pmObject.totalRecords.AllProject = this.pmObject.countObj.allProjectCount;
       if (this.pmObject.tabMenuItems.length) {
@@ -157,6 +160,11 @@ export class AllProjectsComponent implements OnInit {
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       }
 
+    } else {
+      if (this.pmObject.tabMenuItems.length) {
+        this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';
+        this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+      }
     }
     if (this.pmObject.allProjectItems && this.pmObject.allProjectItems.length) {
       const tempAllProjectArray = [];
@@ -287,6 +295,20 @@ export class AllProjectsComponent implements OnInit {
     this.selectedProjectObj = rowData;
     const status = this.selectedProjectObj.Status;
     const route = this.router.url;
+    menu.model[0].visible = true;
+    menu.model[1].visible = true;
+    menu.model[2].visible = true;
+    menu.model[3].visible = true;
+    menu.model[4].visible = true;
+    menu.model[5].visible = true;
+    menu.model[6].visible = true;
+    menu.model[7].visible = true;
+    menu.model[8].visible = true;
+    menu.model[9].visible = true;
+    menu.model[10].visible = true;
+    menu.model[11].visible = true;
+    menu.model[12].visible = true;
+    menu.model[13].visible = true;
     if (route.indexOf('myDashboard') > -1) {
       menu.model[0].visible = false;
       menu.model[1].visible = false;
@@ -298,16 +320,16 @@ export class AllProjectsComponent implements OnInit {
       menu.model[7].visible = false;
       menu.model[8].visible = false;
       menu.model[9].visible = false;
-      // menu.model[10].visible = false;
+      menu.model[10].visible = false;
+      menu.model[13].visible = false;
     } else {
-      menu.model[11].visible = false;
+      menu.model[12].visible = false;
       switch (status) {
         case this.constants.projectStatus.InDiscussion:
-          menu.model[0].visible = true;
           menu.model[1].visible = false;
           menu.model[2].visible = false;
           menu.model[3].visible = false;
-          menu.model[6].visible = true;
+          menu.model[10].visible = false;
           break;
         case this.constants.projectStatus.Unallocated:
         case this.constants.projectStatus.InProgress:
@@ -315,27 +337,43 @@ export class AllProjectsComponent implements OnInit {
         case this.constants.projectStatus.OnHold:
         case this.constants.projectStatus.AuthorReview:
           menu.model[0].visible = false;
-          menu.model[1].visible = true;
           menu.model[2].visible = false;
           menu.model[3].visible = false;
-          menu.model[6].visible = true;
           break;
         case this.constants.projectStatus.AuditInProgress:
           menu.model[0].visible = false;
           menu.model[1].visible = false;
-          menu.model[2].visible = true;
           menu.model[3].visible = false;
-          menu.model[6].visible = true;
+          menu.model[13].visible = false;
+          menu.model[10].visible = false;
           break;
         case this.constants.projectStatus.PendingClosure:
           menu.model[0].visible = false;
           menu.model[1].visible = false;
           menu.model[2].visible = false;
-          menu.model[3].visible = true;
           menu.model[6].visible = false;
+          menu.model[13].visible = false;
+          menu.model[10].visible = false;
+          break;
+        case this.constants.projectStatus.SentToAMForApproval:
+          menu.model[0].visible = false;
+          menu.model[1].visible = false;
+          menu.model[2].visible = false;
+          menu.model[3].visible = false;
+          menu.model[6].visible = false;
+          menu.model[13].visible = false;
+          menu.model[10].visible = false;
           break;
         case this.constants.projectStatus.AwaitingCancelApproval:
-          menu.model[6].visible = false;
+          menu.model[0].visible = false;
+          menu.model[1].visible = false;
+          menu.model[2].visible = false;
+          menu.model[3].visible = false;
+          menu.model[5].visible = false;
+          menu.model[8].visible = false;
+          menu.model[9].visible = false;
+          menu.model[10].visible = false;
+          menu.model[13].visible = false;
           break;
       }
     }
@@ -672,6 +710,10 @@ export class AllProjectsComponent implements OnInit {
     }
     this.projectViewDataArray.push(this.pmObject.addProject);
     this.pmObject.isProjectRightSideVisible = true;
+  }
+  goToAllocationPage(task) {
+    window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
+      '/Pages/TaskAllocation.aspx?ProjectCode=' + task.ProjectCode, '_blank');
   }
   async manageFinances(selectedProjectObj) {
     const projObj: any = selectedProjectObj;

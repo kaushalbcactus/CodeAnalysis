@@ -401,6 +401,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 AddressType: element.AddressType,
                 ProjectTitle: project ? project.Title : '',
                 CS: this.getCSDetails(element),
+                PracticeArea: this.getPracticeArea(element).BusinessVertical,
                 TaggedDate: element.TaggedDate,
                 Status: element.Status,
                 ProformaLookup: element.ProformaLookup,
@@ -429,6 +430,16 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             }
         })
         return found ? found.Milestone : '';
+    }
+
+    // Project Current Milestones
+    getPracticeArea(pc: any) {
+        let found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode == pc.Title) {
+                return x;
+            }
+        })
+        return found ? found : '';
     }
 
     // Project Client
@@ -980,7 +991,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.messageService.add({ key: 'custom', sticky: true, severity: 'success', summary: 'Proforma Added', detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber });
 
         } else {
-            const res = this.spServices.getData(batchGuid, sBatchData); //.subscribe(res => {
+            const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
             const arrResults = res;
             console.log('--oo ', arrResults);
             if (type === "revertInvoice") {

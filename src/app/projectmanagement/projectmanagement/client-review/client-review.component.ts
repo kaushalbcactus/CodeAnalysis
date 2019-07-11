@@ -76,14 +76,14 @@ export class ClientReviewComponent implements OnInit {
     this.isCRFilterHidden = false;
     this.popItems = [
       {
-        label: 'Go to Allocation', icon: 'pi pi-external-link', target: '_blank',
+        label: 'Go to Allocation', target: '_blank',
         command: (event) => this.goToAllocationPage(this.selectedCRTask)
       },
       {
-        label: 'Go to Project', icon: 'pi pi-external-link', target: '_blank',
+        label: 'Go to Project', target: '_blank',
         command: (event) => this.goToProjectManagement(this.selectedCRTask)
       },
-      { label: 'Close', icon: 'pi pi-times', command: (event) => this.closeTask(this.selectedCRTask) }
+      { label: 'Close', command: (event) => this.closeTask(this.selectedCRTask) }
     ];
     this.pmObject.sendToClientArray = [];
     this._success.subscribe((message) => this.crSuccessMessage = message);
@@ -277,6 +277,8 @@ export class ClientReviewComponent implements OnInit {
       if (this.crArrays.taskItems.length !== this.pmObject.countObj.crCount) {
         this.pmObject.countObj.crCount = this.crArrays.taskItems.length;
       }
+      this.pmObject.tabMenuItems[3].label = 'Client Review (' + this.pmObject.countObj.crCount + ')';
+      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       this.crHideNoDataMessage = false;
       this.isCRInnerLoaderHidden = true;
       this.isCRTableHidden = true;

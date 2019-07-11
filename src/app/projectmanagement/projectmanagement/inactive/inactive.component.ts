@@ -76,16 +76,16 @@ export class InactiveComponent implements OnInit {
     this.isIAPInnerLoaderHidden = false;
     this.isIAPFilterHidden = false;
     this.popItems = [
+      // {
+      //   label: 'Go to Allocation', target: '_blank',
+      //   command: (task) => this.goToAllocationPage(this.selectedIAPTask)
+      // },
       {
-        label: 'Go to Allocation', icon: 'pi pi-external-link', target: '_blank',
-        command: (task) => this.goToAllocationPage(this.selectedIAPTask)
-      },
-      {
-        label: 'Go to Project', icon: 'pi pi-external-link', target: '_blank',
+        label: 'Go to Project', target: '_blank',
         command: (task) => this.goToProjectManagement(this.selectedIAPTask)
       },
       {
-        label: 'Show History', icon: 'pi pi-download', target: '_blank',
+        label: 'Show History', target: '_blank',
         command: (task) => this.timeline.showTimeline(this.selectedIAPTask.ID, 'ProjectMgmt', 'Project')
       }
     ];
@@ -109,6 +109,12 @@ export class InactiveComponent implements OnInit {
   async fetchPendingProjects() {
     // this.iapArrays.projectItems = await this.spServices.read('' + this.Constant.listNames.ProjectInformation.name + '',
     //   this.pmConstant.pInfoInactiveProjectIndiviualViewOptions);
+    if (!this.pmObject.allProjectItems.length) {
+      let arrResults: any = [];
+      // Get all project information based on current user.
+      arrResults = await this.pmCommonService.getProjects();
+      this.pmObject.allProjectItems = arrResults;
+    }
     this.iapArrays.projectItems = this.pmObject.allProjectItems.filter(x =>
       x.Status === this.Constant.projectStatus.OnHold ||
       x.Status === this.Constant.projectStatus.InDiscussion);
@@ -171,6 +177,8 @@ export class InactiveComponent implements OnInit {
       this.isIAPInnerLoaderHidden = true;
       this.isIAPTableHidden = false;
     } else {
+      this.pmObject.tabMenuItems[5].label = 'Inactive Projects (' + this.pmObject.countObj.iapCount + ')';
+      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       this.iapHideNoDataMessage = false;
       this.isIAPInnerLoaderHidden = true;
       this.isIAPTableHidden = true;

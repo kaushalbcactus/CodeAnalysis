@@ -5,7 +5,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { GlobalService } from 'src/app/Services/global.service';
-import { promise } from 'selenium-webdriver';
+
 declare var $;
 @Injectable({
   providedIn: 'root'
@@ -770,5 +770,16 @@ export class PMCommonService {
       tempArray.push(element.ID);
     });
     return tempArray;
+  }
+  async getProjects() {
+    let arrResults: any = [];
+    if (this.pmObject.userRights.isMangers || this.pmObject.userRights.isHaveProjectFullAccess) {
+      const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.ALL_PROJECT_INFORMATION);
+      arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
+    } else {
+      const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION);
+      arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
+    }
+    return arrResults;
   }
 }

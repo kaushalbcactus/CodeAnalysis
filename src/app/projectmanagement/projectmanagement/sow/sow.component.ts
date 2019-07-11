@@ -203,6 +203,11 @@ export class SOWComponent implements OnInit {
         this.pmObject.tabMenuItems[1].label = 'All SOW (' + this.pmObject.countObj.allSOWCount + ')';
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       }
+    } else {
+      if (this.pmObject.tabMenuItems.length) {
+        this.pmObject.tabMenuItems[1].label = 'All SOW (' + this.pmObject.countObj.allSOWCount + ')';
+        this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+      }
     }
     if (this.pmObject.allSOWItems && this.pmObject.allSOWItems.length) {
       const tempAllSOWArray = [];
