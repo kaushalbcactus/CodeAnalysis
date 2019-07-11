@@ -7,6 +7,10 @@
     
 </div>
 
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
+position="bottom-center">
+</p-toast>
+
 <router-outlet (activate)="onActivate($event) " #myOutlet="outlet"></router-outlet>
 
  

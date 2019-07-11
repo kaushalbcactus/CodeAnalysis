@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, AfterViewInit, ViewChildren, QueryList, } from '@angular/core';
-import { MenuItem, DialogService } from 'primeng/api';
+import { MenuItem, DialogService, MessageService } from 'primeng/api';
 import { SharepointoperationService } from '../Services/sharepoint-operation.service';
 import { GlobalService } from '../Services/global.service';
 import { ConstantsService } from '../Services/constants.service';
@@ -33,6 +33,7 @@ export class MyDashboardComponent implements OnInit {
     private myDashboardConstantsService: MyDashboardConstantsService,
     private router: Router,
     public dialogService: DialogService,
+    public messageService: MessageService,
     // private commonService: CommonService,
   ) { }
 
@@ -86,12 +87,17 @@ export class MyDashboardComponent implements OnInit {
       contentStyle: { "height": "90vh", "overflow": "auto" },
       closable: false,
     });
-    ref.onClose.subscribe(async (TimeBookingobj: any) => {
-      if (TimeBookingobj) {
-      }
-
-    });
-
+    ref.onClose.subscribe(async (TimeBookingobjCount: any) => {
+      debugger;
+      if (TimeBookingobjCount > 0) {
+       
+          this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time booking updated successfully.' });
+        }
+        else  if(TimeBookingobjCount === 0)
+        {
+          this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'No data found to update.' });
+        }
+     });
   }
 
   async executeCommonCalls() {

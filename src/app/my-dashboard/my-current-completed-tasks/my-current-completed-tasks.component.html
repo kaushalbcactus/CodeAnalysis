@@ -76,8 +76,7 @@
            ********************************************************************************************************** -->
 
 <div *ngIf="allTasks.length > 0 && !loderenable" style="padding-top: 5px;">
-    <p-table #taskId [columns]="cols" [value]="allTasks" [paginator]="true" [rows]="10" [resizableColumns]="true"
-        [style]="{'font-size': '13px'}"
+    <p-table #taskId [columns]="cols" [value]="allTasks" [paginator]="true" [rows]="10" [style]="{'font-size':'13px','min-height':'500px'}"
         [exportFilename]="TabName ==='MyCompletedTask' ? 'My Completed Tasks':'My Current Tasks'">
 
         <ng-template pTemplate="header" let-columns>
@@ -94,20 +93,20 @@
             </tr>
             <tr>
                 <th></th>
-                <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
+                <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" style="overflow: visible;">
                     <ng-container *ngIf="col.field">
 
                         <p-dropdown [disabled]="TabName ==='MyCompletedTask'" filter="true" *ngSwitchCase="'MainStatus'"
-                            [options]="AllTaskColArray.Status" appendTo="body"
+                            [options]="AllTaskColArray.Status" 
                             (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
-                        <p-dropdown *ngSwitchCase="'Status'" filter="true" [options]="AllTaskColArray.TaskStatus" appendTo="body"
+                        <p-dropdown *ngSwitchCase="'Status'" filter="true" [options]="AllTaskColArray.TaskStatus" 
                             (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
-                        <p-dropdown filter="true" *ngSwitchCase="'DisplayTitle'" [options]="AllTaskColArray.TaskName" appendTo="body"
+                        <p-dropdown filter="true" *ngSwitchCase="'DisplayTitle'" [options]="AllTaskColArray.TaskName" 
                             (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
-                        <p-dropdown filter="true" *ngSwitchCase="'StartDate'" [options]="AllTaskColArray.StartDate" appendTo="body"
+                        <p-dropdown filter="true" *ngSwitchCase="'StartDate'" [options]="AllTaskColArray.StartDate" 
                         (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
 
-                        <p-dropdown filter="true" *ngSwitchCase="'DueDate'" [options]="AllTaskColArray.DueDate" appendTo="body"
+                        <p-dropdown filter="true" *ngSwitchCase="'DueDate'" [options]="AllTaskColArray.DueDate" 
                         (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
                     </ng-container>
                 </th>
