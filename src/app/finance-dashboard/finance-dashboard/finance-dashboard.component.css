@@ -269,10 +269,9 @@ table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
 body p {margin:0;line-height:1.5;}
 .table-heading{width: 100%;  text-align: center;font-weight: bold;background: #d8d8d8; font-size: 16px;
 color: #000; padding: 10px;}
-.contact_details_japan{height:60px;}
+/* .contact_details_japan{height:60px;} */
 .contact_details p,.contact_details_japan p{padding-top: 3px;padding-bottom: 3px;}
-.contact_details-table table:first-child{width: 47%;float: left;margin-bottom: 20px;}
-.contact_details-table table:nth-child(2){float: right;text-align: left;width: 44%;display: grid}
+.contact_details-table figure:first-child{width: 47%;margin: 0px !important; display: inline-block;vertical-align: top;};
 .contact_details-table figure:nth-child(3) table{width: 100%;}
 .referenceDetail figure,.appendix figure,.contact_details-table figure,figure{display: contents;}
 .contact_details-table table:first-child p{margin: 0;line-height: 24px;font-size: 16px;}
@@ -291,9 +290,8 @@ p span{display: inline-flex;}
 .contact-detail-table p{margin: 0;line-height: 24px;font-size: 16px;}
 ul{line-height: 26px;padding-left:20px;list-style: unset;}
 .paymentDetails,.column-flex{display: inline-flex;}
-.paymentDetails ul{padding-left: 10px;}
+/* .paymentDetails ul{padding-left: 10px;} */
 .invoice-table{border-collapse: collapse;width: 100%;}
-.invoice-table table {width: 100%};
 .invoice-table td{border:1px solid #000 !important;padding: 0; vertical-align: middle;}
 .invoice-table th{border:1px solid #000 !important;padding: 0; vertical-align: middle;}
 .invoice-table table thead tr{text-align: center; font-size: 16px; font-weight: bold;}
@@ -330,34 +328,67 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
   width: 235px;
   display: inline-block;
 }
-#contact_details table tbody tr td p strong, #contact_details p strong {
+#contact_details table tbody tr td p strong, #contact_details p strong,
+#contact_details table tbody tr td strong, #contact_details strong
+ {
   display:inline-block;
   width: 150px;
 }
 #contact_details table tbody tr td p + p {
   padding-left: 150px;
 }
-.indContact #contact_details table:first-child tbody tr td p strong,
-.indContact #contact_details table:last-child tbody tr td p strong {
+.indContact #contact_details figure:first-child table tbody tr td p strong,
+.indContact #contact_details figure:last-child table tbody tr td p strong,
+.indContact #contact_details figure:first-child table tbody tr td strong,
+.indContact #contact_details figure:last-child table tbody tr td strong {
   width: 160px;
 }
-.indContact #contact_details table:nth-child(2) tbody tr td p strong {
+.indContact #contact_details figure:nth-child(2) table tbody tr td p strong,
+.indContact #contact_details figure:nth-child(2) table tbody tr td strong {
   width: 125px;
 }
-.indContact #contact_details table:nth-child(2) tbody tr td a {
+.indContact #contact_details figure:nth-child(2) table tbody tr td a {
   margin-left: -5px;
 }
-.indContact #contact_details table:last-child#address {
- margin-left: 5px;
+.indContact #contact_details figure:last-child {
+ margin-left: 3px !important;
 }
-.indContact #contact_details table:last-child tbody tr td p + p {
+.indContact #contact_details figure:last-child table tbody tr td p + p {
   padding-left: 160px;
 }
+
+.indContact figure {
+  margin: 0px !important;
+  vertical-align: top;
+  display: inline-block;
+}
+
+.usContact figure:last-child {
+  width: 44% !important;
+  display: inline-block;
+  margin: 0px;
+  vertical-align: top;
+}
+
+.indContact figure:first-child {
+  width: 50% !important;
+}
+
+.indContact figure:nth-child(2) {
+  width: 44% !important;
+}
+
+.indContact figure:last-child {
+  width: 100% !important;
+}
+
+.invoice-table table, #appendix figure {width: 100% !important; margin: 0px !important;}
+
 
 .ck-reset_all.ck-body.ck-rounded-corners + .ui-dialog-resizable,
 .ck-reset_all.ck-body.ck-rounded-corners ~ .ui-widget-overlay ~ .ui-dialog-resizable,
 .ck-reset_all.ck-body.ck-rounded-corners ~ .ui-dialog-resizable,
-.ui-widget-overlay + .ck-reset_all.ck-body.ck-rounded-corners {
+.ck-reset_all.ck-body.ck-rounded-corners + .ui-dialog-resizable {
   top: 5px !important;
 }
 
@@ -454,3 +485,23 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
 .financeTable div.ui-table-wrapper {
   min-height: 440px;
 }
+
+.financeTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
+  overflow: visible;
+}
+
+.financeTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
+  position: relative;
+}
+
+.financeTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div >i {
+  top: 0px !important;
+}
+
+.financeTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+  top: 0 !important;
+  left: inherit !important;
+  right: 40 !important;
+}
+
+

@@ -17,7 +17,7 @@
     <header id=header [innerHTML]=USTemplateCopy.header>
     </header>
 
-    <div id="main_content">
+    <div id="main_content" class="usContact">
         <div style='height:1300px;'>
             <table style="margin: 15px 0">
                 <tbody>
@@ -33,11 +33,7 @@
             </p>
 
             <div class="contact_details-table">
-                <div id="contact_details">
-                    <table id="contactDetails1" [innerHTML]='USTemplateCopy.contactDetails'>
-                    </table>
-                    <table id="contactDetails2" style="width:44%;" [innerHTML]='USTemplateCopy.contactDetails2'>
-                    </table>
+                <div id="contact_details" [innerHTML]='USTemplateCopy.contactDetails'>
                 </div>
             </div>
 
@@ -80,7 +76,7 @@
             </p> -->
 
                 <div id="invoiceDetail" style="margin-bottom: 20px;">
-                    <table id="invoiceDetails" border="0" cellspacing="0" cellpadding="0"
+                    <table id="invoiceDetails" cellspacing="0" cellpadding="0"
                         [innerHTML]='USTemplateCopy.invoiceDetail'>
                     </table>
                     <p style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
@@ -107,8 +103,8 @@
                     <td style="font-size:14px">
                         <div id="paymentInstructions" [innerHTML]='USTemplateCopy.paymentInstructions'>
                         </div>
-                        <div id="paymentDetails" [innerHTML]='USTemplateCopy.paymentDetails'>
-                        </div>
+                        <ul id="paymentDetails" [innerHTML]='USTemplateCopy.paymentDetails'>
+                        </ul>
 
                     </td>
                 </tr>
@@ -208,7 +204,7 @@
             </p> -->
 
                 <div id="invoiceDetail" style="margin-bottom: 10px;">
-                    <table border="0" cellspacing="0" cellpadding="0" id="invoiceDetails"
+                    <table cellspacing="0" cellpadding="0" id="invoiceDetails"
                         [innerHTML]='JapanTemplateCopy.invoiceDetail'>
                     </table>
                     <p style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
@@ -236,7 +232,7 @@
                         <div class="paymentInstructions" id="paymentInstructions1"
                             [innerHTML]='JapanTemplateCopy.paymentInstructions'>
                         </div>
-                        <ul id="paymentInstructions2" [innerHTML]='JapanTemplateCopy.paymentDetails'>
+                        <ul  id="paymentInstructions2" [innerHTML]='JapanTemplateCopy.paymentDetails'>
                         </ul>
 
                     </td>
@@ -326,13 +322,13 @@
             </p>
 
             <div class="contact_details-table">
-                <div id="contact_details">
-                    <table id="contactDetails1" style="width:54%;" [innerHTML]='IndiaTemplateCopy.contactDetails1'>
+                <div id="contact_details"  [innerHTML]='IndiaTemplateCopy.contactDetails1'>
+                    <!-- <table id="contactDetails1" style="width:54%;" [innerHTML]='IndiaTemplateCopy.contactDetails1'>
                     </table>
                     <table id="contactDetails2" style="width:40%;" [innerHTML]='IndiaTemplateCopy.contactDetails2'>
                     </table>
                     <table id="address" [innerHTML]='IndiaTemplateCopy.address'>
-                    </table>
+                    </table> -->
                 </div>
             </div>
 
@@ -369,7 +365,7 @@
 
             <div class="invoice-table proformaDetail">
                 <div id="invoiceDetail" style="margin-bottom: 20px;">
-                    <table border="0" cellspacing="0" cellpadding="0" id="invoiceDetails"
+                    <table cellspacing="0" cellpadding="0" id="invoiceDetails"
                         [innerHTML]='IndiaTemplateCopy.invoiceDetail'>
                     </table>
                     <p style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
