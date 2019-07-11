@@ -18,7 +18,7 @@
 <div class="financeTable">
 <p-table #db [columns]="deliverableBasedCols" [value]="deliverableBasedRes" [paginator]="true" [rows]="10"
     [resizableColumns]="true" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
-    selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Deliverable_Based_Expenses">
+    selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Deliverable_Based_InvoiceLineItems">
     <ng-template pTemplate="header" let-columns>
         <tr>
             <th>S.No</th>
@@ -88,7 +88,7 @@
                 <ng-container *ngIf="col.field == ''">
                     <div>
                         <!-- <div *ngIf="rowData.showMenu === true"> -->
-                        <p-menu #popupMenu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu">
+                        <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu">
                         </p-menu>
                         <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
                             (click)="openPopup(rowData, popupMenu);popupMenu.toggle($event);"></i>

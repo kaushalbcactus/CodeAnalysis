@@ -76,15 +76,15 @@ export class PendingAllocationComponent implements OnInit {
     this.isPAFilterHidden = false;
     this.popItems = [
       {
-        label: 'Go to Allocation', icon: 'pi pi-external-link', target: '_blank',
+        label: 'Go to Allocation', target: '_blank',
         command: (event) => this.goToAllocationPage(this.selectedPATask)
       },
       {
-        label: 'Go to Project', icon: 'pi pi-external-link', target: '_blank',
+        label: 'Go to Project', target: '_blank',
         command: (event) => this.goToProjectManagement(this.selectedPATask)
       },
       {
-        label: 'Show History', icon: 'pi pi-download', target: '_blank',
+        label: 'Show History', target: '_blank',
         command: (task) => this.timeline.showTimeline(this.selectedPATask.ID, 'ProjectMgmt', 'Project')
       }
     ];
@@ -108,6 +108,12 @@ export class PendingAllocationComponent implements OnInit {
   async fetchPendingProjects() {
     // this.paArrays.projectItems = await this.spServices.read('' + this.Constant.listNames.ProjectInformation.name + '',
     //   this.pmConstant.pInfoPendingAllocationIndiviualViewOptions);
+    if (!this.pmObject.allProjectItems.length) {
+      let arrResults: any = [];
+      // Get all project information based on current user.
+      arrResults = await this.pmCommonService.getProjects();
+      this.pmObject.allProjectItems = arrResults;
+    }
     this.paArrays.projectItems = this.pmObject.allProjectItems.filter(x => x.Status === this.Constant.projectStatus.Unallocated);
     this.pmObject.countObj.paCount = this.paArrays.projectItems.length;
     this.pmObject.totalRecords.PendingAllocation = this.pmObject.countObj.paCount;
@@ -167,6 +173,8 @@ export class PendingAllocationComponent implements OnInit {
       this.isPAInnerLoaderHidden = true;
       this.isPATableHidden = false;
     } else {
+      this.pmObject.tabMenuItems[4].label = 'Pending Allocation (' + this.pmObject.countObj.paCount + ')';
+      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       this.paHideNoDataMessage = false;
       this.isPAInnerLoaderHidden = true;
       this.isPATableHidden = true;

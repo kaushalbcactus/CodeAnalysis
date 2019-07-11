@@ -87,7 +87,7 @@ export class EditorComponent implements OnInit {
             // centralTax : '39,564.45',
             // stateTax : '19,782.22',
             // consumptionTax : '43,200.00',
-            serviceDetails: 'April Invoice for PO #8300324481 (5 Manuscripts and 1 Poster)',
+            serviceDetails: 'April',
             invoiceFees: '30,687.50',
             total: '30,687.50'
         };
@@ -144,7 +144,7 @@ export class EditorComponent implements OnInit {
         </table>
         </div>
         </footer>`,
-            maincontent: `    <div id="main_content">
+            maincontent: `    <div id="main_content" class="usContact">
         <div style='height:1300px;'>
         <table style="margin: 15px 0">
             <tbody>
@@ -156,7 +156,7 @@ export class EditorComponent implements OnInit {
         </table>
         <div class="contact_details-table">
             <div id="contact_details">
-                <table>
+                <figure class="table"><table>
                 <tbody>
                 <tr>
                     <td>
@@ -182,8 +182,8 @@ export class EditorComponent implements OnInit {
                     </td>
                 </tr>
                 </tbody>
-                </table>
-                <table style="width:44%;">
+                </table></figure>
+                <figure class="table"><table>
                 <tbody>
                 <tr>
                     <td>
@@ -192,7 +192,7 @@ export class EditorComponent implements OnInit {
                     </td>
                 </tr>
                 </tbody>
-                </table>
+                </table></figure>
             </div>
         </div>
         <table style="margin: 15px 0">
@@ -394,7 +394,7 @@ export class EditorComponent implements OnInit {
         </tr>
         </table>
         </div>`,
-            contactDetails: `<tbody>
+            contactDetails: `<figure class="table"><table> <tbody>
         <tr>
             <td>
                 <p><strong>Company : </strong>[[Company]]</p>
@@ -418,15 +418,23 @@ export class EditorComponent implements OnInit {
                 </p>
             </td>
         </tr>
-        </tbody>`,
-            contactDetails2: `<tbody>
+        </tbody> </table> </figure> <figure class="table">
+        <table >  <tbody>
         <tr>
             <td>
                 <p><strong>Address : </strong>[[Address1]]</p>
                 [[AddressMulti]]
             </td>
         </tr>
-        </tbody>`,
+        </tbody> </table> </figure>`,
+        //     contactDetails2: `<tbody>
+        // <tr>
+        //     <td>
+        //         <p><strong>Address : </strong>[[Address1]]</p>
+        //         [[AddressMulti]]
+        //     </td>
+        // </tr>
+        // </tbody>`,
             address2: `<p>[[Address2]]</p>`,
             address3: `<p>[[Address3]]</p>`,
             address4: `<p>[[Address4]]</p>`,
@@ -473,7 +481,7 @@ export class EditorComponent implements OnInit {
             account<br />
             contact <a href="#">payments@cactusglobal.com</a></li>
         </ul>`,
-            paymentDetails: `<ul>
+            paymentDetails: `
             <li>
                 <strong>Payment by bank transfer:</strong><br />
                 Bank name: Citibank NA, 785 Fifth Avenue, New York, NY 10022<br />
@@ -484,7 +492,7 @@ export class EditorComponent implements OnInit {
                 Recipient Address: 2 Neshaminy Interplex, Suite 100, Trevose, PA 19053<br />
                 Recipient Phone: 267-332-0051
             </li>
-        </ul>`,
+        `,
             appendix: `<figure>
         <table>
             <thead>
@@ -689,7 +697,7 @@ export class EditorComponent implements OnInit {
         <tbody class="paymentDetails">
             <tr>
                 <td style="font-size:14px">
-                    <div class="paymentInstructions">
+                    <div class="paymentInstructions" id="paymentInstructions1">
                     <label>
                     振込先銀行：三菱UFJ銀行 品川駅前支店(店番588) 普通預金 2406331<br/>
                     口座名義：カクタスコミュニケーションズカブシキガイシャ
@@ -698,12 +706,12 @@ export class EditorComponent implements OnInit {
                     口座名義：カクタスコミュニケーションズカブシキガイシャ
                     </label>
                     </div>
-                    <ul id="paymentInstructions">
+                    <ul id="paymentInstructions2">
                     <li>
                         振込手数料はお客様ご負担でお願いいたします
                     </li>
                     <li>
-                    この請求書が届いてから<span id="paymentInstructions">60</span>日以内にお支払いをお願いいたします
+                    この請求書が届いてから60日以内にお支払いをお願いいたします
                     </li>
                     <li>
                         正式な書類として弊社の電子押印で発行しております
@@ -979,95 +987,125 @@ export class EditorComponent implements OnInit {
                 <title></title>
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
                 <style>
-                    body {font-size: 16px; color: #333;background-color: #fff;font-family: Verdana !important;}
-                    table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
-                    body p {margin:0;line-height:1.5;}
-                    .table-heading{width: 100%;  text-align: center;font-weight: bold;background: #d8d8d8; font-size: 16px;
-                    color: #000; padding: 10px;}
-                    .contact_details_japan{height:60px;}
-                    .contact_details p,.contact_details_japan p{padding-top: 3px;padding-bottom: 3px;}
-                    .contact_details-table table:first-child{width: 47%;float: left;margin-bottom: 20px;}
-                    .contact_details-table table:nth-child(2){float: right;text-align: left;width: 44%;display: grid}
-                    .contact_details-table figure:nth-child(3) table{width: 100%;}
-                    .referenceDetail figure,.appendix figure,.contact_details-table figure,figure{display: contents;}
-                    .contact_details-table table:first-child p{margin: 0;line-height: 24px;font-size: 16px;}
-                    .contact_details-table table:first-child tr td{margin: 0;line-height: 24px;font-size: 16px;
-                    border: none !important;
-                    padding: 5px;}
-                    p span{display: inline-flex;}
-                    .contact-detail-table-left {width: 50%;float: left;margin-bottom: 20px;}
-                    .contact-detail-table-left p,
-                    .contact-detail-table-right p {margin: 0;line-height: 24px;font-size: 15px;}
-                    .contact-detail-table-right {float: right;text-align: left;width: 50%;}
-                    .purchaseOrder p{height:25px;font-size: 16px;}
-                    .referenceDetail {height: 50px; font-size: 16px;}
-                    .referenceDetail table {width: 94%;}
-                    .contact-detail-table{padding-left: 30px;}
-                    .contact-detail-table p{margin: 0;line-height: 24px;font-size: 16px;}
-                    ul{line-height: 26px;padding-left:20px;list-style: unset;}
-                    .paymentDetails,.column-flex{display: inline-flex;}
-                    .paymentDetails ul{padding-left: 10px;}
-                    .invoice-table{border-collapse: collapse;width: 100%;}
-                    .invoice-table table {width: 100%};
-                    .invoice-table td{border:1px solid #000;padding: 0}
-                    .invoice-table th{border:1px solid #000;padding: 0}
-                    .invoice-table table thead tr{text-align: center; font-size: 16px; font-weight: bold;}
-                    .invoice-table table thead tr th{padding: 10px 12px; text-align: center}
-                    .invoice-table table tbody tr td{text-align: left;font-size: 16px;padding: 16px 10px;border:1px solid #000;}
-                    .invoice-table table tfoot tr td{text-align: center;font-size: 16px;padding: 16px 10px;font-weight: bold;}
-                    .invoice-table table tbody tr:last-child td:last-child{font-weight: bold;}
-                    .invoice-table table tbody tr td:last-child{font-weight: bold;width: 14%;text-align: right;}
-                    .invoice-table table tbody tr td:first-child{text-align: left;}
-                    .appendix table tbody tr:last-child td{font-weight: normal;}
-                    .appendix table tbody tr td:last-child{font-weight: bold;}
-                    .signature-table{float: right;text-align: right;margin-right: 10px;
-                    background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M5U1nFCgVaguRgo4S0B3-L67nYrXIgtxcYoJEba9w);
-                    background-repeat: no-repeat;background-position: right;}
-                    .signature-table p{margin:0;line-height: 24px;}
-                    .paymentInstructions label {font-size: 16px;font-weight: bold;display: table;margin-top: 20px;}
-                    .col3 table tr:first-child td:first-child{width:10%;}
-                    .col3 table tr:first-child td:nth-child(2){width:34%;}
-                    .col4 table tr:first-child td:first-child{width:16%;}
-                    .col10 figure table tr:first-child td{font-weight: bold;}
-                    .col10 figure table tr:first-child td:first-child{width:5%;}
-                    .col10 figure table tr:first-child td:nth-child(2){width:13%;}
-                    .col10 figure table tr:first-child td:nth-child(3){width:8%;}
-                    .col10 figure table tr:first-child td:nth-child(4){width:10%;}
-                    .col10 figure table tr:first-child td:nth-child(5){width:12%;}
-                    .col10 figure table tr:first-child td:nth-child(6){width:10%;}
-                    .col10 figure table tr:first-child td:nth-child(7){width:9%;}
-                    .col10 figure table tr:first-child td:nth-child(8){width:11%;}
-                    .col10 figure table tr:first-child td:nth-child(9){width:9%;}
-                    .col10 figure table tr:first-child td:nth-child(10){width:13%;}
-                    .proformaDetail table tbody tr td{text-align: left;padding: 16px 10px;}
-                    .proformaDetail table tbody tr:last-child td:nth-child(2){text-align: center; font-weight: bold;}
-                    .indiaPurchase td:first-child p strong {
-                        width: 235px;
-                        display: inline-block;
-                    }
-                    #contact_details table tbody tr td p strong, #contact_details p strong {
-                    display:inline-block;
-                    width: 150px;
-                    }
-                    #contact_details table tbody tr td p + p {
-                    padding-left: 150px;
-                    }
-                    .indContact #contact_details table:first-child tbody tr td p strong,
-                    .indContact #contact_details table:last-child tbody tr td p strong {
-                    width: 160px;
-                    }
-                    .indContact #contact_details table:nth-child(2) tbody tr td p strong {
-                    width: 125px;
-                    }
-                    .indContact #contact_details table:nth-child(2) tbody tr td a {
-                    margin-left: -5px;
-                    }
-                    .indContact #contact_details table:last-child#address {
-                    margin-left: 5px;
-                    }
-                    .indContact #contact_details table:last-child tbody tr td p + p {
-                    padding-left: 160px;
-                    }
+                body {font-size: 16px; color: #333;background-color: #fff;font-family: Verdana !important;}
+table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
+body p {margin:0;line-height:1.5;}
+.table-heading{width: 100%;  text-align: center;font-weight: bold;background: #d8d8d8; font-size: 16px;
+color: #000; padding: 10px;}
+/* .contact_details_japan{height:60px;} */
+.contact_details p,.contact_details_japan p{padding-top: 3px;padding-bottom: 3px;}
+.contact_details-table figure:first-child{width: 47%;margin: 0px !important; display: inline-block;vertical-align: top;};
+.contact_details-table figure:nth-child(3) table{width: 100%;}
+.referenceDetail figure,.appendix figure,.contact_details-table figure,figure{display: contents;}
+.contact_details-table table:first-child p{margin: 0;line-height: 24px;font-size: 16px;}
+.contact_details-table table:first-child tr td{margin: 0;line-height: 24px;font-size: 16px;
+  border: none !important;
+  padding: 5px;}
+p span{display: inline-flex;}
+.contact-detail-table-left {width: 50%;float: left;margin-bottom: 20px;}
+.contact-detail-table-left p,
+.contact-detail-table-right p {margin: 0;line-height: 24px;font-size: 15px;}
+.contact-detail-table-right {float: right;text-align: left;width: 50%;}
+.purchaseOrder p{height:25px;font-size: 16px;}
+.referenceDetail {height: 50px; font-size: 16px;}
+.referenceDetail table {width: 94%;}
+.contact-detail-table{padding-left: 30px;}
+.contact-detail-table p{margin: 0;line-height: 24px;font-size: 16px;}
+ul{line-height: 26px;padding-left:20px;list-style: unset;}
+.paymentDetails,.column-flex{display: inline-flex;}
+/* .paymentDetails ul{padding-left: 10px;} */
+.invoice-table{border-collapse: collapse;width: 100%;}
+.invoice-table td{border:1px solid #000 !important;padding: 0; vertical-align: middle;}
+.invoice-table th{border:1px solid #000 !important;padding: 0; vertical-align: middle;}
+.invoice-table table thead tr{text-align: center; font-size: 16px; font-weight: bold;}
+.invoice-table table thead tr th{padding: 10px 12px; text-align: center}
+.invoice-table table tbody tr td{text-align: left;font-size: 16px;padding: 16px 10px;border:1px solid #000 !important; vertical-align: middle;}
+.invoice-table table tfoot tr td{text-align: center;font-size: 16px;padding: 16px 10px;font-weight: bold;}
+.invoice-table table tbody tr:last-child td:last-child{font-weight: bold;}
+.invoice-table table tbody tr td:last-child{font-weight: bold;width: 14%;text-align: right;}
+.invoice-table table tbody tr td:first-child{text-align: left; width: 14%}
+.appendix table tbody tr:last-child td{font-weight: normal;}
+.appendix table tbody tr td:last-child{font-weight: bold;}
+.signature-table{float: right;text-align: right;margin-right: 10px;
+background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M5U1nFCgVaguRgo4S0B3-L67nYrXIgtxcYoJEba9w);
+ background-repeat: no-repeat;background-position: right;}
+.signature-table p{margin:0;line-height: 24px;}
+.paymentInstructions label {font-size: 16px;font-weight: bold;display: table;margin-top: 20px;}
+.col3 table tr:first-child td:first-child{width:10%;}
+.col3 table tr:first-child td:nth-child(2){width:34%;}
+.col4 table tr:first-child td:first-child{width:16%;}
+.col10 figure table tr:first-child td{font-weight: bold;}
+.col10 figure table tr:first-child td:first-child{width:5%;}
+.col10 figure table tr:first-child td:nth-child(2){width:13%;}
+.col10 figure table tr:first-child td:nth-child(3){width:8%;}
+.col10 figure table tr:first-child td:nth-child(4){width:10%;}
+.col10 figure table tr:first-child td:nth-child(5){width:12%;}
+.col10 figure table tr:first-child td:nth-child(6){width:10%;}
+.col10 figure table tr:first-child td:nth-child(7){width:9%;}
+.col10 figure table tr:first-child td:nth-child(8){width:11%;}
+.col10 figure table tr:first-child td:nth-child(9){width:9%;}
+.col10 figure table tr:first-child td:nth-child(10){width:13%;}
+.proformaDetail table tbody tr td{text-align: left;padding: 16px 10px;}
+.proformaDetail table tbody tr:last-child td:nth-child(2){text-align: center; font-weight: bold;}
+.indiaPurchase td:first-child p strong {
+  width: 235px;
+  display: inline-block;
+}
+#contact_details table tbody tr td p strong, #contact_details p strong,
+#contact_details table tbody tr td strong, #contact_details strong
+ {
+  display:inline-block;
+  width: 150px;
+}
+#contact_details table tbody tr td p + p {
+  padding-left: 150px;
+}
+.indContact #contact_details figure:first-child table tbody tr td p strong,
+.indContact #contact_details figure:last-child table tbody tr td p strong,
+.indContact #contact_details figure:first-child table tbody tr td strong,
+.indContact #contact_details figure:last-child table tbody tr td strong {
+  width: 160px;
+}
+.indContact #contact_details figure:nth-child(2) table tbody tr td p strong,
+.indContact #contact_details figure:nth-child(2) table tbody tr td strong {
+  width: 125px;
+}
+.indContact #contact_details figure:nth-child(2) table tbody tr td a {
+  margin-left: -5px;
+}
+.indContact #contact_details figure:last-child {
+ margin-left: 3px !important;
+}
+.indContact #contact_details figure:last-child table tbody tr td p + p {
+  padding-left: 160px;
+}
+
+.indContact figure {
+  margin: 0px !important;
+  vertical-align: top;
+  display: inline-block;
+}
+
+.usContact figure:last-child {
+  width: 44% !important;
+  display: inline-block;
+  margin: 0px;
+  vertical-align: top;
+}
+
+.indContact figure:first-child {
+  width: 50% !important;
+}
+
+.indContact figure:nth-child(2) {
+  width: 44% !important;
+}
+
+.indContact figure:last-child {
+  width: 100% !important;
+}
+
+.invoice-table table, #appendix figure {width: 100% !important; margin: 0px !important;};
                 </style>
             </head>
         <body>
@@ -1147,7 +1185,7 @@ export class EditorComponent implements OnInit {
     
         <div class="contact_details-table">
             <div id="contact_details">
-                <table id="contactDetails1" style="width:54%;">
+            <figure class="table"><table>
                 <tbody>
             <tr>
                 <td>
@@ -1171,8 +1209,8 @@ export class EditorComponent implements OnInit {
                 </td>
             </tr>
             </tbody>
-            </table>
-            <table id="contactDetails2" style="width:40%;">
+            </table></figure>
+            <figure class="table"><table>
             <tbody>
             <tr>
                 <td>
@@ -1192,8 +1230,8 @@ export class EditorComponent implements OnInit {
                 </td>
             </tr>
             </tbody>
-            </table>
-            <table id="address">
+            </table></figure>
+            <figure class="table"><table>
             <tbody>
             <tr>
             <td>
@@ -1201,7 +1239,7 @@ export class EditorComponent implements OnInit {
             </td>
             </tr>
             </tbody>
-            </table>
+            </table></figure>
             </div>
         </div>
     
@@ -1334,8 +1372,7 @@ export class EditorComponent implements OnInit {
                             (Please note the transfer charges will be borne by you):</strong>
                             <p>Bank name:  Citibank NA</p>
                             <p style="display: inline-flex">Bank address: <span> Citibank N.A. Times Square IT Park branch, Wing B,
-                            Unit No. 1, Andheri-Kurla Road,<br />
-                            Marol, Andheri (E), Mumbai – 400 059.</span></p>
+                            Unit No. 1, Andheri-Kurla Road,Marol, Andheri (E), Mumbai – 400 059.</span></p>
                             <p>Branch name: Andheri (E), Mumbai, India</p>
                             <p>IFSC: CITI0100000</p>
                             <p>Account #:  0256594118</p>
@@ -1441,7 +1478,7 @@ export class EditorComponent implements OnInit {
         </tr>
         </table>
         </div>`,
-            contactDetails1: `<tbody>
+            contactDetails1: `<figure class="table"><table><tbody>
             <tr>
                 <td>
                     <p><strong>Company : </strong>[[Company]]</p>
@@ -1463,11 +1500,10 @@ export class EditorComponent implements OnInit {
     
                 </td>
             </tr>
-        </tbody>`,
-            address2: `<p>[[Address2]]</p>`,
-            address3: `<p>[[Address3]],</p>`,
-            address4: `<p>[[Address4]]</p>`,
-            contactDetails2: `<tbody>
+        </tbody>  </table></figure>
+        <figure class="table"><table>
+        
+        <tbody>
             <tr>
                 <td>
                     <p><strong>Phone : </strong>[[Phone]]
@@ -1485,14 +1521,45 @@ export class EditorComponent implements OnInit {
                     </p>
                 </td>
             </tr>
-        </tbody>`,
-            address: `<tbody>
+        </tbody> </table></figure>
+        <figure class="table"><table>
+        <tbody>
         <tr>
         <td>
             <p><strong>Address : </strong>[[Address1]]</p>[[AddressMulti]]
         </td>
         </tr>
-        </tbody>`,
+        </tbody> </table></figure>
+        `,
+            address2: `<p>[[Address2]]</p>`,
+            address3: `<p>[[Address3]],</p>`,
+            address4: `<p>[[Address4]]</p>`,
+        //     contactDetails2: `<tbody>
+        //     <tr>
+        //         <td>
+        //             <p><strong>Phone : </strong>[[Phone]]
+        //         </td>
+        //     </tr>
+        //     <tr>
+        //         <td>
+        //             <p><strong>Designation : </strong>[[Designation]]
+        //         </td>
+        //     </tr>
+        //     <tr>
+        //         <td>
+        //             <p><strong>Email : </strong>
+        //             <a href="#">[[Email]]</a>
+        //             </p>
+        //         </td>
+        //     </tr>
+        // </tbody>`,
+        //     address: `<tbody>
+        // <tr>
+        // <td>
+        //     <p><strong>Address : </strong>[[Address1]]</p>[[AddressMulti]]
+        // </td>
+        // </tr>
+        // </tbody>`,
             purchaseOrder: `<tr class=indiaPurchase>
                 <td style="width: 40%; float: left;text-align: left;">
                     <p style="font-size:15px">
@@ -1566,14 +1633,13 @@ export class EditorComponent implements OnInit {
         <li>Please make your payment within 60 days of receiving this proforma. For any questions regarding your account<br />
         contact <a href="#">payments@cactusglobal.com</a></li>
         </ul>`,
-            paymentDetails: `<ul>
+            paymentDetails: `
             <li>
                 <strong>Payment by NEFT/RTGS
                 (Please note the transfer charges will be borne by you):</strong>
                 <p>Bank name:  Citibank NA</p>
                 <p style="display: inline-flex">Bank address: <span> Citibank N.A. Times Square IT Park branch, Wing B,
-                Unit No. 1, Andheri-Kurla Road,<br />
-                Marol, Andheri (E), Mumbai – 400 059.</span></p>
+                Unit No. 1, Andheri-Kurla Road,Marol, Andheri (E), Mumbai – 400 059.</span></p>
                 <p>Branch name: Andheri (E), Mumbai, India</p>
                 <p>IFSC: CITI0100000</p>
                 <p>Account #:  0256594118</p>
@@ -1581,7 +1647,7 @@ export class EditorComponent implements OnInit {
                 <p>Beneficiary Address : 510 Shalimar Morya Park, Off Link Road, Andheri (W), Mumbai 400053, India</p>
                 <p>Recipient Phone : +91 22 67148888 </p>
             </li>
-        </ul>`,
+        `,
             appendix: `<table>
         <thead>
             <tr style="text-align: center; font-size: 16px; font-weight: bold;">
@@ -1624,16 +1690,26 @@ export class EditorComponent implements OnInit {
     }
 
     showDialog() {
+        this.USTemplateCopy = {};
+        this.JapanTemplateCopy = {};
+        this.IndiaTemplateCopy = {};
         this.displayUS = true;
         this.USTemplateCopy = this.USHtmlObject;
+
     }
 
     showDialog1() {
+        this.USTemplateCopy = {};
+        this.JapanTemplateCopy = {};
+        this.IndiaTemplateCopy = {};
         this.displayJapan = true;
         this.JapanTemplateCopy = this.japanHtmlObject;
     }
 
     showDialog2() {
+        this.USTemplateCopy = {};
+        this.JapanTemplateCopy = {};
+        this.IndiaTemplateCopy = {};
         this.displayIndia = true;
         this.IndiaTemplateCopy = this.indiaHtmlObject;
     }
@@ -1798,7 +1874,7 @@ export class EditorComponent implements OnInit {
         USObject.clientcontact2 = USObject.clientcontact2.replace('[[ClientContact2]]', invoiceData.clientcontact2);
         USObject.contactDetails = USObject.contactDetails.replace('[[Email]]', invoiceData.email);
         USObject.contactDetails = USObject.contactDetails.replace('[[Phone]]', invoiceData.phone);
-        USObject.contactDetails2 = USObject.contactDetails2.replace('[[Address1]]', invoiceData.address1);
+        USObject.contactDetails = USObject.contactDetails.replace('[[Address1]]', invoiceData.address1);
         USObject.address2 = USObject.address2.replace('[[Address2]]', invoiceData.address2);
         USObject.address3 = USObject.address3.replace('[[Address3]]', invoiceData.address3);
         USObject.address4 = USObject.address4.replace('[[Address4]]', invoiceData.address4);
@@ -1816,11 +1892,11 @@ export class EditorComponent implements OnInit {
             // console.log(this.address);
         }
         if (this.address !== null && this.address.trim() !== '' && this.address !== undefined) {
-            USObject.contactDetails2 = USObject.contactDetails2.replace('[[AddressMulti]]', this.address);
+            USObject.contactDetails = USObject.contactDetails.replace('[[AddressMulti]]', this.address);
             // console.log(this.address);
         } else {
-            USObject.contactDetails2 = USObject.contactDetails2.replace('[[AddressMulti]]', this.address);
-            console.log(USObject.contactDetails2);
+            USObject.contactDetails = USObject.contactDetails.replace('[[AddressMulti]]', this.address);
+            //console.log(USObject.contactDetails2);
         }
 
         if (invoiceData.clientcontact2 != null && invoiceData.clientcontact2.trim() !== ''
@@ -2117,15 +2193,15 @@ export class EditorComponent implements OnInit {
         IndiaObject.contactDetails1 = IndiaObject.contactDetails1.replace('[[Company]]', invoiceData.company);
         IndiaObject.contactDetails1 = IndiaObject.contactDetails1.replace('[[ClientContact]]',
             invoiceData.clientcontact1);
-        IndiaObject.address = IndiaObject.address.replace('[[Address1]]', invoiceData.address1);
+        IndiaObject.contactDetails1 = IndiaObject.contactDetails1.replace('[[Address1]]', invoiceData.address1);
         IndiaObject.address2 = IndiaObject.address2.replace('[[Address2]]', invoiceData.address2);
         IndiaObject.address3 = IndiaObject.address3.replace('[[Address3]]', invoiceData.address3);
         IndiaObject.address4 = IndiaObject.address4.replace('[[Address4]]', invoiceData.address4);
 
-        IndiaObject.contactDetails2 = IndiaObject.contactDetails2.replace('[[Phone]]', invoiceData.phone);
-        IndiaObject.contactDetails2 = IndiaObject.contactDetails2.replace('[[Designation]]',
+        IndiaObject.contactDetails1 = IndiaObject.contactDetails1.replace('[[Phone]]', invoiceData.phone);
+        IndiaObject.contactDetails1 = IndiaObject.contactDetails1.replace('[[Designation]]',
             invoiceData.clientcontact2);
-        IndiaObject.contactDetails2 = IndiaObject.contactDetails2.replace('[[Email]]', invoiceData.email);
+        IndiaObject.contactDetails1 = IndiaObject.contactDetails1.replace('[[Email]]', invoiceData.email);
 
         IndiaObject.invoiceDetail = IndiaObject.invoiceDetail.replace(new RegExp('\\[\\[InvoiceDate\\]\\]', 'gi'),
             invoiceData.invoice_date);
@@ -2155,10 +2231,10 @@ export class EditorComponent implements OnInit {
         }
 
         if (this.indAddress !== null && this.indAddress.trim() !== '' && this.indAddress !== undefined) {
-            IndiaObject.address = IndiaObject.address.replace('[[AddressMulti]]', this.indAddress);
+            IndiaObject.contactDetails1 = IndiaObject.contactDetails1.replace('[[AddressMulti]]', this.indAddress);
             console.log(this.indAddress);
         } else {
-            IndiaObject.address = IndiaObject.address.replace('[[AddressMulti]]', this.indAddress);
+            IndiaObject.contactDetails1 = IndiaObject.contactDetails1.replace('[[AddressMulti]]', this.indAddress);
         }
 
         if (invoiceData.Appendix.length > 0) {
@@ -2218,13 +2294,15 @@ export class EditorComponent implements OnInit {
         }
     }
     enableButton() {
-        const items: any = document.querySelectorAll('.invButton');
-        let i = 0;
-        const l = items.length;
+        setTimeout(() => {
+            const items: any = document.querySelectorAll('.invButton');
+            let i = 0;
+            const l = items.length;
 
-        for (i; i < l; i++) {
-            items[i].style.display = 'inline-block';
-        }
+            for (i; i < l; i++) {
+                items[i].style.display = 'inline-block';
+            }
+        }, 1000);
     }
 
     confirm() {
@@ -2265,8 +2343,8 @@ export class EditorComponent implements OnInit {
         if (Object.keys(this.USTemplateCopy).length > 0) {
             this.USHtmlObject.header = document.getElementById('header').innerHTML;
             this.USHtmlObject.footer = document.getElementById('footer').innerHTML;
-            this.USHtmlObject.contactDetails = document.getElementById('contactDetails1').innerHTML;
-            this.USHtmlObject.contactDetails2 = document.getElementById('contactDetails2').innerHTML;
+            this.USHtmlObject.contactDetails = document.getElementById('contact_details').innerHTML;
+            //this.USHtmlObject.contactDetails2 = document.getElementById('contactDetails2').innerHTML;
             this.USHtmlObject.purchaseOrder = document.getElementById('purchaseOrderDetails').innerHTML;
             this.USHtmlObject.invoiceDetail = document.getElementById('invoiceDetails').innerHTML;
             this.USHtmlObject.paymentInstructions = document.getElementById('paymentInstructions').innerHTML;
@@ -2290,12 +2368,12 @@ export class EditorComponent implements OnInit {
         } else if (Object.keys(this.IndiaTemplateCopy).length > 0) {
             this.indiaHtmlObject.header = document.getElementById('header').innerHTML;
             this.indiaHtmlObject.footer = document.getElementById('footer').innerHTML;
-            this.indiaHtmlObject.contactDetails1 = document.getElementById('contactDetails1').innerHTML;
-            this.indiaHtmlObject.contactDetails2 = document.getElementById('contactDetails2').innerHTML;
-            this.indiaHtmlObject.address = document.getElementById('address').innerHTML;
+            this.indiaHtmlObject.contactDetails1 = document.getElementById('contact_details').innerHTML;
+            // this.indiaHtmlObject.contactDetails2 = document.getElementById('contactDetails2').innerHTML;
+            // this.indiaHtmlObject.address = document.getElementById('address').innerHTML;
             this.indiaHtmlObject.purchaseOrder = document.getElementById('purchaseOrderDetails').innerHTML;
             this.indiaHtmlObject.invoiceDetail = document.getElementById('invoiceDetails').innerHTML;
-            this.indiaHtmlObject.paymentInstructions = document.getElementById('paymentInstructions1').innerHTML;
+            this.indiaHtmlObject.paymentInstructions = document.getElementById('paymentInstructions').innerHTML;
             this.indiaHtmlObject.paymentDetails = document.getElementById('paymentInstructions2').innerHTML;
             if (this.showAppendix) {
                 this.indiaHtmlObject.appendix = document.getElementById('appendix').innerHTML;
@@ -2325,10 +2403,13 @@ export class EditorComponent implements OnInit {
         pdfContent.ListName = 'ADFC';
         pdfContent.HtmlContent = JSON.stringify(objReturn);
         this.fdConstantsService.fdComponent.selectedEditObject.Code = "TestingOnQAUS";
-        this.fdConstantsService.fdComponent.selectedEditObject.ListName = "Flip";
+        this.fdConstantsService.fdComponent.selectedEditObject.ListName = "ADFC";
+        this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
         ///// Call service 
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
+
+
 
     }
 
@@ -2343,7 +2424,8 @@ export class EditorComponent implements OnInit {
         pdfContent.ListName = 'ADFC';
         pdfContent.HtmlContent = JSON.stringify(objReturn);
         this.fdConstantsService.fdComponent.selectedEditObject.Code = "TestingOnQAJapan";
-        this.fdConstantsService.fdComponent.selectedEditObject.ListName = "Flip";
+        this.fdConstantsService.fdComponent.selectedEditObject.ListName = "ADFC";
+        this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
          ///// Call service 
          const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
          await this.spOperationsServices.executeJS(pdfService, pdfContent);
@@ -2359,7 +2441,8 @@ export class EditorComponent implements OnInit {
         pdfContent.ListName = 'ADFC';
         pdfContent.HtmlContent = JSON.stringify(objReturn);
         this.fdConstantsService.fdComponent.selectedEditObject.Code = "TestingOnQAIndia";
-        this.fdConstantsService.fdComponent.selectedEditObject.ListName = "Flip";
+        this.fdConstantsService.fdComponent.selectedEditObject.ListName = "ADFC";
+        this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
          ///// Call service 
          const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
          await this.spOperationsServices.executeJS(pdfService, pdfContent);

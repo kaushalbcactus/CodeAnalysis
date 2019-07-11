@@ -496,6 +496,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         const currentDate = new Date();
         const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
         const last3Days = this.commonService.getLastWorkingDay(3, new Date());
+        const currentDay = new Date(this.datePipe.transform(new Date(),"yyyyMMdd"));
         if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= new Date()) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {

@@ -52,7 +52,7 @@
                 <td>{{task.ClientLegalEntity}}</td>
                 <td>{{task.POC}}</td>
                 <td>{{task.CreatedBy}}</td>
-                <td>{{task.CreatedDate}}</td>
+                <td>{{task.CreatedDate | date:'MMM dd yyyy hh:mm:ss aa'}}</td>
                 <td>
                     <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems"
                         [popup]="true" appendTo="body">
