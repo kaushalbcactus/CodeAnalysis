@@ -172,7 +172,7 @@ export class AllProjectsComponent implements OnInit {
         projObj.ProjectType = task.ProjectType;
         projObj.Status = task.Status;
         projObj.CreatedBy = task.Author ? task.Author.Title : '';
-        projObj.CreatedDate = this.datePipe.transform(task.Created, 'MMM dd yyyy hh:mm:ss aa');
+        projObj.CreatedDate = task.Created;
         projObj.PrimaryPOC = task.PrimaryPOC;
         projObj.PrimaryPOCText = this.pmCommonService.extractNamefromPOC([projObj.PrimaryPOC]);
         projObj.AdditionalPOC = task.POC ? task.POC.split(';#') : [];
@@ -641,10 +641,22 @@ export class AllProjectsComponent implements OnInit {
       this.pmObject.addProject.Timeline.NonStandard.ProposedStartDate = proj.ProposedStartDate;
       this.pmObject.addProject.Timeline.NonStandard.ProposedEndDate = proj.ProposedStartDate;
     }
-    this.pmObject.addProject.ProjectAttributes.ActiveCM1 = proj.CMLevel1Title;
-    this.pmObject.addProject.ProjectAttributes.ActiveCM2 = proj.CMLevel2Title;
-    this.pmObject.addProject.ProjectAttributes.ActiveDelivery1 = proj.DeliveryLevel1Title;
-    this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = proj.DeliveryLevel1Title;
+    let cm1Array = [];
+    let delivery1Array = [];
+    if (proj.CMLevel1ID && proj.CMLevel1ID.length) {
+      cm1Array = this.pmCommonService.getIds(proj.CMLevel1ID);
+    }
+    if (proj.DeliveryLevel1ID && proj.DeliveryLevel1ID.length) {
+      delivery1Array = this.pmCommonService.getIds(proj.DeliveryLevel1ID);
+    }
+    this.pmObject.addProject.ProjectAttributes.ActiveCM1 = cm1Array;
+    this.pmObject.addProject.ProjectAttributes.ActiveCM1Text = this.pmCommonService.extractNameFromId(cm1Array).join(', ');
+    this.pmObject.addProject.ProjectAttributes.ActiveCM2 = proj.CMLevel2ID ? proj.CMLevel2ID : 0;
+    this.pmObject.addProject.ProjectAttributes.ActiveCM2Text = proj.CMLevel2Title ? proj.CMLevel2Title : '';
+    this.pmObject.addProject.ProjectAttributes.ActiveDelivery1 = delivery1Array;
+    this.pmObject.addProject.ProjectAttributes.ActiveDelivery1Text = this.pmCommonService.extractNameFromId(delivery1Array).join(', ');
+    this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = proj.DeliveryLevel2ID ? proj.DeliveryLevel2ID : 0;
+    this.pmObject.addProject.ProjectAttributes.ActiveDelivery2Text = proj.DeliveryLevel2Title ? proj.DeliveryLevel2Title : '';
     // get data from project finance based on project code.
     const projectFinanceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE);
     projectFinanceFilter.filter = projectFinanceFilter.filter.replace(/{{projectCode}}/gi, proj.ProjectCode);
@@ -737,7 +749,7 @@ export class AllProjectsComponent implements OnInit {
         PrevStatus: this.selectedProjectObj.Status,
       };
       const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectInformation.name,
-      this.selectedProjectObj.ID, piUdpate, this.constants.listNames.ProjectInformation.type);
+        this.selectedProjectObj.ID, piUdpate, this.constants.listNames.ProjectInformation.type);
       this.checkList.addRollingProjectError = false;
       this.pmObject.isAuditRollingVisible = false;
       this.sendEmailBasedOnStatus(this.selectedProjectObj.Status);

@@ -218,7 +218,7 @@ export class SOWComponent implements OnInit {
         });
         sowObj.POC = poc.length > 0 ? poc[0].FullName : '';
         sowObj.CreatedBy = task.Author ? task.Author.Title : '';
-        sowObj.CreatedDate = this.datePipe.transform(task.Created, 'MMM dd yyyy hh:mm:ss aa');
+        sowObj.CreatedDate = task.Created;
         sowCodeTempArray.push({ label: sowObj.SOWCode, value: sowObj.SOWCode });
         shortTitleTempArray.push({ label: sowObj.ShortTitle, value: sowObj.ShortTitle });
         clientLegalEntityTempArray.push({ label: sowObj.ClientLegalEntity, value: sowObj.ClientLegalEntity });

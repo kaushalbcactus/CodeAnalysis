@@ -84,22 +84,27 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    */
   bindMenuItems() {
     this.pmObject.tabMenuItems = [
-      { label: 'All Projects (' + this.pmObject.countObj.allProjectCount + ')',  routerLink: 'allProjects' },
-      { label: 'All SOW (' + this.pmObject.countObj.allSOWCount + ')',  routerLink: 'allSOW', routerLinkActiveOptions: { exact: true } },
+      { label: 'All Projects (' + this.pmObject.countObj.allProjectCount + ')', routerLink: 'allProjects' },
+      { label: 'All SOW (' + this.pmObject.countObj.allSOWCount + ')', routerLink: 'allSOW', routerLinkActiveOptions: { exact: true } },
       // tslint:disable-next-line:max-line-length
-      { label: 'Send to Client (' + this.pmObject.countObj.scCount + ')',  routerLink: 'sendToClient' },
-      { label: 'Client Review (' + this.pmObject.countObj.crCount + ')',  routerLink: 'clientReview' },
+      { label: 'Send to Client (' + this.pmObject.countObj.scCount + ')', routerLink: 'sendToClient' },
+      { label: 'Client Review (' + this.pmObject.countObj.crCount + ')', routerLink: 'clientReview' },
       // tslint:disable-next-line:max-line-length
-      { label: 'Pending Allocation (' + this.pmObject.countObj.paCount + ')',  routerLink: 'pendingAllocation' },
-      { label: 'Inactive Projects (' + this.pmObject.countObj.iapCount + ')',  routerLink: 'inActive' }
+      { label: 'Pending Allocation (' + this.pmObject.countObj.paCount + ')', routerLink: 'pendingAllocation' },
+      { label: 'Inactive Projects (' + this.pmObject.countObj.iapCount + ')', routerLink: 'inActive' }
     ];
-    this.buttons = [
-      {
-        label: 'Add SOW', icon: 'pi pi-plus-circle', command: () => {
-          this.showSOW();
+    if (this.pmObject.userRights.isHaveSOWBudgetManager) {
+      this.buttons = [
+        {
+          label: 'Add SOW', icon: 'pi pi-plus-circle', command: () => {
+            this.showSOW();
+          }
         }
-      }
-    ];
+      ];
+    } else {
+      const arrowButton: any = document.querySelector('.ui-splitbutton-menubutton');
+      arrowButton.style.display = 'none';
+    }
   }
   /**
    * This method will display the add project section.
@@ -117,6 +122,12 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.setSOWDropDownValue();
     this.addSowForm.controls.sowCode.enable();
     this.addSowForm.controls.status.disable();
+    this.addSowForm.controls.currency.enable();
+    this.addSowForm.controls.net.enable();
+    this.addSowForm.controls.oop.enable();
+    this.addSowForm.controls.tax.enable();
+    this.addSowForm.controls.clientLegalEntity.enable();
+    this.addSowForm.controls.sowCreationDate.enable();
     this.pmObject.isAddSOWVisible = true;
   }
   /**
@@ -234,6 +245,25 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       if (clientInfo && clientInfo.length) {
         this.currClientLegalEntityObj = clientInfo;
         this.addSowForm.get('cactusBillingEntity').setValue(clientInfo[0].BillingEntity);
+        if (clientInfo[0].CMLevel1 && clientInfo[0].CMLevel1.results && clientInfo[0].CMLevel1.results.length) {
+          const cm1 = this.pmService.getIds(clientInfo[0].CMLevel1.results);
+          const found = this.sowDropDown.CMLevel1.some(r => cm1.indexOf(r) >= 0);
+          if (found) {
+            this.addSowForm.get('cm').setValue(cm1);
+          }
+        }
+        const cm2 = clientInfo[0].CMLevel2 && clientInfo[0].CMLevel2.hasOwnProperty('ID') ? clientInfo[0].CMLevel2.ID : 0;
+        this.addSowForm.get('cm2').setValue(cm2);
+        if (clientInfo[0].DeliveryLevel1 && clientInfo[0].DeliveryLevel1.results && clientInfo[0].DeliveryLevel1.results.length) {
+          const del1 = this.pmService.getIds(clientInfo[0].DeliveryLevel1.results);
+          const found = this.sowDropDown.Delivery.some(r => del1.indexOf(r) >= 0);
+          if (found) {
+            this.addSowForm.get('deliveryOptional').setValue(del1);
+          }
+        }
+        const del2 = clientInfo[0].DeliveryLevel2 && clientInfo[0].DeliveryLevel2.hasOwnProperty('ID') ?
+          clientInfo[0].DeliveryLevel2.ID : 0;
+        this.addSowForm.get('delivery').setValue(del2);
       }
     }
   }
@@ -395,7 +425,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       libraryName = clientInfo[0].ListName;
     }
     const folderPath: string = this.globalObject.sharePointPageObject.webAbsoluteUrl + '/' + libraryName + '/' + docFolder;
-    this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, false);
+    this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
     const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
     console.log(res);
     if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name') && !res.hasOwnProperty('hasError')) {
@@ -520,9 +550,12 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     });
     let arrayTo = [];
     let tempArray = [];
-    tempArray = tempArray.concat(sowObj.SOWOwner, sowObj.CM1, sowObj.CM2, sowObj.DeliveryOptional, sowObj.delivery);
+    let ccArray = [];
+    tempArray = tempArray.concat(sowObj.SOWOwner, sowObj.CM1, sowObj.CM2, sowObj.DeliveryOptional, sowObj.Delivery);
     arrayTo = this.pmService.getEmailId(tempArray);
-    this.pmService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.APPROVED_SOW, objEmailBody, mailSubject, arrayTo); // Send Mail
+    ccArray = this.pmService.getEmailId(sowObj.CM1);
+    this.pmService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.APPROVED_SOW, objEmailBody, mailSubject, arrayTo,
+      ccArray); // Send Mail
   }
   updateBudgetEmail(sowObj) {
     const objEmailBody = [];
@@ -602,17 +635,12 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       key: '@@NewTaxBudget@@',
       value: sowObj.Budget.Tax + sowObj.Addendum.TaxBudget
     });
-    const arrayTo = [];
+    let arrayTo = [];
     let tempArray = [];
     tempArray = tempArray.concat(sowObj.SOWOwner, sowObj.CM1, sowObj.CM2, sowObj.DeliveryOptional, sowObj.deliveryLevel2);
-    this.pmObject.oProjectManagement.oResourcesCat.forEach(element => {
-      tempArray.forEach(tempOjb => {
-        if (element.UserName && element.UserName.ID === tempOjb) {
-          arrayTo.push(element.UserName.EMail);
-        }
-      });
-    });
-    this.pmService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.SOW_BUDGET_UPDATED, objEmailBody, mailSubject, arrayTo); // Send Mail
+    arrayTo = this.pmService.getEmailId(tempArray);
+    this.pmService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.SOW_BUDGET_UPDATED, objEmailBody, mailSubject, arrayTo,
+      [this.pmObject.currLoginInfo.Email]); // Send Mail
   }
   /**
    * This method is used to add or udpate the SOW.
