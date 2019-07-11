@@ -44,11 +44,7 @@
                 <p-multiSelect *ngSwitchCase="'PONumber'" [options]="outInvoiceColArray.PONumber" defaultLabel="All"
                     (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-<<<<<<< HEAD
-                <p-multiSelect *ngSwitchCase="'POName'" [options]="outInvoiceColArray.POName" defaultLabel="All"
-=======
                 <p-multiSelect *ngSwitchCase="'POValues'" [options]="outInvoiceColArray.POValues" defaultLabel="All"
->>>>>>> 5d070fdb588e08c81be31de53d241b45fdcf9a78
                     (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="outInvoiceColArray.ClientLegalEntity"
