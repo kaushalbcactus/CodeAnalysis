@@ -25,13 +25,11 @@ position="bottom-center">
                   <th style="width: 3em">   
                       <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                   </th>
-                  <th [ngStyle]="{'line-height': isFirst ? '33px':''}" *ngFor="let col of columns; index as i; first as isFirst">
+                  <th [ngStyle]="{'line-height': isFirst ? '33px':'','width': isFirst ? '35%':''}" *ngFor="let col of columns; index as i; first as isFirst">
                       <span> {{col.header}}</span>
-                      <!-- <i  *ngIf= "item.label ==='My Drafts'" style="font-size: 1.2em; margin-left: 0.5vw;cursor: pointer;" [hidden]="col.header !=='Document Name'"  title="Mark as final" class="fa fa-file-text" aria-hidden="true" (click)="markAsFinal()"></i> -->
                       <button   *ngIf= "item.label ==='My Drafts'" style="float: right;margin-left: 7px;font-size: 12px;" [hidden]="col.header !=='Document Name'" [hidden]="col.header !=='Document Name'" pButton type="button"  label="Mark final" (click)="markAsFinal()" class="ui-button-danger" ></button>
 
                       <button  style="float: right;font-size: 12px;" [hidden]="col.header !=='Document Name'" pButton type="button"   label="Download" (click)="downloadFile()" class="ui-button-danger" ></button>
-                      <!-- <i  style="font-size: 1.2em; margin-left: 0.5vw;cursor: pointer;vertical-align: middle;" [hidden]="col.header !=='Document Name'" (click)="downloadFile()" title="Download" class="fa fa-download" aria-hidden="true"></i> -->
                   </th>
               </tr>
           </ng-template>

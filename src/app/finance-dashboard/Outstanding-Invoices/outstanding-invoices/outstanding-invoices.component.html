@@ -20,7 +20,7 @@
 <div class="financeTable">
     <p-table #outi [columns]="outstandingInCols" [value]="outstandingInvoicesRes" [paginator]="true" [rows]="10"
         [resizableColumns]="true" [(selection)]="selectedRowData" selectionMode="multiple"
-        (onRowSelect)="onRowSelect($event)" exportFilename="outstanding_Invoices">
+        (onRowSelect)="onRowSelect($event)" exportFilename="Outstanding_Invoices">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th>S.No</th>

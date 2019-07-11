@@ -21,6 +21,11 @@
     background: #f4f4f4 !important;
 }
 
+::ng-deep p-dropdownitem > li
+{
+   padding: 4px !important;
+   font-size: 12px !important;
+}
 
 ::ng-deep .ui-table .ui-sortable-column.ui-state-highlight , ::ng-deep  .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active, ::ng-deep .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
     background-color :#C53E3E !important;

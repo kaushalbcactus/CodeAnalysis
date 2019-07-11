@@ -47,29 +47,11 @@
     display: none !important;
   }
 
-  
-@media (min-width: 1400px) {
-  
-    ::ng-deep .blockBookingButton
-    {
-      position: fixed !important;
-      width: 100% !important;
-      margin: -62px !important;
-    }
-  
-    
-  }
-  
-  
-  @media (min-width: 1025px) and (max-width: 1400px) {
-    
-    ::ng-deep .blockBookingButton
-    {
-      position: fixed !important;
-      width: 100% !important;
-      margin: -64px !important;
-    }
- 
+  ::ng-deep .blockBookingButton
+  {
+    position: fixed !important;
+    width: 100% !important;
+    margin: -60px !important;
   }
   
  ::ng-deep #saveBooking ,::ng-deep .ui-state-active {

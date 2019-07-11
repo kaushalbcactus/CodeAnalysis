@@ -155,7 +155,14 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.tableviewenable = true;
   }
 
+  keyDownFunction(event) {
+    if(event.keyCode == 13) {
+     this.SearchProject();
+    }
+  }
+
   async SearchProject() {
+    debugger;
     
     this.ProjectPopupDetails = Object.assign({}, this.ProjectDetails);
     this.ProjectPopupDetails = undefined;
@@ -164,7 +171,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.tableviewenable = false;
     this.modalloaderenable=true;
 
-    if (this.ProjectCode === '' && this.ProjectTitle === '') {
+    if (!this.ProjectCode  && !this.ProjectTitle) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Enter Project Code or Project Short Title.' });
     }
     else {
@@ -174,10 +181,11 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
       var Project;
       if (this.ProjectCode !== '') {
         Project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformation);
-        Project.filterByCode = Project.filterByCode.replace(/{{projectCode}}/gi, this.ProjectCode.trimEnd());
+        Project.filterByCode = Project.filterByCode.replace(/{{projectCode}}/gi, this.ProjectCode.trim());
         Project.filter = Project.filterByCode;
       }
       else {
+        this.ProjectTitle.trimStart();
         Project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformation);
         Project.filterByTitle = Project.filterByTitle.replace(/{{shortTitle}}/gi, this.ProjectTitle.trimEnd());
         Project.filter = Project.filterByTitle;

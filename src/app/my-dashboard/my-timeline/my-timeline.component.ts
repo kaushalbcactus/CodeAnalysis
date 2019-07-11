@@ -151,7 +151,6 @@ export class MyTimelineComponent implements OnInit {
 
       eventClick: async function (eventInfo) {
 
-
         self.EnableEditDate = self.EnableEditDate === undefined ? await self.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3) : self.EnableEditDate;
         if (eventInfo.event.backgroundColor !== '#D6CFC7') {
           self.modalloaderenable = true;

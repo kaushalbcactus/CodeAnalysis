@@ -22,7 +22,7 @@
 <div class="financeTable">
 <p-table #hb [columns]="hourlyBasedCols" [value]="hourlyBasedRes" [paginator]="true" [rows]="10"
     [resizableColumns]="true" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
-    selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Hourly_Based_Expenses">
+    selectionMode="" [(selection)]="selectedAllRowsItem" exportFilename="Hourly_Based_Projects">
     <ng-template pTemplate="header" let-columns>
         <tr>
             <th>S.No</th>

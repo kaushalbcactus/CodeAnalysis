@@ -4,7 +4,7 @@
 
   <div fxLayout="row" fxLayoutAlign="space-around center" fxLayoutGap="10px">
     <div></div>
-    <form class="SearchForm" #SearchForm="ngForm">
+    <form class="SearchForm" (keydown)="keyDownFunction($event)" #SearchForm="ngForm">
 
       <div fxLayout="row" class="SearchBox" fxLayoutAlign="space-around center" fxLayoutGap="10px">
         <span style="color: #c53e3e; font-weight: 500;font-size:1.2em;"> Search Project</span>
@@ -20,8 +20,8 @@
           <label for="float-input">By Short Title</label>
         </span>
 
-        <button pButton type="button" (click)="SearchProject()" [disabled]="ProjectCode ==='' && ProjectTitle===''"
-          [ngStyle]="{'cursor': ProjectCode ==='' && ProjectTitle==='' ? 'not-allowed':'pointer'}" icon="pi pi-search"
+        <button pButton type="button" (click)="SearchProject()" [disabled]="ProjectCode && ProjectTitle"
+          [ngStyle]="{'cursor': ProjectCode && ProjectTitle ? 'not-allowed':'pointer'}" icon="pi pi-search"
           label="Search" class="ui-button-danger"></button>
       </div>
     </form>
@@ -55,7 +55,7 @@
 ************************************************************************************************ -->
 
   <div *ngIf="!loaderenable && tableviewenable" style="padding-top: 5px;">
-    <p-table #project [columns]="cols" [value]="ProjectList" [resizableColumns]="true" [exportFilename]="ProjectList" [paginator]="true" [rows]="10" [style]="{'font-size':'12px'}"  >
+    <p-table #project [columns]="cols" [value]="ProjectList" [exportFilename]="ProjectList" [paginator]="true" [rows]="10" [style]="{'font-size':'12px','min-height':'500px'}"  >
 
       <ng-template pTemplate="header" let-columns>
         <tr>
@@ -67,27 +67,27 @@
         </tr>
         <tr>
 
-          <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
+          <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" style="overflow: visible;">
             <ng-container *ngIf="col.field">
 
-              <p-dropdown filter="true" *ngSwitchCase="'SOWCode'" [options]="ProjectColArray.SOWCode" appendTo="body"
+              <p-dropdown filter="true" *ngSwitchCase="'SOWCode'" [options]="ProjectColArray.SOWCode" 
                 (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown filter="true" *ngSwitchCase="'ProjectCode'" [options]="ProjectColArray.ProjectCode" appendTo="body"
+              <p-dropdown filter="true" *ngSwitchCase="'ProjectCode'" [options]="ProjectColArray.ProjectCode" 
                 (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown filter="true" *ngSwitchCase="'WBJID'" [options]="ProjectColArray.WBJID" appendTo="body"
+              <p-dropdown filter="true" *ngSwitchCase="'WBJID'" [options]="ProjectColArray.WBJID" 
                 (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
               <p-dropdown filter="true" *ngSwitchCase="'ClientLegalEntity'" [options]="ProjectColArray.ClientLegalEntity"
-                appendTo="body" (onChange)="project.filter($event.value, col.field, 'equals')">
+                 (onChange)="project.filter($event.value, col.field, 'equals')">
               </p-dropdown>
-              <p-dropdown filter="true" *ngSwitchCase="'DeliverableType'" [options]="ProjectColArray.DeliverableType" appendTo="body"
+              <p-dropdown filter="true" *ngSwitchCase="'DeliverableType'" [options]="ProjectColArray.DeliverableType" 
                 (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown filter="true" *ngSwitchCase="'ProjectType'" [options]="ProjectColArray.ProjectType" appendTo="body"
+              <p-dropdown filter="true" *ngSwitchCase="'ProjectType'" [options]="ProjectColArray.ProjectType" 
                 (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown filter="true" *ngSwitchCase="'Status'" [options]="ProjectColArray.Status" appendTo="body"
+              <p-dropdown filter="true" *ngSwitchCase="'Status'" [options]="ProjectColArray.Status" 
                 (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown filter="true" *ngSwitchCase="'CreatedBy'" [options]="ProjectColArray.CreatedBy" appendTo="body"
+              <p-dropdown filter="true" *ngSwitchCase="'CreatedBy'" [options]="ProjectColArray.CreatedBy" 
                 (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-                <p-dropdown filter="true" *ngSwitchCase="'Created'" [options]="ProjectColArray.Created" appendTo="body"
+                <p-dropdown filter="true" *ngSwitchCase="'Created'" [options]="ProjectColArray.Created" 
                 (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
             </ng-container>
           </th>

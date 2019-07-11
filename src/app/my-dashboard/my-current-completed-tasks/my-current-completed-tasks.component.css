@@ -11,8 +11,6 @@
 }
 
 
-
-
   #scTableInnerLoader{
     border: 3px solid #f3f3f3 ;
     border-radius: 50% ;
@@ -67,10 +65,10 @@
 ::ng-deep .ui-slidemenu-content {
 	min-height: 200px  !important;
 } */
-:host ::ng-deep .ui-inputtext
+/* :host ::ng-deep .ui-inputtext
 {
   width: 80%  !important;
-}
+} */
 
  ::ng-deep  .ui-slidemenu ul
 {

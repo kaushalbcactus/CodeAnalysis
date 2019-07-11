@@ -409,6 +409,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 AddressType: element.AddressType,
                 ProjectTitle: project ? project.Title : '',
                 CS: this.getCSDetails(element),
+                PracticeArea: this.getPracticeArea(element).BusinessVertical,
                 TaggedDate: element.TaggedDate,
                 Status: element.Status,
                 ProformaLookup: element.ProformaLookup,
@@ -437,6 +438,16 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             }
         })
         return found ? found.Milestone : '';
+    }
+
+    // Project Current Milestones
+    getPracticeArea(pc: any) {
+        let found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode == pc.Title) {
+                return x;
+            }
+        })
+        return found ? found : '';
     }
 
     // Project Client

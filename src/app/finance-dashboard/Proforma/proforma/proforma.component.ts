@@ -584,7 +584,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.fdConstantsService.fdComponent.selectedComp = this;
                 switch (data.Template) {
                     case 'US':
-                        this.editorRef.enableButton();
+                        this.editorRef.JapanTemplateCopy = {};
+                        this.editorRef.IndiaTemplateCopy = {};
                         this.editorRef.USTemplateCopy = proformaObj.saveObj;
                         if (this.editorRef.USTemplateCopy.appendix) {
                             this.editorRef.showAppendix = true;
@@ -594,9 +595,11 @@ export class ProformaComponent implements OnInit, OnDestroy {
                         this.editorRef.displayJapan = false;
                         this.editorRef.displayUS = true;
                         this.editorRef.displayIndia = false;
+                        this.editorRef.enableButton();
                         break;
                     case 'Japan':
-                        this.editorRef.enableButton();
+                        this.editorRef.USTemplateCopy = {};
+                        this.editorRef.IndiaTemplateCopy = {};
                         this.editorRef.JapanTemplateCopy = proformaObj.saveObj;
                         if (this.editorRef.JapanTemplateCopy.appendix) {
                             this.editorRef.showAppendix = true;
@@ -606,9 +609,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
                         this.editorRef.displayJapan = true;
                         this.editorRef.displayUS = false;
                         this.editorRef.displayIndia = false;
+                        this.editorRef.enableButton();
                         break;
                     case 'India':
-                        this.editorRef.enableButton();
+                        
+                        this.editorRef.JapanTemplateCopy = {};
+                        this.editorRef.USTemplateCopy = {};
                         this.editorRef.IndiaTemplateCopy = proformaObj.saveObj;
                         if (this.editorRef.IndiaTemplateCopy.appendix) {
                             this.editorRef.showAppendix = true;
@@ -618,6 +624,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                         this.editorRef.displayJapan = false;
                         this.editorRef.displayUS = false;
                         this.editorRef.displayIndia = true;
+                        this.editorRef.enableButton();
                         break;
                 }
             }

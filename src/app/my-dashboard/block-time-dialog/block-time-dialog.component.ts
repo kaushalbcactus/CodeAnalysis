@@ -125,15 +125,10 @@ export class BlockTimeDialogComponent implements OnInit {
 
 
   async saveBooking() {
-
+    debugger;
     if ((!this.SelectedClientLegalEntity && this.data.timeblockType !== 'Admin') && ( !this.SelectedClientLegalEntity  && this.data.timeblockType !== 'Internal Meeting') && (!this.SelectedClientLegalEntity  && this.data.timeblockType !== 'Training')) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Client.' });
       return false;
-    }
-    else if (!this.SelectedClientLegalEntity) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Client.' });
-      return false;
-
     }
     else if ( !this.eventDate) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select  Date.' });

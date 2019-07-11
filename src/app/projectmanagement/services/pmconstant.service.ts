@@ -175,7 +175,11 @@ export class PmconstantService {
       top: 4900
     },
     CLIENT_LEGAL_ENTITY: {
-      select: 'ID,Title,Acronym,Currency,InvoiceName,ListName,APAddress,TimeZone, SOWCounter, IsCentrallyAllocated, BillingEntity',
+      select: 'ID,Title,Acronym,Currency,InvoiceName,ListName,APAddress,TimeZone, SOWCounter, IsCentrallyAllocated, BillingEntity, '
+        + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
+        + 'DeliveryLevel2/ID, DeliveryLevel2/Title',
+      expand: 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
+        + 'DeliveryLevel2/ID, DeliveryLevel2/Title',
       orderby: 'Title',
       top: 4900
     },
