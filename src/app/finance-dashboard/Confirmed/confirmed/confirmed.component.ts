@@ -236,6 +236,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true },
+            { field: 'ScheduledDateFormat', header: 'Scheduled Date', visibility: false },
             { field: 'ScheduleType', header: 'Schedule Type', visibility: true },
             { field: 'Amount', header: 'Amount', visibility: true },
             { field: 'Currency', header: 'Currency', visibility: true },
@@ -391,17 +392,37 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             const element = data[i];
             var project: any = this.getProject(element);
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
+            let sowCode = element.SOWCode ? element.SOWCode : '';
+            let sowName = sowItem.Title ? sowItem.Title : '';
+            let sowcn = sowCode + ' ' + sowName;
+            if (sowCode && sowName) {
+                sowcn = sowCode + ' / ' + sowName;
+            }
+            let poItem = await this.getPONumber(element);
+            let pnumber = poItem.Number ? poItem.Number : '';
+            let pname = poItem.Name ? poItem.Name : '';
+            if (pnumber === 'NA') {
+                pnumber = '';
+            }
+            let ponn = pnumber + ' ' + pname;
+            if (pname && pnumber) {
+                ponn = pnumber + ' / ' + pname;
+            }
+            let POValues = ponn;
+
             this.confirmedRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
                 SOWCode: element.SOWCode,
-                SOWValue: element.SOWCode + ' / ' + sowItem.Title,
+                SOWValue: sowcn,
                 SOWName: sowItem.Title,
                 ProjectMileStone: project ? project.Milestone : '', // this.getMilestones(element),
-                PONumber: this.getPONumber(element).Number,
-                POName: this.getPONumber(element).Name,
+                POValues: POValues,
+                PONumber: poItem.Number,
+                POName: poItem.Name,
                 ClientLegalEntity: this.selectedPurchaseNumber.ClientLegalEntity,
                 ScheduledDate: element.ScheduledDate, // this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
+                ScheduledDateFormat: this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
                 ScheduleType: element.ScheduleType,
                 Amount: element.Amount,
                 Currency: element.Currency,

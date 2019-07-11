@@ -378,7 +378,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 LineItemsLookup: element.LineItemsLookup,
                 Reason: element.Reason,
                 State: element.State,
-                Modified: this.datePipe.transform(element.Modified, 'MMM d, y'),
+                Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyy'),
             })
         }
         this.proformaRes = [...this.proformaRes];
@@ -1405,12 +1405,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
             ////// Replace date on specific sections only
 
             if (proformHtml) {
-                const proformaDate = this.datePipe.transform(this.selectedRowItem.ProformaDate, 'MMM d, y');
+                const proformaDate = this.datePipe.transform(this.selectedRowItem.ProformaDate, 'MMM dd, yyy');
                 proformHtml = proformHtml.replace(new RegExp("Proforma", "g"), "Invoice");
                 proformHtml = proformHtml.replace(new RegExp("PROFORMA", "g"), "INVOICE");
                 proformHtml = proformHtml.replace(new RegExp("proforma", "g"), "invoice");
                 proformHtml = proformHtml.replace(new RegExp(this.selectedRowItem.ProformaNumber, "g"), oInv.InvoiceNumber);
-                proformHtml = proformHtml.replace(new RegExp(proformaDate, "g"), this.datePipe.transform(oInv.InvoiceDate, 'MMM d, y'));
+                proformHtml = proformHtml.replace(new RegExp(proformaDate, "g"), this.datePipe.transform(oInv.InvoiceDate, 'MMM dd, yyy'));
                 const invObject = JSON.parse(proformHtml);
 
                 const pdfCall = invObject.pdf;

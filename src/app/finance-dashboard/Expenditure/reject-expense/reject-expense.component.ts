@@ -123,7 +123,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
             { field: 'ApproverComments', header: 'Approver Comments', visibility: true },
             { field: 'ActionBy', header: 'Actioned By', visibility: true },
             { field: 'Modified', header: 'Actioned Date', visibility: true },
-            
+            { field: 'ModifiedDateFormat', header: 'Actioned Date', visibility: false },
             { field: 'SOWCode', header: 'SOW Code', visibility: false },
             { field: 'SOWName', header: 'SOW Name', visibility: false },
             { field: 'Created', header: 'Date Created', visibility: false },
@@ -192,16 +192,16 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
                 ExpenseType: element.SpendType,
                 ClientAmount: element.Amount,
                 ClientCurrency: element.ClientCurrency,
-                Created: this.datePipe.transform(element.Created, 'MMM d, y, hh:mm a'),
+                Created: this.datePipe.transform(element.Created, 'MMM dd, yyy, hh:mm a'),
                 CreatedBy: rcCreatedItem ? rcCreatedItem.UserName.Title : '',
                 ModifiedBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
                 Notes: element.Notes,
-                //ModifiedDate: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
+                ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyy, hh:mm a'),
                 RequestType: element.RequestType,
                 ApproverComments: element.ApproverComments,
                 Status: element.Status,
                 ActionBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
-                Modified: element.Modified, // this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
+                Modified: element.Modified, // this.datePipe.transform(element.Modified, 'MMM dd, yyy, hh:mm a'),
 
                 FileURL: element.FileURL,
                 ClientApprovalFileURL: element.ClientApprovalFileURL,
@@ -214,7 +214,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
                 POLookup: element.POLookup,
                 VendorName: this.getVendorNameById(element),
                 // PONumber: this.getPONumber(element),
-                // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM d, y, hh:mm a')
+                // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM dd, yyy, hh:mm a')
 
 
             })

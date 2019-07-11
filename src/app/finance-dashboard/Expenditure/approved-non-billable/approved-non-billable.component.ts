@@ -158,6 +158,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             { field: 'PayingEntity', header: 'Paying Entity', visibility: true },
             { field: 'Status', header: 'Status', visibility: true },
             { field: 'ApproverComments', header: 'Approver Comments', visibility: true },
+            { field: 'ModifiedDateFormat', header: 'Approval / Billable Date', visibility: false },
             { field: 'Modified', header: 'Approval / Billable Date', visibility: true },
             
             { field: 'Category', header: 'Category', visibility: false },
@@ -237,18 +238,19 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 ExpenseType: element.SpendType,
                 ClientAmount: element.Amount,
                 ClientCurrency: element.ClientCurrency,
-                DateCreated: this.datePipe.transform(element.Created, 'MMM d, y, hh:mm a'),
+                DateCreated: this.datePipe.transform(element.Created, 'MMM dd, yyy, hh:mm a'),
                 Notes: element.Notes,
-                Created: this.datePipe.transform(element.Created, 'MMM d, y, hh:mm a'),
-                Modified: element.Modified, // this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
+                Created: this.datePipe.transform(element.Created, 'MMM dd, yyy, hh:mm a'),
+                Modified: element.Modified, // 
+                ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyy, hh:mm a'),
                 CreatedBy: rcCreatedItem ? rcCreatedItem.UserName.Title : '',
                 ModifiedBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
-                // ModifiedDate: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
+                // ModifiedDate: this.datePipe.transform(element.Modified, 'MMM dd, yyy, hh:mm a'),
                 RequestType: element.RequestType,
                 PaymentMode: element.PaymentMode,
                 PayingEntity: element.PayingEntity,
                 Status: element.Status,
-                DateSpend: this.datePipe.transform(element.DateSpend, 'MMM d, y, hh:mm a'),
+                DateSpend: this.datePipe.transform(element.DateSpend, 'MMM dd, yyy, hh:mm a'),
                 ApproverComments: element.ApproverComments,
                 VendorName: this.getVendorNameById(element),
                 FileURL: element.FileURL,
@@ -261,7 +263,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 POLookup: element.POLookup,
                 // Created: element.Created,
                 // PONumber: this.getPONumber(element),
-                // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM d, y, hh:mm a')
+                // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM dd, yyy, hh:mm a')
             })
         }
         this.approvedNonBillableRes = [...this.approvedNonBillableRes];
