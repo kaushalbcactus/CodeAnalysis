@@ -149,9 +149,6 @@ export class AllProjectsComponent implements OnInit {
       arrResults = await this.pmCommonService.getProjects();
       this.pmObject.allProjectItems = arrResults;
     }
-    // Get all project information based on current user.
-    arrResults = this.pmCommonService.getProjects();
-    this.pmObject.allProjectItems = arrResults;
     if (this.pmObject.allProjectItems.length) {
       this.pmObject.countObj.allProjectCount = arrResults.length;
       this.pmObject.totalRecords.AllProject = this.pmObject.countObj.allProjectCount;
@@ -159,7 +156,6 @@ export class AllProjectsComponent implements OnInit {
         this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       }
-
     } else {
       if (this.pmObject.tabMenuItems.length) {
         this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';
