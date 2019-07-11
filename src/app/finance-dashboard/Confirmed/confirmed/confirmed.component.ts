@@ -351,8 +351,16 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         let po = data.value;
         console.log('po ', po);
         if (po) {
-            this.po.revenuBalance = (parseFloat(po.AmountRevenue ? po.AmountRevenue : 0) - parseFloat(po.InvoicedRevenue ? po.InvoicedRevenue : 0));
-            this.po.oopBalance = (parseFloat(po.AmountOOP ? po.AmountOOP : 0) - parseFloat(po.InvoicedOOP ? po.InvoicedOOP : 0));
+            if (po.hasOwnProperty('AmountRevenue') && po.hasOwnProperty('InvoicedRevenue')) {
+                this.po.revenuBalance = (parseFloat(po.AmountRevenue ? po.AmountRevenue : 0) - parseFloat(po.InvoicedRevenue ? po.InvoicedRevenue : 0));
+            } else {
+                this.po.revenuBalance = 0;
+            }
+            if (po.hasOwnProperty('AmountOOP') && po.hasOwnProperty('InvoicedOOP')) {
+                this.po.oopBalance = (parseFloat(po.AmountOOP ? po.AmountOOP : 0) - parseFloat(po.InvoicedOOP ? po.InvoicedOOP : 0));
+            } else {
+                this.po.oopBalance = 0;
+            }
         }
         if (po) {
             for (let c = 0; c < this.confirmedILIarray.length; c++) {
@@ -770,7 +778,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             // console.log('cleAcronym,', cleAcronym);
             proformaCounter = cle.ProformaCounter ? parseInt(cle.ProformaCounter) + 1 : 1;
             let sNum = '000' + proformaCounter;
-            let sFinalNum = sNum.substr(sNum.length - 4);
+            let sFinalNum = sNum.substr(sNum.length ? sNum.length : 0 - 4);
             // console.log('proformaCounter,', proformaCounter);
             proformaDate = this.datePipe.transform(new Date(), 'MM') + this.datePipe.transform(new Date(), 'yy');
             // console.log('proformaDate,', proformaDate);
@@ -1077,7 +1085,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         let amt = parseInt(val);
         let poScheduled = parseFloat(this.selectedPOItem.value.TotalScheduled ? this.selectedPOItem.value.TotalScheduled : 0);
         let poInvoiced = parseFloat(this.selectedPOItem.value.TotalInvoiced ? this.selectedPOItem.value.TotalInvoiced : 0);
-        let availableBudget = this.selectedPOItem.value.Amount - (poScheduled + poInvoiced);
+        let poItemAmt = this.selectedPOItem.value.Amount ? this.selectedPOItem.value.Amount : 0;
+        let availableBudget = poItemAmt - (poScheduled + poInvoiced);
         if (amt > availableBudget) {
             this.enterPOAmtMsg = true;
             this.addToProforma_form.get('Amount').setValue('');

@@ -215,8 +215,9 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
-            { field: 'PONumber', header: 'PO Number/ Name', visibility: true },
+            { field: 'POValues', header: 'PO Number/ Name', visibility: true },
             { field: 'ClientName', header: 'Client LE', visibility: true },
+            { field: 'ScheduledDateFormat', header: 'Scheduled Date', visibility: false },
             { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true },
             { field: 'Amount', header: 'Amount', visibility: true },
             { field: 'Currency', header: 'Currency', visibility: true },
@@ -229,7 +230,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             { field: 'AddressType', header: 'Address Type', visibility: false },
             // { field: 'TaggedDate', header: 'Tagged Date', visibility: false },
             { field: 'Status', header: 'Status', visibility: false },
-            // { field: 'ProformaLookup', header: 'Proforma Lookup', visibility: false },
             { field: 'ScheduleType', header: 'Schedule Type', visibility: false },
             { field: 'InvoiceLookup', header: 'Invoice Lookup', visibility: false },
             { field: 'Template', header: 'Template', visibility: false },
@@ -300,20 +300,39 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
+            let sowCode = element.SOWCode ? element.SOWCode : '';
+            let sowName = sowItem.Title ? sowItem.Title : '';
+            let sowcn = sowCode + ' ' + sowName;
+            if (sowCode && sowName) {
+                sowcn = sowCode + ' / ' + sowName;
+            }
             let poItem = await this.getPONumber(element);
+            let pnumber = poItem.Number ? poItem.Number : '';
+            let pname = poItem.Name ? poItem.Name : '';
+            if (pnumber === 'NA') {
+                pnumber = '';
+            }
+            let ponn = pnumber + ' ' + pname;
+            if (pname && pnumber) {
+                ponn = pnumber + ' / ' + pname;
+            }
+            let POValues = ponn;
+
             let piInfo = await this.getMilestones(element);
             this.deliverableBasedRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
                 SOWCode: element.SOWCode,
-                SOWValue: element.SOWCode + ' / ' + sowItem.Title,
+                SOWValue: sowcn,
                 SOWName: sowItem.Title,
                 ProjectMileStone: piInfo.Milestone,
+                POValues: POValues,
                 PONumber: poItem.Number,
                 PO: element.PO,
                 POCId: element.MainPOC,
                 ClientName: piInfo.ClientLegalEntity,//this.getCLE(element),
-                ScheduledDate: element.ScheduledDate, // this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
+                ScheduledDate: element.ScheduledDate, //this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
+                ScheduledDateFormat: this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
                 Amount: element.Amount,
                 Currency: element.Currency,
                 POCName: this.getPOCName(element),
@@ -403,7 +422,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         ProjectCode: [],
         SOWCode: [],
         ProjectMileStone: [],
-        PONumber: [],
+        POValues: [],
         ClientName: [],
         ScheduledDate: [],
         Amount: [],
@@ -421,7 +440,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         this.deliverableBasedColArray.ScheduledDate = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }));
         this.deliverableBasedColArray.Amount = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
         this.deliverableBasedColArray.Currency = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
-        this.deliverableBasedColArray.PONumber = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
+        this.deliverableBasedColArray.POValues = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }));
     }
 
     uniqueArrayObj(array: any) {

@@ -677,7 +677,10 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         console.log('po event ', event.value);
         this.submitBtn.isClicked = false;
         this.poItem = event.value;
-        this.oopBalance = (this.poItem.AmountOOP - this.poItem.OOPLinked);
+        this.oopBalance = 0;
+        if (this.poItem) {
+            this.oopBalance = (this.poItem.AmountOOP ? this.poItem.AmountOOP : 0 - this.poItem.OOPLinked ? this.poItem.OOPLinked : 0);
+        }
         if (this.oopBalance >= this.scheduleOopInvoice_form.getRawValue().Amount) {
             this.getPfPfb();
         } else {
