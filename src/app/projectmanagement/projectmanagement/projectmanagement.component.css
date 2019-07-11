@@ -658,15 +658,15 @@ body .ui-datepicker table td>a.ui-state-active,
 body .ui-datepicker table td>span.ui-state-active,
 body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight,
 body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item-group.ui-state-highlight {
-  background-color: #C53E3E;
-  border: 1px solid #C53E3E;
+  background-color: #C53E3E !important;
+  border: 1px solid #C53E3E !important;
 }
 
 body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a,
 body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active:hover a {
-  background-color: #c53e3e;
-  border: 1px solid #c53e3e;
-  color: #ffffff;
+  background-color: #c53e3e !important;
+  border: 1px solid #c53e3e !important;
+  color: #ffffff !important;
 }
 
 body .ui-dialog .ui-dialog-titlebar {
@@ -676,7 +676,7 @@ body .ui-dialog .ui-dialog-titlebar {
 }
 
 .ui-dialog .ui-dialog-titlebar-icon span {
-  background: #c53e3e;
+  background: #c53e3e !important;
   color: #fff;
   border-radius: 50%;
   width: 25px;
@@ -691,9 +691,9 @@ body .ui-radiobutton .ui-radiobutton-box.ui-state-focus {
 
 body .ui-chkbox .ui-chkbox-box.ui-state-active,
 body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover {
-  border-color: #ffffff;
-  background-color: #c53e3e;
-  color: #ffffff;
+  border-color: #ffffff !important;
+  background-color: #c53e3e !important;
+  color: #ffffff !important;
 }
 
 .ui-confirmdialog.ui-dialog .ui-dialog-content {
@@ -701,9 +701,9 @@ body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover {
 }
 
 body .ui-calendar.ui-calendar-w-btn .ui-datepicker-trigger.ui-button {
-  background: #C53E3E;
+  background: #C53E3E !important;
   color: #fff;
-  border: 3px solid #C53E3E;
+  border: 3px solid #C53E3E !important;
 }
 
 input,

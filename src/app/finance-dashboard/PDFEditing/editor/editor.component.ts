@@ -87,7 +87,7 @@ export class EditorComponent implements OnInit {
             // centralTax : '39,564.45',
             // stateTax : '19,782.22',
             // consumptionTax : '43,200.00',
-            serviceDetails: 'April Invoice for PO #8300324481 (5 Manuscripts and 1 Poster)',
+            serviceDetails: 'April',
             invoiceFees: '30,687.50',
             total: '30,687.50'
         };
@@ -689,7 +689,7 @@ export class EditorComponent implements OnInit {
         <tbody class="paymentDetails">
             <tr>
                 <td style="font-size:14px">
-                    <div class="paymentInstructions">
+                    <div class="paymentInstructions" id="paymentInstructions1">
                     <label>
                     振込先銀行：三菱UFJ銀行 品川駅前支店(店番588) 普通預金 2406331<br/>
                     口座名義：カクタスコミュニケーションズカブシキガイシャ
@@ -698,12 +698,12 @@ export class EditorComponent implements OnInit {
                     口座名義：カクタスコミュニケーションズカブシキガイシャ
                     </label>
                     </div>
-                    <ul id="paymentInstructions">
+                    <ul id="paymentInstructions2">
                     <li>
                         振込手数料はお客様ご負担でお願いいたします
                     </li>
                     <li>
-                    この請求書が届いてから<span id="paymentInstructions">60</span>日以内にお支払いをお願いいたします
+                    この請求書が届いてから60日以内にお支払いをお願いいたします
                     </li>
                     <li>
                         正式な書類として弊社の電子押印で発行しております
@@ -1017,7 +1017,7 @@ export class EditorComponent implements OnInit {
                     .invoice-table table tfoot tr td{text-align: center;font-size: 16px;padding: 16px 10px;font-weight: bold;}
                     .invoice-table table tbody tr:last-child td:last-child{font-weight: bold;}
                     .invoice-table table tbody tr td:last-child{font-weight: bold;width: 14%;text-align: right;}
-                    .invoice-table table tbody tr td:first-child{text-align: left;}
+                    .invoice-table table tbody tr td:first-child{text-align: left;width: 14%;}
                     .appendix table tbody tr:last-child td{font-weight: normal;}
                     .appendix table tbody tr td:last-child{font-weight: bold;}
                     .signature-table{float: right;text-align: right;margin-right: 10px;
@@ -1334,8 +1334,7 @@ export class EditorComponent implements OnInit {
                             (Please note the transfer charges will be borne by you):</strong>
                             <p>Bank name:  Citibank NA</p>
                             <p style="display: inline-flex">Bank address: <span> Citibank N.A. Times Square IT Park branch, Wing B,
-                            Unit No. 1, Andheri-Kurla Road,<br />
-                            Marol, Andheri (E), Mumbai – 400 059.</span></p>
+                            Unit No. 1, Andheri-Kurla Road,Marol, Andheri (E), Mumbai – 400 059.</span></p>
                             <p>Branch name: Andheri (E), Mumbai, India</p>
                             <p>IFSC: CITI0100000</p>
                             <p>Account #:  0256594118</p>
@@ -1572,8 +1571,7 @@ export class EditorComponent implements OnInit {
                 (Please note the transfer charges will be borne by you):</strong>
                 <p>Bank name:  Citibank NA</p>
                 <p style="display: inline-flex">Bank address: <span> Citibank N.A. Times Square IT Park branch, Wing B,
-                Unit No. 1, Andheri-Kurla Road,<br />
-                Marol, Andheri (E), Mumbai – 400 059.</span></p>
+                Unit No. 1, Andheri-Kurla Road,Marol, Andheri (E), Mumbai – 400 059.</span></p>
                 <p>Branch name: Andheri (E), Mumbai, India</p>
                 <p>IFSC: CITI0100000</p>
                 <p>Account #:  0256594118</p>
@@ -2218,13 +2216,15 @@ export class EditorComponent implements OnInit {
         }
     }
     enableButton() {
-        const items: any = document.querySelectorAll('.invButton');
-        let i = 0;
-        const l = items.length;
+        setTimeout(() => {
+            const items: any = document.querySelectorAll('.invButton');
+            let i = 0;
+            const l = items.length;
 
-        for (i; i < l; i++) {
-            items[i].style.display = 'inline-block';
-        }
+            for (i; i < l; i++) {
+                items[i].style.display = 'inline-block';
+            }
+        }, 1000);
     }
 
     confirm() {
@@ -2295,7 +2295,7 @@ export class EditorComponent implements OnInit {
             this.indiaHtmlObject.address = document.getElementById('address').innerHTML;
             this.indiaHtmlObject.purchaseOrder = document.getElementById('purchaseOrderDetails').innerHTML;
             this.indiaHtmlObject.invoiceDetail = document.getElementById('invoiceDetails').innerHTML;
-            this.indiaHtmlObject.paymentInstructions = document.getElementById('paymentInstructions1').innerHTML;
+            this.indiaHtmlObject.paymentInstructions = document.getElementById('paymentInstructions').innerHTML;
             this.indiaHtmlObject.paymentDetails = document.getElementById('paymentInstructions2').innerHTML;
             if (this.showAppendix) {
                 this.indiaHtmlObject.appendix = document.getElementById('appendix').innerHTML;

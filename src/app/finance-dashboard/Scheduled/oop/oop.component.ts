@@ -463,6 +463,7 @@ export class OopComponent implements OnInit, OnDestroy {
         const currentDate = new Date();
         const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
         const last3Days = this.commonService.getLastWorkingDay(3, new Date());
+        const currentDay = new Date(this.datePipe.transform(new Date(),"yyyyMMdd"));
         if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= new Date()) {
             // if (date > last3Days && retPO && new Date(retPO.POExpiryDate) >= new Date()) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
@@ -471,7 +472,7 @@ export class OopComponent implements OnInit, OnDestroy {
                 this.messageService.add({ key: 'bottomCenter', severity: 'success', summary: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.', detail: '', life: 4000 })
             } else if (!retPO) {
                 this.messageService.add({ key: 'bottomCenter', severity: 'success', summary: 'PO not available for the selected line item.', detail: '', life: 4000 })
-            } else if (!(new Date(retPO.POExpiryDate) >= new Date())) {
+            } else if (!(new Date(retPO.POExpiryDate)  >= new Date())) {
                 this.messageService.add({ key: 'bottomCenter', severity: 'success', summary: 'PO expired on ' + this.datePipe.transform(retPO.POExpiryDate, 'MMM d, y'), detail: '', life: 4000 })
             }
         }

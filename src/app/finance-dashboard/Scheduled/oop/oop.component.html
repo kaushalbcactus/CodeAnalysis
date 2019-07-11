@@ -20,7 +20,7 @@
 <div class="financeTable">
 <p-table #oop [columns]="oopBasedCols" [value]="oopBasedRes" [paginator]="true" [rows]="10" [resizableColumns]="true"
     (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" selectionMode=""
-    [(selection)]="selectedAllRowsItem" exportFilename="OOP_Expenses">
+    [(selection)]="selectedAllRowsItem" exportFilename="OOP__InvoiceLineItems">
     <ng-template pTemplate="header" let-columns>
         <tr>
             <th>S.No</th>

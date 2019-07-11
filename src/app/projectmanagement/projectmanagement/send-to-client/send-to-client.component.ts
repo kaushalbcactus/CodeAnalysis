@@ -68,16 +68,16 @@ export class SendToClientComponent implements OnInit {
     this.isSCInnerLoaderHidden = false;
     this.isSCFilterHidden = true;
     this.popItems = [
-      { label: 'Download', icon: 'pi pi-download', command: (event) => this.downloadTask(this.selectedSendToClientTask) },
+      { label: 'Download', command: (event) => this.downloadTask(this.selectedSendToClientTask) },
       {
-        label: 'Go to Allocation', icon: 'pi pi-external-link', target: '_blank',
+        label: 'Go to Allocation', target: '_blank',
         command: (event) => this.goToAllocationPage(this.selectedSendToClientTask)
       },
       {
-        label: 'Go to Project', icon: 'pi pi-external-link', target: '_blank',
+        label: 'Go to Project', target: '_blank',
         command: (event) => this.goToProjectManagement(this.selectedSendToClientTask)
       },
-      { label: 'Close', icon: 'pi pi-times', command: (event) => this.closeTask(this.selectedSendToClientTask) }
+      { label: 'Close', command: (event) => this.closeTask(this.selectedSendToClientTask) }
     ];
     this.pmObject.sendToClientArray = [];
     this._success.subscribe((message) => this.successMessage = message);
@@ -369,6 +369,8 @@ export class SendToClientComponent implements OnInit {
       if (this.scArrays.taskItems.length !== this.pmObject.countObj.scCount) {
         this.pmObject.countObj.scCount = this.scArrays.taskItems.length;
       }
+      this.pmObject.tabMenuItems[2].label = 'Send to Client (' + this.pmObject.countObj.scCount + ')';
+      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       this.hideNoDataMessage = false;
       this.isSCInnerLoaderHidden = true;
       this.isSCFilterHidden = false;
