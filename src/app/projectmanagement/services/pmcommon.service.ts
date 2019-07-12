@@ -572,9 +572,9 @@ export class PMCommonService {
       x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
     if (clientInfo && clientInfo.length) {
       const listName = clientInfo[0].ListName;
-      objProjectFolder = this.globalObject.sharePointPageObject.webAbsoluteUrl + '/' + listName + '/' +
+      objProjectFolder = this.globalObject.sharePointPageObject.serverRelativeUrl + '/' + listName + '/' +
         addObj.ProjectAttributes.ProjectCode;
-      objProjectTask = this.globalObject.sharePointPageObject.webAbsoluteUrl + '/' + this.constant.listNames.Schedules.name
+      objProjectTask = this.globalObject.sharePointPageObject.serverRelativeUrl + '/' + this.constant.listNames.Schedules.name
         + '/' + addObj.ProjectAttributes.ProjectCode;
     }
     const data: any = {

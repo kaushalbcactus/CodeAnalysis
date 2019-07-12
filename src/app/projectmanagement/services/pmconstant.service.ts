@@ -404,13 +404,14 @@ export class PmconstantService {
       top: 4900
     },
     SOW_BY_SOWCODE: {
-      select: 'ID',
+      select: 'ID, ClientLegalEntity, SOWTitle, Currency, TotalBudget, NetBudget, OOPBudget, TaxBudget, Status,'
+        + 'PrimaryPOC',
       filter: 'SOWCode eq \'{{sowCode}}\''
     },
     PROJECT_BUDGET_BREAKUP_CANCELLED_BY_PROJECTCODE: {
       select: 'ID, Title, ProjectLookup, Status, ApprovalDate, OriginalBudget, NetBudget, OOPBudget, TaxBudget, ProjectCode,'
         + ' BudgetHours, Reason, Comments',
-      filter: 'ProjectCode eq \'{{projectCode}}\' and Status eq \'Approved\''
+      filter: 'ProjectCode eq \'{{projectCode}}\' and (Status eq \'Approved\' or Status eq \'Approval Pending\')'
     },
     PROJECT_FINANCE_BREAKUP_CANCELLED_BY_PROJECTCODE: {
       select: 'ID,Title,POLookup,ProjectNumber,Amount, AmountRevenue, AmountOOP, AmountTax, TotalScheduled, ScheduledRevenue',
@@ -422,4 +423,16 @@ export class PmconstantService {
     DELIVERABLE: 'Deliverable'
   };
   public TIME_OUT = 500;
+  public PROJECT_CANCELLED_REASON = {
+    NOT_CONVINCED_OF_EXPERIANCE_OR_QUALITY: 'Not convinced of our experience/quality',
+    LACK_OF_CAPABILITY: 'Lack of capability',
+    PRICE_TO_HIGH: 'Price too high',
+    CLIENT_BUDGET: 'Client Budget',
+    CLIENT_DOING_INTERNALLY: 'Client doing internally',
+    CHANGE_IN_DELIVERY_TYPE: 'Change in deliverable type',
+    CACTUS_REJECT: 'CACTUS reject',
+    DUPLICATE_ENTRY: 'Duplicate Entry',
+    CLIENT_NOT_MOVING_FORWARD_WITH_PROJECT: 'Client not moving forward with project',
+    UNKNOWN: 'Unkownn'
+  };
 }
