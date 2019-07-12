@@ -808,7 +808,7 @@ export class AllProjectsComponent implements OnInit {
       Status: this.constants.STATUS.APPROVED,
       ApprovalDate: new Date()
     };
-    projectBudgetBreakUPIds.array.forEach(element => {
+    projectBudgetBreakUPIds.forEach(element => {
       const prjBudgetBreakupUpdate = Object.assign({}, options);
       prjBudgetBreakupUpdate.data = prjBudgetBreakupData;
       prjBudgetBreakupUpdate.listName = this.constants.listNames.ProjectBudgetBreakup.name;
