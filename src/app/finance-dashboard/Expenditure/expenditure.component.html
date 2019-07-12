@@ -1,6 +1,6 @@
 <div class="ui-g ui-fluid mtb-20">
     <div class="ui-g-12 ui-md-4">
-        <p-calendar [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="dd M , yy"
+        <p-calendar [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="M dd, yy"
             placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()"
             (onClearClick)="setDefault()"></p-calendar>
     </div>
@@ -374,7 +374,7 @@
 
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
+                    <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="M dd, yy"
                         yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true"
                         [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}"
                         formControlName="ContractStartDate">
@@ -392,7 +392,7 @@
 
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
+                    <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="M dd, yy"
                         yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true"
                         [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}"
                         formControlName="ContractEndDate">

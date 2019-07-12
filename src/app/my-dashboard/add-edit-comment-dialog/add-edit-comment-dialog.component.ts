@@ -154,6 +154,8 @@ export class AddEditCommentComponent implements OnInit {
       comment: this.previousComment !== null ? this.previousComment + this.editor.getData() : this.editor.getData(),
       IsMarkComplete: IsMarkComplete
     }
+
+    debugger;
     if (IsMarkComplete) {
       this.ref.close(commentObj);
     }
@@ -170,14 +172,14 @@ export class AddEditCommentComponent implements OnInit {
           }
           this.editor.setData('');
           await this.spServices.update(this.constants.listNames.Schedules.name, this.data.ID, data, "SP.Data.SchedulesListItem");
-          this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
+          this.messageService.add({ key: 'custom-comment', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
 
           this.getComments(this.data, false);
         }
 
       }
       else {
-        this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please enter the comment' });
+        this.messageService.add({ key: 'custom-comment', severity: 'warn', summary: 'Warning Message', detail: 'Please enter the comment' });
       }
     }
   }

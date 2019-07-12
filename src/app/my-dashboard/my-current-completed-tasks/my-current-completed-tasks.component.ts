@@ -227,13 +227,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
     if (this.allTasks.length > 0) {
 
+      this.allTasks.map(c => c.TimeSpent = c.TimeSpent === null ? 0 : c.TimeSpent.replace('.', ':'));
 
-      // this.allTasks.map(c => c.TimeSpent = c.TimeSpent === null ? 0 : c.TimeSpent.split('.')[0] < 10 ?"0" + c.TimeSpent.split('.')[0] +":" + c.TimeSpent.split('.')[1] : c.TimeSpent.split('.')[0] +":" + c.TimeSpent.split('.')[1]);
-
-      this.allTasks.map(c => c.TimeSpent = c.TimeSpent === null ? 0 : parseFloat(c.TimeSpent));
-
-      this.allTasks.map(c => c.StartDate = new Date(this.datePipe.transform(c.StartDate, 'd MMM, y, h:mm a')));
-      this.allTasks.map(c => c.DueDate = new Date(this.datePipe.transform(c.DueDate, 'd MMM, y, h:mm a')));
+      this.allTasks.map(c => c.StartDate = new Date(this.datePipe.transform(c.StartDate, 'MMM d, y, h:mm a')));
+      this.allTasks.map(c => c.DueDate = new Date(this.datePipe.transform(c.DueDate, 'MMM d, y, h:mm a')));
 
       if (this.TabName === 'MyCompletedTask') {
         this.allTasks.filter(c => c.Status === 'Completed' || c.Status === 'Auto Closed').map(c => c.MainStatus = 'Closed');
@@ -275,7 +272,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
         });
       }
 
-      this.AllTaskColArray = this.route.snapshot.data.type === 'MyCompletedTask' ? { Status: [{ label: 'Closed', value: 'Closed' }], TaskStatus: [{ label: 'All', value: null }], TaskName: [{ label: 'All', value: null }], StartDate: [{ label: 'All', value: null }], DueDate: [{ label: 'All', value: null }] } : { Status: [{ label: 'All', value: null }], TaskStatus: [{ label: 'All', value: null }], TaskName: [{ label: 'All', value: null }], StartDate: [{ label: 'All', value: null }], DueDate: [{ label: 'All', value: null }] };
+      this.AllTaskColArray = this.route.snapshot.data.type === 'MyCompletedTask' ? { Status: [{ label: 'Closed', value: 'Closed' }], TaskStatus: [], TaskName: [], StartDate: [], DueDate: [] } : { Status: [], TaskStatus: [], TaskName: [], StartDate: [], DueDate: [] };
       this.createColFieldValues();
 
     }
@@ -293,16 +290,16 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     this.AllTaskColArray.TaskStatus.push.apply(this.AllTaskColArray.TaskStatus, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
     this.AllTaskColArray.TaskName.push.apply(this.AllTaskColArray.TaskName, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.DisplayTitle, value: a.DisplayTitle }; return b; })));
     this.AllTaskColArray.Status.push.apply(this.AllTaskColArray.Status, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.MainStatus, value: a.MainStatus }; return b; })));
-    this.AllTaskColArray.StartDate.push.apply(this.AllTaskColArray.StartDate, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: this.datePipe.transform(a.StartDate, "d MMM, y, h:mm a"), value: a.StartDate }; return b; })));
-    this.AllTaskColArray.DueDate.push.apply(this.AllTaskColArray.DueDate, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: this.datePipe.transform(a.DueDate, "d MMM, y, h:mm a"), value: a.DueDate }; return b; })));
+    this.AllTaskColArray.StartDate.push.apply(this.AllTaskColArray.StartDate, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: this.datePipe.transform(a.StartDate, "MMM d, y, h:mm a"), value: a.StartDate }; return b; })));
+    this.AllTaskColArray.DueDate.push.apply(this.AllTaskColArray.DueDate, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: this.datePipe.transform(a.DueDate, "MMM d, y, h:mm a"), value: a.DueDate }; return b; })));
 
 
     this.AllTaskColArray.StartDate = this.AllTaskColArray.StartDate.sort((a, b) =>
-    new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
+      new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
     );
 
     this.AllTaskColArray.DueDate = this.AllTaskColArray.DueDate.sort((a, b) =>
-    new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
+      new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
     );
 
 
@@ -449,8 +446,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   async getAddUpdateComment(task, IsMarkComplete) {
 
-    console.log(task);
-
     const ref = this.dialogService.open(AddEditCommentComponent, {
       data: {
         task: task,
@@ -462,10 +457,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     });
     ref.onClose.subscribe(async (Commentobj: any) => {
 
+      this.loaderenable = true;
+      this.allTasks = [];
 
       if (Commentobj) {
         if (Commentobj.IsMarkComplete) {
-          this.loaderenable = true;
+
           task.TaskComments = Commentobj.comment;
           task.Status = "Completed";
           var response = await this.myDashboardConstantsService.CompleteTask(task);
@@ -475,7 +472,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
           }
           else {
             this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task Updated Successfully.' });
-           
+
             if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
               this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
             }
@@ -486,7 +483,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
         }
       }
 
-      this.loaderenable=true;
+
       this.GetDatabyDateSelection(this.selectedTab, this.days);
 
     });
@@ -602,17 +599,17 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   async checkCompleteTask(task) {
 
-      this.batchContents = new Array();
-      const batchGuid = this.spServices.generateUUID();
+    this.batchContents = new Array();
+    const batchGuid = this.spServices.generateUUID();
 
-      let TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
-      TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, task.ID);
+    let TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
+    TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, task.ID);
 
-      const TaskDetailsUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TaskDetails);
-      this.spServices.getBatchBodyGet(this.batchContents, batchGuid, TaskDetailsUrl);
-      this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    debugger
-    console.log(this.response);
+    const TaskDetailsUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TaskDetails);
+    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, TaskDetailsUrl);
+    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+
+
     var stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
 
     if (stval === "Completed" || stval === "AllowCompletion" || stval === "Auto Closed") {

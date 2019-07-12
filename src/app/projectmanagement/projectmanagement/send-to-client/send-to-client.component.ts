@@ -9,6 +9,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
+import { PMCommonService } from '../../services/pmcommon.service';
 declare var $;
 @Component({
   selector: 'app-send-to-client',
@@ -100,7 +101,8 @@ export class SendToClientComponent implements OnInit {
     private commonService: CommonService,
     private datePipe: DatePipe,
     public pmObject: PMObjectService,
-    private pmConstant: PmconstantService
+    private pmConstant: PmconstantService,
+    public pmCommonService: PMCommonService,
   ) {
   }
   public changeSuccessMessage(message) {

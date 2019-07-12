@@ -329,6 +329,33 @@
             </p-footer>
         </p-dialog>
     </div>
+    <div *ngIf="pmObject.isReasonSectionVisible">
+        <p-dialog [(visible)]="pmObject.isReasonSectionVisible" [modal]="true" [style]="{width: '900px'}">
+            <p-header>
+                Cancel Project
+            </p-header>
+            <div class="ui-grid-row mt-20">
+                <div class="ui-grid-col-2"><span class="compulsory">*</span>Reason Type</div>
+                <div class="ui-grid-col-4">
+                    <p-dropdown [(ngModel)]="selectedReasonType" [options]="cancelReasonArray"
+                        placeholder="Please Select" [showClear]="true" [filter]="true"></p-dropdown>
+                </div>
+            </div>
+            <div class="ui-grid-row mt-20">
+                <div class="ui-grid-col-2"><span class="compulsory">*</span>Reason</div>
+                <div class="ui-grid-col-4">
+                    <div class="floatLeft">
+                        <textarea [(ngModel)]="selectedReason" rows="3" cols="30"></textarea>
+                    </div>
+                </div>
+            </div>
+            <p-footer>
+                <p-button type="button" (click)="saveCancelProject()" label="Confirm"></p-button>
+                <p-button type="button" (click)="pmObject.isReasonSectionVisible=false" label="Cancel">
+                </p-button>
+            </p-footer>
+        </p-dialog>
+    </div>
     <p-toast position="bottom-right" key="allProject"></p-toast>
 </div>
 <app-timeline-history #timelineRef></app-timeline-history>

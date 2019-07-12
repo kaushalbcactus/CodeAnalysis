@@ -58,7 +58,7 @@ position="bottom-center">
          
         
          <p-calendar [style]="{'min-width':'100%'}"  [minDate]="minDateValue" placeholder="Select Date"  [(ngModel)]="eventDate"  [maxDate] ="maxDate" [disabledDays]="[0,6]"
-         dateFormat="dd M , yy"yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
+         dateFormat="M dd, yy"yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
         [yearNavigator]="true" ></p-calendar>
       
 
@@ -103,7 +103,7 @@ position="bottom-center">
         <td>      
           
             <p-calendar [style]="{'min-width':'100%'}"  [minDate]="minDateValue" placeholder="Select Start Date"  [(ngModel)]="eventDate"  [disabledDays]="[0,6]"
-            dateFormat="dd M , yy"yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
+            dateFormat="M dd, yy"yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
            [yearNavigator]="true" ></p-calendar>
         
         </td>
@@ -115,7 +115,7 @@ position="bottom-center">
         <th>End Date:</th>
         <td>      
   
-            <p-calendar [style]="{'min-width':'100%'}"  [minDate]="eventDate" placeholder="Select End Date"  [(ngModel)]="eventEndDate"  [disabledDays]="[0,6]" dateFormat="dd M , yy"yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" (onClose)="EnableHalfDay()"
+            <p-calendar [style]="{'min-width':'100%'}"  [minDate]="eventDate" placeholder="Select End Date"  [(ngModel)]="eventEndDate"  [disabledDays]="[0,6]" dateFormat="M dd, yy"yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true" (onClose)="EnableHalfDay()"
            [yearNavigator]="true" ></p-calendar>
         </td>
      </tr>

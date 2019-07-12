@@ -606,14 +606,14 @@ export class MyDashboardConstantsService {
 
       var EmailTemplate = this.Emailtemplate.Content;
       var objEmailBody = [];
-
+debugger;
       objEmailBody.push({
         "key": "@@Val1@@",
         "value": task.ProjectCode
       });
       objEmailBody.push({
         "key": "@@Val2@@",
-        "value": element.SubMilestones ? element.Title + " - " + element.SubMilestones : element.Title
+        "value": element.SubMilestones ? element.SubMilestones !=="Default" ? element.Title + " - " + element.SubMilestones : element.Title : element.Title
       });
       objEmailBody.push({
         "key": "@@Val3@@",
