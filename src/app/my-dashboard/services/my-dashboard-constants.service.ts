@@ -317,7 +317,7 @@ export class MyDashboardConstantsService {
         return response;
       }
       else {
-       
+
         response = await this.saveTask(task, true);
       }
     }
@@ -345,7 +345,7 @@ export class MyDashboardConstantsService {
 
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Url);
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-   
+
     this.allDocuments = this.response[0];
 
     this.allDocuments.map(c => c.isFileMarkedAsFinal = c.ListItemAllFields.Status.split(" ").splice(-1)[0] === "Complete" ? true : false);
@@ -375,7 +375,7 @@ export class MyDashboardConstantsService {
 
 
   async getJCIDS(task) {
-   
+
     var isJcIdFound = false;
     const batchGuid = this.spServices.generateUUID();
     var batchContents = new Array();
@@ -419,10 +419,35 @@ export class MyDashboardConstantsService {
     }
     this.response = await this.spServices.getDataByApi(batchGuid, batchContents);
 
+    this.jcSubId=undefined;
+    this.jcId=undefined;
     if (this.response.length > 0) {
-      this.jcSubId = this.response[0].length > 0 ? this.response[0][0].ID : 0;
-      this.jcId = this.response.length > 1 ? this.response[1].length > 0 ? this.response[1][0].ID : 0 : 0;
-      isJcIdFound = true;
+
+      switch (task.Task) {
+        case 'Submission Pkg':
+            this.jcSubId = this.response[0].length > 0 ? this.response[0][0].ID : 0;
+           
+          break;
+        case 'Galley':
+            this.jcSubId = this.response[0].length > 0 ? this.response[0][0].ID : 0;
+            this.jcId = this.response.length > 1 ? this.response[1].length > 0 ? this.response[1][0].ID : 0 : 0;
+          break;
+        case 'Submit':
+            this.jcSubId = this.response[0].length > 0 ? this.response[0][0].ID : 0;
+            this.jcId = this.response.length > 1 ? this.response[1].length > 0 ? this.response[1][0].ID : 0 : 0;
+          break;
+        case 'Journal Requirement':
+            this.jcId = this.response[0].length > 0 ? this.response[0][0].ID : 0;
+          break;
+      }
+
+      if(this.jcSubId || this.jcId)
+      {
+        isJcIdFound = true;
+      }
+
+     
+     
     }
     return isJcIdFound;
   }
@@ -433,6 +458,7 @@ export class MyDashboardConstantsService {
   // **************************************************************************************************************************************
 
   async saveTask(task, isJcIdFound) {
+    debugger;
 
     const batchGuid = this.spServices.generateUUID();
     var batchContents = new Array();
@@ -453,7 +479,7 @@ export class MyDashboardConstantsService {
       const count = this.DocumentArray.length;
       this.DocumentArray.forEach(function (value, i) {
         docUrl += value.ServerRelativeUrl;
-        docUrl += i < count - 1  ? ";#" : '';
+        docUrl += i < count - 1 ? ";#" : '';
       });
       if (task.Task === 'Submission Pkg') {
         const jcSubmissionObj = {
@@ -461,8 +487,8 @@ export class MyDashboardConstantsService {
           SubmissionPkgURL: docUrl
         };
 
-        const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
-        this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(jcSubmissionObj), false);
+        const SubPackPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
+        this.spServices.getChangeSetBodySC(batchContents, changeSetId, SubPackPoint, JSON.stringify(jcSubmissionObj), false);
 
       }
       else if (task.Task === 'Galley') {
@@ -474,8 +500,8 @@ export class MyDashboardConstantsService {
           GalleyURL: docUrl
         };
 
-        const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.jcGalley.name + "')/items";
-        this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(jcSubmissionObj), false);
+        const GallyPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.jcGalley.name + "')/items";
+        this.spServices.getChangeSetBodySC(batchContents, changeSetId, GallyPoint, JSON.stringify(jcSubmissionObj), true);
         //--------------------------------------- new Url--------------------------------------------------//
         const jcendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
         const jcSubObj = {
@@ -495,7 +521,7 @@ export class MyDashboardConstantsService {
         const ProjetcInfoPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.ProjectInformation.name + "')/items(" + +(this.projectInfo.ID) + ")";
         const projectInfoObj = {
           __metadata: { type: 'SP.Data.ProjectInformationListItem' },
-          Status: 'Galleyed'
+          PubSupportStatus: 'Galleyed'
         };
         this.spServices.getChangeSetBodySC(batchContents, changeSetId, ProjetcInfoPoint, JSON.stringify(projectInfoObj), false);
 
@@ -509,8 +535,8 @@ export class MyDashboardConstantsService {
           SubmissionURL: docUrl
         };
 
-        const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
-        this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(jcSubmissionObj), false);
+        const SubmitPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
+        this.spServices.getChangeSetBodySC(batchContents, changeSetId, SubmitPoint, JSON.stringify(jcSubmissionObj), false);
         //--------------------------------------- new Url--------------------------------------------------//
         const jcConendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JournalConf.name + "')/items(" + +(this.jcId) + ")";
         const jcConObj = {
@@ -575,8 +601,8 @@ export class MyDashboardConstantsService {
         __metadata: { type: 'SP.Data.SchedulesListItem' },
         PreviousTaskClosureDate: new Date()
       };
-      const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(element.ID) + ")";
-      this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(data), false);
+      const tempendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(element.ID) + ")";
+      this.spServices.getChangeSetBodySC(batchContents, changeSetId, tempendPoint, JSON.stringify(data), false);
 
       var EmailTemplate = this.Emailtemplate.Content;
       var objEmailBody = [];
@@ -587,7 +613,7 @@ export class MyDashboardConstantsService {
       });
       objEmailBody.push({
         "key": "@@Val2@@",
-        "value": element.SubMilestones ?  element.Title + " - " + element.SubMilestones :element.Title 
+        "value": element.SubMilestones ? element.Title + " - " + element.SubMilestones : element.Title
       });
       objEmailBody.push({
         "key": "@@Val3@@",
@@ -611,13 +637,13 @@ export class MyDashboardConstantsService {
       });
       objEmailBody.push({
         "key": "@@Val8@@",
-        "value": task.TaskComments  ? task.TaskComments :''
+        "value": task.TaskComments ? task.TaskComments : ''
       });
       objEmailBody.push({
         "key": "@@Val0@@",
         "value": element.ID
       });
-    
+
       objEmailBody.forEach(element => {
         EmailTemplate = EmailTemplate.replace(RegExp(element.key, "gi"), element.value);
       });

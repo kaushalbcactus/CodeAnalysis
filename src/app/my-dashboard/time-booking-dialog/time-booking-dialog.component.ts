@@ -401,12 +401,12 @@ export class TimeBookingDialogComponent implements OnInit {
         if (dbTasks[i].Entity) {
 
           if (!dbTasks[i].ProjectCode) {
-            this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: "Please Select Project / To remove unwanted line, please select 'Select Client'" });
+            this.messageService.add({ key: 'custom-booking', severity: 'warn', summary: 'Warning Message', detail: "Please Select Project / To remove unwanted line, please unselect Client" });
 
             return false;
           }
           else if (!dbTasks[i].Milestone) {
-            this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: "Please Select Milestone / To remove unwanted line, please select 'Select Client'" });
+            this.messageService.add({ key: 'custom-booking', severity: 'warn', summary: 'Warning Message', detail: "Please Select Milestone / To remove unwanted line, please unselect Client" });
             return false;
           }
           else {

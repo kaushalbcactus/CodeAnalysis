@@ -75,7 +75,7 @@
                                                           Table View Data
            ********************************************************************************************************** -->
 
-<div *ngIf="allTasks.length > 0 && !loderenable" style="padding-top: 5px;">
+<div class="MyCurrentCompletedTable" *ngIf="allTasks.length > 0 && !loderenable" style="padding-top: 5px;">
     <p-table #taskId [columns]="cols" [value]="allTasks" [paginator]="true" [rows]="10" [style]="{'font-size':'13px','min-height':'500px'}"
         [exportFilename]="TabName ==='MyCompletedTask' ? 'My Completed Tasks':'My Current Tasks'">
 
@@ -141,13 +141,13 @@
 
                 </td>
                 <td>
-                    <span *ngIf="rowData.MainStatus !=='Planned'">
-                        <p-menu #popupMenu [style]="{'width': '20em'}" [popup]="true" appendTo="body"
+                    <div *ngIf="rowData.MainStatus !=='Planned'">
+                        <p-menu #popupMenu [style]="{'width': '20em'}" [popup]="true" 
                             [model]="taskMenu"></p-menu>
 
                         <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                             (click)="openPopup(rowData, popupMenu);popupMenu.toggle($event);"></i>
-                    </span>
+                    </div>
                 </td>
             </tr>
         </ng-template>

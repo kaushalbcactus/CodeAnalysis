@@ -83,4 +83,30 @@ body .ui-chkbox .ui-chkbox-box.ui-state-active, body .ui-button, body .ui-button
 :host ::ng-deep .ui-slidemenu-wrapper {
   height: 130px !important;
 } 
+
+
+
+     
+::ng-deep .MyCurrentCompletedTable  div.ui-table-wrapper {
+    min-height: 440px;
+  }
+  
+  ::ng-deep  .MyCurrentCompletedTable  .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
+    overflow: visible;
+  }
+  
+  ::ng-deep  .MyCurrentCompletedTable  .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
+    position: relative;
+  }
+  
+  ::ng-deep  .MyCurrentCompletedTable  .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div > i {
+    top: 0px !important;
+  }
+  
+  ::ng-deep  .MyCurrentCompletedTable  .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+    top: 0px !important;
+    left: inherit !important;
+    right: 40px !important;
+  }
+  
   

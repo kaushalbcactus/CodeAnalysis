@@ -54,7 +54,7 @@
                                                           Table View Data
 ************************************************************************************************ -->
 
-  <div *ngIf="!loaderenable && tableviewenable" style="padding-top: 5px;">
+  <div *ngIf="!loaderenable && tableviewenable" class="SearchProjectTable" style="padding-top: 5px;">
     <p-table #project [columns]="cols" [value]="ProjectList" [exportFilename]="ProjectList" [paginator]="true" [rows]="10" [style]="{'font-size':'12px','min-height':'500px'}"  >
 
       <ng-template pTemplate="header" let-columns>
@@ -101,13 +101,13 @@
             <span *ngIf="col.field !== 'Created'"> {{rowData[col.field]}} </span>
           </td>
           <td>
-            <span>
-              <p-menu #popupMenu [popup]="true" appendTo="body" [model]="projectMenu">
+            <div>
+              <p-menu #popupMenu [popup]="true"  [model]="projectMenu">
               </p-menu>
 
               <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                 (click)="openPopup(rowData, popupMenu);popupMenu.toggle($event);"></i>
-            </span>
+            </div>
           </td>
         </tr>
       </ng-template>

@@ -475,7 +475,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
           }
           else {
             this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task Updated Successfully.' });
-            this.GetDatabyDateSelection(this.selectedTab, this.days);
+           
             if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
               this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
             }
@@ -485,6 +485,9 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
           this.UpdateComment(Commentobj.comment, task);
         }
       }
+
+      this.loaderenable=true;
+      this.GetDatabyDateSelection(this.selectedTab, this.days);
 
     });
   }

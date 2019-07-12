@@ -167,36 +167,46 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
 
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Url);
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
+debugger;
     this.allDocuments = this.response[0];
 
-    this.DocumentArray = this.allDocuments;
-    if (this.allDocuments.length > 0) {
-      var Ids = this.DocumentArray.map(c => c.DocIds = c.ListItemAllFields.EditorId).filter((el, i, a) => i === a.indexOf(el));
-
-      if (Ids.length > 0)
-        var users = await this.getUsers(Ids);
-      this.loaderenable = false;
-      this.DocumentArray.map(c => c.taskName = c.ListItemAllFields.TaskName != null ? c.ListItemAllFields.TaskName : "");
-      this.DocumentArray.map(c => c.modifiedUserName = users.find(d => d.Id === c.ListItemAllFields.EditorId) !== undefined ? users.find(d => d.Id === c.ListItemAllFields.EditorId).Title : '');
-      this.DocumentArray.map(c => c.status = c.ListItemAllFields.Status !== null ? c.ListItemAllFields.Status : '');
-      this.DocumentArray.map(c => c.isFileMarkedAsFinal = c.status.split(" ").splice(-1)[0] === "Complete" ? true : false);
-      this.DocumentArray.map(c => c.ModifiedDateString = this.datePipe.transform(c.ListItemAllFields.Modified, 'MMM d, y, h:mm a'));
-
-      this.DocumentArray = this.DocumentArray.filter(c => c.isFileMarkedAsFinal);
-
-      if (this.DocumentArray.length) {
-
-        this.DocumentArray = this.DocumentArray.sort((a, b) =>
-
-          new Date(a.ModifiedDateString).getTime() < new Date(b.ModifiedDateString).getTime() ? 1 : -1
-        );
+    if(this.response.length > 0)
+    {
+      this.DocumentArray = this.allDocuments;
+    
+      if (this.allDocuments.length > 0) {
+        var Ids = this.DocumentArray.map(c => c.DocIds = c.ListItemAllFields.EditorId).filter((el, i, a) => i === a.indexOf(el));
+  
+        if (Ids.length > 0)
+          var users = await this.getUsers(Ids);
+        this.loaderenable = false;
+        this.DocumentArray.map(c => c.taskName = c.ListItemAllFields.TaskName != null ? c.ListItemAllFields.TaskName : "");
+        this.DocumentArray.map(c => c.modifiedUserName = users.find(d => d.Id === c.ListItemAllFields.EditorId) !== undefined ? users.find(d => d.Id === c.ListItemAllFields.EditorId).Title : '');
+        this.DocumentArray.map(c => c.status = c.ListItemAllFields.Status !== null ? c.ListItemAllFields.Status : '');
+        this.DocumentArray.map(c => c.isFileMarkedAsFinal = c.status.split(" ").splice(-1)[0] === "Complete" ? true : false);
+        this.DocumentArray.map(c => c.ModifiedDateString = this.datePipe.transform(c.ListItemAllFields.Modified, 'MMM d, y, h:mm a'));
+  
+        this.DocumentArray = this.DocumentArray.filter(c => c.isFileMarkedAsFinal);
+  
+        if (this.DocumentArray.length) {
+  
+          this.DocumentArray = this.DocumentArray.sort((a, b) =>
+  
+            new Date(a.ModifiedDateString).getTime() < new Date(b.ModifiedDateString).getTime() ? 1 : -1
+          );
+        }
       }
+      else {
+        this.loaderenable = false;
+      }
+  
     }
-    else {
+    else
+    {
       this.loaderenable = false;
     }
 
+    
 
     this.selectedDocuments = [];
 
