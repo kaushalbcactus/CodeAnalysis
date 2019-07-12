@@ -589,7 +589,6 @@ export class PMCommonService {
       BusinessVertical: addObj.ProjectAttributes.PracticeArea,
       WBJID: addObj.ProjectAttributes.AlternateShortTitle,
       SOWBoxLink: addObj.ProjectAttributes.SOWBoxLink,
-      SOWCode: addObj.SOWSelect.SOWCode,
       CMLevel1Id: {
         results: addObj.ProjectAttributes.ActiveCM1
       },
@@ -613,6 +612,7 @@ export class PMCommonService {
       SOWLink: addObj.FinanceManagement.SOWFileURL ? addObj.FinanceManagement.SOWFileURL : ''
     };
     if (isCreate) {
+      data.SOWCode = addObj.SOWSelect.SOWCode;
       data.Milestones = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.Milestones : '';
       data.DeliverableType = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.DeliverableType :
         addObj.Timeline.NonStandard.DeliverableType;
