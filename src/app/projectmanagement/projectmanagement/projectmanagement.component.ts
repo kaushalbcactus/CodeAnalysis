@@ -247,7 +247,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         this.addSowForm.get('cactusBillingEntity').setValue(clientInfo[0].BillingEntity);
         if (clientInfo[0].CMLevel1 && clientInfo[0].CMLevel1.results && clientInfo[0].CMLevel1.results.length) {
           const cm1 = this.pmService.getIds(clientInfo[0].CMLevel1.results);
-          const found = this.sowDropDown.CMLevel1.some(r => cm1.indexOf(r) >= 0);
+          // const found = this.sowDropDown.CMLevel1.some(r => cm1.indexOf(r) >= 0); // Commented by kaushal on 12-07-2019
+          const found = this.sowDropDown.CMLevel1.some(r => cm1.indexOf(r.value) >= 0);
           if (found) {
             this.addSowForm.get('cm').setValue(cm1);
           }
@@ -256,7 +257,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         this.addSowForm.get('cm2').setValue(cm2);
         if (clientInfo[0].DeliveryLevel1 && clientInfo[0].DeliveryLevel1.results && clientInfo[0].DeliveryLevel1.results.length) {
           const del1 = this.pmService.getIds(clientInfo[0].DeliveryLevel1.results);
-          const found = this.sowDropDown.Delivery.some(r => del1.indexOf(r) >= 0);
+          const found = this.sowDropDown.Delivery.some(r => del1.indexOf(r.value) >= 0);
           if (found) {
             this.addSowForm.get('deliveryOptional').setValue(del1);
           }
@@ -428,7 +429,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
     const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
     console.log(res);
-    if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name') && !res.hasOwnProperty('hasError')) {
+    // Added by kaushal on 12-07-2019
+    if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name') ) { // && !res.hasOwnProperty('hasError')
       this.pmObject.addSOW.SOWFileURL = res.ServerRelativeUrl;
       this.pmObject.addSOW.SOWFileName = res.Name;
       this.pmObject.addSOW.SOWDocProperties = res;
@@ -554,6 +556,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     tempArray = tempArray.concat(sowObj.SOWOwner, sowObj.CM1, sowObj.CM2, sowObj.DeliveryOptional, sowObj.Delivery);
     arrayTo = this.pmService.getEmailId(tempArray);
     ccArray = this.pmService.getEmailId(sowObj.CM1);
+    ccArray.push(this.globalObject.currentUser.email); // Added by kaushal on 12-07-2019
     this.pmService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.APPROVED_SOW, objEmailBody, mailSubject, arrayTo,
       ccArray); // Send Mail
   }
@@ -740,7 +743,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       DeliveryLevel2Id: sowObj.Delivery,
       BDId: sowObj.SOWOwner,
       PrimaryPOC: sowObj.Poc,
-      AdditionalPOC: sowObj.PocOptional.join(';#'),
+      AdditionalPOC: sowObj.PocOptional ? sowObj.PocOptional.join(';#') : [],
       AllResourcesId: {
         results: sowObj.AllOperationId
       }

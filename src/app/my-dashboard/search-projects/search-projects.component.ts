@@ -125,7 +125,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
   createColFieldValues() {
 
-    this.ProjectColArray = { SOWCode: [{ label: 'All', value: null }], ProjectCode: [{ label: 'All', value: null }], WBJID: [{ label: 'All', value: null }], ClientLegalEntity: [{ label: 'All', value: null }], DeliverableType: [{ label: 'All', value: null }], ProjectType: [{ label: 'All', value: null }], Status: [{ label: 'All', value: null }], CreatedBy: [{ label: 'All', value: null }], Created: [{ label: 'All', value: null }] };
+    this.ProjectColArray = { SOWCode: [], ProjectCode: [], WBJID: [], ClientLegalEntity: [], DeliverableType: [], ProjectType: [], Status: [], CreatedBy: [], Created: [] };
     this.ProjectColArray.SOWCode.push.apply(this.ProjectColArray.SOWCode, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; })));
 
     this.ProjectColArray.ProjectCode.push.apply(this.ProjectColArray.ProjectCode, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; })));
@@ -144,7 +144,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.ProjectColArray.CreatedBy.push.apply(this.ProjectColArray.CreatedBy, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; })));
 
 
-    this.ProjectColArray.Created.push.apply(this.ProjectColArray.Created, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: this.datePipe.transform(a.Created, "d MMM, y, h:mm a"), value: a.Created }; return b; })));
+    this.ProjectColArray.Created.push.apply(this.ProjectColArray.Created, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: this.datePipe.transform(a.Created, "MMM d, y, h:mm a"), value: a.Created }; return b; })));
 
     this.ProjectColArray.Created = this.ProjectColArray.Created.sort((a, b) =>
     new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
@@ -293,9 +293,11 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.ProjectDetails.cmLevel1 = this.response[1][0].CMLevel1;
     
 
-    this.projectResource.CMMembers =  this.response[1].map(c=>c).map(c=>c.CMLevel1).map(c=>c.results).length  > 0 ? this.response[1].map(c=>c).map(c=>c.CMLevel1).map(c=>c.results)[0].map(c=>c.Title) + ", " + this.response[1][0].CMLevel2.Title : this.response[1][0].CMLevel2.Title;
+    this.projectResource.CMMembers =  this.response[1].map(c=>c).map(c=>c.CMLevel1)[0].results ? this.response[1].map(c=>c).map(c=>c.CMLevel1).map(c=>c.results)[0].map(c=>c.Title) + ", " + this.response[1][0].CMLevel2.Title : this.response[1][0].CMLevel2.Title;
 
-    this.projectResource.PMMembers = this.response[1][0].DeliveryLevel1.Title ? this.response[1][0].DeliveryLevel1.Title + ", " + this.response[1][0].DeliveryLevel2.Title : this.response[1][0].DeliveryLevel2.Title;
+    this.projectResource.PMMembers =  this.response[1].map(c=>c).map(c=>c.DeliveryLevel1)[0].results ? this.response[1].map(c=>c).map(c=>c.DeliveryLevel1).map(c=>c.results)[0].map(c=>c.Title) + ", " + this.response[1][0].DeliveryLevel2.Title : this.response[1][0].DeliveryLevel2.Title;
+
+    // this.projectResource.PMMembers = this.response[1][0].DeliveryLevel1.Title ? this.response[1][0].DeliveryLevel1.Title + ", " + this.response[1][0].DeliveryLevel2.Title : this.response[1][0].DeliveryLevel2.Title;
     
     this.projectResource.PrimaryResource = this.response[0].map(c=>c).map(c=> c.PrimaryResMembers).find(c=>c.results) !== undefined ? this.response[0].map(c=>c).map(c=> c.PrimaryResMembers).map(c=>c.results)[0].map(e => e.Title) : '';
 

@@ -54,7 +54,7 @@
                                                           Table View Data
 ************************************************************************************************ -->
 
-  <div *ngIf="!loaderenable && tableviewenable" style="padding-top: 5px;">
+  <div *ngIf="!loaderenable && tableviewenable" class="SearchProjectTable" style="padding-top: 5px;">
     <p-table #project [columns]="cols" [value]="ProjectList" [exportFilename]="ProjectList" [paginator]="true" [rows]="10" [style]="{'font-size':'12px','min-height':'500px'}"  >
 
       <ng-template pTemplate="header" let-columns>
@@ -70,25 +70,25 @@
           <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" style="overflow: visible;">
             <ng-container *ngIf="col.field">
 
-              <p-dropdown filter="true" *ngSwitchCase="'SOWCode'" [options]="ProjectColArray.SOWCode" 
-                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown filter="true" *ngSwitchCase="'ProjectCode'" [options]="ProjectColArray.ProjectCode" 
-                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown filter="true" *ngSwitchCase="'WBJID'" [options]="ProjectColArray.WBJID" 
-                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown filter="true" *ngSwitchCase="'ClientLegalEntity'" [options]="ProjectColArray.ClientLegalEntity"
-                 (onChange)="project.filter($event.value, col.field, 'equals')">
-              </p-dropdown>
-              <p-dropdown filter="true" *ngSwitchCase="'DeliverableType'" [options]="ProjectColArray.DeliverableType" 
-                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown filter="true" *ngSwitchCase="'ProjectType'" [options]="ProjectColArray.ProjectType" 
-                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown filter="true" *ngSwitchCase="'Status'" [options]="ProjectColArray.Status" 
-                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-              <p-dropdown filter="true" *ngSwitchCase="'CreatedBy'" [options]="ProjectColArray.CreatedBy" 
-                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
-                <p-dropdown filter="true" *ngSwitchCase="'Created'" [options]="ProjectColArray.Created" 
-                (onChange)="project.filter($event.value, col.field, 'equals')"></p-dropdown>
+              <p-multiSelect filter="true" *ngSwitchCase="'SOWCode'" [options]="ProjectColArray.SOWCode"   defaultLabel="All"
+                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
+              <p-multiSelect filter="true" *ngSwitchCase="'ProjectCode'" [options]="ProjectColArray.ProjectCode"  defaultLabel="All"
+                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
+              <p-multiSelect filter="true" *ngSwitchCase="'WBJID'"  defaultLabel="All" [options]="ProjectColArray.WBJID" 
+                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
+              <p-multiSelect filter="true" *ngSwitchCase="'ClientLegalEntity'" [options]="ProjectColArray.ClientLegalEntity"  defaultLabel="All"
+                 (onChange)="project.filter($event.value, col.field, 'in')">
+              </p-multiSelect>
+              <p-multiSelect filter="true" *ngSwitchCase="'DeliverableType'" [options]="ProjectColArray.DeliverableType"  defaultLabel="All"
+                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
+              <p-multiSelect filter="true" *ngSwitchCase="'ProjectType'" [options]="ProjectColArray.ProjectType"   defaultLabel="All"
+                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
+              <p-multiSelect filter="true" *ngSwitchCase="'Status'" [options]="ProjectColArray.Status"  defaultLabel="All"
+                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
+              <p-multiSelect filter="true" *ngSwitchCase="'CreatedBy'" [options]="ProjectColArray.CreatedBy"  defaultLabel="All"
+                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
+                <p-multiSelect filter="true" *ngSwitchCase="'Created'" [options]="ProjectColArray.Created"  defaultLabel="All"
+                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
             </ng-container>
           </th>
           <th></th>
@@ -101,13 +101,13 @@
             <span *ngIf="col.field !== 'Created'"> {{rowData[col.field]}} </span>
           </td>
           <td>
-            <span>
-              <p-menu #popupMenu [popup]="true" appendTo="body" [model]="projectMenu">
+            <div>
+              <p-menu #popupMenu [popup]="true"  [model]="projectMenu">
               </p-menu>
 
               <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                 (click)="openPopup(rowData, popupMenu);popupMenu.toggle($event);"></i>
-            </span>
+            </div>
           </td>
         </tr>
       </ng-template>

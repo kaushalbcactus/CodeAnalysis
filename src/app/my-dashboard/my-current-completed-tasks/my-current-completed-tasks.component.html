@@ -47,9 +47,12 @@
             (click)="GetDatabyDateSelection('Past',14)"></button>
 
         <p-calendar [(ngModel)]="rangeDates" selectionMode="range" (onClose)="GetDatabyDateSelection('Custom',0)"
-            [style]="{'width':'130%'}" numberOfMonths='1' appendTo="body" dateFormat="dd M , yy" [showIcon]="true"
+            [style]="{'width':'130%'}" numberOfMonths='1' appendTo="body" dateFormat="M dd, yy" [showIcon]="true"
             [disabledDays]="[0,6]" [readonlyInput]="true" placeholder="Select Custom Dates"
             [style]="{'cursor': 'pointer'}"></p-calendar>
+
+
+         
         <!-- yearRange="{{yearsRange}}"  -->
     </div>
     <div fxLayoutAlign="start center" fxFlex="3" fxLayoutGap="10px">
@@ -75,7 +78,7 @@
                                                           Table View Data
            ********************************************************************************************************** -->
 
-<div *ngIf="allTasks.length > 0 && !loderenable" style="padding-top: 5px;">
+<div class="MyCurrentCompletedTable" *ngIf="allTasks.length > 0 && !loderenable" style="padding-top: 5px;">
     <p-table #taskId [columns]="cols" [value]="allTasks" [paginator]="true" [rows]="10" [style]="{'font-size':'13px','min-height':'500px'}"
         [exportFilename]="TabName ==='MyCompletedTask' ? 'My Completed Tasks':'My Current Tasks'">
 
@@ -83,7 +86,7 @@
             <tr>
                 <th style="width: 4em;">No.</th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field"
-                    [ngStyle]="{'width': col.field === 'ExpectedTime' || col.field === 'TimeSpent' ? '8em':'auto' }"
+                    [ngStyle]="{'width': (col.field === 'ExpectedTime' || col.field === 'TimeSpent' ) ? '10em': (col.field === 'StartDate' || col.field === 'DueDate'|| col.field === 'MainStatus' || col.field === 'Status') ? '13em' : 'auto' }"
                     pResizableColumn pReorderableColumn>
                     {{col.header}}
                     <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
@@ -96,18 +99,18 @@
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" style="overflow: visible;">
                     <ng-container *ngIf="col.field">
 
-                        <p-dropdown [disabled]="TabName ==='MyCompletedTask'" filter="true" *ngSwitchCase="'MainStatus'"
-                            [options]="AllTaskColArray.Status" 
-                            (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
-                        <p-dropdown *ngSwitchCase="'Status'" filter="true" [options]="AllTaskColArray.TaskStatus" 
-                            (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
-                        <p-dropdown filter="true" *ngSwitchCase="'DisplayTitle'" [options]="AllTaskColArray.TaskName" 
-                            (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
-                        <p-dropdown filter="true" *ngSwitchCase="'StartDate'" [options]="AllTaskColArray.StartDate" 
-                        (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
+                        <p-multiSelect [disabled]="TabName ==='MyCompletedTask'" filter="true" *ngSwitchCase="'MainStatus'"
+                            [options]="AllTaskColArray.Status"   defaultLabel="All"
+                            (onChange)="taskId.filter($event.value, col.field, 'in')"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'Status'" filter="true" [options]="AllTaskColArray.TaskStatus"   defaultLabel="All"
+                            (onChange)="taskId.filter($event.value, col.field, 'in')"></p-multiSelect>
+                        <p-multiSelect filter="true" *ngSwitchCase="'DisplayTitle'" [options]="AllTaskColArray.TaskName"   defaultLabel="All"
+                            (onChange)="taskId.filter($event.value, col.field, 'in')"></p-multiSelect>
+                        <p-multiSelect filter="true" *ngSwitchCase="'StartDate'" [options]="AllTaskColArray.StartDate"   defaultLabel="All"
+                        (onChange)="taskId.filter($event.value, col.field, 'in')"></p-multiSelect>
 
-                        <p-dropdown filter="true" *ngSwitchCase="'DueDate'" [options]="AllTaskColArray.DueDate" 
-                        (onChange)="taskId.filter($event.value, col.field, 'equals')"></p-dropdown>
+                        <p-multiSelect filter="true" *ngSwitchCase="'DueDate'" [options]="AllTaskColArray.DueDate"   defaultLabel="All"
+                        (onChange)="taskId.filter($event.value, col.field, 'in')"></p-multiSelect>
                     </ng-container>
                 </th>
                 <th></th>
@@ -127,7 +130,7 @@
                         *ngIf="col.field !== 'DisplayTitle' && col.field !=='TimeSpent' && col.field !=='StartDate' && col.field !=='DueDate' ">
                         {{rowData[col.field]}}</span>
                     <span *ngIf="col.field ==='StartDate' || col.field ==='DueDate' ">
-                        {{rowData[col.field] | date:'d MMM, y, h:mm a'}}</span>
+                        {{rowData[col.field] | date:' MMM d, y, h:mm a'}}</span>
 
                     <span *ngIf="( col.field ==='TimeSpent' && rowData.MainStatus ==='Planned')">
                         {{rowData[col.field]}}</span>
@@ -141,13 +144,13 @@
 
                 </td>
                 <td>
-                    <span *ngIf="rowData.MainStatus !=='Planned'">
-                        <p-menu #popupMenu [style]="{'width': '20em'}" [popup]="true" appendTo="body"
+                    <div *ngIf="rowData.MainStatus !=='Planned'">
+                        <p-menu #popupMenu [style]="{'width': '20em'}" [popup]="true" 
                             [model]="taskMenu"></p-menu>
 
                         <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                             (click)="openPopup(rowData, popupMenu);popupMenu.toggle($event);"></i>
-                    </span>
+                    </div>
                 </td>
             </tr>
         </ng-template>

@@ -3,7 +3,7 @@
   <div id="modalInnerLoader"></div>
   <div id="modalInnerLoaderText">Loading...</div>
 </div>
-<p-toast styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
+<p-toast styleClass="custom-toast" key="custom-comment" [hideTransitionOptions]="'0ms'"
 position="bottom-center">
 </p-toast>
 <div [ngClass]="{'currentTaskButton' : config.data === undefined , 'timeLineButton': config.data !== undefined}" fxLayout="row" fxLayoutAlign="end center" *ngIf="!modalloaderenable">
@@ -11,9 +11,9 @@ position="bottom-center">
   <button *ngIf="!MarkComplete" type="button" pButton icon="pi pi-check" id="savecomment" style="margin-right: 5px;" (click)="saveComment(false)"
     label="Save Comment"></button>
 
-    <button   *ngIf="MarkComplete" [disabled]="disableComment" type="button" pButton icon="pi pi-check" id="savewithoutcomment" (click)="saveComment(true)" [ngStyle]="{'margin-right': '5px;','cursor': disableComment===false ? 'pointer':'not-allowed'}" (click)="saveComment()"
+    <button   *ngIf="MarkComplete" [disabled]="disableComment" type="button" pButton icon="pi pi-check" id="savewithoutcomment" (click)="saveComment(true)" [ngStyle]="{'margin-right': '5px;','cursor': disableComment===false ? 'pointer':'not-allowed'}" 
     label="Save without Comment"></button>
-    <button   *ngIf="MarkComplete" [disabled]="!disableComment" type="button" pButton icon="pi pi-save" id="savewithoutcomment" (click)="saveComment(true)" [ngStyle]="{'margin-right': '5px;','cursor': disableComment === true ? 'pointer':'not-allowed'}" (click)="saveComment()"
+    <button   *ngIf="MarkComplete" [disabled]="!disableComment" type="button" pButton icon="pi pi-save" id="savewithoutcomment"  [ngStyle]="{'margin-right': '5px;','cursor': disableComment === true ? 'pointer':'not-allowed'}" (click)="saveComment(true)"
     label="Save with Comment"></button>
 
   <button type="button" pButton icon="pi pi-times" (click)="cancelComment();" label="Cancel" class="ui-button-secondary"

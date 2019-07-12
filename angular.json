@@ -92,6 +92,10 @@
               "buildOptimizer": true,
               "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/MyDashboard/"
             },
+            "qamydashboarddev" :{
+              "outputHashing":"none",
+              "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/MyDashboardDev/"
+            },
             "qaPM": {
               "optimization": true,
               "outputHashing": "bundles",

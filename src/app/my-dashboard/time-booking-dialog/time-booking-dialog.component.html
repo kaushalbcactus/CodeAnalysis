@@ -3,7 +3,7 @@
   <div id="modalInnerLoaderText">Loading...</div>
 </div>
 
-<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom-booking" [hideTransitionOptions]="'0ms'"
 position="bottom-center">
 </p-toast>
 
@@ -11,7 +11,6 @@ position="bottom-center">
 
   <button type="button" pButton icon="pi pi-save" id="saveBooking"
     [ngStyle]="{'margin-right':   '5px','cursor':'pointer' }" (click)="SaveTimeBooking()" label="Save"></button>
-
 
   <button type="button" pButton icon="pi pi-times" (click)="cancelTBooking();" label="Cancel"
     class="ui-button-secondary" style="background-color:ghostwhite;"></button>
@@ -58,13 +57,13 @@ position="bottom-center">
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-rowData let-editing="editing" let-ri="rowIndex">
-        <tr [pEditableRow]="rowData">
+        <tr [pEditableRow]="rowData" >
 
           <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
 
             <p-dropdown filter="true" *ngIf="rowData.isEditable" [options]="rowData.dbClientLegalEntities"
               [(ngModel)]="rowData.Entity" (ngModelChange)="getAllProjects($event,rowData)"
-              [style]="{ width: '100%', overflow: 'visible',border:'none' }" appendTo="body">
+              [style]="{ width: '100%', overflow: 'visible',border:'none' }">
             </p-dropdown>
 
             <span fxLayout="row wrap" *ngIf="!rowData.isEditable"> {{rowData.Entity}} </span>

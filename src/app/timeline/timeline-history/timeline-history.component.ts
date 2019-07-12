@@ -697,7 +697,7 @@ export class TimelineHistoryComponent implements OnInit {
               if (versionDetail.FileURL && versionDetail.InvoiceHtml) {
                 obj.activity_type = 'Invoice Edited';
                 obj.activity_description = 'Invoice format updated';
-                obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + versionDetail.FileURL;
+                obj.file_uploaded = versionDetail.FileURL;
               }
               break;
             case this.globalConstant.invoiceList.columns.Status:
@@ -774,7 +774,7 @@ export class TimelineHistoryComponent implements OnInit {
               if (versionDetail.FileURL && versionDetail.ProformaHtml) {
                 obj.activity_type = 'Proforma Edited';
                 obj.activity_description = 'Proforma ' + versionDetail.Title + ' format updated.';
-                obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + versionDetail.FileURL;
+                obj.file_uploaded = versionDetail.FileURL;
               }
               break;
             case this.globalConstant.proformaList.columns.Status:

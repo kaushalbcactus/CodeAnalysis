@@ -74,6 +74,12 @@
 {
   cursor: pointer !important;
 }
+
+::ng-deep .ui-fileupload-row > div > .ui-button
+{
+  background-color: #c53e3e !important;
+  border: 1px solid #c53e3e !important;
+} 
  
 /* ::ng-deep .ui-table-scrollable-header-box {
   margin-right: 17px !important !important;

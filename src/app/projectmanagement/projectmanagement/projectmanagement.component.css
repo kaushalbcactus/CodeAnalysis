@@ -767,4 +767,6 @@ body .ui-corner-top {
     float: right !important;
     margin-top: 10px !important;
   }
-  
+  body .ui-dialog .ui-dialog-content {
+    padding: 3.571em 1em;
+  }

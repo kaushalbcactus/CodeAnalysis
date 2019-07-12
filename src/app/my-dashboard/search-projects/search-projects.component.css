@@ -113,3 +113,40 @@
     0% { transform: rotate(0deg) }
     100% { transform: rotate(360deg) }
   }
+
+   
+      
+      ::ng-deep  .SearchProjectTable  .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
+        overflow: visible;
+      }
+      
+      ::ng-deep  .SearchProjectTable  .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
+        position: relative;
+      }
+      
+      ::ng-deep  .SearchProjectTable  .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div > i {
+        top: 0px !important;
+      }
+      
+      ::ng-deep  .SearchProjectTable  .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+        top: 0px !important;
+        left: inherit !important;
+        right: 40px !important;
+      }
+
+      
+  ::ng-deep  .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight , ::ng-deep  .ui-chkbox .ui-chkbox-box.ui-state-active {
+    background-color :#C53E3E   !important;
+    border-color :#C53E3E !important;
+     
+  }
+  ::ng-deep .ui-multiselect-label
+  {
+    font-size: 12px;
+  }
+
+  ::ng-deep  .ui-multiselect-panel .ui-multiselect-header .ui-multiselect-filter-container .ui-multiselect-filter-icon  {
+   color :#C53E3E   !important;
+    
+     
+  }

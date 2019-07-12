@@ -28,3 +28,8 @@
   .ui-calendar.ui-calendar-w-btn {
     margin-left: 0px;
 }
+
+.ui-table-thead>tr>th:last-child
+{
+    width: 3em !important;
+}

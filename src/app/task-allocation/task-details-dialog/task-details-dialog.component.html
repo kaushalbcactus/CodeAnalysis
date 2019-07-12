@@ -29,7 +29,10 @@ position="bottom-center">
                           </th>
                           <th *ngFor="let col of columns">
                               {{col.header}}
-                              <i  style="font-size: 1.2em; margin-left: 0.5vw;cursor: pointer;vertical-align: middle;" [hidden]="col.header !=='Document Name'" (click)="downloadFile()" title="Download" class="fa fa-download" aria-hidden="true"></i>
+                              <!-- <i  style="font-size: 1.2em; margin-left: 0.5vw;cursor: pointer;vertical-align: middle;" [hidden]="col.header !=='Document Name'" (click)="downloadFile()" title="Download" class="fa fa-download" aria-hidden="true"></i> -->
+
+                              <button style="float: right;font-size: 12px;" [hidden]="col.header !=='Document Name'" pButton
+                              type="button" label="Download" (click)="downloadFile()" class="ui-button-danger"></button>
                           </th>
                       </tr>
                   </ng-template>
