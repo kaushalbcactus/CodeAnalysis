@@ -36,31 +36,31 @@
                     <ng-container *ngIf="col.field">
                 <td></td>
                 <p-multiSelect *ngSwitchCase="'InvoiceStatus'" [options]="outInvoiceColArray.InvoiceStatus"
-                    defaultLabel="All"  (onChange)="pi.filter($event.value, col.field, 'in')">
+                    defaultLabel="All" (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'InvoiceNumber'" [options]="outInvoiceColArray.InvoiceNumber"
-                    defaultLabel="All"  (onChange)="pi.filter($event.value, col.field, 'in')">
+                    defaultLabel="All" (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'PONumber'" [options]="outInvoiceColArray.PONumber" defaultLabel="All"
-                     (onChange)="pi.filter($event.value, col.field, 'in')">
+                    (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'POName'" [options]="outInvoiceColArray.POName" defaultLabel="All"
-                     (onChange)="pi.filter($event.value, col.field, 'in')">
+                <p-multiSelect *ngSwitchCase="'POValues'" [options]="outInvoiceColArray.POValues" defaultLabel="All"
+                    (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="outInvoiceColArray.ClientLegalEntity"
-                    defaultLabel="All"  (onChange)="pi.filter($event.value, col.field, 'in')">
+                    defaultLabel="All" (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'InvoiceDate'" [options]="outInvoiceColArray.InvoiceDate"
-                    defaultLabel="All"  (onChange)="pi.filter($event.value, col.field, 'in')">
+                    defaultLabel="All" (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'Amount'" [options]="outInvoiceColArray.Amount" defaultLabel="All"
-                     (onChange)="pi.filter($event.value, col.field, 'in')">
+                    (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'Currency'" [options]="outInvoiceColArray.Currency" defaultLabel="All"
-                     (onChange)="pi.filter($event.value, col.field, 'in')">
+                    (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'POC'" [options]="outInvoiceColArray.POC" defaultLabel="All"
-                     (onChange)="pi.filter($event.value, col.field, 'in')">
+                    (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
 
                 <!-- <p-dropdown [options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">
@@ -96,10 +96,12 @@
                     </ng-container>
 
                     <ng-container *ngIf="col.field == ''">
-                        <p-menu #popupMenu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu">
-                        </p-menu>
-                        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                            (click)="popupMenu.toggle($event);openPopup(rowData, popupMenu)"></i>
+                        <div>
+                            <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu">
+                            </p-menu>
+                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                                (click)="popupMenu.toggle($event);openPopup(rowData, popupMenu)"></i>
+                        </div>
                     </ng-container>
                 </td>
             </tr>
@@ -109,8 +111,7 @@
 <!-- Table End  -->
 
 <!-- Right Side Bar -->
-<p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow:'auto'}"
-    styleClass="ui-sidebar-md">
+<p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
     <ng-container *ngIf="rightSideBar">
         <app-inv-table-attribute [rowItemData]="selectedRowItem"></app-inv-table-attribute>
     </ng-container>

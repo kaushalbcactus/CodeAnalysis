@@ -71,7 +71,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     // Observable 
     subscriptionPE: Subscription;
 
-    showApproveReject:boolean = false;
+    showApproveReject: boolean = false;
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
@@ -101,13 +101,13 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
 
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
-        if(groups.indexOf('ExpenseApprovers') > -1) {
+        if (groups.indexOf('ExpenseApprovers') > -1) {
             this.showApproveReject = true;
         }
         else {
             this.showApproveReject = false;
         }
-        
+
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         // Check PI list
         await this.fdDataShareServie.checkProjectsAvailable();
@@ -146,7 +146,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     // Project Info 
     projectInfoData: any = [];
     async projectInfo() {
-        
+
         // Check PI list
         await this.fdDataShareServie.checkProjectsAvailable();
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
@@ -221,8 +221,10 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             { field: 'ClientAmount', header: 'Client Amount', visibility: true },
             { field: 'ClientCurrency', header: 'Client Currency', visibility: true },
             { field: 'Created', header: 'Date Created', visibility: true },
+            { field: 'CreatedDateFormat', header: 'Date Created', visibility: false },
             { field: 'CreatedBy', header: 'Created By', visibility: true },
             { field: 'Modified', header: 'Modified Date', visibility: false },
+            { field: 'ModifiedDateFormat', header: 'Modified Date', visibility: false },
             { field: 'ModifiedBy', header: 'Modified By', visibility: false },
 
             { field: 'SOWCode', header: 'SOW Code', visibility: false },
@@ -236,11 +238,11 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             { field: 'ApproverComments', header: 'Approver Comments', visibility: false },
             { field: 'ApproverFileUrl', header: 'Approver File Url', visibility: false },
             { field: 'PayingEntity', header: 'Paying Entity', visibility: false },
-            { field: 'AuthorId', header: 'Author Id', visibility: false },
+            // { field: 'AuthorId', header: 'Author Id', visibility: false },
 
-            { field: 'DollarAmount', header: 'Dollar Amount', visibility: false },
-            { field: 'InvoiceID', header: 'Invoice ID', visibility: false },
-            { field: 'POLookup', header: 'PO Lookup', visibility: false },
+            // { field: 'DollarAmount', header: 'Dollar Amount', visibility: false },
+            // { field: 'InvoiceID', header: 'Invoice ID', visibility: false },
+            // { field: 'POLookup', header: 'PO Lookup', visibility: false },
             { field: '', header: '', visibility: true },
         ];
     }
@@ -371,11 +373,13 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 ExpenseType: element.SpendType,
                 ClientAmount: parseFloat(element.ClientAmount).toFixed(2),
                 ClientCurrency: element.ClientCurrency,
-                Created: element.Created, // this.datePipe.transform(element.Created, 'MMM d, y, hh:mm a'),
+                Created: element.Created,
+                CreatedDateFormat: this.datePipe.transform(element.Created, 'MMM dd, yyy, hh:mm a'),
                 CreatedBy: rcCreatedItem ? rcCreatedItem.UserName.Title : '',
                 ModifiedBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
                 Notes: element.Notes,
-                Modified: element.Modified, // this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
+                Modified: element.Modified,
+                ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyy, hh:mm a'),
                 RequestType: element.RequestType,
                 Number: element.Number,
                 DateSpend: element.DateSpend,
@@ -394,7 +398,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 InvoiceID: element.InvoiceID,
                 POLookup: element.POLookup,
                 // PONumber: this.getPONumber(element),
-                // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM d, y, hh:mm a')
+                // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM dd, yyy, hh:mm a')
             })
         }
         this.pendingExpenses = [...this.pendingExpenses];
@@ -495,21 +499,21 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         // console.log('pubSupportSts  ', pubSupportSts);
 
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
-        if(groups.indexOf('ExpenseApprovers') > -1) {
+        if (groups.indexOf('ExpenseApprovers') > -1) {
             this.items = [
                 { label: 'Approve Expense', command: (e) => this.openMenuContent(e, data) },
-                { label: 'Cancel Expense', command: (e) => this.openMenuContent(e, data) },
                 { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) },
+                { label: 'Cancel Expense', command: (e) => this.openMenuContent(e, data) },
                 { label: 'Details', command: (e) => this.openMenuContent(e, data) },
             ];
         }
         else {
             this.items = [
-                { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) },
+                { label: 'Cancel Expense', command: (e) => this.openMenuContent(e, data) },
                 { label: 'Details', command: (e) => this.openMenuContent(e, data) },
             ];
         }
-        
+
     }
 
     // CLick on Table Check box to Select All Row Item

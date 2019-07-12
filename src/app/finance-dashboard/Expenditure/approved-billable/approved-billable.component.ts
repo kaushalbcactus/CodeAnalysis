@@ -203,8 +203,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             { field: 'ClientCurrency', header: 'Client Currency', visibility: true },
             { field: 'ClientAmount', header: 'Client Amount', visibility: true },
             { field: 'Status', header: 'Status', visibility: true },
-            { field: '', header: '', visibility: true },
-
+            
             { field: 'Category', header: 'Category', visibility: false },
             { field: 'PaymentMode', header: 'Payment Mode', visibility: false },
             { field: 'RequestType', header: 'Request Type', visibility: false },
@@ -218,12 +217,13 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             { field: 'ApproverComments', header: 'Approver Comments', visibility: false },
             { field: 'ApproverFileUrl', header: 'Approver File Url', visibility: false },
             { field: 'PayingEntity', header: 'Paying Entity', visibility: false },
-            { field: 'VendorFreelancer', header: 'Vendor Freelancer', visibility: false },
-            { field: 'AuthorId', header: 'Author Id', visibility: false },
-            { field: 'RequestType', header: 'Request Type', visibility: false },
-            { field: 'DollarAmount', header: 'Dollar Amount', visibility: false },
-            { field: 'InvoiceID', header: 'Invoice ID', visibility: false },
-            { field: 'POLookup', header: 'PO Lookup', visibility: false },
+            // { field: 'VendorFreelancer', header: 'Vendor Freelancer', visibility: false },
+            // { field: 'AuthorId', header: 'Author Id', visibility: false },
+            // { field: 'RequestType', header: 'Request Type', visibility: false },
+            // { field: 'DollarAmount', header: 'Dollar Amount', visibility: false },
+            // { field: 'InvoiceID', header: 'Invoice ID', visibility: false },
+            // { field: 'POLookup', header: 'PO Lookup', visibility: false },
+            { field: '', header: '', visibility: true },
 
         ];
     }
@@ -677,7 +677,10 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         console.log('po event ', event.value);
         this.submitBtn.isClicked = false;
         this.poItem = event.value;
-        this.oopBalance = (this.poItem.AmountOOP - this.poItem.OOPLinked);
+        this.oopBalance = 0;
+        if (this.poItem) {
+            this.oopBalance = (this.poItem.AmountOOP ? this.poItem.AmountOOP : 0 - this.poItem.OOPLinked ? this.poItem.OOPLinked : 0);
+        }
         if (this.oopBalance >= this.scheduleOopInvoice_form.getRawValue().Amount) {
             this.getPfPfb();
         } else {

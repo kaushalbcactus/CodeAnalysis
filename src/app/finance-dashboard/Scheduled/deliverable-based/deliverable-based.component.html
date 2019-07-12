@@ -47,7 +47,7 @@
                         [options]="deliverableBasedColArray.ProjectMileStone" defaultLabel="All" 
                         (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'PONumber'" [options]="deliverableBasedColArray.PONumber"
+                    <p-multiSelect *ngSwitchCase="'POValues'" [options]="deliverableBasedColArray.POValues"
                         defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ClientName'" [options]="deliverableBasedColArray.ClientName"
@@ -83,12 +83,12 @@
                     {{rowData[col.field]}}
                 </ng-container>
                 <ng-container *ngIf="col.field == 'ScheduledDate'">
-                    <p>{{rowData[col.field] | date:'MMM d, y' }}</p>
+                    <p>{{rowData[col.field] | date:'MMM dd, yyyy' }}</p>
                 </ng-container>
                 <ng-container *ngIf="col.field == ''">
                     <div>
                         <!-- <div *ngIf="rowData.showMenu === true"> -->
-                        <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu">
+                        <p-menu #popupMenu [popup]="true"  [model]="items" styleClass="borderMenu">
                         </p-menu>
                         <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
                             (click)="openPopup(rowData, popupMenu);popupMenu.toggle($event);"></i>

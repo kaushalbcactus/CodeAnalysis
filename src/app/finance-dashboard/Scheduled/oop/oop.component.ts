@@ -174,8 +174,9 @@ export class OopComponent implements OnInit, OnDestroy {
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
-            { field: 'PONumber', header: 'PO Number/ Name', visibility: true },
+            { field: 'POValues', header: 'PO Number/ Name', visibility: true },
             { field: 'ClientName', header: 'Client LE', visibility: true },
+            { field: 'ScheduledDateFormat', header: 'Scheduled Date', visibility: false },
             { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true },
             { field: 'Amount', header: 'Amount', visibility: true },
             { field: 'Currency', header: 'Currency', visibility: true },
@@ -184,13 +185,14 @@ export class OopComponent implements OnInit, OnDestroy {
             { field: 'SOWName', header: 'SOW Name', visibility: false },
             { field: 'SOWCode', header: 'SOW Code', visibility: false },
             { field: 'POName', header: 'PO Name', visibility: false },
+            { field: 'PONumber', header: 'PO Number', visibility: false },
             { field: 'Notes', header: 'Notes', visibility: false },
             { field: 'AddressType', header: 'Address Type', visibility: false },
             { field: 'Status', header: 'Status', visibility: false },
             // { field: 'TaggedDate', header: 'Tagged Date', visibility: false },
             // { field: 'ProformaLookup', header: 'Proforma Lookup', visibility: false },
             { field: 'ScheduleType', header: 'Schedule Type', visibility: false },
-            { field: 'InvoiceLookup', header: 'Invoice Lookup', visibility: false },
+            // { field: 'InvoiceLookup', header: 'Invoice Lookup', visibility: false },
             { field: 'Template', header: 'Template', visibility: false },
             { field: 'Modified', header: 'Modified Date', visibility: false },
             { field: 'ModifiedBy', header: 'Modified By', visibility: false },
@@ -260,20 +262,39 @@ export class OopComponent implements OnInit, OnDestroy {
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
+            let sowCode = element.SOWCode ? element.SOWCode : '';
+            let sowName = sowItem.Title ? sowItem.Title : '';
+            let sowcn = sowCode + ' ' + sowName;
+            if (sowCode && sowName) {
+                sowcn = sowCode + ' / ' + sowName;
+            }
             let poItem = await this.getPONumber(element);
+            let pnumber = poItem.Number ? poItem.Number : '';
+            let pname = poItem.Name ? poItem.Name : '';
+            if (pnumber === 'NA') {
+                pnumber = '';
+            }
+            let ponn = pnumber + ' ' + pname;
+            if (pname && pnumber) {
+                ponn = pnumber + ' / ' + pname;
+            }
+            let POValues = ponn;
+
             let piInfo = await this.getMilestones(element);
             this.oopBasedRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
                 SOWCode: element.SOWCode,
-                SOWValue: element.SOWCode + ' / ' + sowItem.Title,
                 SOWName: sowItem.Title,
+                SOWValue: sowcn,
                 ProjectMileStone: piInfo.Milestone,
+                POValues: POValues,
                 PONumber: poItem.Number,
                 PO: element.PO,
                 POCId: element.MainPOC,
                 ClientName: piInfo.ClientLegalEntity,
                 ScheduledDate: element.ScheduledDate,// this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
+                ScheduledDateFormat: this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
                 Amount: element.Amount,
                 Currency: element.Currency,
                 POCName: this.getPOCName(element),
@@ -377,7 +398,7 @@ export class OopComponent implements OnInit, OnDestroy {
         this.oopColArray.ProjectCode = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }));
         this.oopColArray.SOWCode = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }));
         this.oopColArray.ProjectMileStone = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }));
-        this.oopColArray.PONumber = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
+        this.oopColArray.PONumber = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }));
         this.oopColArray.ClientName = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }));
         this.oopColArray.ScheduledDate = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, 'MMM d, y'), value: a.ScheduledDate }; return b; }));
         this.oopColArray.Amount = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));

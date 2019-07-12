@@ -262,16 +262,16 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             { field: 'POName', header: 'PO Name', visibility: true },
             { field: 'PONumber', header: 'PO Number', visibility: true },
             { field: 'InvoiceDate', header: 'Invoice Date', visibility: true },
+            { field: 'InvoiceDateFormat', header: 'Invoice Date', visibility: false },
             { field: 'Amount', header: 'Amount', visibility: true },
             { field: 'Currency', header: 'Currency', visibility: true },
             { field: 'POC', header: 'POC', visibility: true },
-            { field: '', header: '', visibility: true },
-
+            
             { field: 'PaymentURL', header: 'Payment URL', visibility: false },
             { field: 'MainPOC', header: 'Main POC', visibility: false },
             { field: 'Template', header: 'Template', visibility: false },
-            { field: 'ProformaLookup', header: 'Proforma Lookup', visibility: false },
-            { field: 'LineItemsLookup', header: 'LineItems Lookup', visibility: false },
+            // { field: 'ProformaLookup', header: 'Proforma Lookup', visibility: false },
+            // { field: 'LineItemsLookup', header: 'LineItems Lookup', visibility: false },
             { field: 'DisputeReason', header: 'Dispute Reason', visibility: false },
             { field: 'DisputeComments', header: 'Dispute Comments', visibility: false },
             { field: 'Reason', header: 'Reason', visibility: false },
@@ -281,8 +281,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             { field: 'TaggedAmount', header: 'Tagged Amount', visibility: false },
             { field: 'IsTaggedFully', header: 'Is Tagged Fully', visibility: false },
             { field: 'Modified', header: 'Modified', visibility: false },
-            { field: 'AdditionalPOC', header: 'Additional POC', visibility: false },
+            // { field: 'AdditionalPOC', header: 'Additional POC', visibility: false },
             { field: 'Created', header: 'Created', visibility: false },
+            { field: '', header: '', visibility: true },
         ];
     }
 
@@ -355,7 +356,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 Currency: element.Currency,
                 FileURL: element.FileURL,
                 FiscalYear: element.FiscalYear,
-                InvoiceDate: element.InvoiceDate, // this.datePipe.transform(element.InvoiceDate, 'MMM d, y, hh:mm a'),
+                InvoiceDate: element.InvoiceDate,
+                InvoiceDateFormat: this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyy, hh:mm a'),
                 InvoiceNumber: element.InvoiceNumber,
                 MainPOC: element.MainPOC,
                 InvoiceStatus: element.Status,
@@ -378,9 +380,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 InvoiceType: element.InvoiceType,
                 TaggedAmount: element.TaggedAmount,
                 IsTaggedFully: element.IsTaggedFully,
-                Modified: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
+                Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyy, hh:mm a'),
                 AdditionalPOC: element.AdditionalPOC,
-                Created: this.datePipe.transform(element.Created, 'MMM d, y, hh:mm a'),
+                Created: this.datePipe.transform(element.Created, 'MMM dd, yyy, hh:mm a'),
             })
         }
         this.outstandingInvoicesRes = [...this.outstandingInvoicesRes];
@@ -444,7 +446,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     }
 
     outInvoiceColArray = {
-        ClientLegalEntity:[],
+        ClientLegalEntity: [],
         InvoiceStatus: [],
         InvoiceNumber: [],
         PONumber: [],

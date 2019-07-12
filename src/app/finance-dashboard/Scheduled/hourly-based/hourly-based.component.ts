@@ -189,13 +189,13 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             { field: 'Rate', header: 'Rate', visibility: true },
             { field: 'HoursSpent', header: 'Hrs', visibility: true },
             // { field: 'TotalInvoice', header: 'Total Invoice', visibility: true },
-            { field: '', header: '', visibility: true },
-
+            
             { field: 'ProposedEndDate', header: 'Proposed End Date', visibility: false },
             { field: 'Modified', header: 'Modified', visibility: false },
             { field: 'SOWName', header: 'SOW Name', visibility: false },
             { field: 'SOWCode', header: 'SOW Code', visibility: false },
             { field: 'Invoiced', header: 'Invoiced', visibility: false },
+            { field: '', header: '', visibility: true },
         ];
     }
 
