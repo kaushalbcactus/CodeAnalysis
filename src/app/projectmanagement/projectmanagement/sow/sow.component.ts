@@ -385,6 +385,10 @@ export class SOWComponent implements OnInit {
           }
         }
       }
+      if (batchURL.length) {
+        batchResults = await this.spServices.executeBatch(batchURL);
+        finalArray = [...finalArray, ...batchResults];
+      }
     }
     console.log('batch length: ' + batchURL.length);
     return finalArray;

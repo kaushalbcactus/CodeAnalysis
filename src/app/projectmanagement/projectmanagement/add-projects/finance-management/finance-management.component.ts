@@ -641,6 +641,10 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
           }
         }
       }
+      if (batchURL.length) {
+        batchResults = await this.spServices.executeBatch(batchURL);
+        finalArray = [...finalArray, ...batchResults];
+      }
     } else {
       batchResults = await this.spServices.executeBatch(batchURL);
       finalArray = [...finalArray, ...batchResults];
@@ -704,6 +708,11 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
             batchURL = [];
           }
         }
+      }
+      if (batchURL.length) {
+        batchResults = await this.spServices.executeBatch(batchURL);
+        console.log(batchResults);
+        finalArray = [...finalArray, ...batchResults];
       }
     }
     this.pmObject.isMainLoaderHidden = true;
