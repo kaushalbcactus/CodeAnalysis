@@ -685,7 +685,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             this.getPfPfb();
         } else {
             this.submitBtn.isClicked = true;
-            this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'OOP Balance must be grater than Scheduled oop Amount.', detail: '', life: 4000 });
+            this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'OOP Balance must be greater than Scheduled oop Amount.', detail: '', life: 4000 });
             return;
         }
     }

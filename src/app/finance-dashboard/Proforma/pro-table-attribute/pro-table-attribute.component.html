@@ -82,6 +82,10 @@
                 <td [ngStyle]="{'color':'#d7181f'}">Modified</td>
                 <td>{{rowItemData.Modified | date:'medium'}}</td>
             </tr>
+            <tr>
+                <td [ngStyle]="{'color':'#d7181f'}">Modified By</td>
+                <td>{{rowItemData.ModifiedBy}}</td>
+            </tr>
         </ng-template>
     </p-table>
 </div>

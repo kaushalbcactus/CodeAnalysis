@@ -115,7 +115,11 @@
               "vendorChunk": false,
               "buildOptimizer": true,
               "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/FD/"
-            } ,
+            },
+            "qaFDDev": {
+              "outputHashing": "none",
+              "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/FDDev/"
+            },
             "uatFD": {
               "optimization": true,
               "outputHashing": "bundles",

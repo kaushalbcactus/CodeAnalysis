@@ -150,7 +150,7 @@
                         {{rowData[col.field]}}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'ScheduledDate'">
-                        <p>{{rowData[col.field] | date:'MMM d, y' }}</p>
+                        <p>{{rowData[col.field] | date:'MMM dd, yyyy' }}</p>
                     </ng-container>
                     <ng-container *ngIf="col.field == ''">
                             <div>

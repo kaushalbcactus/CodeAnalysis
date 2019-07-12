@@ -230,7 +230,7 @@
             <div class="ui-g-4">
 
                 <div class="ui-g-6" style="padding-left:0">
-                    <p-dropdown [options]="poNames" formControlName="PONumber" placeholder="Select PO Number"
+                    <p-dropdown [options]="poNames" filter="true" formControlName="PONumber" placeholder="Select PO Number"
                         optionLabel="Number" (onChange)="poChange($event)">
                     </p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidScheduleOOPInvoiceForm.PONumber.errors">
@@ -298,7 +298,7 @@
             </div>
             <div class="ui-g-6">
                 <p-dropdown [options]="listOfPOCs" formControlName="POCName" placeholder="Select POC Name"
-                    optionLabel="FullName" (onChange)="pocChange($event)">
+                    optionLabel="FullName" filter="true" (onChange)="pocChange($event)">
                 </p-dropdown>
                 <div *ngIf="formSubmit.isSubmit && isValidScheduleOOPInvoiceForm.POCName.errors">
                     <div *ngIf="isValidScheduleOOPInvoiceForm.POCName.errors.required" style="color:red;">Please
