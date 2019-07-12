@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -13,7 +13,8 @@ declare var $;
 @Component({
   selector: 'app-client-review',
   templateUrl: './client-review.component.html',
-  styleUrls: ['./client-review.component.css']
+  styleUrls: ['./client-review.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class ClientReviewComponent implements OnInit {
   displayedColumns: any[] = [

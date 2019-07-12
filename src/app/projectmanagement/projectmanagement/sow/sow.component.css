@@ -43,7 +43,7 @@
     }
 
   .lastColumnWidth {
-    width: 50px;
+    width: 60px;
   }
 
   .excelIcon {
@@ -55,4 +55,36 @@
     word-break: break-all;
   }
 
+
+  .allSOW-section div.ui-table-wrapper {
+    min-height: 440px;
+  }
+  
+  .allSOW-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
+    overflow: visible;
+  }
+  
+  .allSOW-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
+    position: relative;
+  }
+  
+  .allSOW-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div > i {
+    top: 0px !important;
+  }
+  
+  .allSOW-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+    top: 0px !important;
+    left: inherit !important;
+    right: 40px !important;
+  }
+
+  .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
+    background: #D7181F !important;
+}
+.ui-button:enabled:active{
+    background-color: #D7181F !important;
+    border-color: #D7181F !important;
+}
+
+  
  

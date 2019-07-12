@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, ViewChild, ViewEncapsulation } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -15,7 +15,8 @@ declare var $;
 @Component({
   selector: 'app-sow',
   templateUrl: './sow.component.html',
-  styleUrls: ['./sow.component.css']
+  styleUrls: ['./sow.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class SOWComponent implements OnInit {
   @Output() projectItem: EventEmitter<any> = new EventEmitter();
@@ -229,7 +230,8 @@ export class SOWComponent implements OnInit {
         clientLegalEntityTempArray.push({ label: sowObj.ClientLegalEntity, value: sowObj.ClientLegalEntity });
         pocTempArray.push({ label: sowObj.POC, value: sowObj.POC });
         createdByTempArray.push({ label: sowObj.CreatedBy, value: sowObj.CreatedBy });
-        createDateTempArray.push({ label: sowObj.CreatedDate, value: sowObj.CreatedDate });
+        createDateTempArray.push({ label: this.datePipe.transform(sowObj.CreatedDate, 'MMM dd yyyy hh:mm:ss aa'),
+         value: sowObj.CreatedDate });
         tempAllSOWArray.push(sowObj);
       }
       this.allSOW.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');

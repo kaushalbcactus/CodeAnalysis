@@ -544,7 +544,7 @@ body .ui-table .ui-table-tbody > tr:nth-child(even){
         cursor:auto !important;
     }
     .lastColumnWidth {
-        width: 50px;
+      width: 60px;
     }
     p-table tbody tr td {
      overflow-wrap: break-word;

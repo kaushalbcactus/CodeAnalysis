@@ -1,0 +1,21 @@
+.inActiveTable div.ui-table-wrapper {
+    min-height: 440px;
+  }
+  
+  .inActiveTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
+    overflow: visible;
+  }
+  
+  .inActiveTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
+    position: relative;
+  }
+  
+  .inActiveTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div > i {
+    top: 0px !important;
+  }
+  
+  .inActiveTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+    top: 0px !important;
+    left: inherit !important;
+    right: 40px !important;
+  }
