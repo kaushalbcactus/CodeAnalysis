@@ -276,7 +276,8 @@ export class AllProjectsComponent implements OnInit {
         projectTypeTempArray.push({ label: projObj.ProjectType, value: projObj.ProjectType });
         statusTempArray.push({ label: projObj.Status, value: projObj.Status });
         createdByTempArray.push({ label: projObj.CreatedBy, value: projObj.CreatedBy });
-        createDateTempArray.push({ label: projObj.CreatedDate, value: projObj.CreatedDate });
+        createDateTempArray.push({ label: this.datePipe.transform(projObj.CreatedDate, 'MMM dd yyyy hh:mm:ss aa'),
+         value: projObj.CreatedDate });
         tempAllProjectArray.push(projObj);
       }
       this.allProjects.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');

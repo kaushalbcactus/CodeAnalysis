@@ -58,6 +58,22 @@
     border-color :#C53E3E !important;
     padding: 1px;
   }
+
+  ::ng-deep  .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight , ::ng-deep  .ui-chkbox .ui-chkbox-box.ui-state-active {
+    background-color :#C53E3E   !important;
+    border-color :#C53E3E !important;
+     
+  }
+  ::ng-deep .ui-multiselect-label
+  {
+    font-size: 12px;
+  }
+
+  ::ng-deep  .ui-multiselect-panel .ui-multiselect-header .ui-multiselect-filter-container .ui-multiselect-filter-icon  {
+   color :#C53E3E   !important;
+    
+     
+  }
 /* :host ::ng-deep .ui-menuitem 
 {
   width:20em !important;
@@ -65,10 +81,12 @@
 ::ng-deep .ui-slidemenu-content {
 	min-height: 200px  !important;
 } */
-/* :host ::ng-deep .ui-inputtext
+:host ::ng-deep .ui-calendar-w-btn .ui-inputtext
 {
   width: 80%  !important;
-} */
+}
+
+
 
  ::ng-deep  .ui-slidemenu ul
 {
@@ -84,13 +102,7 @@ body .ui-chkbox .ui-chkbox-box.ui-state-active, body .ui-button, body .ui-button
   height: 130px !important;
 } 
 
-
-
-     
-::ng-deep .MyCurrentCompletedTable  div.ui-table-wrapper {
-    min-height: 440px;
-  }
-  
+ 
   ::ng-deep  .MyCurrentCompletedTable  .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
     overflow: visible;
   }

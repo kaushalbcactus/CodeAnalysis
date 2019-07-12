@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { debounceTime } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -8,14 +8,14 @@ import { SharepointoperationService } from 'src/app/Services/sharepoint-operatio
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
-import { Command } from 'selenium-webdriver';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { PMCommonService } from '../../services/pmcommon.service';
 declare var $: any;
 @Component({
   selector: 'app-inactive',
   templateUrl: './inactive.component.html',
-  styleUrls: ['./inactive.component.css']
+  styleUrls: ['./inactive.component.css'],
+  encapsulation:ViewEncapsulation.None
 })
 export class InactiveComponent implements OnInit {
   displayedColumns: any[] = [

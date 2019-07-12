@@ -125,7 +125,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
   createColFieldValues() {
 
-    this.ProjectColArray = { SOWCode: [{ label: 'All', value: null }], ProjectCode: [{ label: 'All', value: null }], WBJID: [{ label: 'All', value: null }], ClientLegalEntity: [{ label: 'All', value: null }], DeliverableType: [{ label: 'All', value: null }], ProjectType: [{ label: 'All', value: null }], Status: [{ label: 'All', value: null }], CreatedBy: [{ label: 'All', value: null }], Created: [{ label: 'All', value: null }] };
+    this.ProjectColArray = { SOWCode: [], ProjectCode: [], WBJID: [], ClientLegalEntity: [], DeliverableType: [], ProjectType: [], Status: [], CreatedBy: [], Created: [] };
     this.ProjectColArray.SOWCode.push.apply(this.ProjectColArray.SOWCode, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; })));
 
     this.ProjectColArray.ProjectCode.push.apply(this.ProjectColArray.ProjectCode, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; })));
@@ -144,7 +144,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.ProjectColArray.CreatedBy.push.apply(this.ProjectColArray.CreatedBy, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; })));
 
 
-    this.ProjectColArray.Created.push.apply(this.ProjectColArray.Created, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: this.datePipe.transform(a.Created, "d MMM, y, h:mm a"), value: a.Created }; return b; })));
+    this.ProjectColArray.Created.push.apply(this.ProjectColArray.Created, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: this.datePipe.transform(a.Created, "MMM d, y, h:mm a"), value: a.Created }; return b; })));
 
     this.ProjectColArray.Created = this.ProjectColArray.Created.sort((a, b) =>
     new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1

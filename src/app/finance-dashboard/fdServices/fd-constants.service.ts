@@ -137,7 +137,7 @@ export class FdConstantsService {
         // Schedule Deliverable
         invoicesDel: {
             // select: "ID,Title,SOWCode,ScheduledDate,FiscalYear,Amount,Currency,MainPOC,AddressType,PO,Status,Template,ScheduleType,SOWCode,CS/ID,CS/Title",
-            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title",
+            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title,AuthorId,EditorId",
             filter: "Status eq 'Scheduled' and ScheduleType eq 'revenue' and (ScheduledDate ge '{{StartDate}}' and ScheduledDate le '{{EndDate}}') ",
             top: 4500,
             orderby: "ScheduledDate asc",
@@ -146,7 +146,7 @@ export class FdConstantsService {
         // Schedule Deliverable
         invoicesDelCS: {
             // select: "ID,Title,SOWCode,ScheduledDate,FiscalYear,Amount,Currency,MainPOC,AddressType,PO,Status,Template,ScheduleType,SOWCode,CS/ID,CS/Title",
-            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title",
+            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title,AuthorId,EditorId",
             filter: "Status eq 'Scheduled' and ScheduleType eq 'revenue' and (ScheduledDate ge '{{StartDate}}' and ScheduledDate le '{{EndDate}}') and CSId eq {{UserID}}",
             top: 4500,
             orderby: "ScheduledDate asc",
@@ -154,7 +154,7 @@ export class FdConstantsService {
         },
         // Schedule OOP Invoices
         invoicesOOP: {
-            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title",
+            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title,AuthorId,EditorId",
             filter: "Status eq 'Scheduled' and ScheduleType eq 'oop' and (ScheduledDate ge '{{StartDate}}' and ScheduledDate le '{{EndDate}}')  ",
             top: 4500,
             orderby: "ScheduledDate asc",
@@ -162,7 +162,7 @@ export class FdConstantsService {
         },
         // Schedule OOP Invoices
         invoicesOOPCS: {
-            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title",
+            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title,AuthorId,EditorId",
             filter: "Status eq 'Scheduled' and ScheduleType eq 'oop' and (ScheduledDate ge '{{StartDate}}' and ScheduledDate le '{{EndDate}}') and CSId eq {{UserID}}",
             top: 4500,
             orderby: "ScheduledDate asc",
@@ -171,19 +171,19 @@ export class FdConstantsService {
         // hourly based
         projectFinances: {
             // select: "ID,Title,BudgetHrs,Budget,HoursSpent,Currency,Template,ApprovedBudget,ScheduledOOP,ScheduledRevenue,TotalScheduled,InvoicedRevenue,InvoicedOOP,TotalInvoiced,InvoicesScheduled, Invoiced",
-            select: "ID,Modified,Title,Currency,ApprovedBudget,Budget,RevenueBudget,OOPBudget,TaxBudget,InvoicesScheduled,ScheduledRevenue,ScheduledOOP,Invoiced,InvoicedRevenue,InvoicedOOP,InvoicedTax,HoursSpent,BillableExpenses,NonBillableExpenses,Realization,BudgetHrs,Template",
+            select: "ID,Modified,Title,Currency,ApprovedBudget,Budget,RevenueBudget,OOPBudget,TaxBudget,InvoicesScheduled,ScheduledRevenue,ScheduledOOP,Invoiced,InvoicedRevenue,InvoicedOOP,InvoicedTax,HoursSpent,BillableExpenses,NonBillableExpenses,Realization,BudgetHrs,Template,AuthorId,EditorId",
             filter: "Title eq '{{ProjectCode}}'",
             // orderby: "Title",
             top: 1
         },
         projectFinanceBreakupFromPO: {
-            select: "ID,Title,POLookup,ProjectNumber,ScheduledOOP,ScheduledRevenue,TotalScheduled,InvoicedRevenue,InvoicedOOP,TotalInvoiced",
+            select: "ID,Title,POLookup,ProjectNumber,ScheduledOOP,ScheduledRevenue,TotalScheduled,InvoicedRevenue,InvoicedOOP,TotalInvoiced,AuthorId,EditorId",
             filter: "ProjectNumber eq '{{ProjectCode}}' and POLookup eq '{{PO}}' and Status ne 'Deleted' ",
             top: 1
         },
 
         sowForIG: {
-            select: "ID, SOWCode,ScheduledOOP, ScheduledRevenue, TotalScheduled, TotalInvoiced, InvoicedOOP, InvoicedRevenue",
+            select: "ID, SOWCode,ScheduledOOP, ScheduledRevenue, TotalScheduled, TotalInvoiced, InvoicedOOP, InvoicedRevenue,AuthorId,EditorId",
             filter: "SOWCode eq  '{{SOWCode}}' ",
             top: 1
         },
@@ -191,25 +191,25 @@ export class FdConstantsService {
         // ,TotalBudget,NetBudget,TotalLinked,TotalInvoiced,TotalScheduled,ScheduledRevenue,RevenueLinked
 
         projectBudgetBreakup: {
-            select: "ID, ProjectLookup, BudgetHours",
+            select: "ID, ProjectLookup, BudgetHours,AuthorId,EditorId",
             filter: "ProjectCode eq '{{ProjectCode}}' ",
             // top: 1
         },
 
         projectFinanceBreakup: {
-            select: "ID,POLookup,ProjectNumber",
+            select: "ID,POLookup,ProjectNumber,AuthorId,EditorId",
             filter: "ProjectNumber eq '{{ProjectCode}}' and Status ne 'Deleted' ",
             // top: 1
         },
 
         projectFinanceBreakupForPO: {
-            select: "ID,POLookup,ProjectNumber",
+            select: "ID,POLookup,ProjectNumber,AuthorId,EditorId",
             filter: "ProjectNumber eq '{{ProjectCode}}' and Status ne 'Deleted' ",
             top: 1
         },
 
         sowByProjectCode: {
-            select: "ID, Title, ClientLegalEntity, SOWTitle, Currency, TotalBudget, NetBudget, OOPBudget, TaxBudget, Status, PrimaryPOC, TotalLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, RevenueLinked",
+            select: "ID, Title, ClientLegalEntity, SOWTitle, Currency, TotalBudget, NetBudget, OOPBudget, TaxBudget, Status, PrimaryPOC, TotalLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, RevenueLinked,AuthorId,EditorId",
             filter: "SOWCode eq '{{SOWCode}}' and Status ne 'Deleted'",
             top: 1
         },
@@ -219,16 +219,17 @@ export class FdConstantsService {
         // Confirmed
         invoiceLineItems: {
             // select: "ID,Title,SOWCode,ScheduledDate,FiscalYear,Amount,Currency,MainPOC,AddressType,PO,Status,Template,ScheduleType,SOWCode,CS/ID,CS/Title&$Expand=CS/ID,CS/Title",
-            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title&$Expand=CS/ID,CS/Title",
+            select: "ID,Title,TaggedDate,ScheduledDate,Amount,Currency,PO,Status,ProformaLookup,ScheduleType,InvoiceLookup,FiscalYear,MainPOC,AddressType,Template,SOWCode,Modified,Modified,CS,CS/ID,CS/Title,AuthorId,EditorId",
             filter: "Status eq 'Confirmed' ",
             orderby: "ScheduledDate asc",
-            top: 4500
+            top: 4500,
+            expand: "CS/ID,CS/Title"
         },
 
         // Proforma
         proformaForMangerIT: {
             // select: "ID,Title,ProformaDate,ProformaHtml,ProformaType,ClientLegalEntity,FiscalYear,Amount,Currency,MainPOC,AddressType,LineItems/Id,LineItems/Title,PO,Status,FileURL,Template,AdditionalInfo",
-            select: "Title,ClientLegalEntity,ProformaType,ProformaDate,Amount,Currency,PO,Status,MainPOC,AdditionalInfo,ProformaTitle,AddressType,Template,InvoiceLookup,LineItemsLookup,FileURL,Reason,State,Modified,ID,ProformaHtml,LineItems/Id,LineItems/Title",
+            select: "Title,ClientLegalEntity,ProformaType,ProformaDate,Amount,Currency,PO,Status,MainPOC,AdditionalInfo,ProformaTitle,AddressType,Template,InvoiceLookup,LineItemsLookup,FileURL,Reason,State,Modified,ID,ProformaHtml,LineItems/Id,LineItems/Title,AuthorId,EditorId",
             filter: "Status eq 'Created' or Status eq 'Sent' ",
             orderby: "ProformaDate",
             expand: "LineItems",
@@ -245,7 +246,7 @@ export class FdConstantsService {
         // Outstanding Invoices
         invoicesForMangerIT: {
             // select: "ID,ClientLegalEntity,Title,InvoiceNumber,InvoiceDate,FiscalYear,Amount,Currency,MainPOC,AddressType,PO,Status,FileURL,Template,ProformaLookup,InvoiceType",
-            select1: "ID,ClientLegalEntity,InvoiceNumber,InvoiceDate,Amount,PaymentURL,FileURL,Currency,PO,Status,MainPOC,InvoiceTitle,AddressType,Template,ProformaLookup,LineItemsLookup,DisputeReason,DisputeComments,Reason,State,AdditionalInfo,InvoiceType,TaggedAmount,IsTaggedFully,Modified,Title,Created,InvoiceHtml",
+            select1: "ID,ClientLegalEntity,InvoiceNumber,InvoiceDate,Amount,PaymentURL,FileURL,Currency,PO,Status,MainPOC,InvoiceTitle,AddressType,Template,ProformaLookup,LineItemsLookup,DisputeReason,DisputeComments,Reason,State,AdditionalInfo,InvoiceType,TaggedAmount,IsTaggedFully,Modified,Title,Created,InvoiceHtml,AuthorId,EditorId",
             filter: "Status eq '" + this.constantService.invoicesStatus.AwaitingClosedCreditNote + "' or " +
                 "Status eq '" + this.constantService.invoicesStatus.AwaitingClosedDebitNote + "' or " +
                 "Status eq '" + this.constantService.invoicesStatus.AwaitingWriteOff + "' or " +
@@ -259,7 +260,7 @@ export class FdConstantsService {
             top: 4500
         },
         invoicesForNonManger: {
-            select: "ID,Title,InvoiceNumber,InvoiceDate,FiscalYear,Amount,Currency,MainPOC,AddressType,PO,Status,FileURL",
+            select: "ID,Title,InvoiceNumber,InvoiceDate,FiscalYear,Amount,Currency,MainPOC,AddressType,PO,Status,FileURL,AuthorId,EditorId",
             filter: "ID lt 0",
             // orderby: "ProformaDate",
             // expand: "LineItems",
@@ -269,7 +270,7 @@ export class FdConstantsService {
         // Paid Invoices
         paidInvoices: {
             // select: "ID,ClientLegalEntity,InvoiceNumber,InvoiceDate,FiscalYear, FileURL,InvoiceTitle,Amount,Currency,MainPOC,AddressType,PO,Status,ProformaLookup,State, InvoiceType, Title",
-            select: "ID,ClientLegalEntity,InvoiceNumber,InvoiceDate,Amount,PaymentURL,FileURL,Currency,PO,Status,MainPOC,InvoiceTitle,AddressType,Template,ProformaLookup,LineItemsLookup,DisputeReason,DisputeComments,Reason,State,AdditionalInfo,InvoiceType,TaggedAmount,IsTaggedFully,Modified,Title,Created",
+            select: "ID,ClientLegalEntity,InvoiceNumber,InvoiceDate,Amount,PaymentURL,FileURL,Currency,PO,Status,MainPOC,InvoiceTitle,AddressType,Template,ProformaLookup,LineItemsLookup,DisputeReason,DisputeComments,Reason,State,AdditionalInfo,InvoiceType,TaggedAmount,IsTaggedFully,Modified,Title,Created,AuthorId,EditorId",
             filter: "Status eq 'Paid' and Modified ge '{{StartDate}}' and Modified le '{{EndDate}}'",
             // orderby: "ProformaDate",
             // expand: "LineItems",
@@ -278,7 +279,7 @@ export class FdConstantsService {
 
         // Invoice Line Item
         invoiceLineItem: {
-            select: "ID,Title,Status,ScheduledDate,Amount,Currency,PO,MainPOC,ScheduleType,InvoiceLookup,Expenses,AddressType,Template,SOWCode, AdditionalInfo,ProformaLookup",
+            select: "ID,Title,Status,ScheduledDate,Amount,Currency,PO,MainPOC,ScheduleType,InvoiceLookup,Expenses,AddressType,Template,SOWCode, AdditionalInfo,ProformaLookup,AuthorId,EditorId",
             filter: "ProformaLookup eq '{{ProformaLookup}}' ",
             top: 4500
         },

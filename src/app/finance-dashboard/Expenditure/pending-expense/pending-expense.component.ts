@@ -373,13 +373,13 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 ExpenseType: element.SpendType,
                 ClientAmount: parseFloat(element.ClientAmount).toFixed(2),
                 ClientCurrency: element.ClientCurrency,
-                Created: element.Created,
-                CreatedDateFormat: this.datePipe.transform(element.Created, 'MMM dd, yyy, hh:mm a'),
+                Created: new Date(this.datePipe.transform(element.Created, 'MMM dd, yyyy')),
+                CreatedDateFormat: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
                 CreatedBy: rcCreatedItem ? rcCreatedItem.UserName.Title : '',
                 ModifiedBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
                 Notes: element.Notes,
-                Modified: element.Modified,
-                ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyy, hh:mm a'),
+                Modified: new Date(this.datePipe.transform(element.Modified, 'MMM dd, yyyy')),
+                ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
                 RequestType: element.RequestType,
                 Number: element.Number,
                 DateSpend: element.DateSpend,
@@ -398,7 +398,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 InvoiceID: element.InvoiceID,
                 POLookup: element.POLookup,
                 // PONumber: this.getPONumber(element),
-                // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM dd, yyy, hh:mm a')
+                // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM dd, yyyy, hh:mm a')
             })
         }
         this.pendingExpenses = [...this.pendingExpenses];
@@ -472,10 +472,10 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.pendinExpenseColArray.ExpenseType = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }));
         this.pendinExpenseColArray.ClientAmount = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ClientAmount, value: a.ClientAmount }; return b; }));
         this.pendinExpenseColArray.ClientCurrency = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }));
-        this.pendinExpenseColArray.Created = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: this.datePipe.transform(a.Created, 'MMM d, y'), value: a.Created }; return b; }));
+        this.pendinExpenseColArray.Created = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: this.datePipe.transform(a.Created, 'MMM dd, yyyy'), value: a.Created }; return b; }));
         this.pendinExpenseColArray.CreatedBy = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }));
         this.pendinExpenseColArray.ModifiedBy = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }));
-        this.pendinExpenseColArray.ModifiedDate = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM d, y'), value: a.Modified }; return b; }));
+        this.pendinExpenseColArray.ModifiedDate = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b; }));
     }
 
     uniqueArrayObj(array: any) {

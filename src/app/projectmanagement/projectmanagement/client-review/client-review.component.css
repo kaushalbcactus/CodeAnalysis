@@ -1,0 +1,21 @@
+.crTable div.ui-table-wrapper {
+    min-height: 440px;
+  }
+  
+  .crTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
+    overflow: visible;
+  }
+  
+  .crTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
+    position: relative;
+  }
+  
+  .crTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div > i {
+    top: 0px !important;
+  }
+  
+  .crTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+    top: 0px !important;
+    left: inherit !important;
+    right: 40px !important;
+  }

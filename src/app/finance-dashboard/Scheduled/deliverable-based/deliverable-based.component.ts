@@ -299,6 +299,10 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         this.deliverableBasedRes = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
+            let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
+            if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
+                resCInfo = resCInfo.UserName.Title
+            }
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
             let sowCode = element.SOWCode ? element.SOWCode : '';
             let sowName = sowItem.Title ? sowItem.Title : '';
@@ -331,7 +335,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 PO: element.PO,
                 POCId: element.MainPOC,
                 ClientName: piInfo.ClientLegalEntity,//this.getCLE(element),
-                ScheduledDate: element.ScheduledDate, //this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
+                ScheduledDate: new Date(this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy')), //this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
                 ScheduledDateFormat: this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
                 Amount: element.Amount,
                 Currency: element.Currency,
@@ -348,7 +352,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 ScheduleType: element.ScheduleType,
                 InvoiceLookup: element.InvoiceLookup,
                 Template: element.Template,
-                Modified: this.datePipe.transform(element.Modified, 'MMM d, y'),
+                Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyyy'),
+                ModifiedBy: resCInfo,
             })
         }
         this.deliverableBasedRes = [...this.deliverableBasedRes];
@@ -407,8 +412,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     getCSDetails(res) {
         if (res.hasOwnProperty('CS') && res.CS.hasOwnProperty('results') && res.CS.results.length) {
             let title = [];
-            for (let i = 0; i < res.length; i++) {
-                const element = res[i];
+            for (let i = 0; i < res.CS.results.length; i++) {
+                const element = res.CS.results[i];
                 title.push(element.Title);
             }
             return title.toString();
@@ -515,7 +520,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         const currentDate = new Date();
         const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
         const last3Days = this.commonService.getLastWorkingDay(3, new Date());
-        const currentDay = new Date(this.datePipe.transform(new Date(),"yyyyMMdd"));
+        const currentDay = new Date(this.datePipe.transform(new Date(), "yyyyMMdd"));
         if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= new Date()) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
@@ -524,7 +529,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             } else if (!retPO) {
                 this.messageService.add({ key: 'bottomCenter', severity: 'success', summary: 'PO not available for the selected line item.', detail: '', life: 4000 })
             } else if (!(new Date(retPO.POExpiryDate) >= new Date())) {
-                this.messageService.add({ key: 'bottomCenter', severity: 'success', summary: 'PO expired on ' + this.datePipe.transform(retPO.POExpiryDate, 'MMM d, y'), detail: '', life: 4000 })
+                this.messageService.add({ key: 'bottomCenter', severity: 'success', summary: 'PO expired on ' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), detail: '', life: 4000 })
             }
         }
         this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });

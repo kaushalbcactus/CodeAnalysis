@@ -544,7 +544,7 @@ body .ui-table .ui-table-tbody > tr:nth-child(even){
         cursor:auto !important;
     }
     .lastColumnWidth {
-        width: 50px;
+      width: 60px;
     }
     p-table tbody tr td {
      overflow-wrap: break-word;
@@ -735,11 +735,11 @@ body .ui-corner-top {
 
   }
 
-  .allSOW-section table tbody tr td:last-child p-menu, 
+  /* .allSOW-section table tbody tr td:last-child p-menu, 
   .allProjects-section table tbody tr td:last-child p-menu,
   .projectDataExist table tbody tr td:last-child p-menu {
     display: none;
-  }
+  } */
 
   /* .allSOW-section table tbody tr td:last-child i {
     padding-top: 5px;
@@ -776,4 +776,6 @@ body .ui-corner-top {
     overflow-y: auto !important;
 
 } 
-  
+body .ui-dialog .ui-dialog-content {
+  padding: 3.571em 1em;
+}

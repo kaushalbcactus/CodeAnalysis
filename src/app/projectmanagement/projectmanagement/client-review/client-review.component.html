@@ -27,7 +27,7 @@
     <div class="noDataMessage" [hidden]='crHideNoDataMessage'>
         No Tasks Found.
     </div>
-    <div class="table100 slaExist ver4 m-b-110" [hidden]="isCRTableHidden">
+    <div class="crTable table100 slaExist ver4 m-b-110" [hidden]="isCRTableHidden">
         <p-table #crTableRef [columns]="displayedColumns" [value]="pmObject.clientReviewArray_copy" [paginator]="true"
             [rows]="10" [lazy]="true" (onLazyLoad)="crLazyLoadTask($event)"
             [totalRecords]="pmObject.totalRecords.ClientReview" [loading]="pmObject.loading.ClientReview"
@@ -79,11 +79,13 @@
                     <td>{{task.Milestone}}</td>
                     <td>{{task.DeliveryDate}}</td>
                     <td>
-                        <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu
-                            [model]="popItems" [popup]="true" appendTo="body">
-                        </p-menu>
-                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
-                            (click)="storeRowData(rowData); menu.toggle($event);"></i>
+                        <div>
+                            <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu
+                                [model]="popItems" [popup]="true">
+                            </p-menu>
+                            <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
+                                (click)="storeRowData(rowData); menu.toggle($event);"></i>
+                        </div>
                     </td>
                 </tr>
             </ng-template>

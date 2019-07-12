@@ -188,8 +188,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             { field: 'Currency', header: 'Currency', visibility: true },
             { field: 'Rate', header: 'Rate', visibility: true },
             { field: 'HoursSpent', header: 'Hrs', visibility: true },
-            // { field: 'TotalInvoice', header: 'Total Invoice', visibility: true },
-            
+            { field: 'TotalInvoice', header: 'Total Invoice', visibility: true },
+
             { field: 'ProposedEndDate', header: 'Proposed End Date', visibility: false },
             { field: 'Modified', header: 'Modified', visibility: false },
             { field: 'SOWName', header: 'SOW Name', visibility: false },
@@ -277,7 +277,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                         ProjectMileStone: this.getMilestones(this.projectCodes[p]),
                         // ProjectMileStone: this.getMilestones(this.projectCodes[p]),
                         ClientLegalEntity: this.projectCodes[p].ClientLegalEntity,
-                        ProposedEndDate: this.datePipe.transform(this.projectCodes[p].ProposedEndDate, 'MMM d, y, hh:mm a'),
+                        ProposedEndDate: this.datePipe.transform(this.projectCodes[p].ProposedEndDate, 'MMM dd, yyyy, hh:mm a'),
                         POCName: this.getPOCName(this.projectCodes[p].PrimaryPOC),
                         // PONumber: this.projectCodes[p].PrimaryPOC,
                         POName: poDetail.Name,
@@ -318,7 +318,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     }
 
     updateTotal(rate, hrs) {
-        return rate * hrs;
+        return (rate * hrs).toFixed(2);
     }
 
     // Project Current Milestones
@@ -390,6 +390,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         HoursSpent: [],
         Currency: [],
         POCName: [],
+        TotalInvoice: []
     }
 
     createColFieldValues() {
@@ -403,6 +404,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         this.hourlyBasedColArray.HoursSpent = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.HoursSpent, value: a.HoursSpent }; return b; }));
         this.hourlyBasedColArray.Currency = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
         this.hourlyBasedColArray.POCName = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }));
+        this.hourlyBasedColArray.TotalInvoice = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.TotalInvoice, value: a.TotalInvoice }; return b; }));
     }
 
     uniqueArrayObj(array: any) {

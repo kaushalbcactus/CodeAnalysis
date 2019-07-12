@@ -69,10 +69,12 @@
                 <td>{{task.CreatedBy}}</td>
                 <td>{{task.CreatedDate | date:'MMM dd yyyy hh:mm:ss aa'}}</td>
                 <td>
-                    <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu class="projectSlider"
-                        [model]="popItems" [popup]="true" appendTo="body"></p-menu>
-                    <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
-                        (click)="storeRowData(rowData,menu); menu.toggle($event);"></i>
+                    <div>
+                        <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu class="projectSlider"
+                            [model]="popItems" [popup]="true"></p-menu>
+                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
+                            (click)="storeRowData(rowData,menu); menu.toggle($event);"></i>
+                    </div>
                 </td>
             </tr>
         </ng-template>

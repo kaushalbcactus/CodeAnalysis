@@ -5,6 +5,15 @@
     width: 100% !important;
     margin: -50px !important;
   }
+
+  :host ::ng-deep .ui-table .ui-table-thead > tr > th {
+    position: -webkit-sticky;
+    position: sticky;
+    top: -10px;
+    z-index: 9999999;
+}
+
+
   
 #modalInnerLoader{
     border: 5px solid #f3f3f3;
