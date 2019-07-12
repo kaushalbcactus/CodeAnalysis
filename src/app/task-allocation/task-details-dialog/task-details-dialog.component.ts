@@ -211,7 +211,7 @@ downloadFile() {
   if (this.selectedDocuments.length > 0) {
     this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.currentTask.Title);
   } else {
-    this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Files.', life: 4000 })
+    this.messageService.add({ key: 'task-details', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Files.', life: 4000 })
   }
 }
 

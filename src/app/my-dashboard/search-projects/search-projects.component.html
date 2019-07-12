@@ -143,8 +143,8 @@
 
           <table [hidden]="modalloaderenable" class="ProjectDetails" style="width:100%;margin:10px 0px 0px 0px;">
             <tr>
-              <th>Client Name </th>
-              <td>{{ProjectPopupDetails.ClientLegalEntity}}</td>
+              <th>Client /  Subdivision  </th>
+              <td>{{ProjectPopupDetails.ClientLegalEntity}} <span *ngIf="ProjectPopupDetails.SubDivision">/</span> {{ProjectPopupDetails.SubDivision}}</td>
               <th>POC </th>
               <td>{{ProjectPopupDetails.POC}}</td>
             </tr>
@@ -158,17 +158,17 @@
               <th>Deliverable Type </th>
               <td>{{ProjectPopupDetails.DeliverableType}}</td>
               <th>Sub-Deliverable / Service </th>
-              <td>{{ProjectPopupDetails.SubDeliverable}} / {{ProjectPopupDetails.ServiceLevel}} </td>
+              <td>{{ProjectPopupDetails.SubDeliverable}} <span *ngIf="ProjectPopupDetails.ServiceLevel"> / </span> {{ProjectPopupDetails.ServiceLevel}} </td>
             </tr>
             <tr>
               <th>TA & Indication </th>
-              <td>{{ProjectPopupDetails.TA}} & {{ProjectPopupDetails.Indication}}</td>
+              <td>{{ProjectPopupDetails.TA}} <span *ngIf="ProjectPopupDetails.Indication"> & </span> {{ProjectPopupDetails.Indication}}</td>
               <th>Molecule </th>
               <td>{{ProjectPopupDetails.Molecule}}</td>
             </tr>
             <tr>
-              <th>Complexity </th>
-              <td>{{ProjectPopupDetails.Complexity}}</td>
+              <th>Practice Area </th>
+              <td>{{ProjectPopupDetails.BusinessVertical}}</td>
               <th>Priority </th>
               <td>{{ProjectPopupDetails.Priority}}</td>
             </tr>
@@ -209,10 +209,16 @@
               <td>{{ProjectPopupDetails.PubSupportStatus}} </td>
             </tr>
             <tr>
-              <th>Journel / Conference </th>
+              <th>Journal / Conference </th>
               <td>{{ProjectPopupDetails.ConferenceJournal}}</td>
               <th>Authors </th>
               <td>{{ProjectPopupDetails.Authors}} </td>
+            </tr>
+            <tr>
+              <th>SOW Box Link</th>
+              <td>{{ProjectPopupDetails.SOWBoxLink}}</td>
+              <th> End use of Deliverable </th>
+              <td>{{ProjectPopupDetails.Description}} </td>
             </tr>
             <tr>
               <th>Comments </th>
@@ -247,9 +253,9 @@
 
           <table [hidden]="modalloaderenable" class="ProjectDetails" style="width:100%;margin:10px 0px 0px 0px;">
             <tr>
-              <th>CM Members </th>
+              <th>Client Managers </th>
               <td>{{projectResource.CMMembers}}</td>
-              <th>Delivery Members </th>
+              <th>Delivery Leads </th>
               <td>{{projectResource.PMMembers}}</td>
             </tr>
             <tr>

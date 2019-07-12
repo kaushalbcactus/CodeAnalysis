@@ -165,7 +165,7 @@ export class MyDashboardConstantsService {
     },
     ProjectInformation:
     {
-      select: 'ID,Title,ProjectCode,ProjectFolder,ClientLegalEntity,PrimaryPOC,Status,DeliverableType,Milestone,Milestones,SubDeliverable,ServiceLevel,TA,Indication,Molecule,Complexity,Priority,ProposedStartDate,ProposedEndDate,ActualStartDate,ActualEndDate,IsPubSupport,PubSupportStatus,ConferenceJournal,Authors,Comments,WBJID,SOWCode,ProjectType,Created,Author/Title',
+      select: 'ID,Title,ProjectCode,ProjectFolder,ClientLegalEntity,PrimaryPOC,Status,DeliverableType,Milestone,Milestones,SubDeliverable,ServiceLevel,TA,Indication,Molecule,Complexity,Priority,ProposedStartDate,ProposedEndDate,ActualStartDate,ActualEndDate,IsPubSupport,PubSupportStatus,ConferenceJournal,Authors,Comments,WBJID,SOWCode,ProjectType,Created,Author/Title,BusinessVertical,SubDivision,SOWBoxLink,Description',
       filterByCode: "ProjectCode eq '{{projectCode}}'",
       filterByTitle: "WBJID eq '{{shortTitle}}'",
       filter: '',

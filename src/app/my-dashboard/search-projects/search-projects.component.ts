@@ -295,8 +295,8 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
     this.projectResource.CMMembers =  this.response[1].map(c=>c).map(c=>c.CMLevel1).map(c=>c.results).length  > 0 ? this.response[1].map(c=>c).map(c=>c.CMLevel1).map(c=>c.results)[0].map(c=>c.Title) + ", " + this.response[1][0].CMLevel2.Title : this.response[1][0].CMLevel2.Title;
 
-    // this.projectResource.map(c => c.PMMembers = this.response[1].DeliveryLevel1.results.length > 0 ? this.response[1].DeliveryLevel1.results.map(e => e.Title) + ", " + this.response[1].DeliveryLevel2.results.Title : this.response[1].DeliveryLevel2.results.Title);
-
+    this.projectResource.PMMembers = this.response[1][0].DeliveryLevel1.Title ? this.response[1][0].DeliveryLevel1.Title + ", " + this.response[1][0].DeliveryLevel2.Title : this.response[1][0].DeliveryLevel2.Title;
+    
     this.projectResource.PrimaryResource = this.response[0].map(c=>c).map(c=> c.PrimaryResMembers).find(c=>c.results) !== undefined ? this.response[0].map(c=>c).map(c=> c.PrimaryResMembers).map(c=>c.results)[0].map(e => e.Title) : '';
 
     this.projectResource.Writers = this.response[0].map(c=>c).map(c=> c.Writers).find(c=>c.results) !== undefined ? this.response[0].map(c=>c).map(c=> c.Writers).map(c=>c.results)[0].map(e => e.Title) : '';

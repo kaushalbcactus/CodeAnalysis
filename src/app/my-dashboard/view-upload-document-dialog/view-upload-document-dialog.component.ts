@@ -279,7 +279,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
     this.allDocuments = this.response[0];
-
+debugger;
     if (this.selectedTab === 'My Drafts') {
       this.DocumentArray = this.allDocuments.filter(c => c.ListItemAllFields.TaskName === this.selectedTask.Title);
     }

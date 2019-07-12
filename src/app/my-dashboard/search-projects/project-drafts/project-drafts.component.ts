@@ -229,7 +229,8 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   downloadFile() {
 
     if (this.selectedDocuments.length > 0) {
-      this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTask.Title);
+
+      this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTab);
     } else {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Files.', life: 4000 })
     }
