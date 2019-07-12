@@ -147,7 +147,8 @@ export class AllProjectsComponent implements OnInit {
       this.pmObject.allProjectItems = arrResults;
     }
     if (this.pmObject.allProjectItems.length) {
-      this.pmObject.countObj.allProjectCount = arrResults.length;
+      // this.pmObject.countObj.allProjectCount = arrResults.length;
+      this.pmObject.countObj.allProjectCount = this.pmObject.allProjectItems.length; // added by kaushal on 12-07-2019
       this.pmObject.totalRecords.AllProject = this.pmObject.countObj.allProjectCount;
       if (this.pmObject.tabMenuItems.length) {
         this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';

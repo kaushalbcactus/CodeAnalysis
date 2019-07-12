@@ -25,6 +25,10 @@
         <input id="overdue" type="checkbox" checked="checked" (click)="getCheckedCheckbox()">
         <span class="checkmark"></span>
     </label>
+    <div class="box excelIcon" [hidden]='isSCTableHidden'>
+        <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(sendToClientTableRef)"
+            title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+    </div>
     <div class="noDataMessage" [hidden]='hideNoDataMessage'>
         No Tasks Found.
     </div>
