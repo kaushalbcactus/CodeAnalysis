@@ -276,7 +276,8 @@ export class ConstantsService {
     Cancelled: 'Cancelled',
     AwaitingCancelApproval: 'Awaiting Cancel Approval',
     PendingClosure: 'Pending Closure',
-    SentToAMForApproval: 'Sent to AM for Approval'
+    SentToAMForApproval: 'Sent to AM for Approval',
+    Approved: 'Approved'
   };
 
   public Groups = {
@@ -312,7 +313,9 @@ export class ConstantsService {
     APPROVAL_PENDING: 'Approval Pending',
     NOT_CONFIRMED: 'Not Confirmed',
     CLOSED_PROJECT: 'CloseProject',
-    CONFIRMED: 'Confirmed'
+    CONFIRMED: 'Confirmed',
+    DELETED: 'Deleted',
+    REJECTED: 'Rejected'
   };
   public SKILL_LEVEL = {
     WRITER: 'Writer',

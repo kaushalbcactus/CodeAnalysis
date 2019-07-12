@@ -397,7 +397,25 @@ export class PmconstantService {
     PROFORMA_BY_PROFORMALOOKUP: {
       select: 'ID, Title, FileURL',
       filter: 'ID eq \'{{proformaLookup}}\''
-    }
+    },
+    SCHEDULE_LIST_BY_PROJECTCODE: {
+      select: 'ID, Title, Status',
+      filter: 'ProjectCode eq \'{{projectCode}}\'',
+      top: 4900
+    },
+    SOW_BY_SOWCODE: {
+      select: 'ID',
+      filter: 'SOWCode eq \'{{sowCode}}\''
+    },
+    PROJECT_BUDGET_BREAKUP_CANCELLED_BY_PROJECTCODE: {
+      select: 'ID, Title, ProjectLookup, Status, ApprovalDate, OriginalBudget, NetBudget, OOPBudget, TaxBudget, ProjectCode,'
+        + ' BudgetHours, Reason, Comments',
+      filter: 'ProjectCode eq \'{{projectCode}}\' and Status eq \'Approved\''
+    },
+    PROJECT_FINANCE_BREAKUP_CANCELLED_BY_PROJECTCODE: {
+      select: 'ID,Title,POLookup,ProjectNumber,Amount, AmountRevenue, AmountOOP, AmountTax, TotalScheduled, ScheduledRevenue',
+      filter: 'ProjectNumber eq \'{{projectCode}}\' and Status eq \'Active\''
+    },
   };
   public PROJECT_TYPE = {
     HOURLY: 'Hourly',
