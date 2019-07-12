@@ -155,11 +155,11 @@
                 </tr>
                 <tr>
                   <td>
-                    <span *ngIf="rowData.showDelete"><i class="pi pi-trash iconsize"
+                    <span *ngIf="rowData.showDelete"><i title="Delete PO from Project" class="pi pi-trash iconsize"
                         (click)="removePO(poObj)"></i></span>
-                    <span *ngIf="rowData.showAdd"><i class="pi pi-plus-circle iconsize"
+                    <span *ngIf="rowData.showAdd"><i title="Reserve budget from PO" class="pi pi-plus-circle iconsize"
                         (click)="schedulePo(poObj)"></i></span>
-                    <span *ngIf="rowData.showInvoice"><i class="pi pi-file iconsize"
+                    <span *ngIf="rowData.showInvoice"><i title="Schedule Invoices on the PO" class="pi pi-file iconsize"
                         (click)="scheduleInvoice(poObj)"></i></span>
                   </td>
                   <td><input [(ngModel)]="rowData.poTotal" [attr.disabled]=true type="number" style="width:100%"
