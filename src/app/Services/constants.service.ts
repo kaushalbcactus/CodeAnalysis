@@ -329,7 +329,8 @@ export class ConstantsService {
     AUDIT_PROJECT: 'AuditProject',
     CLOSE_PROJECT: 'CloseProject',
     NOTIFY_PM: 'NotifyPM',
-    INVOICE_CONFIRM: 'ConfirmInvoice'
+    INVOICE_CONFIRM: 'ConfirmInvoice',
+    CANCEL: 'Cancel'
   };
   public invoiceList = {
     status: {
