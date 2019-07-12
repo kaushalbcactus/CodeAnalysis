@@ -12,8 +12,8 @@
 position="bottom-center">
 </p-toast>
 
-<div [hidden]="modalloaderenable" fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="center center">
-    <p-card [style]="{width: '1050px'}">
+<div [hidden]="modalloaderenable" fxLayout="column" fxLayoutGap="10px">
+    <p-card>
         <p-header style="padding: 0.5em;font-size: 1.5em;color: #6f0b0b;font-weight: 600;"><i class="fa fa-book" aria-hidden="true"></i> &nbsp;&nbsp; Documents</p-header>
         <div>
 
@@ -50,8 +50,8 @@ position="bottom-center">
           
         </div>
     </p-card>
-    <p-card [style]="{'width': '1050px'}">
-        <p-header style="padding: 0.5em;font-size: 1.5em;color: #6f0b0b;font-weight: 600;"><i class="fa fa-commenting" aria-hidden="true"></i>&nbsp;&nbsp; Comments</p-header>
+    <p-card >
+        <p-header style="padding: 0.5em;font-size: 1.5em;color: #6f0b0b;font-weight: 600; width: 100%;"><i class="fa fa-commenting" aria-hidden="true"></i>&nbsp;&nbsp; Comments</p-header>
         <div>
             <span *ngIf="!currentTask.TaskComments" style="color: #c53e3e;font-size: 1em;">* No notes or comments present for
                 current task.
@@ -62,7 +62,7 @@ position="bottom-center">
           </span>
           </div>
     </p-card>
-    <p-card [style]="{width: '1050px'}" >
+    <p-card  >
         <p-header style="padding: 0.5em;font-size: 1.5em;color: #6f0b0b;font-weight: 600;"><i class="fa fa-comments" aria-hidden="true"></i>&nbsp;&nbsp; Scope</p-header>
         
         <div>
