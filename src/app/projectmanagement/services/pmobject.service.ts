@@ -492,6 +492,7 @@ export class PMObjectService {
   public columnFilter = {
     ProjectCode: []
   };
+  public isReasonSectionVisible = false;
 }
 
 

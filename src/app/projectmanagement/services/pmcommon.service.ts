@@ -572,9 +572,9 @@ export class PMCommonService {
       x.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity);
     if (clientInfo && clientInfo.length) {
       const listName = clientInfo[0].ListName;
-      objProjectFolder = this.globalObject.sharePointPageObject.webAbsoluteUrl + '/' + listName + '/' +
+      objProjectFolder = this.globalObject.sharePointPageObject.serverRelativeUrl + '/' + listName + '/' +
         addObj.ProjectAttributes.ProjectCode;
-      objProjectTask = this.globalObject.sharePointPageObject.webAbsoluteUrl + '/' + this.constant.listNames.Schedules.name
+      objProjectTask = this.globalObject.sharePointPageObject.serverRelativeUrl + '/' + this.constant.listNames.Schedules.name
         + '/' + addObj.ProjectAttributes.ProjectCode;
     }
     const data: any = {
@@ -589,7 +589,6 @@ export class PMCommonService {
       BusinessVertical: addObj.ProjectAttributes.PracticeArea,
       WBJID: addObj.ProjectAttributes.AlternateShortTitle,
       SOWBoxLink: addObj.ProjectAttributes.SOWBoxLink,
-      SOWCode: addObj.SOWSelect.SOWCode,
       CMLevel1Id: {
         results: addObj.ProjectAttributes.ActiveCM1
       },
@@ -613,6 +612,7 @@ export class PMCommonService {
       SOWLink: addObj.FinanceManagement.SOWFileURL ? addObj.FinanceManagement.SOWFileURL : ''
     };
     if (isCreate) {
+      data.SOWCode = addObj.SOWSelect.SOWCode;
       data.Milestones = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.Milestones : '';
       data.DeliverableType = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.DeliverableType :
         addObj.Timeline.NonStandard.DeliverableType;

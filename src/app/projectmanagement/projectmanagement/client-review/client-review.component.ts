@@ -9,6 +9,7 @@ import { DatePipe } from '@angular/common';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
+import { PMCommonService } from '../../services/pmcommon.service';
 declare var $;
 @Component({
   selector: 'app-client-review',
@@ -68,7 +69,8 @@ export class ClientReviewComponent implements OnInit {
     private spServices: SharepointoperationService,
     private datePipe: DatePipe,
     public pmObject: PMObjectService,
-    private pmConstant: PmconstantService
+    private pmConstant: PmconstantService,
+    public pmCommonService: PMCommonService,
   ) { }
 
   ngOnInit() {

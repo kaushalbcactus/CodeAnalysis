@@ -11,7 +11,7 @@ import { CommunicationComponent } from '../communication/communication.component
 import { ProjectAttributesComponent } from '../add-projects/project-attributes/project-attributes.component';
 import { ManageFinanceComponent } from '../add-projects/manage-finance/manage-finance.component';
 import { TimelineHistoryComponent } from '../../../timeline/timeline-history/timeline-history.component';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectTimelineComponent } from './project-timeline/project-timeline.component';
 import { GlobalService } from 'src/app/Services/global.service';
 
@@ -67,9 +67,17 @@ export class AllProjectsComponent implements OnInit {
     addRollingProjectError: false,
     addRollingProjectErrorMsg: ''
   };
+  public params = {
+    ProjectCode: '',
+    ActionStatus: '',
+    ProjectStatus: ''
+  };
   newSelectedSOW;
   moveSOWObjectArray = [];
   sowDropDownArray: SelectItem[];
+  selectedReasonType;
+  selectedReason;
+  cancelReasonArray: SelectItem[];
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   constructor(
     public pmObject: PMObjectService,
@@ -83,7 +91,8 @@ export class AllProjectsComponent implements OnInit {
     public dialogService: DialogService,
     public router: Router,
     private confirmationService: ConfirmationService,
-    private globalObject: GlobalService
+    private globalObject: GlobalService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
@@ -126,6 +135,7 @@ export class AllProjectsComponent implements OnInit {
       }
       this.pmObject.columnFilter.ProjectCode = [];
     }, this.pmConstant.TIME_OUT);
+
   }
   /**
    * This method is used to get all projects based on current user credentials.
@@ -147,11 +157,23 @@ export class AllProjectsComponent implements OnInit {
       this.pmObject.allProjectItems = arrResults;
     }
     if (this.pmObject.allProjectItems.length) {
-      this.pmObject.countObj.allProjectCount = arrResults.length;
+      // this.pmObject.countObj.allProjectCount = arrResults.length;
+      this.pmObject.countObj.allProjectCount = this.pmObject.allProjectItems.length; // added by kaushal on 12-07-2019
       this.pmObject.totalRecords.AllProject = this.pmObject.countObj.allProjectCount;
       if (this.pmObject.tabMenuItems.length) {
         this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+      }
+      this.params.ProjectCode = this.route.snapshot.queryParams['ProjectCode'];
+      this.params.ActionStatus = this.route.snapshot.queryParams['ActionStatus'];
+      this.params.ProjectStatus = this.route.snapshot.queryParams['ProjectStatus'];
+      if (this.params.ProjectCode && this.params.ActionStatus &&
+        this.params.ProjectStatus && this.params.ActionStatus === this.constants.projectStatus.Approved) {
+        const projectObj = this.pmObject.allProjectItems.filter(c => c.ProjectCode === this.params.ProjectCode);
+        if (projectObj && projectObj.length) {
+          await this.getGetIds(projectObj[0], true);
+          this.changeProjectStatusCancelled(projectObj[0]);
+        }
       }
     } else {
       if (this.pmObject.tabMenuItems.length) {
@@ -394,15 +416,8 @@ export class AllProjectsComponent implements OnInit {
             });
           }
           if (isCancelledClick) {
-            this.confirmationService.confirm({
-              header: 'Change Status of Project -' + selectedProjectObj.ProjectCode + '',
-              icon: 'pi pi-exclamation-triangle',
-              message: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
-                + ' from ' + status + ' to ' + this.constants.projectStatus.Cancelled + '?',
-              accept: () => {
-                this.changeProjectStatusCancelled(selectedProjectObj);
-              }
-            });
+            await this.loadReasonDropDown();
+            this.pmObject.isReasonSectionVisible = true;
           }
           break;
         case this.constants.projectStatus.Unallocated:
@@ -410,15 +425,21 @@ export class AllProjectsComponent implements OnInit {
         case this.constants.projectStatus.ReadyForClient:
         case this.constants.projectStatus.OnHold:
         case this.constants.projectStatus.AuthorReview:
-          this.confirmationService.confirm({
-            header: 'Change Status of Project -' + selectedProjectObj.ProjectCode + '',
-            icon: 'pi pi-exclamation-triangle',
-            message: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
-              + ' from ' + status + ' to ' + this.constants.projectStatus.AuditInProgress + '?',
-            accept: () => {
-              this.changeProjectStatusAuditInProgress();
-            }
-          });
+          if (!isCancelledClick) {
+            this.confirmationService.confirm({
+              header: 'Change Status of Project -' + selectedProjectObj.ProjectCode + '',
+              icon: 'pi pi-exclamation-triangle',
+              message: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
+                + ' from ' + status + ' to ' + this.constants.projectStatus.AuditInProgress + '?',
+              accept: () => {
+                this.changeProjectStatusAuditInProgress();
+              }
+            });
+          }
+          if (isCancelledClick) {
+            await this.loadReasonDropDown();
+            this.pmObject.isReasonSectionVisible = true;
+          }
           break;
         case this.constants.projectStatus.AuditInProgress:
           this.addRollingProjectArray = [
@@ -439,22 +460,112 @@ export class AllProjectsComponent implements OnInit {
             }
           });
           break;
-        case this.constants.projectStatus.Approved:
-          this.confirmationService.confirm({
-            header: 'Change Status of Project -' + selectedProjectObj.ProjectCode + '',
-            icon: 'pi pi-exclamation-triangle',
-            message: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
-              + ' from ' + status + ' to ' + this.constants.projectStatus.AwaitingCancelApproval + '?',
-            accept: () => {
-              this.changeProjectStatusAwaitingCancelApproval();
-            }
-          });
-          break;
       }
     }
   }
-  changeProjectStatusAwaitingCancelApproval() {
+  loadReasonDropDown() {
+    this.cancelReasonArray = [
+      {
+        label: this.pmConstant.PROJECT_CANCELLED_REASON.NOT_CONVINCED_OF_EXPERIANCE_OR_QUALITY,
+        value: this.pmConstant.PROJECT_CANCELLED_REASON.NOT_CONVINCED_OF_EXPERIANCE_OR_QUALITY
+      },
+      {
+        label: this.pmConstant.PROJECT_CANCELLED_REASON.LACK_OF_CAPABILITY,
+        value: this.pmConstant.PROJECT_CANCELLED_REASON.LACK_OF_CAPABILITY
+      },
+      {
+        label: this.pmConstant.PROJECT_CANCELLED_REASON.PRICE_TO_HIGH,
+        value: this.pmConstant.PROJECT_CANCELLED_REASON.PRICE_TO_HIGH
+      },
+      {
+        label: this.pmConstant.PROJECT_CANCELLED_REASON.CLIENT_BUDGET,
+        value: this.pmConstant.PROJECT_CANCELLED_REASON.CLIENT_BUDGET
+      },
+      {
+        label: this.pmConstant.PROJECT_CANCELLED_REASON.CLIENT_DOING_INTERNALLY,
+        value: this.pmConstant.PROJECT_CANCELLED_REASON.CLIENT_DOING_INTERNALLY
+      },
+      {
+        label: this.pmConstant.PROJECT_CANCELLED_REASON.CHANGE_IN_DELIVERY_TYPE,
+        value: this.pmConstant.PROJECT_CANCELLED_REASON.CHANGE_IN_DELIVERY_TYPE
+      },
+      {
+        label: this.pmConstant.PROJECT_CANCELLED_REASON.CACTUS_REJECT,
+        value: this.pmConstant.PROJECT_CANCELLED_REASON.CACTUS_REJECT
+      },
+      {
+        label: this.pmConstant.PROJECT_CANCELLED_REASON.DUPLICATE_ENTRY,
+        value: this.pmConstant.PROJECT_CANCELLED_REASON.DUPLICATE_ENTRY
+      },
+      {
+        label: this.pmConstant.PROJECT_CANCELLED_REASON.CLIENT_NOT_MOVING_FORWARD_WITH_PROJECT,
+        value: this.pmConstant.PROJECT_CANCELLED_REASON.CLIENT_NOT_MOVING_FORWARD_WITH_PROJECT
+      },
+      {
+        label: this.pmConstant.PROJECT_CANCELLED_REASON.UNKNOWN,
+        value: this.pmConstant.PROJECT_CANCELLED_REASON.UNKNOWN
+      }
+    ];
   }
+  async saveCancelProject() {
+    if (this.selectedReasonType && this.selectedReason) {
+      const piUdpate: any = {
+        Reason: this.selectedReason,
+        ReasonType: this.selectedReasonType
+      };
+      if (this.selectedProjectObj.Status !== this.constants.projectStatus.InDiscussion) {
+        piUdpate.Status = this.constants.projectStatus.AwaitingCancelApproval;
+      }
+      const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectInformation.name,
+        this.selectedProjectObj.ID, piUdpate, this.constants.listNames.ProjectInformation.type);
+      if (this.selectedProjectObj.Status === this.constants.projectStatus.InDiscussion) {
+        this.changeProjectStatusCancelled(this.selectedProjectObj);
+      } else {
+        this.sendApprovalEmailToManager(this.selectedProjectObj, this.selectedReason);
+      }
+    } else {
+      if (!this.selectedReasonType) {
+        this.messageService.add({
+          key: 'custom', severity: 'error', summary: 'Error Message',
+          detail: 'Please select reason Type.'
+        });
+      } else if (!this.selectedReason) {
+        this.messageService.add({
+          key: 'custom', severity: 'error', summary: 'Error Message',
+          detail: 'Please select reason Type.'
+        });
+      }
+    }
+  }
+  sendApprovalEmailToManager(selectedProjectObj, reason, ) {
+    const projectFinanceObj = this.toUpdateIds[1] && this.toUpdateIds[1].retItems && this.toUpdateIds[1].retItems.length ?
+      this.toUpdateIds[1].retItems[0] : [];
+    const subjectVal = 'Request to cancel the project';
+    const mailSubject = selectedProjectObj.ProjectCode + ' : ' + subjectVal;
+    const objEmailBody = [];
+    objEmailBody.push({ key: '@@Val1@@', value: selectedProjectObj.ProjectCode });
+    objEmailBody.push({ key: '@@Val2@@', value: selectedProjectObj.ClientLegalEntity });
+    objEmailBody.push({ key: '@@SiteName@@', value: this.globalObject.sharePointPageObject.webAbsoluteUrl });
+    objEmailBody.push({ key: '@@Val3@@', value: this.pmObject.currLoginInfo.Title });
+    objEmailBody.push({ key: '@@Val4@@', value: selectedProjectObj.ProposedStartDate });
+    objEmailBody.push({ key: '@@Val5@@', value: reason });
+    objEmailBody.push({ key: '@@Val6@@', value: selectedProjectObj.ProposedStartDate });
+    objEmailBody.push({ key: '@@Val7@@', value: projectFinanceObj.Budget });
+    let tempArray = [];
+    let arrayTo = [];
+    const cm1IdArray = [];
+    this.selectedProjectObj.CMLevel1ID.forEach(element => {
+      cm1IdArray.push(element.ID);
+    });
+    tempArray = tempArray.concat(cm1IdArray, this.selectedProjectObj.CMLevel2ID);
+    arrayTo = this.pmCommonService.getEmailId(tempArray);
+    this.pmCommonService.getTemplate(this.constants.EMAIL_TEMPLATE_NAME.CANCEL, objEmailBody, mailSubject, arrayTo,
+      [this.pmObject.currLoginInfo.Email]);
+  }
+  /**
+   * This function is used to changet the project status to cancelled.
+   * @param selectedProjectObj pass the project object as parameter.
+   */
   async changeProjectStatusCancelled(selectedProjectObj) {
     const projectBudgetBreakUPObjs = this.toUpdateIds[0] && this.toUpdateIds[0].retItems && this.toUpdateIds[0].retItems.length ?
       this.toUpdateIds[0].retItems : [];
@@ -482,7 +593,7 @@ export class AllProjectsComponent implements OnInit {
         type: this.constants.listNames.ProjectInformation.type
       },
       Status: this.constants.projectStatus.Cancelled,
-      PrevStatus: status,
+      PrevStatus: selectedProjectObj.Status,
       RejectionDate: new Date()
     };
     const piUpdate = Object.assign({}, options);
@@ -508,13 +619,12 @@ export class AllProjectsComponent implements OnInit {
         element.ID);
       batchURL.push(invoiceUpdate);
     });
-    projectFinanceBreakObjs.array.forEach(element => {
+    projectFinanceBreakObjs.forEach(element => {
       const projectFinanceBreakData = {
         __metadata: {
           type: this.constants.listNames.ProjectFinanceBreakup.type
         },
-        Status: this.constants.STATUS.DELETED,
-        PO: null
+        Status: this.constants.STATUS.DELETED
       };
       const projectFinanceBreakUpdate = Object.assign({}, options);
       projectFinanceBreakUpdate.data = projectFinanceBreakData;
@@ -582,7 +692,7 @@ export class AllProjectsComponent implements OnInit {
     projectFinanceBreakObjs.forEach(element => {
       const poLookUp = element.POLookup;
       const poItem = POObjsArray.find(c => c.ID === poLookUp);
-      if (poItem && poItem.length) {
+      if (poItem && poItem.hasOwnProperty('Amount')) {
         const poData = {
           __metadata: {
             type: this.constants.listNames.SOW.type
@@ -607,7 +717,7 @@ export class AllProjectsComponent implements OnInit {
           __metadata: {
             type: this.constants.listNames.Schedules.type
           },
-          TaskStatus: this.constants.STATUS.DELETED
+          Status: this.constants.STATUS.DELETED
         };
         const scUpdate = Object.assign({}, options);
         scUpdate.data = scUpdateData;
@@ -628,7 +738,7 @@ export class AllProjectsComponent implements OnInit {
     }
     this.messageService.add({
       key: 'allProject', severity: 'success', summary: 'Success Message',
-      detail: 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.'
+      detail: 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.'
     });
     setTimeout(() => {
       this.router.navigate(['/projectMgmt/allProjects']);
@@ -698,7 +808,7 @@ export class AllProjectsComponent implements OnInit {
       Status: this.constants.STATUS.APPROVED,
       ApprovalDate: new Date()
     };
-    projectBudgetBreakUPIds.array.forEach(element => {
+    projectBudgetBreakUPIds.forEach(element => {
       const prjBudgetBreakupUpdate = Object.assign({}, options);
       prjBudgetBreakupUpdate.data = prjBudgetBreakupData;
       prjBudgetBreakupUpdate.listName = this.constants.listNames.ProjectBudgetBreakup.name;
