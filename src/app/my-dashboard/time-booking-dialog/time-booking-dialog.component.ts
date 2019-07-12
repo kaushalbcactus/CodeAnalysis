@@ -218,7 +218,7 @@ export class TimeBookingDialogComponent implements OnInit {
 
     var startDate = new Date(this.datePipe.transform(this.weekDays[0], "yyyy-MM-dd") + " 00:00:00").toISOString();
     var endDate = new Date(this.datePipe.transform(this.weekDays[this.weekDays.length - 1], "yyyy-MM-dd") + " 23:59:00").toISOString();
-
+debugger;
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
     let AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimelineForBooking);
@@ -236,10 +236,11 @@ export class TimeBookingDialogComponent implements OnInit {
 
     console.log(this.allTasks);
 
+    
+
     var tempMilestones = this.allTasks.map(o => new Object({ ID: o.ID, Entity: o.Entity, ProjectCode: o.ProjectCode === "Adhoc" ? '-' : o.ProjectCode, Milestone: o.Milestone === 'Select one' ? o.Comments : o.Milestone, type: o.Entity === null ? 'task' : 'Adhoc', TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: new Date(this.datePipe.transform(minDate, 'yyyy-MM-dd')).getTime() < new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() ? true : false })) }));
 
-    this.UserMilestones = tempMilestones.length > 0 ? this.getUnique(tempMilestones, 'ProjectCode') : [];
-
+    this.UserMilestones = tempMilestones.length > 0 ? this.getUnique(tempMilestones, 'Milestone') :[];
 
     console.log("allTasks")
     console.log(this.allTasks)
