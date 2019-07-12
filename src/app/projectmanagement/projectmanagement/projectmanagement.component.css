@@ -735,11 +735,11 @@ body .ui-corner-top {
 
   }
 
-  .allSOW-section table tbody tr td:last-child p-menu, 
+  /* .allSOW-section table tbody tr td:last-child p-menu, 
   .allProjects-section table tbody tr td:last-child p-menu,
   .projectDataExist table tbody tr td:last-child p-menu {
     display: none;
-  }
+  } */
 
   /* .allSOW-section table tbody tr td:last-child i {
     padding-top: 5px;
