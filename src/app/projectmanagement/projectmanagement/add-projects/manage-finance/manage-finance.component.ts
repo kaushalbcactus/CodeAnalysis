@@ -781,7 +781,7 @@ export class ManageFinanceComponent implements OnInit {
     this.pmCommonService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.APPROVED_SOW, objEmailBody,
       mailSubject, arrayTo, [this.pmObject.currLoginInfo.Email]);
     this.messageService.add({
-      key: 'custom', severity: 'success', summary: 'Success Message',
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Invoice Line Items Confirmed Successfully'
     });
     this.dynamicDialogRef.close();
@@ -814,7 +814,7 @@ export class ManageFinanceComponent implements OnInit {
     const result = await this.spServices.updateItem(this.constant.listNames.InvoiceLineItems.name,
       this.invoiceObj.Id, data, this.constant.listNames.InvoiceLineItems.type);
     this.messageService.add({
-      key: 'custom', severity: 'success', summary: 'Success Message',
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Invoice Line Items updated Successfully'
     });
     setTimeout(() => {
@@ -947,7 +947,7 @@ export class ManageFinanceComponent implements OnInit {
     await this.spServices.executeBatch(batchURL);
     this.pmObject.isMainLoaderHidden = true;
     this.messageService.add({
-      key: 'custom', severity: 'success', summary: 'Success Message',
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Budget Updated Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
     });
     setTimeout(() => {

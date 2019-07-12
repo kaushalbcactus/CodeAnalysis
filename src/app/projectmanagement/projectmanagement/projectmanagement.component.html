@@ -217,15 +217,15 @@
                 <div class="ui-g mt-20">
                     <div class="ui-g-2"><span class="compulsory">*</span>Delivery</div>
                     <div class="ui-g-4">
-                        <p-multiSelect formControlName="deliveryOptional" [options]="sowDropDown.DeliveryOptional"
+                        <p-multiSelect formControlName="delivery" [options]="sowDropDown.Delivery"
                             [panelStyle]="{minWidth:'12em'}" [style]="{'width':'85%'}" defaultLabel="Please Select"
                             inputId="Please Select" [filter]="true"></p-multiSelect>
                     </div>
                     <div class="ui-g-4">
-                        <p-dropdown formControlName="delivery" [options]="sowDropDown.Delivery"
+                        <p-dropdown formControlName="deliveryOptional" [options]="sowDropDown.DeliveryOptional"
                             placeholder="Please Select" [showClear]="true" [filter]="true"></p-dropdown>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['delivery'].valid&&addSowForm.controls['delivery'].touched">
+                            *ngIf="!addSowForm.controls['deliveryOptional'].valid&&addSowForm.controls['deliveryOptional'].touched">
                             Delivery 2 is required</div>
                     </div>
                 </div>
@@ -296,4 +296,4 @@
 </div>
 <p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog>
 
-<p-toast position="bottom-right" key="custom"></p-toast>
+<p-toast position="bottom-right" key="custom" ></p-toast>

@@ -58,6 +58,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     private confirmationService: ConfirmationService
   ) { }
   ngOnInit() {
+    this.loadProjectManagementInit();
+  }
+  loadProjectManagementInit() {
     this.subscription = this.dataService.on('call-EditSOW').subscribe(() => this.getEditSOWData());
     this.subscription = this.dataService.on('call-Close-SOW').subscribe(() => this.closeSOW());
     this.pmObject.isAddSOWVisible = false;
@@ -259,12 +262,12 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           const del1 = this.pmService.getIds(clientInfo[0].DeliveryLevel1.results);
           const found = this.sowDropDown.Delivery.some(r => del1.indexOf(r.value) >= 0);
           if (found) {
-            this.addSowForm.get('deliveryOptional').setValue(del1);
+            this.addSowForm.get('delivery').setValue(del1);
           }
         }
         const del2 = clientInfo[0].DeliveryLevel2 && clientInfo[0].DeliveryLevel2.hasOwnProperty('ID') ?
           clientInfo[0].DeliveryLevel2.ID : 0;
-        this.addSowForm.get('delivery').setValue(del2);
+        this.addSowForm.get('deliveryOptional').setValue(del2);
       }
     }
   }
@@ -292,8 +295,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       tax: [null],
       cm: ['', Validators.required],
       cm2: ['', Validators.required],
-      deliveryOptional: [''],
-      delivery: ['', Validators.required],
+      deliveryOptional: ['', Validators.required],
+      delivery: [''],
       sowOwner: ['', Validators.required]
     });
     this.addAdditionalBudgetForm = this.frmbuilder.group({
@@ -358,12 +361,12 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.addSOW.CM1.forEach(element => {
         this.pmObject.addSOW.AllOperationId.push(element);
       });
-      this.pmObject.addSOW.DeliveryOptional.forEach(element => {
+      this.pmObject.addSOW.Delivery.forEach(element => {
         this.pmObject.addSOW.AllOperationId.push(element);
       });
       this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.SOWOwner);
       this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.CM2);
-      this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.Delivery);
+      this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.DeliveryOptional);
       let fileUploadResult = {};
       if (this.selectedFile) {
         fileUploadResult = await this.submitFile();
@@ -430,7 +433,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
     console.log(res);
     // Added by kaushal on 12-07-2019
-    if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name') ) { // && !res.hasOwnProperty('hasError')
+    if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name')) { // && !res.hasOwnProperty('hasError')
       this.pmObject.addSOW.SOWFileURL = res.ServerRelativeUrl;
       this.pmObject.addSOW.SOWFileName = res.Name;
       this.pmObject.addSOW.SOWDocProperties = res;
@@ -556,7 +559,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     tempArray = tempArray.concat(sowObj.SOWOwner, sowObj.CM1, sowObj.CM2, sowObj.DeliveryOptional, sowObj.Delivery);
     arrayTo = this.pmService.getEmailId(tempArray);
     ccArray = this.pmService.getEmailId(sowObj.CM1);
-    ccArray.push(this.globalObject.currentUser.email); // Added by kaushal on 12-07-2019
+    ccArray.push(this.pmObject.currLoginInfo.Email);
     this.pmService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.APPROVED_SOW, objEmailBody, mailSubject, arrayTo,
       ccArray); // Send Mail
   }
@@ -640,7 +643,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     });
     let arrayTo = [];
     let tempArray = [];
-    tempArray = tempArray.concat(sowObj.SOWOwner, sowObj.CM1, sowObj.CM2, sowObj.DeliveryOptional, sowObj.deliveryLevel2);
+    tempArray = tempArray.concat(sowObj.SOWOwner, sowObj.CM1, sowObj.CM2, sowObj.DeliveryOptional, sowObj.Delivery);
     arrayTo = this.pmService.getEmailId(tempArray);
     this.pmService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.SOW_BUDGET_UPDATED, objEmailBody, mailSubject, arrayTo,
       [this.pmObject.currLoginInfo.Email]); // Send Mail
@@ -673,7 +676,11 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'SOW Created Successfully.' });
         setTimeout(() => {
           this.pmObject.isAddSOWVisible = false;
-          this.router.navigate(['/projectMgmt/allSOW']);
+          if (this.router.url === '/projectMgmt/allSOW') {
+            this.dataService.publish('reload-EditSOW');
+          } else {
+            this.router.navigate(['/projectMgmt/allSOW']);
+          }
         }, this.pmConstant.TIME_OUT);
       }
     } else { // Update SOW
@@ -688,8 +695,11 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'SOW Updated Successfully.' });
       this.pmObject.isMainLoaderHidden = true;
       setTimeout(() => {
-        this.pmObject.isAddSOWVisible = false;
-        this.router.navigate(['/projectMgmt/allSOW']);
+        if (this.router.url === '/projectMgmt/allSOW') {
+          this.dataService.publish('reload-EditSOW');
+        } else {
+          this.router.navigate(['/projectMgmt/allSOW']);
+        }
       }, this.pmConstant.TIME_OUT);
     }
   }
@@ -738,9 +748,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       },
       CMLevel2Id: sowObj.CM2,
       DeliveryLevel1Id: {
-        results: sowObj.DeliveryOptional,
+        results: sowObj.Delivery,
       },
-      DeliveryLevel2Id: sowObj.Delivery,
+      DeliveryLevel2Id: sowObj.DeliveryOptional,
       BDId: sowObj.SOWOwner,
       PrimaryPOC: sowObj.Poc,
       AdditionalPOC: sowObj.PocOptional ? sowObj.PocOptional.join(';#') : [],
@@ -809,8 +819,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.pmObject.addSOW.Budget.Tax = +'';
     this.pmObject.addSOW.CM1 = [];
     this.pmObject.addSOW.CM2 = '';
-    this.pmObject.addSOW.DeliveryOptional = [];
-    this.pmObject.addSOW.Delivery = '';
+    this.pmObject.addSOW.DeliveryOptional = '';
+    this.pmObject.addSOW.Delivery = [];
     this.pmObject.addSOW.SOWOwner = '';
     this.pmObject.addSOW.Addendum.NetBudget = +'';
     this.pmObject.addSOW.Addendum.OOPBudget = +'';

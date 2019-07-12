@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, ViewChild } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, ViewChild, OnDestroy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -17,7 +17,7 @@ declare var $;
   templateUrl: './sow.component.html',
   styleUrls: ['./sow.component.css']
 })
-export class SOWComponent implements OnInit {
+export class SOWComponent implements OnInit,  OnDestroy {
   @Output() projectItem: EventEmitter<any> = new EventEmitter();
   displayedColumns: any[] = [
     { field: 'SOWCode', header: 'SOW Code' },
@@ -74,6 +74,7 @@ export class SOWComponent implements OnInit {
   isInActiveProjectTableHidden = true;
   popItems: MenuItem[];
   sowViewDataArray = [];
+  subscription;
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   step: number;
   constructor(
@@ -90,12 +91,13 @@ export class SOWComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.loadSOWInit();
+  }
+  loadSOWInit() {
     this.isAllSOWTableHidden = true;
     this.isAllSOWLoaderHidden = false;
     this.pmObject.isAddSOWVisible = false;
     this.pmObject.selectedSOWTask = '';
-
-
     setTimeout(() => {
       this.getAllSOW();
     }, this.pmConstant.TIME_OUT);
@@ -129,6 +131,10 @@ export class SOWComponent implements OnInit {
         command: (task) => this.timeline.showTimeline(this.pmObject.selectedSOWTask.ID, 'ProjectMgmt', 'SOW')
       }
     ];
+    this.subscription = this.dataService.on('reload-EditSOW').subscribe(() => this.loadSOWInit());
+  }
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
   /**
    * This method is used to add additional Budget SOW.

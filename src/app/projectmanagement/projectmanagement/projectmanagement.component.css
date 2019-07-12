@@ -767,4 +767,13 @@ body .ui-corner-top {
     float: right !important;
     margin-top: 10px !important;
   }
+ .ui-fileupload-content {
+  
+    background: url('./images/drop-here.jpg') 50% 0% no-repeat !important; 
+    min-height: 20vh !important;
+    background-size: 20VW 20VH !important;
+    max-height: 40vh !important;
+    overflow-y: auto !important;
+
+} 
   

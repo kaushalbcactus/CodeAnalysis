@@ -3,9 +3,7 @@
   <div id="modalInnerLoader"></div>
   <div id="modalInnerLoaderText">Loading...</div>
 </div>
-<p-toast styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'" position="bottom-center">
-</p-toast>
-<p-fileUpload [style]="{'margin-top':'1vh'}" customUpload="true" (uploadHandler)="uploadDocuments($event,selectedTab)" multiple="multiple" maxFileSize="100000000">
+<p-fileUpload [style]="{'margin-top':'1vh'}" *ngIf="!loaderenable && (selectedTab ==='Source Documents' || selectedTab ==='References' || selectedTab ==='Meeting Notes & Client Comments')" customUpload="true" (uploadHandler)="uploadDocuments($event,selectedTab)" multiple="multiple" maxFileSize="100000000">
 </p-fileUpload>
 <p-tabPanel [header]="item.label" [hidden]="loaderenable" *ngFor="let item of items; let i = index"
   [selected]="item.label === selectedTab">

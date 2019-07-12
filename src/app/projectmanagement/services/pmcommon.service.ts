@@ -746,10 +746,10 @@ export class PMCommonService {
     this.pmObject.addSOW.CM1Text = this.extractNameFromId(cm1Array).join(',');
     this.pmObject.addSOW.CM2 = sowItem.CMLevel2.ID;
     this.pmObject.addSOW.CM2Text = this.extractNameFromId([sowItem.CMLevel2.ID]).join(',');
-    this.pmObject.addSOW.DeliveryOptional = delivery1Array;
-    this.pmObject.addSOW.DeliveryOptionalText = this.extractNameFromId(delivery1Array).join(',');
-    this.pmObject.addSOW.Delivery = sowItem.DeliveryLevel2.ID;
-    this.pmObject.addSOW.DeliveryText = this.extractNameFromId([sowItem.DeliveryLevel2.ID]).join(',');
+    this.pmObject.addSOW.Delivery = delivery1Array;
+    this.pmObject.addSOW.DeliveryText = this.extractNameFromId(delivery1Array).join(',');
+    this.pmObject.addSOW.DeliveryOptional = sowItem.DeliveryLevel2.ID;
+    this.pmObject.addSOW.DeliveryOptionalText = this.extractNameFromId([sowItem.DeliveryLevel2.ID]).join(',');
     this.pmObject.addSOW.SOWOwner = sowItem.BD.ID;
     this.pmObject.addSOW.SOWOwnerText = sowItem.BD.hasOwnProperty('ID') ? this.extractNameFromId([sowItem.BD.ID]).join(',') : '';
   }

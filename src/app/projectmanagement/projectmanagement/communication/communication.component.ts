@@ -113,8 +113,11 @@ export class CommunicationComponent implements OnInit {
    */
   async uploadDocuments(event, type) {
     let docFolder;
+    let existingFiles = [];
     this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Uploading....' });
-    const existingFiles = this.allDocuments.map(c => c.Name);
+    if (this.allDocuments && this.allDocuments.length) {
+      existingFiles = this.allDocuments.map(c => c.Name);
+    }
     switch (type) {
       case 'Source Documents':
         docFolder = '/Source Documents';
@@ -131,7 +134,7 @@ export class CommunicationComponent implements OnInit {
     for (let index = 0; index < event.files.length; index++) {
       const element = event.files[index];
       let filename = element.name;
-      if (existingFiles.includes(filename)) {
+      if (existingFiles && existingFiles.length && existingFiles.includes(filename)) {
         filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' +
           this.datePipe.transform(new Date(), 'ddMMyyyyhhmmss') + '.' + filename.split(/\.(?=[^\.]+$)/)[1];
       }
@@ -155,15 +158,21 @@ export class CommunicationComponent implements OnInit {
         //     }
         //   }
         // });
-        await this.spServices.uploadFile(filePathUrl, this.fileReader.result);
+        const uploadedFiles = await this.spServices.uploadFile(filePathUrl, this.fileReader.result);
+        if (event.files.length && uploadedFiles.hasOwnProperty('ServerRelativeUrl')) {
+          this.getDocuments(type);
+        }
+        this.messageService.add({
+          key: 'custom', severity: 'success',
+          summary: 'Success Message', detail: 'Document updated successfully.'
+        });
       };
       existingFiles.push(filename);
     }
-    this.getDocuments(type);
   }
   downloadFile() {
     if (this.selectedDocuments.length > 0) {
-       this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTab);
+      this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTab);
     } else {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Files.', life: 4000 });
     }

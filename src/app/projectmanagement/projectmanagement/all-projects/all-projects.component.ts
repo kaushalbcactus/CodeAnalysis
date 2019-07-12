@@ -737,7 +737,7 @@ export class AllProjectsComponent implements OnInit {
       console.log(updateResults);
     }
     this.messageService.add({
-      key: 'allProject', severity: 'success', summary: 'Success Message',
+      key: 'allProject', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.'
     });
     setTimeout(() => {
@@ -770,7 +770,7 @@ export class AllProjectsComponent implements OnInit {
     const sResult = await this.spServices.executeBatch(batchURL);
     this.sendEmailBasedOnStatus(status);
     this.messageService.add({
-      key: 'allProject', severity: 'success', summary: 'Success Message',
+      key: 'allProject', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.'
     });
     setTimeout(() => {
@@ -820,7 +820,7 @@ export class AllProjectsComponent implements OnInit {
     const sResult = await this.spServices.executeBatch(batchURL);
     this.sendEmailBasedOnStatus(status);
     this.messageService.add({
-      key: 'allProject', severity: 'success', summary: 'Success Message',
+      key: 'allProject', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.'
     });
     setTimeout(() => {
@@ -870,7 +870,7 @@ export class AllProjectsComponent implements OnInit {
     const sResult = await this.spServices.executeBatch(batchURL);
     this.sendEmailBasedOnStatus(status);
     this.messageService.add({
-      key: 'allProject', severity: 'success', summary: 'Success Message',
+      key: 'allProject', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.'
     });
     setTimeout(() => {
@@ -1163,7 +1163,7 @@ export class AllProjectsComponent implements OnInit {
       this.pmObject.isAuditRollingVisible = false;
       this.sendEmailBasedOnStatus(this.selectedProjectObj.Status);
       this.messageService.add({
-        key: 'allProject', severity: 'success', summary: 'Success Message',
+        key: 'allProject', severity: 'success', summary: 'Success Message', sticky: true,
         detail: 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.'
       });
       setTimeout(() => {
@@ -1344,7 +1344,7 @@ export class AllProjectsComponent implements OnInit {
       const sResult = await this.spServices.executeBatch(batchURL);
       this.pmObject.isMainLoaderHidden = true;
       this.messageService.add({
-        key: 'allProject', severity: 'success', summary: 'Success Message',
+        key: 'allProject', severity: 'success', summary: 'Success Message', sticky: true,
         detail: 'Project move to under new SOW Code - ' + this.newSelectedSOW + ''
       });
       setTimeout(() => {

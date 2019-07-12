@@ -48,6 +48,9 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     private router: Router
   ) { }
   ngOnInit() {
+    this.loadFinanceManagementInit();
+  }
+  loadFinanceManagementInit() {
     setTimeout(() => {
       this.setHeaderColumn();
       this.budgethours = this.pmObject.addProject.Timeline.Standard.IsStandard ?
@@ -717,12 +720,14 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     }
     this.pmObject.isMainLoaderHidden = true;
     this.messageService.add({
-      key: 'custom', severity: 'success', summary: 'Success Message',
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
     });
     setTimeout(() => {
       this.pmObject.isAddProjectVisible = false;
-      this.router.navigate(['/projectMgmt/allProjects']);
+      if (this.router.url) {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
     }, this.pmConstant.TIME_OUT);
   }
   /**
