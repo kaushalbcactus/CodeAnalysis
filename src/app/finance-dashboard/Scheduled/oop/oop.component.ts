@@ -93,6 +93,7 @@ export class OopComponent implements OnInit, OnDestroy {
         this.projectInfo();
         this.poInfo();
         this.projectContacts();
+        this.resourceCInfo();
         // GEt Client Legal Entity
         // this.cleInfo();
 
@@ -143,6 +144,17 @@ export class OopComponent implements OnInit, OnDestroy {
                 this.projectContactsData = res;
                 console.log('this.projectContactsData ', this.projectContactsData);
                 // this.getPCForSentToAMForApproval();
+            }
+        }))
+    }
+
+    // Resource Categorization
+    rcData: any = [];
+    resourceCInfo() {
+        this.subscription.add(this.fdDataShareServie.defaultRCData.subscribe((res) => {
+            if (res) {
+                this.rcData = res;
+                console.log('Resource Categorization ', this.rcData);
             }
         }))
     }
@@ -261,6 +273,10 @@ export class OopComponent implements OnInit, OnDestroy {
         this.oopBasedRes = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
+            let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
+            if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
+                resCInfo = resCInfo.UserName.Title
+            }
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
             let sowCode = element.SOWCode ? element.SOWCode : '';
             let sowName = sowItem.Title ? sowItem.Title : '';
@@ -293,7 +309,7 @@ export class OopComponent implements OnInit, OnDestroy {
                 PO: element.PO,
                 POCId: element.MainPOC,
                 ClientName: piInfo.ClientLegalEntity,
-                ScheduledDate: element.ScheduledDate,// this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
+                ScheduledDate: new Date(this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy')),// this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
                 ScheduledDateFormat: this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
                 Amount: element.Amount,
                 Currency: element.Currency,
@@ -310,7 +326,8 @@ export class OopComponent implements OnInit, OnDestroy {
                 ScheduleType: element.ScheduleType,
                 InvoiceLookup: element.InvoiceLookup,
                 Template: element.Template,
-                Modified: this.datePipe.transform(element.Modified, 'MMM d, y'),
+                Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyyy'),
+                ModifiedBy: resCInfo,
             })
         }
         this.oopBasedRes = [...this.oopBasedRes];
@@ -371,8 +388,8 @@ export class OopComponent implements OnInit, OnDestroy {
     getCSDetails(res) {
         if (res.hasOwnProperty('CS') && res.CS.hasOwnProperty('results') && res.CS.results.length) {
             let title = [];
-            for (let i = 0; i < res.length; i++) {
-                const element = res[i];
+            for (let i = 0; i < res.CS.results.length; i++) {
+                const element = res.CS.results[i];
                 title.push(element.Title);
             }
             return title.toString();
@@ -400,7 +417,7 @@ export class OopComponent implements OnInit, OnDestroy {
         this.oopColArray.ProjectMileStone = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }));
         this.oopColArray.PONumber = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }));
         this.oopColArray.ClientName = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }));
-        this.oopColArray.ScheduledDate = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, 'MMM d, y'), value: a.ScheduledDate }; return b; }));
+        this.oopColArray.ScheduledDate = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, 'MMM dd, yyyy'), value: a.ScheduledDate }; return b; }));
         this.oopColArray.Amount = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
         this.oopColArray.Currency = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
         this.oopColArray.POC = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }));
@@ -484,7 +501,7 @@ export class OopComponent implements OnInit, OnDestroy {
         const currentDate = new Date();
         const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
         const last3Days = this.commonService.getLastWorkingDay(3, new Date());
-        const currentDay = new Date(this.datePipe.transform(new Date(),"yyyyMMdd"));
+        const currentDay = new Date(this.datePipe.transform(new Date(), "yyyyMMdd"));
         if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= new Date()) {
             // if (date > last3Days && retPO && new Date(retPO.POExpiryDate) >= new Date()) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
@@ -493,8 +510,8 @@ export class OopComponent implements OnInit, OnDestroy {
                 this.messageService.add({ key: 'bottomCenter', severity: 'success', summary: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.', detail: '', life: 4000 })
             } else if (!retPO) {
                 this.messageService.add({ key: 'bottomCenter', severity: 'success', summary: 'PO not available for the selected line item.', detail: '', life: 4000 })
-            } else if (!(new Date(retPO.POExpiryDate)  >= new Date())) {
-                this.messageService.add({ key: 'bottomCenter', severity: 'success', summary: 'PO expired on ' + this.datePipe.transform(retPO.POExpiryDate, 'MMM d, y'), detail: '', life: 4000 })
+            } else if (!(new Date(retPO.POExpiryDate) >= new Date())) {
+                this.messageService.add({ key: 'bottomCenter', severity: 'success', summary: 'PO expired on ' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), detail: '', life: 4000 })
             }
         }
         this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });

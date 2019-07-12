@@ -10,6 +10,7 @@ import { DatePipe } from '@angular/common';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -68,7 +69,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
     };
 
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-
+    @ViewChild('popupMenu', { static: true }) popupMenu;
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
 
@@ -82,11 +83,11 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
         private messageService: MessageService,
-        private commonService: CommonService
+        private commonService: CommonService,
+        private router: Router
     ) { }
 
     ngOnInit() {
-
         let today = new Date();
         let invalidDate = new Date();
         invalidDate.setDate(today.getDate() - 1);
@@ -303,7 +304,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             { field: 'Amount', header: 'Amount', visibility: true },
             { field: 'Currency', header: 'Currency', visibility: true },
             { field: 'POC', header: 'POC', visibility: true },
-            
+
             { field: 'PONNumber', header: 'PO Number', visibility: false },
             { field: 'PaymentURL', header: 'Payment URL', visibility: false },
             { field: 'MainPOC', header: 'Main POC', visibility: false },
@@ -398,11 +399,11 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
                 Id: element.ID,
                 InvoiceStatus: element.Status,
                 InvoiceNumber: element.InvoiceNumber,
-                POValues:POValues,
+                POValues: POValues,
                 PONumber: poItem.Number,
                 POName: poItem.Name,
                 ClientLegalEntity: element.ClientLegalEntity,
-                InvoiceDate: element.InvoiceDate,
+                InvoiceDate: new Date(this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyyy')),
                 InvoiceDateFormat: this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyy, hh:mm a'),
                 Amount: element.Amount,
                 Currency: element.Currency,
@@ -526,7 +527,22 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             }
         })
     }
+    onTableClick() {
+        this.messageService.add({ key: 'pmenuToast', severity: 'success', summary: 'Summary Text', detail: 'Detail Text', });
+        this.messageService.clear('pmenuToast');
+        if (this.pMenu && !this.popupMenu.visible) {
+            console.log('in menuOnHide function');
+            this.popupMenu.visible = false;
+        }
+    }
 
+    pmenuonShow() {
+        this.pMenu = true;
+    }
+
+    pmenuOnHide() {
+        this.pMenu = false;
+    }
 
     // On Row Selection
     onRowSelect(event) {
@@ -548,11 +564,10 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         cnf1.exportCSV();
     }
 
-    items: any[];
-    contextMenu: boolean = false;
+    items: any = [];
+    pMenu: boolean = false;
     // Open popups
-    openPopup(data, popUpData) {
-        this.contextMenu = false;
+    openPopup(data, popupMenu) {
         // console.log('Row data  ', data);
         // let invoiceSts: string = '';
         this.items = [];
@@ -589,7 +604,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         )
         if (this.items.length === 0) {
             console.log('this.items ', this.items);
-            this.contextMenu = true;
+            this.pMenu = true;
         }
 
     }

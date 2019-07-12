@@ -22,7 +22,7 @@ export class AppComponent {
       '/sites/medcomcdn/PublishingImages/Images' :
       '/sites/medcomcdn/PublishingImages/Images';
 
-    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 112 : _spPageContextInfo.userId;
+    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 8 : _spPageContextInfo.userId;
     this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
       : _spPageContextInfo.webAbsoluteUrl;
     this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
@@ -48,15 +48,21 @@ export class AppComponent {
   }
 
   goToFD() {
-    this.router.navigate(['/financeDashboard']);
+    if (!this.router.url.includes('financeDashboard')) {
+      this.router.navigate(['/financeDashboard']);
+    }
   }
 
   goToPM() {
-    this.router.navigate(['/projectMgmt']);
+    if (!this.router.url.includes('projectMgmt')) {
+      this.router.navigate(['/projectMgmt']);
+    }
   }
 
   goToMyDashboard() {
-    this.router.navigate(['/myDashboard']);
+    if (!this.router.url.includes('myDashboard')) {
+      this.router.navigate(['/myDashboard']);
+    }
   }
 
   // tslint:disable-next-line:use-life-cycle-interface

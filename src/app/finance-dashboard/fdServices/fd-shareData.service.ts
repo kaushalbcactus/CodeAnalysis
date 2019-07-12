@@ -232,8 +232,13 @@ export class FDDataShareService {
 
     requiredData: any = [];
 
-    isManager() {
-
+    getResDetailById(data, ele) {
+        let found = data.find((x) => {
+            if (x.UserName.ID === ele.EditorId) {
+                return x;
+            }
+        })
+        return found ? found : ''
     }
 
     async getRequiredData(): Promise<any> {

@@ -103,7 +103,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         // GEt PO data
         await this.poInfo();
         this.projectContacts();
-
+        this.resourceCInfo();
         // Get Confirmed IonvoiceLineItems
         this.getRequiredData();
 
@@ -202,6 +202,17 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }))
     }
 
+    // Resource Categorization
+    rcData: any = [];
+    resourceCInfo() {
+        this.subscription.add(this.fdDataShareServie.defaultRCData.subscribe((res) => {
+            if (res) {
+                this.rcData = res;
+                console.log('Resource Categorization ', this.rcData);
+            }
+        }))
+    }
+
     getProformaTemplates() {
         this.proformatTemplates = [
             { label: 'US', value: 'US' },
@@ -255,6 +266,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             // { field: 'InvoiceLookup', header: 'Invoice Lookup', visibility: false },
             { field: 'Template', header: 'Template', visibility: false },
             { field: 'Modified', header: 'Modified', visibility: false },
+            { field: 'ModifiedBy', header: 'Modified By', visibility: false },
             { field: 'PracticeArea', header: 'Practice Area', visibility: false },
             { field: 'CS', header: 'CS', visibility: false },
 
@@ -391,6 +403,10 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             var project: any = this.getProject(element);
+            let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
+            if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
+                resCInfo = resCInfo.UserName.Title
+            }
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
             let sowCode = element.SOWCode ? element.SOWCode : '';
             let sowName = sowItem.Title ? sowItem.Title : '';
@@ -421,7 +437,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 PONumber: poItem.Number,
                 POName: poItem.Name,
                 ClientLegalEntity: this.selectedPurchaseNumber.ClientLegalEntity,
-                ScheduledDate: element.ScheduledDate, // this.datePipe.transform(element.ScheduledDate, 'MMM d, y'),
+                ScheduledDate: new Date(this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy')), // this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
                 ScheduledDateFormat: this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
                 ScheduleType: element.ScheduleType,
                 Amount: element.Amount,
@@ -436,7 +452,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 ProformaLookup: element.ProformaLookup,
                 InvoiceLookup: element.InvoiceLookup,
                 Template: element.Template,
-                Modified: this.datePipe.transform(element.Modified, 'MMM d, y')
+                Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyyy'),
+                ModifiedBy: resCInfo,
             })
         }
         this.createColFieldValues();
@@ -499,8 +516,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     getCSDetails(res) {
         if (res.hasOwnProperty('CS') && res.CS.hasOwnProperty('results') && res.CS.results.length) {
             let title = [];
-            for (let i = 0; i < res.length; i++) {
-                const element = res[i];
+            for (let i = 0; i < res.CS.results.length; i++) {
+                const element = res.CS.results[i];
                 title.push(element.Title);
             }
             return title.toString();
@@ -810,7 +827,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             // console.log('cleAcronym,', cleAcronym);
             proformaCounter = cle.ProformaCounter ? parseInt(cle.ProformaCounter) + 1 : 1;
             let sNum = '000' + proformaCounter;
-            let sFinalNum = sNum.substr(sNum.length ? sNum.length : 0 - 4);
+            let sFinalNum = sNum.substr(sNum.length - 4);
             // console.log('proformaCounter,', proformaCounter);
             proformaDate = this.datePipe.transform(new Date(), 'MM') + this.datePipe.transform(new Date(), 'yy');
             // console.log('proformaDate,', proformaDate);

@@ -91,7 +91,7 @@
                         {{rowData[col.field]}}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'InvoiceDate'">
-                        <p>{{rowData[col.field] | date:'MMM d, y' }}</p>
+                        <p>{{rowData[col.field] | date:'MMM dd, yyyy' }}</p>
                     </ng-container>
                     <ng-container *ngIf="col.field == 'InvoiceNumber'">
                         <a *ngIf="rowData['FileURL']" [href]="rowData['FileURL']" target="_blank">

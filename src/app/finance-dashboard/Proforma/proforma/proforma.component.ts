@@ -102,7 +102,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         await this.poInfo();
         this.usStatesInfo();
         this.currencyInfo();
-
+        this.resourceCInfo();
 
         // Get Required Proforma Data
         this.getRequiredData();
@@ -223,6 +223,17 @@ export class ProformaComponent implements OnInit, OnDestroy {
         ]
     }
 
+    // Resource Categorization
+    rcData: any = [];
+    resourceCInfo() {
+        this.subscription.add(this.fdDataShareServie.defaultRCData.subscribe((res) => {
+            if (res) {
+                this.rcData = res;
+                console.log('Resource Categorization ', this.rcData);
+            }
+        }))
+    }
+
     // Logged In user Info
     loggedInUserInfo: any = [];
     loggedInUserGroup: any = [];
@@ -295,7 +306,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             { field: 'Currency', header: 'Currency', visibility: true },
             { field: 'POC', header: 'POC', visibility: true },
             { field: 'Status', header: 'Status', visibility: true },
-            
+
             { field: 'AddressType', header: 'AddressType', visibility: false },
             { field: 'PO', header: 'PO Name', visibility: false },
             { field: 'MainPOC', header: 'MainPOC', visibility: false },
@@ -348,17 +359,22 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
-    formatData(data: any[]) {
+    async formatData(data: any[]) {
         this.proformaRes = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let poItem = this.getPONumber(element)
+            let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
+            if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
+                resCInfo = resCInfo.UserName.Title
+            }
             this.proformaRes.push({
                 Id: element.ID,
                 ProformaNumber: element.Title,
+                PO: element.PO,
                 PONumber: poItem.Number,
                 POName: poItem.Name,
-                ProformaDate: element.ProformaDate,
+                ProformaDate: new Date(this.datePipe.transform(element.ProformaDate, 'MMM dd, yyyy')),
                 ProformaDateFormat: this.datePipe.transform(element.ProformaDate, 'MMM dd, yyyy'),
                 ProformaType: element.ProformaType,
                 Amount: element.Amount,
@@ -378,7 +394,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 LineItemsLookup: element.LineItemsLookup,
                 Reason: element.Reason,
                 State: element.State,
-                Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyy'),
+                Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyyy'),
+                ModifiedBy: resCInfo
             })
         }
         this.proformaRes = [...this.proformaRes];
@@ -612,7 +629,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                         this.editorRef.enableButton();
                         break;
                     case 'India':
-                        
+
                         this.editorRef.JapanTemplateCopy = {};
                         this.editorRef.USTemplateCopy = {};
                         this.editorRef.IndiaTemplateCopy = proformaObj.saveObj;
@@ -822,6 +839,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             AdditionalInfo: this.selectedRowItem.AdditionalInfo,
             ClientLegalEntity: this.selectedRowItem.ClientLegalEntity,
             InvoiceType: this.selectedRowItem.ProformaType,
+            InvoiceTitle: this.selectedRowItem.ProformaTitle,
             TaggedAmount: this.addILIObj.TaggedAmount,
             IsTaggedFully: this.addILIObj.IsTaggedFully,
             State: this.selectedRowItem.State
@@ -1405,12 +1423,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
             ////// Replace date on specific sections only
 
             if (proformHtml) {
-                const proformaDate = this.datePipe.transform(this.selectedRowItem.ProformaDate, 'MMM dd, yyy');
+                const proformaDate = this.datePipe.transform(this.selectedRowItem.ProformaDate, 'MMM dd, yyyy');
                 proformHtml = proformHtml.replace(new RegExp("Proforma", "g"), "Invoice");
                 proformHtml = proformHtml.replace(new RegExp("PROFORMA", "g"), "INVOICE");
                 proformHtml = proformHtml.replace(new RegExp("proforma", "g"), "invoice");
                 proformHtml = proformHtml.replace(new RegExp(this.selectedRowItem.ProformaNumber, "g"), oInv.InvoiceNumber);
-                proformHtml = proformHtml.replace(new RegExp(proformaDate, "g"), this.datePipe.transform(oInv.InvoiceDate, 'MMM dd, yyy'));
+                proformHtml = proformHtml.replace(new RegExp(proformaDate, "g"), this.datePipe.transform(oInv.InvoiceDate, 'MMM dd, yyyy'));
                 const invObject = JSON.parse(proformHtml);
 
                 const pdfCall = invObject.pdf;

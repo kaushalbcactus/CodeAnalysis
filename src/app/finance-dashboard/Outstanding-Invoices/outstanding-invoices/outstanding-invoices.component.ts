@@ -266,7 +266,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             { field: 'Amount', header: 'Amount', visibility: true },
             { field: 'Currency', header: 'Currency', visibility: true },
             { field: 'POC', header: 'POC', visibility: true },
-            
+
             { field: 'PaymentURL', header: 'Payment URL', visibility: false },
             { field: 'MainPOC', header: 'Main POC', visibility: false },
             { field: 'Template', header: 'Template', visibility: false },
@@ -356,8 +356,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 Currency: element.Currency,
                 FileURL: element.FileURL,
                 FiscalYear: element.FiscalYear,
-                InvoiceDate: element.InvoiceDate,
-                InvoiceDateFormat: this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyy, hh:mm a'),
+                InvoiceDate: new Date(this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyyy')),
+                InvoiceDateFormat: this.datePipe.transform(element.InvoiceDate, 'MMM dd, yyyy, hh:mm a'),
                 InvoiceNumber: element.InvoiceNumber,
                 MainPOC: element.MainPOC,
                 InvoiceStatus: element.Status,
@@ -380,9 +380,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 InvoiceType: element.InvoiceType,
                 TaggedAmount: element.TaggedAmount,
                 IsTaggedFully: element.IsTaggedFully,
-                Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyy, hh:mm a'),
+                Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
                 AdditionalPOC: element.AdditionalPOC,
-                Created: this.datePipe.transform(element.Created, 'MMM dd, yyy, hh:mm a'),
+                Created: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
             })
         }
         this.outstandingInvoicesRes = [...this.outstandingInvoicesRes];
@@ -463,7 +463,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         this.outInvoiceColArray.InvoiceNumber = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }));
         this.outInvoiceColArray.PONumber = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
         this.outInvoiceColArray.POName = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; }));
-        this.outInvoiceColArray.InvoiceDate = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: this.datePipe.transform(a.InvoiceDate, 'MMM d, y'), value: a.InvoiceDate }; return b; }));
+        this.outInvoiceColArray.InvoiceDate = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: this.datePipe.transform(a.InvoiceDate, 'MMM dd, yyyy'), value: a.InvoiceDate }; return b; }));
         this.outInvoiceColArray.Amount = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
         this.outInvoiceColArray.Currency = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
         this.outInvoiceColArray.POC = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.POC, value: a.POC }; return b; }));

@@ -160,7 +160,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             { field: 'ApproverComments', header: 'Approver Comments', visibility: true },
             { field: 'ModifiedDateFormat', header: 'Approval / Billable Date', visibility: false },
             { field: 'Modified', header: 'Approval / Billable Date', visibility: true },
-            
+
             { field: 'Category', header: 'Category', visibility: false },
             { field: 'RequestType', header: 'Request Type', visibility: false },
             { field: 'DateSpend', header: 'Date Spend', visibility: false },
@@ -238,19 +238,19 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 ExpenseType: element.SpendType,
                 ClientAmount: element.Amount,
                 ClientCurrency: element.ClientCurrency,
-                DateCreated: this.datePipe.transform(element.Created, 'MMM dd, yyy, hh:mm a'),
+                DateCreated: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
                 Notes: element.Notes,
-                Created: this.datePipe.transform(element.Created, 'MMM dd, yyy, hh:mm a'),
-                Modified: element.Modified, // 
-                ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyy, hh:mm a'),
+                Created: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
+                Modified: new Date(this.datePipe.transform(element.Modified, 'MMM dd, yyyy')), // 
+                ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
                 CreatedBy: rcCreatedItem ? rcCreatedItem.UserName.Title : '',
                 ModifiedBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
-                // ModifiedDate: this.datePipe.transform(element.Modified, 'MMM dd, yyy, hh:mm a'),
+                // ModifiedDate: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
                 RequestType: element.RequestType,
                 PaymentMode: element.PaymentMode,
                 PayingEntity: element.PayingEntity,
                 Status: element.Status,
-                DateSpend: this.datePipe.transform(element.DateSpend, 'MMM dd, yyy, hh:mm a'),
+                DateSpend: this.datePipe.transform(element.DateSpend, 'MMM dd, yyyy, hh:mm a'),
                 ApproverComments: element.ApproverComments,
                 VendorName: this.getVendorNameById(element),
                 FileURL: element.FileURL,
@@ -263,7 +263,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 POLookup: element.POLookup,
                 // Created: element.Created,
                 // PONumber: this.getPONumber(element),
-                // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM dd, yyy, hh:mm a')
+                // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM dd, yyyy, hh:mm a')
             })
         }
         this.approvedNonBillableRes = [...this.approvedNonBillableRes];
@@ -323,7 +323,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
 
         this.anonBillableColArray.Number = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Number, value: a.Number }; return b; }));
         this.anonBillableColArray.PaymentDate = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }));
-        this.anonBillableColArray.Modified = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM d, y'), value: a.Modified }; return b; }));
+        this.anonBillableColArray.Modified = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b; }));
         this.anonBillableColArray.Created = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Created, value: a.Created }; return b; }));
 
         // this.anonBillableColArray.SOWCode = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }));

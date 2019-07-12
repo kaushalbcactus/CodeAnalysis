@@ -1,6 +1,6 @@
 <div class="ui-g">
     <div class="ui-g-12 ui-fluid ui-md-4">
-        <p-calendar [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="dd M , yy"
+        <p-calendar [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="M dd, yy"
             placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()"
             (onClearClick)="setDefault()"></p-calendar>
     </div>
@@ -15,7 +15,7 @@
 <div class="financeTable">
     <p-table #pi [columns]="outstandingInCols" [value]="paidInvoicesRes" [paginator]="true" [rows]="10"
         [resizableColumns]="true" [(selection)]="selectedRowData" [(selection)]="selectedRowData" selectionMode=""
-        (onRowSelect)="onRowSelect($event)" exportFilename="Paid_Invoices">
+        (onRowSelect)="onRowSelect($event)" exportFilename="Paid_Invoices" (click)="onTableClick()">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th>S.No</th>
@@ -86,7 +86,7 @@
                         {{rowData[col.field]}}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'InvoiceDate'">
-                        <p>{{rowData[col.field] | date:'MMM d, y' }}</p>
+                        <p>{{rowData[col.field] | date:'MMM dd, yyyy' }}</p>
                     </ng-container>
 
                     <ng-container *ngIf="col.field == 'InvoiceNumber'">
@@ -97,7 +97,8 @@
 
                     <ng-container *ngIf="col.field == ''">
                         <div>
-                            <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu">
+                            <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu"
+                               (onHide)="pmenuOnHide()" (onShow)="pmenuonShow()">
                             </p-menu>
                             <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
                                 (click)="popupMenu.toggle($event);openPopup(rowData, popupMenu)"></i>
@@ -109,6 +110,8 @@
     </p-table>
 </div>
 <!-- Table End  -->
+
+<p-toast key="pmenuToast"></p-toast>
 
 <!-- Right Side Bar -->
 <p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
