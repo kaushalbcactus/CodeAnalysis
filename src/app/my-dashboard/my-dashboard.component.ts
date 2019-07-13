@@ -88,13 +88,12 @@ export class MyDashboardComponent implements OnInit {
       closable: false,
     });
     ref.onClose.subscribe(async (TimeBookingobjCount: any) => {
-      debugger;
       if (TimeBookingobjCount > 0) {
         this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time booking updated successfully.' });
       }
-      else if (TimeBookingobjCount === 0) {
-        this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Please Enter Time Spent.' });
-      }
+      // else if (TimeBookingobjCount === 0) {
+      //   this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Please Enter Time Spent.' });
+      // }
     });
   }
 

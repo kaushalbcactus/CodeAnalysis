@@ -227,7 +227,7 @@ export class ManageFinanceComponent implements OnInit {
     const sowGet = Object.assign({}, options);
     const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.SOW_CODE);
     sowFilter.filter = sowFilter.filter.replace(/{{sowcode}}/gi,
-      this.projObj ?  this.projObj.SOWCode : this.pmObject.addProject.SOWSelect.SOWCode);
+      this.projObj ? this.projObj.SOWCode : this.pmObject.addProject.SOWSelect.SOWCode);
     sowGet.url = this.spServices.getReadURL(this.constant.listNames.SOW.name,
       sowFilter);
     sowGet.type = 'GET';
@@ -831,7 +831,7 @@ export class ManageFinanceComponent implements OnInit {
     this.budgetData = [];
 
     if (result && result.length) {
-      
+
       this.existBudgetArray = result[0];
       this.existPOArray = result[1];
       this.existPOInvoiceArray = result[2];
@@ -923,7 +923,7 @@ export class ManageFinanceComponent implements OnInit {
           invoiceObj.isExsitInv = true;
           invoiceObj.currency = this.existBudgetArray.retItems[0].Currency;
           if (invoiceObj.status === 'Scheduled') {
-            
+
             if (this.projectStatus === this.constant.projectStatus.Unallocated
               || this.projectStatus === this.constant.projectStatus.InProgress
               || this.projectStatus === this.constant.projectStatus.ReadyForClient
@@ -1123,7 +1123,7 @@ export class ManageFinanceComponent implements OnInit {
     this.addPOForm.get('primarypoc').setValue(rowData.poc);
     this.addPOForm.get('address').setValue(rowData.address);
     this.addPOForm.get('amount').setValue(rowData.amount);
-    
+
     this.isInvoiceEdit = true;
     this.showAddInvoiceDetails = true;
   }
@@ -1302,14 +1302,14 @@ export class ManageFinanceComponent implements OnInit {
     let invoiceRevenue = 0;
     poArray.forEach((poInfoObj) => {
       poInfoObj.poInfoData.forEach(element => {
-        if (element.status === this.constant.STATUS.NOT_STARTED) {
-          invoiceSc = element.amount;
-          scRevenue = element.amount;
-        }
         if (element.status === this.constant.STATUS.APPROVED) {
           invoice = element.amount;
           invoiceRevenue = element.amount;
+        } else if (element.status != this.constant.STATUS.DELETED) {
+          invoiceSc = element.amount;
+          scRevenue = element.amount;
         }
+
       });
     });
     const data: any = {
@@ -1319,8 +1319,8 @@ export class ManageFinanceComponent implements OnInit {
     if (projObj.ProjectType === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
       data.Budget = budgetArray[0].Rate;
       data.OOPBudget = 0;
-      data.RevenueBudget = 0,
-        data.TaxBudget = 0;
+      data.RevenueBudget = 0;
+      data.TaxBudget = 0;
       data.InvoicesScheduled = 0;
       data.ScheduledRevenue = 0;
       data.Invoiced = 0;
@@ -1329,8 +1329,8 @@ export class ManageFinanceComponent implements OnInit {
     } else {
       data.Budget = budgetArray[0].total;
       data.OOPBudget = budgetArray[0].oop;
-      data.RevenueBudget = budgetArray[0].revenue,
-        data.TaxBudget = budgetArray[0].tax;
+      data.RevenueBudget = budgetArray[0].revenue;
+      data.TaxBudget = budgetArray[0].tax;
       data.InvoicesScheduled = invoiceSc;
       data.ScheduledRevenue = scRevenue;
       data.Invoiced = invoice;
@@ -1358,11 +1358,11 @@ export class ManageFinanceComponent implements OnInit {
         invoice += element.amount;
         invoiceRevenue += element.amount;
       }
-      else if (element.status != this.constant.STATUS.DELETED ) {
+      else if (element.status != this.constant.STATUS.DELETED) {
         totalScheduled += element.amount;
         scRevenue += element.amount;
       }
-      
+
     });
     data.POLookup = po.poId;
     if (po.isExsitPO) {
@@ -1497,11 +1497,11 @@ export class ManageFinanceComponent implements OnInit {
         const data = {
           __metadata: { type: this.constant.listNames.PO.type },
           TotalLinked: poItem[0].TotalLinked + element.Amount - (poExistItem ? poExistItem.TotalLinked : 0),
-          RevenueLinked: poItem[0].RevenueLinked + element.AmountRevenue  - (poExistItem ? poExistItem.RevenueLinked : 0),
-          OOPLinked: poItem[0].OOPLinked + element.AmountOOP  - (poExistItem ? poExistItem.OOPLinked : 0),
-          TaxLinked: poItem[0].TaxLinked + element.AmountTax  - (poExistItem ? poExistItem.TaxLinked : 0),
-          TotalScheduled: poItem[0].TotalScheduled + element.TotalScheduled  - (poExistItem ? poExistItem.TotalScheduled : 0),
-          ScheduledRevenue: poItem[0].ScheduledRevenue + element.ScheduledRevenue  - (poExistItem ? poExistItem.ScheduledRevenue : 0),
+          RevenueLinked: poItem[0].RevenueLinked + element.AmountRevenue - (poExistItem ? poExistItem.RevenueLinked : 0),
+          OOPLinked: poItem[0].OOPLinked + element.AmountOOP - (poExistItem ? poExistItem.OOPLinked : 0),
+          TaxLinked: poItem[0].TaxLinked + element.AmountTax - (poExistItem ? poExistItem.TaxLinked : 0),
+          TotalScheduled: poItem[0].TotalScheduled + element.TotalScheduled - (poExistItem ? poExistItem.TotalScheduled : 0),
+          ScheduledRevenue: poItem[0].ScheduledRevenue + element.ScheduledRevenue - (poExistItem ? poExistItem.ScheduledRevenue : 0),
           ID: element.POLookup
         };
         porray.push(data);

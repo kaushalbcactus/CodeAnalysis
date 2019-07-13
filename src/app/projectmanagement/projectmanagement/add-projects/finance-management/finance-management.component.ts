@@ -463,7 +463,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
           Amount: element.amount,
           Currency: addObj.FinanceManagement.Currency,
           PO: element.poId,
-          Status: element.status === 'Not Saved' ? 'Sheduled' : element.status,
+          Status: element.status === 'Not Saved' ? 'Scheduled' : element.status,
           ScheduleType: element.type,
           MainPOC: element.poc,
           AddressType: element.address,
