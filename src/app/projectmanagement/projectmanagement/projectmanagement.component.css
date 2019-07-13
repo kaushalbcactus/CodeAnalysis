@@ -613,7 +613,7 @@ body .ui-table .ui-table-tbody > tr:nth-child(even){
         color: #D7181F;
     }
     .ui-dynamicdialog {
-        height: 550px !important;
+        max-height: 550px !important;
         overflow-y: auto !important; 
         width: 90% !important;
     }

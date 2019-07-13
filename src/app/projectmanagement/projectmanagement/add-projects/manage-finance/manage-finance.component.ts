@@ -4,7 +4,7 @@ import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.ser
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { DatePipe } from '@angular/common';
-import { ConfirmationService, DynamicDialogConfig, MessageService, DynamicDialogRef } from 'primeng/api';
+import { ConfirmationService, DynamicDialogConfig, MessageService, DynamicDialogRef, SelectItem } from 'primeng/api';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { CommonService } from 'src/app/Services/common.service';
@@ -34,7 +34,11 @@ export class ManageFinanceComponent implements OnInit {
     revenue: 0,
     oop: 0,
     tax: 0,
-    budget_hours: 0
+    budget_hours: 0,
+    edited: false,
+    reason: '',
+    reasonType: '',
+    pbbID: 0
   };
   poData = [];
   poObj = {
@@ -51,7 +55,9 @@ export class ManageFinanceComponent implements OnInit {
     showDelete: false,
     showAdd: false,
     showInvoice: false,
-    isExsitPO: false
+    isExsitPO: false,
+    status: '',
+    edited: false
   };
   poInfoData = [];
   poAddObj = {
@@ -71,7 +77,8 @@ export class ManageFinanceComponent implements OnInit {
     isInvoiceItemConfirm: false,
     currency: '',
     pocText: '',
-    Id: 0
+    Id: 0,
+    edited: false
   };
   poHeader = {
     total: 0,
@@ -121,6 +128,11 @@ export class ManageFinanceComponent implements OnInit {
   showUnAssigned = false;
   invoiceHeader = 'Add Invoice Line Item';
   projectType = '';
+  budgetIncreaseArray: SelectItem[];
+  selectedReasonType = '';
+  selectedReason = '';
+  showBudgetIncrease = false;
+  sowObj: any
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -143,6 +155,11 @@ export class ManageFinanceComponent implements OnInit {
     });
   }
   ngOnInit() {
+    this.reInitializePopup();
+  }
+
+
+  reInitializePopup() {
     this.pmObject.addProject.FinanceManagement.POListArray = [];
     this.pmObject.addProject.FinanceManagement.POArray = [];
     this.pmObject.addProject.FinanceManagement.BudgetArray = [];
@@ -169,9 +186,9 @@ export class ManageFinanceComponent implements OnInit {
       this.isPOEdit = false;
       this.projectType = this.pmObject.addProject.ProjectAttributes.BilledBy;
       this.setBudget();
-
     }
   }
+
   /**
    * This method is used to get required data before loading the page.
    */
@@ -203,6 +220,18 @@ export class ManageFinanceComponent implements OnInit {
     poGet.type = 'GET';
     poGet.listName = this.constant.listNames.PO.name;
     batchURL.push(poGet);
+
+    // Get SOW ##1
+    const sowGet = Object.assign({}, options);
+    const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.SOW_CODE);
+    sowFilter.filter = sowFilter.filter.replace(/{{sowcode}}/gi,
+      this.projObj.SOWCode);
+    sowGet.url = this.spServices.getReadURL(this.constant.listNames.SOW.name,
+      sowFilter);
+    sowGet.type = 'GET';
+    sowGet.listName = this.constant.listNames.SOW.name;
+    batchURL.push(sowGet);
+
     const arrResults = await this.spServices.executeBatch(batchURL);
     if (arrResults && arrResults.length) {
       const tempbudgetObject = $.extend(true, {}, this.budgetObj);
@@ -222,6 +251,7 @@ export class ManageFinanceComponent implements OnInit {
           this.poList.push({ label: element.Number + '-' + element.Name, value: element.ID });
         });
       }
+      this.sowObj = arrResults[2].retItems[0];
     }
   }
   /**
@@ -257,66 +287,156 @@ export class ManageFinanceComponent implements OnInit {
     this.showUnAssigned = this.unassignedBudgetobj.total ? true : false;
     this.isAddToProjectHidden = this.unassignedBudgetobj.total ? false : true;
   }
+
+  assignBudgetToProject(sReason, sReasonType) {
+    this.error = false;
+    this.errorMsg = '';
+
+    this.unassignedBudget = [];
+
+    if ((this.sowObj.AmountRevenue - this.sowObj.RevenueLinked) >= this.updatedBudget) {
+      this.messageService.add({
+        key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+        detail: 'SOW revenue balance is less than addendum budget.".'
+      });
+      return;
+    }
+
+    const tempbudgetObject = $.extend(true, {}, this.budgetObj);
+    if (this.existBudgetArray.retItems && this.existBudgetArray.retItems.length) {
+      tempbudgetObject.oop = this.existBudgetArray.retItems[0].OOPBudget;
+      tempbudgetObject.budget_hours = this.budgetHours + this.existBudgetArray.retItems[0].BudgetHrs;
+      tempbudgetObject.revenue = this.updatedBudget + this.existBudgetArray.retItems[0].RevenueBudget;
+      tempbudgetObject.tax = this.existBudgetArray.retItems[0].TaxBudget;
+      tempbudgetObject.total = this.updatedBudget + this.existBudgetArray.retItems[0].Budget;
+    } else {
+      tempbudgetObject.oop = 0;
+      tempbudgetObject.budget_hours = this.budgetHours;
+      tempbudgetObject.revenue = this.updatedBudget;
+      tempbudgetObject.tax = 0;
+      tempbudgetObject.total = this.updatedBudget;
+    }
+    this.budgetData = [];
+    tempbudgetObject.edited = true;
+    tempbudgetObject.reason = sReason;
+    tempbudgetObject.reasonType = sReasonType;
+    this.budgetData.push(tempbudgetObject);
+    // add to assigned object.
+    const unassignedObj = $.extend(true, {}, this.unassignedBudgetobj);
+    if (this.existBudgetArray && this.existBudgetArray.length) {
+      unassignedObj.total = this.updatedBudget + this.existBudgetArray.retItems[0].Budget;
+      unassignedObj.revenue = this.updatedBudget + this.existBudgetArray.retItems[0].RevenueBudget;
+      unassignedObj.oop = tempbudgetObject.oop;
+      unassignedObj.tax = 0;
+    } else {
+      unassignedObj.total = this.updatedBudget;
+      unassignedObj.revenue = this.updatedBudget;
+      unassignedObj.oop = tempbudgetObject.oop;
+      unassignedObj.tax = 0;
+    }
+    this.unassignedBudget = [];
+    this.unassignedBudget.push(unassignedObj);
+    this.showUnAssigned = unassignedObj.total ? true : false;
+    this.isAddToProjectHidden = unassignedObj.total ? false : true;
+
+    this.isAddBudgetButtonHidden = true;
+    this.isrevenueFieldDisabled = true;
+    this.updatedBudget = 0;
+    this.budgetHours = 0;
+    if (unassignedObj.total) {
+      this.poData.forEach(element => {
+        element.poInfo[0].showAdd = true;
+      });
+    }
+    const isTotalMatched = this.isScheduledMatched();
+    if (isTotalMatched) {
+      this.showSave = true;
+    }
+
+  }
+
   /**
    * This method is used to add the budget to project.
    */
   addBudgetToProject() {
-    if (this.budgetHours && this.updatedBudget) {
-      this.error = false;
-      this.errorMsg = '';
-      this.budgetData = [];
-      this.unassignedBudget = [];
-      const tempbudgetObject = $.extend(true, {}, this.budgetObj);
-      if (this.existBudgetArray.retItems && this.existBudgetArray.retItems.length) {
-        tempbudgetObject.oop = this.existBudgetArray.retItems[0].OOPBudget;
-        tempbudgetObject.budget_hours = this.budgetHours + this.existBudgetArray.retItems[0].BudgetHrs;
-        tempbudgetObject.revenue = this.updatedBudget + this.existBudgetArray.retItems[0].RevenueBudget;
-        tempbudgetObject.tax = this.existBudgetArray.retItems[0].TaxBudget;
-        tempbudgetObject.total = this.updatedBudget + + this.existBudgetArray.retItems[0].Budget;
-      } else {
-        tempbudgetObject.oop = 0;
-        tempbudgetObject.budget_hours = this.budgetHours;
-        tempbudgetObject.revenue = this.updatedBudget;
-        tempbudgetObject.tax = 0;
-        tempbudgetObject.total = this.updatedBudget;
-      }
-      this.budgetData.push(tempbudgetObject);
-      // add to assigned object.
-      const unassignedObj = $.extend(true, {}, this.unassignedBudgetobj);
-      if (this.existBudgetArray && this.existBudgetArray.length) {
-        unassignedObj.total = this.updatedBudget + this.existBudgetArray.retItems[0].Budget;
-        unassignedObj.revenue = this.updatedBudget + this.existBudgetArray.retItems[0].RevenueBudget;
-        unassignedObj.oop = tempbudgetObject.oop;
-        unassignedObj.tax = 0;
-      } else {
-        unassignedObj.total = this.updatedBudget;
-        unassignedObj.revenue = this.updatedBudget;
-        unassignedObj.oop = tempbudgetObject.oop;
-        unassignedObj.tax = 0;
-      }
-      this.unassignedBudget = [];
-      this.unassignedBudget.push(unassignedObj);
-      this.showUnAssigned = unassignedObj.total ? true : false;
-      this.isAddToProjectHidden = unassignedObj.total ? false : true;
 
-      this.isAddBudgetButtonHidden = true;
-      this.isrevenueFieldDisabled = true;
-      this.updatedBudget = 0;
-      this.budgetHours = 0;
-      if (unassignedObj.total) {
-        this.poData.forEach(element => {
-          element.poInfo[0].showAdd = true;
-        });
+    let showError = false;
+    if (this.projObj.Status === this.constant.projectStatus.InDiscussion) {
+      if (this.updatedBudget === 0 && this.budgetHours === 0) {
+        showError = true;
+      } else if (this.updatedBudget < 0) {
+        showError = true;
+      } else if (this.updatedBudget !== 0 && this.budgetHours === 0) {
+        showError = true;
       }
     } else {
-      this.error = true;
-      if (!this.updatedBudget) {
-        this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGET;
+      if (this.updatedBudget === 0 && this.budgetHours === 0) {
+        showError = true;
+      } else if (this.updatedBudget !== 0 && this.budgetHours === 0) {
+        showError = true;
+      } else if (this.updatedBudget < 0) {
+        showError = true;
       } else {
+        this.selectedReason = '';
+        this.selectedReasonType = '';
+        this.budgetIncreaseArray = [];
+        this.budgetIncreaseArray = [
+          {
+            label: this.pmConstant.PROJECT_BUDGET_INCREASE_REASON.SCOPE_INCREASE,
+            value: this.pmConstant.PROJECT_BUDGET_INCREASE_REASON.SCOPE_INCREASE
+          },
+          {
+            label: this.pmConstant.PROJECT_BUDGET_INCREASE_REASON.INPUT_ERROR,
+            value: this.pmConstant.PROJECT_BUDGET_INCREASE_REASON.INPUT_ERROR
+          }
+        ]
+        this.showBudgetIncrease = true;
+        return;
+      }
+    }
+
+    if (!showError) {
+      this.assignBudgetToProject('', '');
+    } else {
+      this.error = true;
+      if (!this.budgetHours) {
         this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGETHrs;
+      }
+      else {
+        this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGET;
       }
     }
   }
+
+  increaseBudget() {
+    if (this.selectedReason && this.selectedReasonType) {
+
+      if (!(this.updatedBudget === 0 && this.budgetHours !== 0 && this.selectedReasonType === this.pmConstant.PROJECT_BUDGET_INCREASE_REASON.INPUT_ERROR)) {
+        this.messageService.add({
+          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'Budget can only be zero if selected reason is "Input error".'
+        });
+        return;
+      }
+      this.showBudgetIncrease = false;
+      //this.assignBudgetToProject(this.selectedReason, this.selectedReasonType);
+    }
+    else {
+      if (!this.selectedReason) {
+        this.messageService.add({
+          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'Please enter reason.'
+        });
+      }
+      if (!this.selectedReasonType) {
+        this.messageService.add({
+          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'Please select reason type.'
+        });
+      }
+    }
+  }
+
   /**
    * This method is used to add Rate to project.
    */
@@ -370,8 +490,10 @@ export class ManageFinanceComponent implements OnInit {
         tempPOObj.scOOP = 0;
         tempPOObj.scTax = 0;
         tempPOObj.isExsitPO = false;
+        tempPOObj.edited = true;
         const tempObj: any = { Id: 0, poInfo: [], poInfoData: [] };
-        tempObj.Id = tempPOObj.poId;
+        // tempObj.Id = tempPOObj.poId;
+        tempObj.status = 'Not Saved';
         tempObj.poInfo.push(tempPOObj);
         if (this.existPOArray.retItems && this.existPOArray.retItems.length) {
           this.poData.unshift(tempObj);
@@ -401,32 +523,50 @@ export class ManageFinanceComponent implements OnInit {
     this.selectedPo = poValue.poInfo[0].poId;
     const poIndex = this.poData.findIndex(item => item.poInfo[0].poId === this.selectedPo);
     const retPOInfo = this.poData[poIndex].poInfo[0];
-    if (retPOInfo.poRevenue) {
-      if (this.unassignedBudget[0].total === 0 && this.unassignedBudget[0].revenue === 0) {
-        retPOInfo.total = retPOInfo.total + retPOInfo.poRevenue + retPOInfo.oop + retPOInfo.tax;
-        retPOInfo.revenue = retPOInfo.revenue + retPOInfo.poRevenue;
-        retPOInfo.oop = retPOInfo.oop + retPOInfo.oop;
-        retPOInfo.tax = retPOInfo.tax + retPOInfo.tax;
-      }
-      if (this.unassignedBudget[0].total !== 0 && this.unassignedBudget[0].revenue !== 0) {
-        retPOInfo.total = retPOInfo.total + retPOInfo.poRevenue + retPOInfo.oop + retPOInfo.tax;
-        retPOInfo.revenue = retPOInfo.revenue + retPOInfo.poRevenue;
-        retPOInfo.oop = retPOInfo.oop + retPOInfo.oop ? retPOInfo.oop : 0;
-        retPOInfo.tax = retPOInfo.tax + retPOInfo.tax ? retPOInfo.tax : 0;
-        this.unassignedBudget[0].total = this.unassignedBudget[0].total - retPOInfo.poRevenue - retPOInfo.oop - retPOInfo.tax;
-        this.unassignedBudget[0].revenue = this.unassignedBudget[0].revenue - retPOInfo.poRevenue;
-        this.unassignedBudget[0].oop = this.unassignedBudget[0].oop - retPOInfo.oop;
-        this.unassignedBudget[0].tax = this.unassignedBudget[0].tax - retPOInfo.tax;
-      }
-      // Add the value to Po header.
-      this.poHeader.total = this.poHeader.total + retPOInfo.poRevenue;
-      this.poHeader.revenue = this.poHeader.revenue + retPOInfo.poRevenue;
-      this.poHeader.tax = this.poHeader.tax + retPOInfo.tax;
-      this.poHeader.oop = this.poHeader.oop + retPOInfo.tax;
+    const reservePO = this.poArray.find(item => item.ID === this.selectedPo);
+
+    if (!retPOInfo.poRevenue) {
+      this.messageService.add({
+        key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+        detail: 'Enter revenue amount to be assigned to PO.'
+      });
     }
+
+    if ((reservePO.AmountRevenue - reservePO.RevenueLinked) < retPOInfo.poRevenue) {
+      this.messageService.add({
+        key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+        detail: 'PO revenue balance should be greater than or equal to the amount to reserved on PO.'
+      });
+    }
+
+
+    // if (retPOInfo.poRevenue) {
+    if (this.unassignedBudget[0].total === 0 && this.unassignedBudget[0].revenue === 0) {
+      retPOInfo.total = retPOInfo.total + retPOInfo.poRevenue + retPOInfo.oop + retPOInfo.tax;
+      retPOInfo.revenue = retPOInfo.revenue + retPOInfo.poRevenue;
+      retPOInfo.oop = retPOInfo.oop + retPOInfo.oop;
+      retPOInfo.tax = retPOInfo.tax + retPOInfo.tax;
+    }
+    if (this.unassignedBudget[0].total !== 0 && this.unassignedBudget[0].revenue !== 0) {
+      retPOInfo.total = retPOInfo.total + retPOInfo.poRevenue + retPOInfo.oop + retPOInfo.tax;
+      retPOInfo.revenue = retPOInfo.revenue + retPOInfo.poRevenue;
+      retPOInfo.oop = retPOInfo.oop + retPOInfo.oop ? retPOInfo.oop : 0;
+      retPOInfo.tax = retPOInfo.tax + retPOInfo.tax ? retPOInfo.tax : 0;
+      this.unassignedBudget[0].total = this.unassignedBudget[0].total - retPOInfo.poRevenue - retPOInfo.oop - retPOInfo.tax;
+      this.unassignedBudget[0].revenue = this.unassignedBudget[0].revenue - retPOInfo.poRevenue;
+      this.unassignedBudget[0].oop = this.unassignedBudget[0].oop - retPOInfo.oop;
+      this.unassignedBudget[0].tax = this.unassignedBudget[0].tax - retPOInfo.tax;
+    }
+    // Add the value to Po header.
+    this.poHeader.total = this.poHeader.total + retPOInfo.poRevenue;
+    this.poHeader.revenue = this.poHeader.revenue + retPOInfo.poRevenue;
+    this.poHeader.tax = this.poHeader.tax + retPOInfo.tax;
+    this.poHeader.oop = this.poHeader.oop + retPOInfo.oop;
+    // }
     retPOInfo.poRevenue = 0;
     retPOInfo.poTotal = 0;
     retPOInfo.showInvoice = true;
+    retPOInfo.edited = true;
     this.error = false;
     if (this.unassignedBudget && this.unassignedBudget.length && this.unassignedBudget[0].total === 0) {
       this.poData.forEach(element => {
@@ -465,46 +605,60 @@ export class ManageFinanceComponent implements OnInit {
    * This method is used to add the invoice details.
    */
   addInvoiceDetails() {
-    const poIndex = this.poData.findIndex(item => item.poInfo[0].poId === this.selectedPo);
-    const retPOInfo = this.poData[poIndex].poInfo[0];
-    this.addInvoiceError = false;
-    if (this.addPOForm.valid) {
-      const tempPOObj = $.extend(true, {}, this.poAddObj);
-      tempPOObj.poId = retPOInfo.poId;
-      tempPOObj.inv_number = '';
-      tempPOObj.prf_number = '';
-      tempPOObj.invUrl = '';
-      tempPOObj.prfUrl = '';
-      tempPOObj.date = new Date(this.datePipe.transform(this.addPOForm.value.poDate, 'MMM d, y'));
-      tempPOObj.amount = this.addPOForm.value.amount;
-      tempPOObj.type = 'revenue';
-      tempPOObj.status = this.constant.STATUS.NOT_STARTED;
-      tempPOObj.poc = this.addPOForm.value.primarypoc;
-      tempPOObj.pocText = this.pmCommonService.extractNamefromPOC([tempPOObj.poc]);
-      tempPOObj.address = this.addPOForm.value.address;
-      tempPOObj.isExsitInv = false;
-      if (tempPOObj.amount > retPOInfo.total) {
-        this.addInvoiceError = true;
-        this.addInvoiceErrorMsg = this.pmConstant.ERROR.INVOICE_AMOUNT_GREATER;
-      } else {
-        retPOInfo.scTotal = retPOInfo.scTotal + this.addPOForm.value.amount;
-        retPOInfo.scRevenue = retPOInfo.scRevenue + this.addPOForm.value.amount;
-        retPOInfo.scOOP = retPOInfo.scOOP + 0;
-        retPOInfo.scTax = retPOInfo.scTax + 0;
-        this.poData[poIndex].poInfoData.push(tempPOObj);
-        this.showAddInvoiceDetails = false;
-        if (retPOInfo.total === retPOInfo.scTotal) {
-          retPOInfo.showAdd = false;
-          retPOInfo.showDelete = false;
-          retPOInfo.showInvoice = false;
-        }
-        const isTotalMatched = this.isScheduledMatched();
-        if (isTotalMatched) {
-          this.showSave = true;
-        }
+    if (this.isInvoiceEdit) {
+      const amount = this.addPOForm.get('amount').value;
+      if (this.invoiceObj.amount !== amount) {
+        //// Reduce amount on inv, po and add unassigned
+        alert('Inv amount updated')
       }
-    } else {
-      this.validateAllFormFields(this.addPOForm);
+      else {
+        this.saveInvoiceEdit();
+      }
+    }
+    else {
+      const poIndex = this.poData.findIndex(item => item.poInfo[0].poId === this.selectedPo);
+      const retPOInfo = this.poData[poIndex].poInfo[0];
+      this.addInvoiceError = false;
+      if (this.addPOForm.valid) {
+        const tempPOObj = $.extend(true, {}, this.poAddObj);
+        tempPOObj.poId = retPOInfo.poId;
+        tempPOObj.inv_number = '';
+        tempPOObj.prf_number = '';
+        tempPOObj.invUrl = '';
+        tempPOObj.prfUrl = '';
+        tempPOObj.date = new Date(this.datePipe.transform(this.addPOForm.value.poDate, 'MMM d, y'));
+        tempPOObj.amount = this.addPOForm.value.amount;
+        tempPOObj.type = 'revenue';
+        tempPOObj.status = this.constant.STATUS.NOT_STARTED;
+        tempPOObj.poc = this.addPOForm.value.primarypoc;
+        tempPOObj.pocText = this.pmCommonService.extractNamefromPOC([tempPOObj.poc]);
+        tempPOObj.address = this.addPOForm.value.address;
+        tempPOObj.isExsitInv = false;
+        tempPOObj.edited = true;
+        if (tempPOObj.amount > retPOInfo.total) {
+          this.addInvoiceError = true;
+          this.addInvoiceErrorMsg = this.pmConstant.ERROR.INVOICE_AMOUNT_GREATER;
+        } else {
+          retPOInfo.edited = true;
+          retPOInfo.scTotal = retPOInfo.scTotal + this.addPOForm.value.amount;
+          retPOInfo.scRevenue = retPOInfo.scRevenue + this.addPOForm.value.amount;
+          retPOInfo.scOOP = retPOInfo.scOOP + 0;
+          retPOInfo.scTax = retPOInfo.scTax + 0;
+          this.poData[poIndex].poInfoData.push(tempPOObj);
+          this.showAddInvoiceDetails = false;
+          if (retPOInfo.total === retPOInfo.scTotal) {
+            retPOInfo.showAdd = false;
+            retPOInfo.showDelete = false;
+            retPOInfo.showInvoice = false;
+          }
+          const isTotalMatched = this.isScheduledMatched();
+          if (isTotalMatched) {
+            this.showSave = true;
+          }
+        }
+      } else {
+        this.validateAllFormFields(this.addPOForm);
+      }
     }
   }
   /***
@@ -550,8 +704,19 @@ export class ManageFinanceComponent implements OnInit {
       icon: 'pi pi-info-circle',
       message: 'Are you sure you want to remove the po from project ?',
       accept: () => {
-        const arrayIndex = this.poData.findIndex(x => x.Id === this.selectedPo);
-        this.poData.splice(arrayIndex, 1);
+        if (poObj.poInfo[0].status === 'Not Saved') {
+          const arrayIndex = this.poData.findIndex(x => x.Id === this.selectedPo);
+          this.poData.splice(arrayIndex, 1);
+        }
+        else {
+          poObj.poInfo[0].status = 'Deleted';
+          poObj.poInfo[0].edited = true;
+          poObj.poInfoData.forEach(element => {
+            element.status = 'Deleted';
+            element.edited = true;
+          });
+        }
+
         this.isAddToProjectHidden = false;
         this.unassignedBudget[0].total = this.unassignedBudget[0].total + poObj.poInfo[0].total;
         this.unassignedBudget[0].revenue = this.unassignedBudget[0].revenue + poObj.poInfo[0].revenue;
@@ -566,6 +731,10 @@ export class ManageFinanceComponent implements OnInit {
           this.isPoRevenueDisabled = true;
         } else {
           this.isPoRevenueDisabled = false;
+        }
+        const isTotalMatched = this.isScheduledMatched();
+        if (isTotalMatched) {
+          this.showSave = true;
         }
       }
     });
@@ -642,13 +811,24 @@ export class ManageFinanceComponent implements OnInit {
     invoiceLineItemsGet.type = 'GET';
     invoiceLineItemsGet.listName = this.constant.listNames.InvoiceLineItems.name;
     batchURL.push(invoiceLineItemsGet);
+
+
+    // Get PBB  ##3;
+    const pbbGet = Object.assign({}, options);
+    const pbbFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_BUDGET_BREAKUP);
+    pbbFilter.filter = pbbFilter.filter.replace(/{{projectCode}}/gi,
+      projObj.ProjectCode);
+    pbbGet.url = this.spServices.getReadURL(this.constant.listNames.ProjectBudgetBreakup.name,
+      pbbFilter);
+    pbbGet.type = 'GET';
+    pbbGet.listName = this.constant.listNames.ProjectBudgetBreakup.name;
+    batchURL.push(pbbGet);
+
     const result = await this.spServices.executeBatch(batchURL);
     this.budgetData = [];
 
-
-
-
     if (result && result.length) {
+      
       this.existBudgetArray = result[0];
       this.existPOArray = result[1];
       this.existPOInvoiceArray = result[2];
@@ -661,6 +841,7 @@ export class ManageFinanceComponent implements OnInit {
       tempbudgetObject.total = this.existBudgetArray.retItems[0].Budget;
       tempbudgetObject.oop = this.existBudgetArray.retItems[0].OOPBudget;
       tempbudgetObject.budget_hours = this.existBudgetArray.retItems[0].BudgetHrs;
+      tempbudgetObject.pbbID = result[3].retItems.length ? result[3].retItems[0].ID : 0;
       this.budgetData.push(tempbudgetObject);
 
       let poTotal = 0, poRev = 0, poOOP = 0, poTax = 0;
@@ -677,7 +858,7 @@ export class ManageFinanceComponent implements OnInit {
         tempPOObj.revenue = poItem.AmountRevenue;
         tempPOObj.oop = poItem.AmountOOP;
         tempPOObj.tax = poItem.AmountTax;
-
+        tempPOObj.status = poItem.Status;
         poTotal = poTotal + tempPOObj.total;
         poRev = poRev + tempPOObj.revenue;
         poOOP = poOOP + tempPOObj.oop;
@@ -701,7 +882,7 @@ export class ManageFinanceComponent implements OnInit {
         tempPOObj.scTax = 0;
         tempPOObj.isExsitPO = true;
         const tempObj: any = { Id: 0, poInfo: [], poInfoData: [] };
-        tempObj.Id = poItem.POLookup;
+        tempObj.Id = poItem.ID;
         tempObj.poInfo.push(tempPOObj);
         this.poData.push(tempObj);
         const inoviceItems = this.existPOInvoiceArray.retItems.filter(x => x.PO === poItem.POLookup);
@@ -739,6 +920,7 @@ export class ManageFinanceComponent implements OnInit {
           invoiceObj.isExsitInv = true;
           invoiceObj.currency = this.existBudgetArray.retItems[0].Currency;
           if (invoiceObj.status === 'Scheduled') {
+            
             if (this.projObj.Status === this.constant.projectStatus.Unallocated
               || this.projObj.Status === this.constant.projectStatus.InProgress
               || this.projObj.Status === this.constant.projectStatus.ReadyForClient
@@ -881,7 +1063,7 @@ export class ManageFinanceComponent implements OnInit {
     const result = await this.spServices.updateItem(this.constant.listNames.InvoiceLineItems.name,
       rowData.Id, data, this.constant.listNames.InvoiceLineItems.type);
     const objEmailBody = [];
-    const mailSubject = '';
+    const mailSubject = this.projObj.ProjectCode + '/' + this.projObj.ClientLegalEntity + ': Confirmed line item for billing';
     objEmailBody.push({
       key: '@@Val2@@',
       value: this.projObj.ProjectCode
@@ -890,30 +1072,37 @@ export class ManageFinanceComponent implements OnInit {
       key: '@@Val3@@',
       value: this.projObj.ClientLegalEntity
     });
+    const poValue = this.poArray.filter(x => x.ID === rowData.poId);
     objEmailBody.push({
       key: '@@Val4@@',
-      value: rowData.poId
+      value: poValue[0].Number
     });
     objEmailBody.push({
       key: '@@Val5@@',
-      value: new Date(this.datePipe.transform(rowData.date, 'MMM d, y'))
+      value: this.datePipe.transform(rowData.date, 'MMM dd, yyyy')
     });
     objEmailBody.push({
       key: '@@Val6@@',
       value: rowData.currency + ' ' + rowData.amount
+    });
+    objEmailBody.push({
+      key: '@@Val7@@',
+      value: this.projObj.SOWCode
     });
     let arrayTo = [];
     let tempArray = [];
     tempArray = tempArray.concat(this.projObj.CMLevel1ID,
       this.projObj.CMLevel2ID, this.projObj.DeliveryLevel1ID, this.projObj.DeliveryLevel2ID);
     arrayTo = this.pmCommonService.getEmailId(tempArray);
-    this.pmCommonService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.APPROVED_SOW, objEmailBody,
+    this.pmCommonService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.INVOICE_CONFIRM, objEmailBody,
       mailSubject, arrayTo, [this.pmObject.currLoginInfo.Email]);
     this.messageService.add({
-      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+      key: 'mamageFinance', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Invoice Line Items Confirmed Successfully'
     });
-    this.dynamicDialogRef.close();
+    setTimeout(() => {
+      this.reInitializePopup();
+    }, this.pmConstant.TIME_OUT);
   }
   editInvoiceItem(rowData) {
     this.invoiceHeader = 'Edit Invoice Line Item';
@@ -931,7 +1120,8 @@ export class ManageFinanceComponent implements OnInit {
     this.addPOForm.get('primarypoc').setValue(rowData.poc);
     this.addPOForm.get('address').setValue(rowData.address);
     this.addPOForm.get('amount').setValue(rowData.amount);
-    // this.isInvoiceEdit = true;
+    
+    this.isInvoiceEdit = true;
     this.showAddInvoiceDetails = true;
   }
   async saveInvoiceEdit() {
@@ -946,18 +1136,17 @@ export class ManageFinanceComponent implements OnInit {
     const result = await this.spServices.updateItem(this.constant.listNames.InvoiceLineItems.name,
       this.invoiceObj.Id, data, this.constant.listNames.InvoiceLineItems.type);
     this.messageService.add({
-      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+      key: 'mamageFinance', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Invoice Line Items updated Successfully'
     });
     setTimeout(() => {
       this.isInvoiceEdit = false;
+      this.showAddInvoiceDetails = false;
+      this.reInitializePopup();
     }, this.pmConstant.TIME_OUT);
   }
   async saveUpdatePO() {
-    // this.pmObject.addProject.FinanceManagement.POListArray = this.poArray;
-    // this.pmObject.addProject.FinanceManagement.POArray = this.poData;
-    // this.pmObject.addProject.FinanceManagement.BudgetArray = this.budgetData;
-    // this.pmObject.addProject.FinanceManagement.UnassignedArray = this.unassignedBudget;
+
     this.pmObject.isMainLoaderHidden = false;
     const batchURL = [];
     const options = {
@@ -966,120 +1155,131 @@ export class ManageFinanceComponent implements OnInit {
       type: '',
       listName: ''
     };
-    // Project Finance Update.
-    const projectFinaceData = this.getProjectFinanceData(this.poData, this.budgetData, this.projObj);
-    const projectFinaceUpdate = Object.assign({}, options);
-    projectFinaceUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectFinances.name,
-      this.existBudgetArray.retItems[0].ID);
-    projectFinaceUpdate.data = projectFinaceData;
-    projectFinaceUpdate.type = 'PATCH';
-    projectFinaceUpdate.listName = this.constant.listNames.ProjectFinances.name;
-    batchURL.push(projectFinaceUpdate);
+
     // Project Finance Breakup ==>  if data exist - update else create.
     const projectFinanceBreakArray = [];
     this.poData.forEach(poInfoObj => {
       const po = poInfoObj.poInfo[0];
-      const projectFinanceBreakupData = this.getProjectFinanceBreakupData(po, this.projObj, poInfoObj);
-      if (po.isExsitPO) {
-        const projectFinaceBreakUpdate = Object.assign({}, options);
-        projectFinaceBreakUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectFinanceBreakup.name, po.poId);
-        projectFinaceBreakUpdate.data = projectFinanceBreakupData;
-        projectFinaceBreakUpdate.type = 'PATCH';
-        projectFinaceBreakUpdate.listName = this.constant.listNames.ProjectFinanceBreakup.name;
-        batchURL.push(projectFinaceBreakUpdate);
-      } else {
-        const projectFinaceBreakcreate = Object.assign({}, options);
-        projectFinaceBreakcreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectFinanceBreakup.name, null);
-        projectFinaceBreakcreate.data = projectFinanceBreakupData;
-        projectFinaceBreakcreate.type = 'POST';
-        projectFinaceBreakcreate.listName = this.constant.listNames.ProjectFinanceBreakup.name;
-        batchURL.push(projectFinaceBreakcreate);
-      }
-      projectFinanceBreakArray.push(projectFinanceBreakupData);
-    });
-    if (this.projObj.Status === this.constant.projectStatus.InDiscussion) {
-      // Project Finance Update.
-      // Project Finance Breakup existing - update & new to create.
-      // Project Budget Breakup Update.
-      // SOW Update - update
-      // PO Update
-      // Invoice existing  - update else create
-      const projectBudgetBreakupData = this.getProjectBudgetBreakupData(this.budgetData, this.projObj, false);
-      const projectBudgetBreakupUpdate = Object.assign({}, options);
-      projectBudgetBreakupUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectBudgetBreakup.name, this.projObj.ID);
-      projectBudgetBreakupUpdate.data = projectBudgetBreakupData;
-      projectBudgetBreakupUpdate.type = 'PATCH';
-      projectBudgetBreakupUpdate.listName = this.constant.listNames.ProjectBudgetBreakup.name;
-      batchURL.push(projectBudgetBreakupUpdate);
-    } else {
-      // Project Finance update.
-      // Project Finance Breakup existing - update & new to create.
-      // Project Budget Breakup insert.
-      // SOW Update - update
-      // PO Update
-      // Invoice existing  - update else create
-      const projectBudgetBreakupData = this.getProjectBudgetBreakupData(this.budgetData, this.projObj, true);
-      const projectBudgetBreakupCreate = Object.assign({}, options);
-      projectBudgetBreakupCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectBudgetBreakup.name, null);
-      projectBudgetBreakupCreate.data = projectBudgetBreakupData;
-      projectBudgetBreakupCreate.type = 'POST';
-      projectBudgetBreakupCreate.listName = this.constant.listNames.ProjectBudgetBreakup.name;
-      batchURL.push(projectBudgetBreakupCreate);
-    }
-    // SOW update
-    const sowObj = this.pmObject.allSOWItems.filter(x => x.SOWCode === this.projObj.SOWCode);
-    const sowUpdateData = this.getSOWData(this.projObj, projectFinaceData);
-    const sowUpdate = Object.assign({}, options);
-    sowUpdate.url = this.spServices.getItemURL(this.constant.listNames.SOW.name, sowObj[0].ID);
-    sowUpdate.data = sowUpdateData;
-    sowUpdate.type = 'PATCH';
-    sowUpdate.listName = this.constant.listNames.SOW.name;
-    batchURL.push(sowUpdate);
-    // PO Update call
-    const poItemArray = this.getPOData(projectFinanceBreakArray, this.poArray);
-    poItemArray.forEach(element => {
-      const poItemCreate = Object.assign({}, options);
-      poItemCreate.url = this.spServices.getItemURL(this.constant.listNames.PO.name, element.ID);
-      poItemCreate.data = element;
-      poItemCreate.type = 'PATCH';
-      poItemCreate.listName = this.constant.listNames.PO.name;
-      batchURL.push(poItemCreate);
-    });
-    // Invoice Item creation and updation
-    const CSIdArray = [];
-    this.projObj.CMLevel1ID.forEach(cm => {
-      CSIdArray.push(cm.ID);
-    });
-    CSIdArray.push(this.projObj.CMLevel2ID);
-    const billingEntitys = this.pmObject.oProjectCreation.oProjectInfo.billingEntity;
-    const clientObj = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
-      x.Title === this.projObj.ClientLegalEntity);
-    const billingEntity = billingEntitys.filter(x => x.Title === this.projObj.BillingEntity);
-    this.poData.forEach(poInfoObj => {
-      poInfoObj.poInfoData.forEach(element => {
-        const invoiceData = this.getInvoiceItemData(element, this.projObj, clientObj, billingEntity, CSIdArray);
-        if (element.isExsitInv) {
-          const invoiceUpdate = Object.assign({}, options);
-          invoiceUpdate.url = this.spServices.getItemURL(this.constant.listNames.InvoiceLineItems.name, element.poId);
-          invoiceUpdate.data = invoiceData;
-          invoiceUpdate.type = 'PATCH';
-          invoiceUpdate.listName = this.constant.listNames.InvoiceLineItems.name;
-          batchURL.push(invoiceUpdate);
-        } else {
-          const invoicecreate = Object.assign({}, options);
-          invoicecreate.url = this.spServices.getReadURL(this.constant.listNames.InvoiceLineItems.name, null);
-          invoicecreate.data = invoiceData;
-          invoicecreate.type = 'POST';
-          invoicecreate.listName = this.constant.listNames.InvoiceLineItems.name;
-          batchURL.push(invoicecreate);
+      if (po.edited) {
+        const projectFinanceBreakupData = this.getProjectFinanceBreakupData(po, this.projObj, poInfoObj);
+        if (projectFinanceBreakupData.hasOwnProperty('Status')) {
+          if (po.isExsitPO) {
+            const projectFinaceBreakUpdate = Object.assign({}, options);
+            projectFinaceBreakUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectFinanceBreakup.name, poInfoObj.Id);
+            projectFinaceBreakUpdate.data = projectFinanceBreakupData;
+            projectFinaceBreakUpdate.type = 'PATCH';
+            projectFinaceBreakUpdate.listName = this.constant.listNames.ProjectFinanceBreakup.name;
+            batchURL.push(projectFinaceBreakUpdate);
+          } else {
+            const projectFinaceBreakcreate = Object.assign({}, options);
+            projectFinaceBreakcreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectFinanceBreakup.name, null);
+            projectFinaceBreakcreate.data = projectFinanceBreakupData;
+            projectFinaceBreakcreate.type = 'POST';
+            projectFinaceBreakcreate.listName = this.constant.listNames.ProjectFinanceBreakup.name;
+            batchURL.push(projectFinaceBreakcreate);
+          }
+          projectFinanceBreakArray.push(projectFinanceBreakupData);
         }
-      });
+      }
     });
+
+    // PO Update call
+    if (projectFinanceBreakArray.length) {
+      const poItemArray = this.getPOData(projectFinanceBreakArray, this.poArray);
+      poItemArray.forEach(element => {
+        const poItemCreate = Object.assign({}, options);
+        poItemCreate.url = this.spServices.getItemURL(this.constant.listNames.PO.name, element.ID);
+        poItemCreate.data = element;
+        poItemCreate.type = 'PATCH';
+        poItemCreate.listName = this.constant.listNames.PO.name;
+        batchURL.push(poItemCreate);
+      });
+    }
+
+    // Project Finance Update.
+    if (this.projObj.ProjectType !== this.pmConstant.PROJECT_TYPE.HOURLY.value) {
+      if (this.budgetData[0].edited) {
+        const projectFinaceData = this.getProjectFinanceData(this.poData, this.budgetData, this.projObj);
+        const projectFinaceUpdate = Object.assign({}, options);
+        projectFinaceUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectFinances.name,
+          this.existBudgetArray.retItems[0].ID);
+        projectFinaceUpdate.data = projectFinaceData;
+        projectFinaceUpdate.type = 'PATCH';
+        projectFinaceUpdate.listName = this.constant.listNames.ProjectFinances.name;
+        batchURL.push(projectFinaceUpdate);
+
+        if (this.projObj.Status === this.constant.projectStatus.InDiscussion) {
+          const projectBudgetBreakupData = this.getProjectBudgetBreakupData(this.budgetData, this.projObj, false);
+          const projectBudgetBreakupUpdate = Object.assign({}, options);
+          projectBudgetBreakupUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectBudgetBreakup.name, this.budgetData[0].pbbID);
+          projectBudgetBreakupUpdate.data = projectBudgetBreakupData;
+          projectBudgetBreakupUpdate.type = 'PATCH';
+          projectBudgetBreakupUpdate.listName = this.constant.listNames.ProjectBudgetBreakup.name;
+          batchURL.push(projectBudgetBreakupUpdate);
+        } else {
+          const projectBudgetBreakupData = this.getProjectBudgetBreakupData(this.budgetData, this.projObj, true);
+          const projectBudgetBreakupCreate = Object.assign({}, options);
+          projectBudgetBreakupCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectBudgetBreakup.name, null);
+          projectBudgetBreakupCreate.data = projectBudgetBreakupData;
+          projectBudgetBreakupCreate.type = 'POST';
+          projectBudgetBreakupCreate.listName = this.constant.listNames.ProjectBudgetBreakup.name;
+          batchURL.push(projectBudgetBreakupCreate);
+        }
+        // SOW update
+        const sowObj = this.sowObj;
+        const sowUpdateData = this.getSOWData(this.projObj, projectFinaceData);
+        const sowUpdate = Object.assign({}, options);
+        sowUpdate.url = this.spServices.getItemURL(this.constant.listNames.SOW.name, sowObj.ID);
+        sowUpdate.data = sowUpdateData;
+        sowUpdate.type = 'PATCH';
+        sowUpdate.listName = this.constant.listNames.SOW.name;
+        batchURL.push(sowUpdate);
+      }
+
+
+      // Invoice Item creation and updation
+      const CSIdArray = [];
+      this.projObj.CMLevel1ID.forEach(cm => {
+        CSIdArray.push(cm.ID);
+      });
+      CSIdArray.push(this.projObj.CMLevel2ID);
+      const billingEntitys = this.pmObject.oProjectCreation.oProjectInfo.billingEntity;
+      const clientObj = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
+        x.Title === this.projObj.ClientLegalEntity);
+      const billingEntity = billingEntitys.filter(x => x.Title === this.projObj.BillingEntity);
+      this.poData.forEach(poInfoObj => {
+        poInfoObj.poInfoData.forEach(element => {
+          if (element.edited) {
+            const invoiceData = this.getInvoiceItemData(element, this.projObj, clientObj, billingEntity, CSIdArray);
+            if (element.isExsitInv) {
+              const invoiceUpdate = Object.assign({}, options);
+              invoiceUpdate.url = this.spServices.getItemURL(this.constant.listNames.InvoiceLineItems.name, element.poId);
+              invoiceUpdate.data = invoiceData;
+              invoiceUpdate.type = 'PATCH';
+              invoiceUpdate.listName = this.constant.listNames.InvoiceLineItems.name;
+              batchURL.push(invoiceUpdate);
+            } else {
+              const invoicecreate = Object.assign({}, options);
+              invoicecreate.url = this.spServices.getReadURL(this.constant.listNames.InvoiceLineItems.name, null);
+              invoicecreate.data = invoiceData;
+              invoicecreate.type = 'POST';
+              invoicecreate.listName = this.constant.listNames.InvoiceLineItems.name;
+              batchURL.push(invoicecreate);
+            }
+          }
+
+        });
+      });
+    }
+
     console.log(batchURL);
-    await this.spServices.executeBatch(batchURL);
+    if (batchURL.length) {
+      await this.spServices.executeBatch(batchURL);
+    }
+
     this.pmObject.isMainLoaderHidden = true;
     this.messageService.add({
-      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+      key: 'mamageFinance', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Budget Updated Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
     });
     setTimeout(() => {
@@ -1122,6 +1322,7 @@ export class ManageFinanceComponent implements OnInit {
       data.ScheduledRevenue = 0;
       data.Invoiced = 0;
       data.InvoicedRevenue = 0;
+
     } else {
       data.Budget = budgetArray[0].total;
       data.OOPBudget = budgetArray[0].oop;
@@ -1134,75 +1335,7 @@ export class ManageFinanceComponent implements OnInit {
     }
     return data;
   }
-  getProjectFinanceBreakupData1(poArray, projObj) {
-    const pfbArray = [];
-    poArray.forEach((poInfoObj) => {
-      let totalScheduled = 0;
-      let scRevenue = 0;
-      let invoice = 0;
-      let invoiceRevenue = 0;
-      const po = poInfoObj.poInfo[0];
-      poInfoObj.poInfoData.forEach(element => {
-        if (element.status === this.constant.STATUS.NOT_STARTED) {
-          totalScheduled += element.amount;
-          scRevenue += element.amount;
-        }
-        if (element.status === this.constant.STATUS.APPROVED) {
-          invoice += element.amount;
-          invoiceRevenue += element.amount;
-        }
-      });
-      const data: any = {
-        __metadata: { type: this.constant.listNames.ProjectFinanceBreakup.type },
-      };
-      if (po.isExsitPO) {
-        data.ProjectNumber = projObj.ProjectCode;
-        data.POLookup = po.poId;
-        if (projObj.ProjectType === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
-          data.Amount = 0;
-          data.AmountRevenue = 0;
-          data.AmountOOP = 0;
-          data.AmountTax = 0;
-          data.TotalScheduled = 0;
-          data.ScheduledRevenue = 0;
-          data.TotalInvoiced = 0;
-          data.InvoicedRevenue = 0;
-        } else {
-          data.Amount = po.total;
-          data.AmountRevenue = po.revenue;
-          data.AmountOOP = po.oop;
-          data.AmountTax = po.tax;
-          data.TotalScheduled = totalScheduled;
-          data.ScheduledRevenue = scRevenue;
-          data.TotalInvoiced = invoice;
-          data.InvoicedRevenue = invoiceRevenue;
-        }
-        pfbArray.push(data);
-      } else {
-        if (projObj.ProjectType === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
-          data.Amount = 0;
-          data.AmountRevenue = 0;
-          data.AmountOOP = 0;
-          data.AmountTax = 0;
-          data.TotalScheduled = 0;
-          data.ScheduledRevenue = 0;
-          data.TotalInvoiced = 0;
-          data.InvoicedRevenue = 0;
-        } else {
-          data.Amount = po.total;
-          data.AmountRevenue = po.revenue;
-          data.AmountOOP = po.oop;
-          data.AmountTax = po.tax;
-          data.TotalScheduled = totalScheduled;
-          data.ScheduledRevenue = scRevenue;
-          data.TotalInvoiced = invoice;
-          data.InvoicedRevenue = invoiceRevenue;
-        }
-        pfbArray.push(data);
-      }
-    });
-    return pfbArray;
-  }
+
   /**
    * This method is used to get the ProjectFinance Data
    * @param po pass the po
@@ -1227,7 +1360,9 @@ export class ManageFinanceComponent implements OnInit {
         invoiceRevenue += element.amount;
       }
     });
+    data.POLookup = po.poId;
     if (po.isExsitPO) {
+      data.Status = po.status;
       if (projObj.ProjectType === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
         data.Amount = 0;
         data.AmountRevenue = 0;
@@ -1246,12 +1381,11 @@ export class ManageFinanceComponent implements OnInit {
         data.ScheduledRevenue = scRevenue;
         data.TotalInvoiced = invoice;
         data.InvoicedRevenue = invoiceRevenue;
-        data.POLookup = po.poId;
       }
       return data;
     } else {
       data.ProjectNumber = projObj.ProjectCode;
-      data.POLookup = po.poId;
+      data.Status = po.status;
       if (projObj.ProjectType === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
         data.Amount = 0;
         data.AmountRevenue = 0;
@@ -1284,6 +1418,8 @@ export class ManageFinanceComponent implements OnInit {
     const data: any = {
       __metadata: { type: this.constant.listNames.ProjectBudgetBreakup.type },
     };
+    data.Reason = budgetArray[0].reasonType;
+    data.Comments = budgetArray[0].reason;
     if (isCreate) {
       data.ProjectCode = projObj.ProjectCode;
       data.ProjectLookup = projObj.ID;
@@ -1302,6 +1438,7 @@ export class ManageFinanceComponent implements OnInit {
       }
     } else {
       data.BudgetHours = budgetArray[0].budget_hours;
+
       if (projObj.ProjectType === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
         data.OriginalBudget = 0;
         data.OOPBudget = 0;
@@ -1323,19 +1460,19 @@ export class ManageFinanceComponent implements OnInit {
    */
   getSOWData(projObj, projectfinaceObj) {
     const sowCode = projObj.SOWCode;
-    let sowObj = this.pmObject.allSOWItems.filter(x => x.SOWCode === sowCode);
-    if (sowObj && sowObj.length) {
-      sowObj = sowObj[0];
+    let sowObj = this.sowObj;
+    if (sowObj) {
+
       const data = {
         __metadata: { type: this.constant.listNames.SOW.type },
-        TotalLinked: sowObj.TotalLinked + projectfinaceObj.Budget,
-        RevenueLinked: sowObj.RevenueLinked + projectfinaceObj.RevenueBudget,
-        OOPLinked: sowObj.OOPLinked + projectfinaceObj.OOPBudget,
-        TaxLinked: sowObj.TaxLinked + projectfinaceObj.TaxBudget,
-        TotalScheduled: sowObj.TotalScheduled + projectfinaceObj.InvoicesScheduled,
-        ScheduledRevenue: sowObj.ScheduledRevenue + projectfinaceObj.ScheduledRevenue,
-        TotalInvoiced: sowObj.TotalInvoiced + projectfinaceObj.Invoiced,
-        InvoicedRevenue: sowObj.InvoicedRevenue + projectfinaceObj.InvoicedRevenue,
+        TotalLinked: sowObj.TotalLinked + projectfinaceObj.Budget - this.existBudgetArray.retItems[0].Budget,
+        RevenueLinked: sowObj.RevenueLinked + projectfinaceObj.RevenueBudget - this.existBudgetArray.retItems[0].RevenueBudget,
+        OOPLinked: sowObj.OOPLinked + projectfinaceObj.OOPBudget - this.existBudgetArray.retItems[0].OOPBudget,
+        TaxLinked: sowObj.TaxLinked + projectfinaceObj.TaxBudget - this.existBudgetArray.retItems[0].TaxBudget,
+        TotalScheduled: sowObj.TotalScheduled + projectfinaceObj.InvoicesScheduled - this.existBudgetArray.retItems[0].InvoicesScheduled,
+        ScheduledRevenue: sowObj.ScheduledRevenue + projectfinaceObj.ScheduledRevenue - this.existBudgetArray.retItems[0].ScheduledRevenue,
+        TotalInvoiced: sowObj.TotalInvoiced + projectfinaceObj.Invoiced - this.existBudgetArray.retItems[0].Invoiced,
+        InvoicedRevenue: sowObj.InvoicedRevenue + projectfinaceObj.InvoicedRevenue - this.existBudgetArray.retItems[0].InvoicedRevenue,
       };
       return data;
     }
@@ -1365,58 +1502,7 @@ export class ManageFinanceComponent implements OnInit {
     });
     return porray;
   }
-  getInvoiceItemData1(projObj, poArray, billingEntitys, clientLegalEntityArray) {
-    const invoiceArray = [];
-    const CSIdArray = [];
-    projObj.ActiveCM1.forEach(cm => {
-      CSIdArray.push(cm);
-    });
-    CSIdArray.push(projObj.ActiveCM2);
-    const clientObj = clientLegalEntityArray.filter(x => x.Title === projObj.ClientLegalEntity);
-    const billingEntity = billingEntitys.filter(x => x.Title === projObj.BillingEntity);
-    poArray.forEach((poInfoObj) => {
-      poInfoObj.poInfoData.forEach(element => {
-        if (element.isExsitInv) {
-          const data: any = {
-            __metadata: { type: this.constant.listNames.InvoiceLineItems.type },
-            ScheduledDate: element.date,
-            Amount: element.amount,
-            MainPOC: element.poc,
-            AddressType: element.address,
-          };
-          if (element.status === this.constant.STATUS.APPROVED) {
-            data.ProformaLookup = element.proformaLookup;
-            data.InvoiceLookup = element.invoiceLookup;
-          }
-          invoiceArray.push(data);
-        } else {
-          const data: any = {
-            __metadata: { type: this.constant.listNames.InvoiceLineItems.type },
-            Title: projObj.ProjectCode,
-            ScheduledDate: element.date,
-            Amount: element.amount,
-            Currency: clientObj && clientObj.length ? clientObj[0].Currency : '',
-            PO: element.poId,
-            Status: element.status === 'Not Saved' ? 'Scheduled' : element.status,
-            ScheduleType: element.type,
-            MainPOC: element.poc,
-            AddressType: element.address,
-            Template: billingEntity && billingEntity.length ? billingEntity[0].InvoiceTemplate : '',
-            SOWCode: projObj.SOWCode,
-            CSId: {
-              results: CSIdArray
-            },
-          };
-          if (element.status === this.constant.STATUS.APPROVED) {
-            data.ProformaLookup = element.proformaLookup;
-            data.InvoiceLookup = element.invoiceLookup;
-          }
-          invoiceArray.push(data);
-        }
-      });
-    });
-    return invoiceArray;
-  }
+
   /**
    * This method is used to the invoice item as object
    * @param poInvItem pass the poInvoice Item as object.
@@ -1427,42 +1513,45 @@ export class ManageFinanceComponent implements OnInit {
    */
   getInvoiceItemData(poInvItem, projObj, clientObj, billingEntity, CSIdArray) {
     const element = poInvItem;
-    if (element.isExsitInv) {
-      const data: any = {
-        __metadata: { type: this.constant.listNames.InvoiceLineItems.type },
-        ScheduledDate: element.date,
-        Amount: element.amount,
-        MainPOC: element.poc,
-        AddressType: element.address,
-      };
-      if (element.status === this.constant.STATUS.APPROVED) {
-        data.ProformaLookup = element.proformaLookup;
-        data.InvoiceLookup = element.invoiceLookup;
+    if (element.edited && (element.status !== 'Deleted' || (element.status === 'Deleted' && element.Id != 0))) {
+      if (element.isExsitInv) {
+        const data: any = {
+          __metadata: { type: this.constant.listNames.InvoiceLineItems.type },
+          ScheduledDate: element.date,
+          Amount: element.amount,
+          MainPOC: element.poc,
+          AddressType: element.address,
+        };
+        if (element.status === this.constant.STATUS.APPROVED) {
+          data.ProformaLookup = element.proformaLookup;
+          data.InvoiceLookup = element.invoiceLookup;
+        }
+        return data;
+      } else {
+        const data: any = {
+          __metadata: { type: this.constant.listNames.InvoiceLineItems.type },
+          Title: projObj.ProjectCode,
+          ScheduledDate: element.date,
+          Amount: element.amount,
+          Currency: clientObj && clientObj.length ? clientObj[0].Currency : '',
+          PO: element.amount === 0 ? null : element.poId,
+          Status: element.amount === 0 ? 'Deleted' : (element.status === 'Not Saved' ? 'Scheduled' : element.status),
+          ScheduleType: element.type,
+          MainPOC: element.poc,
+          AddressType: element.address,
+          Template: billingEntity && billingEntity.length ? billingEntity[0].InvoiceTemplate : '',
+          SOWCode: projObj.SOWCode,
+          CSId: {
+            results: CSIdArray
+          },
+        };
+        if (element.status === this.constant.STATUS.APPROVED) {
+          data.ProformaLookup = element.proformaLookup;
+          data.InvoiceLookup = element.invoiceLookup;
+        }
+        return data;
       }
-      return data;
-    } else {
-      const data: any = {
-        __metadata: { type: this.constant.listNames.InvoiceLineItems.type },
-        Title: projObj.ProjectCode,
-        ScheduledDate: element.date,
-        Amount: element.amount,
-        Currency: clientObj && clientObj.length ? clientObj[0].Currency : '',
-        PO: element.poId,
-        Status: element.status === 'Not Saved' ? 'Scheduled' : element.status,
-        ScheduleType: element.type,
-        MainPOC: element.poc,
-        AddressType: element.address,
-        Template: billingEntity && billingEntity.length ? billingEntity[0].InvoiceTemplate : '',
-        SOWCode: projObj.SOWCode,
-        CSId: {
-          results: CSIdArray
-        },
-      };
-      if (element.status === this.constant.STATUS.APPROVED) {
-        data.ProformaLookup = element.proformaLookup;
-        data.InvoiceLookup = element.invoiceLookup;
-      }
-      return data;
     }
+
   }
 }
