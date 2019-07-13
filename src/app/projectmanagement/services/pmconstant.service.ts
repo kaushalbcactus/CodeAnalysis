@@ -320,6 +320,7 @@ export class PmconstantService {
   // ***********************************************************************//
   public ERROR = {
     ADD_PROJECT_TO_BUDGET: 'Please enter project budget.',
+    ADD_PROJECT_TO_BUDGETHrs: 'Please enter budget hrs.',
     PO_NOT_SELECTED: 'Please select PO.',
     PO_ALREADY_EXIST: 'PO already assiged to the project. Please select some other PO.',
     INVOICE_AMOUNT_GREATER: 'Invoice amount is greater than the pending amount to be scheduled.',
@@ -339,7 +340,7 @@ export class PmconstantService {
       filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\''
     },
     PROJECT_FINANCE_BY_PROJECTCODE: {
-      select: 'ID, Title, Currency, Budget, RevenueBudget, OOPBudget, TaxBudget,BudgetHrs,' +
+      select: 'ID, Title, Currency, ApprovedBudget, Budget, RevenueBudget, OOPBudget, TaxBudget,BudgetHrs,' +
         'InvoicesScheduled, ScheduledRevenue, ScheduledOOP, Invoiced, InvoicedRevenue, InvoicedOOP',
       filter: 'Title eq \'{{projectCode}}\''
     },
@@ -419,8 +420,9 @@ export class PmconstantService {
     },
   };
   public PROJECT_TYPE = {
-    HOURLY: 'Hourly',
-    DELIVERABLE: 'Deliverable'
+    HOURLY : { display : 'Hourly',  value : 'Hours-Rolling' },
+    // HOURLY: 'Hours-Rolling',
+    DELIVERABLE: { display : 'Deliverable',  value : 'Deliverable-Writing' }
   };
   public TIME_OUT = 500;
   public PROJECT_CANCELLED_REASON = {

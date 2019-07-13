@@ -167,8 +167,8 @@ export class ProjectAttributesComponent implements OnInit {
   async setDropDownValue(clientLeagalEntity) {
     this.subDivisionArray = [];
     this.billedBy = [
-      { label: this.pmConstant.PROJECT_TYPE.DELIVERABLE, value: this.pmConstant.PROJECT_TYPE.DELIVERABLE },
-      { label: this.pmConstant.PROJECT_TYPE.HOURLY, value: this.pmConstant.PROJECT_TYPE.HOURLY }
+      { label: this.pmConstant.PROJECT_TYPE.DELIVERABLE.display, value: this.pmConstant.PROJECT_TYPE.DELIVERABLE.value },
+      { label: this.pmConstant.PROJECT_TYPE.HOURLY.display, value: this.pmConstant.PROJECT_TYPE.HOURLY.value }
     ];
     this.priority = [
       { label: 'Pilot', value: 'Pilot' },

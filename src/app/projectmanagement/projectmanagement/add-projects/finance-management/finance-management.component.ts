@@ -237,7 +237,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
       batchURL.push(projectFinanceBreakupCreate);
       counter += 1;
     });
-    if (this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.DELIVERABLE) {
+    if (this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value) {
       //  Add data to  InvoiceLineItem call ## 19
       const invoiceLineItemArray = this.getInvoiceLineItemData();
       invoiceLineItemArray.forEach(element => {
@@ -333,7 +333,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
       Currency: addObj.FinanceManagement.Currency,
       BudgetHrs: addObj.FinanceManagement.BudgetHours
     };
-    if (addObj.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.HOURLY) {
+    if (addObj.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
       data.Budget = addObj.FinanceManagement.Rate;
       data.OOPBudget = 0;
       data.RevenueBudget = 0,
@@ -367,7 +367,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
       Status: this.constant.STATUS.APPROVAL_PENDING,
       BudgetHours: addObj.FinanceManagement.BudgetHours
     };
-    if (addObj.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.HOURLY) {
+    if (addObj.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
       data.OriginalBudget = 0;
       data.OOPBudget = 0;
       data.NetBudget = 0;
@@ -408,7 +408,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
         ProjectNumber: addObj.ProjectAttributes.ProjectCode,
         POLookup: po.poId
       };
-      if (addObj.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.HOURLY) {
+      if (addObj.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
         data.Amount = 0;
         data.AmountRevenue = 0;
         data.AmountOOP = 0;
