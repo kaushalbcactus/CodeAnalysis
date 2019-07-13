@@ -95,7 +95,7 @@ export class MyDashboardComponent implements OnInit {
         }
         else  if(TimeBookingobjCount === 0)
         {
-          this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'No data found to update.' });
+          this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Please Enter Time Spent.' });
         }
      });
   }

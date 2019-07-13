@@ -90,7 +90,7 @@ export class TimeSpentDialogComponent implements OnInit {
     this.task = task;
     // var previousStatus =  this.data.status;
     // if (previousStatus === "Completed" || previousStatus === "AllowCompletion" || previousStatus === "Auto Closed") {
-
+debugger;
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
 
@@ -107,8 +107,9 @@ export class TimeSpentDialogComponent implements OnInit {
     var todayDate = new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
     var startDate = new Date(this.datePipe.transform(task.StartDate, 'MMM d, y'));
     if (startDate > todayDate) {
-      var endDate = todayDate.getDay() === 6 ? new Date(todayDate.setDate(todayDate.getDate() - 1)) : todayDate.getDay() === 0 ? new Date(todayDate.setDate(todayDate.getDate() - 2)) : new Date(todayDate.setDate(todayDate.getDate()))
+      // var endDate = todayDate.getDay() === 6 ? new Date(todayDate.setDate(todayDate.getDate() - 1)) : todayDate.getDay() === 0 ? new Date(todayDate.setDate(todayDate.getDate() - 2)) : new Date(todayDate.setDate(todayDate.getDate()))
 
+      var endDate = new Date(todayDate.setDate(todayDate.getDate()))
 
       this.dateArray = this.CalculatePastBusinessDays(endDate, 3).reverse();
     }
@@ -164,8 +165,9 @@ export class TimeSpentDialogComponent implements OnInit {
 
   CalculatePastBusinessDays(date, days) {
     var businessDates = [];
+   
     if (this.SelectedTabType !== 'MyCompletedTask') {
-      businessDates.push({ actualDate: tempDate, date: this.datePipe.transform(new Date(), 'EE, MMM d, y'), time: '00:00', edited: true });
+      businessDates.push({ actualDate: new Date(), date: this.datePipe.transform(new Date(), 'EE, MMM d, y'), time: '00:00', edited: true });
     }
     const dayCount = days;
     var tempDate = new Date(date);
@@ -174,13 +176,13 @@ export class TimeSpentDialogComponent implements OnInit {
       tempDate = new Date(tempDate.setDate(tempDate.getDate() - 1));
       if (tempDate.getDay() !== 6 && tempDate.getDay() !== 0) {
         days -= 1;
+      }
         if (dayCount - 3 <= days) {
           businessDates.push({ actualDate: tempDate, date: this.datePipe.transform(tempDate, 'EE, MMM d, y'), time: '00:00', edited: true });
         }
         else {
           businessDates.push({ actualDate: tempDate, date: this.datePipe.transform(tempDate, 'EE, MMM d, y'), time: '00:00', edited: false });
         }
-      }
     }
     return businessDates;
   }

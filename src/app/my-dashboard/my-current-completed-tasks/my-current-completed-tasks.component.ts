@@ -27,14 +27,11 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   selectedDueDate: DateObj;
   selectedStartDate: DateObj;
-  @ViewChild('popupMenu', { static: true })
-  popupMenu: SlideMenu;
-  thenpopupMenu: SlideMenu;
   thenBlock: Table;
   public loderenable: boolean = false;
-  @ViewChild('taskId', { static: true })
+
   @ViewChild('feedbackPopup', { static: true }) feedbackPopupComponent: FeedbackPopupComponent
-  taskId: Table;
+  @ViewChild('taskId', { static: true }) taskId: Table;
   showCalender: boolean;
   selectedDate: any;
   rangeDates: Date[];
@@ -286,7 +283,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
   // Column filter for search 
   // *************************************************************************************************************************************
 
+  
+
+
   createColFieldValues() {
+
+     
     this.AllTaskColArray.TaskStatus.push.apply(this.AllTaskColArray.TaskStatus, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
     this.AllTaskColArray.TaskName.push.apply(this.AllTaskColArray.TaskName, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.DisplayTitle, value: a.DisplayTitle }; return b; })));
     this.AllTaskColArray.Status.push.apply(this.AllTaskColArray.Status, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.MainStatus, value: a.MainStatus }; return b; })));
@@ -305,7 +307,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
     this.loaderenable = false;
     this.thenBlock = this.taskId;
-    this.thenpopupMenu = this.popupMenu;
   }
 
   // *************************************************************************************************************************************
@@ -389,7 +390,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
     // var status = await this.getPrevTaskStatus(task);
 
-
+debugger;
     const ref = this.dialogService.open(TimeSpentDialogComponent, {
       data: {
         task: task,
@@ -397,7 +398,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
         tab: this.TabName
 
       },
-      header: task.Title,
+      header: task.DisplayTitle,
       width: '90vw',
       contentStyle: { "max-height": "90vh", "overflow-y": "auto" },
       closable: false,
@@ -451,7 +452,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
         task: task,
         MarkComplete: IsMarkComplete,
       },
-      header: task.Title,
+      header: task.DisplayTitle,
       closable: false,
       width: '80vw',
     });
@@ -579,7 +580,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
         task: task,
         //  status:status,
       },
-      header: task.Title,
+      header: task.DisplayTitle,
       width: '80vw',
       contentStyle: { "min-height": "30vh", "max-height": "90vh", "overflow-y": "auto" }
     });
@@ -667,39 +668,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     }
 
   }
-
-
-  // async CompleteTask(task) {
-  //   this.NextPreviousTask = await this.getNextPreviousTask(task);
-  //   if (task.Task == 'Galley' || task.Task == 'Submission Pkg'
-  //     || task.Task == 'Submit' || task.Task == 'Journal Selection'
-  //     || task.Task == 'Journal Requirement') {
-  //     await this.myDashboardConstantsService.GetAllDocuments(task);
-  //     var isJcIdFound = await this.myDashboardConstantsService.getJCIDS(task);
-  //     if (!isJcIdFound) {
-  //       this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: task.Task + "task can't be closed as no submission details are found." });
-  //       return false;
-  //     }
-  //     else {
-  //       this.loaderenable = true;
-  //       task.Status = "Completed";
-  //       await this.myDashboardConstantsService.saveTask(task, true);
-  //       this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated sucessfully.' });
-  //       this.GetDatabyDateSelection(this.selectedTab, this.days);
-  //     }
-
-  //   }
-  //   else {
-  //     this.loaderenable = true;
-  //     task.Status = "Completed";
-  //     await this.myDashboardConstantsService.saveTask(task, false);
-  //     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated sucessfully.' });
-  //     this.GetDatabyDateSelection(this.selectedTab, this.days);
-  //   }
-
-
-  // }
-
 }
 
 
