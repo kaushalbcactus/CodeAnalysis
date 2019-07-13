@@ -59,6 +59,13 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
         this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours :
         this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours;
       this.pmObject.addProject.FinanceManagement.BudgetHours = this.budgethours;
+      // Setting the currency value.
+      const currency = this.pmObject.allSOWItems.filter((obj) => {
+        return obj.SOWCode === this.pmObject.addProject.SOWSelect.SOWCode;
+      });
+      if (currency && currency.length) {
+        this.pmObject.addProject.FinanceManagement.Currency = currency[0].Currency;
+      }
     }, this.pmConstant.TIME_OUT);
   }
   ngOnChanges(changes: SimpleChanges) {

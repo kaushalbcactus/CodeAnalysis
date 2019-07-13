@@ -173,13 +173,6 @@ export class ProjectAttributesComponent implements OnInit {
     if (projObj.Comments) {
       this.addProjectAttributesForm.get('comments').setValue(projObj.Comments);
     }
-    // Setting the currency value.
-    const currency = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter((obj) => {
-      return obj.Title === projObj.ClientLegalEntity;
-    });
-    if (currency && currency.length) {
-      this.pmObject.addProject.FinanceManagement.Currency = currency[0].Currency;
-    }
     this.isProjectAttributeTableHidden = false;
     this.isProjectAttributeLoaderHidden = true;
   }
