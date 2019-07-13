@@ -73,6 +73,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     showApproveReject: boolean = false;
 
+    isExpenseCreate: boolean = false;
+
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
 
@@ -92,6 +94,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     ) {
         this.subscription.add(this.fdDataShareServie.getAddExpenseSuccess().subscribe(date => {
             console.log('I called when expense created success...... ');
+            this.isExpenseCreate = true;
+            console.log('this.isExpenseCreate ', this.isExpenseCreate);
             this.getRequiredData();
         }));
     }
@@ -307,6 +311,12 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     pendingExpenses: any = [];
     // On load get Required Data
     async getRequiredData() {
+
+        // Refetch vendor list if expense created
+        if (this.isExpenseCreate) {
+            this.fdDataShareServie.freelancerVendersRes = [];
+            this.freelancerVendersRes = await this.fdDataShareServie.getVendorFreelanceData();
+        }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
@@ -997,7 +1007,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 mailContent = this.replaceContent(mailContent, "@@Val8@@", this.approveExpense_form.value.PaymentMode.value);
                 mailContent = this.replaceContent(mailContent, "@@Val9@@", this.datePipe.transform(this.approveExpense_form.value.DateSpend, 'dd MMMM yyyy, hh:mm a'));
                 mailContent = this.replaceContent(mailContent, "@@Val11@@", this.approveExpense_form.value.Number);
-                mailContent = this.replaceContent(mailContent, "@@Val12@@", this.globalService.sharePointPageObject.webAbsoluteUrl + '' + this.fileUploadedUrl);
+                mailContent = this.replaceContent(mailContent, "@@Val12@@", this.globalService.sharePointPageObject.rootsite + '' + this.fileUploadedUrl);
             } else {
                 mailContent = this.replaceContent(mailContent, "@@Val8@@", '');
                 mailContent = this.replaceContent(mailContent, "@@Val9@@", '');

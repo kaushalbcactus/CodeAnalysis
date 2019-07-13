@@ -617,14 +617,14 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             this.totalLineItems[index] = obj;
             const arrItems = this.totalLineItems;
             this.totalLineItems = [...[]];
-            
+
             setTimeout(async () => {
                 this.totalLineItems = [...arrItems];
                 this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
             }, 300);
         }
 
-        
+
         // Currency Conversion
         // for (let pi = 0; pi < this.totalLineItems.length; pi++) {
         //     const element = this.totalLineItems[pi];
@@ -1009,8 +1009,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         mailContent = this.replaceContent(mailContent, "@@Val5@@", expense.Currency + ' ' + parseFloat(expense.Amount).toFixed(2));
         mailContent = this.replaceContent(mailContent, "@@Val6@@", expense.ClientAmount ? expense.ClientCurrency + ' ' + parseFloat(expense.ClientAmount).toFixed(2) : '--');
         mailContent = this.replaceContent(mailContent, "@@Val7@@", expense.Notes);
-        mailContent = this.replaceContent(mailContent, "@@Val10@@", expense.FileURL);
-        mailContent = this.replaceContent(mailContent, "@@Val11@@", expense.ClientApprovalFileURL);
+        mailContent = this.replaceContent(mailContent, "@@Val10@@", this.globalService.sharePointPageObject.rootsite + '' + expense.FileURL);
+        mailContent = this.replaceContent(mailContent, "@@Val11@@", this.globalService.sharePointPageObject.rootsite + '' + expense.ClientApprovalFileURL);
         mailContent = this.replaceContent(mailContent, "@@Val12@@", expense.RequestType);
 
         var ccUser = [];

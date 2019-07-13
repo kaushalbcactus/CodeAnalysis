@@ -303,6 +303,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         }
         this.hourlyBasedRes = [...this.hourlyBasedRes];
         this.isPSInnerLoaderHidden = true;
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         console.log('hourlyBasedRes data ', this.hourlyBasedRes);
         this.createColFieldValues();
     }
@@ -897,7 +898,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         } else if (type === "editInvoice") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Updated.', detail: '', life: 2000 });
             this.cancelFormSub('editInvoice');
-            this.reFetchData();
+            this.reFetchData('edit');
         }
         this.isPSInnerLoaderHidden = true;
 
@@ -1052,7 +1053,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         this.spOperationsService.sendMail(this.getTosList('pc').join(','), this.currentUserInfoData.Email, pcmailSubject, pcmailContent, ccUser.join(','));
         this.isPSInnerLoaderHidden = true;
         this.confirmationModal = false;
-        this.reFetchData();
+        this.reFetchData('confirm');
     }
 
     getTosList(type: string) {
@@ -1098,16 +1099,23 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         return self.indexOf(value) === index;
     }
 
-    reFetchData() {
+    reFetchData(type: string) {
         setTimeout(async () => {
-            // Refetch PO/CLE Data
-            await this.fdDataShareServie.getClePO('hourly');
-            // Fetch latest PO & CLE
-            this.poInfo();
-            this.cleInfo();
-            await this.projectInfo();
-
-            this.getRequiredData();
+            if (type !== 'edit') {
+                this.purchaseOrdersList = [];
+                this.cleData = [];
+                this.projectInfoData = [];
+                // Refetch PO/CLE Data
+                await this.fdDataShareServie.getClePO('hourly');
+                // Fetch latest PO & CLE
+                this.poInfo();
+                this.cleInfo();
+                await this.projectInfo();
+                this.getPCForSentToAMForApproval();
+            } else {
+                this.getPCForSentToAMForApproval();
+            }
+            // this.getRequiredData();
         }, 300);
     }
 
