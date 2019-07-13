@@ -125,6 +125,15 @@ export class PmconstantService {
       orderby: 'Modified desc',
       top: 4500
     },
+    SOW_CODE: {
+      select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget, '
+        + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, InvoicedRevenue,'
+        + 'BillingEntity',
+      expand: 'Author/Id,Author/Title',
+      filter: 'SOWCode eq \'{{sowcode}}\'',
+      orderby: 'Modified desc',
+      top: 1
+    },
     USER_SPECIFIC_SOW: {
       select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget,'
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, InvoicedRevenue,'
@@ -319,7 +328,7 @@ export class PmconstantService {
   // Finance Management
   // ***********************************************************************//
   public ERROR = {
-    ADD_PROJECT_TO_BUDGET: 'Please enter project budget.',
+    ADD_PROJECT_TO_BUDGET: 'Please enter revenue budget greater than 0.',
     ADD_PROJECT_TO_BUDGETHrs: 'Please enter budget hrs.',
     PO_NOT_SELECTED: 'Please select PO.',
     PO_ALREADY_EXIST: 'PO already assiged to the project. Please select some other PO.',
@@ -345,14 +354,20 @@ export class PmconstantService {
       filter: 'Title eq \'{{projectCode}}\''
     },
     PROJECT_FINANCE_BREAKUP_BY_PROJECTCODE: {
-      select: 'ID,Title,POLookup,ProjectNumber,Amount, AmountRevenue, AmountOOP, AmountTax, TotalScheduled, ScheduledRevenue',
-      filter: 'ProjectNumber eq \'{{projectCode}}\''
+      select: 'ID,Title,POLookup,ProjectNumber,Amount, AmountRevenue, AmountOOP, AmountTax, TotalScheduled, ScheduledRevenue,Status',
+      filter: 'ProjectNumber eq \'{{projectCode}}\' and Status eq \'Active\''
     },
     INVOICE_LINE_ITEMS_BY_PROJECTCODE: {
       select: 'ID, Title, ScheduledDate,Amount, Currency, PO, MainPOC, AddressType, SOWCode, ScheduleType, Status, ProformaLookup,'
         + ' InvoiceLookup',
-      filter: 'Title eq \'{{projectCode}}\''
-    }
+      filter: 'Title eq \'{{projectCode}}\' and Status ne \'Deleted\''
+    },
+    PROJECT_BUDGET_BREAKUP: {
+      select: 'ID, Title, ProjectLookup, Status, ApprovalDate, OriginalBudget, NetBudget, OOPBudget, TaxBudget, ProjectCode,'
+        + ' BudgetHours, Reason, Comments',
+      filter: 'ProjectCode eq \'{{projectCode}}\' and (Status eq \'Approval Pending\')',
+      top: 1
+    },
   };
   public QUERY = {
     GET_TIMESPENT: {
@@ -361,7 +376,7 @@ export class PmconstantService {
     },
     PROJECT_BUDGET_BREAKUP_BY_PROJECTCODE: {
       select: 'ID',
-      filter: 'ProjectCode eq \'{{projectCode}}\''
+      filter: 'ProjectCode eq \'{{projectCode}}\' and (Status eq \'Approved\' or Status eq \'Approval Pending\')'
     },
     ACTIVE_PROJECT_BY_SOWCODE: {
       select: 'ID, Title, ProjectType,ProjectCode,Title,DeliverableType,WBJID,Status,IsApproved,SOWCode,ProposedStartDate',
@@ -436,5 +451,9 @@ export class PmconstantService {
     DUPLICATE_ENTRY: 'Duplicate Entry',
     CLIENT_NOT_MOVING_FORWARD_WITH_PROJECT: 'Client not moving forward with project',
     UNKNOWN: 'Unkownn'
+  };
+  public PROJECT_BUDGET_INCREASE_REASON = {
+    SCOPE_INCREASE: 'Scope increase',
+    INPUT_ERROR: 'Input error'
   };
 }

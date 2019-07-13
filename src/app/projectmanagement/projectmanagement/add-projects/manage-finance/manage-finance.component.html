@@ -127,7 +127,7 @@
       </div>
       <div *ngIf="showPo">
         <ng-container *ngFor="let poObj of poData">
-          <p-card>
+          <p-card *ngIf="poObj.poInfo[0].status !== 'Deleted'">
             <p-table [value]=poObj.poInfo>
               <ng-template pTemplate="header">
                 <tr>
@@ -155,12 +155,12 @@
                 </tr>
                 <tr>
                   <td>
-                    <span *ngIf="rowData.showDelete"><i title="Delete PO from Project" class="pi pi-trash iconsize"
-                        (click)="removePO(poObj)"></i></span>
-                    <span *ngIf="rowData.showAdd"><i title="Reserve budget from PO" class="pi pi-plus-circle iconsize"
-                        (click)="schedulePo(poObj)"></i></span>
-                    <span *ngIf="rowData.showInvoice"><i title="Schedule Invoices on the PO" class="pi pi-file iconsize"
-                        (click)="scheduleInvoice(poObj)"></i></span>
+                    <span *ngIf="rowData.showDelete"><i title="Delete PO from Project" class="pi pi-trash"
+                        style="font-size:2em;cursor: pointer;" (click)="removePO(poObj)"></i></span>
+                    <span *ngIf="rowData.showAdd"><i title="Reserve budget from PO" class="pi pi-plus-circle"
+                        style="font-size:2em;cursor: pointer;" (click)="schedulePo(poObj)"></i></span>
+                    <span *ngIf="rowData.showInvoice"><i title="Schedule Invoices on the PO" class="pi pi-file"
+                        style="font-size:2em;cursor: pointer;" (click)="scheduleInvoice(poObj)"></i></span>
                   </td>
                   <td><input [(ngModel)]="rowData.poTotal" [attr.disabled]=true type="number" style="width:100%"
                       pInputText>
@@ -311,7 +311,8 @@
     </div>
     <div class="ui-grid-row mt-20">
       <div class="ui-grid-col-3">Client POC</div>
-      <p-dropdown [options]="primaryPoc" formControlName="primarypoc" placeholder="Select POC"></p-dropdown>
+      <p-dropdown [options]="primaryPoc" filter="true" formControlName="primarypoc" placeholder="Select POC">
+      </p-dropdown>
       <div class="error" *ngIf="!addPOForm.controls['primarypoc'].valid&&addPOForm.controls['primarypoc'].touched">
         Please select poc.</div>
     </div>
@@ -328,36 +329,38 @@
     </div>
   </form>
 </p-dialog>
-<!-- <div *ngIf="isInvoiceEdit">
-  <form [formGroup]='addPOForm'>
-    <p-dialog header="Edit Invoice Items" appendTo='body' [(visible)]="isInvoiceEdit">
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-3">Date</div>
-        <p-calendar  class="pcalendarClass" formControlName="poDate" [disabledDays]="[0,6]"   [readonlyInput]="true"  
-          dateFormat="dd M, yy"   appendTo="body"   hideOnDateTimeSelect="true"   [required]="true"   [showIcon]="true"
-            [showOnFocus]="false"   [monthNavigator]="true"   [yearNavigator]="true"    
-          yearRange="{{pmObject.yearRange}}" [inputStyle]="{'width': '80%', 'min-width': '80%'}"
-           inputStyleClass="ngPrime-red">
-        </p-calendar>
-        <div class="error" *ngIf="!addPOForm.controls['poDate'].valid&&addPOForm.controls['poDate'].touched">
-          Please select date.</div>
+
+
+<p-dialog [(visible)]="showBudgetIncrease" appendTo='body' [style]="{width: '500px'}">
+  <p-header>
+      Budget Increment Popup 
+  </p-header>
+  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+      <div class="ui-grid-col-12">
+          Please select the reason and provide comments for budget increase.
       </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-3">Primary POC</div>
-        <p-dropdown [options]="primaryPoc" formControlName="primarypoc" placeholder="Select POC"></p-dropdown>
-        <div class="error" *ngIf="!addPOForm.controls['primarypoc'].valid&&addPOForm.controls['primarypoc'].touched">
-          Please select poc.</div>
+  </div>
+  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+    <div class="ui-grid-col-4"><span class="compulsory">*</span>Reason Type</div>
+    <div class="ui-grid-col-4">
+      <p-dropdown [(ngModel)]="selectedReasonType" [options]="budgetIncreaseArray" placeholder="Please Select"
+        [showClear]="true" [filter]="true"></p-dropdown>
+    </div>
+  </div>
+  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+    <div class="ui-grid-col-4"><span class="compulsory">*</span>Reason</div>
+    <div class="ui-grid-col-4">
+      <div class="floatLeft">
+        <textarea [(ngModel)]="selectedReason" rows="3" cols="30"></textarea>
       </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-3">Address</div>
-        <p-dropdown [options]="address" formControlName="address" placeholder="Select Address"></p-dropdown>
-        <div class="error" *ngIf="!addPOForm.controls['address'].valid&&addPOForm.controls['address'].touched">
-          Please select address</div>
-      </div>
-      <div class="ui-grid-row mt-20" style="float:right">
-        <p-button class="mr-5" type="button" (click)="saveInvoiceEdit()" value="Post Data" label="Update"></p-button>
-        <p-button class="mr-5" type="button" (click)="isInvoiceEdit=false" label="Cancel"></p-button>
-      </div>
-    </p-dialog>
-  </form>
-</div> -->
+    </div>
+  </div>
+  <p-footer>
+    <p-button type="button" (click)="increaseBudget()" label="Confirm"></p-button>
+    <p-button type="button" (click)="showBudgetIncrease=false" label="Cancel">
+    </p-button>
+  </p-footer>
+</p-dialog>
+
+
+<p-toast position="bottom-right" key="mamageFinance"></p-toast>
