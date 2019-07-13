@@ -121,7 +121,8 @@ export class GlobalService {
     serverRelativeUrl: '',
     webRelativeUrl: '',
     publicCdn: '',
-    userId: 0
+    userId: 0,
+    rootsite: '',
   };
 
 
