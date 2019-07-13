@@ -395,23 +395,20 @@ export class TimeBookingDialogComponent implements OnInit {
       var timeSpentHours = dateArray.map(c => c.time.split(":")).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
       var timeSpentMin = dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
 
-      debugger;
       var timeSpentHours1 = timeSpentHours < 10 ? "0" + timeSpentHours : timeSpentHours;
       var totalTimeSpent = timeSpentMin < 10 ? timeSpentHours1 + ':' + "0" + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
 
+      var existingObjItem = this.allTasks.filter(c => c.ProjectCode === dbTasks[i].ProjectCode && c.Milestone === dbTasks[i].Milestone && c.Task === "Time Booking")
 
-      var existingObj = this.allTasks.find(c => c.ProjectCode === dbTasks[i].ProjectCode && c.Milestone === dbTasks[i].Milestone && c.Task === "Time Booking")
-
-      debugger;
-      if (existingObj !== undefined) {
+      if (existingObjItem.length) {
+        const existingObj = existingObjItem[0];
         if (existingObj.TimeSpentPerDay !== timeSpentString) {
           existingObj.TimeSpent = totalTimeSpent;
           existingObj.TimeSpentPerDay = timeSpentString;
           count++;
           await this.spServices.update(this.constants.listNames.Schedules.name, existingObj.ID, existingObj, "SP.Data.SchedulesListItem");
         }
-      }
-      else {
+      } else {
         if (dbTasks[i].Entity) {
 
           if (!dbTasks[i].ProjectCode) {
@@ -423,7 +420,7 @@ export class TimeBookingDialogComponent implements OnInit {
             this.messageService.add({ key: 'custom-booking', severity: 'warn', summary: 'Warning Message', detail: "Please Select Milestone / To remove unwanted line, please unselect Client" });
             return false;
           }
-          else if(timeSpentMin > 0) {
+          else if(totalTimeSpent !== "00:00") {
             this.modalloaderenable = true;
             if (dbTasks[i].Milestone && dbTasks[i].ProjectCode && dbTasks[i].Entity) {
               const obj = {
