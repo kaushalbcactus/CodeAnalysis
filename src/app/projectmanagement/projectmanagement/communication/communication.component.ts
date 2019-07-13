@@ -112,62 +112,68 @@ export class CommunicationComponent implements OnInit {
    * This method is used to upload the document.
    */
   async uploadDocuments(event, type) {
-    let docFolder;
-    let existingFiles = [];
-    this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Uploading....' });
-    if (this.allDocuments && this.allDocuments.length) {
-      existingFiles = this.allDocuments.map(c => c.Name);
-    }
-    switch (type) {
-      case 'Source Documents':
-        docFolder = '/Source Documents';
-        break;
-      case 'References':
-        docFolder = '/References';
-        break;
-      case 'Meeting Notes & Client Comments':
-        docFolder = '/Communications';
-        break;
-    }
-    this.loaderenable = true;
-    // tslint:disable-next-line:prefer-for-of
-    for (let index = 0; index < event.files.length; index++) {
-      const element = event.files[index];
-      let filename = element.name;
-      if (existingFiles && existingFiles.length && existingFiles.includes(filename)) {
-        filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' +
-          this.datePipe.transform(new Date(), 'ddMMyyyyhhmmss') + '.' + filename.split(/\.(?=[^\.]+$)/)[1];
+    if (event.files.length) {
+      let docFolder;
+      let existingFiles = [];
+      this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Uploading....' });
+      if (this.allDocuments && this.allDocuments.length) {
+        existingFiles = this.allDocuments.map(c => c.Name);
       }
-      this.fileReader = new FileReader();
-      this.fileReader.readAsArrayBuffer(element);
-      this.fileReader.onload = async () => {
-        const folderURl = this.projObj.ProjectFolder + docFolder;
-        const filePathUrl = this.spServices.getFileUploadUrl(folderURl, filename, false);
-        // this.nodeService.uploadFIle(filePathUrl, this.fileReader.result).subscribe(res => {
-        //   uploadedFiles.push(res.d);
-        //   t
-        //   if (event.files.length === uploadedFiles.length) {
-        //     if (this.selectedTab === 'My Drafts') {
-        //       // this.LinkDoumentToProject(uploadedFiles);
-        //     } else {
-        //       // this.loadDraftDocs(this.selectedTab);
-        //       this.messageService.add({
-        //         key: 'custom', severity: 'success', summary: 'Success Message',
-        //         detail: 'Document updated sucessfully.'
-        //       });
-        //     }
-        //   }
-        // });
-        const uploadedFiles = await this.spServices.uploadFile(filePathUrl, this.fileReader.result);
-        if (event.files.length && uploadedFiles.hasOwnProperty('ServerRelativeUrl')) {
-          this.getDocuments(type);
+      switch (type) {
+        case 'Source Documents':
+          docFolder = '/Source Documents';
+          break;
+        case 'References':
+          docFolder = '/References';
+          break;
+        case 'Meeting Notes & Client Comments':
+          docFolder = '/Communications';
+          break;
+      }
+      this.loaderenable = true;
+      let counter = 0;
+      // tslint:disable-next-line:prefer-for-of
+      for (let index = 0; index < event.files.length; index++) {
+        const element = event.files[index];
+        let filename = element.name;
+        if (existingFiles && existingFiles.length && existingFiles.includes(filename)) {
+          filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' +
+            this.datePipe.transform(new Date(), 'ddMMyyyyhhmmss') + '.' + filename.split(/\.(?=[^\.]+$)/)[1];
         }
-        this.messageService.add({
-          key: 'custom', severity: 'success',
-          summary: 'Success Message', detail: 'Document updated successfully.'
-        });
-      };
-      existingFiles.push(filename);
+        this.fileReader = new FileReader();
+        this.fileReader.readAsArrayBuffer(element);
+        this.fileReader.onload = async () => {
+          const folderURl = this.projObj.ProjectFolder + docFolder;
+          const filePathUrl = this.spServices.getFileUploadUrl(folderURl, filename, false);
+          // this.nodeService.uploadFIle(filePathUrl, this.fileReader.result).subscribe(res => {
+          //   uploadedFiles.push(res.d);
+          //   t
+          //   if (event.files.length === uploadedFiles.length) {
+          //     if (this.selectedTab === 'My Drafts') {
+          //       // this.LinkDoumentToProject(uploadedFiles);
+          //     } else {
+          //       // this.loadDraftDocs(this.selectedTab);
+          //       this.messageService.add({
+          //         key: 'custom', severity: 'success', summary: 'Success Message',
+          //         detail: 'Document updated sucessfully.'
+          //       });
+          //     }
+          //   }
+          // });
+          const uploadedFiles = await this.spServices.uploadFile(filePathUrl, this.fileReader.result);
+          if (event.files.length && uploadedFiles.hasOwnProperty('ServerRelativeUrl')) {
+            counter += 1;
+          }
+          if (event.files.length === counter) {
+            this.messageService.add({
+              key: 'custom', severity: 'success', sticky: true,
+              summary: 'Success Message', detail: 'Document uploaded successfully(' + counter + ').'
+            });
+            this.getDocuments(type);
+          }
+        };
+        existingFiles.push(filename);
+      }
     }
   }
   downloadFile() {
