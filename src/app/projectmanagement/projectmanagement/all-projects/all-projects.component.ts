@@ -14,6 +14,7 @@ import { TimelineHistoryComponent } from '../../../timeline/timeline-history/tim
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectTimelineComponent } from './project-timeline/project-timeline.component';
 import { GlobalService } from 'src/app/Services/global.service';
+import { DataService } from 'src/app/Services/data.service';
 
 declare var $;
 @Component({
@@ -78,6 +79,7 @@ export class AllProjectsComponent implements OnInit {
   selectedReasonType;
   selectedReason;
   cancelReasonArray: SelectItem[];
+  subscription;
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   constructor(
     public pmObject: PMObjectService,
@@ -92,10 +94,14 @@ export class AllProjectsComponent implements OnInit {
     public router: Router,
     private confirmationService: ConfirmationService,
     private globalObject: GlobalService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private dataService: DataService
   ) { }
 
   ngOnInit() {
+    this.reloadAllProject();
+  }
+  reloadAllProject() {
     this.isAllProjectTableHidden = true;
     this.isAllProjectLoaderHidden = false;
     this.popItems = [
@@ -135,11 +141,15 @@ export class AllProjectsComponent implements OnInit {
       }
       this.pmObject.columnFilter.ProjectCode = [];
     }, this.pmConstant.TIME_OUT);
-
+    this.subscription = this.dataService.on('reload-project').subscribe(() => this.callReloadProject());
   }
   /**
    * This method is used to get all projects based on current user credentials.
    */
+  callReloadProject() {
+    this.pmObject.allProjectItems = [];
+    this.reloadAllProject();
+  }
   async getAllProjects() {
     const sowCodeTempArray = [];
     const projectCodeTempArray = [];
@@ -167,13 +177,20 @@ export class AllProjectsComponent implements OnInit {
       this.params.ProjectCode = this.route.snapshot.queryParams['ProjectCode'];
       this.params.ActionStatus = this.route.snapshot.queryParams['ActionStatus'];
       this.params.ProjectStatus = this.route.snapshot.queryParams['ProjectStatus'];
-      if (this.params.ProjectCode && this.params.ActionStatus &&
-        this.params.ProjectStatus && this.params.ActionStatus === this.constants.projectStatus.Approved) {
-        const projectObj = this.pmObject.allProjectItems.filter(c => c.ProjectCode === this.params.ProjectCode);
+      const projectObj = this.pmObject.allProjectItems.filter(c => c.ProjectCode === this.params.ProjectCode);
+      if (projectObj && projectObj.length && this.params.ActionStatus === this.constants.projectStatus.Approved) {
         if (projectObj && projectObj.length) {
           await this.getGetIds(projectObj[0], true);
           this.changeProjectStatusCancelled(projectObj[0]);
         }
+      }
+      if (projectObj && projectObj.length && this.params.ActionStatus === this.constants.projectStatus.Rejected) {
+        const piUdpate: any = {
+          Status: this.params.ProjectStatus,
+          PrevStatus: this.constants.projectStatus.AwaitingCancelApproval
+        };
+        const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectInformation.name,
+          projectObj.ID, piUdpate, this.constants.listNames.ProjectInformation.type);
       }
     } else {
       if (this.pmObject.tabMenuItems.length) {
@@ -276,8 +293,10 @@ export class AllProjectsComponent implements OnInit {
         projectTypeTempArray.push({ label: projObj.ProjectType, value: projObj.ProjectType });
         statusTempArray.push({ label: projObj.Status, value: projObj.Status });
         createdByTempArray.push({ label: projObj.CreatedBy, value: projObj.CreatedBy });
-        createDateTempArray.push({ label: this.datePipe.transform(projObj.CreatedDate, 'MMM dd yyyy hh:mm:ss aa'),
-         value: projObj.CreatedDate });
+        createDateTempArray.push({
+          label: this.datePipe.transform(projObj.CreatedDate, 'MMM dd yyyy hh:mm:ss aa'),
+          value: projObj.CreatedDate
+        });
         tempAllProjectArray.push(projObj);
       }
       this.allProjects.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');
@@ -457,7 +476,7 @@ export class AllProjectsComponent implements OnInit {
             message: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
               + ' from ' + status + ' to ' + this.constants.projectStatus.Closed + '?',
             accept: () => {
-              this.changeProjectStatusAuditInProgress();
+              this.changeProjectStatusClose();
             }
           });
           break;
@@ -510,6 +529,7 @@ export class AllProjectsComponent implements OnInit {
   }
   async saveCancelProject() {
     if (this.selectedReasonType && this.selectedReason) {
+      this.pmObject.isMainLoaderHidden = false;
       const piUdpate: any = {
         Reason: this.selectedReason,
         ReasonType: this.selectedReasonType
@@ -552,6 +572,7 @@ export class AllProjectsComponent implements OnInit {
     objEmailBody.push({ key: '@@Val5@@', value: reason });
     objEmailBody.push({ key: '@@Val6@@', value: selectedProjectObj.ProposedStartDate });
     objEmailBody.push({ key: '@@Val7@@', value: projectFinanceObj.Budget });
+    objEmailBody.push({ key: '@@ProjectStatus@@', value: selectedProjectObj.Status });
     let tempArray = [];
     let arrayTo = [];
     const cm1IdArray = [];
@@ -562,6 +583,20 @@ export class AllProjectsComponent implements OnInit {
     arrayTo = this.pmCommonService.getEmailId(tempArray);
     this.pmCommonService.getTemplate(this.constants.EMAIL_TEMPLATE_NAME.CANCEL, objEmailBody, mailSubject, arrayTo,
       [this.pmObject.currLoginInfo.Email]);
+    this.pmObject.isMainLoaderHidden = true;
+    this.pmObject.isReasonSectionVisible = false;
+    this.messageService.add({
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+      detail: 'Email has send for approval to concern person.'
+    });
+    setTimeout(() => {
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.pmObject.allProjectItems = [];
+        this.reloadAllProject();
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
+    }, this.pmConstant.TIME_OUT);
   }
   /**
    * This function is used to changet the project status to cancelled.
@@ -737,12 +772,19 @@ export class AllProjectsComponent implements OnInit {
       const updateResults = await this.spServices.executeBatch(batchURL);
       console.log(updateResults);
     }
+    this.pmObject.isMainLoaderHidden = true;
+    this.pmObject.isReasonSectionVisible = false;
     this.messageService.add({
-      key: 'allProject', severity: 'success', summary: 'Success Message', sticky: true,
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.'
     });
     setTimeout(() => {
-      this.router.navigate(['/projectMgmt/allProjects']);
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.pmObject.allProjectItems = [];
+        this.reloadAllProject();
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
     }, this.pmConstant.TIME_OUT);
   }
   async changeProjectStatusClose() {
@@ -771,11 +813,16 @@ export class AllProjectsComponent implements OnInit {
     const sResult = await this.spServices.executeBatch(batchURL);
     this.sendEmailBasedOnStatus(status);
     this.messageService.add({
-      key: 'allProject', severity: 'success', summary: 'Success Message', sticky: true,
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.'
     });
     setTimeout(() => {
-      this.router.navigate(['/projectMgmt/allProjects']);
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.pmObject.allProjectItems = [];
+        this.reloadAllProject();
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
     }, this.pmConstant.TIME_OUT);
   }
   async changeProjectStatusUnallocated() {
@@ -821,11 +868,16 @@ export class AllProjectsComponent implements OnInit {
     const sResult = await this.spServices.executeBatch(batchURL);
     this.sendEmailBasedOnStatus(status);
     this.messageService.add({
-      key: 'allProject', severity: 'success', summary: 'Success Message', sticky: true,
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.'
     });
     setTimeout(() => {
-      this.router.navigate(['/projectMgmt/allProjects']);
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.pmObject.allProjectItems = [];
+        this.reloadAllProject();
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
     }, this.pmConstant.TIME_OUT);
   }
   async changeProjectStatusAuditInProgress() {
@@ -871,11 +923,16 @@ export class AllProjectsComponent implements OnInit {
     const sResult = await this.spServices.executeBatch(batchURL);
     this.sendEmailBasedOnStatus(status);
     this.messageService.add({
-      key: 'allProject', severity: 'success', summary: 'Success Message', sticky: true,
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.'
     });
     setTimeout(() => {
-      this.router.navigate(['/projectMgmt/allProjects']);
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.pmObject.allProjectItems = [];
+        this.reloadAllProject();
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
     }, this.pmConstant.TIME_OUT);
   }
   async getGetIds(selectedProjectObj, isCancelledClick) {
@@ -1014,8 +1071,11 @@ export class AllProjectsComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.PracticeArea = proj.BusinessVertical;
     this.pmObject.addProject.ProjectAttributes.Priority = proj.Priority;
     this.pmObject.addProject.ProjectAttributes.ProjectStatus = proj.Status;
-    this.pmObject.addProject.ProjectAttributes.PointOfContact1 = proj.PrimaryPOCText[0];
-    this.pmObject.addProject.ProjectAttributes.PointOfContact2 = proj.PrimaryPOCText[0];
+    this.pmObject.addProject.ProjectAttributes.PointOfContact1 = proj.PrimaryPOC;
+    this.pmObject.addProject.ProjectAttributes.PointOfContact1Text = proj.PrimaryPOCText[0];
+    this.pmObject.addProject.ProjectAttributes.PointOfContact2 = proj.AdditionalPOC && proj.AdditionalPOC.length ? proj.AdditionalPOC : [];
+    const pocIds = this.pmObject.addProject.ProjectAttributes.PointOfContact2.map(x => parseInt(x, 10));
+    this.pmObject.addProject.ProjectAttributes.PointOfContact2Text = this.pmCommonService.extractNamefromPOC(pocIds).join(', ');
     this.pmObject.addProject.ProjectAttributes.Molecule = proj.Molecule;
     this.pmObject.addProject.ProjectAttributes.TherapeuticArea = proj.TA;
     this.pmObject.addProject.ProjectAttributes.Indication = proj.Indication;
@@ -1164,11 +1224,16 @@ export class AllProjectsComponent implements OnInit {
       this.pmObject.isAuditRollingVisible = false;
       this.sendEmailBasedOnStatus(this.selectedProjectObj.Status);
       this.messageService.add({
-        key: 'allProject', severity: 'success', summary: 'Success Message', sticky: true,
+        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
         detail: 'Project - ' + this.selectedProjectObj.ProjectCode + ' Updated Successfully.'
       });
       setTimeout(() => {
-        this.router.navigate(['/projectMgmt/allProjects']);
+        if (this.router.url === '/projectMgmt/allProjects') {
+          this.pmObject.allProjectItems = [];
+          this.reloadAllProject();
+        } else {
+          this.router.navigate(['/projectMgmt/allProjects']);
+        }
       }, this.pmConstant.TIME_OUT);
     }
   }
@@ -1345,10 +1410,16 @@ export class AllProjectsComponent implements OnInit {
       const sResult = await this.spServices.executeBatch(batchURL);
       this.pmObject.isMainLoaderHidden = true;
       this.messageService.add({
-        key: 'allProject', severity: 'success', summary: 'Success Message', sticky: true,
+        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
         detail: 'Project move to under new SOW Code - ' + this.newSelectedSOW + ''
       });
       setTimeout(() => {
+        if (this.router.url === '/projectMgmt/allProjects') {
+          this.pmObject.allProjectItems = [];
+          this.reloadAllProject();
+        } else {
+          this.router.navigate(['/projectMgmt/allProjects']);
+        }
         this.closeMoveSOW();
       }, this.pmConstant.TIME_OUT);
     }

@@ -64,7 +64,7 @@ export class MyDashboardComponent implements OnInit {
 
   async GetCurrentUser() {
     var currentUser = await this.spServices.getUserInfo(this.sharedObject.sharePointPageObject.userId.toString());
- 
+
 
     //currentUser = JSON.parse(currentUser);
     this.sharedObject.currentUser.id = currentUser.Id;
@@ -90,14 +90,12 @@ export class MyDashboardComponent implements OnInit {
     ref.onClose.subscribe(async (TimeBookingobjCount: any) => {
       debugger;
       if (TimeBookingobjCount > 0) {
-       
-          this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time booking updated successfully.' });
-        }
-        else  if(TimeBookingobjCount === 0)
-        {
-          this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'No data found to update.' });
-        }
-     });
+        this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time booking updated successfully.' });
+      }
+      else if (TimeBookingobjCount === 0) {
+        this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Please Enter Time Spent.' });
+      }
+    });
   }
 
   async executeCommonCalls() {

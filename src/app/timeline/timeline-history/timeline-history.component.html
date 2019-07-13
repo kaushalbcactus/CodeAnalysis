@@ -21,16 +21,16 @@
                 <th></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field">
                     <p-multiSelect *ngSwitchCase="'date_time'" [panelStyle]="{minWidth:'12em'}" appendTo="body"
-                        [style]="{'width':'100%'}" [options]="filter.dates" defaultLabel="All"
+                        [style]="{'width':'100%'}" [options]="filter.dates" defaultLabel="All" (keydown.enter)="$event.preventDefault()"
                         (onChange)="dt.filter($event.value, col.field, 'contains','test')"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'activity_type'" [panelStyle]="{minWidth:'12em'}" appendTo="body"
-                        [style]="{'width':'100%'}" [options]="filter.activityType" defaultLabel="All"
+                        [style]="{'width':'100%'}" [options]="filter.activityType" defaultLabel="All" (keydown.enter)="$event.preventDefault()"
                         (onChange)="dt.filter($event.value, col.field, 'in')"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'activity_sub_type'" [panelStyle]="{minWidth:'12em'}" appendTo="body"
-                        [style]="{'width':'100%'}" [options]="filter.activitySubType" defaultLabel="All"
+                        [style]="{'width':'100%'}" [options]="filter.activitySubType" defaultLabel="All" (keydown.enter)="$event.preventDefault()"
                         (onChange)="dt.filter($event.value, col.field, 'in')"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'activity_by'" [panelStyle]="{minWidth:'12em'}" appendTo="body"
-                        [style]="{'width':'100%'}" [options]="filter.activityBy" defaultLabel="All"
+                        [style]="{'width':'100%'}" [options]="filter.activityBy" defaultLabel="All" (keydown.enter)="$event.preventDefault()"
                         (onChange)="dt.filter($event.value, col.field, 'in')"></p-multiSelect>
                 </th>
             </tr>

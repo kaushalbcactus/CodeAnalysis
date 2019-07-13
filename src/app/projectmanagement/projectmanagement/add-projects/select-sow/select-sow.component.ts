@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
+import { SpOperationsService } from 'src/app/Services/sp-operations.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 declare var $;
 @Component({
   selector: 'app-select-sow',
@@ -30,7 +32,9 @@ export class SelectSOWComponent implements OnInit {
   constructor(
     public pmObject: PMObjectService,
     private commonService: CommonService,
-    private pmConstant: PmconstantService) { }
+    private pmConstant: PmconstantService,
+    private spServices: SpOperationsService,
+    private constants: ConstantsService) { }
 
   ngOnInit() {
     this.isSelectSOWLoaderHidden = false;
@@ -42,15 +46,31 @@ export class SelectSOWComponent implements OnInit {
       this.lazyLoadTask(this.pmObject.addProject.SOWSelect.GlobalFilterEvent);
     }
   }
-  getSelectSOW() {
+  async getSelectSOW() {
     const sowCodeTempArray = [];
     const shortTitleTempArray = [];
     const sowOwnerTempArray = [];
+    if (this.pmObject.allSOWItems.length === 0) {
+      let arrResults = [];
+      if (this.pmObject.userRights.isMangers
+        || this.pmObject.userRights.isHaveSOWFullAccess
+        || this.pmObject.userRights.isHaveSOWBudgetManager) {
+        const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW);
+        arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
+      } else {
+        const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
+        arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
+      }
+      if (arrResults && arrResults.length) {
+        this.pmObject.allSOWItems = arrResults;
+      }
+    }
     if (this.pmObject.allSOWItems && this.pmObject.allSOWItems.length) {
       const tempAllSOWArray = [];
       for (const task of this.pmObject.allSOWItems) {
         const sowObj = $.extend(true, {}, this.pmObject.selectSOW);
         sowObj.ID = task.ID;
+        sowObj.Title = task.Title;
         sowObj.SOWCode = task.SOWCode;
         sowObj.ShortTitle = task.Title;
         sowObj.TotalBudget = task.TotalBudget ? task.TotalBudget : 0;
@@ -61,6 +81,7 @@ export class SelectSOWComponent implements OnInit {
         sowObj.OOPLinked = task.OOPLinked ? task.OOPLinked : 0;
         sowObj.TaxLinked = task.TaxLinked ? task.TaxLinked : 0;
         sowObj.TotalScheduled = task.TotalScheduled ? task.TotalScheduled : 0;
+        sowObj.TotalLinked = task.TotalLinked ? task.TotalLinked : 0;
         sowObj.ScheduledRevenue = task.ScheduledRevenue ? task.ScheduledRevenue : 0;
         sowObj.TotalInvoiced = task.TotalInvoiced ? task.TotalInvoiced : 0;
         sowObj.InvoicedRevenue = task.InvoicedRevenue ? task.InvoicedRevenue : 0;

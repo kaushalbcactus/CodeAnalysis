@@ -29,8 +29,8 @@
     </div>
 </div>
 <div class="project-section">
-    <p-dialog [(visible)]="pmObject.isAddProjectVisible" [modal]="true" (onHide)="resetAddProject();"
-        [style]="{width: '1300px'}">
+    <p-dialog #pDialog [(visible)]="pmObject.isAddProjectVisible" [modal]="true"
+        (onHide)="pmService.resetAddProject();" [style]="{width: '1300px'}">
         <p-header>
             Add Project
         </p-header>
@@ -114,7 +114,7 @@
                     </div>
                 </div>
                 <div class="ui-g mt-20">
-                    <div class="ui-g-2"><span class="compulsory">*</span>SOW Cretion Date</div>
+                    <div class="ui-g-2"><span class="compulsory">*</span>SOW Creation Date</div>
                     <div class="ui-g-4">
                         <p-calendar class="pcalendarClass" formControlName="sowCreationDate" [disabledDays]="[0,6]"  
                             [readonlyInput]="true"   [showTime]="false"   hourFormat="12"   dateFormat="dd M, yy"  
@@ -296,4 +296,4 @@
 </div>
 <p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog>
 
-<p-toast position="bottom-right" key="custom" ></p-toast>
+<p-toast position="bottom-right" key="custom"></p-toast>

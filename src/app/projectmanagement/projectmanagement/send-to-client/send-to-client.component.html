@@ -27,7 +27,7 @@
     </label>
     <div class="box excelIcon" [hidden]='isSCTableHidden'>
         <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(sendToClientTableRef)"
-            title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+            title="Export To Excel" class="fa fa-fw fa-file-excel-o" exportFilename="Send to client"></i>
     </div>
     <div class="noDataMessage" [hidden]='hideNoDataMessage'>
         No Tasks Found.
@@ -48,26 +48,26 @@
                 <tr>
                     <th *ngFor="let col of columns" [ngSwitch]="col.field">
                         <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="scArrays.projectCodeArray"
-                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="scArrays.clientLegalEntityArray"
-                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'POC'" [options]="scArrays.POCArray" defaultLabel="All"
-                            (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')"></p-multiSelect>
+                            (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in') " (keydown.enter)="$event.preventDefault()"></p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="scArrays.deliveryTypeArray"
-                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'DueDate'" [options]="scArrays.dueDateArray" defaultLabel="All"
-                            (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')"></p-multiSelect>
+                            (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"></p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'Milestone'" [options]="scArrays.milestoneArray"
-                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'PreviousTaskUser'" [options]="scArrays.previousTaskOwnerArray"
-                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'PreviousTaskStatus'" [options]="scArrays.previousTaskStatusArray"
-                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                         </p-multiSelect>
                     </th>
                     <th class="lastColumnWidth"></th>
@@ -89,7 +89,7 @@
                     <td>{{task.PreviousTaskStatus}}</td>
                     <td>
                         <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu
-                            [model]="popItems" [popup]="true" appendTo="body">
+                            [model]="popItems" [popup]="true" >
                         </p-menu>
                         <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                             (click)="storeRowData(rowData,menu); menu.toggle($event);"></i>

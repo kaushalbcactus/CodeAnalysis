@@ -155,6 +155,7 @@ export class MyDashboardConstantsService {
       filter: "ProjectCode eq '{{projectCode}}' and ContentType eq 'Summary Task' and (Status eq 'In Progress' or Status eq 'Completed') and Actual_x0020_End_x0020_Date ge '{{DateString}}' ",
       top: 4500
     },
+    
     MyTimelineForBooking: {
       select: "ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,TimeSpentPerDay",
       orderby: "DueDate asc",
@@ -781,9 +782,10 @@ debugger;
     return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
       return {
         label: label1,
-        value: array.find(s => s.label === label1).value
+        value: array.find(s => s.label === label1).value,
+      
       }
-    })
+    });
   }
 
   //*************************************************************************************************

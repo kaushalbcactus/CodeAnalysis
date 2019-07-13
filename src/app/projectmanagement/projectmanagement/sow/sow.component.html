@@ -23,22 +23,22 @@
                 <th class="lastColumnWidth"></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field">
                     <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allSOW.sowCodeArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="allSOW.shortTitleArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="allSOW.clientLegalEntityArray"
-                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'POC'" [options]="allSOW.pocArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'CreatedBy'" [options]="allSOW.createdByArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'CreatedDate'" [options]="allSOW.createdDateArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                     </p-multiSelect>
                 </th>
                 <th class="lastColumnWidth"></th>

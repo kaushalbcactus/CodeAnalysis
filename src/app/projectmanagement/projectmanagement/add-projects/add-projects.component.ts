@@ -55,19 +55,6 @@ export class AddProjectsComponent implements OnInit {
       }
     }
     ];
-    let arrResults = [];
-    if (this.pmObject.userRights.isMangers
-      || this.pmObject.userRights.isHaveSOWFullAccess
-      || this.pmObject.userRights.isHaveSOWBudgetManager) {
-      const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW);
-      arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
-    } else {
-      const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
-      arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
-    }
-    if (arrResults && arrResults.length) {
-      this.pmObject.allSOWItems = arrResults;
-    }
   }
   /**
    * This method is used to show the manage finance component.

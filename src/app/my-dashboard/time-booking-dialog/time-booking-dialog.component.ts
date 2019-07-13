@@ -9,6 +9,7 @@ import { ElementSchemaRegistry } from '@angular/compiler';
 import { eraseStyles } from '@angular/animations/browser/src/util';
 import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-time-booking-dialog',
@@ -18,6 +19,11 @@ import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 export class TimeBookingDialogComponent implements OnInit {
 
   @ViewChild('scrollDown', { static: true }) _el: ElementRef;
+
+  thenBlock: Table;
+  @ViewChild('tableId', { static: true })
+  tableId: Table;
+
 
   modalloaderenable: boolean = true;
   dbClientLegalEntities: any = [{ label: 'Select Client', value: null }];
@@ -199,26 +205,21 @@ export class TimeBookingDialogComponent implements OnInit {
   //  Get  milestone time booking based on week dates
   //*************************************************************************************************
 
-
-  getUnique(arr, comp) {
-
-    const unique = arr
-      .map(e => e[comp])
-
-      // store the keys of the unique objects
-      .map((e, i, final) => final.indexOf(e) === i && i)
-
-      // eliminate the dead keys & store unique objects
-      .filter(e => arr[e]).map(e => arr[e]);
-
-    return unique;
+  unique(arr, keyProps) {
+    const kvArray = arr.map(entry => {
+      const key = keyProps.map(k => entry[k]).join('|');
+      return [key, entry];
+    });
+    const map = new Map(kvArray);
+    return Array.from(map.values());
   }
+
 
   async getTimeBookingData() {
 
     var startDate = new Date(this.datePipe.transform(this.weekDays[0], "yyyy-MM-dd") + " 00:00:00").toISOString();
     var endDate = new Date(this.datePipe.transform(this.weekDays[this.weekDays.length - 1], "yyyy-MM-dd") + " 23:59:00").toISOString();
-debugger;
+    debugger;
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
     let AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimelineForBooking);
@@ -236,11 +237,21 @@ debugger;
 
     console.log(this.allTasks);
 
-    
+
 
     var tempMilestones = this.allTasks.map(o => new Object({ ID: o.ID, Entity: o.Entity, ProjectCode: o.ProjectCode === "Adhoc" ? '-' : o.ProjectCode, Milestone: o.Milestone === 'Select one' ? o.Comments : o.Milestone, type: o.Entity === null ? 'task' : 'Adhoc', TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: new Date(this.datePipe.transform(minDate, 'yyyy-MM-dd')).getTime() < new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() ? true : false })) }));
 
-    this.UserMilestones = tempMilestones.length > 0 ? this.getUnique(tempMilestones, 'Milestone') :[];
+    var dbActualMilestone = tempMilestones.length > 0 ? tempMilestones.filter(c => c.ProjectCode !== '-') : [];
+
+    var dbActualAdhoc = tempMilestones.length > 0 ? tempMilestones.filter(c => c.ProjectCode === '-') : [];
+
+    var uniquedbTasks = dbActualMilestone.length > 0 ? this.unique(dbActualMilestone, ['ProjectCode', 'Milestone']) : [];
+    var uniqueAdhoc = dbActualAdhoc.length > 0 ? this.unique(dbActualAdhoc, ['Entity', 'Milestone']) : [];
+
+    this.UserMilestones = [];
+    this.UserMilestones.push.apply(this.UserMilestones, uniquedbTasks);
+    this.UserMilestones.push.apply(this.UserMilestones, uniqueAdhoc);
+
 
     console.log("allTasks")
     console.log(this.allTasks)
@@ -360,14 +371,14 @@ debugger;
 
     console.log("UserMilestones")
     console.log(this.UserMilestones)
-
+    this.thenBlock = this.tableId;
     this.modalloaderenable = false;
   }
 
 
   async SaveTimeBooking() {
 
-    var count =0;
+    var count = 0;
     var dbTasks = this.UserMilestones.filter(c => c.type === 'task');
     for (var i = 0; i < dbTasks.length; i++) {
 
@@ -383,12 +394,15 @@ debugger;
       var timeSpentString = dateArray.map(c => (c.date + ":" + c.time).replace(/ /g, '')).join('\n');
       var timeSpentHours = dateArray.map(c => c.time.split(":")).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
       var timeSpentMin = dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
+
+      debugger;
       var timeSpentHours1 = timeSpentHours < 10 ? "0" + timeSpentHours : timeSpentHours;
       var totalTimeSpent = timeSpentMin < 10 ? timeSpentHours1 + ':' + "0" + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
 
 
       var existingObj = this.allTasks.find(c => c.ProjectCode === dbTasks[i].ProjectCode && c.Milestone === dbTasks[i].Milestone && c.Task === "Time Booking")
 
+      debugger;
       if (existingObj !== undefined) {
         if (existingObj.TimeSpentPerDay !== timeSpentString) {
           existingObj.TimeSpent = totalTimeSpent;
@@ -398,7 +412,6 @@ debugger;
         }
       }
       else {
-        debugger
         if (dbTasks[i].Entity) {
 
           if (!dbTasks[i].ProjectCode) {
@@ -410,7 +423,7 @@ debugger;
             this.messageService.add({ key: 'custom-booking', severity: 'warn', summary: 'Warning Message', detail: "Please Select Milestone / To remove unwanted line, please unselect Client" });
             return false;
           }
-          else {
+          else if(timeSpentMin > 0) {
             this.modalloaderenable = true;
             if (dbTasks[i].Milestone && dbTasks[i].ProjectCode && dbTasks[i].Entity) {
               const obj = {
@@ -446,6 +459,20 @@ debugger;
 
   }
 
+  checkMilestone(event,rowData)
+  {
+
+    if(this.UserMilestones.filter(c=>c.Entity === rowData.Entity && c.ProjectCode === rowData.ProjectCode && c.Milestone === rowData.Milestone).length > 1)
+    {
+       var index = this.UserMilestones.indexOf(rowData);
+       debugger;
+       if(index > -1)
+       {
+          this.UserMilestones.splice(index,1);
+       }
+      this.messageService.add({ key: 'custom-booking', severity: 'warn', summary: 'Warning Message', detail: "Selected combination already exist. Please check above" });
+    }  
+  }
 
 
   async DifferenceHours(startTime, EndTime) {

@@ -23,32 +23,32 @@
                 <th class="lastColumnWidth"></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field">
                     <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allProjects.sowCodeArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProjectCode'" [(ngModel)]="pmObject.columnFilter.ProjectCode"
                         [options]="allProjects.projectCodeArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="allProjects.shortTitleArray"
-                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="allProjects.clientLegalEntityArray"
-                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="allProjects.deliveryTypeArray"
-                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProjectType'" [options]="allProjects.projectTypeArray"
-                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Status'" [options]="allProjects.statusArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'CreatedBy'" [options]="allProjects.createdByArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'CreatedDate'" [options]="allProjects.createdDateArray"
-                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')">
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                     </p-multiSelect>
                 </th>
                 <th class="lastColumnWidth"></th>
@@ -133,8 +133,8 @@
                         <td colspan="2" [ngStyle]="{'color':'#d7181f'}">Client POC</td>
                     </tr>
                     <tr>
-                        <td>{{task.ProjectAttributes.PointOfContact1}}</td>
-                        <td>{{task.ProjectAttributes.PointOfContact2}}</td>
+                        <td>{{task.ProjectAttributes.PointOfContact1Text}}</td>
+                        <td>{{task.ProjectAttributes.PointOfContact2Text}}</td>
                     </tr>
                     <tr>
                         <td [ngStyle]="{'color':'#d7181f'}">Molecule</td>
@@ -196,11 +196,11 @@
                     </tr>
                     <tr *ngIf="task.Timeline.Standard.IsStandard">
                         <td [ngStyle]="{'color':'#d7181f'}">Proposed Start Date</td>
-                        <td>{{task.Timeline.Standard.ProposedStartDate | date:'medium'}}</td>
+                        <td>{{task.Timeline.Standard.ProposedStartDate | date:'MMM dd yyyy'}}</td>
                     </tr>
                     <tr *ngIf="task.Timeline.Standard.IsStandard">
                         <td [ngStyle]="{'color':'#d7181f'}">Proposed End Date</td>
-                        <td>{{task.Timeline.Standard.ProposedEndDate | date:'medium'}}</td>
+                        <td>{{task.Timeline.Standard.ProposedEndDate | date:'MMM dd yyyy'}}</td>
                     </tr>
                     <tr *ngIf="task.Timeline.NonStandard.IsStandard">
                         <td colspan="2" [ngStyle]="{'color':'#d7181f'}" align="center">Non Standard Project</td>
@@ -219,11 +219,11 @@
                     </tr>
                     <tr *ngIf="task.Timeline.NonStandard.IsStandard">
                         <td [ngStyle]="{'color':'#d7181f'}">Proposed Start Date</td>
-                        <td>{{task.Timeline.NonStandard.ProposedStartDate | date:'medium'}}</td>
+                        <td>{{task.Timeline.NonStandard.ProposedStartDate | date:'MMM dd yyyy'}}</td>
                     </tr>
                     <tr *ngIf="task.Timeline.NonStandard.IsStandard">
                         <td [ngStyle]="{'color':'#d7181f'}">Proposed End Date</td>
-                        <td>{{task.Timeline.NonStandard.ProposedEndDate | date:'medium'}}</td>
+                        <td>{{task.Timeline.NonStandard.ProposedEndDate | date:'MMM dd yyyy'}}</td>
                     </tr>
                     <tr>
                         <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
@@ -356,6 +356,5 @@
             </p-footer>
         </p-dialog>
     </div>
-    <p-toast position="bottom-right" key="allProject"></p-toast>
 </div>
 <app-timeline-history #timelineRef></app-timeline-history>
