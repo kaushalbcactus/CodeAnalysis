@@ -72,18 +72,18 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     ) { }
 
     async ngOnInit() {
+        this.createHBCCols();
+        // this.getHourlyBasedData();
+        this.createHourlyFormField();
+        this.createHourlyConfirmFormField();
+
         // Get Projects & PC
-        this.projectInfo();
+        await this.projectInfo();
         this.poInfo();
         this.projectContacts();
         // GEt Client Legal Entity
         this.cleInfo();
         this.resourceCInfo();
-
-        this.createHBCCols();
-        // this.getHourlyBasedData();
-        this.createHourlyFormField();
-        this.createHourlyConfirmFormField();
 
         // For Mail
         this.currentUserInfoData = await this.fdDataShareServie.getCurrentUserInfo();
@@ -97,6 +97,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
     // Project Info
     async projectInfo() {
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         // Check PI list
         await this.fdDataShareServie.checkProjectsAvailable();
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
@@ -206,22 +207,11 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             const element = this.projectInfoData[i];
             if (element.Status === this.constantService.projectStatus.SentToAMForApproval) {
                 this.projectCodes.push(element);
-                // this.projectForSentTOAMF(element);
             }
         }
         console.log('projectCodes ', this.projectCodes);
         if (this.projectCodes) {
             this.getRequiredData();
-        }
-    }
-
-    // Push Project info data to HBRes
-    projectForSentTOAMF(data: any[]) {
-        for (let j = 0; j < data.length; j++) {
-            const element = data[j];
-            this.hourlyBasedRes.push({
-
-            })
         }
     }
 
@@ -1061,6 +1051,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         this.spOperationsService.sendMail(this.getTosList('i').join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.spOperationsService.sendMail(this.getTosList('pc').join(','), this.currentUserInfoData.Email, pcmailSubject, pcmailContent, ccUser.join(','));
         this.isPSInnerLoaderHidden = true;
+        this.confirmationModal = false;
         this.reFetchData();
     }
 
@@ -1098,18 +1089,23 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 }
             }
         }
-
+        arrayTo = arrayTo.filter(this.onlyUnique);
         console.log('arrayTo ', arrayTo);
         return arrayTo;
+    }
+
+    onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
     }
 
     reFetchData() {
         setTimeout(async () => {
             // Refetch PO/CLE Data
-            await this.fdDataShareServie.getClePO();
+            await this.fdDataShareServie.getClePO('hourly');
             // Fetch latest PO & CLE
             this.poInfo();
             this.cleInfo();
+            await this.projectInfo();
 
             this.getRequiredData();
         }, 300);

@@ -98,7 +98,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.getProformaTemplates();
 
         // Get Projects
-        this.projectInfo();
+        await this.projectInfo();
         await this.cleInfo();
         // GEt PO data
         await this.poInfo();
@@ -114,6 +114,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     // Project Info 
     projectInfoData: any = [];
     async projectInfo() {
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         // Check PI list
         await this.fdDataShareServie.checkProjectsAvailable();
 
@@ -158,8 +159,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
     getProformaType() {
         this.listOfproformaType = [
-            { label: 'OOP', value: 'OOP' },
-            { label: 'Revenue', value: 'Revenue' },
+            { label: 'OOP', value: 'oop' },
+            { label: 'Revenue', value: 'revenue' },
         ]
     }
 
@@ -191,7 +192,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     cleData: any = [];
     async cleInfo() {
         this.isPSInnerLoaderHidden = false;
-        await this.fdDataShareServie.getClePO();
+        await this.fdDataShareServie.getClePO('confirm');
         this.isPSInnerLoaderHidden = true;
         this.cleData = [];
         this.subscription.add(this.fdDataShareServie.defaultCLEData.subscribe((res) => {
@@ -281,8 +282,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         this.confirmedRes = [];
-        this.po.revenuBalance = '';
-        this.po.oopBalance = '';
+        this.po = {};
         this.selectedAllRowData = [];
         this.selectedTotalAmt = 0;
         const batchContents = new Array();
@@ -1113,7 +1113,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     reFetchData() {
         setTimeout(async () => {
             // Refetch PO/CLE Data
-            await this.fdDataShareServie.getClePO();
+            await this.fdDataShareServie.getClePO('confirm');
             // Fetch latest PO & CLE
             this.poInfo();
             this.cleInfo();

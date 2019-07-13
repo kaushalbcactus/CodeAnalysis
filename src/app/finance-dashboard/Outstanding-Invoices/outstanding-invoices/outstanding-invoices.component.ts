@@ -25,7 +25,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     msgs: Message[] = [];
 
     // Row Selection Array
-    selectedRowData: any[];
+    selectedRowData: any = [];
 
     // Forms
     paymentResoved_form: FormGroup;
@@ -345,6 +345,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
     formatData(data: any[]) {
         this.outstandingInvoicesRes = [];
+        this.selectedRowData = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let poItem = this.getPONumber(element);

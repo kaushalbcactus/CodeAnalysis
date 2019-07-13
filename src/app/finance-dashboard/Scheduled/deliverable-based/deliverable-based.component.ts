@@ -99,17 +99,17 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             this.fdDataShareServie.scheduleDateRange = this.DateRange;
         }
 
+        this.createDBICols();
+        // this.getApprovedNonBillable();
+        this.createEditDeliverableFormField();
+
         // Get Projects
-        this.projectInfo();
+        await this.projectInfo();
         // GEt Client Legal Entity
         this.cleInfo();
         this.poInfo();
         this.projectContacts();
         this.resourceCInfo();
-
-        this.createDBICols();
-        // this.getApprovedNonBillable();
-        this.createEditDeliverableFormField();
 
         // Get Deliverable-based Invoices
         this.getRequiredData();
@@ -134,7 +134,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     projectInfoData: any = [];
     async projectInfo() {
         // Check PI list
-        await this.fdDataShareServie.checkProjectsAvailable();
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+        let data = await this.fdDataShareServie.checkProjectsAvailable();
 
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
             if (res) {
@@ -297,8 +298,10 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     }
     async formatData(data: any[]) {
         this.deliverableBasedRes = [];
+        this.selectedAllRowsItem = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
+            let piInfo = await this.getMilestones(element);
             let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
             if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
                 resCInfo = resCInfo.UserName.Title
@@ -321,8 +324,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 ponn = pnumber + ' / ' + pname;
             }
             let POValues = ponn;
-
-            let piInfo = await this.getMilestones(element);
             this.deliverableBasedRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
@@ -357,8 +358,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             })
         }
         this.deliverableBasedRes = [...this.deliverableBasedRes];
-        this.createColFieldValues();
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+        this.createColFieldValues();
     }
 
     // Project PO
@@ -440,8 +441,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         this.deliverableBasedColArray.SOWCode = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }));
         this.deliverableBasedColArray.ProjectMileStone = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }));
         this.deliverableBasedColArray.POCName = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }));
-        // this.deliverableBasedColArray.ClientName this.uniqueArrayObj(= this.deliverableBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }));
-        this.deliverableBasedColArray.ClientName = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b ? b : ''; }));
+        this.deliverableBasedColArray.ClientName = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }));
         this.deliverableBasedColArray.ScheduledDate = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }));
         this.deliverableBasedColArray.Amount = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
         this.deliverableBasedColArray.Currency = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
@@ -461,29 +461,16 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     // CLick on Table Check box to Select All Row Item
     selectedAllRowsItem: any = [];
 
-    selectedRowItemData: any = [];
-    selectedRowItemPC: any;
     onRowSelect(event) {
-        console.log(event);
-        this.selectedRowItemData.push(event.data);
-        this.selectedRowItemPC = event.data.ProjectCode;
-        console.log(this.selectedRowItemData);
+        console.log(this.selectedAllRowsItem);
     }
 
     onRowUnselect(event) {
-        let rowUnselectIndex = this.selectedRowItemData.indexOf(event.data);
-        this.selectedRowItemData.splice(rowUnselectIndex, 1);
-        console.log(this.selectedRowItemData);
+        console.log(this.selectedAllRowsItem);
     }
 
     selectAllRows() {
-        this.selectedAllRowsItem.length === 0 ? this.selectedRowItemData = [] : this.selectedRowItemData;
-        if (this.selectedAllRowsItem.length === this.deliverableBasedRes.length) {
-            this.selectedRowItemData = this.selectedAllRowsItem;
-        }
         console.log('in selectAllRows ', this.selectedAllRowsItem);
-        console.log('selectedRowItemData ', this.selectedRowItemData);
-
     }
 
     confirm1() {
@@ -603,9 +590,11 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             }
         });
         console.log('this.listOfPOCNames ', this.listOfPOCNames);
-        this.editDeliverable_form.patchValue({
-            POCName: rowVal
-        });
+        if (Object.keys(rowVal).length) {
+            this.editDeliverable_form.patchValue({
+                POCName: rowVal
+            });
+        }
     }
 
     pocChange(event) {

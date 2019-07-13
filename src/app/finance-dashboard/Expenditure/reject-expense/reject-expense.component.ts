@@ -70,7 +70,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
         }
 
         this.createRCECols();
-        this.projectInfo();
+        await this.projectInfo();
         // Resource Categorization
         this.resourceCInfo();
     }
@@ -78,6 +78,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
     // Project Info 
     projectInfoData: any = [];
     async projectInfo() {
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         await this.fdDataShareServie.checkProjectsAvailable();
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
             if (res) {

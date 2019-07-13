@@ -76,7 +76,7 @@ export class OopComponent implements OnInit, OnDestroy {
         }));
     }
 
-    ngOnInit() {
+    async ngOnInit() {
         // SetDefault Values
         if (this.fdDataShareServie.scheduleDateRange.startDate) {
             this.DateRange = this.fdDataShareServie.scheduleDateRange;
@@ -89,17 +89,17 @@ export class OopComponent implements OnInit, OnDestroy {
             this.fdDataShareServie.scheduleDateRange = this.DateRange;
         }
 
+        this.createANBCols();
+        // this.getApprovedNonBillable();
+        this.createEditDeliverableFormField();
+
         // Get Projects
-        this.projectInfo();
+        await this.projectInfo();
         this.poInfo();
         this.projectContacts();
         this.resourceCInfo();
         // GEt Client Legal Entity
         // this.cleInfo();
-
-        this.createANBCols();
-        // this.getApprovedNonBillable();
-        this.createEditDeliverableFormField();
 
         // get OOP Invocies
         this.getRequiredData();
@@ -114,9 +114,9 @@ export class OopComponent implements OnInit, OnDestroy {
     // Project Info 
     projectInfoData: any = [];
     async projectInfo() {
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         // Check PI list
         await this.fdDataShareServie.checkProjectsAvailable();
-
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
             if (res) {
                 this.projectInfoData = res;
@@ -271,6 +271,7 @@ export class OopComponent implements OnInit, OnDestroy {
     }
     async formatData(data: any[]) {
         this.oopBasedRes = [];
+        this.selectedAllRowsItem = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
@@ -436,29 +437,16 @@ export class OopComponent implements OnInit, OnDestroy {
     // CLick on Table Check box to Select All Row Item
     selectedAllRowsItem: any = [];
 
-    selectedRowItemData: any = [];
-    selectedRowItemPC: any;
     onRowSelect(event) {
-        console.log(event);
-        this.selectedRowItemData.push(event.data);
-        this.selectedRowItemPC = event.data.ProjectCode;
-        console.log(this.selectedRowItemData);
+        console.log(this.selectedAllRowsItem);
     }
 
     onRowUnselect(event) {
-        let rowUnselectIndex = this.selectedRowItemData.indexOf(event.data);
-        this.selectedRowItemData.splice(rowUnselectIndex, 1);
-        console.log(this.selectedRowItemData);
+        console.log(this.selectedAllRowsItem);
     }
 
     selectAllRows() {
-        this.selectedAllRowsItem.length === 0 ? this.selectedRowItemData = [] : this.selectedRowItemData;
-        if (this.selectedAllRowsItem.length === this.oopBasedRes.length) {
-            this.selectedRowItemData = this.selectedAllRowsItem;
-        }
         console.log('in selectAllRows ', this.selectedAllRowsItem);
-        console.log('selectedRowItemData ', this.selectedRowItemData);
-
     }
 
     confirm1() {
@@ -586,9 +574,11 @@ export class OopComponent implements OnInit, OnDestroy {
             }
         });
         console.log('this.listOfPOCNames ', this.listOfPOCNames);
-        this.editOop_form.patchValue({
-            POCName: rowVal
-        });
+        if (Object.keys(rowVal).length) {
+            this.editOop_form.patchValue({
+                POCName: rowVal
+            });
+        }
     }
 
     getPOCItemByName(poc: any) {

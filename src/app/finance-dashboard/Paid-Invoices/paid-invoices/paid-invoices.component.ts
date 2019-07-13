@@ -381,6 +381,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
 
     async formatData(data: any[]) {
         this.paidInvoicesRes = [];
+        this.selectedRowData = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let poItem = await this.getPONumber(element);

@@ -109,6 +109,10 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         }
 
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+        // Form Fields initialisation
+        this.approveExpenseFormField();
+        this.canRejExpenseFormField();
+
         // Check PI list
         await this.fdDataShareServie.checkProjectsAvailable();
 
@@ -116,13 +120,9 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.freelancerVendersRes = await this.fdDataShareServie.getVendorFreelanceData();
 
         // Get Projects
-        this.projectInfo();
+        await this.projectInfo();
         this.cleInfo();
         this.resourceCInfo();
-
-        // Form Fields initialisation
-        this.approveExpenseFormField();
-        this.canRejExpenseFormField();
 
         // Create PendingExpense Columns
         this.createPECols();
@@ -146,7 +146,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     // Project Info 
     projectInfoData: any = [];
     async projectInfo() {
-
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         // Check PI list
         await this.fdDataShareServie.checkProjectsAvailable();
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
@@ -352,6 +352,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     async formatData(data: any[]) {
         this.pendingExpenses = [];
+        this.selectedAllRowsItem = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let cleName = this.getPIFromPC(element);

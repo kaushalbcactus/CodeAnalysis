@@ -28,7 +28,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     msgs: Message[] = [];
 
     // Row Selection Array
-    selectedRowData: any[];
+    selectedRowData: any = [];
 
     // Show Hide State
     isTemplate4US: boolean = false;
@@ -186,7 +186,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     cleData: any = [];
     async cleInfo() {
         this.isPSInnerLoaderHidden = false;
-        await this.fdDataShareServie.getClePO();
+        await this.fdDataShareServie.getClePO('proforma');
         this.isPSInnerLoaderHidden = true;
 
         this.cleData = [];
@@ -361,6 +361,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     async formatData(data: any[]) {
         this.proformaRes = [];
+        this.selectedRowData = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let poItem = this.getPONumber(element)
@@ -1459,7 +1460,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         // this.getRequiredData();
         setTimeout(async () => {
             // Refetch PO/CLE Data
-            await this.fdDataShareServie.getClePO();
+            await this.fdDataShareServie.getClePO('proforma');
             // Fetch latest PO & CLE
             this.poInfo();
             this.cleInfo();

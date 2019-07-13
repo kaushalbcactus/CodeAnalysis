@@ -89,7 +89,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
 
         // Get VendorFreelancer List
         this.freelancerVendersRes = await this.fdDataShareServie.getVendorFreelanceData();
-        this.projectInfo();
+        await this.projectInfo();
         // Resource Categorization
         this.resourceCInfo();
 
@@ -104,6 +104,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     // Project Info 
     projectInfoData: any = [];
     async projectInfo() {
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         await this.fdDataShareServie.checkProjectsAvailable();
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
             if (res) {
@@ -220,6 +221,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
 
     async formatData(data: any[]) {
         this.approvedNonBillableRes = [];
+        this.selectedAllRowsItem = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let rcCreatedItem = this.getCreatedModifiedByFromRC(element.AuthorId);

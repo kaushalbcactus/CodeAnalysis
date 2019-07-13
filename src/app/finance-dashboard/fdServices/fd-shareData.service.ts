@@ -349,13 +349,16 @@ export class FDDataShareService {
 
     }
 
-    async getClePO() {
+    async getClePO(type: string) {
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
         const clientLegalEntityEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
         const projectPO = this.spServices.getReadURL('' + this.constantService.listNames.ProjectPO.name + '', this.fdConstantsService.fdComponent.projectPO);
-
         let endPoints = [clientLegalEntityEndpoint, projectPO];
+        if (type === 'hourly') {
+            const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
+            endPoints = [clientLegalEntityEndpoint, projectPO, projectInfoEndpoint];
+        }
         let userBatchBody;
         for (let i = 0; i < endPoints.length; i++) {
             const element = endPoints[i];
@@ -375,6 +378,8 @@ export class FDDataShareService {
         }
         if (data[1]) {
             this.poData.next(data[1]);
+        } if (data[2]) {
+            this.projectInfoData.next(data[2]);
         }
     }
 

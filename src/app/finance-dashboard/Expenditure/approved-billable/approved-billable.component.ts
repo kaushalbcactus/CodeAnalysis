@@ -104,7 +104,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         // Get Freelancer 
         this.freelancerVendersRes = await this.fdDataShareServie.getVendorFreelanceData();
 
-        this.projectInfo();
+        await this.projectInfo();
         this.poInfo();
         this.projectContacts();
         // GEt Client Legal Entity
@@ -118,6 +118,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     // Project Info 
     projectInfoData: any = [];
     async projectInfo() {
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         await this.fdDataShareServie.checkProjectsAvailable();
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
             if (res) {
@@ -298,6 +299,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
     async formatData(data: any[]) {
         this.approvedBillableRes = [];
+        this.selectedAllRowsItem = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let rcCreatedItem = this.getCreatedModifiedByFromRC(element.AuthorId);
@@ -429,11 +431,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     }
 
     selectAllRows() {
-        // this.selectedAllRowsItem.length === 0 ? this.selectedRowItemData = [] : this.selectedRowItemData;
-        // if (this.selectedAllRowsItem.length === this.approvedBillableRes.length) {
-        //     this.selectedRowItemData = this.selectedAllRowsItem;
-        //     this.selectedAllRowsItem = [];
-        // }
         console.log('in selectAllRows ', this.selectedAllRowsItem);
     }
 
@@ -476,17 +473,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     openTableAtt(data, popUpData) {
         this.items = [];
         console.log('this.selectedRowItemData ', this.selectedRowItemData);
-        this.items.push({ label: 'Details', command: (e) => this.openMenuContent(e, data) })
-        // if (this.selectedRowItemData.length === 1) {
-        // } else {
-        //     this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Please select 1 line item only & try again', detail: '', life: 4000 });
-        //     if (this.items.length === 0) {
-        //         console.log('this.items ', this.items);
-        //         popUpData.visible = false;
-        //     }
-        //     return;
-        // }
-
+        this.items.push({ label: 'Details', command: (e) => this.openMenuContent(e, data) });
     }
 
     rowItemDetails: any;
@@ -612,19 +599,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     }
 
     checkUniquePC() {
-        // for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
-        //     const ele = this.selectedAllRowsItem[i];
-        //     for (let j = 0; j < this.selectedRowItemData.length; j++) {
-        //         const element = this.selectedRowItemData[j];
-        //         if (ele.ProjectCode !== element.ProjectCode) {
-        //             this.pcFound = false;
-        //             break;
-        //         } else {
-        //             this.pcFound = true;
-        //         }
-        //     }
-        // }
-
         for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
             const element = this.selectedAllRowsItem[i];
             let selectedPC = this.selectedAllRowsItem[0].ProjectCode;
@@ -1095,7 +1069,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     reFetchData() {
         setTimeout(async () => {
             // Refetch PO/CLE Data
-            await this.fdDataShareServie.getClePO();
+            await this.fdDataShareServie.getClePO('approved');
             // Fetch latest PO & CLE
             this.poInfo();
             this.cleInfo();
