@@ -85,17 +85,20 @@
 
         <tr>
             <td [ngStyle]="{'color':'#d7181f'}">Approver File Url</td>
-            <td><a href="{{rowItemData.ApproverFileUrl}}" target="_blank" style="color:red">Click here</a>
+            <td><a href="{{rowItemData.ApproverFileUrl}}" target="_blank" style="color:red"
+                    *ngIf="rowItemData.ApproverFileUrl">Click here</a>
             </td>
         </tr>
         <tr>
             <td [ngStyle]="{'color':'#d7181f'}">File URL</td>
-            <td><a href="{{rowItemData.FileURL}}" target="_blank" style="color:red">Click here</a>
+            <td><a href="{{rowItemData.FileURL}}" target="_blank" style="color:red" *ngIf="rowItemData.FileURL">Click
+                    here</a>
             </td>
         </tr>
         <tr>
             <td [ngStyle]="{'color':'#d7181f'}">Client Approval File URL</td>
-            <td><a href="{{rowItemData.ClientApprovalFileURL }}" target="_blank" style="color:red">Click here</a>
+            <td><a href="{{rowItemData.ClientApprovalFileURL }}" target="_blank" style="color:red"
+                    *ngIf="rowItemData.ClientApprovalFileURL">Click here</a>
             </td>
         </tr>
         <tr>
