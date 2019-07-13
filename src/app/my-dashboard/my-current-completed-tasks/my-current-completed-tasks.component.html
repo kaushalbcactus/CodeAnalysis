@@ -55,9 +55,9 @@
          
         <!-- yearRange="{{yearsRange}}"  -->
     </div>
-    <div fxLayoutAlign="start center" fxFlex="3" fxLayoutGap="10px">
+    <div fxLayoutAlign="start center" fxFlex="3" fxLayoutGap="10px" *ngIf="allTasks.length > 0 && !loderenable">
         <!-- <a style="font-size: 2em;cursor: pointer;"> <i class="fa fa-fw fa-columns"></i></a> -->
-        <i style="font-size: 1.8em;cursor: pointer;" (click)=" taskId.exportCSV();" title="Export To Excel"
+        <i style="font-size: 1.8em;cursor: pointer;" (click)="taskId.exportCSV();" title="Export To Excel"
             class="fa fa-fw fa-file-excel-o"></i>
 
     </div>

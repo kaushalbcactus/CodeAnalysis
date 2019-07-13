@@ -21,7 +21,13 @@ position="bottom-center">
 
   
   <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start" fxLayoutGap="20px">
-    <p-table [style]="{'font-size':'12px'}"  [value]="UserMilestones" dataKey="ID" editMode="row" id="datatable">
+    <p-table  #tableId [style]="{'font-size':'12px'}"  [value]="UserMilestones" [globalFilterFields]="['Entity','ProjectCode','Milestone']" id="datatable">
+      <ng-template pTemplate="caption">
+        <div style="text-align: right">        
+            <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+            <input type="text" pInputText size="50" placeholder="Search by Client / Project / Milestone/Category" (input)="tableId.filterGlobal($event.target.value, 'contains')" style="width:auto">
+        </div>
+    </ng-template>
       <ng-template pTemplate="header">
         <tr>
           <th>Client</th>
@@ -79,7 +85,7 @@ position="bottom-center">
           </td>
           <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
             <p-dropdown fxLayout="row wrap" filter="true" *ngIf="rowData.isEditable" [options]="rowData.dbMilestones"
-              [(ngModel)]="rowData.Milestone" (ngModelChange)="SetMilestone($event,rowData)" [style]="{ width: '100%', overflow: 'visible',border:'none'}">
+              [(ngModel)]="rowData.Milestone" (ngModelChange)="checkMilestone($event,rowData)" [style]="{ width: '100%', overflow: 'visible',border:'none'}">
             </p-dropdown>
 
             <span fxLayout="row wrap" *ngIf="!rowData.isEditable"> {{rowData.Milestone}} </span>
