@@ -8,6 +8,8 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { DynamicDialogConfig, MessageService, DynamicDialogRef } from 'primeng/api';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
+import { Router } from '@angular/router';
+import { DataService } from 'src/app/Services/data.service';
 @Component({
   selector: 'app-project-attributes',
   templateUrl: './project-attributes.component.html',
@@ -41,7 +43,9 @@ export class ProjectAttributesComponent implements OnInit {
     private config: DynamicDialogConfig,
     private pmCommonService: PMCommonService,
     private messageService: MessageService,
-    private dynamicDialogRef: DynamicDialogRef
+    private dynamicDialogRef: DynamicDialogRef,
+    private router: Router,
+    private dataService: DataService
   ) { }
   ngOnInit() {
     this.initForm();
@@ -62,7 +66,14 @@ export class ProjectAttributesComponent implements OnInit {
         if (sow && sow.length) {
           const sowObj = {
             ClientLegalEntity: sow[0].ClientLegalEntity,
-            BillingEntity: sow[0].BillingEntity
+            BillingEntity: sow[0].BillingEntity,
+            PrimaryPOC: sow[0].PrimaryPOC ? sow[0].PrimaryPOC : 0,
+            CMLevel1: sow[0].CMLevel1 && sow[0].CMLevel1.results && sow[0].CMLevel1.results.length ? sow[0].CMLevel1.results : [],
+            CMLevel2: sow[0].CMLevel2.ID,
+            DeliveryLevel1: sow[0].DeliveryLevel1 && sow[0].DeliveryLevel1.results &&
+              sow[0].DeliveryLevel1.results.length ? sow[0].DeliveryLevel1.results : [],
+            DeliveryLevel2: sow[0].DeliveryLevel2.ID,
+            AdditionalPOC: sow[0].AdditionalPOC ? sow[0].AdditionalPOC.split(';#').map(x => parseInt(x, 10)) : []
           };
           this.setFieldProperties(this.pmObject.addProject.ProjectAttributes, sowObj, true);
           this.showEditSave = false;
@@ -72,13 +83,21 @@ export class ProjectAttributesComponent implements OnInit {
   }
   async setFieldProperties(projObj, sowObj, isCreate) {
     if (isCreate) {
-      this.setDropDownValue(sowObj.ClientLegalEntity);
+      await this.setDropDownValue(sowObj.ClientLegalEntity);
     } else {
-      this.setDropDownValue(projObj.ClientLegalEntity);
+      await this.setDropDownValue(projObj.ClientLegalEntity);
     }
     if (isCreate && sowObj) {
       this.addProjectAttributesForm.get('clientLeagalEntity').setValue(sowObj.ClientLegalEntity);
       this.addProjectAttributesForm.get('billingEntity').setValue(sowObj.BillingEntity);
+      this.addProjectAttributesForm.get('poc').setValue(sowObj.PrimaryPOC);
+      this.addProjectAttributesForm.get('poc2').setValue(sowObj.AdditionalPOC);
+      const cm1IdArray = this.pmCommonService.getIds(sowObj.CMLevel1);
+      const deliveryIdArray = this.pmCommonService.getIds(sowObj.DeliveryLevel1);
+      this.addProjectAttributesForm.get('selectedActiveCM1').setValue(cm1IdArray);
+      this.addProjectAttributesForm.get('selectedActiveCM2').setValue(sowObj.CMLevel2);
+      this.addProjectAttributesForm.get('selectedActiveAD1').setValue(deliveryIdArray);
+      this.addProjectAttributesForm.get('selectedActiveAD2').setValue(sowObj.DeliveryLevel2);
       projObj.ClientLegalEntity = this.addProjectAttributesForm.get('clientLeagalEntity').value;
     } else {
       this.addProjectAttributesForm.get('clientLeagalEntity').setValue(projObj.ClientLegalEntity);
@@ -103,7 +122,7 @@ export class ProjectAttributesComponent implements OnInit {
     if (projObj.PointOfContact1) {
       this.addProjectAttributesForm.get('poc').setValue(projObj.PointOfContact1);
     }
-    if (projObj.PointOfContact2) {
+    if (projObj.PointOfContact2.length) {
       this.addProjectAttributesForm.get('poc2').setValue(projObj.PointOfContact2);
     }
     if (projObj.Molecule) {
@@ -121,13 +140,13 @@ export class ProjectAttributesComponent implements OnInit {
     if (projObj.PUBSupportStatus) {
       this.addProjectAttributesForm.get('pubSupportStatus').setValue(projObj.PUBSupportStatus);
     }
-    if (projObj.ActiveCM1) {
+    if (projObj.ActiveCM1.length) {
       this.addProjectAttributesForm.get('selectedActiveCM1').setValue(projObj.ActiveCM1);
     }
     if (projObj.ActiveCM2) {
       this.addProjectAttributesForm.get('selectedActiveCM2').setValue(projObj.ActiveCM2);
     }
-    if (projObj.ActiveDelivery1) {
+    if (projObj.ActiveDelivery1.length) {
       this.addProjectAttributesForm.get('selectedActiveAD1').setValue(projObj.ActiveDelivery1);
     }
     if (projObj.ActiveDelivery2) {
@@ -371,11 +390,16 @@ export class ProjectAttributesComponent implements OnInit {
       this.constant.listNames.ProjectInformation.type);
     this.pmObject.isMainLoaderHidden = true;
     this.messageService.add({
-      key: 'custom', severity: 'success', summary: 'Success Message',
+      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Project Updated Successfully for the projectcode - ' + this.projObj.ProjectCode
     });
     setTimeout(() => {
       this.dynamicDialogRef.close();
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.dataService.publish('reload-project');
+      } else {
+        this.router.navigate(['/projectMgmt/allProjects']);
+      }
     }, this.pmConstant.TIME_OUT);
   }
   /**
