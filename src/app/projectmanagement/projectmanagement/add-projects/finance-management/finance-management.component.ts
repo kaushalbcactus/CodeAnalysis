@@ -7,6 +7,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { DataService } from 'src/app/Services/data.service';
 @Component({
   selector: 'app-finance-management',
   templateUrl: './finance-management.component.html',
@@ -45,7 +46,8 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     private globalObject: GlobalService,
     private pmCommon: PMCommonService,
     public messageService: MessageService,
-    private router: Router
+    private router: Router,
+    private dataService: DataService,
   ) { }
   ngOnInit() {
     this.loadFinanceManagementInit();
@@ -96,7 +98,6 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
    */
   saveProject() {
     // verify the project code.
-    this.pmObject.isMainLoaderHidden = false;
     setTimeout(() => {
       this.validateAndSave();
     }, this.pmConstant.TIME_OUT);
@@ -105,6 +106,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
   async validateAndSave() {
     const isFormValid = this.validateForm();
     if (isFormValid) {
+      this.pmObject.isMainLoaderHidden = false;
       const newProjectCode = await this.verifyAndUpdateProjectCode();
       this.pmObject.addProject.ProjectAttributes.ProjectCode = newProjectCode;
       if (newProjectCode) {
@@ -725,7 +727,9 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     });
     setTimeout(() => {
       this.pmObject.isAddProjectVisible = false;
-      if (this.router.url) {
+      if (this.router.url === '/projectMgmt/allProjects') {
+        this.dataService.publish('reload-project');
+      } else {
         this.router.navigate(['/projectMgmt/allProjects']);
       }
     }, this.pmConstant.TIME_OUT);

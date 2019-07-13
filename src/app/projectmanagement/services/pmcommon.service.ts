@@ -782,4 +782,56 @@ export class PMCommonService {
     }
     return arrResults;
   }
+  /**
+   * This method is used to reset all the global variable for project.
+   */
+  resetAddProject() {
+    this.pmObject.activeIndex = 0;
+    this.pmObject.addProject.SOWSelect.SOWCode = '';
+    this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = '';
+    this.pmObject.addProject.ProjectAttributes.SubDivision = '';
+    this.pmObject.addProject.ProjectAttributes.BillingEntity = '';
+    this.pmObject.addProject.ProjectAttributes.BilledBy = '';
+    this.pmObject.addProject.ProjectAttributes.PracticeArea = '';
+    this.pmObject.addProject.ProjectAttributes.ProjectStatus = '';
+    this.pmObject.addProject.ProjectAttributes.PointOfContact1 = '';
+    this.pmObject.addProject.ProjectAttributes.PointOfContact2 = [];
+    this.pmObject.addProject.ProjectAttributes.ProjectCode = '';
+    this.pmObject.addProject.ProjectAttributes.Molecule = '';
+    this.pmObject.addProject.ProjectAttributes.TherapeuticArea = '';
+    this.pmObject.addProject.ProjectAttributes.Indication = '';
+    this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = '';
+    this.pmObject.addProject.ProjectAttributes.PUBSupportStatus = '';
+    this.pmObject.addProject.ProjectAttributes.ProjectTitle = '';
+    this.pmObject.addProject.ProjectAttributes.AlternateShortTitle = '';
+    this.pmObject.addProject.ProjectAttributes.EndUseofDeliverable = '';
+    this.pmObject.addProject.ProjectAttributes.SOWBoxLink = '';
+    this.pmObject.addProject.ProjectAttributes.ConferenceJournal = '';
+    this.pmObject.addProject.ProjectAttributes.Authors = '';
+    this.pmObject.addProject.ProjectAttributes.Comments = '';
+    this.pmObject.addProject.Timeline.Standard.IsStandard = false;
+    this.pmObject.addProject.Timeline.Standard.Service = {};
+    this.pmObject.addProject.Timeline.Standard.Resource = {};
+    this.pmObject.addProject.Timeline.Standard.Reviewer = {};
+    this.pmObject.addProject.Timeline.Standard.ProposedStartDate = null;
+    this.pmObject.addProject.Timeline.Standard.ProposedEndDate = null;
+    this.pmObject.addProject.Timeline.Standard.StandardBudgetHrs = 0;
+    this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours = 0;
+    this.pmObject.addProject.Timeline.Standard.OverallTat = 0;
+    this.pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked = false;
+    this.pmObject.addProject.Timeline.Standard.standardArray = [];
+    this.pmObject.addProject.Timeline.NonStandard.IsStandard = false;
+    this.pmObject.addProject.Timeline.NonStandard.DeliverableType = '';
+    this.pmObject.addProject.Timeline.NonStandard.SubDeliverable = '';
+    this.pmObject.addProject.Timeline.NonStandard.Service = '';
+    this.pmObject.addProject.Timeline.NonStandard.ResourceName = {};
+    this.pmObject.addProject.Timeline.NonStandard.ProposedStartDate = null;
+    this.pmObject.addProject.Timeline.NonStandard.ProposedEndDate = null;
+    this.pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked = false;
+    this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours = 0;
+    this.pmObject.addProject.ProjectAttributes.ActiveCM1 = [];
+    this.pmObject.addProject.ProjectAttributes.ActiveDelivery1 = [];
+    this.pmObject.addProject.ProjectAttributes.ActiveCM2 = '';
+    this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = '';
+  }
 }

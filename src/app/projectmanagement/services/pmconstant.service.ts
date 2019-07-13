@@ -119,8 +119,10 @@ export class PmconstantService {
     ALL_SOW: {
       select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget, '
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, InvoicedRevenue,'
-        + 'BillingEntity',
-      expand: 'Author/Id,Author/Title',
+        + 'BillingEntity, AdditionalPOC, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
+        + 'DeliveryLevel2/ID, DeliveryLevel2/Title',
+      expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
+        + 'DeliveryLevel2/ID, DeliveryLevel2/Title',
       filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\')',
       orderby: 'Modified desc',
       top: 4500
@@ -137,8 +139,10 @@ export class PmconstantService {
     USER_SPECIFIC_SOW: {
       select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget,'
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, InvoicedRevenue,'
-        + 'BillingEntity',
-      expand: 'Author/Id,Author/Title',
+        + 'BillingEntity, AdditionalPOC, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
+        + 'DeliveryLevel2/ID, DeliveryLevel2/Title',
+      expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
+        + 'DeliveryLevel2/ID, DeliveryLevel2/Title',
       // tslint:disable-next-line:max-line-length
       filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllResources/Id eq ' + this.global.sharePointPageObject.userId + ')',
       orderby: 'Modified desc',
@@ -435,9 +439,9 @@ export class PmconstantService {
     },
   };
   public PROJECT_TYPE = {
-    HOURLY : { display : 'Hourly',  value : 'Hours-Rolling' },
+    HOURLY: { display: 'Hourly', value: 'Hours-Rolling' },
     // HOURLY: 'Hours-Rolling',
-    DELIVERABLE: { display : 'Deliverable',  value : 'Deliverable-Writing' }
+    DELIVERABLE: { display: 'Deliverable', value: 'Deliverable-Writing' }
   };
   public TIME_OUT = 500;
   public PROJECT_CANCELLED_REASON = {

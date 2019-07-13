@@ -277,7 +277,8 @@ export class ConstantsService {
     AwaitingCancelApproval: 'Awaiting Cancel Approval',
     PendingClosure: 'Pending Closure',
     SentToAMForApproval: 'Sent to AM for Approval',
-    Approved: 'Approved'
+    Approved: 'Approved',
+    Rejected: 'rejected'
   };
 
   public Groups = {

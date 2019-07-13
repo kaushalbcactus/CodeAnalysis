@@ -144,8 +144,8 @@
     <div class="ui-grid-row mt-20">
       <div class="ui-grid-col-2"><span class="compulsory">*</span>Project Title</div>
       <div class="ui-grid-col-6">
-        <textarea [rows]="5" [cols]="80" formControlName="projectTitle" pInputTextarea
-          autoResize="autoResize"></textarea>
+        <textarea [rows]="2" [cols]="80" formControlName="projectTitle" pInputTextarea
+        ></textarea>
         <div class="error"
           *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
           Project Title is required</div>
@@ -172,15 +172,15 @@
     </div>
     <div class="ui-grid-row mt-20">
       <div class="ui-grid-col-2">Conference / Journal</div>
-      <textarea [rows]="5" [cols]="80" formControlName="conference" pInputTextarea autoResize="autoResize"></textarea>
+      <textarea [rows]="2" [cols]="80" formControlName="conference" pInputTextarea ></textarea>
     </div>
     <div class="ui-grid-row mt-20">
       <div class="ui-grid-col-2">Authors</div>
-      <textarea [rows]="5" [cols]="80" formControlName="authors" pInputTextarea autoResize="autoResize"></textarea>
+      <textarea [rows]="2" [cols]="80" formControlName="authors" pInputTextarea ></textarea>
     </div>
     <div class="ui-grid-row mt-20">
       <div class="ui-grid-col-2">Comments</div>
-      <textarea [rows]="5" [cols]="80" formControlName="comments" pInputTextarea autoResize="autoResize"></textarea>
+      <textarea [rows]="2" [cols]="80" formControlName="comments" pInputTextarea ></textarea>
     </div>
     <div *ngIf="showEditSave">
       <div class="ui-grid-col-2">Project SOW</div>

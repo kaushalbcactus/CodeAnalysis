@@ -10,7 +10,7 @@
             <div style="text-align: left">
                 <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
                 <input type="text" pInputText size="50" placeholder="search" [(ngModel)]="pmObject.addProject.SOWSelect.GlobalFilterValue"
-                    (input)="allProjectRef.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                    (input)="allProjectRef.filterGlobal($event.target.value, 'contains')" style="width:auto" (keydown.enter)="$event.preventDefault()">
             </div>
         </ng-template>
         <ng-template pTemplate="header" let-columns>

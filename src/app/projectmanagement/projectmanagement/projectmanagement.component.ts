@@ -134,58 +134,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.pmObject.isAddSOWVisible = true;
   }
   /**
-   * This method is used to reset all the global variable for project.
-   */
-  resetAddProject() {
-    this.pmObject.activeIndex = 0;
-    this.pmObject.addProject.SOWSelect.SOWCode = '';
-    this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = '';
-    this.pmObject.addProject.ProjectAttributes.SubDivision = '';
-    this.pmObject.addProject.ProjectAttributes.BillingEntity = '';
-    this.pmObject.addProject.ProjectAttributes.BilledBy = '';
-    this.pmObject.addProject.ProjectAttributes.PracticeArea = '';
-    this.pmObject.addProject.ProjectAttributes.ProjectStatus = '';
-    this.pmObject.addProject.ProjectAttributes.PointOfContact1 = '';
-    this.pmObject.addProject.ProjectAttributes.PointOfContact2 = [];
-    this.pmObject.addProject.ProjectAttributes.ProjectCode = '';
-    this.pmObject.addProject.ProjectAttributes.Molecule = '';
-    this.pmObject.addProject.ProjectAttributes.TherapeuticArea = '';
-    this.pmObject.addProject.ProjectAttributes.Indication = '';
-    this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = '';
-    this.pmObject.addProject.ProjectAttributes.PUBSupportStatus = '';
-    this.pmObject.addProject.ProjectAttributes.ProjectTitle = '';
-    this.pmObject.addProject.ProjectAttributes.AlternateShortTitle = '';
-    this.pmObject.addProject.ProjectAttributes.EndUseofDeliverable = '';
-    this.pmObject.addProject.ProjectAttributes.SOWBoxLink = '';
-    this.pmObject.addProject.ProjectAttributes.ConferenceJournal = '';
-    this.pmObject.addProject.ProjectAttributes.Authors = '';
-    this.pmObject.addProject.ProjectAttributes.Comments = '';
-    this.pmObject.addProject.Timeline.Standard.IsStandard = false;
-    this.pmObject.addProject.Timeline.Standard.Service = {};
-    this.pmObject.addProject.Timeline.Standard.Resource = {};
-    this.pmObject.addProject.Timeline.Standard.Reviewer = {};
-    this.pmObject.addProject.Timeline.Standard.ProposedStartDate = null;
-    this.pmObject.addProject.Timeline.Standard.ProposedEndDate = null;
-    this.pmObject.addProject.Timeline.Standard.StandardBudgetHrs = 0;
-    this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours = 0;
-    this.pmObject.addProject.Timeline.Standard.OverallTat = 0;
-    this.pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked = false;
-    this.pmObject.addProject.Timeline.Standard.standardArray = [];
-    this.pmObject.addProject.Timeline.NonStandard.IsStandard = false;
-    this.pmObject.addProject.Timeline.NonStandard.DeliverableType = '';
-    this.pmObject.addProject.Timeline.NonStandard.SubDeliverable = '';
-    this.pmObject.addProject.Timeline.NonStandard.Service = '';
-    this.pmObject.addProject.Timeline.NonStandard.ResourceName = {};
-    this.pmObject.addProject.Timeline.NonStandard.ProposedStartDate = null;
-    this.pmObject.addProject.Timeline.NonStandard.ProposedEndDate = null;
-    this.pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked = false;
-    this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours = 0;
-    this.pmObject.addProject.ProjectAttributes.ActiveCM1 = [];
-    this.pmObject.addProject.ProjectAttributes.ActiveDelivery1 = [];
-    this.pmObject.addProject.ProjectAttributes.ActiveCM2 = '';
-    this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = '';
-  }
-  /**
    * This method is used to set the dropdown value of add sow form.
    */
   setSOWDropDownValue() {
@@ -673,7 +621,10 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           this.constant.listNames.ClientLegalEntity.type);
         this.addUpdateSOWsendEmail(sowObj, this.constant.SOW_STATUS.APPROVED);
         this.pmObject.isMainLoaderHidden = true;
-        this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'SOW Created Successfully.' });
+        this.messageService.add({
+          key: 'custom', severity: 'success', sticky: true,
+          summary: 'Success Message', detail: 'SOW Created Successfully.'
+        });
         setTimeout(() => {
           this.pmObject.isAddSOWVisible = false;
           if (this.router.url === '/projectMgmt/allSOW') {
@@ -692,7 +643,10 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       const data = this.getSOWDataObj(sowObj);
       await this.spServices.updateItem(this.constant.listNames.SOW.name, sowObj.ID, data, this.constant.listNames.SOW.type);
       this.addUpdateSOWsendEmail(sowObj, this.constant.SOW_STATUS.UPDATE);
-      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'SOW Updated Successfully.' });
+      this.messageService.add({
+        key: 'custom', severity: 'success', sticky: true,
+        summary: 'Success Message', detail: 'SOW Updated Successfully.'
+      });
       this.pmObject.isMainLoaderHidden = true;
       setTimeout(() => {
         if (this.router.url === '/projectMgmt/allSOW') {
@@ -1022,9 +976,17 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       const sowItem = arrResults[0].retItems[0];
       this.pmService.setGlobalVariable(sowItem);
       this.pmObject.addSOW.ID = currSelectedSOW.ID;
-      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'SOW Closed Successfully.' });
+      this.messageService.add({
+        key: 'custom', severity: 'success', sticky: true,
+        summary: 'Success Message', detail: 'SOW ' + currSelectedSOW.SOWCode + ' Closed Successfully.'
+      });
       setTimeout(() => {
         this.addUpdateSOWsendEmail(this.pmObject.addSOW, this.constant.SOW_STATUS.CLOSED);
+        if (this.router.url === '/projectMgmt/allSOW') {
+          this.dataService.publish('reload-EditSOW');
+        } else {
+          this.router.navigate(['/projectMgmt/allSOW']);
+        }
       }, this.pmConstant.TIME_OUT);
     }
   }

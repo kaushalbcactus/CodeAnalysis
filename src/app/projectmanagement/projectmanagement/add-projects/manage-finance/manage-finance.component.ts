@@ -8,6 +8,7 @@ import { ConfirmationService, DynamicDialogConfig, MessageService, DynamicDialog
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { CommonService } from 'src/app/Services/common.service';
+import HitDragging from '@fullcalendar/interaction/interactions/HitDragging';
 declare var $;
 @Component({
   selector: 'app-manage-finance',
@@ -180,7 +181,6 @@ export class ManageFinanceComponent implements OnInit {
         // this.setBudget();
         this.projectType = this.projObj.ProjectType;
         this.editManageFinances(this.projObj);
-
       }, this.pmConstant.TIME_OUT);
     } else {
       this.isPOEdit = false;
@@ -828,7 +828,7 @@ export class ManageFinanceComponent implements OnInit {
     this.budgetData = [];
 
     if (result && result.length) {
-      const projStatus = this.projObj.Status;
+      
       this.existBudgetArray = result[0];
       this.existPOArray = result[1];
       this.existPOInvoiceArray = result[2];
@@ -845,7 +845,6 @@ export class ManageFinanceComponent implements OnInit {
       this.budgetData.push(tempbudgetObject);
 
       let poTotal = 0, poRev = 0, poOOP = 0, poTax = 0;
-
       // add appropriate value for unassigned project.
       for (let index = 0; index < this.existPOArray.retItems.length; index++) {
         const poItem = this.existPOArray.retItems[index];
@@ -873,8 +872,7 @@ export class ManageFinanceComponent implements OnInit {
 
         if (tempPOObj.total) {
           tempPOObj.showDelete = false;
-        }
-        else {
+        } else {
           tempPOObj.showDelete = true;
         }
         tempPOObj.scValue = 'Scheduled + Invoiced';
@@ -922,15 +920,24 @@ export class ManageFinanceComponent implements OnInit {
           invoiceObj.isExsitInv = true;
           invoiceObj.currency = this.existBudgetArray.retItems[0].Currency;
           if (invoiceObj.status === 'Scheduled') {
-            if (projStatus === 'Unallocated' || projStatus === 'In Progress' || projStatus === 'Ready for Client' ||
-              projStatus === '	Audit In Progress' || projStatus === 'On Hold' || projStatus === 'Author Review'
-              || projStatus === 'Pending Closure') {
+            
+            if (this.projObj.Status === this.constant.projectStatus.Unallocated
+              || this.projObj.Status === this.constant.projectStatus.InProgress
+              || this.projObj.Status === this.constant.projectStatus.ReadyForClient
+              || this.projObj.Status === this.constant.projectStatus.AuditInProgress
+              || this.projObj.Status === this.constant.projectStatus.OnHold
+              || this.projObj.Status === this.constant.projectStatus.AuthorReview
+              || this.projObj.Status === this.constant.projectStatus.PendingClosure) {
               invoiceObj.isInvoiceItemConfirm = true;
             }
-
-            if (projStatus === 'Unallocated' || projStatus === 'In Progress' || projStatus === 'Ready for Client' ||
-              projStatus === '	Audit In Progress' || projStatus === 'On Hold' || projStatus === 'Author Review'
-              || projStatus === 'Pending Closure' || projStatus === 'In Discussion') {
+            if (this.projObj.Status === this.constant.projectStatus.Unallocated
+              || this.projObj.Status === this.constant.projectStatus.InProgress
+              || this.projObj.Status === this.constant.projectStatus.ReadyForClient
+              || this.projObj.Status === this.constant.projectStatus.AuditInProgress
+              || this.projObj.Status === this.constant.projectStatus.OnHold
+              || this.projObj.Status === this.constant.projectStatus.AuthorReview
+              || this.projObj.Status === this.constant.projectStatus.PendingClosure
+              || this.projObj.Status === this.constant.projectStatus.InDiscussion) {
               invoiceObj.isInvoiceItemEdit = true;
             }
           }
@@ -945,7 +952,7 @@ export class ManageFinanceComponent implements OnInit {
       this.poHeader.tax = poTax;
 
 
-      ///// Adjust 
+      ///// Adjust
       if (this.projObj.ProjectType === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
         this.poHeader.total = null;
         tempbudgetObject.total = null;
@@ -965,8 +972,7 @@ export class ManageFinanceComponent implements OnInit {
           this.poHeader.tax = 0;
           tempbudgetObject.tax = 0;
           tempbudgetObject.oop = 0;
-        }
-        else {
+        } else {
           tempbudgetObject.total = 0;
           tempbudgetObject.revenue = 0;
           tempbudgetObject.tax = 0;
@@ -1114,7 +1120,7 @@ export class ManageFinanceComponent implements OnInit {
     this.addPOForm.get('primarypoc').setValue(rowData.poc);
     this.addPOForm.get('address').setValue(rowData.address);
     this.addPOForm.get('amount').setValue(rowData.amount);
-    //this.isInvoiceEdit = true;
+    
     this.isInvoiceEdit = true;
     this.showAddInvoiceDetails = true;
   }

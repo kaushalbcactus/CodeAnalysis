@@ -1809,13 +1809,14 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
             for (let i = 0; i < invoiceData.Appendix.length; i++) {
-                USInvoice.appendixRow = USInvoice.appendixRow.replace('[[DvCode]]', invoiceData.Appendix[i].dvcode);
-                USInvoice.appendixRow = USInvoice.appendixRow.replace('[[CactusSpCode]]', invoiceData.Appendix[i].cactusSpCode);
-                USInvoice.appendixRow = USInvoice.appendixRow.replace('[[ProjectTitle]]', invoiceData.Appendix[i].title);
-                USInvoice.appendixRow = USInvoice.appendixRow.replace('[[Amount]]', invoiceData.Appendix[i].amount);
-                USInvoice.appendixRow = USInvoice.appendixRow.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
+                let appendixRow = USInvoice.appendixRow;
+                appendixRow = appendixRow.replace('[[DvCode]]', invoiceData.Appendix[i].dvcode);
+                appendixRow = appendixRow.replace('[[CactusSpCode]]', invoiceData.Appendix[i].cactusSpCode);
+                appendixRow = appendixRow.replace('[[ProjectTitle]]', invoiceData.Appendix[i].title);
+                appendixRow = appendixRow.replace('[[Amount]]', invoiceData.Appendix[i].amount);
+                appendixRow = appendixRow.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                     invoiceData.usCurrencySymbol);
-                newArr.push(USInvoice.appendixRow);
+                newArr.push(appendixRow);
             }
             USInvoice.appendixCreate = USInvoice.appendixCreate.replace('[[Appendix]]', newArr.join(''));
             USInvoice.appendixCreate = USInvoice.appendixCreate.replace('[[Total]]', invoiceData.Appendix[0].amount);
@@ -1978,12 +1979,13 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
             for (let i = 0; i < invoiceData.Appendix.length; i++) {
-                JapanInvoice.appendixRow = JapanInvoice.appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].cactusSpCode);
-                JapanInvoice.appendixRow = JapanInvoice.appendixRow.replace('[[Title]]', invoiceData.Appendix[i].title);
-                JapanInvoice.appendixRow = JapanInvoice.appendixRow.replace('[[Amount]]', invoiceData.Appendix[i].amount);
-                JapanInvoice.appendixRow = JapanInvoice.appendixRow.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
+                let appendixRow = JapanInvoice.appendixRow;
+                appendixRow = appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].cactusSpCode);
+                appendixRow = appendixRow.replace('[[Title]]', invoiceData.Appendix[i].title);
+                appendixRow = appendixRow.replace('[[Amount]]', invoiceData.Appendix[i].amount);
+                appendixRow = appendixRow.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                     invoiceData.JpnCurrencySymbol);
-                newArr.push(JapanInvoice.appendixRow);
+                newArr.push(appendixRow);
             }
             JapanInvoice.appendixCreate = JapanInvoice.appendixCreate.replace('[[Appendix]]', newArr.join(''));
             JapanInvoice.appendixCreate = JapanInvoice.appendixCreate.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
@@ -2134,11 +2136,12 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
             for (let i = 0; i < invoiceData.Appendix.length; i++) {
-                IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].cactusSpCode);
-                IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[Title]]', invoiceData.Appendix[i].title);
-                IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[DVCode]]', invoiceData.Appendix[i].dvcode);
-                IndiaInvoice.appendixRow = IndiaInvoice.appendixRow.replace('[[Amount]]', invoiceData.Appendix[i].amount);
-                newArr.push(IndiaInvoice.appendixRow);
+               let appendixRow = IndiaInvoice.appendixRow;
+               appendixRow = appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].cactusSpCode);
+               appendixRow = appendixRow.replace('[[Title]]', invoiceData.Appendix[i].title);
+               appendixRow = appendixRow.replace('[[DVCode]]', invoiceData.Appendix[i].dvcode);
+               appendixRow = appendixRow.replace('[[Amount]]', invoiceData.Appendix[i].amount);
+                newArr.push(appendixRow);
             }
             IndiaInvoice.appendixCreate = IndiaInvoice.appendixCreate.replace('[[Appendix]]', newArr.join(''));
             IndiaInvoice.appendixCreate = IndiaInvoice.appendixCreate.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),

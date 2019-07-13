@@ -860,14 +860,14 @@ export class ProformaComponent implements OnInit, OnDestroy {
         let updateCle = { objData: cleObj, endpoint: cleEndpoint, requestPost: false }
         data.push(updateCle);
 
-        // Update Proforma
-        let pObj = {
-            Status: 'Approved'
-        }
-        pObj['__metadata'] = { type: 'SP.Data.ProformaListItem' };
-        const pEndpoint = this.fdConstantsService.fdComponent.addUpdateProforma.update.replace("{{Id}}", this.selectedRowItem.Id);
-        let updatePObj = { objData: pObj, endpoint: pEndpoint, requestPost: false }
-        data.push(updatePObj);
+        // // Update Proforma // ommited as it is called in call batch request
+        // let pObj = {
+        //     Status: 'Approved'
+        // }
+        // pObj['__metadata'] = { type: 'SP.Data.ProformaListItem' };
+        // const pEndpoint = this.fdConstantsService.fdComponent.addUpdateProforma.update.replace("{{Id}}", this.selectedRowItem.Id);
+        // let updatePObj = { objData: pObj, endpoint: pEndpoint, requestPost: false }
+        // data.push(updatePObj);
 
         let proformaType: any = '';
         ///update PO
@@ -1418,7 +1418,15 @@ export class ProformaComponent implements OnInit, OnDestroy {
                     requestPost: false
                 });
             }
-
+            // Update Proforma
+            const pObj = {
+                Status: 'Approved',
+                InvoiceLookup: oInv.ID
+            }
+            pObj['__metadata'] = { type: 'SP.Data.ProformaListItem' };
+            const pEndpoint = this.fdConstantsService.fdComponent.addUpdateProforma.update.replace("{{Id}}", this.selectedRowItem.Id);
+            const updatePObj = { objData: pObj, endpoint: pEndpoint, requestPost: false }
+            data.push(updatePObj);
             await this.callBatchRequest(data);
             ////// Replace date on specific sections only
 
