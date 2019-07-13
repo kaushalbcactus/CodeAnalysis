@@ -553,7 +553,7 @@ export class AllProjectsComponent implements OnInit {
       } else if (!this.selectedReason) {
         this.messageService.add({
           key: 'custom', severity: 'error', summary: 'Error Message',
-          detail: 'Please select reason Type.'
+          detail: 'Please select reason.'
         });
       }
     }

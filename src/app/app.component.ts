@@ -28,6 +28,7 @@ export class AppComponent {
     this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
       : _spPageContextInfo.siteServerRelativeUrl;
     this.globalObject.sharePointPageObject.serverRelativeUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
+    this.globalObject.sharePointPageObject.rootsite = window.origin;
     // tslint:disable-next-line:no-string-literal
     window['angularComponentReference'] = { component: this, zone: this._ngZone, loadPubSupport: () => this.goToPubSupport(), };
     // tslint:disable-next-line:no-string-literal
