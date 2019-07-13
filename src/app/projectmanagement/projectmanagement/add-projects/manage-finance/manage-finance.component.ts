@@ -413,7 +413,7 @@ export class ManageFinanceComponent implements OnInit {
   increaseBudget() {
     if (this.selectedReason && this.selectedReasonType) {
 
-      if (!(this.updatedBudget === 0 && this.budgetHours !== 0 && this.selectedReasonType === this.pmConstant.PROJECT_BUDGET_INCREASE_REASON.INPUT_ERROR)) {
+      if (this.updatedBudget === 0 && this.budgetHours !== 0 && this.selectedReasonType !== this.pmConstant.PROJECT_BUDGET_INCREASE_REASON.INPUT_ERROR) {
         this.messageService.add({
           key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
           detail: 'Budget can only be zero if selected reason is "Input error".'
@@ -421,7 +421,7 @@ export class ManageFinanceComponent implements OnInit {
         return;
       }
       this.showBudgetIncrease = false;
-      //this.assignBudgetToProject(this.selectedReason, this.selectedReasonType);
+      this.assignBudgetToProject(this.selectedReason, this.selectedReasonType);
     }
     else {
       if (!this.selectedReason) {
