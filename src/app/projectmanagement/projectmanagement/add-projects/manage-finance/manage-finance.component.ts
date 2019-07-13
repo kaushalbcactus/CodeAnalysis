@@ -8,7 +8,6 @@ import { ConfirmationService, DynamicDialogConfig, MessageService, DynamicDialog
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { CommonService } from 'src/app/Services/common.service';
-import HitDragging from '@fullcalendar/interaction/interactions/HitDragging';
 declare var $;
 @Component({
   selector: 'app-manage-finance',
@@ -132,7 +131,8 @@ export class ManageFinanceComponent implements OnInit {
   selectedReasonType = '';
   selectedReason = '';
   showBudgetIncrease = false;
-  sowObj: any
+  sowObj: any;
+  projectStatus = ''
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -180,11 +180,13 @@ export class ManageFinanceComponent implements OnInit {
         this.isPOEdit = true;
         // this.setBudget();
         this.projectType = this.projObj.ProjectType;
+        this.projectStatus = this.projObj.Status;
         this.editManageFinances(this.projObj);
       }, this.pmConstant.TIME_OUT);
     } else {
       this.isPOEdit = false;
       this.projectType = this.pmObject.addProject.ProjectAttributes.BilledBy;
+      this.projectStatus = this.constant.projectList.status.InDiscussion;
       this.setBudget();
     }
   }
@@ -225,7 +227,7 @@ export class ManageFinanceComponent implements OnInit {
     const sowGet = Object.assign({}, options);
     const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.SOW_CODE);
     sowFilter.filter = sowFilter.filter.replace(/{{sowcode}}/gi,
-      this.projObj.SOWCode);
+      this.projObj ?  this.projObj.SOWCode : this.pmObject.addProject.SOWSelect.SOWCode);
     sowGet.url = this.spServices.getReadURL(this.constant.listNames.SOW.name,
       sowFilter);
     sowGet.type = 'GET';
@@ -361,7 +363,7 @@ export class ManageFinanceComponent implements OnInit {
   addBudgetToProject() {
 
     let showError = false;
-    if (this.projObj.Status === this.constant.projectStatus.InDiscussion) {
+    if (this.projectStatus === this.constant.projectStatus.InDiscussion) {
       if (this.updatedBudget === 0 && this.budgetHours === 0) {
         showError = true;
       } else if (this.updatedBudget < 0) {
@@ -537,6 +539,7 @@ export class ManageFinanceComponent implements OnInit {
         key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
         detail: 'PO revenue balance should be greater than or equal to the amount to reserved on PO.'
       });
+      return;
     }
 
 
@@ -921,23 +924,23 @@ export class ManageFinanceComponent implements OnInit {
           invoiceObj.currency = this.existBudgetArray.retItems[0].Currency;
           if (invoiceObj.status === 'Scheduled') {
             
-            if (this.projObj.Status === this.constant.projectStatus.Unallocated
-              || this.projObj.Status === this.constant.projectStatus.InProgress
-              || this.projObj.Status === this.constant.projectStatus.ReadyForClient
-              || this.projObj.Status === this.constant.projectStatus.AuditInProgress
-              || this.projObj.Status === this.constant.projectStatus.OnHold
-              || this.projObj.Status === this.constant.projectStatus.AuthorReview
-              || this.projObj.Status === this.constant.projectStatus.PendingClosure) {
+            if (this.projectStatus === this.constant.projectStatus.Unallocated
+              || this.projectStatus === this.constant.projectStatus.InProgress
+              || this.projectStatus === this.constant.projectStatus.ReadyForClient
+              || this.projectStatus === this.constant.projectStatus.AuditInProgress
+              || this.projectStatus === this.constant.projectStatus.OnHold
+              || this.projectStatus === this.constant.projectStatus.AuthorReview
+              || this.projectStatus === this.constant.projectStatus.PendingClosure) {
               invoiceObj.isInvoiceItemConfirm = true;
             }
-            if (this.projObj.Status === this.constant.projectStatus.Unallocated
-              || this.projObj.Status === this.constant.projectStatus.InProgress
-              || this.projObj.Status === this.constant.projectStatus.ReadyForClient
-              || this.projObj.Status === this.constant.projectStatus.AuditInProgress
-              || this.projObj.Status === this.constant.projectStatus.OnHold
-              || this.projObj.Status === this.constant.projectStatus.AuthorReview
-              || this.projObj.Status === this.constant.projectStatus.PendingClosure
-              || this.projObj.Status === this.constant.projectStatus.InDiscussion) {
+            if (this.projectStatus === this.constant.projectStatus.Unallocated
+              || this.projectStatus === this.constant.projectStatus.InProgress
+              || this.projectStatus === this.constant.projectStatus.ReadyForClient
+              || this.projectStatus === this.constant.projectStatus.AuditInProgress
+              || this.projectStatus === this.constant.projectStatus.OnHold
+              || this.projectStatus === this.constant.projectStatus.AuthorReview
+              || this.projectStatus === this.constant.projectStatus.PendingClosure
+              || this.projectStatus === this.constant.projectStatus.InDiscussion) {
               invoiceObj.isInvoiceItemEdit = true;
             }
           }
@@ -1208,7 +1211,7 @@ export class ManageFinanceComponent implements OnInit {
         projectFinaceUpdate.listName = this.constant.listNames.ProjectFinances.name;
         batchURL.push(projectFinaceUpdate);
 
-        if (this.projObj.Status === this.constant.projectStatus.InDiscussion) {
+        if (this.projectStatus === this.constant.projectStatus.InDiscussion) {
           const projectBudgetBreakupData = this.getProjectBudgetBreakupData(this.budgetData, this.projObj, false);
           const projectBudgetBreakupUpdate = Object.assign({}, options);
           projectBudgetBreakupUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectBudgetBreakup.name, this.budgetData[0].pbbID);
@@ -1351,14 +1354,15 @@ export class ManageFinanceComponent implements OnInit {
     let invoice = 0;
     let invoiceRevenue = 0;
     poInfoObj.poInfoData.forEach(element => {
-      if (element.status === this.constant.STATUS.NOT_STARTED) {
-        totalScheduled += element.amount;
-        scRevenue += element.amount;
-      }
       if (element.status === this.constant.STATUS.APPROVED) {
         invoice += element.amount;
         invoiceRevenue += element.amount;
       }
+      else if (element.status != this.constant.STATUS.DELETED ) {
+        totalScheduled += element.amount;
+        scRevenue += element.amount;
+      }
+      
     });
     data.POLookup = po.poId;
     if (po.isExsitPO) {
@@ -1445,10 +1449,10 @@ export class ManageFinanceComponent implements OnInit {
         data.NetBudget = 0;
         data.TaxBudget = 0;
       } else {
-        data.OriginalBudget = budgetArray[0].total;
-        data.OOPBudget = budgetArray[0].oop;
-        data.NetBudget = budgetArray[0].revenue;
-        data.TaxBudget = budgetArray[0].tax;
+        data.OriginalBudget = budgetArray[0].total - this.existBudgetArray.retItems[0].Budget;
+        data.OOPBudget = budgetArray[0].oop - this.existBudgetArray.retItems[0].OOPBudget;
+        data.NetBudget = budgetArray[0].revenue - this.existBudgetArray.retItems[0].RevenueBudget;
+        data.TaxBudget = budgetArray[0].tax - this.existBudgetArray.retItems[0].TaxBudget;
       }
     }
     return data;
@@ -1484,17 +1488,20 @@ export class ManageFinanceComponent implements OnInit {
    */
   getPOData(financeBreakupArray, poArray) {
     const porray = [];
+    const poExistingItems = this.existPOArray.retItems;
+
     financeBreakupArray.forEach(element => {
       const poItem = poArray.filter(poObj => poObj.Id === element.POLookup);
+      const poExistItem = poExistingItems.find(poObj => poObj.ID === element.POLookup);
       if (poItem && poItem.length) {
         const data = {
           __metadata: { type: this.constant.listNames.PO.type },
-          TotalLinked: poItem[0].TotalLinked + element.Amount,
-          RevenueLinked: poItem[0].RevenueLinked + element.AmountRevenue,
-          OOPLinked: poItem[0].OOPLinked + element.AmountOOP,
-          TaxLinked: poItem[0].TaxLinked + element.AmountTax,
-          TotalScheduled: poItem[0].TotalScheduled + element.TotalScheduled,
-          ScheduledRevenue: poItem[0].ScheduledRevenue + element.ScheduledRevenue,
+          TotalLinked: poItem[0].TotalLinked + element.Amount - (poExistItem ? poExistItem.TotalLinked : 0),
+          RevenueLinked: poItem[0].RevenueLinked + element.AmountRevenue  - (poExistItem ? poExistItem.RevenueLinked : 0),
+          OOPLinked: poItem[0].OOPLinked + element.AmountOOP  - (poExistItem ? poExistItem.OOPLinked : 0),
+          TaxLinked: poItem[0].TaxLinked + element.AmountTax  - (poExistItem ? poExistItem.TaxLinked : 0),
+          TotalScheduled: poItem[0].TotalScheduled + element.TotalScheduled  - (poExistItem ? poExistItem.TotalScheduled : 0),
+          ScheduledRevenue: poItem[0].ScheduledRevenue + element.ScheduledRevenue  - (poExistItem ? poExistItem.ScheduledRevenue : 0),
           ID: element.POLookup
         };
         porray.push(data);

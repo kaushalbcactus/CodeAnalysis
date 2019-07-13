@@ -310,6 +310,7 @@ export class ConstantsService {
 
   public STATUS = {
     NOT_STARTED: 'Not Saved',
+    SCHEDUELD: 'Scheduled',
     APPROVED: 'Approved',
     APPROVAL_PENDING: 'Approval Pending',
     NOT_CONFIRMED: 'Not Confirmed',
