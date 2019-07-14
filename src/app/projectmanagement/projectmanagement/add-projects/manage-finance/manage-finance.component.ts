@@ -21,6 +21,7 @@ export class ManageFinanceComponent implements OnInit {
   @Output() budgetOutputData = new EventEmitter<any>();
   addPOForm: FormGroup;
   existBudgetArray: any = [];
+  existPBBBudgetArray: any = [];
   existPOArray: any = [];
   existPOInvoiceArray: any = [];
   existPODataArray: any = [];
@@ -36,8 +37,7 @@ export class ManageFinanceComponent implements OnInit {
     budget_hours: 0,
     edited: false,
     reason: '',
-    reasonType: '',
-    pbbID: 0
+    reasonType: ''
   };
   poData = [];
   poObj = {
@@ -374,6 +374,7 @@ export class ManageFinanceComponent implements OnInit {
         return;
       }
 
+      ////// Remove 
 
 
     }
@@ -1004,6 +1005,7 @@ export class ManageFinanceComponent implements OnInit {
       this.existBudgetArray = result[0];
       this.existPOArray = result[1];
       this.existPOInvoiceArray = result[2];
+      this.existPBBBudgetArray = result[3];
       await this.getInitData(projObj.ProjectCode, projObj.ClientLegalEntity,
         this.existBudgetArray.retItems[0].Currency);
       const tempbudgetObject = $.extend(true, {}, this.budgetObj);
@@ -1013,7 +1015,6 @@ export class ManageFinanceComponent implements OnInit {
       tempbudgetObject.total = this.existBudgetArray.retItems[0].Budget;
       tempbudgetObject.oop = this.existBudgetArray.retItems[0].OOPBudget;
       tempbudgetObject.budget_hours = this.existBudgetArray.retItems[0].BudgetHrs;
-      tempbudgetObject.pbbID = result[3].retItems.length ? result[3].retItems[0].ID : 0;
       this.budgetData.push(tempbudgetObject);
 
       let poTotal = 0;
@@ -1387,7 +1388,7 @@ export class ManageFinanceComponent implements OnInit {
           const projectBudgetBreakupData = this.getProjectBudgetBreakupData(this.budgetData, this.projObj, false, true);
           const projectBudgetBreakupUpdate = Object.assign({}, options);
           projectBudgetBreakupUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectBudgetBreakup.name,
-            this.budgetData[0].pbbID);
+            this.existPBBBudgetArray.retItems[0].ID);
           projectBudgetBreakupUpdate.data = projectBudgetBreakupData;
           projectBudgetBreakupUpdate.type = 'PATCH';
           projectBudgetBreakupUpdate.listName = this.constant.listNames.ProjectBudgetBreakup.name;
@@ -1395,8 +1396,15 @@ export class ManageFinanceComponent implements OnInit {
         } else {
           let budgetArr = [];
           if(this.unassignedBudget[0].revenue === 0) {
+            const existingBudget = this.existBudgetArray.retItems[0];
             budgetArr = this.budgetData;
-            budgetArr[0].budget_hours = budgetArr[0].budget_hours - this.budgetData[0].budget_hours;
+            budgetArr[0].budget_hours = budgetArr[0].budget_hours - existingBudget.BudgetHrs;
+            if(existingBudget.RevenueBudget === budgetArr[0].revenue) {
+              budgetArr[0].total = 0;
+              budgetArr[0].revenue = 0;
+              budgetArr[0].oop = 0;
+              budgetArr[0].tax = 0;
+            }
           } else {
             budgetArr = this.unassignedBudget;
             budgetArr[0].total = 0 - budgetArr[0].total;
@@ -1444,7 +1452,7 @@ export class ManageFinanceComponent implements OnInit {
             const invoiceData = this.getInvoiceItemData(element, this.projObj, clientObj, billingEntity, CSIdArray);
             if (element.isExsitInv) {
               const invoiceUpdate = Object.assign({}, options);
-              invoiceUpdate.url = this.spServices.getItemURL(this.constant.listNames.InvoiceLineItems.name, element.poId);
+              invoiceUpdate.url = this.spServices.getItemURL(this.constant.listNames.InvoiceLineItems.name, element.Id);
               invoiceUpdate.data = invoiceData;
               invoiceUpdate.type = 'PATCH';
               invoiceUpdate.listName = this.constant.listNames.InvoiceLineItems.name;
@@ -1642,10 +1650,10 @@ export class ManageFinanceComponent implements OnInit {
         data.NetBudget = 0;
         data.TaxBudget = 0;
       } else {
-        data.OriginalBudget = budgetArray[0].total - this.existBudgetArray.retItems[0].Budget;
-        data.OOPBudget = budgetArray[0].oop - this.existBudgetArray.retItems[0].OOPBudget;
-        data.NetBudget = budgetArray[0].revenue - this.existBudgetArray.retItems[0].RevenueBudget;
-        data.TaxBudget = budgetArray[0].tax - this.existBudgetArray.retItems[0].TaxBudget;
+        data.OriginalBudget = budgetArray[0].total;
+        data.OOPBudget = budgetArray[0].oop;
+        data.NetBudget = budgetArray[0].revenue;
+        data.TaxBudget = budgetArray[0].tax;
       }
     }
     return data;
@@ -1736,13 +1744,13 @@ export class ManageFinanceComponent implements OnInit {
           Title: projObj.ProjectCode,
           ScheduledDate: element.date,
           Amount: element.amount,
-          Currency: clientObj && clientObj.length ? clientObj[0].Currency : '',
+          Currency: this.existBudgetArray.retItems[0].Currency,
           PO: element.amount === 0 ? null : element.poId,
           Status: element.amount === 0 ? 'Deleted' : (element.status === 'Not Saved' ? 'Scheduled' : element.status),
           ScheduleType: element.type,
           MainPOC: element.poc,
           AddressType: element.address,
-          Template: billingEntity && billingEntity.length ? billingEntity[0].InvoiceTemplate : '',
+          Template: this.existBudgetArray.retItems[0].Template,     //billingEntity && billingEntity.length ? billingEntity[0].InvoiceTemplate : '',
           SOWCode: projObj.SOWCode,
           CSId: {
             results: CSIdArray
