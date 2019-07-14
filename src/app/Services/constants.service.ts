@@ -276,9 +276,7 @@ export class ConstantsService {
     Cancelled: 'Cancelled',
     AwaitingCancelApproval: 'Awaiting Cancel Approval',
     PendingClosure: 'Pending Closure',
-    SentToAMForApproval: 'Sent to AM for Approval',
-    Approved: 'Approved',
-    Rejected: 'rejected'
+    SentToAMForApproval: 'Sent to AM for Approval'
   };
 
   public Groups = {
@@ -317,7 +315,10 @@ export class ConstantsService {
     CLOSED_PROJECT: 'CloseProject',
     CONFIRMED: 'Confirmed',
     DELETED: 'Deleted',
-    REJECTED: 'Rejected'
+    REJECTED: 'Rejected',
+    IN_PROGRESS: 'In Progress',
+    ON_HOLD: 'On Hold',
+    AUTO_CLOSED: 'Auto Closed'
   };
   public SKILL_LEVEL = {
     WRITER: 'Writer',
@@ -332,7 +333,8 @@ export class ConstantsService {
     CLOSE_PROJECT: 'CloseProject',
     NOTIFY_PM: 'NotifyPM',
     INVOICE_CONFIRM: 'ConfirmInvoice',
-    CANCEL: 'Cancel'
+    CANCEL: 'Cancel',
+    APPROVED_PROJECT: 'ApproveProject'
   };
   public invoiceList = {
     status: {

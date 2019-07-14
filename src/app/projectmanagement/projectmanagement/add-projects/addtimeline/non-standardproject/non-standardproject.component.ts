@@ -61,6 +61,7 @@ export class NonStandardprojectComponent implements OnInit {
         this.getProjectManagement();
         this.setFieldProperties();
       } else {
+        this.setFieldProperties();
         this.setDropdownField();
       }
     }, this.pmConstant.TIME_OUT);
