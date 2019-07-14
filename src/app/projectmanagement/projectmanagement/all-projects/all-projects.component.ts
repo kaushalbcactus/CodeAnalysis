@@ -1397,8 +1397,16 @@ export class AllProjectsComponent implements OnInit {
    * @param projObj pass the project object as a parameter.
    */
   moveSOW(projObj) {
+    this.sowDropDownArray = [];
+    this.pmObject.isMainLoaderHidden = false;
     this.newSelectedSOW = projObj.SOWCode;
-    this.sowDropDownArray = this.allProjects.sowCodeArray;
+    const sowArray = this.pmObject.allSOWItems;
+    if (sowArray && sowArray.length) {
+      sowArray.forEach(element => {
+        this.sowDropDownArray.push({ label: element.SOWCode, value: element.SOWCode });
+      });
+    }
+    this.pmObject.isMainLoaderHidden = true;
     this.pmObject.isMoveProjectToSOWVisible = true;
   }
   /**
