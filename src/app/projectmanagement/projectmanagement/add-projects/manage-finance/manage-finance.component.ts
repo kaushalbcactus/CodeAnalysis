@@ -132,7 +132,7 @@ export class ManageFinanceComponent implements OnInit {
   selectedReason = '';
   showBudgetIncrease = false;
   sowObj: any;
-  projectStatus = ''
+  projectStatus = '';
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -391,7 +391,7 @@ export class ManageFinanceComponent implements OnInit {
             label: this.pmConstant.PROJECT_BUDGET_INCREASE_REASON.INPUT_ERROR,
             value: this.pmConstant.PROJECT_BUDGET_INCREASE_REASON.INPUT_ERROR
           }
-        ]
+        ];
         this.showBudgetIncrease = true;
         return;
       }
@@ -403,8 +403,7 @@ export class ManageFinanceComponent implements OnInit {
       this.error = true;
       if (!this.budgetHours) {
         this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGETHrs;
-      }
-      else {
+      } else {
         this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGET;
       }
     }
@@ -413,7 +412,8 @@ export class ManageFinanceComponent implements OnInit {
   increaseBudget() {
     if (this.selectedReason && this.selectedReasonType) {
 
-      if (this.updatedBudget === 0 && this.budgetHours !== 0 && this.selectedReasonType !== this.pmConstant.PROJECT_BUDGET_INCREASE_REASON.INPUT_ERROR) {
+      if (this.updatedBudget === 0 && this.budgetHours !== 0
+        && this.selectedReasonType !== this.pmConstant.PROJECT_BUDGET_INCREASE_REASON.INPUT_ERROR) {
         this.messageService.add({
           key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
           detail: 'Budget can only be zero if selected reason is "Input error".'
@@ -422,8 +422,7 @@ export class ManageFinanceComponent implements OnInit {
       }
       this.showBudgetIncrease = false;
       this.assignBudgetToProject(this.selectedReason, this.selectedReasonType);
-    }
-    else {
+    } else {
       if (!this.selectedReason) {
         this.messageService.add({
           key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
@@ -612,13 +611,11 @@ export class ManageFinanceComponent implements OnInit {
       const amount = this.addPOForm.get('amount').value;
       if (this.invoiceObj.amount !== amount) {
         //// Reduce amount on inv, po and add unassigned
-        alert('Inv amount updated')
-      }
-      else {
+        alert('Inv amount updated');
+      } else {
         this.saveInvoiceEdit();
       }
-    }
-    else {
+    } else {
       const poIndex = this.poData.findIndex(item => item.poInfo[0].poId === this.selectedPo);
       const retPOInfo = this.poData[poIndex].poInfo[0];
       this.addInvoiceError = false;
@@ -710,8 +707,7 @@ export class ManageFinanceComponent implements OnInit {
         if (poObj.poInfo[0].status === 'Not Saved') {
           const arrayIndex = this.poData.findIndex(x => x.Id === this.selectedPo);
           this.poData.splice(arrayIndex, 1);
-        }
-        else {
+        } else {
           poObj.poInfo[0].status = 'Deleted';
           poObj.poInfo[0].edited = true;
           poObj.poInfoData.forEach(element => {
@@ -847,7 +843,10 @@ export class ManageFinanceComponent implements OnInit {
       tempbudgetObject.pbbID = result[3].retItems.length ? result[3].retItems[0].ID : 0;
       this.budgetData.push(tempbudgetObject);
 
-      let poTotal = 0, poRev = 0, poOOP = 0, poTax = 0;
+      let poTotal = 0;
+      let poRev = 0;
+      let poOOP = 0;
+      let poTax = 0;
       // add appropriate value for unassigned project.
       for (let index = 0; index < this.existPOArray.retItems.length; index++) {
         const poItem = this.existPOArray.retItems[index];
@@ -1214,7 +1213,8 @@ export class ManageFinanceComponent implements OnInit {
         if (this.projectStatus === this.constant.projectStatus.InDiscussion) {
           const projectBudgetBreakupData = this.getProjectBudgetBreakupData(this.budgetData, this.projObj, false);
           const projectBudgetBreakupUpdate = Object.assign({}, options);
-          projectBudgetBreakupUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectBudgetBreakup.name, this.budgetData[0].pbbID);
+          projectBudgetBreakupUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectBudgetBreakup.name,
+            this.budgetData[0].pbbID);
           projectBudgetBreakupUpdate.data = projectBudgetBreakupData;
           projectBudgetBreakupUpdate.type = 'PATCH';
           projectBudgetBreakupUpdate.listName = this.constant.listNames.ProjectBudgetBreakup.name;
@@ -1305,7 +1305,7 @@ export class ManageFinanceComponent implements OnInit {
         if (element.status === this.constant.STATUS.APPROVED) {
           invoice = element.amount;
           invoiceRevenue = element.amount;
-        } else if (element.status != this.constant.STATUS.DELETED) {
+        } else if (element.status !== this.constant.STATUS.DELETED) {
           invoiceSc = element.amount;
           scRevenue = element.amount;
         }
@@ -1357,8 +1357,7 @@ export class ManageFinanceComponent implements OnInit {
       if (element.status === this.constant.STATUS.APPROVED) {
         invoice += element.amount;
         invoiceRevenue += element.amount;
-      }
-      else if (element.status != this.constant.STATUS.DELETED) {
+      } else if (element.status !== this.constant.STATUS.DELETED) {
         totalScheduled += element.amount;
         scRevenue += element.amount;
       }
@@ -1464,9 +1463,8 @@ export class ManageFinanceComponent implements OnInit {
    */
   getSOWData(projObj, projectfinaceObj) {
     const sowCode = projObj.SOWCode;
-    let sowObj = this.sowObj;
+    const sowObj = this.sowObj;
     if (sowObj) {
-
       const data = {
         __metadata: { type: this.constant.listNames.SOW.type },
         TotalLinked: sowObj.TotalLinked + projectfinaceObj.Budget - this.existBudgetArray.retItems[0].Budget,
@@ -1489,7 +1487,6 @@ export class ManageFinanceComponent implements OnInit {
   getPOData(financeBreakupArray, poArray) {
     const porray = [];
     const poExistingItems = this.existPOArray.retItems;
-
     financeBreakupArray.forEach(element => {
       const poItem = poArray.filter(poObj => poObj.Id === element.POLookup);
       const poExistItem = poExistingItems.find(poObj => poObj.ID === element.POLookup);
@@ -1520,7 +1517,7 @@ export class ManageFinanceComponent implements OnInit {
    */
   getInvoiceItemData(poInvItem, projObj, clientObj, billingEntity, CSIdArray) {
     const element = poInvItem;
-    if (element.edited && (element.status !== 'Deleted' || (element.status === 'Deleted' && element.Id != 0))) {
+    if (element.edited && (element.status !== 'Deleted' || (element.status === 'Deleted' && element.Id !== 0))) {
       if (element.isExsitInv) {
         const data: any = {
           __metadata: { type: this.constant.listNames.InvoiceLineItems.type },
