@@ -27,14 +27,14 @@
     </label>
     <div class="box excelIcon" [hidden]='isSCTableHidden'>
         <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(sendToClientTableRef)"
-            title="Export To Excel" class="fa fa-fw fa-file-excel-o" exportFilename="Send to client"></i>
+            title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
     </div>
     <div class="noDataMessage" [hidden]='hideNoDataMessage'>
         No Tasks Found.
     </div>
     <div class="table100 slaExist ver4 m-b-110" [hidden]="isSCTableHidden">
         <p-table #sendToClientTableRef [columns]="displayedColumns" [value]="pmObject.sendToClientArray"
-            [paginator]="true" [rows]="10" >
+            [paginator]="true" [rows]="10" selectionMode="" exportFilename="Send to client">
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th *ngFor="let col of columns" [pSortableColumn]="col.field">

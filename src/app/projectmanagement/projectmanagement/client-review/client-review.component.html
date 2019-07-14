@@ -22,14 +22,14 @@
     </div>
     <div class="box excelIcon" [hidden]='isCRTableHidden'>
         <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(crTableRef)"
-            title="Export To Excel" class="fa fa-fw fa-file-excel-o" exportFilename="Client Review"></i>
+            title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
     </div>
     <div class="noDataMessage" [hidden]='crHideNoDataMessage'>
         No Tasks Found.
     </div>
     <div class="crTable table100 slaExist ver4 m-b-110" [hidden]="isCRTableHidden">
         <p-table #crTableRef [columns]="displayedColumns" [value]="pmObject.clientReviewArray" [paginator]="true"
-            [rows]="10" >
+            [rows]="10" selectionMode="" exportFilename="Client Review">
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th *ngFor="let col of columns" [pSortableColumn]="col.field">

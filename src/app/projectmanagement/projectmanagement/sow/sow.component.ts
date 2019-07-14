@@ -18,7 +18,7 @@ declare var $;
   styleUrls: ['./sow.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class SOWComponent implements OnInit,  OnDestroy {
+export class SOWComponent implements OnInit, OnDestroy {
   @Output() projectItem: EventEmitter<any> = new EventEmitter();
   displayedColumns: any[] = [
     { field: 'SOWCode', header: 'SOW Code' },
@@ -250,8 +250,10 @@ export class SOWComponent implements OnInit,  OnDestroy {
         clientLegalEntityTempArray.push({ label: sowObj.ClientLegalEntity, value: sowObj.ClientLegalEntity });
         pocTempArray.push({ label: sowObj.POC, value: sowObj.POC });
         createdByTempArray.push({ label: sowObj.CreatedBy, value: sowObj.CreatedBy });
-        createDateTempArray.push({ label: this.datePipe.transform(sowObj.CreatedDate, 'MMM dd yyyy hh:mm:ss aa'),
-         value: sowObj.CreatedDate });
+        createDateTempArray.push({
+          label: this.datePipe.transform(sowObj.CreatedDate, 'MMM dd yyyy hh:mm:ss aa'),
+          value: sowObj.CreatedDate
+        });
         tempAllSOWArray.push(sowObj);
       }
       this.allSOW.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');
@@ -347,7 +349,8 @@ export class SOWComponent implements OnInit,  OnDestroy {
         projectObj.DeliverableType = projectItem.DeliverableType;
         projectObj.ProjectCode = projectItem.ProjectCode;
         projectObj.Title = projectItem.Title;
-        const tempBuget = budgetArray.filter(x => x.retItems[0].Title === projectItem.ProjectCode);
+        const tempBuget = budgetArray.filter(x => x.retItems[0] && x.retItems[0].length &&
+          x.retItems[0].Title === projectItem.ProjectCode);
         projectObj.Budget = tempBuget && tempBuget.length && tempBuget[0] && tempBuget[0].retItems.length
           ? tempBuget[0].retItems[0].RevenueBudget ? tempBuget[0].retItems[0].RevenueBudget : 0 : 0;
         projectObj.Status = projectItem.Status;
