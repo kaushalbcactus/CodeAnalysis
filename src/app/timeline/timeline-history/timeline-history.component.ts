@@ -312,8 +312,9 @@ export class TimelineHistoryComponent implements OnInit {
       case 'FD_InvoiceLineItems':
         obj.data = this.setInvLineItemsVersion(obj.versions, obj.verDifference);
         break;
+      case 'ProjectMgmt_ProjectFromDashboard':
       case 'ProjectMgmt_ProjectInformation':
-        obj.data = this.setPrjVersion(obj.versions, obj.verDifference);
+        obj.data = this.setPrjVersion(obj.versions, obj.verDifference, type);
         break;
       case 'ProjectMgmt_ProjectBudgetBreakup':
         obj.data = this.setPrjBudgetBreakupVersion(obj.versions, obj.verDifference);
@@ -1341,7 +1342,7 @@ export class TimelineHistoryComponent implements OnInit {
   // #endregion
 
   // #region process/set data for display data
-  setPrjVersion(arrVersions, arrVersionDifference) {
+  setPrjVersion(arrVersions, arrVersionDifference, type) {
     const items = [];
 
     // fetches top version in an array
@@ -1469,11 +1470,13 @@ export class TimelineHistoryComponent implements OnInit {
               }
               break;
             case this.globalConstant.projectList.columns.SOWLink:
-              if (versionDetail.SOWLink) {
+              if (versionDetail.SOWLink && type !== 'ProjectMgmt_ProjectFromDashboard') {
+                let sowListName = this.arrCle.filter(c => c.Title === versionDetail.ClientLegalEntity);
+                sowListName = sowListName.length > 0 ? sowListName[0].ListName : [];
                 obj.activity_type = 'Attachment';
                 obj.activity_sub_type = 'Sow document updated';
                 obj.activity_description = 'Sow document updated to ' + versionDetail.SOWLink;
-                obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + versionDetail.ProjectFolder + '/Finance/SOW/' + versionDetail.SOWLink;
+                obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + '/' + sowListName + '/Finance/SOW/' + versionDetail.SOWLink;
               }
               break;
             case this.globalConstant.projectList.columns.Status:
@@ -1482,9 +1485,11 @@ export class TimelineHistoryComponent implements OnInit {
               obj.activity_description = 'Status Updated to ' + versionDetail.Status;
               break;
             case this.globalConstant.projectList.columns.PubSupportStatus:
-              obj.activity_type = 'Project updated';
-              obj.activity_sub_type = 'Pubsupport status updated';
-              obj.activity_description = 'Pubsupport Status Updated to ' + versionDetail.PubSupportStatus;
+              if (versionDetail.IsPubSupport === 'Yes') {
+                obj.activity_type = 'Project updated';
+                obj.activity_sub_type = 'Pubsupport status updated';
+                obj.activity_description = 'Pubsupport Status Updated to ' + versionDetail.PubSupportStatus;
+              }
               break;
             case this.globalConstant.projectList.columns.TA:
               obj.activity_type = 'Project updated';
@@ -1897,7 +1902,7 @@ export class TimelineHistoryComponent implements OnInit {
                 obj.activity_type = 'Attachment';
                 obj.activity_sub_type = 'SOW document updated';
                 obj.activity_description = 'SOW document Updated to ' + versionDetail.SOWLink;
-                obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + sowListName + '/Finance/SOW/' + versionDetail.SOWLink
+                obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + '/' + sowListName + '/Finance/SOW/' + versionDetail.SOWLink
               }
               break;
             case this.globalConstant.sowList.columns.BD:

@@ -101,7 +101,7 @@ export class TimelineConstantsService {
         'Status', 'IsPubSupport', 'SOWBoxLink', 'SOWLink', 'BD', 'CMLevel1', 'CMLevel2', 'DeliveryLevel1', 'DeliveryLevel2', 'WBJID', 'Milestone',
         'ProposedStartDate', 'ProposedEndDate'],
       getVersions: {
-        select: 'Id,ProjectType, Description, PubSupportStatus, BusinessVertical, ProjectCode, SOWCode, Comments, ProjectFolder, PrimaryPOC, TA, Indication, Molecule, Priority, Authors,' +
+        select: 'Id,ProjectType, Description,ClientLegalEntity, PubSupportStatus, BusinessVertical, ProjectCode, SOWCode, Comments, ProjectFolder, PrimaryPOC, TA, Indication, Molecule, Priority, Authors,' +
           'Status, IsPubSupport, SOWBoxLink, SOWLink, Title, WBJID, Milestone, ProposedStartDate, ProposedEndDate, ConferenceJournal, BD/LookupId, BD/LookupValue,' +
           'CMLevel1/LookupId, CMLevel1/LookupValue, CMLevel2/LookupId, CMLevel2/LookupValue, DeliveryLevel1/LookupId, DeliveryLevel1/LookupValue,' +
           'DeliveryLevel2/LookupId, DeliveryLevel2/LookupValue,' +
