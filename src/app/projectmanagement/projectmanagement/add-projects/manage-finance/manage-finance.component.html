@@ -281,13 +281,13 @@
   </p-accordion>
   <div *ngIf="!isPOEdit">
     <div class="ui-grid-row mt-20" style="float:right">
-      <p-button *ngIf="showSave" class="mr-5" type="button" (click)="savePo()" label="Save"></p-button>
-      <p-button class="mr-5" type="button" label="Cancel"></p-button>
+      <p-button *ngIf="showSave" type="button" (click)="savePo()" label="Save"></p-button>
+      <!-- <p-button class="mr-5" type="button" label="Cancel"></p-button> -->
     </div>
   </div>
   <div *ngIf="isPOEdit">
     <div class="ui-grid-row mt-20" style="float:right">
-      <p-button *ngIf="showSave" class="mr-5" type="button" (click)="saveUpdatePO()" label="Save"></p-button>
+      <p-button *ngIf="showSave" type="button" (click)="saveUpdatePO()" label="Save"></p-button>
     </div>
   </div>
 </div>
@@ -363,7 +363,7 @@
   </p-footer>
 </p-dialog>
 
-<p-dialog [(visible)]="showReduction" appendTo='body' [style]="{width: '500px'}">
+<p-dialog *ngIf="showReduction" [(visible)]="showReduction" appendTo='body' [style]="{width: '500px'}">
   <p-header>
     Budget Reduction Popup
   </p-header>
