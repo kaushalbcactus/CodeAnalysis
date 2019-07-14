@@ -707,7 +707,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       DeliveryLevel2Id: sowObj.DeliveryOptional,
       BDId: sowObj.SOWOwner,
       PrimaryPOC: sowObj.Poc,
-      AdditionalPOC: sowObj.PocOptional ? sowObj.PocOptional.join(';#') : [],
+      AdditionalPOC: sowObj.PocOptional ? sowObj.PocOptional.join(';#') : '',
       AllResourcesId: {
         results: sowObj.AllOperationId
       }
