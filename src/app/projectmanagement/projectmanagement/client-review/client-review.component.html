@@ -28,10 +28,8 @@
         No Tasks Found.
     </div>
     <div class="crTable table100 slaExist ver4 m-b-110" [hidden]="isCRTableHidden">
-        <p-table #crTableRef [columns]="displayedColumns" [value]="pmObject.clientReviewArray_copy" [paginator]="true"
-            [rows]="10" [lazy]="true" (onLazyLoad)="crLazyLoadTask($event)"
-            [totalRecords]="pmObject.totalRecords.ClientReview" [loading]="pmObject.loading.ClientReview"
-            [lazyLoadOnInit]="false">
+        <p-table #crTableRef [columns]="displayedColumns" [value]="pmObject.clientReviewArray" [paginator]="true"
+            [rows]="10" >
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th *ngFor="let col of columns" [pSortableColumn]="col.field">

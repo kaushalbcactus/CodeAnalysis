@@ -72,8 +72,13 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     if (this.manageData && this.manageData.length) {
       this.isPOTableHidden = false;
       this.budgetHoursSection = true;
+      if (this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
+        this.rate = true;
+      }
       this.budgetData = this.manageData[0].budget;
       this.poData = this.manageData[0].PO;
+      this.pmObject.addProject.FinanceManagement.Rate = this.manageData[0].Rate;
+      this.pmObject.addProject.FinanceManagement.OverNightRequest = this.manageData[0].OverNightRequest;
     }
   }
   setHeaderColumn() {
@@ -123,6 +128,9 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
             this.pmObject.addSOW.isSOWCodeDisabled = false;
             this.pmObject.addSOW.isStatusDisabled = true;
           }
+          this.isPOTableHidden = true;
+          this.budgetHoursSection = false;
+          this.rate = false;
         }
         await this.addUpdateProject();
       }
@@ -345,8 +353,8 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     if (addObj.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
       data.Budget = addObj.FinanceManagement.Rate;
       data.OOPBudget = 0;
-      data.RevenueBudget = 0,
-        data.TaxBudget = 0;
+      data.RevenueBudget = 0;
+      data.TaxBudget = 0;
       data.InvoicesScheduled = 0;
       data.ScheduledRevenue = 0;
       data.Invoiced = 0;
@@ -354,8 +362,8 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     } else {
       data.Budget = budgetArray[0].total;
       data.OOPBudget = budgetArray[0].oop;
-      data.RevenueBudget = budgetArray[0].revenue,
-        data.TaxBudget = budgetArray[0].tax;
+      data.RevenueBudget = budgetArray[0].revenue;
+      data.TaxBudget = budgetArray[0].tax;
       data.InvoicesScheduled = invoiceSc;
       data.ScheduledRevenue = scRevenue;
       data.Invoiced = invoice;

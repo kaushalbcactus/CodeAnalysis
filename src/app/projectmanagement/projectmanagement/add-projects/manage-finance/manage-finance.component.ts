@@ -8,6 +8,7 @@ import { ConfirmationService, DynamicDialogConfig, MessageService, DynamicDialog
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { retry } from 'rxjs/operators';
 declare var $;
 @Component({
   selector: 'app-manage-finance',
@@ -128,10 +129,13 @@ export class ManageFinanceComponent implements OnInit {
   invoiceHeader = 'Add Invoice Line Item';
   projectType = '';
   budgetIncreaseArray: SelectItem[];
+  budgetDecreaseArray: SelectItem[];
   selectedReasonType = '';
   selectedReason = '';
   showBudgetIncrease = false;
+  showReduction = false;
   sowObj: any;
+  newBudgetHrs = 0;
   projectStatus = '';
   constructor(
     private frmbuilder: FormBuilder,
@@ -286,8 +290,8 @@ export class ManageFinanceComponent implements OnInit {
     this.budgetData.push(this.budgetObj);
     this.unassignedBudget = [];
     this.unassignedBudget.push(this.unassignedBudgetobj);
-    this.showUnAssigned = this.unassignedBudgetobj.total ? true : false;
-    this.isAddToProjectHidden = this.unassignedBudgetobj.total ? false : true;
+    this.showUnAssigned = this.unassignedBudgetobj.revenue ? true : false;
+    this.isAddToProjectHidden = this.unassignedBudgetobj.revenue ? false : true;
   }
 
   assignBudgetToProject(sReason, sReasonType) {
@@ -338,24 +342,96 @@ export class ManageFinanceComponent implements OnInit {
     }
     this.unassignedBudget = [];
     this.unassignedBudget.push(unassignedObj);
-    this.showUnAssigned = unassignedObj.total ? true : false;
-    this.isAddToProjectHidden = unassignedObj.total ? false : true;
+    this.showUnAssigned = unassignedObj.revenue ? true : false;
+    this.isAddToProjectHidden = unassignedObj.revenue ? false : true;
 
     this.isAddBudgetButtonHidden = true;
     this.isrevenueFieldDisabled = true;
     this.updatedBudget = 0;
     this.budgetHours = 0;
-    if (unassignedObj.total) {
+    if (unassignedObj.revenue) {
       this.poData.forEach(element => {
         element.poInfo[0].showAdd = true;
+        element.poInfo[0].poTotal = unassignedObj.revenue;
+        element.poInfo[0].poRevenue = unassignedObj.revenue;
       });
     }
+    ///// Set Pending to PO's 
+
     const isTotalMatched = this.isScheduledMatched();
     if (isTotalMatched) {
       this.showSave = true;
     }
 
   }
+
+  reduceBudget() {
+    if (this.selectedReason && this.selectedReasonType && this.newBudgetHrs) {
+      if(this.budgetData[0].budget_hours === this.newBudgetHrs) {
+        this.messageService.add({
+          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'New and old budget hours cant be same.'
+        });
+        return;
+        
+
+      }
+    }
+    else {
+      if (!this.selectedReasonType) {
+        this.messageService.add({
+          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'Please select reason type.'
+        });
+        return;
+      }
+      if (!this.selectedReason) {
+        this.messageService.add({
+          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'Please enter reason.'
+        });
+        return;
+      }
+      if (!this.newBudgetHrs) {
+        this.messageService.add({
+          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'New Budget hours cant be zero.'
+        });
+        return;
+      }
+      
+    }
+  }
+
+
+  removeUnassigned() {
+    this.selectedReason = '';
+    this.selectedReasonType = '';
+    this.newBudgetHrs = 0;
+    this.budgetDecreaseArray = [];
+    this.budgetDecreaseArray = [
+      {
+        label: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.SCOPE_REDUCE,
+        value: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.SCOPE_REDUCE
+      }
+      ,
+      {
+        label: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.QUALITY,
+        value: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.QUALITY
+      }
+      ,
+      {
+        label: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.RELATIONSHIP,
+        value: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.RELATIONSHIP
+      },
+      {
+        label: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.INPUT_ERROR,
+        value: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.INPUT_ERROR
+      }
+    ]
+    this.showReduction = true;
+  }
+
 
   /**
    * This method is used to add the budget to project.
@@ -422,19 +498,23 @@ export class ManageFinanceComponent implements OnInit {
       }
       this.showBudgetIncrease = false;
       this.assignBudgetToProject(this.selectedReason, this.selectedReasonType);
-    } else {
-      if (!this.selectedReason) {
-        this.messageService.add({
-          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
-          detail: 'Please enter reason.'
-        });
-      }
+    }
+    else {
       if (!this.selectedReasonType) {
         this.messageService.add({
           key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
           detail: 'Please select reason type.'
         });
+        return;
       }
+      if (!this.selectedReason) {
+        this.messageService.add({
+          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'Please enter reason.'
+        });
+        return;
+      }
+      
     }
   }
 
@@ -455,6 +535,7 @@ export class ManageFinanceComponent implements OnInit {
       this.isHourlyOverNightDisabled = true;
       this.isHourlyRateDisabled = true;
       this.isAddRateButtonHidden = true;
+      this.isAddToProjectHidden = false;
     }
   }
   /**
@@ -492,10 +573,22 @@ export class ManageFinanceComponent implements OnInit {
         tempPOObj.scTax = 0;
         tempPOObj.isExsitPO = false;
         tempPOObj.edited = true;
+        tempPOObj.status = 'Not Saved';
+        tempPOObj.poRevenue = this.unassignedBudget[0].revenue;
         const tempObj: any = { Id: 0, poInfo: [], poInfoData: [] };
         // tempObj.Id = tempPOObj.poId;
-        tempObj.status = 'Not Saved';
+
         tempObj.poInfo.push(tempPOObj);
+        this.poData.forEach(element => {
+          const zeroInv = element.poInfoData.filter(e => e.amount === 0);
+          zeroInv.forEach(elementInv => {
+            const invIndex = element.poInfoData.findIndex(elementInv);
+            element.poInfoData.splice(invIndex, 1);
+            element.poId = tempPOObj.poId;
+            tempObj.poInfoData.push(element);
+          });
+        });
+
         if (this.existPOArray.retItems && this.existPOArray.retItems.length) {
           this.poData.unshift(tempObj);
         } else {
@@ -570,13 +663,26 @@ export class ManageFinanceComponent implements OnInit {
     retPOInfo.showInvoice = true;
     retPOInfo.edited = true;
     this.error = false;
-    if (this.unassignedBudget && this.unassignedBudget.length && this.unassignedBudget[0].total === 0) {
+    if (this.unassignedBudget && this.unassignedBudget.length && this.unassignedBudget[0].revenue === 0) {
       this.poData.forEach(element => {
+        element.poInfo[0].poRevenue = 0;
+        element.poInfo[0].poTotal = 0;
         element.poInfo[0].showAdd = false;
+        if (element.poInfo[0].total === 0)
+          element.poInfo[0].showDelete = true;
       });
       this.isPoRevenueDisabled = true;
       this.isAddToProjectHidden = true;
-    } else {
+    } else if (this.unassignedBudget && this.unassignedBudget.length && this.unassignedBudget[0].revenue !== 0) {
+      this.poData.forEach(element => {
+        element.poInfo[0].poRevenue = this.unassignedBudget[0].revenue;
+        element.poInfo[0].poTotal = this.unassignedBudget[0].total;
+        element.poInfo[0].showAdd = true;
+        if (element.poInfo[0].total === 0)
+          element.poInfo[0].showDelete = true;
+      });
+    }
+    else {
       retPOInfo.showAdd = true;
       retPOInfo.showDelete = retPOInfo.isExsitPO ? false : true;
       this.isPoRevenueDisabled = false;
@@ -588,11 +694,13 @@ export class ManageFinanceComponent implements OnInit {
    * This method is called when schedule invoice will trigger.
    */
   scheduleInvoice(poValue) {
+    this.isInvoiceEdit = false;
     this.invoiceHeader = 'Add Invoice Line Item';
     this.selectedPo = poValue.poInfo[0].poId;
     const clientLegalEntity = this.isPOEdit ? this.config.data.projectObj.ClientLegalEntity
       : this.pmObject.addProject.ProjectAttributes.ClientLegalEntity;
     this.primaryPoc = [];
+    this.addPOForm.get('amount').setValue(0);
     const poc = this.pmObject.projectContactsItems.filter((obj) =>
       obj.ClientLegalEntity === clientLegalEntity);
     if (poc && poc.length) {
@@ -607,12 +715,69 @@ export class ManageFinanceComponent implements OnInit {
    * This method is used to add the invoice details.
    */
   addInvoiceDetails() {
+    this.addInvoiceError = false;
     if (this.isInvoiceEdit) {
       const amount = this.addPOForm.get('amount').value;
       if (this.invoiceObj.amount !== amount) {
         //// Reduce amount on inv, po and add unassigned
-        alert('Inv amount updated');
-      } else {
+        const poIndex = this.poData.findIndex(item => item.poInfo[0].poId === this.invoiceObj.poId);
+        const retPOInfo = this.poData[poIndex].poInfo[0];
+        if (this.invoiceObj.amount > amount) {
+          //// Reduce all
+          retPOInfo.scRevenue = retPOInfo.scRevenue - this.invoiceObj.amount + amount;
+          retPOInfo.scTotal = retPOInfo.scTotal - this.invoiceObj.amount + amount;
+          this.poHeader.total = this.poHeader.total - this.invoiceObj.amount + amount;
+          this.poHeader.revenue = this.poHeader.revenue - this.invoiceObj.amount + amount;
+          this.unassignedBudget[0].revenue = this.unassignedBudget[0].revenue + (this.invoiceObj.amount - amount)
+          this.unassignedBudget[0].total = this.unassignedBudget[0].total + (this.invoiceObj.amount - amount)
+          retPOInfo.revenue = retPOInfo.revenue - this.invoiceObj.amount + amount;
+          retPOInfo.total = retPOInfo.total - this.invoiceObj.amount + amount;
+          retPOInfo.showAdd = true;
+          retPOInfo.showDelete = false;
+          if (retPOInfo.revenue === retPOInfo.scRevenue) {
+            retPOInfo.showInvoice = false;
+          }
+          this.poData.forEach(element => {
+            element.poInfo[0].poRevenue = this.unassignedBudget[0].revenue;
+            element.poInfo[0].poTotal = this.unassignedBudget[0].total;
+            element.poInfo[0].showAdd = true;
+            if (element.poInfo[0].total === 0)
+              element.poInfo[0].showDelete = true;
+          });
+          this.isAddToProjectHidden = this.unassignedBudget[0].revenue ? false : true;
+          this.showUnAssigned = this.unassignedBudget[0].revenue ? true : false;
+        }
+        else {
+          ///// Check and add
+          if ((retPOInfo.revenue - (retPOInfo.scRevenue - this.invoiceObj.amount) >= amount)) {
+            retPOInfo.scRevenue = retPOInfo.scRevenue - this.invoiceObj.amount + amount;
+            retPOInfo.scTotal = retPOInfo.scTotal - this.invoiceObj.amount + amount;
+          }
+          else {
+            this.addInvoiceError = true;
+            this.addInvoiceErrorMsg = this.pmConstant.ERROR.INVOICE_AMOUNT_GREATER;
+            return;
+          }
+          if (retPOInfo.revenue === retPOInfo.scRevenue) {
+            retPOInfo.showAdd = false;
+            retPOInfo.showDelete = false;
+            retPOInfo.showInvoice = false;
+          }
+        }
+        this.invoiceObj.amount = amount;
+        this.invoiceObj.poc = this.addPOForm.value.primarypoc;
+        this.invoiceObj.pocText = this.pmCommonService.extractNamefromPOC([this.invoiceObj.poc]);
+        this.invoiceObj.address = this.addPOForm.value.address;
+        this.invoiceObj.edited = true;
+        retPOInfo.edited = true;
+        this.showAddInvoiceDetails = false;
+
+        const isTotalMatched = this.isScheduledMatched();
+        if (isTotalMatched) {
+          this.showSave = true;
+        }
+      }
+      else {
         this.saveInvoiceEdit();
       }
     } else {
@@ -620,6 +785,11 @@ export class ManageFinanceComponent implements OnInit {
       const retPOInfo = this.poData[poIndex].poInfo[0];
       this.addInvoiceError = false;
       if (this.addPOForm.valid) {
+        if (this.addPOForm.value.amount <= 0) {
+          this.addInvoiceError = true;
+          this.addInvoiceErrorMsg = this.pmConstant.ERROR.INVOICE_AMOUNT_ZERO;
+          return
+        }
         const tempPOObj = $.extend(true, {}, this.poAddObj);
         tempPOObj.poId = retPOInfo.poId;
         tempPOObj.inv_number = '';
@@ -635,7 +805,8 @@ export class ManageFinanceComponent implements OnInit {
         tempPOObj.address = this.addPOForm.value.address;
         tempPOObj.isExsitInv = false;
         tempPOObj.edited = true;
-        if (tempPOObj.amount > retPOInfo.total) {
+
+        if (tempPOObj.amount > (retPOInfo.revenue - retPOInfo.scRevenue)) {
           this.addInvoiceError = true;
           this.addInvoiceErrorMsg = this.pmConstant.ERROR.INVOICE_AMOUNT_GREATER;
         } else {
@@ -646,7 +817,7 @@ export class ManageFinanceComponent implements OnInit {
           retPOInfo.scTax = retPOInfo.scTax + 0;
           this.poData[poIndex].poInfoData.push(tempPOObj);
           this.showAddInvoiceDetails = false;
-          if (retPOInfo.total === retPOInfo.scTotal) {
+          if (retPOInfo.revenue === retPOInfo.scRevenue) {
             retPOInfo.showAdd = false;
             retPOInfo.showDelete = false;
             retPOInfo.showInvoice = false;
@@ -660,6 +831,7 @@ export class ManageFinanceComponent implements OnInit {
         this.validateAllFormFields(this.addPOForm);
       }
     }
+    this.isInvoiceEdit = false;
   }
   /***
    * This function is used to validate the form field
@@ -742,7 +914,7 @@ export class ManageFinanceComponent implements OnInit {
    * This method is used to save the PO.
    */
   savePo() {
-    this.savePOArray.push({ budget: this.budgetData, PO: this.poData });
+    this.savePOArray.push({ budget: this.budgetData, PO: this.poData, Rate: this.hourlyRate, OverNightRequest: this.selectedOverNightRequest });
     // store value into global variable.
     this.pmObject.addProject.FinanceManagement.POListArray = this.poArray;
     this.pmObject.addProject.FinanceManagement.POArray = this.poData;
@@ -994,16 +1166,15 @@ export class ManageFinanceComponent implements OnInit {
       unassignedObj.oop = tempbudgetObject.oop - poOOP;
       unassignedObj.tax = tempbudgetObject.tax - poTax;
 
-      if (!unassignedObj.total) {
+      if (!unassignedObj.revenue) {
         this.poData.forEach(element => {
           element.poInfo[0].showAdd = false;
         });
       }
 
       this.unassignedBudget.push(unassignedObj);
-      this.showUnAssigned = unassignedObj.total ? true : false;
-      this.isAddToProjectHidden = unassignedObj.total ? false : true;
-
+      this.showUnAssigned = unassignedObj.revenue ? true : false;
+      this.isAddToProjectHidden = unassignedObj.revenue ? false : true;
 
       this.existPODataArray = this.poData;
       this.showPo = true;
@@ -1363,9 +1534,9 @@ export class ManageFinanceComponent implements OnInit {
       }
 
     });
-    data.POLookup = po.poId;
+    data.POLookup = po.status === 'Deleted' ? null : po.poId;
     if (po.isExsitPO) {
-      data.Status = po.status;
+      data.Status = po.status === 'Not Saved' ? 'Active' : po.status;
       if (projObj.ProjectType === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
         data.Amount = 0;
         data.AmountRevenue = 0;
@@ -1388,7 +1559,7 @@ export class ManageFinanceComponent implements OnInit {
       return data;
     } else {
       data.ProjectNumber = projObj.ProjectCode;
-      data.Status = po.status;
+      data.Status = po.status === 'Not Saved' ? 'Active' : po.status;
       if (projObj.ProjectType === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
         data.Amount = 0;
         data.AmountRevenue = 0;

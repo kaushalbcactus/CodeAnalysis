@@ -260,6 +260,8 @@ export class SendToClientComponent implements OnInit {
       filter: currentFilter,
       top: 4200
     };
+   
+    
     this.scArrays.taskItems = await this.spServices.read('' + this.Constant.listNames.Schedules.name + '', queryOptions);
     const projectCodeTempArray = [];
     const clientLegalEntityTempArray = [];
@@ -270,6 +272,12 @@ export class SendToClientComponent implements OnInit {
     const previousTaskOwnerTempArray = [];
     const previousTaskStatusTempArray = [];
     if (this.scArrays.taskItems && this.scArrays.taskItems.length) {
+      let arrResultsProj: any = [];
+      if (!this.pmObject.allProjectItems.length) {
+        // Get all project information based on current user.
+        arrResultsProj = await this.pmCommonService.getProjects();
+        this.pmObject.allProjectItems = arrResultsProj;
+      }
       this.pmObject.countObj.scCount = this.scArrays.taskItems.length;
       this.pmObject.totalRecords.ClientReview = this.pmObject.countObj.scCount;
       this.pmObject.tabMenuItems[2].label = 'Send to Client (' + this.pmObject.countObj.scCount + ')';
@@ -362,8 +370,8 @@ export class SendToClientComponent implements OnInit {
       this.pmObject.sendToClientArray = tempSendToClientArray;
       const tableRef: any = this.sct;
       tableRef.first = 0;
-      this.pmObject.totalRecords.SendToClient = this.pmObject.sendToClientArray.length;
-      this.pmObject.sendToClientArray_copy = tempSendToClientArray.slice(0, 5);
+      // this.pmObject.totalRecords.SendToClient = this.pmObject.sendToClientArray.length;
+      // this.pmObject.sendToClientArray_copy = tempSendToClientArray.slice(0, 5);
       this.isSCTableHidden = false;
       this.isSCInnerLoaderHidden = true;
       this.isSCFilterHidden = false;
@@ -377,7 +385,7 @@ export class SendToClientComponent implements OnInit {
       this.isSCInnerLoaderHidden = true;
       this.isSCFilterHidden = false;
     }
-    this.commonService.setIframeHeight();
+    //this.commonService.setIframeHeight();
   }
   myFunction() {
     document.getElementById('myDropdown').classList.toggle('show');
