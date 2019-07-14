@@ -817,7 +817,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         mailContent = this.replaceContent(mailContent, "@@Val2@@", this.selectedRowItem.ProjectCode);
         mailContent = this.replaceContent(mailContent, "@@Val3@@", this.selectedRowItem.ClientName);
         mailContent = this.replaceContent(mailContent, "@@Val4@@", this.selectedRowItem.PO);
-        mailContent = this.replaceContent(mailContent, "@@Val5@@", this.selectedRowItem.ScheduledDate);
+        mailContent = this.replaceContent(mailContent, "@@Val5@@", this.datePipe.transform(this.selectedRowItem.ScheduledDate, 'MMM dd, yyyy'));
         mailContent = this.replaceContent(mailContent, "@@Val6@@", this.selectedRowItem.Currency + ' ' + this.selectedRowItem.Amount);
         mailContent = this.replaceContent(mailContent, "@@Val7@@", this.selectedRowItem.SOWCode);
 

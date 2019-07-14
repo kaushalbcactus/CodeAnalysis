@@ -3,10 +3,10 @@
         <div id="scInnerLoader"></div>
         <div id="scInnerLoaderText">Loading...</div>
     </div>
-    <div class="noDataMessage" [hidden]='paHideNoDataMessage'>
+    <div class="noDataMessage" [hidden]='paHideNoDataMessage'> 
         No Project Found.
     </div>
-    <div class="table100 projectDataExist ver4 m-b-110" [hidden]="isPATableHidden">
+    <div class="pendingTable table100 projectDataExist ver4 m-b-110" [hidden]="isPATableHidden">
         <div class="box excelIcon">
             <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(paTableRef)"
                 title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
@@ -63,11 +63,13 @@
                     <td>{{task.Milestone}}</td>
                     <td>{{task.Status}}</td>
                     <td>
-                        <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems"
-                            [popup]="true">
-                        </p-menu>
-                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
-                            (click)="storeRowData(rowData); menu.toggle($event);"></i>
+                        <div>
+                            <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems"
+                                [popup]="true">
+                            </p-menu>
+                            <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
+                                (click)="storeRowData(rowData); menu.toggle($event);"></i>
+                        </div>
                     </td>
                 </tr>
             </ng-template>

@@ -190,6 +190,12 @@ export class ClientReviewComponent implements OnInit {
     const milestoneTempArray = [];
     const deliveryDateTempArray = [];
     if (this.crArrays.taskItems.length) {
+      let arrResultsProj: any = [];
+      if (!this.pmObject.allProjectItems.length) {
+        // Get all project information based on current user.
+        arrResultsProj = await this.pmCommonService.getProjects();
+        this.pmObject.allProjectItems = arrResultsProj;
+      }
       this.pmObject.countObj.crCount = this.crArrays.taskItems.length;
       this.pmObject.totalRecords.ClientReview = this.pmObject.countObj.crCount;
       this.pmObject.tabMenuItems[3].label = 'Client Review (' + this.pmObject.countObj.crCount + ')';

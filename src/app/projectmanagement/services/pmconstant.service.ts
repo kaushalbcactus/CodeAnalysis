@@ -337,6 +337,7 @@ export class PmconstantService {
     PO_NOT_SELECTED: 'Please select PO.',
     PO_ALREADY_EXIST: 'PO already assiged to the project. Please select some other PO.',
     INVOICE_AMOUNT_GREATER: 'Invoice amount is greater than the pending amount to be scheduled.',
+    INVOICE_AMOUNT_ZERO: 'Invoice amount should be greater than 0.',
     AUDIT_COMPLETE_ERROR: 'Please select checkbox or enter comment for each checklist parmater.',
     SELECT_SOW: 'Please select SOW code.',
     BLANK_HOURLY_BUDGET: 'Please enter rate.',
@@ -364,7 +365,8 @@ export class PmconstantService {
     INVOICE_LINE_ITEMS_BY_PROJECTCODE: {
       select: 'ID, Title, ScheduledDate,Amount, Currency, PO, MainPOC, AddressType, SOWCode, ScheduleType, Status, ProformaLookup,'
         + ' InvoiceLookup',
-      filter: 'Title eq \'{{projectCode}}\' and Status ne \'Deleted\''
+      filter: 'Title eq \'{{projectCode}}\' and Status ne \'Deleted\'',
+      orderby: 'ScheduledDate'
     },
     PROJECT_BUDGET_BREAKUP: {
       select: 'ID, Title, ProjectLookup, Status, ApprovalDate, OriginalBudget, NetBudget, OOPBudget, TaxBudget, ProjectCode,'
@@ -459,5 +461,11 @@ export class PmconstantService {
   public PROJECT_BUDGET_INCREASE_REASON = {
     SCOPE_INCREASE: 'Scope increase',
     INPUT_ERROR: 'Input error'
+  };
+  public PROJECT_BUDGET_DECREASE_REASON = {
+    SCOPE_REDUCE: 'Scope reduction',
+    QUALITY: 'Client discount - quality complaints',
+    RELATIONSHIP: 'Client discount - relationship',
+    INPUT_ERROR: 'Input error',
   };
 }
