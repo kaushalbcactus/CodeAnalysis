@@ -176,6 +176,7 @@ export class SOWComponent implements OnInit,  OnDestroy {
   addProjectSOW(task) {
     this.pmObject.isAddProjectVisible = true;
     this.pmObject.addProject.SOWSelect.SOWCode = task.SOWCode;
+    this.pmObject.addProject.SOWSelect.SOWSelectedItem = task;
     this.pmObject.activeIndex = 1;
   }
   viewProjectSOW(task) {
@@ -231,6 +232,19 @@ export class SOWComponent implements OnInit,  OnDestroy {
         sowObj.POC = poc.length > 0 ? poc[0].FullName : '';
         sowObj.CreatedBy = task.Author ? task.Author.Title : '';
         sowObj.CreatedDate = task.Created;
+        sowObj.TotalBudget = task.TotalBudget ? task.TotalBudget : 0;
+        sowObj.NetBudget = task.NetBudget ? task.NetBudget : 0;
+        sowObj.OOPBudget = task.OOPBudget ? task.OOPBudget : 0;
+        sowObj.TaxBudget = task.TaxBudget ? task.TaxBudget : 0;
+        sowObj.RevenueLinked = task.RevenueLinked ? task.RevenueLinked : 0;
+        sowObj.OOPLinked = task.OOPLinked ? task.OOPLinked : 0;
+        sowObj.TaxLinked = task.TaxLinked ? task.TaxLinked : 0;
+        sowObj.TotalScheduled = task.TotalScheduled ? task.TotalScheduled : 0;
+        sowObj.TotalLinked = task.TotalLinked ? task.TotalLinked : 0;
+        sowObj.ScheduledRevenue = task.ScheduledRevenue ? task.ScheduledRevenue : 0;
+        sowObj.TotalInvoiced = task.TotalInvoiced ? task.TotalInvoiced : 0;
+        sowObj.InvoicedRevenue = task.InvoicedRevenue ? task.InvoicedRevenue : 0;
+        sowObj.ClientLegalEntity = task.ClientLegalEntity;
         sowCodeTempArray.push({ label: sowObj.SOWCode, value: sowObj.SOWCode });
         shortTitleTempArray.push({ label: sowObj.ShortTitle, value: sowObj.ShortTitle });
         clientLegalEntityTempArray.push({ label: sowObj.ClientLegalEntity, value: sowObj.ClientLegalEntity });

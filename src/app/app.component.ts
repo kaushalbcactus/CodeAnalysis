@@ -35,13 +35,6 @@ export class AppComponent {
     window['fdComponentReference'] = { component: this, zone: this._ngZone, loadFD: () => this.goToFD(), };
     window['pmComponentReference'] = { component: this, zone: this._ngZone, loadPM: () => this.goToPM(), };
     window['myDashboardComponentReference'] = { component: this, zone: this._ngZone, loadMyDashboard: () => this.goToMyDashboard(), };
-
-    // UnComment for production
-    // if (Environment.production) {
-    //   if (window) {
-    //     window.console.log = function () { };
-    //   }
-    // }
   }
 
   goToPubSupport() {

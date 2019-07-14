@@ -377,7 +377,7 @@ export class PmconstantService {
   };
   public QUERY = {
     GET_TIMESPENT: {
-      select: 'ID, Title, Task,TimeSpent',
+      select: 'ID, Title, Task,TimeSpent, Status',
       filter: 'ProjectCode eq \'{{projectCode}}\''
     },
     PROJECT_BUDGET_BREAKUP_BY_PROJECTCODE: {
@@ -461,6 +461,15 @@ export class PmconstantService {
   public PROJECT_BUDGET_INCREASE_REASON = {
     SCOPE_INCREASE: 'Scope increase',
     INPUT_ERROR: 'Input error'
+  };
+  public ACTION = {
+    CONFIRM_PROJECT: 'Confirm Project',
+    PROPOSE_CLOSURE: 'Propose Closure',
+    AUDIT_PROJECT: 'Audit Project',
+    CLOSE_PROJECT: 'Close Project',
+    CANCEL_PROJECT: 'Cancel Project',
+    APPROVED: 'Approved',
+    REJECTED: 'rejected'
   };
   public PROJECT_BUDGET_DECREASE_REASON = {
     SCOPE_REDUCE: 'Scope reduction',
