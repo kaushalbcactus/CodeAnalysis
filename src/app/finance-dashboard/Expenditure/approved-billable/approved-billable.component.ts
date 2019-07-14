@@ -204,7 +204,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             { field: 'ClientCurrency', header: 'Client Currency', visibility: true },
             { field: 'ClientAmount', header: 'Client Amount', visibility: true },
             { field: 'Status', header: 'Status', visibility: true },
-            
+
             { field: 'Category', header: 'Category', visibility: false },
             { field: 'PaymentMode', header: 'Payment Mode', visibility: false },
             { field: 'RequestType', header: 'Request Type', visibility: false },
@@ -489,6 +489,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     openPopup(modal: string) {
         console.log('selectedAllRowsItem ', this.selectedAllRowsItem);
         console.log('this.selectedRowItemData ', this.selectedRowItemData);
+        this.listOfPOCs = [];
         this.checkUniquePC();
         if (!this.selectedAllRowsItem.length) {
             this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Please select at least 1 Projects & try again', detail: '', life: 4000 });
@@ -592,10 +593,21 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.poNames = [];
         this.purchaseOrdersList.map((x) => {
             if (x.ClientLegalEntity === cli.ClientLegalEntity) {
-                this.poNames.push(x);
+                if (this.matchCurrency(x)) {
+                    this.poNames.push(x);
+                }
             }
         });
         console.log(this.poNames);
+    }
+
+    matchCurrency(po) {
+        let found = this.selectedAllRowsItem.find(item => {
+            if (item.ClientCurrency === po.Currency) {
+                return item;
+            }
+        })
+        return found ? found : ''
     }
 
     checkUniquePC() {
@@ -647,7 +659,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
     oopBalance: number = 0;
     poItem: any;
-    poChange(event) {
+    async poChange(event) {
         console.log('po event ', event.value);
         this.submitBtn.isClicked = false;
         this.poItem = event.value;
@@ -656,7 +668,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             this.oopBalance = (this.poItem.AmountOOP ? this.poItem.AmountOOP : 0 - this.poItem.OOPLinked ? this.poItem.OOPLinked : 0);
         }
         if (this.oopBalance >= this.scheduleOopInvoice_form.getRawValue().Amount) {
-            this.getPfPfb();
+            await this.getPfPfb();
         } else {
             this.submitBtn.isClicked = true;
             this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'OOP Balance must be greater than Scheduled oop Amount.', detail: '', life: 4000 });
@@ -676,6 +688,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     projectInfoLineItem: any;
     pcmLevels: any = [];
     async getPfPfb() {
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         this.hBQuery = [];
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
@@ -735,7 +748,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             this.pfbListItem = arrResults[1];
             this.pbbListItem = arrResults[2];
         }
-        // });
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
 
     }
 
@@ -932,6 +945,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 MainPOC: this.scheduleOopInvoice_form.getRawValue().POCName.Id,
                 SOWCode: this.projectInfoLineItem.SOWCode,
                 CSId: { results: this.pcmLevels.map(x => x.ID) },
+                Template: this.pfListItem[0].Template,
                 Status: 'Scheduled'
             }
             obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };

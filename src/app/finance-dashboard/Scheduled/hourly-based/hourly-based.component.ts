@@ -30,7 +30,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     confirmHourlybased_form: FormGroup;
 
     // loader
-    isPSInnerLoaderHidden: boolean = false;
+    isPSInnerLoaderHidden: boolean = true;
 
     // Show Hide Requesr Expense Modal
     showHideREModal: boolean = false;
@@ -247,7 +247,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         if (arrResults.length) {
             this.formatData(arrResults);
         }
-        this.isPSInnerLoaderHidden = true;
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
     async formatData(data: any[]) {
@@ -302,7 +302,6 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             }
         }
         this.hourlyBasedRes = [...this.hourlyBasedRes];
-        this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         console.log('hourlyBasedRes data ', this.hourlyBasedRes);
         this.createColFieldValues();
@@ -835,6 +834,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 return
             }
             this.submitBtn.isClicked = true;
+            this.isPSInnerLoaderHidden = false;
             this.updateHourlyData();
             let obj1 = {
                 Budget: this.editHourly_form.value.Rate,
@@ -850,7 +850,6 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 }
             ]
             this.submitForm(data, type);
-            this.cancelFormSub('editHourly');
         }
     }
 
@@ -894,13 +893,12 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         if (type === "confirmInvoice") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice is Confirmed.', detail: '', life: 2000 });
             // this.cancelFormSub('confirmationModal');
-            this.sendCreateExpenseMail();
+            this.sendConfirmInvoiceMail();
         } else if (type === "editInvoice") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Updated.', detail: '', life: 2000 });
             this.cancelFormSub('editInvoice');
             this.reFetchData('edit');
         }
-        this.isPSInnerLoaderHidden = true;
 
         // });
     }
@@ -1025,7 +1023,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         return mailContent.replace(new RegExp(key, 'g'), value);
     }
 
-    sendCreateExpenseMail() {
+    sendConfirmInvoiceMail() {
 
         // Confirmation Mail 
         var mailSubject = this.selectedRowItem.ProjectCode + "/" + this.selectedRowItem.ClientLegalEntity + ": Confirmed line item for billing";
@@ -1051,7 +1049,6 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         // let tos = this.getTosList();
         this.spOperationsService.sendMail(this.getTosList('i').join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.spOperationsService.sendMail(this.getTosList('pc').join(','), this.currentUserInfoData.Email, pcmailSubject, pcmailContent, ccUser.join(','));
-        this.isPSInnerLoaderHidden = true;
         this.confirmationModal = false;
         this.reFetchData('confirm');
     }
@@ -1108,14 +1105,14 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 // Refetch PO/CLE Data
                 await this.fdDataShareServie.getClePO('hourly');
                 // Fetch latest PO & CLE
-                this.poInfo();
-                this.cleInfo();
-                await this.projectInfo();
-                this.getPCForSentToAMForApproval();
+                // this.poInfo();
+                // this.cleInfo();
+                // this.projectInfo();
+                // this.getPCForSentToAMForApproval();
             } else {
                 this.getPCForSentToAMForApproval();
             }
-            // this.getRequiredData();
+            this.isPSInnerLoaderHidden = true;
         }, 300);
     }
 
