@@ -50,10 +50,12 @@
     <div *ngIf="rate" class="ui-grid-row mt-20">
       <div class="ui-grid-col-2">Rate</div>
       <div class="ui-grid-col-3">
-        <input class="mr-5" type="text" size="20" placeholder="Rate" pInputText>
+        <input class="mr-5" type="text" size="20" disabled [(ngModel)]="pmObject.addProject.FinanceManagement.Rate" placeholder="Rate" pInputText>
       </div>
       <div class="ui-grid-col-2">Overnight Request</div>
-      <p-dropdown [options]="request" placeholder="Select Value" [showClear]="true"></p-dropdown>
+      <div class="ui-grid-col-3"></div>
+        <input class="mr-5" type="text" size="20" disabled [(ngModel)]="pmObject.addProject.FinanceManagement.OverNightRequest" placeholder="Rate" pInputText>
+      </div>
     </div>
     <div class="ui-grid-row mt-20">
       <div class="ui-grid-col-2">
@@ -106,11 +108,11 @@
               <tr>
                 <td>{{rowData.inv_number}}</td>
                 <td>{{rowData.prf_number}}</td>
-                <td>{{rowData.date | date:'medium'}}</td>
+                <td>{{rowData.date | date:'MMM dd, yyyy'}}</td>
                 <td>{{rowData.amount}}</td>
                 <td>{{rowData.type}}</td>
                 <td>{{rowData.status}}</td>
-                <td>{{rowData.poc}}</td>
+                <td>{{rowData.pocText}}</td>
                 <td>{{rowData.address}}</td>
                 <td></td>
               </tr>

@@ -270,7 +270,8 @@
           </tr>
           <tr>
             <td>
-              <p-button class="mt-20" label="Remove Invoices From project" type="button"></p-button>
+              <p-button class="mt-20" label="Reduce project budget" (click)="removeUnassigned()" type="button">
+              </p-button>
             </td>
           </tr>
         </ng-template>
@@ -280,13 +281,13 @@
   </p-accordion>
   <div *ngIf="!isPOEdit">
     <div class="ui-grid-row mt-20" style="float:right">
-      <p-button *ngIf="showSave" class="mr-5" type="button" (click)="savePo()" label="Save"></p-button>
-      <p-button class="mr-5" type="button" label="Cancel"></p-button>
+      <p-button *ngIf="showSave" type="button" (click)="savePo()" label="Save"></p-button>
+      <!-- <p-button class="mr-5" type="button" label="Cancel"></p-button> -->
     </div>
   </div>
   <div *ngIf="isPOEdit">
     <div class="ui-grid-row mt-20" style="float:right">
-      <p-button *ngIf="showSave" class="mr-5" type="button" (click)="saveUpdatePO()" label="Save"></p-button>
+      <p-button *ngIf="showSave" type="button" (click)="saveUpdatePO()" label="Save"></p-button>
     </div>
   </div>
 </div>
@@ -333,12 +334,12 @@
 
 <p-dialog [(visible)]="showBudgetIncrease" appendTo='body' [style]="{width: '500px'}">
   <p-header>
-      Budget Increment Popup 
+    Budget Increment Popup
   </p-header>
   <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
-      <div class="ui-grid-col-12">
-          Please select the reason and provide comments for budget increase.
-      </div>
+    <div class="ui-grid-col-12">
+      Please select the reason and provide comments for budget increase.
+    </div>
   </div>
   <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
     <div class="ui-grid-col-4"><span class="compulsory">*</span>Reason Type</div>
@@ -358,6 +359,58 @@
   <p-footer>
     <p-button type="button" (click)="increaseBudget()" label="Confirm"></p-button>
     <p-button type="button" (click)="showBudgetIncrease=false" label="Cancel">
+    </p-button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog *ngIf="showReduction" [(visible)]="showReduction" appendTo='body' [style]="{width: '500px'}">
+  <p-header>
+    Budget Reduction Popup
+  </p-header>
+  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+    <div class="ui-grid-col-12">
+      Are you sure you want to remove the un-assigned budget from the project ?
+    </div>
+  </div>
+  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+    <div class="ui-grid-col-12">
+      Note: If the project is already confirmed then an approval will be sent to CM Level 2 for approving the budget
+      reduction.
+    </div>
+  </div>
+  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+    <div class="ui-grid-col-4"><span class="compulsory">*</span>Reason Type</div>
+    <div class="ui-grid-col-4">
+      <p-dropdown [(ngModel)]="selectedReasonType" [options]="budgetDecreaseArray" placeholder="Please Select"
+        [showClear]="true" [filter]="true"></p-dropdown>
+    </div>
+  </div>
+  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+    <div class="ui-grid-col-4"><span class="compulsory">*</span>Reason</div>
+    <div class="ui-grid-col-4">
+      <div class="floatLeft">
+        <textarea [(ngModel)]="selectedReason" rows="3" cols="30"></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+    <!-- <div class="ui-grid-col-12"> -->
+    <div class="ui-grid-col-4"><span>Reduce budget hours from </span><span>{{budgetData[0].budget_hours}}</span> to
+    </div>
+    <div class="ui-grid-col-4">
+      <input class="mr-5" type="number" [(ngModel)]="newBudgetHrs" size="30" placeholder="New budget hrs" pInputText>
+    </div>
+
+    <!-- </div> -->
+    <!-- <div class="ui-grid-col-4">
+          <div class="floatLeft">
+            <textarea [(ngModel)]="selectedReason" rows="3" cols="30"></textarea>
+          </div>
+        </div> -->
+  </div>
+  <p-footer>
+    <p-button type="button" (click)="reduceBudget()" label="Confirm"></p-button>
+    <p-button type="button" (click)="showReduction=false" label="Cancel">
     </p-button>
   </p-footer>
 </p-dialog>

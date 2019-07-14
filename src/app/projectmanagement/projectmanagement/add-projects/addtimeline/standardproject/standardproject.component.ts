@@ -288,7 +288,9 @@ export class StandardprojectComponent implements OnInit {
       filter: 'LegalEntity/Title eq \'' + clientLegalEntity + '\' and Active eq \'Yes \''
     };
     standardTemplate = await this.spService.readItems(this.constants.listNames.StandardTemplates.name, standardTemplateOptions);
-    this.loadServiceDropDown(standardTemplate);
+    if(standardTemplate && standardTemplate.length) {
+      this.loadServiceDropDown(standardTemplate);
+    }
   }
   /**
    * This method is used to fetch the milestone for standard project.
