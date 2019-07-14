@@ -685,13 +685,13 @@ export class TimelineHistoryComponent implements OnInit {
               if (properties[key] && !versionDetail.InvoiceHtml) {
                 obj.activity_type = 'Attachment';
                 obj.activity_description = 'File Replaced';
-                obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + properties[key];
+                obj.file_uploaded = properties[key];
               }
               break;
             case this.globalConstant.invoiceList.columns.PaymentURL:
               if (properties[key]) {
                 obj.activity_type = 'Payment resolved attachment';
-                obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + properties[key];
+                obj.file_uploaded =  properties[key];
               }
               break;
             case this.globalConstant.invoiceList.columns.InvoiceHtml:
@@ -767,7 +767,7 @@ export class TimelineHistoryComponent implements OnInit {
             case this.globalConstant.proformaList.columns.FileURL:
               if (properties[key] && !versionDetail.ProformaHtml) {
                 obj.activity_type = 'Attachment';
-                obj.file_uploaded = this.global.sharePointPageObject.serverRelativeUrl + properties[key];
+                obj.file_uploaded =  properties[key];
                 obj.activity_description = 'File Replaced';
               }
               break;
