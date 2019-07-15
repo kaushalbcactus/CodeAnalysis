@@ -25,7 +25,7 @@
                 </tr>
                 <tr>
                     <th class="lastColumnWidth"></th>
-                    <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                    <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
                         <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="paArrays.projectCodeArray"
                             defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
                         </p-multiSelect>
