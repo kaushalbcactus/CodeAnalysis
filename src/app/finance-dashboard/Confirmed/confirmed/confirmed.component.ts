@@ -392,6 +392,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.confirmedInColArray.POName = [];
             this.confirmedInColArray.ClientLegalEntity = [];
             this.confirmedInColArray.PONumber = [];
+            this.po = {};
         }
     }
 
@@ -747,7 +748,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
     showHideState(val: any) {
         console.log('val ', val);
-        val.value == "US" ? this.isTemplate4US = true : this.isTemplate4US = false;
+        if (val) {
+            val.value == "US" ? this.isTemplate4US = true : this.isTemplate4US = false;
+        }
     }
 
 
