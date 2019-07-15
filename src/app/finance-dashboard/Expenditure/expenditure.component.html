@@ -69,7 +69,7 @@
             </div>
             <div class="p-col-4">
                 <div class="box">
-                    <p-dropdown [options]="freelancerVendersRes" virtualScroll="true" itemSize="30" [showClear]="false"
+                    <p-dropdown resetFilterOnHide="true"[options]="freelancerVendersRes" virtualScroll="true" itemSize="30" [showClear]="false"
                         resetFilterOnHide="false" filter="true" autoDisplayFirst="false" name="projctCodeDD"
                         placeholder="Select Freelancer/ Vendor Name " [style]="{'width':'100%'}"
                         formControlName="FreelancerVenderName" optionLabel="Title">
@@ -110,7 +110,7 @@
             </div>
             <div class="p-col-8">
                 <div class="box">
-                    <p-dropdown [options]="currencyList" placeholder="Select Currency" [showClear]="false"
+                    <p-dropdown resetFilterOnHide="true"[options]="currencyList" placeholder="Select Currency" [showClear]="false"
                         resetFilterOnHide="false" filter="true" autoDisplayFirst="false" name="currency"
                         placeholder="Select a Currency" [style]="{'width':'100%'}" formControlName="Currency">
                         <ng-template let-item pTemplate="item">
@@ -153,7 +153,7 @@
             </div>
             <div class="p-col-8">
                 <div class="box">
-                    <p-dropdown [options]="expenseTypeArray" placeholder="Select a Expense Type"
+                    <p-dropdown resetFilterOnHide="true"[options]="expenseTypeArray" placeholder="Select a Expense Type"
                         [style]="{'width':'100%'}" formControlName="SpendType" optionLabel="value"
                         onfocus='this.size=10;'>
                     </p-dropdown>
@@ -226,7 +226,7 @@
                 </tr>
                 <tr *ngFor="let p of totalLineItems; let i = index">
                     <td>
-                        <p-dropdown [options]="piCleData" [group]="true" virtualScroll="true" itemSize="31"
+                        <p-dropdown resetFilterOnHide="true"[options]="piCleData" [group]="true" virtualScroll="true" itemSize="31"
                             filter="true" placeholder="Select a Project Code / Client" [style]="{'width':'100%'}"
                             [(ngModel)]="p.ProjectCode" (onChange)="selectedProjectCode($event.value, i)">
                             <ng-template let-group pTemplate="group">
@@ -324,7 +324,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-dropdown [options]="recordTypes" virtualScroll="true" itemSize="30" [showClear]="false"
+                    <p-dropdown resetFilterOnHide="true"[options]="recordTypes" virtualScroll="true" itemSize="30" [showClear]="false"
                         placeholder="Select a type" [style]="{'width':'100%'}" formControlName="RecordType"
                         optionLabel="label">
                     </p-dropdown>
@@ -343,7 +343,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-dropdown [options]="billingEntityData" virtualScroll="true" itemSize="30" [showClear]="false"
+                    <p-dropdown resetFilterOnHide="true"[options]="billingEntityData" virtualScroll="true" itemSize="30" [showClear]="false"
                         placeholder="Select a Billing Entity" [style]="{'width':'100%'}" formControlName="BilledTo"
                         optionLabel="Title">
                     </p-dropdown>

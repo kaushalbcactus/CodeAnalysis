@@ -348,28 +348,32 @@ export class FDDataShareService {
 
 
     }
-
+    clePoPiRes: any = [];
     async getClePO(type: string) {
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        const clientLegalEntityEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
-        const projectPO = this.spServices.getReadURL('' + this.constantService.listNames.ProjectPO.name + '', this.fdConstantsService.fdComponent.projectPO);
-        let endPoints = [clientLegalEntityEndpoint, projectPO];
-        if (type === 'hourly') {
-            const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
-            endPoints = [clientLegalEntityEndpoint, projectPO, projectInfoEndpoint];
-        }
-        let userBatchBody;
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
+        if (this.clePoPiRes.length) {
+            return this.clePoPiRes;
+        } else {
+            const batchContents = new Array();
+            const batchGuid = this.spServices.generateUUID();
+            const clientLegalEntityEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
+            const projectPO = this.spServices.getReadURL('' + this.constantService.listNames.ProjectPO.name + '', this.fdConstantsService.fdComponent.projectPO);
+            let endPoints = [clientLegalEntityEndpoint, projectPO];
+            if (type === 'hourly') {
+                const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
+                endPoints = [clientLegalEntityEndpoint, projectPO, projectInfoEndpoint];
+            }
+            let userBatchBody;
+            for (let i = 0; i < endPoints.length; i++) {
+                const element = endPoints[i];
+                this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+            }
+            batchContents.push('--batch_' + batchGuid + '--');
+            userBatchBody = batchContents.join('\r\n');
 
-        const arrResults = await this.spServices.getFDData(batchGuid, userBatchBody);
-        this.requiredData = arrResults;
-        this.setClePOData(arrResults);
+            const arrResults = await this.spServices.getFDData(batchGuid, userBatchBody);
+            this.clePoPiRes = arrResults;
+            this.setClePOData(arrResults);
+        }
     }
 
     setClePOData(data) {
