@@ -348,11 +348,11 @@ export class FDDataShareService {
 
 
     }
-    clePoPiRes: any = [];
+    // clePoPiRes: any = [];
     async getClePO(type: string) {
-        if (this.clePoPiRes.length) {
-            return this.clePoPiRes;
-        } else {
+        // if (this.clePoPiRes.length) {
+        //     return this.clePoPiRes;
+        // } else {
             const batchContents = new Array();
             const batchGuid = this.spServices.generateUUID();
             const clientLegalEntityEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
@@ -371,9 +371,9 @@ export class FDDataShareService {
             userBatchBody = batchContents.join('\r\n');
 
             const arrResults = await this.spServices.getFDData(batchGuid, userBatchBody);
-            this.clePoPiRes = arrResults;
+            // this.clePoPiRes = arrResults;
             this.setClePOData(arrResults);
-        }
+        // }
     }
 
     setClePOData(data) {

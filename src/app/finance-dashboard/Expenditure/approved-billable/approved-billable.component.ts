@@ -501,15 +501,16 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 console.log('Sts ', sts);
                 // if (this.selectedAllRowsItem[0].Status.includes('Approved')) {
                 if (sts) {
-                    this.scheduleOopModal = true;
+                    this.poNames = [];
+                   
                     let pInfo = this.getCleFromPC();
-                    console.log('pInfo ', pInfo);
                     if (pInfo) {
                         this.getPONumberFromCLE(pInfo);
                         this.getPOCFromPCLE(pInfo);
                     }
                     console.log('this.listOfPOCs ', this.listOfPOCs);
                     this.setValInScheduleOop(this.selectedRowItemData);
+                    this.scheduleOopModal = true;
                 } else {
                     this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Please select only those Projects whose payment is pending & try again', detail: '', life: 4000 });
                 }
@@ -590,7 +591,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     // Project PO
     poNames: any = [];
     getPONumberFromCLE(cli) {
-        this.poNames = [];
+        
         this.purchaseOrdersList.map((x) => {
             if (x.ClientLegalEntity === cli.ClientLegalEntity) {
                 if (this.matchCurrency(x)) {
@@ -664,8 +665,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.submitBtn.isClicked = false;
         this.poItem = event.value;
         this.oopBalance = 0;
+        this.poItem.OOPLinked = this.poItem.OOPLinked ? this.poItem.OOPLinked : 0;
         if (this.poItem) {
-            this.oopBalance = (this.poItem.AmountOOP ? this.poItem.AmountOOP : 0 - this.poItem.OOPLinked ? this.poItem.OOPLinked : 0);
+            this.oopBalance = (this.poItem.AmountOOP ? this.poItem.AmountOOP - this.poItem.OOPLinked : 0 - this.poItem.OOPLinked);
         }
         if (this.oopBalance >= this.scheduleOopInvoice_form.getRawValue().Amount) {
             await this.getPfPfb();

@@ -104,7 +104,7 @@
     </ng-template>
     <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
 
-        <tr [pSelectableRow]="rowData">
+        <tr >
             <td>{{rowIndex+1}}</td>
             <td>
                 <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
