@@ -329,6 +329,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     // Get Proformas InvoiceItemList
     confirmedILIarray: any = [];
     async getRequiredData() {
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
         let invoicesQuery = '';
@@ -395,7 +396,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 LineItemsLookup: element.LineItemsLookup,
                 Reason: element.Reason,
                 State: element.State,
-                Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyyy'),
+                Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
                 ModifiedBy: resCInfo
             })
         }
@@ -670,6 +671,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         IsTaggedFully: 'No'
     };
     async getILIByPID() {
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
         let invoicesQuery = '';
@@ -705,7 +707,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             }
             this.getUniqueItem(arrResults[0]);
         }
-        // });
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
     getUniqueItem(data: any[]) {
@@ -875,11 +877,11 @@ export class ProformaComponent implements OnInit, OnDestroy {
         let poObj: any = {};
         if (this.selectedRowItem) {
             proformaType = this.selectedRowItem.ProformaType;
-             // tslint:disable
-             // InvoicedRevenue: (poItem.InvoicedRevenue ? poItem.InvoicedRevenue : 0 + this.selectedRowItem.Amount),
-             // 
+            // tslint:disable
+            // InvoicedRevenue: (poItem.InvoicedRevenue ? poItem.InvoicedRevenue : 0 + this.selectedRowItem.Amount),
+            // 
             if (proformaType === 'revenue') {
-                poObj = {                   
+                poObj = {
                     InvoicedRevenue: (poItem.InvoicedRevenue ? poItem.InvoicedRevenue + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
                     ScheduledRevenue: (poItem.ScheduledRevenue ? poItem.ScheduledRevenue - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount),
                     TotalInvoiced: (poItem.TotalInvoiced ? poItem.TotalInvoiced + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
@@ -887,10 +889,10 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 };
             } else if (proformaType === 'oop') {
                 poObj = {
-                    ScheduledOOP: (poItem.ScheduledOOP ? poItem.ScheduledOOP - this.selectedRowItem.Amount: 0 - this.selectedRowItem.Amount),
-                    InvoicedOOP: (poItem.InvoicedOOP ? poItem.InvoicedOOP + this.selectedRowItem.Amount: 0 + this.selectedRowItem.Amount),
-                    TotalInvoiced: (poItem.TotalInvoiced ? poItem.TotalInvoiced + this.selectedRowItem.Amount: 0 + this.selectedRowItem.Amount),
-                    TotalScheduled: (poItem.TotalScheduled ? poItem.TotalScheduled - this.selectedRowItem.Amount: 0 - this.selectedRowItem.Amount),
+                    ScheduledOOP: (poItem.ScheduledOOP ? poItem.ScheduledOOP - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount),
+                    InvoicedOOP: (poItem.InvoicedOOP ? poItem.InvoicedOOP + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
+                    TotalInvoiced: (poItem.TotalInvoiced ? poItem.TotalInvoiced + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
+                    TotalScheduled: (poItem.TotalScheduled ? poItem.TotalScheduled - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount),
                 };
             }
             // tslint:disable
@@ -937,18 +939,18 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 if (proformaType === 'revenue') {
                     pfbs.push({
                         Id: pfbsItem.Id,
-                        InvoicedRevenue: (pfbsItem.InvoicedRevenue ? pfbsItem.InvoicedRevenue + element.Amount: 0 + element.Amount),
-                        ScheduledRevenue: (pfbsItem.ScheduledRevenue ? pfbsItem.ScheduledRevenue - element.Amount: 0 - element.Amount),
-                        TotalInvoiced: (pfbsItem.TotalInvoiced ? pfbsItem.TotalInvoiced + element.Amount: 0 + element.Amount),
-                        TotalScheduled: (pfbsItem.TotalScheduled ? pfbsItem.TotalScheduled - element.Amount: 0 - element.Amount),
+                        InvoicedRevenue: (pfbsItem.InvoicedRevenue ? pfbsItem.InvoicedRevenue + element.Amount : 0 + element.Amount),
+                        ScheduledRevenue: (pfbsItem.ScheduledRevenue ? pfbsItem.ScheduledRevenue - element.Amount : 0 - element.Amount),
+                        TotalInvoiced: (pfbsItem.TotalInvoiced ? pfbsItem.TotalInvoiced + element.Amount : 0 + element.Amount),
+                        TotalScheduled: (pfbsItem.TotalScheduled ? pfbsItem.TotalScheduled - element.Amount : 0 - element.Amount),
                     })
                 } else if (proformaType === 'oop') {
                     pfbs.push({
                         Id: pfbsItem.Id,
-                        ScheduledOOP: (pfbsItem.ScheduledOOP ? pfbsItem.ScheduledOOP - element.Amount: 0 - element.Amount),
-                        InvoicedOOP: (pfbsItem.InvoicedOOP ? pfbsItem.InvoicedOOP + element.Amount: 0 + element.Amount),
-                        TotalInvoiced: (pfbsItem.TotalInvoiced ? pfbsItem.TotalInvoiced + element.Amount: 0 + element.Amount),
-                        TotalScheduled: (pfbsItem.TotalScheduled ? pfbsItem.TotalScheduled - element.Amount: 0 - element.Amount),
+                        ScheduledOOP: (pfbsItem.ScheduledOOP ? pfbsItem.ScheduledOOP - element.Amount : 0 - element.Amount),
+                        InvoicedOOP: (pfbsItem.InvoicedOOP ? pfbsItem.InvoicedOOP + element.Amount : 0 + element.Amount),
+                        TotalInvoiced: (pfbsItem.TotalInvoiced ? pfbsItem.TotalInvoiced + element.Amount : 0 + element.Amount),
+                        TotalScheduled: (pfbsItem.TotalScheduled ? pfbsItem.TotalScheduled - element.Amount : 0 - element.Amount),
                     })
                 }
             }
@@ -958,18 +960,18 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 if (proformaType === 'revenue') {
                     sows.push({
                         Id: sowsItem.Id,
-                        InvoicedRevenue: (sowsItem.InvoicedRevenue ? sowsItem.InvoicedRevenue + element.Amount: 0 + element.Amount),
-                        ScheduledRevenue: (sowsItem.ScheduledRevenue ? sowsItem.ScheduledRevenue - element.Amount: 0 - element.Amount ),
-                        TotalInvoiced: (sowsItem.TotalInvoiced ? sowsItem.TotalInvoiced + element.Amount: 0 + element.Amount),
-                        TotalScheduled: (sowsItem.TotalScheduled ? sowsItem.TotalScheduled - element.Amount: 0 - element.Amount),
+                        InvoicedRevenue: (sowsItem.InvoicedRevenue ? sowsItem.InvoicedRevenue + element.Amount : 0 + element.Amount),
+                        ScheduledRevenue: (sowsItem.ScheduledRevenue ? sowsItem.ScheduledRevenue - element.Amount : 0 - element.Amount),
+                        TotalInvoiced: (sowsItem.TotalInvoiced ? sowsItem.TotalInvoiced + element.Amount : 0 + element.Amount),
+                        TotalScheduled: (sowsItem.TotalScheduled ? sowsItem.TotalScheduled - element.Amount : 0 - element.Amount),
                     })
                 } else if (proformaType === 'oop') {
                     sows.push({
                         Id: sowsItem.Id,
-                        ScheduledOOP: (sowsItem.ScheduledOOP ? sowsItem.ScheduledOOP - element.Amount: 0 - element.Amount),
-                        InvoicedOOP: (sowsItem.InvoicedOOP ? sowsItem.InvoicedOOP + element.Amount : 0 + element.Amount ),
-                        TotalInvoiced: (sowsItem.TotalInvoiced ? sowsItem.TotalInvoiced + element.Amount: 0 + element.Amount),
-                        TotalScheduled: (sowsItem.TotalScheduled ? sowsItem.TotalScheduled - element.Amount: 0 - element.Amount),
+                        ScheduledOOP: (sowsItem.ScheduledOOP ? sowsItem.ScheduledOOP - element.Amount : 0 - element.Amount),
+                        InvoicedOOP: (sowsItem.InvoicedOOP ? sowsItem.InvoicedOOP + element.Amount : 0 + element.Amount),
+                        TotalInvoiced: (sowsItem.TotalInvoiced ? sowsItem.TotalInvoiced + element.Amount : 0 + element.Amount),
+                        TotalScheduled: (sowsItem.TotalScheduled ? sowsItem.TotalScheduled - element.Amount : 0 - element.Amount),
                     })
                 }
             }
@@ -1115,6 +1117,9 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 }
             ];
             this.submitForm(data, 'replaceProforma');
+        } else if (res.hasError) {
+            this.isPSInnerLoaderHidden = true;
+            this.messageService.add({ key: 'myKey1', severity: 'info', summary: 'File not uploaded.', detail: 'Folder / ' + res.message.value+'', life: 3000 })
         }
     }
 
@@ -1125,10 +1130,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     onCLIChange(data: any) {
         console.log(data);
-        let cleItem = data.value;
-        this.getPONumberFromCLE(data.value.Title);
-        this.generateProformaNumber(cleItem);
-        this.getPOCNamesForEditInv(data.value);
+        if (data) {
+            let cleItem = data.value;
+            this.getPONumberFromCLE(data.value.Title);
+            this.generateProformaNumber(cleItem);
+            this.getPOCNamesForEditInv(data.value);
+        }
     }
     selectedPOItem: any;
     onPOChange(data: any) {
@@ -1198,17 +1205,15 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
 
     cancelFormSub(formType) {
-        if (formType === 'editDeliverable') {
+        if (formType === 'createProforma') {
             this.createProforma_form.reset();
-            this.proformaModal = false;
-        } else if (formType === 'createProforma') {
-            this.createProforma_form.reset();
+            this.enterPOAmtMsg = false;
             this.proformaModal = false;
         } else if (formType === 'replaceProforma') {
             this.replaceProforma_form.reset();
             this.replaceProformaModal = false;
         } else if (formType === 'generateInvoice') {
-            this.generateInvoice_form.reset();
+            // this.generateInvoice_form.reset();
             this.generateInvoiceModal = false;
         }
         this.formSubmit.isSubmit = false;
@@ -1230,7 +1235,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         console.log('type ', type);
         if (type === 'Mark as Sent to Client') {
             let sts = '';
-            sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
+            sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected';
             let obj = {
                 Status: sts
             }
@@ -1389,12 +1394,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
             let sts = '';
             sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Status changed to "' + sts + '" Successfully.', detail: '', life: 2000 })
-            this.reFetchData();
+            this.reFetchData(type);
         } else if (type === "createProforma") {
             this.proformaModal = false;
             await this.fdDataShareServie.callProformaCreation(arrResults[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, []);
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Proforma Created.', detail: '', life: 2000 })
-            this.reFetchData();
+            this.reFetchData(type);
 
         } else if (type === "generateInvoice") {
             const oInv = arrResults[0];
@@ -1451,27 +1456,31 @@ export class ProformaComponent implements OnInit, OnDestroy {
             }
             this.generateInvoiceModal = false;
             this.messageService.add({ key: 'custom', sticky: true, severity: 'success', summary: 'Invoice Generated', detail: 'Invoice Number: ' + oInv.InvoiceNumber });
-            this.reFetchData();
+            this.reFetchData(type);
         } else if (type === "replaceProforma") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success.', detail: '', life: 2000 });
             this.replaceProformaModal = false;
-            this.reFetchData();
+            this.reFetchData(type);
         }
         this.isPSInnerLoaderHidden = true;
 
     }
 
-    reFetchData() {
-        // this.getRequiredData();
-        setTimeout(async () => {
-            // Refetch PO/CLE Data
-            await this.fdDataShareServie.getClePO('proforma');
-            // Fetch latest PO & CLE
-            this.poInfo();
-            this.cleInfo();
-
+    reFetchData(type: string) {
+        if (type === "Mark as Sent to Client" || type === "Reject Proforma" || type === "replaceProforma") {
             this.getRequiredData();
-        }, 300);
+        } else if (type === 'createProforma' || type === 'generateInvoice') {
+            setTimeout(async () => {
+                // Refetch PO/CLE Data
+                this.fdDataShareServie.clePoPiRes = [];
+                await this.fdDataShareServie.getClePO('proforma');
+                // Fetch latest PO & CLE
+                this.poInfo();
+                this.cleInfo();
+                this.getRequiredData();
+            }, 300);
+        }
+
     }
     onlyNumberKey(event) {
         // return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57;

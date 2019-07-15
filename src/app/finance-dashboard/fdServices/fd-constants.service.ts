@@ -69,7 +69,7 @@ export class FdConstantsService {
             top: '5000'
         },
         currency: {
-            select: "ID,Title,Value",
+            select: "ID,Title",
             top: 4500,
             orderby: "Title"
         },

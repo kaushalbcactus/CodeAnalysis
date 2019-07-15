@@ -47,7 +47,6 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
     }
 
     // Purchase Order Number
-    purchaseOrders: any[];
     selectedPurchaseNumber: any;
 
     // Loader
@@ -120,25 +119,11 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.createReplaceInvoiceFormField();
         this.createCreditDebitFormField();
 
-
-        // Dummy
-        this.getPurchaseOrderList();
-
         // Get details
         this.getRequiredData();
     }
 
-    // Project Info 
-    projectInfoData: any = [];
-    projectInfo() {
-        this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
-            if (res) {
-                this.projectInfoData = res;
-                console.log('PI Data ', this.projectInfoData);
-            }
-        }))
-    }
-
+    
     // Purchase Order Number
     purchaseOrdersList: any = [];
     poInfo() {
@@ -196,17 +181,6 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
                 console.log('CLE Data ', this.cleData);
             }
         }))
-    }
-
-    // Purchase Order List
-    getPurchaseOrderList() {
-        this.purchaseOrders = [
-            { name: 'New York', code: 'NY' },
-            { name: 'Rome', code: 'RM' },
-            { name: 'London', code: 'LDN' },
-            { name: 'Istanbul', code: 'IST' },
-            { name: 'Paris', code: 'PRS' }
-        ]
     }
 
     createPaymentResovedFormField() {
