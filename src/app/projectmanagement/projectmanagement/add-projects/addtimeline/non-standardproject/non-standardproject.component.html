@@ -11,7 +11,7 @@
       <div class="col-md-4 col-xs-4 col-lg-4">
         <p-dropdown *ngIf="!pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [options]="nonStandardDeliverableType" [(ngModel)]="selectedDeliverableType" [filter]="true"
           placeholder="Select Deliverable Type" [showClear]="true" [disabled]="isDeliveryTypeDisabled"
-          (onChange)="onDeliverableTypeChange()">
+          (onChange)="onDeliverableTypeChange()" resetFilterOnHide="true">
         </p-dropdown>
         <p-dropdown *ngIf="pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [disabled]="isDeliveryTypeDisabled" [options]="registerNonStandardDeliverableType">
           </p-dropdown>
@@ -22,7 +22,7 @@
       <div class="col-md-4 col-xs-4 col-lg-4">
         <p-dropdown *ngIf="!pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [options]="nonStandardSubType" [(ngModel)]="selectedSubType" [filter]="true"
           placeholder="Select SubType" [disabled]="isStandardSubTypeDisabled" [showClear]="true"
-          (onChange)="onSubTypeChange()">
+          (onChange)="onSubTypeChange()" resetFilterOnHide="true">
         </p-dropdown>
         <p-dropdown *ngIf="pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [disabled]="isStandardSubTypeDisabled" [options]="registerNonStandardSubType">
           </p-dropdown>
@@ -36,9 +36,9 @@
         <div class="col-md-4 col-xs-4 col-lg-4">
           <p-dropdown *ngIf="!pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [options]="nonStandardService" [(ngModel)]="selectedServices" [filter]="true"
             placeholder="Select Service" [disabled]="isStandardServiceDisabled" [showClear]="true"
-            (onChange)="onSelectedServicesChange()">
+            (onChange)="onSelectedServicesChange()" resetFilterOnHide="true">
           </p-dropdown>
-          <p-dropdown *ngIf="pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [disabled]="isStandardServiceDisabled" [options]="registerNonStandardServices">
+          <p-dropdown *ngIf="pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [disabled]="isStandardServiceDisabled" [options]="registerNonStandardServices" >
             </p-dropdown>
         </div>
         <div class="col-md-2 col-xs-2 col-lg-2">
@@ -47,7 +47,7 @@
         <div class="col-md-4 col-xs-4 col-lg-4">
           <p-dropdown *ngIf="!pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [options]="nonStandardResourceName" [(ngModel)]="ngModelSelectedResource" [filter]="true"
             [group]="true" placeholder="Select ResourceName" [disabled]="isStandardResourceNameDisabled"
-            [showClear]="true" (onChange)="onResourceChange($event)">
+            [showClear]="true" (onChange)="onResourceChange($event)" resetFilterOnHide="true">
           </p-dropdown>
           <p-dropdown *ngIf="pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked" [disabled]="isStandardResourceNameDisabled" [options]="registerNonStandardResourceName">
             </p-dropdown>

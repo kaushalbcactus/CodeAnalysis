@@ -46,26 +46,26 @@
                 <tr>
                     <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
                         <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="scArrays.projectCodeArray"
-                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
+                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="scArrays.clientLegalEntityArray"
-                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
+                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'POC'" [options]="scArrays.POCArray" defaultLabel="All"
-                            (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in') " (keydown.enter)="$event.preventDefault()"></p-multiSelect>
+                            (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in') " (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="scArrays.deliveryTypeArray"
-                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
+                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'DueDate'" [options]="scArrays.dueDateArray" defaultLabel="All"
-                            (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"></p-multiSelect>
+                            (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'Milestone'" [options]="scArrays.milestoneArray"
-                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
+                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'PreviousTaskUser'" [options]="scArrays.previousTaskOwnerArray"
-                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
+                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'PreviousTaskStatus'" [options]="scArrays.previousTaskStatusArray"
-                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
+                            defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                     </th>
                     <th class="lastColumnWidth"></th>

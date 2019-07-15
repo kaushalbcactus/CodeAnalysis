@@ -118,7 +118,7 @@
           PO List
         </div>
         <div [hidden]="isAddToProjectHidden" class="ui-grid-col-4">
-          <p-dropdown filter="true" [options]="poList" placeholder="Select Po" [(ngModel)]="selectedPo"></p-dropdown>
+          <p-dropdown filter="true" [options]="poList" placeholder="Select Po" [(ngModel)]="selectedPo" resetFilterOnHide="true"></p-dropdown>
         </div>
         <div [hidden]="isAddToProjectHidden" class="ui-grid-col-4">
           <p-button type="button" class="mr-5" label="Add Po to Project" (click)="addPoToProject()">
@@ -312,7 +312,7 @@
     </div>
     <div class="ui-grid-row mt-20">
       <div class="ui-grid-col-3">Client POC</div>
-      <p-dropdown [options]="primaryPoc" filter="true" formControlName="primarypoc" placeholder="Select POC">
+      <p-dropdown [options]="primaryPoc" filter="true" formControlName="primarypoc" placeholder="Select POC" resetFilterOnHide="true">
       </p-dropdown>
       <div class="error" *ngIf="!addPOForm.controls['primarypoc'].valid&&addPOForm.controls['primarypoc'].touched">
         Please select poc.</div>
@@ -344,7 +344,7 @@
     <div class="ui-grid-col-4"><span class="compulsory">*</span>Reason Type</div>
     <div class="ui-grid-col-4">
       <p-dropdown [(ngModel)]="selectedReasonType" [options]="budgetIncreaseArray" placeholder="Please Select"
-        [showClear]="true" [filter]="true"></p-dropdown>
+        [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
     </div>
   </div>
   <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
@@ -381,7 +381,7 @@
     <div class="ui-grid-col-4"><span class="compulsory">*</span>Reason Type</div>
     <div class="ui-grid-col-4">
       <p-dropdown [(ngModel)]="selectedReasonType" [options]="budgetDecreaseArray" placeholder="Please Select"
-        [showClear]="true" [filter]="true"></p-dropdown>
+        [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
     </div>
   </div>
   <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
@@ -447,7 +447,7 @@
     <div class="ui-grid-col-4">
       <div class="floatLeft">
         <p-dropdown  [(ngModel)]="advanceInvID" (onChange)="setInvData($event)" [options]="advanceInvArray" placeholder="Please Select"
-        [showClear]="true" [filter]="true"></p-dropdown>
+        [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
       </div>
     </div>
   </div>

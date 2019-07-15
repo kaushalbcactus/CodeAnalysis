@@ -12,9 +12,9 @@
         <div class="col-md-2 col-xs-2 col-lg-2">
           <p-dropdown *ngIf="!pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked" #selectServiceDD [options]="standardServices" [(ngModel)]="ngModelSelectService" [filter]="true"
             placeholder="Select Service" [disabled]="isServiceDisabled" [showClear]="true"
-            (onChange)="onServiceChange($event,selectServiceDD)">
+            (onChange)="onServiceChange($event,selectServiceDD)" resetFilterOnHide="true">
           </p-dropdown>
-          <p-dropdown *ngIf="pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked" [disabled]="isServiceDisabled" [options]="registerStandardServices">
+          <p-dropdown *ngIf="pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked" [disabled]="isServiceDisabled" [options]="registerStandardServices" >
           </p-dropdown>
         </div>
         <div class="col-md-2 col-xs-2 col-lg-2">
@@ -23,7 +23,7 @@
         <div class="col-md-2 col-xs-2 col-lg-2">
           <p-dropdown *ngIf="!pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked"  #skillTypesDD [options]="skillTypes" [(ngModel)]="ngModelSelectResource" [filter]="true"
             [group]="true" placeholder="Select Skill" [disabled]="isResourceDisabled" [showClear]="true"
-            (onChange)="onSkillChange($event,selectServiceDD)">
+            (onChange)="onSkillChange($event,selectServiceDD)" resetFilterOnHide="true">
           </p-dropdown>
           <p-dropdown *ngIf="pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked" [disabled]="isResourceDisabled" [options]="registerSkillTypes">
             </p-dropdown>
@@ -34,7 +34,7 @@
         <div class="col-md-2 col-xs-2 col-lg-2">
           <p-dropdown *ngIf="!pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked" #reviewerListDD [options]="reviewerList" [(ngModel)]="ngModelSelectReviewer" [filter]="true"
             [group]="true" placeholder="Select Reviewer" [disabled]="isReviewerDisabled" [showClear]="true"
-            (onChange)="onResourceChange($event,selectServiceDD)">
+            (onChange)="onResourceChange($event,selectServiceDD)" resetFilterOnHide="true">
           </p-dropdown>
           <p-dropdown *ngIf="pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked" [disabled]="isReviewerDisabled" [options]="registerReviewerList">
             </p-dropdown>

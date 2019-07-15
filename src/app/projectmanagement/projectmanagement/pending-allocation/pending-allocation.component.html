@@ -27,25 +27,25 @@
                     <th class="lastColumnWidth"></th>
                     <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
                         <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="paArrays.projectCodeArray"
-                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
+                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="paArrays.clientLegalEntityArray"
-                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
+                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'POC'" [options]="paArrays.POCArray" defaultLabel="All"
-                            (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"></p-multiSelect>
+                            (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="paArrays.deliveryTypeArray"
-                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
+                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'TA'" [options]="paArrays.taArray" defaultLabel="All"
-                            (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"></p-multiSelect>
+                            (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'Molecule'" [options]="paArrays.moleculeArray" defaultLabel="All"
-                            (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"></p-multiSelect>
+                            (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'Milestone'" [options]="paArrays.milestoneArray"
-                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
+                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'Status'" [options]="paArrays.statusArray" defaultLabel="All"
-                            (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"></p-multiSelect>
+                            (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
                     </th>
                     <th class="lastColumnWidth"></th>
                 </tr>
