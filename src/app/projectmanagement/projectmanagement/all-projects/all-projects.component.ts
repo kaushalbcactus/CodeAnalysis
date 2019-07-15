@@ -1504,7 +1504,7 @@ export class AllProjectsComponent implements OnInit {
     } else if (isValid === 'InvoiceNotScheduled') {
       this.messageService.add({
         key: 'custom', severity: 'error', summary: 'Error Message',
-        detail: 'Project Movement to selected SOW ' + projObject.SOWCode + ' is not possible due to Invoice is confirmed'
+        detail: 'Project Movement to selected SOW ' + projObject.SOWCode + ' is not possible due to confirmed invoice'
       });
     } else {
       this.messageService.add({
