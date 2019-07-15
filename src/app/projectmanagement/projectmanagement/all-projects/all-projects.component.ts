@@ -1501,6 +1501,11 @@ export class AllProjectsComponent implements OnInit {
         }
         this.closeMoveSOW();
       }, this.pmConstant.TIME_OUT);
+    } else {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: 'Project Movement to selected SOW ' + projObject.SOWCode + ' is not possible due to insufficient amount'
+      });
     }
   }
   /**

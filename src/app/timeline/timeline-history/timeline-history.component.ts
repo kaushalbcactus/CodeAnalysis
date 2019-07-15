@@ -1485,7 +1485,7 @@ export class TimelineHistoryComponent implements OnInit {
               obj.activity_description = 'Status Updated to ' + versionDetail.Status;
               break;
             case this.globalConstant.projectList.columns.PubSupportStatus:
-              if (versionDetail.IsPubSupport === 'Yes') {
+              if (versionDetail.PubSupportStatus && versionDetail.IsPubSupport === 'Yes') {
                 obj.activity_type = 'Project updated';
                 obj.activity_sub_type = 'Pubsupport status updated';
                 obj.activity_description = 'Pubsupport Status Updated to ' + versionDetail.PubSupportStatus;

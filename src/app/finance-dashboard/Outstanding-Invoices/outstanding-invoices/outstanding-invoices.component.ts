@@ -637,7 +637,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             let fileUrl = res.ServerRelativeUrl;
             let obj = {
                 FileURL: fileUrl,
-                // ProformaHtml: null
+                InvoiceHtml: null
             }
             obj['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
             const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);

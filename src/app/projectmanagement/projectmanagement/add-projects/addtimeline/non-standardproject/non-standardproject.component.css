@@ -1,3 +1,6 @@
 .timeline-non-standard-section{
     width: 100%;
 }
+.ui-dropdown {
+    width: 100% !important;
+}

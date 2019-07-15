@@ -160,7 +160,7 @@
                     <span *ngIf="rowData.showAdd"><i title="Reserve budget from PO" class="pi pi-plus-circle"
                         style="font-size:2em;cursor: pointer;" (click)="schedulePo(poObj)"></i></span>
                     <span *ngIf="rowData.showInvoice"><i title="Schedule Invoices on the PO" class="pi pi-file"
-                        style="font-size:2em;cursor: pointer;" (click)="scheduleInvoice(poObj)"></i></span>
+                        style="font-size:2em;cursor: pointer;" (click)="createScheduleInvoice(poObj)"></i></span>
                   </td>
                   <td><input [(ngModel)]="rowData.poTotal" [attr.disabled]=true type="number" style="width:100%"
                       pInputText>
@@ -194,12 +194,12 @@
               <ng-template pTemplate="body" let-rowData>
                 <tr>
                   <td>
-                    <ng-template *ngIf="rowData.inv_number && rowData.invUrl">
+                    <span *ngIf="rowData.inv_number && rowData.invUrl">
                       <a [href]="rowData.invUrl" target="_blank"> {{rowData.inv_number}}</a>
-                    </ng-template>
-                    <ng-template *ngIf="rowData.inv_number && !rowData.invUrl">
+                    </span>
+                    <span *ngIf="rowData.inv_number && !rowData.invUrl">
                       {{rowData.inv_number}}
-                    </ng-template>
+                    </span>
                   </td>
                   <td>
                     <span *ngIf="rowData.prf_number && rowData.prfUrl">
@@ -331,7 +331,6 @@
   </form>
 </p-dialog>
 
-
 <p-dialog [(visible)]="showBudgetIncrease" appendTo='body' [style]="{width: '500px'}">
   <p-header>
     Budget Increment Popup
@@ -415,5 +414,80 @@
   </p-footer>
 </p-dialog>
 
+<p-dialog *ngIf="relatedInvoiceLinkingPopup" [(visible)]="relatedInvoiceLinkingPopup" appendTo='body' [style]="{width: '500px'}">
+  <p-header>
+    Advance invoice tagging decision
+  </p-header>
+  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+    <div class="ui-grid-col-12">
+      There is an advance invoice existing on this PO. Do you want to tag the project to that invoice or create a new schedule
+      ?
+    </div>
+  </div>
+  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+    <div class="ui-grid-col-12">
+      Note: Ideally the project should be tagged to the advance invoice rather than scheduling new invoice on the PO.
+    </div>
+  </div>
+  <p-footer>
+    <p-button type="button" (click)="tagExistingInv()" label="Tag to existing"></p-button>
+    <p-button type="button" (click)="scheduleNew()" label="Schedule New Invoice"></p-button>
+    <p-button type="button" (click)="relatedInvoiceLinkingPopup=false" label="Cancel">
+    </p-button>
+  </p-footer>
+</p-dialog>
 
-<p-toast position="bottom-right" key="mamageFinance"></p-toast>
+<p-dialog *ngIf="tagExistingInvSection" [(visible)]="tagExistingInvSection" appendTo='body' [style]="{width: '500px'}">
+  <p-header>
+    Tag Existing Invoice
+  </p-header>
+  
+  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+    <div class="ui-grid-col-4"><span class="compulsory">*</span>Invoice List</div>
+    <div class="ui-grid-col-4">
+      <div class="floatLeft">
+        <p-dropdown  [(ngModel)]="advanceInvID" (onChange)="setInvData($event)" [options]="advanceInvArray" placeholder="Please Select"
+        [showClear]="true" [filter]="true"></p-dropdown>
+      </div>
+    </div>
+  </div>
+  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+    <div class="ui-grid-col-4"><span class="compulsory">*</span>Inv Date</div>
+    <div class="ui-grid-col-4">
+      <div class="floatLeft">
+        <input disabled [(ngModel)]="existingInvDate"type="text" style="width:100%" pInputText>
+      </div>
+    </div>
+  </div>
+  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+    <div class="ui-grid-col-4"><span class="compulsory">*</span>Inv Amount</div>
+    <div class="ui-grid-col-4">
+      <div class="floatLeft">
+        <input disabled [(ngModel)]="existingInvAmount" type="number" style="width:100%" pInputText>
+      </div>
+    </div>
+  </div>
+  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+    <div class="ui-grid-col-4"><span class="compulsory">*</span>Balance Amount</div>
+    <div class="ui-grid-col-4">
+      <div class="floatLeft">
+        <input disabled [(ngModel)]="invBalance" type="number" style="width:100%" pInputText>
+      </div>
+    </div>
+  </div>
+  <div class="ui-grid-row mt-6" style="margin-bottom: 15px">
+    <div class="ui-grid-col-4"><span class="compulsory">*</span>Tag Amount</div>
+    <div class="ui-grid-col-4">
+      <div class="floatLeft">
+        <input [(ngModel)]="newInvAmount" type="number" style="width:100%" pInputText>
+      </div>
+    </div>
+  </div>
+  <p-footer>
+    <p-button type="button" (click)="tagToInv()" label="Tag to invoice"></p-button>
+    <p-button type="button" (click)="tagExistingInvSection=false" label="Cancel"></p-button>
+  </p-footer>
+</p-dialog>
+
+
+<p-toast position="bottom-right" key="manageFinance"></p-toast>

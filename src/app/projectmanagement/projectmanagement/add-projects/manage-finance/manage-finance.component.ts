@@ -77,7 +77,9 @@ export class ManageFinanceComponent implements OnInit {
     currency: '',
     pocText: '',
     Id: 0,
-    edited: false
+    edited: false,
+    proformaLookup: -1,
+    invoiceLookup: -1
   };
   poHeader = {
     total: 0,
@@ -136,6 +138,16 @@ export class ManageFinanceComponent implements OnInit {
   sowObj: any;
   newBudgetHrs = 0;
   projectStatus = '';
+  arrAdvanceInvoices = [];
+  relatedInvoiceLinkingPopup = false;
+  advanceInvID = -1;
+  existingInvDate = '';
+  existingInvAmount = 0
+  invBalance = 0;
+  newInvAmount = 0;
+  advanceInvArray = [];
+  tagExistingInvSection = false;
+  updateInvoices = [];
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -237,6 +249,17 @@ export class ManageFinanceComponent implements OnInit {
     sowGet.listName = this.constant.listNames.SOW.name;
     batchURL.push(sowGet);
 
+    // Get Advance Invoices 
+    const invGet = Object.assign({}, options);
+    const invFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.ADV_INVOICES);
+    invFilter.filter = invFilter.filter.replace(/{{clientLegalEntity}}/gi,
+      clientLegalEntity);
+    invGet.url = this.spServices.getReadURL(this.constant.listNames.Invoices.name,
+      invFilter);
+    invGet.type = 'GET';
+    invGet.listName = this.constant.listNames.Invoices.name;
+    batchURL.push(invGet);
+
     const arrResults = await this.spServices.executeBatch(batchURL);
     if (arrResults && arrResults.length) {
       const tempbudgetObject = $.extend(true, {}, this.budgetObj);
@@ -257,6 +280,8 @@ export class ManageFinanceComponent implements OnInit {
         });
       }
       this.sowObj = arrResults[2].retItems[0];
+
+      this.arrAdvanceInvoices = arrResults[3].retItems;
     }
   }
   /**
@@ -301,7 +326,7 @@ export class ManageFinanceComponent implements OnInit {
 
     if ((this.sowObj.AmountRevenue - this.sowObj.RevenueLinked) >= this.updatedBudget) {
       this.messageService.add({
-        key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+        key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
         detail: 'SOW revenue balance is less than addendum budget.".'
       });
       return;
@@ -368,7 +393,7 @@ export class ManageFinanceComponent implements OnInit {
     if (this.selectedReason && this.selectedReasonType && this.newBudgetHrs) {
       if (this.budgetData[0].budget_hours === this.newBudgetHrs) {
         this.messageService.add({
-          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
           detail: 'New and old budget hours cant be same.'
         });
         return;
@@ -381,21 +406,21 @@ export class ManageFinanceComponent implements OnInit {
     else {
       if (!this.selectedReasonType) {
         this.messageService.add({
-          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
           detail: 'Please select reason type.'
         });
         return;
       }
       if (!this.selectedReason) {
         this.messageService.add({
-          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
           detail: 'Please enter reason.'
         });
         return;
       }
       if (!this.newBudgetHrs) {
         this.messageService.add({
-          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
           detail: 'New Budget hours cant be zero.'
         });
         return;
@@ -490,7 +515,7 @@ export class ManageFinanceComponent implements OnInit {
       if (this.updatedBudget === 0 && this.budgetHours !== 0
         && this.selectedReasonType !== this.pmConstant.PROJECT_BUDGET_INCREASE_REASON.INPUT_ERROR) {
         this.messageService.add({
-          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
           detail: 'Budget can only be zero if selected reason is "Input error".'
         });
         return;
@@ -501,14 +526,14 @@ export class ManageFinanceComponent implements OnInit {
     else {
       if (!this.selectedReasonType) {
         this.messageService.add({
-          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
           detail: 'Please select reason type.'
         });
         return;
       }
       if (!this.selectedReason) {
         this.messageService.add({
-          key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
           detail: 'Please enter reason.'
         });
         return;
@@ -620,14 +645,14 @@ export class ManageFinanceComponent implements OnInit {
 
     if (!retPOInfo.poRevenue) {
       this.messageService.add({
-        key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+        key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
         detail: 'Enter revenue amount to be assigned to PO.'
       });
     }
 
     if ((reservePO.AmountRevenue - reservePO.RevenueLinked) < retPOInfo.poRevenue) {
       this.messageService.add({
-        key: 'mamageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+        key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
         detail: 'PO revenue balance should be greater than or equal to the amount to reserved on PO.'
       });
       return;
@@ -689,6 +714,115 @@ export class ManageFinanceComponent implements OnInit {
     }
     this.selectedPo = '';
   }
+  setInvData() {
+    const invID = this.advanceInvID;
+    const oInv = this.arrAdvanceInvoices.find(e => e.ID === invID);
+    this.existingInvDate = this.datePipe.transform(oInv.InvoiceDate, 'MMM, dd, yyyy');
+    this.existingInvAmount = oInv.Amount;
+    this.invBalance = oInv.Amount - oInv.TaggedAmount;
+  }
+
+  tagToInv() {
+    debugger;
+    const invID = this.advanceInvID;
+    const oInv = this.arrAdvanceInvoices.find(e => e.ID === invID);
+    if (this.newInvAmount === 0) {
+      this.messageService.add({
+        key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+        detail: 'Amount to be tagged cannot be zero'
+      });
+      return
+    }
+    if (this.newInvAmount > this.invBalance) {
+      this.messageService.add({
+        key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+        detail: 'Amount to be tagged cannot be greater than Balance Amount'
+      });
+      return
+    }
+    if (this.newInvAmount > this.invBalance) {
+      this.messageService.add({
+        key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+        detail: 'Amount to be tagged cannot be greater than Balance Amount'
+      });
+      return
+    }
+
+    const poValue = this.poData.find(e => e.poInfo[0].poId === this.selectedPo);
+    const retPOInfo = poValue.poInfo[0];
+    if ((retPOInfo.revenue - retPOInfo.scRevenue) < this.newInvAmount) {
+      this.messageService.add({
+        key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+        detail: 'Amount to be tagged cannot be greater than amount to be scheduled on PO'
+      });
+      return
+    }
+
+    ////alert('Assign to PO');
+    const tempPOObj = $.extend(true, {}, this.poAddObj);
+    tempPOObj.poId = this.selectedPo;
+    tempPOObj.inv_number = oInv.InvoiceNumber;
+    tempPOObj.prf_number = '';
+    tempPOObj.invUrl = oInv.FileURL;
+    tempPOObj.prfUrl = '';
+    tempPOObj.date = new Date(this.existingInvDate);
+    tempPOObj.amount = this.newInvAmount;
+    tempPOObj.type = 'revenue';
+    tempPOObj.status = this.constant.STATUS.APPROVED;
+    tempPOObj.poc = oInv.MainPOC;
+    tempPOObj.pocText = this.pmCommonService.extractNamefromPOC([tempPOObj.poc]);
+    tempPOObj.address = oInv.AddressType;
+    tempPOObj.isExsitInv = false;
+    tempPOObj.edited = true;
+    tempPOObj.proformaLookup = oInv.ProjectLookup;
+    tempPOObj.invoiceLookup = oInv.InvoiceLookup;
+
+    retPOInfo.edited = true;
+    retPOInfo.scTotal = retPOInfo.scTotal + this.newInvAmount;
+    retPOInfo.scRevenue = retPOInfo.scRevenue + this.newInvAmount;
+    retPOInfo.scOOP = retPOInfo.scOOP + 0;
+    retPOInfo.scTax = retPOInfo.scTax + 0;
+    this.tagExistingInvSection = false;
+
+    poValue.poInfoData.push(tempPOObj);
+
+    if (retPOInfo.revenue === retPOInfo.scRevenue) {
+      retPOInfo.showAdd = false;
+      retPOInfo.showDelete = false;
+      retPOInfo.showInvoice = false;
+    }
+    const isTotalMatched = this.isScheduledMatched();
+    if (isTotalMatched) {
+      this.showSave = true;
+    }
+  }
+
+  tagExistingInv() {
+    const arrINV = this.arrAdvanceInvoices.filter(e => e.PO === this.selectedPo);
+    this.advanceInvArray = [];
+    arrINV.forEach(element => {
+      this.advanceInvArray.push({ label: element.InvoiceNumber, value: element.ID });
+    });
+    this.relatedInvoiceLinkingPopup = false;
+    this.tagExistingInvSection = true;
+  }
+
+  scheduleNew() {
+    const poValue = this.poData.find(e => e.poInfo[0].poId === this.selectedPo);
+    this.relatedInvoiceLinkingPopup = false;
+    this.scheduleInvoice(poValue);
+  }
+
+  createScheduleInvoice(poValue) {
+    this.selectedPo = poValue.poInfo[0].poId;
+    const arrINV = this.arrAdvanceInvoices.filter(e => e.PO === this.selectedPo);
+    if (arrINV.length) {
+      this.relatedInvoiceLinkingPopup = true;
+    } else {
+      this.scheduleInvoice(poValue);
+    }
+  }
+
   /**
    * This method is called when schedule invoice will trigger.
    */
@@ -1021,6 +1155,7 @@ export class ManageFinanceComponent implements OnInit {
       let poRev = 0;
       let poOOP = 0;
       let poTax = 0;
+
       // add appropriate value for unassigned project.
       for (let index = 0; index < this.existPOArray.retItems.length; index++) {
         const poItem = this.existPOArray.retItems[index];
@@ -1052,9 +1187,10 @@ export class ManageFinanceComponent implements OnInit {
           tempPOObj.showDelete = true;
         }
         tempPOObj.scValue = 'Scheduled + Invoiced';
-        tempPOObj.scTotal = poItem.TotalScheduled;
-        tempPOObj.scRevenue = poItem.ScheduledRevenue;
-        tempPOObj.scOOP = poItem.ScheduledOOP ? poItem.ScheduledOOP : 0;
+        tempPOObj.scTotal = (poItem.TotalScheduled ? poItem.TotalScheduled : 0 ) + (poItem.TotalInvoiced ? poItem.TotalInvoiced : 0 );
+        tempPOObj.scRevenue = (poItem.ScheduledRevenue ? poItem.ScheduledRevenue : 0 ) + 
+        (poItem.InvoicedRevenue ? poItem.InvoicedRevenue : 0 );
+        tempPOObj.scOOP = (poItem.ScheduledOOP ? poItem.ScheduledOOP : 0) + (poItem.InvoicedOOP ? poItem.InvoicedOOP : 0) ;
         tempPOObj.scTax = 0;
         tempPOObj.isExsitPO = true;
         const tempObj: any = { Id: 0, poInfo: [], poInfoData: [] };
@@ -1095,6 +1231,9 @@ export class ManageFinanceComponent implements OnInit {
           invoiceObj.address = invoiceItem.AddressType;
           invoiceObj.isExsitInv = true;
           invoiceObj.currency = this.existBudgetArray.retItems[0].Currency;
+          invoiceObj.proformaLookup = invoiceItem.ProformaLookup;
+          invoiceObj.invoiceLookup = invoiceItem.InvoiceLookup;
+
           if (invoiceObj.status === 'Scheduled') {
 
             if (this.projectStatus === this.constant.projectStatus.Unallocated
@@ -1272,7 +1411,7 @@ export class ManageFinanceComponent implements OnInit {
     this.pmCommonService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.INVOICE_CONFIRM, objEmailBody,
       mailSubject, arrayTo, [this.pmObject.currLoginInfo.Email]);
     this.messageService.add({
-      key: 'mamageFinance', severity: 'success', summary: 'Success Message', sticky: true,
+      key: 'manageFinance', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Invoice Line Items Confirmed Successfully'
     });
     setTimeout(() => {
@@ -1311,7 +1450,7 @@ export class ManageFinanceComponent implements OnInit {
     const result = await this.spServices.updateItem(this.constant.listNames.InvoiceLineItems.name,
       this.invoiceObj.Id, data, this.constant.listNames.InvoiceLineItems.type);
     this.messageService.add({
-      key: 'mamageFinance', severity: 'success', summary: 'Success Message', sticky: true,
+      key: 'manageFinance', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Invoice Line Items updated Successfully'
     });
     setTimeout(() => {
@@ -1321,7 +1460,7 @@ export class ManageFinanceComponent implements OnInit {
     }, this.pmConstant.TIME_OUT);
   }
   async saveUpdatePO() {
-
+    this.updateInvoices = [];
     this.pmObject.isMainLoaderHidden = false;
     const batchURL = [];
     const options = {
@@ -1395,11 +1534,11 @@ export class ManageFinanceComponent implements OnInit {
           batchURL.push(projectBudgetBreakupUpdate);
         } else {
           let budgetArr = [];
-          if(this.unassignedBudget[0].revenue === 0) {
+          if (this.unassignedBudget[0].revenue === 0) {
             const existingBudget = this.existBudgetArray.retItems[0];
             budgetArr = this.budgetData;
             budgetArr[0].budget_hours = budgetArr[0].budget_hours - existingBudget.BudgetHrs;
-            if(existingBudget.RevenueBudget === budgetArr[0].revenue) {
+            if (existingBudget.RevenueBudget === budgetArr[0].revenue) {
               budgetArr[0].total = 0;
               budgetArr[0].revenue = 0;
               budgetArr[0].oop = 0;
@@ -1413,7 +1552,7 @@ export class ManageFinanceComponent implements OnInit {
             budgetArr[0].tax = 0 - budgetArr[0].tax;
             budgetArr[0].budget_hours = this.budgetData[0].budget_hours - this.newBudgetHrs;
           }
-          
+
           const projectBudgetBreakupData = this.getProjectBudgetBreakupData(budgetArr, this.projObj, true, budgetArr[0].revenue < 0 ? true : false);
           const projectBudgetBreakupCreate = Object.assign({}, options);
           projectBudgetBreakupCreate.url = this.spServices.getReadURL(this.constant.listNames.ProjectBudgetBreakup.name, null);
@@ -1425,7 +1564,7 @@ export class ManageFinanceComponent implements OnInit {
         // SOW update
         const sowObj = this.sowObj;
         const sowUpdateData = this.getSOWData(this.projObj, projectFinaceData);
-        if(sowUpdateData.hasOwnProperty('TotalLinked')){
+        if (sowUpdateData.hasOwnProperty('TotalLinked')) {
           const sowUpdate = Object.assign({}, options);
           sowUpdate.url = this.spServices.getItemURL(this.constant.listNames.SOW.name, sowObj.ID);
           sowUpdate.data = sowUpdateData;
@@ -1433,7 +1572,7 @@ export class ManageFinanceComponent implements OnInit {
           sowUpdate.listName = this.constant.listNames.SOW.name;
           batchURL.push(sowUpdate);
         }
-        
+
       }
 
       // Invoice Item creation and updation
@@ -1469,6 +1608,10 @@ export class ManageFinanceComponent implements OnInit {
 
         });
       });
+
+      if(this.updateInvoices.length) {
+
+      }
     }
 
     console.log(batchURL);
@@ -1478,7 +1621,7 @@ export class ManageFinanceComponent implements OnInit {
 
     this.pmObject.isMainLoaderHidden = true;
     this.messageService.add({
-      key: 'mamageFinance', severity: 'success', summary: 'Success Message', sticky: true,
+      key: 'manageFinance', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Budget Updated Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
     });
     setTimeout(() => {
@@ -1622,13 +1765,13 @@ export class ManageFinanceComponent implements OnInit {
     if (isCreate) {
       data.ProjectCode = projObj.ProjectCode;
       data.ProjectLookup = projObj.ID;
-      if(approvalStatus) {
+      if (approvalStatus) {
         data.Status = this.constant.STATUS.APPROVAL_PENDING;
       } else {
-        data.Status = this.constant.STATUS.APPROVED ;
-        data.ApprovalDate = new Date() ;
+        data.Status = this.constant.STATUS.APPROVED;
+        data.ApprovalDate = new Date();
       }
-      
+
       data.BudgetHours = budgetArray[0].budget_hours;
       if (projObj.ProjectType === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
         data.OriginalBudget = 0;
@@ -1658,17 +1801,17 @@ export class ManageFinanceComponent implements OnInit {
     }
     return data;
   }
-  
-/**
-   * The method is used to get SOW object.
-   * @param projObj the project object as parameter.
-   * @param projectfinaceObj pass project finance object as parameter.
-   */
+
+  /**
+     * The method is used to get SOW object.
+     * @param projObj the project object as parameter.
+     * @param projectfinaceObj pass project finance object as parameter.
+     */
   getSOWData(projObj, projectfinaceObj) {
     let sowObj = this.sowObj;
     let data = {}
     if (sowObj) {
-      if(projectfinaceObj.RevenueBudget !== this.existBudgetArray.retItems[0].RevenueBudget) {
+      if (projectfinaceObj.RevenueBudget !== this.existBudgetArray.retItems[0].RevenueBudget) {
         data = {
           __metadata: { type: this.constant.listNames.SOW.type },
           TotalLinked: sowObj.TotalLinked + projectfinaceObj.Budget - this.existBudgetArray.retItems[0].Budget,
@@ -1681,7 +1824,7 @@ export class ManageFinanceComponent implements OnInit {
           InvoicedRevenue: sowObj.InvoicedRevenue + projectfinaceObj.InvoicedRevenue - this.existBudgetArray.retItems[0].InvoicedRevenue,
         };
       }
-      
+
     }
     return data;
   }
@@ -1759,6 +1902,7 @@ export class ManageFinanceComponent implements OnInit {
         if (element.status === this.constant.STATUS.APPROVED) {
           data.ProformaLookup = element.proformaLookup;
           data.InvoiceLookup = element.invoiceLookup;
+
         }
         return data;
       }

@@ -355,11 +355,11 @@ export class PmconstantService {
     },
     PROJECT_FINANCE_BY_PROJECTCODE: {
       select: 'ID, Title, Currency, ApprovedBudget, Budget, RevenueBudget, OOPBudget, TaxBudget,BudgetHrs,' +
-        'InvoicesScheduled, ScheduledRevenue, ScheduledOOP, Invoiced, InvoicedRevenue, InvoicedOOP',
+        'InvoicesScheduled, ScheduledRevenue, ScheduledOOP, Invoiced, InvoicedRevenue, InvoicedOOP, Template',
       filter: 'Title eq \'{{projectCode}}\''
     },
     PROJECT_FINANCE_BREAKUP_BY_PROJECTCODE: {
-      select: 'ID,Title,POLookup,ProjectNumber,Amount, AmountRevenue, AmountOOP, AmountTax, TotalScheduled, ScheduledRevenue,Status',
+      select: 'ID,Title,POLookup,ProjectNumber,Amount, AmountRevenue, AmountOOP, AmountTax, TotalScheduled, ScheduledRevenue, ScheduledOOP, TotalInvoiced, InvoicedRevenue, InvoicedOOP, Status',
       filter: 'ProjectNumber eq \'{{projectCode}}\' and Status eq \'Active\''
     },
     INVOICE_LINE_ITEMS_BY_PROJECTCODE: {
@@ -374,6 +374,11 @@ export class PmconstantService {
       filter: 'ProjectCode eq \'{{projectCode}}\' and (Status eq \'Approval Pending\')',
       top: 1
     },
+    ADV_INVOICES: {
+      select: 'ID, ClientLegalEntity, Amount, AddressType, InvoiceNumber, PO, ProformaLookup, IsTaggedFully, TaggedAmount, InvoiceDate, MainPOC, FileURL',
+      filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and IsTaggedFully eq \'No\'',
+      top: 4500
+    }
   };
   public QUERY = {
     GET_TIMESPENT: {

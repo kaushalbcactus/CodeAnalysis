@@ -116,7 +116,7 @@ export class StandardprojectComponent implements OnInit {
   onResourceClear() {
     this.selectedResourceObject = null;
   }
-  loadStandardTimeline() {
+  async loadStandardTimeline() {
     $('.timeline-top-section').hide();
     $('#standardTimelineConfirm').attr('disabled', 'true');
     $('.standardMilestoneByType').hide();
@@ -131,7 +131,7 @@ export class StandardprojectComponent implements OnInit {
       this.standardServices = [];
       this.getProjectManagement();
       this.getStandardTemplate();
-      this.userProperties = this.spService.getUserInfo(this.sharedObject.sharePointPageObject.userId);
+      this.userProperties = await this.spService.getUserInfo(this.sharedObject.sharePointPageObject.userId);
     } else {
       this.setDropdownField();
     }
@@ -482,7 +482,10 @@ export class StandardprojectComponent implements OnInit {
    */
   getInitialUserCapactiy(userCapacityRef) {
     if (this.selectedService === undefined) {
-      this.timelineObject.setAlertMessage("Please select the service.");
+      this.messageService.add({
+        key: 'custom', severity: 'error',
+        summary: 'Error Message', detail: 'Please select the service.'
+      });
     } else {
       $('.initialUserCapacity-section').hide();
       $('.standard-spinner-section').show();
@@ -841,6 +844,8 @@ export class StandardprojectComponent implements OnInit {
         ngPrimetaskObj.data.EndTimePart = this.getTimePart(ngPrimetaskObj.data.EndDate);
         ngPrimetaskObj.data.minEndDateValue = ngPrimetaskObj.data.StartDate;
         ngPrimetaskObj.data.MileId = ngPrimemilestoneObj.data.MileId + ';#' + this.pmConstant.task.CLIENT_REVIEW;
+        ngPrimetaskObj.data.AssignedTo = this.userProperties.Title;
+        ngPrimetaskObj.data.showHyperLink = true;
         this.standardFiles.push(ngPrimetaskObj);
         date = this.calcBusinessNextDate(ngPrimetaskObj.data.EndDate, 1);
       }
@@ -1165,7 +1170,10 @@ export class StandardprojectComponent implements OnInit {
     if (ngPrimeSubmilestoneObj && ngPrimeSubmilestoneObj.children && ngPrimeSubmilestoneObj.children.children && ngPrimeSubmilestoneObj.children.children.tasks.length) {
       for (let milestoneTaskObj of ngPrimeSubmilestoneObj.children.children.tasks) {
         if (milestoneTaskObj.data.Task !== this.pmConstant.task.SEND_TO_CLIENT && milestoneTaskObj.data.EndDate > ngPrimeSubmilestoneObj.data.EndDate) {
-          this.timelineObject.setAlertMessage("Task end date cannot be greater than milestone end date.")
+          this.messageService.add({
+            key: 'custom', severity: 'error',
+            summary: 'Error Message', detail: 'Task end date cannot be greater than milestone end date.'
+          });
           milestoneTaskObj.isClassErrorRedVisible = true;
         }
       }
@@ -1832,35 +1840,56 @@ export class StandardprojectComponent implements OnInit {
    */
   private validateRequiredField(isRegisterClick) {
     if (!this.selectedService) {
-      this.timelineObject.setAlertMessage("Please select the service.");
+      this.messageService.add({
+        key: 'custom', severity: 'error',
+        summary: 'Error Message', detail: 'Please select the service.'
+      });
       return false;
     }
     if (!this.selectedSkillObject || !this.selectedSkillObject.value.userType) {
-      this.timelineObject.setAlertMessage("Please select the resource.");
+      this.messageService.add({
+        key: 'custom', severity: 'error',
+        summary: 'Error Message', detail: 'Please select the resource.'
+      });
       return false;
     }
     if (!this.selectedResourceObject || !this.selectedResourceObject.value.userType) {
-      this.timelineObject.setAlertMessage("Please select the reviewer.");
+      this.messageService.add({
+        key: 'custom', severity: 'error',
+        summary: 'Error Message', detail: 'Please select the reviewer.'
+      });
       return false;
     }
     if (this.selectedSkillObject.value.userType === 'Type') {
       if (!this.ngStandardProposedStartDate) {
-        this.timelineObject.setAlertMessage("Please select the proposed start date.");
+        this.messageService.add({
+          key: 'custom', severity: 'error',
+          summary: 'Error Message', detail: 'Please select the proposed start date.'
+        });
         return false;
       }
     }
     if (!this.standardProjectBudgetHrs) {
-      this.timelineObject.setAlertMessage("Please enter the project Budget Hrs.");
+      this.messageService.add({
+        key: 'custom', severity: 'error',
+        summary: 'Error Message', detail: 'Please enter the project Budget Hrs.'
+      });
       return false;
     }
     if (this.standardProjectBudgetHrs) {
       // tslint:disable
       if (parseFloat(this.standardProjectBudgetHrs) <= 0) {
-        this.timelineObject.setAlertMessage("Please enter the valid Budget Hrs.");
+        this.messageService.add({
+          key: 'custom', severity: 'error',
+          summary: 'Error Message', detail: 'Please enter the valid Budget Hrs.'
+        });
         return false;
       }
       if (isNaN(parseFloat(this.standardProjectBudgetHrs))) {
-        this.timelineObject.setAlertMessage("Please enter the Budget Hrs in number.");
+        this.messageService.add({
+          key: 'custom', severity: 'error',
+          summary: 'Error Message', detail: 'Please enter the Budget Hrs in number.'
+        });
         return false;
       }
     }

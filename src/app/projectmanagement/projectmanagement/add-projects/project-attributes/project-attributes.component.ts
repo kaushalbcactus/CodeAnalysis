@@ -93,10 +93,16 @@ export class ProjectAttributesComponent implements OnInit {
       this.addProjectAttributesForm.get('poc').setValue(sowObj.PrimaryPOC);
       this.addProjectAttributesForm.get('poc2').setValue(sowObj.AdditionalPOC);
       const cm1IdArray = this.pmCommonService.getIds(sowObj.CMLevel1);
-      const deliveryIdArray = this.pmCommonService.getIds(sowObj.DeliveryLevel1);
-      this.addProjectAttributesForm.get('selectedActiveCM1').setValue(cm1IdArray);
+      const cm1found = this.cmLevel1.some(r => cm1IdArray.indexOf(r.value) >= 0);
+      if (cm1found) {
+        this.addProjectAttributesForm.get('selectedActiveCM1').setValue(cm1IdArray);
+      }
       this.addProjectAttributesForm.get('selectedActiveCM2').setValue(sowObj.CMLevel2);
-      this.addProjectAttributesForm.get('selectedActiveAD1').setValue(deliveryIdArray);
+      const deliveryIdArray = this.pmCommonService.getIds(sowObj.DeliveryLevel1);
+      const devlivery1found = this.deliveryLevel1.some(r => deliveryIdArray.indexOf(r.value) >= 0);
+      if (devlivery1found) {
+        this.addProjectAttributesForm.get('selectedActiveAD1').setValue(deliveryIdArray);
+      }
       this.addProjectAttributesForm.get('selectedActiveAD2').setValue(sowObj.DeliveryLevel2);
       projObj.ClientLegalEntity = this.addProjectAttributesForm.get('clientLeagalEntity').value;
     } else {
@@ -314,7 +320,7 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = this.addProjectAttributesForm.get('selectedActiveAD2').value;
   }
   onBilledByChanged() {
-    if (this.addProjectAttributesForm.get('billedBy').value === this.pmConstant.PROJECT_TYPE.HOURLY) {
+    if (this.addProjectAttributesForm.get('billedBy').value === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
       if (this.addProjectAttributesForm.get('pubSupport').value) {
         this.addProjectAttributesForm.get('pubSupport').setValue(false);
       }
