@@ -684,9 +684,9 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
       };
       for (const response of results) {
         if (batchURL.length < 100) {
-          const fileUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+          const fileUrl = this.globalObject.sharePointPageObject.serverRelativeUrl +
             '/Lists/' + this.constant.listNames.Schedules.name + '/' + response.retItems.ID + '_.000';
-          let moveFileUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+          let moveFileUrl = this.globalObject.sharePointPageObject.serverRelativeUrl +
             '/Lists/' + this.constant.listNames.Schedules.name + '/' +
             this.pmObject.addProject.ProjectAttributes.ProjectCode;
           if (response.retItems.Milestone === 'Select one') {

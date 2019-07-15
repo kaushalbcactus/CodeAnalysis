@@ -385,11 +385,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.addSOW.SOWFileURL = res.ServerRelativeUrl;
       this.pmObject.addSOW.SOWFileName = res.Name;
       this.pmObject.addSOW.SOWDocProperties = res;
-    } else {
-      this.messageService.add({
-        key: 'custom', severity: 'error', summary: 'Error Message',
-        detail: 'A file with the name' + this.selectedFile.name + ' already exists.'
-      });
     }
     return res;
   }
