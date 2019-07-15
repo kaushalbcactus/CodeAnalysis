@@ -49,32 +49,32 @@
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                     <ng-container *ngIf="col.field">
                 <td></td>
-                <p-multiSelect *ngSwitchCase="'ProformaNumber'" [options]="proformaColArray.ProformaNumber"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProformaNumber'" [options]="proformaColArray.ProformaNumber"
                     defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'PONumber'" [options]="proformaColArray.PONumber" defaultLabel="All"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'PONumber'" [options]="proformaColArray.PONumber" defaultLabel="All"
                     (onChange)="pfc.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'ProformaDate'" [options]="proformaColArray.ProformaDate"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProformaDate'" [options]="proformaColArray.ProformaDate"
                     defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'ProformaType'" [options]="proformaColArray.ProformaType"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProformaType'" [options]="proformaColArray.ProformaType"
                     defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'Amount'" [options]="proformaColArray.Amount" defaultLabel="All"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Amount'" [options]="proformaColArray.Amount" defaultLabel="All"
                     (onChange)="pfc.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'Currency'" [options]="proformaColArray.Currency" defaultLabel="All"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Currency'" [options]="proformaColArray.Currency" defaultLabel="All"
                     (onChange)="pfc.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'POC'" [options]="proformaColArray.POC" defaultLabel="All"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'POC'" [options]="proformaColArray.POC" defaultLabel="All"
                     (onChange)="pfc.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'Status'" [options]="proformaColArray.Status" defaultLabel="All"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Status'" [options]="proformaColArray.Status" defaultLabel="All"
                     (onChange)="pfc.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
 
-                <!-- <p-dropdown [options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">
+                <!-- <p-dropdown resetFilterOnHide="true"[options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">
                 <ng-template let-item pTemplate="item">
                   <span>{{item.value}}</span>
                 </ng-template>
@@ -211,7 +211,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-dropdown id="cle" class="cleClass" [options]="cleData" formControlName="ClientLegalEntity"
+                    <p-dropdown resetFilterOnHide="true"id="cle" class="cleClass" [options]="cleData" formControlName="ClientLegalEntity"
                         placeholder="Select Client" [filter]="true" optionLabel="Title" [showClear]="true"
                         (onChange)="onCLIChange($event)"></p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.ClientLegalEntity.errors">
@@ -225,7 +225,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-dropdown [options]="poNames" formControlName="POName" placeholder="Select PO "
+                    <p-dropdown resetFilterOnHide="true"[options]="poNames" formControlName="POName" placeholder="Select PO "
                         optionLabel="Number" [filter]="true" [showClear]="true" (onChange)="onPOChange($event)">
                     </p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.POName.errors">
@@ -268,7 +268,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-dropdown [options]="proformaTypes" formControlName="ProformaType" placeholder="Select One"
+                    <p-dropdown resetFilterOnHide="true"[options]="proformaTypes" formControlName="ProformaType" placeholder="Select One"
                         optionLabel="lable" [showClear]="true"
                         (onChange)="updatePrformaNumFromPT(createProforma_form.value.ClientLegalEntity,$event)">
                     </p-dropdown>
@@ -285,7 +285,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-dropdown [options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name"
+                    <p-dropdown resetFilterOnHide="true"[options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name"
                         [filter]="true" optionLabel="FullName" (onChange)="pocChange($event)"
                         [style]="{width: '215px'}">
                         <ng-template let-item pTemplate="item">
@@ -322,7 +322,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-dropdown [options]="proformaAddressType" formControlName="AddressType" placeholder="Select One"
+                    <p-dropdown resetFilterOnHide="true"[options]="proformaAddressType" formControlName="AddressType" placeholder="Select One"
                         optionLabel="lable" [showClear]="true"></p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.AddressType.errors">
                         <div *ngIf="isValidCreateProformaForm.AddressType.errors.required" style="color:red;">Please
@@ -337,7 +337,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-dropdown [options]="proformatTemplates" formControlName="Template" placeholder="Select One"
+                    <p-dropdown resetFilterOnHide="true"[options]="proformatTemplates" formControlName="Template" placeholder="Select One"
                         optionLabel="label" [showClear]="true"
                         (onChange)="showHideState(createProforma_form.value.Template)"></p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.Template.errors">
@@ -351,7 +351,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box" *ngIf="isTemplate4US">
-                    <p-dropdown [options]="usStatesData" formControlName="State" placeholder="Select One"
+                    <p-dropdown resetFilterOnHide="true"[options]="usStatesData" formControlName="State" placeholder="Select One"
                         optionLabel="Title" [filter]="true" [showClear]="true"></p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.State.errors">
                         <div *ngIf="isValidCreateProformaForm.State.errors.required" style="color:red;">Please

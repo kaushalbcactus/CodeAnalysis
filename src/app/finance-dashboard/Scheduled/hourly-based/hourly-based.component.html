@@ -41,39 +41,39 @@
                 <th></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                     <ng-container *ngIf="col.field">
-                        <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="hourlyBasedColArray.ProjectCode"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProjectCode'" [options]="hourlyBasedColArray.ProjectCode"
                             defaultLabel="All" (onChange)="hb.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'SOWValue'" [options]="hourlyBasedColArray.SOWCode"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'SOWValue'" [options]="hourlyBasedColArray.SOWCode"
                             defaultLabel="All" (onChange)="hb.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'ProjectMileStone'"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProjectMileStone'"
                             [options]="hourlyBasedColArray.ProjectMileStone" defaultLabel="All"
                             (onChange)="hb.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'ClientLegalEntity'"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientLegalEntity'"
                             [options]="hourlyBasedColArray.ClientLegalEntity" defaultLabel="All"
                             (onChange)="hb.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'PONumber'" [options]="hourlyBasedColArray.PONumber"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'PONumber'" [options]="hourlyBasedColArray.PONumber"
                             defaultLabel="All" (onChange)="hb.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'POName'" [options]="hourlyBasedColArray.POName"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'POName'" [options]="hourlyBasedColArray.POName"
                             defaultLabel="All" (onChange)="hb.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'Rate'" [options]="hourlyBasedColArray.Rate" defaultLabel="All"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Rate'" [options]="hourlyBasedColArray.Rate" defaultLabel="All"
                             (onChange)="hb.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'HoursSpent'" [options]="hourlyBasedColArray.HoursSpent"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'HoursSpent'" [options]="hourlyBasedColArray.HoursSpent"
                             defaultLabel="All" (onChange)="hb.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'TotalInvoice'" [options]="hourlyBasedColArray.TotalInvoice"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'TotalInvoice'" [options]="hourlyBasedColArray.TotalInvoice"
                             defaultLabel="All" (onChange)="hb.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'Currency'" [options]="hourlyBasedColArray.Currency"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Currency'" [options]="hourlyBasedColArray.Currency"
                             defaultLabel="All" (onChange)="hb.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'POCName'" [options]="hourlyBasedColArray.POCName"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'POCName'" [options]="hourlyBasedColArray.POCName"
                             defaultLabel="All" (onChange)="hb.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
 

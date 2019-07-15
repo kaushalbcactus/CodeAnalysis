@@ -40,35 +40,35 @@
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                     <ng-container *ngIf="col.field">
                 <td></td>
-                <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="outInvoiceColArray.ClientLegalEntity"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientLegalEntity'" [options]="outInvoiceColArray.ClientLegalEntity"
                     defaultLabel="All"  (onChange)="outi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'InvoiceStatus'" [options]="outInvoiceColArray.InvoiceStatus"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'InvoiceStatus'" [options]="outInvoiceColArray.InvoiceStatus"
                     defaultLabel="All"  (onChange)="outi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'InvoiceNumber'" [options]="outInvoiceColArray.InvoiceNumber"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'InvoiceNumber'" [options]="outInvoiceColArray.InvoiceNumber"
                     defaultLabel="All"  (onChange)="outi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'PONumber'" [options]="outInvoiceColArray.PONumber" defaultLabel="All"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'PONumber'" [options]="outInvoiceColArray.PONumber" defaultLabel="All"
                      (onChange)="outi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'POName'" [options]="outInvoiceColArray.POName" defaultLabel="All"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'POName'" [options]="outInvoiceColArray.POName" defaultLabel="All"
                      (onChange)="outi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'InvoiceDate'" [options]="outInvoiceColArray.InvoiceDate"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'InvoiceDate'" [options]="outInvoiceColArray.InvoiceDate"
                     defaultLabel="All"  (onChange)="outi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'Amount'" [options]="outInvoiceColArray.Amount" defaultLabel="All"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Amount'" [options]="outInvoiceColArray.Amount" defaultLabel="All"
                      (onChange)="outi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'Currency'" [options]="outInvoiceColArray.Currency" defaultLabel="All"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Currency'" [options]="outInvoiceColArray.Currency" defaultLabel="All"
                      (onChange)="outi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'POC'" [options]="outInvoiceColArray.POC" defaultLabel="All"
+                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'POC'" [options]="outInvoiceColArray.POC" defaultLabel="All"
                      (onChange)="outi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
 
-                <!-- <p-dropdown [options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">
+                <!-- <p-dropdown resetFilterOnHide="true"[options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">
               <ng-template let-item pTemplate="item">
                 <span>{{item.value}}</span>
               </ng-template>
@@ -170,7 +170,7 @@
                 Reason
             </div>
             <div class="ui-g-6">
-                <p-dropdown [options]="reasons" placeholder="Select One" optionLabel="label" [showClear]="true"
+                <p-dropdown resetFilterOnHide="true"[options]="reasons" placeholder="Select One" optionLabel="label" [showClear]="true"
                     formControlName="DisputeReason"></p-dropdown>
                 <div *ngIf="formSubmit.isSubmit && isValidDisputeInvoiceForm.DisputeReason.errors">
                     <div *ngIf="isValidDisputeInvoiceForm.DisputeReason.errors.required" style="color:red;">Please
@@ -289,7 +289,7 @@
             <div class="ui-g-6">Type</div>
             <div class="ui-g-6">
                 <div class="ui-g-6">
-                    <p-dropdown [options]="CreditOrDebitNoteType" placeholder="Select One" optionLabel="label"
+                    <p-dropdown resetFilterOnHide="true"[options]="CreditOrDebitNoteType" placeholder="Select One" optionLabel="label"
                         [showClear]="true" (onChange)="onCorDChange($event)" formControlName="Type"></p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidCreditDebitNoteForm.Type.errors">
                         <div *ngIf="isValidCreditDebitNoteForm.Type.errors.required" style="color:red;">Please
