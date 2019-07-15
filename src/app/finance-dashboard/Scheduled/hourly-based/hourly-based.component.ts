@@ -616,11 +616,11 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     getPOObj(poObj) {
         this.poLookupDataObj.ID = poObj.ID;
         this.poLookupDataObj.ExpiryDate = poObj.POExpiryDate;
-        this.poLookupDataObj.TotalLinked = poObj.TotalLinked;
-        this.poLookupDataObj.RevenueLinked = poObj.RevenueLinked;
-        this.poLookupDataObj.AmountRevenue = poObj.AmountRevenue;
-        this.poLookupDataObj.TotalScheduled = poObj.TotalScheduled;
-        this.poLookupDataObj.ScheduledRevenue = poObj.ScheduledRevenue;
+        this.poLookupDataObj.TotalLinked = poObj.TotalLinked ? poObj.TotalLinked : 0;
+        this.poLookupDataObj.RevenueLinked = poObj.RevenueLinked ? poObj.RevenueLinked : 0;
+        this.poLookupDataObj.AmountRevenue = poObj.AmountRevenue ? poObj.AmountRevenue : 0;
+        this.poLookupDataObj.TotalScheduled = poObj.TotalScheduled ? poObj.TotalScheduled : 0;
+        this.poLookupDataObj.ScheduledRevenue = poObj.ScheduledRevenue ? poObj.ScheduledRevenue : 0;
         this.poLookupDataObj.Number = poObj.Number;
         this.poLookupDataObj.availablePOBudget = parseFloat(poObj.AmountRevenue ? poObj.AmountRevenue : 0) - parseFloat(poObj.RevenueLinked ? poObj.RevenueLinked : 0);
         return this.poLookupDataObj;
@@ -628,6 +628,10 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
     getSOWObj(sow: any) {
         this.sowObj.availableSOWBudget = parseFloat(sow.NetBudget ? sow.NetBudget : 0) - parseFloat(sow.RevenueLinked ? sow.RevenueLinked : 0);
+        this.sowData.TotalLinked  = sow.TotalLinked ? sow.TotalLinked : 0;
+        this.sowData.ScheduledRevenue = sow.ScheduledRevenue ? sow.ScheduledRevenue : 0;
+        this.sowData.TotalScheduled = sow.TotalScheduled = sow.TotalScheduled ? sow.TotalScheduled : 0;
+        this.sowData.RevenueLinked = sow.RevenueLinked ? sow.RevenueLinked : 0;
     }
 
     pcmLevels: any = [];

@@ -1819,7 +1819,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
                 newArr.push(appendixRow);
             }
             USInvoice.appendixCreate = USInvoice.appendixCreate.replace('[[Appendix]]', newArr.join(''));
-            USInvoice.appendixCreate = USInvoice.appendixCreate.replace('[[Total]]', invoiceData.Appendix[0].amount);
+            USInvoice.appendixCreate = USInvoice.appendixCreate.replace('[[Total]]', invoiceData.invoiceFees);
             USInvoice.appendixCreate = USInvoice.appendixCreate.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                 invoiceData.usCurrencySymbol);
         } else {
@@ -1924,7 +1924,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
             USObject.appendix = USObject.appendix.replace('[[Appendix]]', newArr.join(''));
-            USObject.appendix = USObject.appendix.replace('[[Total]]', invoiceData.Appendix[0].amount);
+            USObject.appendix = USObject.appendix.replace('[[Total]]', invoiceData.invoiceFees);
             USObject.appendix = USObject.appendix.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                 invoiceData.usCurrencySymbol);
             delete USObject.appendixCreate;
@@ -2051,7 +2051,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
             JapanObject.appendix = JapanObject.appendix.replace('[[Appendix]]', newArr.join(''));
-            JapanObject.appendix = JapanObject.appendix.replace('[[Amount]]', invoiceData.Appendix[0].amount);
+            // JapanObject.appendix = JapanObject.appendix.replace('[[Amount]]', invoiceData.invoiceFees);
             JapanObject.appendix = JapanObject.appendix.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                 invoiceData.JpnCurrencySymbol);
             delete JapanObject.appendixCreate;
