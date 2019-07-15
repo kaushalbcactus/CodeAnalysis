@@ -909,73 +909,111 @@ export class ProformaComponent implements OnInit, OnDestroy {
         let pfs: any = [];
         let pfbs: any = [];
         let sows: any = [];
-        for (let j = 0; j < this.iliByPidRes.length; j++) {
-            const element = this.iliByPidRes[j];
-            // PF 
-            let pfsItem = await this.findpfFrompfRes(element);
+        // Modified by Kaushal on 15.07.2019 to avoid multipe batch request to update
+
+        let pfsItem: any = {};
+        let pfbsItems: any = [];
+        let sowsItem: any = {};
+        // for (let j = 0; j < this.iliByPidRes.length; j++) {
+        //     const element = this.iliByPidRes[j];
+        // PF 
+        // pfsItem = await this.findpfFrompfRes(element);
+        this.iliByPidRes.forEach(element => {
+            const pfsItems = this.pfresp.filter(pf => pf.Title === element.Title);
+            pfsItem = pfsItems.length > 0 ? pfsItems[0] : {};
             if (pfsItem) {
                 // InvoicedRevenue: (pfsItem.InvoicedRevenue ? pfsItem.InvoicedRevenue : 0 + element.Amount ? element.Amount : 0),
                 if (proformaType === 'revenue') {
+                    pfsItem.InvoicedRevenue = pfsItem.InvoicedRevenue ? pfsItem.InvoicedRevenue + element.Amount : 0 + element.Amount;
+                    pfsItem.ScheduledRevenue = pfsItem.ScheduledRevenue ? pfsItem.ScheduledRevenue - element.Amount : 0 - element.Amount;
+                    pfsItem.Invoiced = pfsItem.Invoiced ? pfsItem.Invoiced + element.Amount : 0 + element.Amount;
+                    pfsItem.InvoicesScheduled = pfsItem.InvoicesScheduled ? pfsItem.InvoicesScheduled - element.Amount : 0 - element.Amount
                     pfs.push({
                         Id: pfsItem.Id,
-                        InvoicedRevenue: (pfsItem.InvoicedRevenue ? pfsItem.InvoicedRevenue + element.Amount : 0 + element.Amount),
-                        ScheduledRevenue: (pfsItem.ScheduledRevenue ? pfsItem.ScheduledRevenue - element.Amount : 0 - element.Amount),
-                        Invoiced: (pfsItem.Invoiced ? pfsItem.Invoiced + element.Amount : 0 + element.Amount),
-                        InvoicesScheduled: (pfsItem.InvoicesScheduled ? pfsItem.InvoicesScheduled - element.Amount : 0 - element.Amount),
-                    })
+                        InvoicedRevenue: (pfsItem.InvoicedRevenue),
+                        ScheduledRevenue: (pfsItem.ScheduledRevenue),
+                        Invoiced: (pfsItem.Invoiced),
+                        InvoicesScheduled: (pfsItem.InvoicesScheduled),
+                    });
                 } else if (proformaType === 'oop') {
+                    pfsItem.ScheduledOOP = pfsItem.ScheduledOOP ? pfsItem.ScheduledOOP - element.Amount : 0 - element.Amount;
+                    pfsItem.InvoicedOOP = pfsItem.InvoicedOOP ? pfsItem.InvoicedOOP + element.Amount : 0 + element.Amount;
+                    pfsItem.Invoiced = pfsItem.Invoiced ? pfsItem.Invoiced + element.Amount : 0 + element.Amount;
+                    pfsItem.InvoicesScheduled = pfsItem.InvoicesScheduled ? pfsItem.InvoicesScheduled - element.Amount : 0 - element.Amount;
                     pfs.push({
                         Id: pfsItem.Id,
-                        ScheduledOOP: (pfsItem.ScheduledOOP ? pfsItem.ScheduledOOP - element.Amount : 0 - element.Amount),
-                        InvoicedOOP: (pfsItem.InvoicedOOP ? pfsItem.InvoicedOOP + element.Amount : 0 + element.Amount),
-                        Invoiced: (pfsItem.Invoiced ? pfsItem.Invoiced + element.Amount : 0 + element.Amount),
-                        InvoicesScheduled: (pfsItem.InvoicesScheduled ? pfsItem.InvoicesScheduled - element.Amount : 0 - element.Amount),
-                    })
+                        ScheduledOOP: (pfsItem.ScheduledOOP),
+                        InvoicedOOP: (pfsItem.InvoicedOOP),
+                        Invoiced: (pfsItem.Invoiced),
+                        InvoicesScheduled: (pfsItem.InvoicesScheduled),
+                    });
                 }
             }
             // PFB
-            let pfbsItem = await this.findpfbFrompfbRes(element);
-            if (pfbsItem) {
-                if (proformaType === 'revenue') {
-                    pfbs.push({
-                        Id: pfbsItem.Id,
-                        InvoicedRevenue: (pfbsItem.InvoicedRevenue ? pfbsItem.InvoicedRevenue + element.Amount : 0 + element.Amount),
-                        ScheduledRevenue: (pfbsItem.ScheduledRevenue ? pfbsItem.ScheduledRevenue - element.Amount : 0 - element.Amount),
-                        TotalInvoiced: (pfbsItem.TotalInvoiced ? pfbsItem.TotalInvoiced + element.Amount : 0 + element.Amount),
-                        TotalScheduled: (pfbsItem.TotalScheduled ? pfbsItem.TotalScheduled - element.Amount : 0 - element.Amount),
-                    })
-                } else if (proformaType === 'oop') {
-                    pfbs.push({
-                        Id: pfbsItem.Id,
-                        ScheduledOOP: (pfbsItem.ScheduledOOP ? pfbsItem.ScheduledOOP - element.Amount : 0 - element.Amount),
-                        InvoicedOOP: (pfbsItem.InvoicedOOP ? pfbsItem.InvoicedOOP + element.Amount : 0 + element.Amount),
-                        TotalInvoiced: (pfbsItem.TotalInvoiced ? pfbsItem.TotalInvoiced + element.Amount : 0 + element.Amount),
-                        TotalScheduled: (pfbsItem.TotalScheduled ? pfbsItem.TotalScheduled - element.Amount : 0 - element.Amount),
-                    })
-                }
+            // let pfbsItem = await this.findpfbFrompfbRes(element);
+            pfbsItems = this.pfbresp.filter(pf => pf.ProjectNumber === element.Title);
+            if (pfbsItems.length) {
+                pfbsItems.forEach(pfbsItem => {
+                    if (proformaType === 'revenue') {
+                        pfbsItem.InvoicedRevenue = pfbsItem.InvoicedRevenue ? pfbsItem.InvoicedRevenue + element.Amount : 0 + element.Amount;
+                        pfbsItem.ScheduledRevenue = pfbsItem.ScheduledRevenue ? pfbsItem.ScheduledRevenue - element.Amount : 0 - element.Amount;
+                        pfbsItem.TotalInvoiced = pfbsItem.TotalInvoiced ? pfbsItem.TotalInvoiced + element.Amount : 0 + element.Amount;
+                        pfbsItem.TotalScheduled = pfbsItem.TotalScheduled ? pfbsItem.TotalScheduled - element.Amount : 0 - element.Amount;
+                        pfbs.push({
+                            Id: pfbsItem.Id,
+                            InvoicedRevenue: (pfbsItem.InvoicedRevenue),
+                            ScheduledRevenue: (pfbsItem.ScheduledRevenue),
+                            TotalInvoiced: (pfbsItem.TotalInvoiced),
+                            TotalScheduled: (pfbsItem.TotalScheduled),
+                        })
+                    } else if (proformaType === 'oop') {
+                        pfbsItem.ScheduledOOP = pfbsItem.ScheduledOOP ? pfbsItem.ScheduledOOP - element.Amount : 0 - element.Amount;
+                        pfbsItem.InvoicedOOP = pfbsItem.InvoicedOOP ? pfbsItem.InvoicedOOP + element.Amount : 0 + element.Amount;
+                        pfbsItem.TotalInvoiced = pfbsItem.TotalInvoiced ? pfbsItem.TotalInvoiced + element.Amount : 0 + element.Amount;
+                        pfbsItem.TotalScheduled = pfbsItem.TotalScheduled ? pfbsItem.TotalScheduled - element.Amount : 0 - element.Amount;
+                        pfbs.push({
+                            Id: pfbsItem.Id,
+                            ScheduledOOP: (pfbsItem.ScheduledOOP),
+                            InvoicedOOP: (pfbsItem.InvoicedOOP),
+                            TotalInvoiced: (pfbsItem.TotalInvoiced),
+                            TotalScheduled: (pfbsItem.TotalScheduled),
+                        })
+                    }
+                });
             }
             // SOW
-            let sowsItem = await this.findsowFromsowRes(element);
+            // let sowsItem = await this.findsowFromsowRes(element);
+            const sowItems = this.sowresp.filter(pf => pf.SOWCode === element.SOWCode);
+            sowsItem = sowItems.length > 0 ? sowItems[0] : {};
             if (sowsItem) {
                 if (proformaType === 'revenue') {
+                    sowsItem.InvoicedRevenue = sowsItem.InvoicedRevenue ? sowsItem.InvoicedRevenue + element.Amount : 0 + element.Amount;
+                    sowsItem.ScheduledRevenue = sowsItem.ScheduledRevenue ? sowsItem.ScheduledRevenue - element.Amount : 0 - element.Amount;
+                    sowsItem.TotalInvoiced = sowsItem.TotalInvoiced ? sowsItem.TotalInvoiced + element.Amount : 0 + element.Amount;
+                    sowsItem.TotalScheduled = sowsItem.TotalScheduled ? sowsItem.TotalScheduled - element.Amount : 0 - element.Amount;
                     sows.push({
                         Id: sowsItem.Id,
-                        InvoicedRevenue: (sowsItem.InvoicedRevenue ? sowsItem.InvoicedRevenue + element.Amount : 0 + element.Amount),
-                        ScheduledRevenue: (sowsItem.ScheduledRevenue ? sowsItem.ScheduledRevenue - element.Amount : 0 - element.Amount),
-                        TotalInvoiced: (sowsItem.TotalInvoiced ? sowsItem.TotalInvoiced + element.Amount : 0 + element.Amount),
-                        TotalScheduled: (sowsItem.TotalScheduled ? sowsItem.TotalScheduled - element.Amount : 0 - element.Amount),
+                        InvoicedRevenue: (sowsItem.InvoicedRevenue),
+                        ScheduledRevenue: (sowsItem.ScheduledRevenue),
+                        TotalInvoiced: (sowsItem.TotalInvoiced),
+                        TotalScheduled: (sowsItem.TotalScheduled),
                     })
                 } else if (proformaType === 'oop') {
+                    sowsItem.ScheduledOOP = sowsItem.ScheduledOOP ? sowsItem.ScheduledOOP - element.Amount : 0 - element.Amount;
+                    sowsItem.InvoicedOOP = sowsItem.InvoicedOOP ? sowsItem.InvoicedOOP + element.Amount : 0 + element.Amount;
+                    sowsItem.TotalInvoiced = sowsItem.TotalInvoiced ? sowsItem.TotalInvoiced + element.Amount : 0 + element.Amount;
+                    sowsItem.TotalScheduled = sowsItem.TotalScheduled ? sowsItem.TotalScheduled - element.Amount : 0 - element.Amount;
                     sows.push({
                         Id: sowsItem.Id,
-                        ScheduledOOP: (sowsItem.ScheduledOOP ? sowsItem.ScheduledOOP - element.Amount : 0 - element.Amount),
-                        InvoicedOOP: (sowsItem.InvoicedOOP ? sowsItem.InvoicedOOP + element.Amount : 0 + element.Amount),
-                        TotalInvoiced: (sowsItem.TotalInvoiced ? sowsItem.TotalInvoiced + element.Amount : 0 + element.Amount),
-                        TotalScheduled: (sowsItem.TotalScheduled ? sowsItem.TotalScheduled - element.Amount : 0 - element.Amount),
+                        ScheduledOOP: (sowsItem.ScheduledOOP),
+                        InvoicedOOP: (sowsItem.InvoicedOOP),
+                        TotalInvoiced: (sowsItem.TotalInvoiced),
+                        TotalScheduled: (sowsItem.TotalScheduled),
                     })
                 }
             }
-        }
+        });
+        // }
 
         if (pfs.length) {
             for (let pf = 0; pf < pfs.length; pf++) {
@@ -1016,30 +1054,30 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.submitForm(data, 'generateInvoice');
     }
 
-    findpfFrompfRes(ili) {
-        let found = this.pfresp.find((x) => {
-            if (x.Title === ili.Title) {
-                return x;
-            }
-        })
-        return found ? found : ''
-    }
-    findpfbFrompfbRes(ili) {
-        let found = this.pfbresp.find((x) => {
-            if (x.ProjectNumber === ili.Title) {
-                return x;
-            }
-        })
-        return found ? found : ''
-    }
-    findsowFromsowRes(ili) {
-        let found = this.sowresp.find((x) => {
-            if (x.SOWCode === ili.SOWCode) {
-                return x;
-            }
-        })
-        return found ? found : ''
-    }
+    // findpfFrompfRes(ili) {
+    //     let found = this.pfresp.find((x) => {
+    //         if (x.Title === ili.Title) {
+    //             return x;
+    //         }
+    //     })
+    //     return found ? found : ''
+    // }
+    // findpfbFrompfbRes(ili) {
+    //     let found = this.pfbresp.find((x) => {
+    //         if (x.ProjectNumber === ili.Title) {
+    //             return x;
+    //         }
+    //     })
+    //     return found ? found : ''
+    // }
+    // findsowFromsowRes(ili) {
+    //     let found = this.sowresp.find((x) => {
+    //         if (x.SOWCode === ili.SOWCode) {
+    //             return x;
+    //         }
+    //     })
+    //     return found ? found : ''
+    // }
 
     //  Generate Invoice Data End
 
@@ -1119,7 +1157,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             this.submitForm(data, 'replaceProforma');
         } else if (res.hasError) {
             this.isPSInnerLoaderHidden = true;
-            this.messageService.add({ key: 'myKey1', severity: 'info', summary: 'File not uploaded.', detail: 'Folder / ' + res.message.value+'', life: 3000 })
+            this.messageService.add({ key: 'myKey1', severity: 'info', summary: 'File not uploaded.', detail: 'Folder / ' + res.message.value + '', life: 3000 })
         }
     }
 
