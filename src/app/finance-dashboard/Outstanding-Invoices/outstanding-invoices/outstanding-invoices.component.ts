@@ -537,18 +537,63 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 this.fdConstantsService.fdComponent.selectedEditObject.ID = data.Id;
                 this.fdConstantsService.fdComponent.selectedEditObject.Type = 'Invoice';
                 this.fdConstantsService.fdComponent.selectedComp = this;
+                // switch (data.Template) {
+                //     case 'US':
+                //         this.editorRef.USTemplateCopy = invObj.saveObj;
+                //         this.editorRef.displayUS = true;
+                //         break;
+                //     case 'Japan':
+                //         this.editorRef.JapanTemplateCopy = invObj.saveObj;
+                //         this.editorRef.displayJapan = true;
+                //         break;
+                //     case 'India':
+                //         this.editorRef.IndiaTemplateCopy = invObj.saveObj;
+                //         this.editorRef.displayIndia = true;
+                //         break;
+                // }
                 switch (data.Template) {
                     case 'US':
+                        this.editorRef.JapanTemplateCopy = {};
+                        this.editorRef.IndiaTemplateCopy = {};
                         this.editorRef.USTemplateCopy = invObj.saveObj;
+                        if (this.editorRef.USTemplateCopy.appendix) {
+                            this.editorRef.showAppendix = true;
+                        } else {
+                            this.editorRef.showAppendix = false;
+                        }
+                        this.editorRef.displayJapan = false;
                         this.editorRef.displayUS = true;
+                        this.editorRef.displayIndia = false;
+                        this.editorRef.enableButton();
                         break;
                     case 'Japan':
+                        this.editorRef.USTemplateCopy = {};
+                        this.editorRef.IndiaTemplateCopy = {};
                         this.editorRef.JapanTemplateCopy = invObj.saveObj;
+                        if (this.editorRef.JapanTemplateCopy.appendix) {
+                            this.editorRef.showAppendix = true;
+                        } else {
+                            this.editorRef.showAppendix = false;
+                        }
                         this.editorRef.displayJapan = true;
+                        this.editorRef.displayUS = false;
+                        this.editorRef.displayIndia = false;
+                        this.editorRef.enableButton();
                         break;
                     case 'India':
+
+                        this.editorRef.JapanTemplateCopy = {};
+                        this.editorRef.USTemplateCopy = {};
                         this.editorRef.IndiaTemplateCopy = invObj.saveObj;
+                        if (this.editorRef.IndiaTemplateCopy.appendix) {
+                            this.editorRef.showAppendix = true;
+                        } else {
+                            this.editorRef.showAppendix = false;
+                        }
+                        this.editorRef.displayJapan = false;
+                        this.editorRef.displayUS = false;
                         this.editorRef.displayIndia = true;
+                        this.editorRef.enableButton();
                         break;
                 }
             }
