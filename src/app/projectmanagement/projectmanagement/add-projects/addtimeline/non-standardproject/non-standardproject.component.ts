@@ -162,42 +162,69 @@ export class NonStandardprojectComponent implements OnInit {
   }
   private validateRequiredField() {
     if (!this.selectedDeliverableType) {
-      this.timelineObject.setAlertMessage("Please select the delivery Type.");
+      this.messageService.add({
+        key: 'custom', severity: 'error',
+        summary: 'Error Message', detail: 'Please select the delivery Type.'
+      });
       return false;
     }
     if (!this.selectedServices) {
-      this.timelineObject.setAlertMessage("Please select the service.");
+      this.messageService.add({
+        key: 'custom', severity: 'error',
+        summary: 'Error Message', detail: 'Please select the service.'
+      });
       return false;
     }
     if (!this.selectedResource) {
-      this.timelineObject.setAlertMessage("Please select the resource.");
+      this.messageService.add({
+        key: 'custom', severity: 'error',
+        summary: 'Error Message', detail: 'Please select the resource.'
+      });
       return false;
     }
     if (!this.ngNonStandardProposedStartDate) {
-      this.timelineObject.setAlertMessage("Please select the Proposed Start Date.");
+      this.messageService.add({
+        key: 'custom', severity: 'error',
+        summary: 'Error Message', detail: 'Please select the Proposed Start Date.'
+      });
       return false;
     }
     if (!this.ngNonStandardProposedEndDate) {
-      this.timelineObject.setAlertMessage("Please select the Proposed End Date.");
+      this.messageService.add({
+        key: 'custom', severity: 'error',
+        summary: 'Error Message', detail: 'Please select the Proposed End Date.'
+      });
       return false;
     }
     if (!this.nonstandardProjectBudgetHrs) {
-      this.timelineObject.setAlertMessage("Please select the project budget hrs.");
+      this.messageService.add({
+        key: 'custom', severity: 'error',
+        summary: 'Error Message', detail: 'Please select the project budget hrs.'
+      });
       return false;
     }
     if (this.nonstandardProjectBudgetHrs) {
       if (parseFloat(this.nonstandardProjectBudgetHrs) <= 0) {
-        this.timelineObject.setAlertMessage("Please enter the valid Budget Hrs.");
+        this.messageService.add({
+          key: 'custom', severity: 'error',
+          summary: 'Error Message', detail: 'Please enter the valid Budget Hrs.'
+        });
         return false;
       }
       if (isNaN(parseFloat(this.nonstandardProjectBudgetHrs))) {
-        this.timelineObject.setAlertMessage("Please enter the Budget Hrs in number.");
+        this.messageService.add({
+          key: 'custom', severity: 'error',
+          summary: 'Error Message', detail: 'Please enter the Budget Hrs in number.'
+        });
         return false;
       }
     }
     if (this.ngNonStandardProposedStartDate && this.ngNonStandardProposedEndDate) {
       if (this.ngNonStandardProposedStartDate > this.ngNonStandardProposedEndDate) {
-        this.timelineObject.setAlertMessage("Proposed Start date cannot be greater than proposed end date.");
+        this.messageService.add({
+          key: 'custom', severity: 'error',
+          summary: 'Error Message', detail: 'Proposed Start date cannot be greater than proposed end date.'
+        });
         return false;
       }
     }

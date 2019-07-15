@@ -320,7 +320,7 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = this.addProjectAttributesForm.get('selectedActiveAD2').value;
   }
   onBilledByChanged() {
-    if (this.addProjectAttributesForm.get('billedBy').value === this.pmConstant.PROJECT_TYPE.HOURLY) {
+    if (this.addProjectAttributesForm.get('billedBy').value === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
       if (this.addProjectAttributesForm.get('pubSupport').value) {
         this.addProjectAttributesForm.get('pubSupport').setValue(false);
       }
