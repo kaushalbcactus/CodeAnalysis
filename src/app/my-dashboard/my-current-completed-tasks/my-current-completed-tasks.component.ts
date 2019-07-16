@@ -210,7 +210,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
-
     let mytasks = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTasks);
     mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
     mytasks.filter += status === 'MyCompletedTask' ? mytasks.filterCompleted : mytasks.filterStatus;
@@ -390,7 +389,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
     // var status = await this.getPrevTaskStatus(task);
 
-debugger;
     const ref = this.dialogService.open(TimeSpentDialogComponent, {
       data: {
         task: task,
@@ -458,12 +456,12 @@ debugger;
     });
     ref.onClose.subscribe(async (Commentobj: any) => {
 
-      this.loaderenable = true;
-      this.allTasks = [];
-
+     
+     
       if (Commentobj) {
+        
         if (Commentobj.IsMarkComplete) {
-
+          this.loaderenable = true;
           task.TaskComments = Commentobj.comment;
           task.Status = "Completed";
           var response = await this.myDashboardConstantsService.CompleteTask(task);
@@ -472,8 +470,9 @@ debugger;
             this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
           }
           else {
+            this.allTasks = [];
             this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task Updated Successfully.' });
-
+            this.GetDatabyDateSelection(this.selectedTab, this.days);
             if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
               this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
             }
@@ -483,10 +482,6 @@ debugger;
           this.UpdateComment(Commentobj.comment, task);
         }
       }
-
-
-      this.GetDatabyDateSelection(this.selectedTab, this.days);
-
     });
   }
 
@@ -505,8 +500,6 @@ debugger;
 
     await this.spServices.update(this.constants.listNames.Schedules.name, task.ID, data, "SP.Data.SchedulesListItem");
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
-
-
   }
 
 
@@ -612,6 +605,8 @@ debugger;
 
 
     var stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
+
+    task.TaskComments = this.response[0][0].TaskComments;
 
     if (stval === "Completed" || stval === "AllowCompletion" || stval === "Auto Closed") {
 

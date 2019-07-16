@@ -236,7 +236,7 @@ export class MyTimelineComponent implements OnInit {
     var filterDates = [];
 
     if (firstLoad) {
-      debugger;
+    
       startDate = new Date(new Date().setDate((new Date().getDate() - new Date().getDay()))),
         endDate = new Date(new Date().setDate((new Date().getDate() - new Date().getDay()) + 6));
     }
@@ -571,7 +571,6 @@ export class MyTimelineComponent implements OnInit {
 
   async UpdateTask() {
 
-    debugger;
     this.CalendarLoader = true;
     if (this.step !== 0) {
       this.batchContents = new Array();

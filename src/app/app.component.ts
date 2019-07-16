@@ -14,18 +14,19 @@ declare const _spPageContextInfo;
 export class AppComponent {
   title = 'Medcom SPA';
   // tslint:disable-next-line:variable-name
-  constructor(public globalObject: GlobalService, private router: Router, private _ngZone: NgZone, 
-    private activeRoute: ActivatedRoute ) { }
+  constructor(
+    public globalObject: GlobalService,
+    private router: Router,
+    private _ngZone: NgZone,
+  ) { }
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
-    const activeRoute = this.activeRoute;
-    debugger;
     this.globalObject.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
     this.globalObject.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1 ?
       '/sites/medcomcdn/PublishingImages/Images' :
       '/sites/medcomcdn/PublishingImages/Images';
 
-    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 90 : _spPageContextInfo.userId;
+    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 112 : _spPageContextInfo.userId;
     this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
       : _spPageContextInfo.webAbsoluteUrl;
     this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'

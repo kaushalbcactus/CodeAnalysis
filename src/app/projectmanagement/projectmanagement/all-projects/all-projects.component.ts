@@ -211,7 +211,7 @@ export class AllProjectsComponent implements OnInit {
       }
 
       if(projectObj && projectObj.length && this.params.ProjectBudgetStatus === this.pmConstant.ACTION.APPROVED) {
-        if(this.pmObject.userRights.isMangers || projectObj.CMLevel2ID) {
+        if(this.pmObject.userRights.isMangers || projectObj.CMLevel2.ID === this.globalObject.sharePointPageObject.userId) {
           
         }
       }
@@ -491,6 +491,8 @@ export class AllProjectsComponent implements OnInit {
           });
           break;
         case this.pmConstant.ACTION.CANCEL_PROJECT:
+          this.selectedReasonType = '';
+          this.selectedReason = '';
           await this.loadReasonDropDown();
           this.pmObject.isReasonSectionVisible = true;
           break;

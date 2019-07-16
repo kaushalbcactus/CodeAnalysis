@@ -70,24 +70,24 @@
           <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" style="overflow: visible;">
             <ng-container *ngIf="col.field">
 
-              <p-multiSelect filter="true" *ngSwitchCase="'SOWCode'" [options]="ProjectColArray.SOWCode"   defaultLabel="All"
+              <p-multiSelect filter="true"  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" *ngSwitchCase="'SOWCode'" [options]="ProjectColArray.SOWCode"   defaultLabel="All"
                 (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
-              <p-multiSelect filter="true" *ngSwitchCase="'ProjectCode'" [options]="ProjectColArray.ProjectCode"  defaultLabel="All"
+              <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'ProjectCode'" [options]="ProjectColArray.ProjectCode"  defaultLabel="All"
                 (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
-              <p-multiSelect filter="true" *ngSwitchCase="'WBJID'"  defaultLabel="All" [options]="ProjectColArray.WBJID" 
+              <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'WBJID'"  defaultLabel="All" [options]="ProjectColArray.WBJID" 
                 (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
-              <p-multiSelect filter="true" *ngSwitchCase="'ClientLegalEntity'" [options]="ProjectColArray.ClientLegalEntity"  defaultLabel="All"
+              <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'ClientLegalEntity'" [options]="ProjectColArray.ClientLegalEntity"  defaultLabel="All"
                  (onChange)="project.filter($event.value, col.field, 'in')">
               </p-multiSelect>
-              <p-multiSelect filter="true" *ngSwitchCase="'DeliverableType'" [options]="ProjectColArray.DeliverableType"  defaultLabel="All"
+              <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'DeliverableType'" [options]="ProjectColArray.DeliverableType"  defaultLabel="All"
                 (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
-              <p-multiSelect filter="true" *ngSwitchCase="'ProjectType'" [options]="ProjectColArray.ProjectType"   defaultLabel="All"
+              <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'ProjectType'" [options]="ProjectColArray.ProjectType"   defaultLabel="All"
                 (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
-              <p-multiSelect filter="true" *ngSwitchCase="'Status'" [options]="ProjectColArray.Status"  defaultLabel="All"
+              <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()"  filter="true" *ngSwitchCase="'Status'" [options]="ProjectColArray.Status"  defaultLabel="All"
                 (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
-              <p-multiSelect filter="true" *ngSwitchCase="'CreatedBy'" [options]="ProjectColArray.CreatedBy"  defaultLabel="All"
+              <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'CreatedBy'" [options]="ProjectColArray.CreatedBy"  defaultLabel="All"
                 (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
-                <p-multiSelect filter="true" *ngSwitchCase="'Created'" [options]="ProjectColArray.Created"  defaultLabel="All"
+                <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'Created'" [options]="ProjectColArray.Created"  defaultLabel="All"
                 (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
             </ng-container>
           </th>

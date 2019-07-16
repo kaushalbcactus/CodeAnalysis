@@ -47,7 +47,7 @@ position="bottom-center">
     <tr *ngIf="data.timeblockType !=='Admin' && data.timeblockType !=='Internal Meeting' && data.timeblockType !=='Training' && data.timeblockType !=='Leave'">
       <th>Client Name:</th>
       <td>
-        <p-dropdown [style]="{'min-width':'100%'}" [options]="ClientLegalEntities" [(ngModel)]="SelectedClientLegalEntity" filter="true"
+        <p-dropdown [style]="{'min-width':'100%'}" [options]="ClientLegalEntities" [(ngModel)]="SelectedClientLegalEntity"  resetFilterOnHide="true" filter="true"
           placeholder="Select a Client" [showClear]="true"></p-dropdown>
        
       </td>

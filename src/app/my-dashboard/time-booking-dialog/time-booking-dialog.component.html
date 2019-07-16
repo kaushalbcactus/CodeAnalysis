@@ -67,7 +67,7 @@ position="bottom-center">
 
           <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
 
-            <p-dropdown filter="true" *ngIf="rowData.isEditable" [options]="rowData.dbClientLegalEntities"
+            <p-dropdown filter="true"  resetFilterOnHide="true"  *ngIf="rowData.isEditable" [options]="rowData.dbClientLegalEntities"
               [(ngModel)]="rowData.Entity" (ngModelChange)="getAllProjects($event,rowData)"
               [style]="{ width: '100%', overflow: 'visible',border:'none' }">
             </p-dropdown>
@@ -76,7 +76,7 @@ position="bottom-center">
 
           </td>
           <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
-            <p-dropdown fxLayout="row wrap" filter="true" *ngIf="rowData.isEditable"
+            <p-dropdown fxLayout="row wrap"  resetFilterOnHide="true" filter="true" *ngIf="rowData.isEditable"
               (ngModelChange)="getAllMilestones($event,rowData)" [options]="rowData.dbProjects"
               [(ngModel)]="rowData.ProjectCodeTitle" [style]="{ width: '100%', overflow: 'visible',border:'none' }">
             </p-dropdown>
@@ -84,7 +84,7 @@ position="bottom-center">
             <span fxLayout="row wrap" *ngIf="!rowData.isEditable"> {{rowData.ProjectCodeTitle}} </span>
           </td>
           <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
-            <p-dropdown fxLayout="row wrap" filter="true" *ngIf="rowData.isEditable" [options]="rowData.dbMilestones"
+            <p-dropdown fxLayout="row wrap"  resetFilterOnHide="true"  filter="true" *ngIf="rowData.isEditable" [options]="rowData.dbMilestones"
               [(ngModel)]="rowData.Milestone" (ngModelChange)="checkMilestone($event,rowData)" [style]="{ width: '100%', overflow: 'visible',border:'none'}">
             </p-dropdown>
 
@@ -96,7 +96,7 @@ position="bottom-center">
             <input *ngIf="rowData.type ==='task' && dayhours.editable" style="text-align: center;width: 80%;border: none;color:#C53E3E;" aria-label="24hr format"
               [min]="dayhours.minHrs" [(ngModel)]="dayhours.MileHrs" [ngxTimepicker]="mon" [format]="24" readonly>
 
-            <ngx-material-timepicker #mon [minutesGap]="15" [ngxMaterialTimepickerTheme]="darkTheme">
+            <ngx-material-timepicker #mon [minutesGap]="15" (closed)="SetTime(dayhours.MileHrs,dayhours)" [enableKeyboardInput]="true"   [ngxMaterialTimepickerTheme]="darkTheme">
             </ngx-material-timepicker>
 
             <span *ngIf="rowData.type ==='Adhoc' ||(rowData.type ==='task' && !dayhours.editable)">{{dayhours.MileHrs}}</span>

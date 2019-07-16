@@ -459,7 +459,7 @@ export class MyDashboardConstantsService {
   // **************************************************************************************************************************************
 
   async saveTask(task, isJcIdFound) {
-    debugger;
+ 
 
     const batchGuid = this.spServices.generateUUID();
     var batchContents = new Array();
@@ -607,7 +607,7 @@ export class MyDashboardConstantsService {
 
       var EmailTemplate = this.Emailtemplate.Content;
       var objEmailBody = [];
-debugger;
+
       objEmailBody.push({
         "key": "@@Val1@@",
         "value": task.ProjectCode

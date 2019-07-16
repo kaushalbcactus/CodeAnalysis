@@ -45,8 +45,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   items: MenuItem[];
   activeItem: MenuItem;
   ngOnInit() {
-    debugger;
-
+    
     this.loaderenable = true;
     this.DocumentArray = [];
     this.data = this.config.data === undefined ? this.taskData : this.config.data;
@@ -178,7 +177,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   // **************************************************************************************************************************************
 
   onChange(event) {
-    debugger;
+    
     this.loaderenable = true;
     this.selectedDocuments = [];
     this.DocumentArray = [];
@@ -279,7 +278,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
     this.allDocuments = this.response[0];
-debugger;
+
     if (this.selectedTab === 'My Drafts') {
       this.DocumentArray = this.allDocuments.filter(c => c.ListItemAllFields.TaskName === this.selectedTask.Title);
     }
@@ -418,67 +417,72 @@ debugger;
   //   upload documents
   // **************************************************************************************************************************************
   async uploadDocuments(event, type) {
-    var docFolder;
-    this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Uploading....' });
 
-    var existingFiles = this.allDocuments.map(c => c.Name);
-    switch (type) {
-      case 'Source Docs':
-        docFolder = 'Source Documents';
-        //  sVal = 'source documents';
-        break;
-      case 'References':
-        docFolder = 'References';
-        //  sVal = 'references';
-        break;
-      case 'meetingNotes':
-        docFolder = 'Communications';
-        // sVal = 'meeting notes';
-        break;
-      case 'Meeting Notes & Client Comments':
-        docFolder = 'Communications';
-        // sVal = 'meeting notes & comments';
-        break;
-      default:
-        docFolder = 'Drafts/Internal/' + this.selectedTask.Milestone;
-        //  sVal = 'current task documents';
-        break;
-    }
-    var uploadedFiles = [];
-    this.loaderenable = true;
-    event.files.forEach(async element => {
-
-      var filename = element.name;
-      if (existingFiles.includes(filename)) {
-        filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(), "ddMMyyyyhhmmss") + "." + filename.split(/\.(?=[^\.]+$)/)[1];
+    if(event.files.length)
+    {
+      var docFolder;
+      this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Uploading....' });
+  
+      var existingFiles = this.allDocuments.map(c => c.Name.toLowerCase());
+      switch (type) {
+        case 'Source Docs':
+          docFolder = 'Source Documents';
+          //  sVal = 'source documents';
+          break;
+        case 'References':
+          docFolder = 'References';
+          //  sVal = 'references';
+          break;
+        case 'meetingNotes':
+          docFolder = 'Communications';
+          // sVal = 'meeting notes';
+          break;
+        case 'Meeting Notes & Client Comments':
+          docFolder = 'Communications';
+          // sVal = 'meeting notes & comments';
+          break;
+        default:
+          docFolder = 'Drafts/Internal/' + this.selectedTask.Milestone;
+          //  sVal = 'current task documents';
+          break;
       }
-
-      this.fileReader = new FileReader();
-      this.fileReader.readAsArrayBuffer(element);
-
-      this.fileReader.onload = () => {
-
-        var filePathUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl('" + this.ProjectInformation.ProjectFolder + "/" + docFolder + "')/Files/add(url=@TargetFileName,overwrite='false')?" +
-          "&@TargetFileName='" + filename + "'&$expand=ListItemAllFields";
-
-        this.nodeService.uploadFIle(filePathUrl, this.fileReader.result).subscribe(res => {
-
-          uploadedFiles.push(res.d);
-          if (event.files.length === uploadedFiles.length) {
-            if (this.selectedTab === 'My Drafts') {
-              this.LinkDoumentToProject(uploadedFiles);
+      var uploadedFiles = [];
+      this.loaderenable = true;
+      event.files.forEach(async element => {
+  
+        var filename = element.name;
+        if (existingFiles.includes(element.name.toLowerCase())) {
+          filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(), "ddMMyyyyhhmmss") + "." + filename.split(/\.(?=[^\.]+$)/)[1];
+        }
+  
+        this.fileReader = new FileReader();
+        this.fileReader.readAsArrayBuffer(element);
+  
+        this.fileReader.onload = () => {
+  
+          var filePathUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl('" + this.ProjectInformation.ProjectFolder + "/" + docFolder + "')/Files/add(url=@TargetFileName,overwrite='false')?" +
+            "&@TargetFileName='" + filename + "'&$expand=ListItemAllFields";
+  
+          this.nodeService.uploadFIle(filePathUrl, this.fileReader.result).subscribe(res => {
+  
+            uploadedFiles.push(res.d);
+            if (event.files.length === uploadedFiles.length) {
+              if (this.selectedTab === 'My Drafts') {
+                this.LinkDoumentToProject(uploadedFiles);
+              }
+              else {
+                this.loadDraftDocs(this.selectedTab);
+                this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
+              }
             }
-            else {
-              this.loadDraftDocs(this.selectedTab);
-              this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
-            }
-          }
-
-        });
-
-      };
-      existingFiles.push(filename);
-    });
+  
+          });
+  
+        };
+        existingFiles.push(filename.toLowerCase());
+      });
+    }
+  
   };
 
 

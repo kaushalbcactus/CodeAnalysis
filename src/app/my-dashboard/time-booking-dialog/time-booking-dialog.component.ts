@@ -141,7 +141,7 @@ export class TimeBookingDialogComponent implements OnInit {
 
 
   async getAllMilestones(projectCode, rowData) {
-    debugger;
+    
     rowData.dbMilestones = [{ label: 'Select Milestone', value: null }]
     rowData.ProjectCode = projectCode;
     this.batchContents = new Array();
@@ -178,10 +178,12 @@ export class TimeBookingDialogComponent implements OnInit {
     var WeekDate = new Date(new Date().getTime() - 60 * 60 * 24 * this.dayscount * 1000)
       , day = WeekDate.getDay()
       , diffToMonday = WeekDate.getDate() - day + (day === 0 ? -6 : 1)
-
+    
+    var tempdate = new Date(this.datePipe.transform(new Date(WeekDate.setDate(diffToMonday - 1)), 'yyyy-MM-dd'));
     for (var i = 0; i <= 6; i++) {
-      var newDate = new Date(this.datePipe.transform(new Date(WeekDate.setDate(diffToMonday + i)), 'yyyy-MM-dd'));
-      this.weekDays.push(newDate);
+      const dateonly = tempdate.getDate();
+     this.weekDays.push(new Date(this.datePipe.transform(new Date(tempdate.setDate(dateonly + 1)), 'yyyy-MM-dd')));
+      tempdate = new Date(this.datePipe.transform(new Date(tempdate), 'yyyy-MM-dd'));
     }
 
     if (this.dayscount <= -21) {
@@ -201,6 +203,14 @@ export class TimeBookingDialogComponent implements OnInit {
   }
 
 
+
+  SetTime(time,dayhoursObj)
+  {
+    
+    var  timespent =  time.split(':')[0] % 12 + ":" + time.split(':')[1] ;
+    dayhoursObj.MileHrs = timespent;
+  }
+
   //*************************************************************************************************
   //  Get  milestone time booking based on week dates
   //*************************************************************************************************
@@ -219,7 +229,7 @@ export class TimeBookingDialogComponent implements OnInit {
 
     var startDate = new Date(this.datePipe.transform(this.weekDays[0], "yyyy-MM-dd") + " 00:00:00").toISOString();
     var endDate = new Date(this.datePipe.transform(this.weekDays[this.weekDays.length - 1], "yyyy-MM-dd") + " 23:59:00").toISOString();
-    debugger;
+    
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
     let AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimelineForBooking);
@@ -237,9 +247,9 @@ export class TimeBookingDialogComponent implements OnInit {
 
     console.log(this.allTasks);
 
+debugger;
 
-
-    var tempMilestones = this.allTasks.map(o => new Object({ ID: o.ID, Entity: o.Entity, ProjectCode: o.ProjectCode === "Adhoc" ? '-' : o.ProjectCode, Milestone: o.Milestone === 'Select one' ? o.Comments : o.Milestone, type: o.Entity === null ? 'task' : 'Adhoc', TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: new Date(this.datePipe.transform(minDate, 'yyyy-MM-dd')).getTime() < new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() ? true : false })) }));
+    var tempMilestones = this.allTasks.map(o => new Object({ ID: o.ID, Entity: o.Entity, ProjectCode: o.ProjectCode === "Adhoc" ? '-' : o.ProjectCode, Milestone: o.Milestone === 'Select one' ? o.Comments : o.Milestone, type: o.Entity === null ? 'task' : 'Adhoc', TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: (new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() > new Date(this.datePipe.transform(minDate, 'yyyy-MM-dd')).getTime()) &&  (new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() <= new Date(this.datePipe.transform(new Date(), 'yyyy-MM-dd')).getTime())  ? true : false })) }));
 
     var dbActualMilestone = tempMilestones.length > 0 ? tempMilestones.filter(c => c.ProjectCode !== '-') : [];
 
@@ -346,7 +356,7 @@ export class TimeBookingDialogComponent implements OnInit {
     this.projetInformations = this.response[0];
     console.log(this.projetInformations);
 
-    debugger;
+    
     if (this.UserMilestones !== undefined) {
       this.projetInformations.forEach(element => {
 
@@ -420,7 +430,7 @@ export class TimeBookingDialogComponent implements OnInit {
             this.messageService.add({ key: 'custom-booking', severity: 'warn', summary: 'Warning Message', detail: "Please Select Milestone / To remove unwanted line, please unselect Client" });
             return false;
           }
-          else if(totalTimeSpent !== "00:00") {
+          else if (totalTimeSpent !== "00:00") {
             this.modalloaderenable = true;
             if (dbTasks[i].Milestone && dbTasks[i].ProjectCode && dbTasks[i].Entity) {
               const obj = {
@@ -456,19 +466,16 @@ export class TimeBookingDialogComponent implements OnInit {
 
   }
 
-  checkMilestone(event,rowData)
-  {
+  checkMilestone(event, rowData) {
 
-    if(this.UserMilestones.filter(c=>c.Entity === rowData.Entity && c.ProjectCode === rowData.ProjectCode && c.Milestone === rowData.Milestone).length > 1)
-    {
-       var index = this.UserMilestones.indexOf(rowData);
-       debugger;
-       if(index > -1)
-       {
-          this.UserMilestones.splice(index,1);
-       }
+    if (this.UserMilestones.filter(c => c.Entity === rowData.Entity && c.ProjectCode === rowData.ProjectCode && c.Milestone === rowData.Milestone).length > 1) {
+      var index = this.UserMilestones.indexOf(rowData);
+      
+      if (index > -1) {
+        this.UserMilestones.splice(index, 1);
+      }
       this.messageService.add({ key: 'custom-booking', severity: 'warn', summary: 'Warning Message', detail: "Selected combination already exist. Please check above" });
-    }  
+    }
   }
 
 
