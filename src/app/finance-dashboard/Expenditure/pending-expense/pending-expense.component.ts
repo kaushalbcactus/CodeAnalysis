@@ -102,7 +102,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     async ngOnInit() {
         let snapData = this.route.snapshot.data['fdData'];
-
+        this.fdConstantsService.fdComponent.hideDatesSection = true;
 
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
         if (groups.indexOf('ExpenseApprovers') > -1) {

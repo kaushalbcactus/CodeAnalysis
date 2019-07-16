@@ -71,7 +71,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     }
 
     async ngOnInit() {
-
+        this.fdConstantsService.fdComponent.hideDatesSection = false;
         // SetDefault Values
         if (this.fdDataShareServie.expenseDateRange.startDate) {
             this.DateRange = this.fdDataShareServie.expenseDateRange;

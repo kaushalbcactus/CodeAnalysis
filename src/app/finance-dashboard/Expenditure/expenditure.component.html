@@ -1,5 +1,5 @@
 <div class="ui-g ui-fluid mtb-20">
-    <div [hidden]='showDatesSectiuon' class="ui-g-12 ui-md-4">
+    <div [hidden]='fdConstantsService.fdComponent.hideDatesSection' class="ui-g-12 ui-md-4">
         <p-calendar [(ngModel)]="rangeDates" selectionMode="range" [readonlyInput]="true" dateFormat="M dd, yy"
             placeholder="Select Start & End Date" showButtonBar="true" (onClose)="SelectedDateRange()"
             (onClearClick)="setDefault()"></p-calendar>
