@@ -55,6 +55,8 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
   loadFinanceManagementInit() {
     setTimeout(() => {
       this.setHeaderColumn();
+      this.poData = [];
+      this.budgetData = [];
       this.budgethours = this.pmObject.addProject.Timeline.Standard.IsStandard ?
         this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours :
         this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours;

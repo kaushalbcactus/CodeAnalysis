@@ -474,7 +474,7 @@ export class PmconstantService {
     CLOSE_PROJECT: 'Close Project',
     CANCEL_PROJECT: 'Cancel Project',
     APPROVED: 'Approved',
-    REJECTED: 'rejected'
+    REJECTED: 'Rejected'
   };
   public PROJECT_BUDGET_DECREASE_REASON = {
     SCOPE_REDUCE: 'Scope reduction',
