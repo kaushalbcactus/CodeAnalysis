@@ -1773,7 +1773,7 @@ export class ManageFinanceComponent implements OnInit {
         data.Amount = 0;
         data.AmountRevenue = 0;
         data.AmountOOP = 0;
-        data.AmountTax = 0;
+        data.AmountTax = 0; 
         data.TotalScheduled = totalScheduled;
         data.ScheduledRevenue = scRevenue;
         data.ScheduledOOP = scOOP;
