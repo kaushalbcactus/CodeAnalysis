@@ -479,6 +479,8 @@ export class AllProjectsComponent implements OnInit {
           });
           break;
         case this.pmConstant.ACTION.CANCEL_PROJECT:
+          this.selectedReasonType = '';
+          this.selectedReason = '';
           await this.loadReasonDropDown();
           this.pmObject.isReasonSectionVisible = true;
           break;
