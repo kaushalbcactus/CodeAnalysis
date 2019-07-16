@@ -317,7 +317,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 Category: element.Category,
                 Number: element.Number,
                 ExpenseType: element.SpendType,
-                ClientAmount: element.Amount,
+                ClientAmount: parseFloat(element.ClientAmount).toFixed(2),
                 ClientCurrency: element.ClientCurrency,
                 VendorName: this.getVendorNameById(element),
                 Notes: element.Notes,
