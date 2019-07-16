@@ -80,6 +80,7 @@ export class AllProjectsComponent implements OnInit {
   selectedReason;
   cancelReasonArray: SelectItem[];
   subscription;
+  isApprovalAction = 0;
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   constructor(
     public pmObject: PMObjectService,
@@ -99,6 +100,7 @@ export class AllProjectsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.isApprovalAction = 1;
     this.reloadAllProject();
   }
   reloadAllProject() {
@@ -194,18 +196,35 @@ export class AllProjectsComponent implements OnInit {
       this.params.ProjectStatus = this.route.snapshot.queryParams['ProjectStatus'];
       const projectObj = this.pmObject.allProjectItems.filter(c => c.ProjectCode === this.params.ProjectCode);
       if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.APPROVED) {
-        if (projectObj && projectObj.length) {
+        if (projectObj[0].Status === this.constants.projectStatus.AwaitingCancelApproval) {
           await this.getGetIds(projectObj[0], true);
-          this.changeProjectStatusCancelled(projectObj[0]);
+          this.isApprovalAction = 3;
+          await this.changeProjectStatusCancelled(projectObj[0]);
         }
+      } else if (!projectObj.length && this.isApprovalAction === 1 && this.params.ProjectCode && this.params.ActionStatus) {
+        this.messageService.add({
+          key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'Action on this project - ' + this.params.ProjectCode + ' is already completed.'
+        });
       }
       if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.REJECTED) {
-        const piUdpate: any = {
-          Status: this.params.ProjectStatus,
-          PrevStatus: this.constants.projectStatus.AwaitingCancelApproval
-        };
-        const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectInformation.name,
-          projectObj.ID, piUdpate, this.constants.listNames.ProjectInformation.type);
+        window.history.pushState({}, 'Title', window.location.href.split('?')[0]);
+        if (projectObj[0].Status === this.constants.projectStatus.AwaitingCancelApproval) {
+          const piUdpate: any = {
+            Status: this.params.ProjectStatus,
+            PrevStatus: this.constants.projectStatus.AwaitingCancelApproval
+          };
+          const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectInformation.name,
+            projectObj[0].ID, piUdpate, this.constants.listNames.ProjectInformation.type);
+          this.pmObject.allProjectItems = [];
+          this.isApprovalAction = 3;
+          this.reloadAllProject();
+        } else if (this.isApprovalAction === 1) {
+          this.messageService.add({
+            key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+            detail: 'Rejection Action on this project - ' + projectObj[0].ProjectCode + ' is already completed.'
+          });
+        }
       }
     } else {
       if (this.pmObject.tabMenuItems.length) {
@@ -591,7 +610,7 @@ export class AllProjectsComponent implements OnInit {
     this.pmObject.isReasonSectionVisible = false;
     this.messageService.add({
       key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-      detail: 'Email has send for approval to concern person.'
+      detail: 'Email has been sent for approval to concerned person.'
     });
     setTimeout(() => {
       if (this.router.url === '/projectMgmt/allProjects') {
@@ -784,6 +803,10 @@ export class AllProjectsComponent implements OnInit {
     });
     setTimeout(() => {
       if (this.router.url === '/projectMgmt/allProjects') {
+        this.pmObject.allProjectItems = [];
+        this.reloadAllProject();
+      } else if (this.router.url.includes('/projectMgmt/allProjects?ProjectCode')) {
+        window.history.pushState({}, 'Title', window.location.href.split('?')[0]);
         this.pmObject.allProjectItems = [];
         this.reloadAllProject();
       } else {

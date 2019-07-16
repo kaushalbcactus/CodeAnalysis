@@ -596,7 +596,6 @@ body .ui-table .ui-table-tbody > tr:nth-child(even){
     .ng-right-side-overlay .ui-sidebar {
         /* background-color: #B13E3E !important;
         color: #ffff !important;  */
-        height: 620px;
         overflow-x: auto; 
     }
     .catHeader {

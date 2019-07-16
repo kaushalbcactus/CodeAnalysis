@@ -618,7 +618,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         this.pmObject.isMainLoaderHidden = true;
         this.messageService.add({
           key: 'custom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'SOW Created Successfully.'
+          summary: 'Success Message', detail: 'SOW Created - ' + sowObj.SOWCode + ' Successfully.'
         });
         setTimeout(() => {
           this.pmObject.isAddSOWVisible = false;
@@ -640,7 +640,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.addUpdateSOWsendEmail(sowObj, this.constant.SOW_STATUS.UPDATE);
       this.messageService.add({
         key: 'custom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: 'SOW Updated Successfully.'
+        summary: 'Success Message', detail: 'SOW Updated - ' + sowObj.SOWCode + ' Successfully.'
       });
       this.pmObject.isMainLoaderHidden = true;
       setTimeout(() => {

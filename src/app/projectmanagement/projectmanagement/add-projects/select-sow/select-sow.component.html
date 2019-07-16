@@ -3,9 +3,8 @@
     <div id="selectSOWLoaderText">Loading...</div>
 </div>
 <div class="selectSOW-section" [hidden]='isSelectSOWTableHidden'>
-    <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.selectSOWArrayCopy" [paginator]="true"
-        [rows]="5" [lazy]="true" [totalRecords]="pmObject.totalRecords.SelectSOW" [loading]="pmObject.loading.SelectSOW"
-        (onLazyLoad)="lazyLoadTask($event)" [lazyLoadOnInit]="false">
+    <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.selectSOWArray" [paginator]="true"
+        [rows]="5">
         <ng-template pTemplate="caption">
             <div style="text-align: left">
                 <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
