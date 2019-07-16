@@ -64,7 +64,7 @@ export class BlockTimeDialogComponent implements OnInit {
     console.log(this.data);
     if (this.data.task !== undefined) {
 
-      debugger;
+    
       this.SelectedClientLegalEntity = this.data.timeblockType !== 'Admin' && this.data.timeblockType !== 'Training' && this.data.timeblockType !== 'Internal Meeting' ? this.data.task.Entity : undefined;
       this.eventDate = new Date(this.datePipe.transform(this.data.task.StartDate, 'dd MMM, yyyy'));
       this.starttime = this.data.timeblockType !== 'Admin' ? this.datePipe.transform(this.data.task.StartDate, 'hh:mm aa').toLowerCase() : this.data.task.TimeSpent;
@@ -125,7 +125,7 @@ export class BlockTimeDialogComponent implements OnInit {
 
 
   async saveBooking() {
-    debugger;
+
     if ((!this.SelectedClientLegalEntity && this.data.timeblockType !== 'Admin') && ( !this.SelectedClientLegalEntity  && this.data.timeblockType !== 'Internal Meeting') && (!this.SelectedClientLegalEntity  && this.data.timeblockType !== 'Training')) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Client.' });
       return false;
@@ -153,7 +153,7 @@ export class BlockTimeDialogComponent implements OnInit {
     else {
       var startDateTime = new Date();
       var endDateTime = new Date();
-      debugger;
+     
       if (this.data.timeblockType !== 'Admin') {
         var totalsHours = await this.ConvertTimeformat(this.starttime);
         var totaleHours = await this.ConvertTimeformat(this.endtime);

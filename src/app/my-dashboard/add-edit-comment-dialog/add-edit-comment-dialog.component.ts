@@ -154,8 +154,6 @@ export class AddEditCommentComponent implements OnInit {
       comment: this.previousComment !== null ? this.previousComment + this.editor.getData() : this.editor.getData(),
       IsMarkComplete: IsMarkComplete
     }
-
-    debugger;
     if (IsMarkComplete) {
       this.ref.close(commentObj);
     }

@@ -24,10 +24,10 @@ position="bottom-center">
     <div class="year" [ngStyle]="{'background-color': datetime.edited === false ? '#cdcdcd':''}">
       <input placeholder="00:00" style="text-align: center;width: 80%;border: none;color:#C53E3E;"
         aria-label="24hr format" [ngStyle]="{'background-color': datetime.edited === false ? '#cdcdcd':''}"
-        [disabled]="datetime.edited === false" [(ngModel)]="datetime.time" [ngxTimepicker]="fullTime" [format]="24"
+      [disabled]="datetime.edited === false" [(ngModel)]="datetime.time" [ngxTimepicker]="fullTime" [format]="24"
         readonly>
 
-      <ngx-material-timepicker #fullTime [minutesGap]="15" [ngxMaterialTimepickerTheme]="darkTheme">
+      <ngx-material-timepicker #fullTime [minutesGap]="15"   (closed)="SetTime(datetime.time,datetime)" [enableKeyboardInput]="true" [ngxMaterialTimepickerTheme]="darkTheme">
       </ngx-material-timepicker>
     </div>
   </div>
