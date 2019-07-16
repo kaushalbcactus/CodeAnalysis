@@ -420,10 +420,11 @@ export class FDDataShareService {
 
     async callProformaInvoiceEdit(objReturn) {
         const pdfContent: any = objReturn.pdf;
+        const refetchType = this.fdConstantsService.fdComponent.selectedEditObject.Type === 'Proforma' ? 'replaceProforma' : 'replaceInvoice';
         pdfContent.Code = this.fdConstantsService.fdComponent.selectedEditObject.Code;
         pdfContent.WebUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
         pdfContent.ID = this.fdConstantsService.fdComponent.selectedEditObject.ID;
-        pdfContent.Type = this.fdConstantsService.fdComponent.selectedEditObject.Type;// 'Proforma';
+        pdfContent.Type = this.fdConstantsService.fdComponent.selectedEditObject.Type; // 'Proforma';
         pdfContent.ListName = this.fdConstantsService.fdComponent.selectedEditObject.ListName;
         pdfContent.HtmlContent = JSON.stringify(objReturn);
 
@@ -431,7 +432,7 @@ export class FDDataShareService {
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-        this.fdConstantsService.fdComponent.selectedComp.reFetchData();
+        this.fdConstantsService.fdComponent.selectedComp.reFetchData(refetchType);
     }
     bdtRate: any = [];
     getProformaPDFObject(oProformaObj, cleData, projectContactsData, purchaseOrdersList, projectAppendix) {
