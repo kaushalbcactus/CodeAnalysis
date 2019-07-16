@@ -13,6 +13,7 @@ export class FdConstantsService {
     ) { }
 
     fdComponent = {
+        hideDatesSection: true,
         tabs: {
             topMenu: [],
             expenditureMenu: [],
