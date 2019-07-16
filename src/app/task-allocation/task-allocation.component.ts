@@ -67,10 +67,13 @@ export class TaskAllocationComponent implements OnInit {
 
   ngOnInit() {
     this.currentUserGroup();
-    this.route.queryParams.subscribe(params => {
 
-      this.projectCode = params['ProjectCode'];
-    })
+    this.route.snapshot.queryParams['ProjectCode'];
+    
+    // this.route.queryParams.subscribe(params => {
+
+    //   this.projectCode = params['ProjectCode'];
+    // })
     if (this.projectCode !== undefined) {
       this.SearchView = false;
       this.getProjectDetails();

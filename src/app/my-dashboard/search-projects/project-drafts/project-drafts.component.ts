@@ -48,7 +48,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   activeItem: MenuItem;
   ngOnInit() {
 
-    debugger;
+
     this.loaderenable = true;
     this.DocumentArray = [];
     this.data = this.milestoneData;
@@ -167,7 +167,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
 
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Url);
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-debugger;
+
     this.allDocuments = this.response[0];
 
     if(this.response.length > 0)

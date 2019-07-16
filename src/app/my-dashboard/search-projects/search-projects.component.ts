@@ -162,8 +162,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   }
 
   async SearchProject() {
-    debugger;
-    
+   
     this.ProjectPopupDetails = Object.assign({}, this.ProjectDetails);
     this.ProjectPopupDetails = undefined;
     this.projectResource=[];

@@ -90,7 +90,7 @@ export class TimeSpentDialogComponent implements OnInit {
     this.task = task;
     // var previousStatus =  this.data.status;
     // if (previousStatus === "Completed" || previousStatus === "AllowCompletion" || previousStatus === "Auto Closed") {
-debugger;
+
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
 
@@ -103,28 +103,46 @@ debugger;
 
     this.currentTaskTimeSpent = this.response[0];
     this.dateArray = [];
-
     var todayDate = new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
     var startDate = new Date(this.datePipe.transform(task.StartDate, 'MMM d, y'));
-    if (startDate > todayDate) {
-      // var endDate = todayDate.getDay() === 6 ? new Date(todayDate.setDate(todayDate.getDate() - 1)) : todayDate.getDay() === 0 ? new Date(todayDate.setDate(todayDate.getDate() - 2)) : new Date(todayDate.setDate(todayDate.getDate()))
+       
+debugger;
+    if(this.currentTaskTimeSpent[0].TimeSpentPerDay)
+    {
+      var timeSpentForTask = this.currentTaskTimeSpent[0].TimeSpentPerDay.split(/\n/);
 
-      var endDate = new Date(todayDate.setDate(todayDate.getDate()))
+       if (timeSpentForTask.indexOf("") > -1) {
+        timeSpentForTask.splice(timeSpentForTask.indexOf(""), 1);
+      }
 
-      this.dateArray = this.CalculatePastBusinessDays(endDate, 3).reverse();
+      startDate =  timeSpentForTask[0].split(':')[0] === timeSpentForTask[0] ? new Date( timeSpentForTask[0].split('#')[0]) : new Date(timeSpentForTask[0].split(':')[0].replace(/,/g, ", ")); 
+
+      var endDate = this.SelectedTabType === 'MyCompletedTask' ?  new Date(this.datePipe.transform( new Date(new Date(task.Actual_x0020_End_x0020_Date).setDate(new Date(task.Actual_x0020_End_x0020_Date).getDate() + 1)),'MMM d, y')) : new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
+
+      var days = this.CalculateWorkingDays(startDate, endDate);
+      this.dateArray = this.CalculatePastBusinessDays(new Date(endDate), days).reverse();
     }
-    else {
-      var endDate = startDate.getDay() === 6 ? new Date(startDate.setDate(startDate.getDate() - 1)) : startDate.getDay() === 0 ? new Date(startDate.setDate(startDate.getDate() - 2)) : new Date(startDate.setDate(startDate.getDate()))
+     else
+     {
+       if (startDate > todayDate) {
+         var endDate = new Date(todayDate.setDate(todayDate.getDate())) 
+         this.dateArray = this.CalculatePastBusinessDays(endDate, 3).reverse();
+        }
+      else {
+      var StartDate = startDate.getDay() === 6 ? new Date(startDate.setDate(startDate.getDate() - 1)) : startDate.getDay() === 0 ? new Date(startDate.setDate(startDate.getDate() - 2)) : new Date(startDate.setDate(startDate.getDate()))
 
       if (this.SelectedTabType === 'MyCompletedTask') {
-        var days = this.CalculateWorkingDays(endDate, new Date(this.datePipe.transform(task.Actual_x0020_End_x0020_Date, 'MMM d,y')));
+        var days = this.CalculateWorkingDays(StartDate, new Date(this.datePipe.transform( new Date(new Date(task.Actual_x0020_End_x0020_Date).setDate(new Date(task.Actual_x0020_End_x0020_Date).getDate() + 1)) , 'MMM d,y')));
+
+        this.dateArray = this.CalculatePastBusinessDays(new Date( new Date(this.datePipe.transform( new Date(new Date(task.Actual_x0020_End_x0020_Date).setDate(new Date(task.Actual_x0020_End_x0020_Date).getDate() + 1)) , 'MMM d,y'))), days + 3).reverse();
       }
       else {
-        var days = this.CalculateWorkingDays(endDate, new Date(this.datePipe.transform(new Date(), 'MMM d,y')));
+        var days = this.CalculateWorkingDays(StartDate, new Date(this.datePipe.transform(new Date(), 'MMM d,y')));
+        
+        this.dateArray = this.CalculatePastBusinessDays(new Date(), days + 3).reverse();
       }
-
-      this.dateArray = this.CalculatePastBusinessDays(new Date(), days + 3).reverse();
     }
+  }
 
 
     if (this.currentTaskTimeSpent !== undefined) {
@@ -156,7 +174,12 @@ debugger;
     this.modalloaderenable = false;
   }
 
-
+  SetTime(time,timeObj)
+  {
+    
+    var  timespent =  time.split(':')[0] % 12 + ":" + time.split(':')[1] ;
+    timeObj.time = timespent;
+  }
 
 
   // *************************************************************************************************************************************
