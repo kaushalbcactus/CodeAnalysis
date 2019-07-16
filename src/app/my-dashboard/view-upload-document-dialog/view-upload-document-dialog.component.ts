@@ -418,7 +418,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   // **************************************************************************************************************************************
   async uploadDocuments(event, type) {
 
-    if(event.file)
+    if(event.files.length)
     {
       var docFolder;
       this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Uploading....' });

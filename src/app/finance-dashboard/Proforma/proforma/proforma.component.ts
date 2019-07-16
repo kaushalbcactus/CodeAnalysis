@@ -815,7 +815,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     async addUpdateRequired() {
         let poItem = this.getPOItemByPOId(this.selectedRowItem);
-        console.log('poItem ', poItem);
         let cleItem = this.getClEItemByPNum(this.selectedRowItem.ClientLegalEntity);
         let invDate = this.generateInvoice_form.value.InvoiceDate;
         let mmyy = this.datePipe.transform(new Date(invDate), 'MM') + this.datePipe.transform(new Date(invDate), 'yy');
@@ -879,20 +878,20 @@ export class ProformaComponent implements OnInit, OnDestroy {
             proformaType = this.selectedRowItem.ProformaType;
             // tslint:disable
             // InvoicedRevenue: (poItem.InvoicedRevenue ? poItem.InvoicedRevenue : 0 + this.selectedRowItem.Amount),
-            // 
+            this.selectedRowItem.Amount = parseFloat(this.selectedRowItem.Amount).toFixed(2);
             if (proformaType === 'revenue') {
                 poObj = {
-                    InvoicedRevenue: (poItem.InvoicedRevenue ? poItem.InvoicedRevenue + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
-                    ScheduledRevenue: (poItem.ScheduledRevenue ? poItem.ScheduledRevenue - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount),
-                    TotalInvoiced: (poItem.TotalInvoiced ? poItem.TotalInvoiced + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
-                    TotalScheduled: (poItem.TotalScheduled ? poItem.TotalScheduled - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount),
+                    InvoicedRevenue: (poItem.InvoicedRevenue ? parseFloat(poItem.InvoicedRevenue.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
+                    ScheduledRevenue: (poItem.ScheduledRevenue ? parseFloat(poItem.ScheduledRevenue.toFixed(2))  - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount),
+                    TotalInvoiced: (poItem.TotalInvoiced ? parseFloat(poItem.TotalInvoiced.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
+                    TotalScheduled: (poItem.TotalScheduled ? parseFloat(poItem.TotalScheduled.toFixed(2)) - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount),
                 };
             } else if (proformaType === 'oop') {
                 poObj = {
-                    ScheduledOOP: (poItem.ScheduledOOP ? poItem.ScheduledOOP - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount),
-                    InvoicedOOP: (poItem.InvoicedOOP ? poItem.InvoicedOOP + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
-                    TotalInvoiced: (poItem.TotalInvoiced ? poItem.TotalInvoiced + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
-                    TotalScheduled: (poItem.TotalScheduled ? poItem.TotalScheduled - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount),
+                    ScheduledOOP: (poItem.ScheduledOOP ?  parseFloat(poItem.ScheduledOOP.toFixed(2)) - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount),
+                    InvoicedOOP: (poItem.InvoicedOOP ? parseFloat(poItem.InvoicedOOP.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
+                    TotalInvoiced: (poItem.TotalInvoiced ? parseFloat(poItem.TotalInvoiced.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
+                    TotalScheduled: (poItem.TotalScheduled ? parseFloat(poItem.TotalScheduled.toFixed(2)) - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount),
                 };
             }
             // tslint:disable
@@ -922,12 +921,13 @@ export class ProformaComponent implements OnInit, OnDestroy {
             const pfsItems = this.pfresp.filter(pf => pf.Title === element.Title);
             pfsItem = pfsItems.length > 0 ? pfsItems[0] : {};
             if (pfsItem) {
+                element.Amount = parseFloat(element.Amount.toFixed(2));
                 // InvoicedRevenue: (pfsItem.InvoicedRevenue ? pfsItem.InvoicedRevenue : 0 + element.Amount ? element.Amount : 0),
                 if (proformaType === 'revenue') {
-                    pfsItem.InvoicedRevenue = pfsItem.InvoicedRevenue ? pfsItem.InvoicedRevenue + element.Amount : 0 + element.Amount;
-                    pfsItem.ScheduledRevenue = pfsItem.ScheduledRevenue ? pfsItem.ScheduledRevenue - element.Amount : 0 - element.Amount;
-                    pfsItem.Invoiced = pfsItem.Invoiced ? pfsItem.Invoiced + element.Amount : 0 + element.Amount;
-                    pfsItem.InvoicesScheduled = pfsItem.InvoicesScheduled ? pfsItem.InvoicesScheduled - element.Amount : 0 - element.Amount
+                    pfsItem.InvoicedRevenue = pfsItem.InvoicedRevenue ? parseFloat(pfsItem.InvoicedRevenue.toFixed(2)) + element.Amount : 0 + element.Amount;
+                    pfsItem.ScheduledRevenue = pfsItem.ScheduledRevenue ? parseFloat(pfsItem.ScheduledRevenue.toFixed(2)) - element.Amount : 0 - element.Amount;
+                    pfsItem.Invoiced = pfsItem.Invoiced ? parseFloat(pfsItem.Invoiced.toFixed(2)) + element.Amount : 0 + element.Amount;
+                    pfsItem.InvoicesScheduled = pfsItem.InvoicesScheduled ? parseFloat(pfsItem.InvoicesScheduled.toFixed(2)) - element.Amount : 0 - element.Amount
                     pfs.push({
                         Id: pfsItem.Id,
                         InvoicedRevenue: (pfsItem.InvoicedRevenue),
@@ -936,10 +936,10 @@ export class ProformaComponent implements OnInit, OnDestroy {
                         InvoicesScheduled: (pfsItem.InvoicesScheduled),
                     });
                 } else if (proformaType === 'oop') {
-                    pfsItem.ScheduledOOP = pfsItem.ScheduledOOP ? pfsItem.ScheduledOOP - element.Amount : 0 - element.Amount;
-                    pfsItem.InvoicedOOP = pfsItem.InvoicedOOP ? pfsItem.InvoicedOOP + element.Amount : 0 + element.Amount;
-                    pfsItem.Invoiced = pfsItem.Invoiced ? pfsItem.Invoiced + element.Amount : 0 + element.Amount;
-                    pfsItem.InvoicesScheduled = pfsItem.InvoicesScheduled ? pfsItem.InvoicesScheduled - element.Amount : 0 - element.Amount;
+                    pfsItem.ScheduledOOP = pfsItem.ScheduledOOP ? parseFloat(pfsItem.ScheduledOOP.toFixed(2)) - element.Amount : 0 - element.Amount;
+                    pfsItem.InvoicedOOP = pfsItem.InvoicedOOP ? parseFloat(pfsItem.InvoicedOOP.toFixed(2)) + element.Amount : 0 + element.Amount;
+                    pfsItem.Invoiced = pfsItem.Invoiced ? parseFloat(pfsItem.Invoiced.toFixed(2)) + element.Amount : 0 + element.Amount;
+                    pfsItem.InvoicesScheduled = pfsItem.InvoicesScheduled ? parseFloat(pfsItem.InvoicesScheduled.toFixed(2)) - element.Amount : 0 - element.Amount;
                     pfs.push({
                         Id: pfsItem.Id,
                         ScheduledOOP: (pfsItem.ScheduledOOP),
@@ -951,14 +951,14 @@ export class ProformaComponent implements OnInit, OnDestroy {
             }
             // PFB
             // let pfbsItem = await this.findpfbFrompfbRes(element);
-            pfbsItems = this.pfbresp.filter(pf => pf.ProjectNumber === element.Title);
+            pfbsItems = this.pfbresp.filter(pfb => pfb.ProjectNumber === element.Title && pfb.POLookup === element.PO);
             if (pfbsItems.length) {
                 pfbsItems.forEach(pfbsItem => {
                     if (proformaType === 'revenue') {
-                        pfbsItem.InvoicedRevenue = pfbsItem.InvoicedRevenue ? pfbsItem.InvoicedRevenue + element.Amount : 0 + element.Amount;
-                        pfbsItem.ScheduledRevenue = pfbsItem.ScheduledRevenue ? pfbsItem.ScheduledRevenue - element.Amount : 0 - element.Amount;
-                        pfbsItem.TotalInvoiced = pfbsItem.TotalInvoiced ? pfbsItem.TotalInvoiced + element.Amount : 0 + element.Amount;
-                        pfbsItem.TotalScheduled = pfbsItem.TotalScheduled ? pfbsItem.TotalScheduled - element.Amount : 0 - element.Amount;
+                        pfbsItem.InvoicedRevenue = pfbsItem.InvoicedRevenue ? parseFloat(pfbsItem.InvoicedRevenue.toFixed(2)) + element.Amount : 0 + element.Amount;
+                        pfbsItem.ScheduledRevenue = pfbsItem.ScheduledRevenue ? parseFloat(pfbsItem.ScheduledRevenue.toFixed(2)) - element.Amount : 0 - element.Amount;
+                        pfbsItem.TotalInvoiced = pfbsItem.TotalInvoiced ? parseFloat(pfbsItem.TotalInvoiced.toFixed(2)) + element.Amount : 0 + element.Amount;
+                        pfbsItem.TotalScheduled = pfbsItem.TotalScheduled ? parseFloat(pfbsItem.TotalScheduled.toFixed(2)) - element.Amount : 0 - element.Amount;
                         pfbs.push({
                             Id: pfbsItem.Id,
                             InvoicedRevenue: (pfbsItem.InvoicedRevenue),
@@ -967,10 +967,10 @@ export class ProformaComponent implements OnInit, OnDestroy {
                             TotalScheduled: (pfbsItem.TotalScheduled),
                         })
                     } else if (proformaType === 'oop') {
-                        pfbsItem.ScheduledOOP = pfbsItem.ScheduledOOP ? pfbsItem.ScheduledOOP - element.Amount : 0 - element.Amount;
-                        pfbsItem.InvoicedOOP = pfbsItem.InvoicedOOP ? pfbsItem.InvoicedOOP + element.Amount : 0 + element.Amount;
-                        pfbsItem.TotalInvoiced = pfbsItem.TotalInvoiced ? pfbsItem.TotalInvoiced + element.Amount : 0 + element.Amount;
-                        pfbsItem.TotalScheduled = pfbsItem.TotalScheduled ? pfbsItem.TotalScheduled - element.Amount : 0 - element.Amount;
+                        pfbsItem.ScheduledOOP = pfbsItem.ScheduledOOP ? parseFloat(pfbsItem.ScheduledOOP.toFixed(2)) - element.Amount : 0 - element.Amount;
+                        pfbsItem.InvoicedOOP = pfbsItem.InvoicedOOP ? parseFloat(pfbsItem.InvoicedOOP.toFixed(2)) + element.Amount : 0 + element.Amount;
+                        pfbsItem.TotalInvoiced = pfbsItem.TotalInvoiced ? parseFloat(pfbsItem.TotalInvoiced.toFixed(2)) + element.Amount : 0 + element.Amount;
+                        pfbsItem.TotalScheduled = pfbsItem.TotalScheduled ? parseFloat(pfbsItem.TotalScheduled.toFixed(2)) - element.Amount : 0 - element.Amount;
                         pfbs.push({
                             Id: pfbsItem.Id,
                             ScheduledOOP: (pfbsItem.ScheduledOOP),
@@ -987,10 +987,10 @@ export class ProformaComponent implements OnInit, OnDestroy {
             sowsItem = sowItems.length > 0 ? sowItems[0] : {};
             if (sowsItem) {
                 if (proformaType === 'revenue') {
-                    sowsItem.InvoicedRevenue = sowsItem.InvoicedRevenue ? sowsItem.InvoicedRevenue + element.Amount : 0 + element.Amount;
-                    sowsItem.ScheduledRevenue = sowsItem.ScheduledRevenue ? sowsItem.ScheduledRevenue - element.Amount : 0 - element.Amount;
-                    sowsItem.TotalInvoiced = sowsItem.TotalInvoiced ? sowsItem.TotalInvoiced + element.Amount : 0 + element.Amount;
-                    sowsItem.TotalScheduled = sowsItem.TotalScheduled ? sowsItem.TotalScheduled - element.Amount : 0 - element.Amount;
+                    sowsItem.InvoicedRevenue = sowsItem.InvoicedRevenue ? parseFloat(sowsItem.InvoicedRevenue.toFixed(2)) + element.Amount : 0 + element.Amount;
+                    sowsItem.ScheduledRevenue = sowsItem.ScheduledRevenue ? parseFloat(sowsItem.ScheduledRevenue.toFixed(2)) - element.Amount : 0 - element.Amount;
+                    sowsItem.TotalInvoiced = sowsItem.TotalInvoiced ? parseFloat(sowsItem.TotalInvoiced.toFixed(2)) + element.Amount : 0 + element.Amount;
+                    sowsItem.TotalScheduled = sowsItem.TotalScheduled ? parseFloat(sowsItem.TotalScheduled.toFixed(2)) - element.Amount : 0 - element.Amount;
                     sows.push({
                         Id: sowsItem.Id,
                         InvoicedRevenue: (sowsItem.InvoicedRevenue),
@@ -999,10 +999,10 @@ export class ProformaComponent implements OnInit, OnDestroy {
                         TotalScheduled: (sowsItem.TotalScheduled),
                     })
                 } else if (proformaType === 'oop') {
-                    sowsItem.ScheduledOOP = sowsItem.ScheduledOOP ? sowsItem.ScheduledOOP - element.Amount : 0 - element.Amount;
-                    sowsItem.InvoicedOOP = sowsItem.InvoicedOOP ? sowsItem.InvoicedOOP + element.Amount : 0 + element.Amount;
-                    sowsItem.TotalInvoiced = sowsItem.TotalInvoiced ? sowsItem.TotalInvoiced + element.Amount : 0 + element.Amount;
-                    sowsItem.TotalScheduled = sowsItem.TotalScheduled ? sowsItem.TotalScheduled - element.Amount : 0 - element.Amount;
+                    sowsItem.ScheduledOOP = sowsItem.ScheduledOOP ? parseFloat(sowsItem.ScheduledOOP.toFixed(2)) - element.Amount : 0 - element.Amount;
+                    sowsItem.InvoicedOOP = sowsItem.InvoicedOOP ? parseFloat(sowsItem.InvoicedOOP.toFixed(2)) + element.Amount : 0 + element.Amount;
+                    sowsItem.TotalInvoiced = sowsItem.TotalInvoiced ? parseFloat(sowsItem.TotalInvoiced.toFixed(2)) + element.Amount : 0 + element.Amount;
+                    sowsItem.TotalScheduled = sowsItem.TotalScheduled ? parseFloat(sowsItem.TotalScheduled.toFixed(2)) - element.Amount : 0 - element.Amount;
                     sows.push({
                         Id: sowsItem.Id,
                         ScheduledOOP: (sowsItem.ScheduledOOP),
