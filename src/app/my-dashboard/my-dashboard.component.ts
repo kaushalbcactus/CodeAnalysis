@@ -39,7 +39,7 @@ export class MyDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.items = [
-      { label: 'My Current Tasks', routerLink: ['my-current-tasks'] },
+      { label: 'My Open Tasks', routerLink: ['my-current-tasks'] },
       { label: 'My Timeline', routerLink: ['my-timeline'] },
       { label: 'My Projects', routerLink: ['my-projects'] },
       { label: 'My SOW', routerLink: ['my-sow'] },
