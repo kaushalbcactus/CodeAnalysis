@@ -374,6 +374,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             } else {
                 this.po.oopBalance = 0;
             }
+            this.po.revenuBalance = parseFloat(this.po.revenuBalance.toFixed(2));
+            this.po.oopBalance = parseFloat(this.po.oopBalance.toFixed(2));
         }
         if (po) {
             for (let c = 0; c < this.confirmedILIarray.length; c++) {
@@ -392,6 +394,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.confirmedInColArray.POName = [];
             this.confirmedInColArray.ClientLegalEntity = [];
             this.confirmedInColArray.PONumber = [];
+            this.po = {};
         }
     }
 
@@ -707,8 +710,10 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             if (this.selectedAllRowData.length) {
                 if (new Date(this.selectedPurchaseNumber.POExpiryDate) >= new Date()) {
                     const format = 'dd MMM , yyyy';
-                    const myDate = new Date();
+                    let myDate = new Date();
                     const locale = 'en-IN';
+                    this.minProformaDate = new Date(Math.max.apply(null, this.selectedAllRowData.map(e => e.ScheduledDate)));
+                    myDate = this.minProformaDate > myDate ?  this.minProformaDate : myDate;
                     const formattedDate = formatDate(myDate, format, locale);
                     this.addToProforma_form.patchValue({
                         ClientLegalEntity: this.selectedPurchaseNumber.ClientLegalEntity,
@@ -747,7 +752,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
     showHideState(val: any) {
         console.log('val ', val);
-        val.value == "US" ? this.isTemplate4US = true : this.isTemplate4US = false;
+        if (val) {
+            val.value == "US" ? this.isTemplate4US = true : this.isTemplate4US = false;
+        }
     }
 
 

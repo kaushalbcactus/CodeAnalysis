@@ -37,32 +37,32 @@
             <th></th>
             <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                 <ng-container *ngIf="col.field">
-                    <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="deliverableBasedColArray.ProjectCode"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProjectCode'" [options]="deliverableBasedColArray.ProjectCode"
                         defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'SOWValue'" [options]="deliverableBasedColArray.SOWCode"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'SOWValue'" [options]="deliverableBasedColArray.SOWCode"
                         defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ProjectMileStone'"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProjectMileStone'"
                         [options]="deliverableBasedColArray.ProjectMileStone" defaultLabel="All" 
                         (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'POValues'" [options]="deliverableBasedColArray.POValues"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'POValues'" [options]="deliverableBasedColArray.POValues"
                         defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ClientName'" [options]="deliverableBasedColArray.ClientName"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientName'" [options]="deliverableBasedColArray.ClientName"
                         defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Amount'" [options]="deliverableBasedColArray.Amount"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Amount'" [options]="deliverableBasedColArray.Amount"
                         defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Currency'" [options]="deliverableBasedColArray.Currency"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Currency'" [options]="deliverableBasedColArray.Currency"
                         defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ScheduledDate'" [options]="deliverableBasedColArray.ScheduledDate"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ScheduledDate'" [options]="deliverableBasedColArray.ScheduledDate"
                         defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'POCName'" [options]="deliverableBasedColArray.POCName"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'POCName'" [options]="deliverableBasedColArray.POCName"
                         defaultLabel="All"  (onChange)="db.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                 </ng-container>
@@ -170,7 +170,7 @@
 
             <div class="ui-g-6">POC Name</div>
             <div class="ui-g-6">
-                <p-dropdown [options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name"
+                <p-dropdown resetFilterOnHide="true"[options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name"
                     [filter]="true" optionLabel="FullName" (onChange)="pocChange($event)">
                     <ng-template let-item pTemplate="item">
                         <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
@@ -185,7 +185,7 @@
             </div>
             <div class="ui-g-6">Address Type</div>
             <div class="ui-g-6">
-                <p-dropdown [options]="addressTypes" formControlName="AddressType" placeholder="Select a Address Type"
+                <p-dropdown resetFilterOnHide="true"[options]="addressTypes" formControlName="AddressType" placeholder="Select a Address Type"
                     optionLabel="label">
                 </p-dropdown>
                 <div *ngIf="formSubmit.isSubmit && isValidEditDeliverableForm.AddressType.errors">

@@ -69,7 +69,7 @@ export class FdConstantsService {
             top: '5000'
         },
         currency: {
-            select: "ID,Title,Value",
+            select: "ID,Title",
             top: 4500,
             orderby: "Title"
         },
@@ -177,7 +177,7 @@ export class FdConstantsService {
             top: 1
         },
         projectFinanceBreakupFromPO: {
-            select: "ID,Title,POLookup,ProjectNumber,ScheduledOOP,ScheduledRevenue,TotalScheduled,InvoicedRevenue,InvoicedOOP,TotalInvoiced,AuthorId,EditorId",
+            select: "ID,Title,AmountOOP, Amount, POLookup,ProjectNumber,ScheduledOOP,ScheduledRevenue,TotalScheduled,InvoicedRevenue,InvoicedOOP,TotalInvoiced,AuthorId,EditorId",
             filter: "ProjectNumber eq '{{ProjectCode}}' and POLookup eq '{{PO}}' and Status ne 'Deleted' ",
             top: 1
         },

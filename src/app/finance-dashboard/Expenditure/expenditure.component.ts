@@ -54,6 +54,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     // MenuList
     expenditureMenuList: any = [];
+    // hideDatesSectiuon: boolean = false;
+    
 
     @ViewChild("target", { static: true }) MyProp: ElementRef;
 
@@ -94,8 +96,12 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'] },
             { label: 'Approved(Billable)', routerLink: ['approvedBillable'] }
         ];
-
-
+        // if(this.router.url === '/financeDashboard/expenditure/pending') {
+        //     this.fdConstantsService.fdComponent.hideDatesSection = true;
+        // }
+        // else {
+        //     this.fdConstantsService.fdComponent.hideDatesSection = false;
+        // }
         this.expenditureFormField();
 
         // Freelancer Form Field

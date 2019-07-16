@@ -34,7 +34,7 @@
       <div class="ui-grid-col-2"><span class="compulsory">*</span>Practice Area</div>
       <div class="ui-grid-col-4">
         <p-dropdown formControlName="practiceArea" [options]="pmObject.oProjectCreation.oProjectInfo.practiceArea"
-          placeholder="Please Select" [showClear]="true" [filter]="true"></p-dropdown>
+          placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
         <div class="error"
           *ngIf="!addProjectAttributesForm.controls['practiceArea'].valid&&addProjectAttributesForm.controls['practiceArea'].touched">
           Practice Area is required</div>
@@ -64,21 +64,21 @@
       <div class="ui-grid-col-2"><span class="compulsory">*</span>Point of Contact</div>
       <div class="ui-grid-col-2">
         <p-dropdown class="mr-5" formControlName="poc" [options]="pmObject.oProjectCreation.oProjectInfo.projectContact"
-          placeholder="Please Select" [showClear]="true" [filter]="true"></p-dropdown>
+          placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
         <div class="error"
           *ngIf="!addProjectAttributesForm.controls['poc'].valid&&addProjectAttributesForm.controls['poc'].touched">POC
           is required</div>
       </div>
       <div class="ui-grid-col-2">
         <p-multiSelect formControlName="poc2" [options]="pmObject.oProjectCreation.oProjectInfo.projectContact"
-          defaultLabel="Please Select">
+          defaultLabel="Please Select" filter="true" resetFilterOnHide="true">
         </p-multiSelect>
       </div>
 
       <div class="ui-grid-col-2"><span class="compulsory">*</span>Molecule</div>
       <div class="ui-grid-col-4">
         <p-dropdown formControlName="molecule" [options]="pmObject.oProjectCreation.oProjectInfo.molecule"
-          placeholder="Please Select" [showClear]="true" [filter]="true"></p-dropdown>
+          placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
         <div class="error"
           *ngIf="!addProjectAttributesForm.controls['molecule'].valid&&addProjectAttributesForm.controls['molecule'].touched">
           Molecule is required</div>
@@ -88,7 +88,7 @@
       <div class="ui-grid-col-2"><span class="compulsory">*</span>Therapeutic Area</div>
       <div class="ui-grid-col-4">
         <p-dropdown formControlName="therapeuticArea" [options]="pmObject.oProjectCreation.oProjectInfo.ta"
-          placeholder="Please Select" [showClear]="true" [filter]="true"></p-dropdown>
+          placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
         <div class="error"
           *ngIf="!addProjectAttributesForm.controls['therapeuticArea'].valid&&addProjectAttributesForm.controls['therapeuticArea'].touched">
           Therapeutic Area is required</div>
@@ -113,7 +113,7 @@
       <div class="ui-grid-col-2"><span class="compulsory">*</span>Active CM</div>
       <div class="ui-grid-col-3">
         <p-multiSelect [options]="cmLevel1" formControlName="selectedActiveCM1" [filter]="true"
-          defaultLabel="Please Select">
+          defaultLabel="Please Select" resetFilterOnHide="true">
         </p-multiSelect>
         <div class="error"
           *ngIf="!addProjectAttributesForm.controls['selectedActiveCM1'].valid&&addProjectAttributesForm.controls['selectedActiveCM1'].touched">
@@ -121,7 +121,7 @@
       </div>
       <div class="ui-grid-col-3">
         <p-dropdown [options]="cmLevel2" formControlName="selectedActiveCM2" [filter]="true" [showClear]="true"
-          placeholder="Please Select"></p-dropdown>
+          placeholder="Please Select" resetFilterOnHide="true"></p-dropdown>
         <div class="error"
           *ngIf="!addProjectAttributesForm.controls['selectedActiveCM2'].valid&&addProjectAttributesForm.controls['selectedActiveCM2'].touched">
           CM2 is required</div>
@@ -131,11 +131,11 @@
       <div class="ui-grid-col-2"><span class="compulsory">*</span>Active Delivery</div>
       <div class="ui-grid-col-3">
         <p-multiSelect [options]="deliveryLevel1" formControlName="selectedActiveAD1" [filter]="true"
-          defaultLabel="Please Select"></p-multiSelect>
+          defaultLabel="Please Select" resetFilterOnHide="true"></p-multiSelect>
       </div>
       <div class="ui-grid-col-3">
         <p-dropdown [options]="deliveryLevel2" formControlName="selectedActiveAD2" [filter]="true" [showClear]="true"
-          placeholder="Please Select"></p-dropdown>
+          placeholder="Please Select" resetFilterOnHide="true"></p-dropdown>
         <div class="error"
           *ngIf="!addProjectAttributesForm.controls['selectedActiveAD2'].valid&&addProjectAttributesForm.controls['selectedActiveAD2'].touched">
           Active Delivery 2 is required</div>

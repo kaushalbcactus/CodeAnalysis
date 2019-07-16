@@ -39,25 +39,25 @@
                     <th class="lastColumnWidth"></th>
                 </tr>
                 <tr>
-                    <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                    <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
                         <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="crArrays.projectCodeArray"
-                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
+                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="crArrays.clientLegalEntityArray"
-                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
+                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'POC'" [options]="crArrays.POCArray" defaultLabel="All"
-                            (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"></p-multiSelect>
+                            (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="crArrays.deliveryTypeArray"
-                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
+                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'DueDate'" [options]="crArrays.dueDateArray" defaultLabel="All"
-                            (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"></p-multiSelect>
+                            (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'Milestone'" [options]="crArrays.milestoneArray"
-                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
+                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'DeliveryDate'" [options]="crArrays.deliveryDateArray"
-                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()">
+                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                     </th>
                     <th class="lastColumnWidth"></th>

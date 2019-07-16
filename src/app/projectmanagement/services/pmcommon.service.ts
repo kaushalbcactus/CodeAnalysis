@@ -594,7 +594,8 @@ export class PMCommonService {
       },
       CMLevel2Id: addObj.ProjectAttributes.ActiveCM2,
       DeliveryLevel1Id: {
-        results: addObj.ProjectAttributes.ActiveDelivery1
+        results: addObj.ProjectAttributes.ActiveDelivery1 && addObj.ProjectAttributes.ActiveDelivery1.length
+          ? addObj.ProjectAttributes.ActiveDelivery1 : []
       },
       DeliveryLevel2Id: addObj.ProjectAttributes.ActiveDelivery2,
       SubDivision: addObj.ProjectAttributes.SubDivision ? addObj.ProjectAttributes.SubDivision : '',
@@ -698,7 +699,7 @@ export class PMCommonService {
       libraryName = clientInfo[0].ListName;
     }
     const folderPath: string = this.globalObject.sharePointPageObject.webAbsoluteUrl + '/' + libraryName + '/' + docFolder;
-    const filePathUrl = await this.spServices.getFileUploadUrl(folderPath, selectedFile.name, false);
+    const filePathUrl = await this.spServices.getFileUploadUrl(folderPath, selectedFile.name, true);
     const res = await this.spServices.uploadFile(filePathUrl, fileReader.result);
     if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name') && !res.hasOwnProperty('hasError')) {
       this.pmObject.addProject.FinanceManagement.SOWFileURL = res.ServerRelativeUrl;

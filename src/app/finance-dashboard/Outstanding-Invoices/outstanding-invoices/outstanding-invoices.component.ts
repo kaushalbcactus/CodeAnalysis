@@ -48,7 +48,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     }
 
     // Purchase Order Number
-    purchaseOrders: any[];
     selectedPurchaseNumber: any;
 
     // Dispute Reasons
@@ -85,12 +84,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         this.currentUserInfo();
 
         // POC & PO Number
-        // this.projectInfo();
         this.projectContacts();
         this.poInfo();
         this.cleInfo();
-        // this.usStatesInfo();
-        // this.currencyInfo();
         this.getReasons();
         this.getTypes();
 
@@ -104,26 +100,11 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         this.createReplaceInvoiceFormField();
         this.createCreditDebitFormField();
 
-
-        // Dummy
-        this.getPurchaseOrderList();
-
         // Get details
         this.getRequiredData();
     }
 
-    // Project Info 
-    projectInfoData: any = [];
-    projectInfo() {
-        this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
-            if (res) {
-                this.projectInfoData = res;
-                console.log('PI Data ', this.projectInfoData);
-            }
-        }))
-    }
-
-    // Purchase Order Number
+    //  Purchase Order Number
     purchaseOrdersList: any = [];
     poInfo() {
         this.fdDataShareServie.defaultPoData.subscribe((res) => {
@@ -142,30 +123,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 this.projectContactsData = res;
                 console.log('this.projectContactsData ', this.projectContactsData);
                 // this.getPCForSentToAMForApproval();
-            }
-        }))
-    }
-
-    // US States
-    usStatesData: any = [];
-    usStatesInfo() {
-        this.usStatesData = [];
-        this.subscription.add(this.fdDataShareServie.defaultUSSData.subscribe((res) => {
-            if (res) {
-                this.usStatesData = res;
-                console.log('US States Data ', this.usStatesData);
-            }
-        }))
-    }
-
-    // US States
-    currencyData: any = [];
-    currencyInfo() {
-        this.currencyData = [];
-        this.subscription.add(this.fdDataShareServie.defaultCUData.subscribe((res) => {
-            if (res) {
-                this.currencyData = res;
-                console.log('currency Data ', this.currencyData);
             }
         }))
     }
@@ -193,17 +150,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         this.CreditOrDebitNoteType = [
             { label: 'Credit Note', value: 'Credit Note' },
             { label: 'Debit Note', value: 'Debit Note' },
-        ]
-    }
-
-    // Purchase Order List
-    getPurchaseOrderList() {
-        this.purchaseOrders = [
-            { name: 'New York', code: 'NY' },
-            { name: 'Rome', code: 'RM' },
-            { name: 'London', code: 'LDN' },
-            { name: 'Istanbul', code: 'IST' },
-            { name: 'Paris', code: 'PRS' }
         ]
     }
 
@@ -591,18 +537,63 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 this.fdConstantsService.fdComponent.selectedEditObject.ID = data.Id;
                 this.fdConstantsService.fdComponent.selectedEditObject.Type = 'Invoice';
                 this.fdConstantsService.fdComponent.selectedComp = this;
+                // switch (data.Template) {
+                //     case 'US':
+                //         this.editorRef.USTemplateCopy = invObj.saveObj;
+                //         this.editorRef.displayUS = true;
+                //         break;
+                //     case 'Japan':
+                //         this.editorRef.JapanTemplateCopy = invObj.saveObj;
+                //         this.editorRef.displayJapan = true;
+                //         break;
+                //     case 'India':
+                //         this.editorRef.IndiaTemplateCopy = invObj.saveObj;
+                //         this.editorRef.displayIndia = true;
+                //         break;
+                // }
                 switch (data.Template) {
                     case 'US':
+                        this.editorRef.JapanTemplateCopy = {};
+                        this.editorRef.IndiaTemplateCopy = {};
                         this.editorRef.USTemplateCopy = invObj.saveObj;
+                        if (this.editorRef.USTemplateCopy.appendix) {
+                            this.editorRef.showAppendix = true;
+                        } else {
+                            this.editorRef.showAppendix = false;
+                        }
+                        this.editorRef.displayJapan = false;
                         this.editorRef.displayUS = true;
+                        this.editorRef.displayIndia = false;
+                        this.editorRef.enableButton();
                         break;
                     case 'Japan':
+                        this.editorRef.USTemplateCopy = {};
+                        this.editorRef.IndiaTemplateCopy = {};
                         this.editorRef.JapanTemplateCopy = invObj.saveObj;
+                        if (this.editorRef.JapanTemplateCopy.appendix) {
+                            this.editorRef.showAppendix = true;
+                        } else {
+                            this.editorRef.showAppendix = false;
+                        }
                         this.editorRef.displayJapan = true;
+                        this.editorRef.displayUS = false;
+                        this.editorRef.displayIndia = false;
+                        this.editorRef.enableButton();
                         break;
                     case 'India':
+
+                        this.editorRef.JapanTemplateCopy = {};
+                        this.editorRef.USTemplateCopy = {};
                         this.editorRef.IndiaTemplateCopy = invObj.saveObj;
+                        if (this.editorRef.IndiaTemplateCopy.appendix) {
+                            this.editorRef.showAppendix = true;
+                        } else {
+                            this.editorRef.showAppendix = false;
+                        }
+                        this.editorRef.displayJapan = false;
+                        this.editorRef.displayUS = false;
                         this.editorRef.displayIndia = true;
+                        this.editorRef.enableButton();
                         break;
                 }
             }
@@ -659,7 +650,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     fileReader: any;
     onFileChange(event) {
         let existingFile = this.selectedRowItem.FileURL ? this.selectedRowItem.FileURL.split('/') : [];
-        if (existingFile) {
+        if (existingFile.length) {
             let file = existingFile[existingFile.length - 1];
             // let fileName = file.substr(0, file.indexOf('.'));
             console.log('fileName  ', file);
@@ -668,10 +659,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 this.replaceInvoice_form.reset();
                 return;
             }
-        }
-        console.log((this.selectedRowItem.FileURL.split('/')))
-        if (this.selectedRowItem.FileURL) {
-
         }
         this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
@@ -695,7 +682,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             let fileUrl = res.ServerRelativeUrl;
             let obj = {
                 FileURL: fileUrl,
-                // ProformaHtml: null
+                InvoiceHtml: null
             }
             obj['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
             const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
@@ -707,6 +694,33 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 }
             ];
             this.submitForm(data, 'replaceInvoice');
+        } else if (res.hasError) {
+            this.isPSInnerLoaderHidden = true;
+            this.messageService.add({ key: 'myKey1', severity: 'info', summary: 'File not uploaded.', detail: 'Folder / ' + res.message.value + '', life: 3000 })
+        }
+    }
+
+    async uploadPaymentFileData(type: string) {
+        const res = await this.spOperations.uploadFile(this.filePathUrl, this.fileReader.result)
+        console.log('selectedFile uploaded .', res.ServerRelativeUrl);
+        if (res.ServerRelativeUrl) {
+            console.log('selectedFile uploaded .', res.ServerRelativeUrl);
+            let obj2 = {
+                Status: 'Paid',
+                PaymentURL: res.ServerRelativeUrl
+            }
+            obj2['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
+            const endpoint2 = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
+            let data = [
+                {
+                    objData: obj2,
+                    endpoint: endpoint2,
+                    requestPost: false
+                }]
+            this.submitForm(data, type);
+        } else if (res.hasError) {
+            this.isPSInnerLoaderHidden = true;
+            this.messageService.add({ key: 'myKey1', severity: 'info', summary: 'File not uploaded.', detail: 'Folder / ' + res.message.value + '', life: 3000 })
         }
     }
 
@@ -753,26 +767,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             }
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
-            this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
-                if (res.d) {
-                    console.log('selectedFile uploaded .', res.d);
-                    let obj2 = {
-                        Status: 'Paid',
-                        PaymentURL: res.d.ServerRelativeUrl
-                    }
-                    obj2['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
-                    const endpoint2 = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
-                    let data = [
-                        {
-                            objData: obj2,
-                            endpoint: endpoint2,
-                            requestPost: false
-                        }]
-                    this.submitForm(data, type);
-                }
-            });
-
-            // this.submitForm();
+            this.uploadPaymentFileData(type);
             console.log('form is submitting ..... & Form data is ', this.paymentResoved_form.value);
         } else if (type === 'disputeInvoice') {
             if (this.disputeInvoice_form.invalid) {
@@ -797,7 +792,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.submitForm(data, type);
         } else if (type === 'replaceInvoice') {
             if (this.replaceInvoice_form.invalid) {
-                return
+                return;
             }
             console.log('form is submitting ..... & Form data is ', this.replaceInvoice_form.value);
             this.isPSInnerLoaderHidden = false;
@@ -925,7 +920,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     reFetchData() {
         setTimeout(() => {
             this.getRequiredData();
-        }, 3000);
+        }, 1000);
     }
 
     onlyNumberKey(event) {

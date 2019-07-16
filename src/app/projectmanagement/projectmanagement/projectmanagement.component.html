@@ -53,7 +53,7 @@
                     <div class="ui-g-4">
                         <p-dropdown class="mr-5" [options]="sowDropDown.ClientLegalEntity"
                             formControlName="clientLegalEntity" placeholder="Please Select" [showClear]="true"
-                            [filter]="true" (onChange)="onChangeClientLegalEntity()">
+                            [filter]="true" (onChange)="onChangeClientLegalEntity()" resetFilterOnHide="true">
                         </p-dropdown>
                         <div class="error"
                             *ngIf="!addSowForm.controls['clientLegalEntity'].valid&&addSowForm.controls['clientLegalEntity'].touched">
@@ -72,7 +72,7 @@
                     <div class="ui-g-4">
                         <p-dropdown class="mr-5" [options]="sowDropDown.BillingEntity"
                             formControlName="cactusBillingEntity" placeholder="Please Select" [showClear]="true"
-                            [filter]="true">
+                            [filter]="true" resetFilterOnHide="true">
                         </p-dropdown>
                         <div class="error"
                             *ngIf="!addSowForm.controls['cactusBillingEntity'].valid&&addSowForm.controls['cactusBillingEntity'].touched">
@@ -82,7 +82,7 @@
                     <div class="ui-g-4">
                         <p-multiSelect class="mr-5" formControlName="practiceArea" [options]="sowDropDown.PracticeArea"
                             [panelStyle]="{minWidth:'12em'}" [style]="{'width':'85%'}" defaultLabel="Please Select"
-                            [filter]="true"></p-multiSelect>
+                            [filter]="true" resetFilterOnHide="true"></p-multiSelect>
                         <div class="error"
                             *ngIf="!addSowForm.controls['practiceArea'].valid&&addSowForm.controls['practiceArea'].touched">
                             Practice Area is required</div>
@@ -92,7 +92,7 @@
                     <div class="ui-g-2"><span class="compulsory">*</span>Client POC</div>
                     <div class="ui-g-3">
                         <p-dropdown class="mr-5" [options]="sowDropDown.POC" formControlName="poc"
-                            placeholder="Please Select" [showClear]="true" [filter]="true">
+                            placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true">
                         </p-dropdown>
                         <div class="error"
                             *ngIf="!addSowForm.controls['poc'].valid&&addSowForm.controls['poc'].touched">
@@ -100,7 +100,7 @@
                     </div>
                     <div class="ui-g-3" style="margin-left: 25px">
                         <p-multiSelect [options]="sowDropDown.POCOptional" formControlName="pocOptional" [filter]="true"
-                            defaultLabel="Please Select"></p-multiSelect>
+                            defaultLabel="Please Select" resetFilterOnHide="true"></p-multiSelect>
                     </div>
                 </div>
                 <div class="ui-g mt-20">
@@ -159,7 +159,7 @@
                     <div class="ui-g-2"><span class="compulsory">*</span>Currency</div>
                     <div class="ui-g-4">
                         <p-dropdown class="mr-5" [options]="sowDropDown.Currency" formControlName="currency"
-                            placeholder="Please Select" [showClear]="true" [filter]="true"></p-dropdown>
+                            placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
                         <div class="error"
                             *ngIf="!addSowForm.controls['currency'].valid&&addSowForm.controls['currency'].touched">
                             Currency is required</div>
@@ -202,13 +202,13 @@
                     <div class="ui-g-4">
                         <p-multiSelect formControlName="cm" [options]="sowDropDown.CMLevel1"
                             [panelStyle]="{minWidth:'12em'}" [style]="{'width':'85%'}" defaultLabel="Please Select"
-                            [filter]="true"></p-multiSelect>
+                            [filter]="true" resetFilterOnHide="true"></p-multiSelect>
                         <div class="error" *ngIf="!addSowForm.controls['cm'].valid&&addSowForm.controls['cm'].touched">
                             CM 1 is required</div>
                     </div>
                     <div class="ui-g-4">
                         <p-dropdown formControlName="cm2" [options]="sowDropDown.CMLevel2" placeholder="Please Select"
-                            [showClear]="true" [filter]="true"></p-dropdown>
+                            [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
                         <div class="error"
                             *ngIf="!addSowForm.controls['cm2'].valid&&addSowForm.controls['cm2'].touched">CM 2 is
                             required</div>
@@ -219,11 +219,11 @@
                     <div class="ui-g-4">
                         <p-multiSelect formControlName="delivery" [options]="sowDropDown.Delivery"
                             [panelStyle]="{minWidth:'12em'}" [style]="{'width':'85%'}" defaultLabel="Please Select"
-                            inputId="Please Select" [filter]="true"></p-multiSelect>
+                            inputId="Please Select" [filter]="true" resetFilterOnHide="true"></p-multiSelect>
                     </div>
                     <div class="ui-g-4">
                         <p-dropdown formControlName="deliveryOptional" [options]="sowDropDown.DeliveryOptional"
-                            placeholder="Please Select" [showClear]="true" [filter]="true"></p-dropdown>
+                            placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
                         <div class="error"
                             *ngIf="!addSowForm.controls['deliveryOptional'].valid&&addSowForm.controls['deliveryOptional'].touched">
                             Delivery 2 is required</div>
@@ -233,7 +233,7 @@
                     <div class="ui-g-2"><span class="compulsory">*</span>SOW Owner</div>
                     <div class="ui-g-4">
                         <p-dropdown class="mr-5" formControlName="sowOwner" [options]="sowDropDown.SowOwner"
-                            placeholder="Please Select" [showClear]="true" [filter]="true"></p-dropdown>
+                            placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
                         <div class="error"
                             *ngIf="!addSowForm.controls['sowOwner'].valid&&addSowForm.controls['sowOwner'].touched">SOW
                             Owner is required</div>

@@ -479,6 +479,8 @@ export class AllProjectsComponent implements OnInit {
           });
           break;
         case this.pmConstant.ACTION.CANCEL_PROJECT:
+          this.selectedReasonType = '';
+          this.selectedReason = '';
           await this.loadReasonDropDown();
           this.pmObject.isReasonSectionVisible = true;
           break;
@@ -1501,6 +1503,16 @@ export class AllProjectsComponent implements OnInit {
         }
         this.closeMoveSOW();
       }, this.pmConstant.TIME_OUT);
+    } else if (isValid === 'InvoiceNotScheduled') {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: 'Project Movement to selected SOW ' + projObject.SOWCode + ' is not possible due to confirmed invoice'
+      });
+    } else {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: 'Project Movement to selected SOW ' + projObject.SOWCode + ' is not possible due to insufficient amount'
+      });
     }
   }
   /**
@@ -1567,6 +1579,12 @@ export class AllProjectsComponent implements OnInit {
     if (sResult && sResult.length && sowObj && sowObj.length) {
       this.moveSOWObjectArray = sResult;
       const fm = sResult[0].retItems[0];
+      const invoiceItems = sResult[1].retItems;
+      for (const item of invoiceItems) {
+        if (item.Status !== this.constants.STATUS.SCHEDUELD) {
+          return 'InvoiceNotScheduled';
+        }
+      }
       const sowItem = sowObj[0];
       // add budget into project object to utilize for update operation.
       projObj.Budget = fm.Budget ? fm.Budget : 0;

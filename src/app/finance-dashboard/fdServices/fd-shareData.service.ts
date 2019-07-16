@@ -348,28 +348,32 @@ export class FDDataShareService {
 
 
     }
-
+    // clePoPiRes: any = [];
     async getClePO(type: string) {
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        const clientLegalEntityEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
-        const projectPO = this.spServices.getReadURL('' + this.constantService.listNames.ProjectPO.name + '', this.fdConstantsService.fdComponent.projectPO);
-        let endPoints = [clientLegalEntityEndpoint, projectPO];
-        if (type === 'hourly') {
-            const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
-            endPoints = [clientLegalEntityEndpoint, projectPO, projectInfoEndpoint];
-        }
-        let userBatchBody;
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
+        // if (this.clePoPiRes.length) {
+        //     return this.clePoPiRes;
+        // } else {
+            const batchContents = new Array();
+            const batchGuid = this.spServices.generateUUID();
+            const clientLegalEntityEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
+            const projectPO = this.spServices.getReadURL('' + this.constantService.listNames.ProjectPO.name + '', this.fdConstantsService.fdComponent.projectPO);
+            let endPoints = [clientLegalEntityEndpoint, projectPO];
+            if (type === 'hourly') {
+                const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
+                endPoints = [clientLegalEntityEndpoint, projectPO, projectInfoEndpoint];
+            }
+            let userBatchBody;
+            for (let i = 0; i < endPoints.length; i++) {
+                const element = endPoints[i];
+                this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+            }
+            batchContents.push('--batch_' + batchGuid + '--');
+            userBatchBody = batchContents.join('\r\n');
 
-        const arrResults = await this.spServices.getFDData(batchGuid, userBatchBody);
-        this.requiredData = arrResults;
-        this.setClePOData(arrResults);
+            const arrResults = await this.spServices.getFDData(batchGuid, userBatchBody);
+            // this.clePoPiRes = arrResults;
+            this.setClePOData(arrResults);
+        // }
     }
 
     setClePOData(data) {
@@ -416,10 +420,11 @@ export class FDDataShareService {
 
     async callProformaInvoiceEdit(objReturn) {
         const pdfContent: any = objReturn.pdf;
+        const refetchType = this.fdConstantsService.fdComponent.selectedEditObject.Type === 'Proforma' ? 'replaceProforma' : 'replaceInvoice';
         pdfContent.Code = this.fdConstantsService.fdComponent.selectedEditObject.Code;
         pdfContent.WebUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
         pdfContent.ID = this.fdConstantsService.fdComponent.selectedEditObject.ID;
-        pdfContent.Type = this.fdConstantsService.fdComponent.selectedEditObject.Type;// 'Proforma';
+        pdfContent.Type = this.fdConstantsService.fdComponent.selectedEditObject.Type; // 'Proforma';
         pdfContent.ListName = this.fdConstantsService.fdComponent.selectedEditObject.ListName;
         pdfContent.HtmlContent = JSON.stringify(objReturn);
 
@@ -427,7 +432,7 @@ export class FDDataShareService {
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-        this.fdConstantsService.fdComponent.selectedComp.reFetchData();
+        this.fdConstantsService.fdComponent.selectedComp.reFetchData(refetchType);
     }
     bdtRate: any = [];
     getProformaPDFObject(oProformaObj, cleData, projectContactsData, purchaseOrdersList, projectAppendix) {

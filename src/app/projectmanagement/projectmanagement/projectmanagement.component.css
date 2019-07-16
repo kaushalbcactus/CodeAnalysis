@@ -445,9 +445,7 @@ label.star:before {
 .cs-dashboard .slaExist table thead tr th:first-child{
     width: 50px;
 }
-.cs-dashboard  .ui-multiselect {
-    width: 100%;    
-}
+
 .cs-dashboard .projectDataExist table tbody tr td:nth-child(5){
     word-break: break-all;
 }
@@ -777,5 +775,5 @@ body .ui-corner-top {
 
 } 
 body .ui-dialog .ui-dialog-content {
-  padding: 1em 1em 4em 1em;
+  padding: 1em 1em 4em 1em !important;
 }

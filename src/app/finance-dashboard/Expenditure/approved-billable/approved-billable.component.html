@@ -49,52 +49,52 @@
             <th></th>
             <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                 <ng-container *ngIf="col.field">
-                    <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="appBillableColArray.ProjectCode"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProjectCode'" [options]="appBillableColArray.ProjectCode"
                         defaultLabel="All"  (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="appBillableColArray.SOWCode" defaultLabel="All"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'SOWCode'" [options]="appBillableColArray.SOWCode" defaultLabel="All"
                          (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Number'" [options]="appBillableColArray.Number" defaultLabel="All"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Number'" [options]="appBillableColArray.Number" defaultLabel="All"
                          (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'DateSpend'" [options]="appBillableColArray.DateSpend"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'DateSpend'" [options]="appBillableColArray.DateSpend"
                         defaultLabel="All"  (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'VendorName'" [options]="appBillableColArray.VendorName"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'VendorName'" [options]="appBillableColArray.VendorName"
                         defaultLabel="All"  (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'RequestType'" [options]="appBillableColArray.RequestType"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'RequestType'" [options]="appBillableColArray.RequestType"
                         defaultLabel="All"  (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ExpenseType'" [options]="appBillableColArray.ExpenseType"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ExpenseType'" [options]="appBillableColArray.ExpenseType"
                         defaultLabel="All"  (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'PaymentMode'" [options]="appBillableColArray.PaymentMode"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'PaymentMode'" [options]="appBillableColArray.PaymentMode"
                         defaultLabel="All"  (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ClientAmount'" [options]="appBillableColArray.ClientAmount"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientAmount'" [options]="appBillableColArray.ClientAmount"
                         defaultLabel="All"  (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ClientCurrency'" [options]="appBillableColArray.ClientCurrency"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientCurrency'" [options]="appBillableColArray.ClientCurrency"
                         defaultLabel="All"  (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'PayingEntity'" [options]="appBillableColArray.PayingEntity"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'PayingEntity'" [options]="appBillableColArray.PayingEntity"
                         defaultLabel="All"  (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Status'" [options]="appBillableColArray.Status" defaultLabel="All"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Status'" [options]="appBillableColArray.Status" defaultLabel="All"
                          (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'SpendDate'" [options]="appBillableColArray.SpendDate"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'SpendDate'" [options]="appBillableColArray.SpendDate"
                         defaultLabel="All"  (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Created'" [options]="appBillableColArray.Created" defaultLabel="All"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Created'" [options]="appBillableColArray.Created" defaultLabel="All"
                          (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ModifiedBy'" [options]="appBillableColArray.ModifiedBy"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ModifiedBy'" [options]="appBillableColArray.ModifiedBy"
                         defaultLabel="All"  (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Modified'" [options]="appBillableColArray.Modified"
+                    <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Modified'" [options]="appBillableColArray.Modified"
                         defaultLabel="All"  (onChange)="ab.filter($event.value, col.field, 'in')">
                     </p-multiSelect>
                 </ng-container>
@@ -104,7 +104,7 @@
     </ng-template>
     <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
 
-        <tr [pSelectableRow]="rowData">
+        <tr >
             <td>{{rowIndex+1}}</td>
             <td>
                 <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
@@ -165,7 +165,7 @@
                 <div class="clear"></div>
                 <div class="ui-g-6">Payment Mode</div>
                 <div class="ui-g-6">
-                    <p-dropdown [options]="paymentModeArray" [showClear]="false" placeholder="Select a Payment Mode"
+                    <p-dropdown resetFilterOnHide="true"[options]="paymentModeArray" [showClear]="false" placeholder="Select a Payment Mode"
                         [style]="{'width':'100%'}" formControlName="PaymentMode" optionLabel="value"
                         onfocus='this.size=10;'>
                     </p-dropdown>
@@ -230,7 +230,7 @@
             <div class="ui-g-4">
 
                 <div class="ui-g-6" style="padding-left:0">
-                    <p-dropdown [options]="poNames" filter="true" formControlName="PONumber" placeholder="Select PO Number"
+                    <p-dropdown resetFilterOnHide="true"[options]="poNames" filter="true" formControlName="PONumber" placeholder="Select PO Number"
                         optionLabel="Number" (onChange)="poChange($event)">
                     </p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidScheduleOOPInvoiceForm.PONumber.errors">
@@ -297,7 +297,7 @@
                 POC Name
             </div>
             <div class="ui-g-6">
-                <p-dropdown [options]="listOfPOCs" formControlName="POCName" placeholder="Select POC Name"
+                <p-dropdown resetFilterOnHide="true"[options]="listOfPOCs" formControlName="POCName" placeholder="Select POC Name"
                     optionLabel="FullName" filter="true" (onChange)="pocChange($event)">
                 </p-dropdown>
                 <div *ngIf="formSubmit.isSubmit && isValidScheduleOOPInvoiceForm.POCName.errors">
@@ -308,7 +308,7 @@
 
             <div class="ui-g-4">Address Type</div>
             <div class="ui-g-6">
-                <p-dropdown [options]="addressTypes" formControlName="AddressType" placeholder="Select a Address Type"
+                <p-dropdown resetFilterOnHide="true"[options]="addressTypes" formControlName="AddressType" placeholder="Select a Address Type"
                     optionLabel="label">
                 </p-dropdown>
                 <div *ngIf="formSubmit.isSubmit && isValidScheduleOOPInvoiceForm.AddressType.errors">
