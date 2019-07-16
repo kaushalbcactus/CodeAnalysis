@@ -1510,7 +1510,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         } else if (type === 'createProforma' || type === 'generateInvoice') {
             setTimeout(async () => {
                 // Refetch PO/CLE Data
-                this.fdDataShareServie.clePoPiRes = [];
+                // this.fdDataShareServie.clePoPiRes = [];
                 await this.fdDataShareServie.getClePO('proforma');
                 // Fetch latest PO & CLE
                 this.poInfo();

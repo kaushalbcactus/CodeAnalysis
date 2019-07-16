@@ -710,8 +710,10 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             if (this.selectedAllRowData.length) {
                 if (new Date(this.selectedPurchaseNumber.POExpiryDate) >= new Date()) {
                     const format = 'dd MMM , yyyy';
-                    const myDate = new Date();
+                    let myDate = new Date();
                     const locale = 'en-IN';
+                    this.minProformaDate = new Date(Math.max.apply(null, this.selectedAllRowData.map(e => e.ScheduledDate)));
+                    myDate = this.minProformaDate > myDate ?  this.minProformaDate : myDate;
                     const formattedDate = formatDate(myDate, format, locale);
                     this.addToProforma_form.patchValue({
                         ClientLegalEntity: this.selectedPurchaseNumber.ClientLegalEntity,
