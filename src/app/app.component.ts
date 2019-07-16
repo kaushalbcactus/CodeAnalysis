@@ -1,6 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { GlobalService } from './Services/global.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { environment } from '../environments/environment';
 // import { Environment } from '../environments/environment.prod';
 declare const _spPageContextInfo;
@@ -14,7 +14,11 @@ declare const _spPageContextInfo;
 export class AppComponent {
   title = 'Medcom SPA';
   // tslint:disable-next-line:variable-name
-  constructor(public globalObject: GlobalService, private router: Router, private _ngZone: NgZone) { }
+  constructor(
+    public globalObject: GlobalService,
+    private router: Router,
+    private _ngZone: NgZone,
+  ) { }
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
     this.globalObject.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
@@ -42,21 +46,19 @@ export class AppComponent {
   }
 
   goToFD() {
-    if (!this.router.url.includes('financeDashboard')) {
+    if (!window.location.href.includes('financeDashboard')) {
       this.router.navigate(['/financeDashboard']);
     }
   }
 
   goToPM() {
-    // tslint:disable-next-line:no-debugger
-    debugger;
-    if (!this.router.url.includes('projectMgmt')) {
+    if (!window.location.href.includes('projectMgmt')) {
       this.router.navigate(['/projectMgmt']);
     }
   }
 
   goToMyDashboard() {
-    if (!this.router.url.includes('myDashboard')) {
+    if (!window.location.href.includes('myDashboard')) {
       this.router.navigate(['/myDashboard']);
     }
   }

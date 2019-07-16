@@ -399,7 +399,7 @@ export class ManageFinanceComponent implements OnInit {
         return;
       }
       this.showReduction = false;
-      this.saveUpdatePO();
+      const pfPFB = this.saveUpdatePO();
       ///// Send approval message
 
     }
@@ -1460,6 +1460,10 @@ export class ManageFinanceComponent implements OnInit {
     }, this.pmConstant.TIME_OUT);
   }
   async saveUpdatePO() {
+    const returnObj = {
+      pfObj: {},
+      pbbObj: {}
+    }
     this.updateInvoices = [];
     this.pmObject.isMainLoaderHidden = false;
     const batchURL = [];
@@ -1522,7 +1526,7 @@ export class ManageFinanceComponent implements OnInit {
         projectFinaceUpdate.type = 'PATCH';
         projectFinaceUpdate.listName = this.constant.listNames.ProjectFinances.name;
         batchURL.push(projectFinaceUpdate);
-
+        returnObj.pfObj = projectFinaceData;
         if (this.projectStatus === this.constant.projectStatus.InDiscussion) {
           const projectBudgetBreakupData = this.getProjectBudgetBreakupData(this.budgetData, this.projObj, false, true);
           const projectBudgetBreakupUpdate = Object.assign({}, options);
@@ -1560,6 +1564,7 @@ export class ManageFinanceComponent implements OnInit {
           projectBudgetBreakupCreate.type = 'POST';
           projectBudgetBreakupCreate.listName = this.constant.listNames.ProjectBudgetBreakup.name;
           batchURL.push(projectBudgetBreakupCreate);
+          returnObj.pbbObj = projectBudgetBreakupData;
         }
         // SOW update
         const sowObj = this.sowObj;
@@ -1634,6 +1639,8 @@ export class ManageFinanceComponent implements OnInit {
     setTimeout(() => {
       this.dynamicDialogRef.close();
     }, this.pmConstant.TIME_OUT);
+
+    return returnObj;
   }
   /**
    * This method is used to get Project Finances Update data
@@ -1652,16 +1659,16 @@ export class ManageFinanceComponent implements OnInit {
       poInfoObj.poInfoData.forEach(element => {
         if (element.status === this.constant.STATUS.APPROVED) {
           invoice = invoice + element.amount;
-          if(element.scheduleType === 'revenue') {
+          if (element.scheduleType === 'revenue') {
             invoiceRevenue = invoiceRevenue + element.amount;
           }
           else {
             invoiceOOP = invoiceOOP + element.amount;
           }
-          
+
         } else if (element.status !== this.constant.STATUS.DELETED) {
-          invoiceSc = invoiceSc +  element.amount;
-          if(element.scheduleType === 'revenue') {
+          invoiceSc = invoiceSc + element.amount;
+          if (element.scheduleType === 'revenue') {
             scRevenue = scRevenue + element.amount;
           }
           else {
@@ -1721,16 +1728,16 @@ export class ManageFinanceComponent implements OnInit {
     poInfoObj.poInfoData.forEach(element => {
       if (element.status === this.constant.STATUS.APPROVED) {
         invoice = invoice + element.amount;
-        if(element.scheduleType === 'revenue') {
+        if (element.scheduleType === 'revenue') {
           invoiceRevenue = invoiceRevenue + element.amount;
         }
         else {
           invoiceOOP = invoiceOOP + element.amount;
         }
-        
+
       } else if (element.status !== this.constant.STATUS.DELETED) {
-        totalScheduled = totalScheduled +  element.amount;
-        if(element.scheduleType === 'revenue') {
+        totalScheduled = totalScheduled + element.amount;
+        if (element.scheduleType === 'revenue') {
           scRevenue = scRevenue + element.amount;
         }
         else {
@@ -1773,7 +1780,7 @@ export class ManageFinanceComponent implements OnInit {
         data.Amount = 0;
         data.AmountRevenue = 0;
         data.AmountOOP = 0;
-        data.AmountTax = 0; 
+        data.AmountTax = 0;
         data.TotalScheduled = totalScheduled;
         data.ScheduledRevenue = scRevenue;
         data.ScheduledOOP = scOOP;
