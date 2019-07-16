@@ -665,7 +665,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.poItem = event.value;
         this.oopBalance = 0;
         if (this.poItem) {
-            this.oopBalance = (this.poItem.AmountOOP ? this.poItem.AmountOOP : 0 - this.poItem.OOPLinked ? this.poItem.OOPLinked : 0);
+            this.oopBalance = parseFloat((this.poItem.AmountOOP ? this.poItem.AmountOOP : 0 - this.poItem.OOPLinked ? this.poItem.OOPLinked : 0).toFixed(2));
         }
         if (this.oopBalance >= this.scheduleOopInvoice_form.getRawValue().Amount) {
             await this.getPfPfb();

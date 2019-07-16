@@ -54,6 +54,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     // MenuList
     expenditureMenuList: any = [];
+    showDatesSectiuon: boolean = false;
+    
 
     @ViewChild("target", { static: true }) MyProp: ElementRef;
 
@@ -94,6 +96,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'] },
             { label: 'Approved(Billable)', routerLink: ['approvedBillable'] }
         ];
+        this.router.url === '/projectMgmt/allProjects'
 
 
         this.expenditureFormField();

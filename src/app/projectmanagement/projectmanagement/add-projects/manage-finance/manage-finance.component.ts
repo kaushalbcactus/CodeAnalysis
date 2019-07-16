@@ -398,9 +398,9 @@ export class ManageFinanceComponent implements OnInit {
         });
         return;
       }
-
-      ////// Remove 
-
+      this.showReduction = false;
+      this.saveUpdatePO();
+      ///// Send approval message
 
     }
     else {
@@ -1187,10 +1187,10 @@ export class ManageFinanceComponent implements OnInit {
           tempPOObj.showDelete = true;
         }
         tempPOObj.scValue = 'Scheduled + Invoiced';
-        tempPOObj.scTotal = (poItem.TotalScheduled ? poItem.TotalScheduled : 0 ) + (poItem.TotalInvoiced ? poItem.TotalInvoiced : 0 );
-        tempPOObj.scRevenue = (poItem.ScheduledRevenue ? poItem.ScheduledRevenue : 0 ) + 
-        (poItem.InvoicedRevenue ? poItem.InvoicedRevenue : 0 );
-        tempPOObj.scOOP = (poItem.ScheduledOOP ? poItem.ScheduledOOP : 0) + (poItem.InvoicedOOP ? poItem.InvoicedOOP : 0) ;
+        tempPOObj.scTotal = (poItem.TotalScheduled ? poItem.TotalScheduled : 0) + (poItem.TotalInvoiced ? poItem.TotalInvoiced : 0);
+        tempPOObj.scRevenue = (poItem.ScheduledRevenue ? poItem.ScheduledRevenue : 0) +
+          (poItem.InvoicedRevenue ? poItem.InvoicedRevenue : 0);
+        tempPOObj.scOOP = (poItem.ScheduledOOP ? poItem.ScheduledOOP : 0) + (poItem.InvoicedOOP ? poItem.InvoicedOOP : 0);
         tempPOObj.scTax = 0;
         tempPOObj.isExsitPO = true;
         const tempObj: any = { Id: 0, poInfo: [], poInfoData: [] };
@@ -1609,8 +1609,15 @@ export class ManageFinanceComponent implements OnInit {
         });
       });
 
-      if(this.updateInvoices.length) {
-
+      if (this.updateInvoices && this.updateInvoices.length) {
+        this.updateInvoices.forEach(element => {
+          const invoicecreate = Object.assign({}, options);
+          invoicecreate.url = this.spServices.getReadURL(this.constant.listNames.Invoices.name, element.ID);
+          invoicecreate.data = element;
+          invoicecreate.type = 'POST';
+          invoicecreate.listName = this.constant.listNames.Invoices.name;
+          batchURL.push(invoicecreate);
+        });
       }
     }
 
@@ -1637,16 +1644,29 @@ export class ManageFinanceComponent implements OnInit {
   getProjectFinanceData(poArray, budgetArray, projObj) {
     let invoiceSc = 0;
     let scRevenue = 0;
+    let scOOP = 0;
     let invoice = 0;
     let invoiceRevenue = 0;
+    let invoiceOOP = 0;
     poArray.forEach((poInfoObj) => {
       poInfoObj.poInfoData.forEach(element => {
         if (element.status === this.constant.STATUS.APPROVED) {
-          invoice = element.amount;
-          invoiceRevenue = element.amount;
+          invoice = invoice + element.amount;
+          if(element.scheduleType === 'revenue') {
+            invoiceRevenue = invoiceRevenue + element.amount;
+          }
+          else {
+            invoiceOOP = invoiceOOP + element.amount;
+          }
+          
         } else if (element.status !== this.constant.STATUS.DELETED) {
-          invoiceSc = element.amount;
-          scRevenue = element.amount;
+          invoiceSc = invoiceSc +  element.amount;
+          if(element.scheduleType === 'revenue') {
+            scRevenue = scRevenue + element.amount;
+          }
+          else {
+            scOOP = scOOP + element.amount;
+          }
         }
 
       });
@@ -1661,9 +1681,11 @@ export class ManageFinanceComponent implements OnInit {
       data.RevenueBudget = 0;
       data.TaxBudget = 0;
       data.InvoicesScheduled = 0;
+      data.ScheduledOOP = 0;
       data.ScheduledRevenue = 0;
       data.Invoiced = 0;
       data.InvoicedRevenue = 0;
+      data.InvoicedOOP = 0;
 
     } else {
       data.Budget = budgetArray[0].total;
@@ -1672,8 +1694,10 @@ export class ManageFinanceComponent implements OnInit {
       data.TaxBudget = budgetArray[0].tax;
       data.InvoicesScheduled = invoiceSc;
       data.ScheduledRevenue = scRevenue;
+      data.ScheduledOOP = scOOP;
       data.Invoiced = invoice;
       data.InvoicedRevenue = invoiceRevenue;
+      data.InvoicedOOP = invoiceOOP;
     }
     return data;
   }
@@ -1690,15 +1714,28 @@ export class ManageFinanceComponent implements OnInit {
     };
     let totalScheduled = 0;
     let scRevenue = 0;
+    let scOOP = 0;
     let invoice = 0;
     let invoiceRevenue = 0;
+    let invoiceOOP = 0;
     poInfoObj.poInfoData.forEach(element => {
       if (element.status === this.constant.STATUS.APPROVED) {
-        invoice += element.amount;
-        invoiceRevenue += element.amount;
+        invoice = invoice + element.amount;
+        if(element.scheduleType === 'revenue') {
+          invoiceRevenue = invoiceRevenue + element.amount;
+        }
+        else {
+          invoiceOOP = invoiceOOP + element.amount;
+        }
+        
       } else if (element.status !== this.constant.STATUS.DELETED) {
-        totalScheduled += element.amount;
-        scRevenue += element.amount;
+        totalScheduled = totalScheduled +  element.amount;
+        if(element.scheduleType === 'revenue') {
+          scRevenue = scRevenue + element.amount;
+        }
+        else {
+          scOOP = scOOP + element.amount;
+        }
       }
 
     });
@@ -1712,8 +1749,10 @@ export class ManageFinanceComponent implements OnInit {
         data.AmountTax = 0;
         data.TotalScheduled = 0;
         data.ScheduledRevenue = 0;
+        data.ScheduledOOP = 0;
         data.TotalInvoiced = 0;
         data.InvoicedRevenue = 0;
+        data.InvoicedOOP = 0;
       } else {
         data.Amount = po.total;
         data.AmountRevenue = po.revenue;
@@ -1721,8 +1760,10 @@ export class ManageFinanceComponent implements OnInit {
         data.AmountTax = po.tax;
         data.TotalScheduled = totalScheduled;
         data.ScheduledRevenue = scRevenue;
+        data.ScheduledOOP = scOOP;
         data.TotalInvoiced = invoice;
         data.InvoicedRevenue = invoiceRevenue;
+        data.InvoicedOOP = invoiceOOP;
       }
       return data;
     } else {
@@ -1733,10 +1774,12 @@ export class ManageFinanceComponent implements OnInit {
         data.AmountRevenue = 0;
         data.AmountOOP = 0;
         data.AmountTax = 0;
-        data.TotalScheduled = 0;
-        data.ScheduledRevenue = 0;
-        data.TotalInvoiced = 0;
-        data.InvoicedRevenue = 0;
+        data.TotalScheduled = totalScheduled;
+        data.ScheduledRevenue = scRevenue;
+        data.ScheduledOOP = scOOP;
+        data.TotalInvoiced = invoice;
+        data.InvoicedRevenue = invoiceRevenue;
+        data.InvoicedOOP = invoiceOOP;
       } else {
         data.Amount = po.total;
         data.AmountRevenue = po.revenue;
@@ -1744,8 +1787,10 @@ export class ManageFinanceComponent implements OnInit {
         data.AmountTax = po.tax;
         data.TotalScheduled = totalScheduled;
         data.ScheduledRevenue = scRevenue;
+        data.ScheduledOOP = scOOP;
         data.TotalInvoiced = invoice;
         data.InvoicedRevenue = invoiceRevenue;
+        data.InvoicedOOP = invoiceOOP;
       }
       return data;
     }
@@ -1893,7 +1938,7 @@ export class ManageFinanceComponent implements OnInit {
           ScheduleType: element.type,
           MainPOC: element.poc,
           AddressType: element.address,
-          Template: this.existBudgetArray.retItems[0].Template,     //billingEntity && billingEntity.length ? billingEntity[0].InvoiceTemplate : '',
+          Template: this.existBudgetArray.retItems[0].Template,
           SOWCode: projObj.SOWCode,
           CSId: {
             results: CSIdArray
@@ -1902,7 +1947,15 @@ export class ManageFinanceComponent implements OnInit {
         if (element.status === this.constant.STATUS.APPROVED) {
           data.ProformaLookup = element.proformaLookup;
           data.InvoiceLookup = element.invoiceLookup;
-
+          const invoice = this.arrAdvanceInvoices.find(e => e.ID === element.invoiceLookup);
+          const tagAmount = invoice.TaggedAmount ? invoice.TaggedAmount + element.amount : element.amount;
+          const dataInv: any = {
+            __metadata: { type: this.constant.listNames.Invoices.type },
+            ID: invoice.ID,
+            TaggedAmount: tagAmount,
+            IsTaggedFully: invoice.Amount === tagAmount ? 'Yes' : 'No'
+          };
+          this.updateInvoices.push(dataInv);
         }
         return data;
       }

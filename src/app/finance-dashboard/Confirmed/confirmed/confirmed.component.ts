@@ -374,6 +374,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             } else {
                 this.po.oopBalance = 0;
             }
+            this.po.revenuBalance = parseFloat(this.po.revenuBalance.toFixed(2));
+            this.po.oopBalance = parseFloat(this.po.oopBalance.toFixed(2));
         }
         if (po) {
             for (let c = 0; c < this.confirmedILIarray.length; c++) {
