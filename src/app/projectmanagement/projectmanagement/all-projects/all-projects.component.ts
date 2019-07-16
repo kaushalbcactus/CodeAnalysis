@@ -71,7 +71,8 @@ export class AllProjectsComponent implements OnInit {
   public params = {
     ProjectCode: '',
     ActionStatus: '',
-    ProjectStatus: ''
+    ProjectStatus: '',
+    ProjectBudgetStatus: ''
   };
   newSelectedSOW;
   moveSOWObjectArray = [];
@@ -192,6 +193,7 @@ export class AllProjectsComponent implements OnInit {
       this.params.ProjectCode = this.route.snapshot.queryParams['ProjectCode'];
       this.params.ActionStatus = this.route.snapshot.queryParams['ActionStatus'];
       this.params.ProjectStatus = this.route.snapshot.queryParams['ProjectStatus'];
+      this.params.ProjectBudgetStatus = this.route.snapshot.queryParams['ProjectBudgetStatus'];
       const projectObj = this.pmObject.allProjectItems.filter(c => c.ProjectCode === this.params.ProjectCode);
       if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.APPROVED) {
         if (projectObj && projectObj.length) {
@@ -207,6 +209,16 @@ export class AllProjectsComponent implements OnInit {
         const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectInformation.name,
           projectObj.ID, piUdpate, this.constants.listNames.ProjectInformation.type);
       }
+
+      if(projectObj && projectObj.length && this.params.ProjectBudgetStatus === this.pmConstant.ACTION.APPROVED) {
+        if(this.pmObject.userRights.isMangers || projectObj.CMLevel2ID) {
+          
+        }
+      }
+      else if(projectObj && projectObj.length && this.params.ProjectBudgetStatus === this.pmConstant.ACTION.REJECTED) {
+
+      }
+
     } else {
       if (this.pmObject.tabMenuItems.length) {
         this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';
