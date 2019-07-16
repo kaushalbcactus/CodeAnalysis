@@ -20,7 +20,7 @@
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              "src/assets" 
+              "src/assets"
             ],
             "styles": [
               "src/styles.css",
@@ -62,7 +62,7 @@
                 }
               ]
             },
-            "production-dev" :{
+            "production-dev": {
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -80,9 +80,9 @@
               "buildOptimizer": true,
               "deployUrl": "https://cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Dev/SPA/"
             },
-            "qamydashboard" :{
+            "qamydashboard": {
               "optimization": true,
-              "outputHashing":"bundles",
+              "outputHashing": "bundles",
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
@@ -92,8 +92,8 @@
               "buildOptimizer": true,
               "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/MyDashboard/"
             },
-            "qamydashboarddev" :{
-              "outputHashing":"none",
+            "qamydashboarddev": {
+              "outputHashing": "none",
               "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/MyDashboardDev/"
             },
             "qaPM": {
@@ -107,6 +107,10 @@
               "vendorChunk": false,
               "buildOptimizer": true,
               "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/PM/"
+            },
+            "qaPMDev": {
+              "outputHashing": "none",
+              "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/PMDev/"
             },
             "qaFD": {
               "optimization": true,

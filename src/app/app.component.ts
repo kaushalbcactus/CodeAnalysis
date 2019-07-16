@@ -22,7 +22,7 @@ export class AppComponent {
       '/sites/medcomcdn/PublishingImages/Images' :
       '/sites/medcomcdn/PublishingImages/Images';
 
-    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 90 : _spPageContextInfo.userId;
+    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 112 : _spPageContextInfo.userId;
     this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
       : _spPageContextInfo.webAbsoluteUrl;
     this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
@@ -48,6 +48,8 @@ export class AppComponent {
   }
 
   goToPM() {
+    // tslint:disable-next-line:no-debugger
+    debugger;
     if (!this.router.url.includes('projectMgmt')) {
       this.router.navigate(['/projectMgmt']);
     }

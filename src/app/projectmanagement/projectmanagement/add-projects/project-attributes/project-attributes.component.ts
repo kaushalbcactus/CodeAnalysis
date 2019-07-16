@@ -314,10 +314,6 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.ConferenceJournal = this.addProjectAttributesForm.get('conference').value;
     this.pmObject.addProject.ProjectAttributes.Authors = this.addProjectAttributesForm.get('authors').value;
     this.pmObject.addProject.ProjectAttributes.Comments = this.addProjectAttributesForm.get('comments').value;
-    this.pmObject.addProject.ProjectAttributes.ActiveCM1 = this.addProjectAttributesForm.get('selectedActiveCM1').value;
-    this.pmObject.addProject.ProjectAttributes.ActiveCM2 = this.addProjectAttributesForm.get('selectedActiveCM2').value;
-    this.pmObject.addProject.ProjectAttributes.ActiveDelivery1 = this.addProjectAttributesForm.get('selectedActiveAD1').value;
-    this.pmObject.addProject.ProjectAttributes.ActiveDelivery2 = this.addProjectAttributesForm.get('selectedActiveAD2').value;
   }
   onBilledByChanged() {
     if (this.addProjectAttributesForm.get('billedBy').value === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
