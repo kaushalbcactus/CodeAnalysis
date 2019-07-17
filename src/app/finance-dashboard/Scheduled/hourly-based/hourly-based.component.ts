@@ -275,7 +275,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                         // ScheduledDate: this.datePipe.transform(element.ScheduledDate, 'MMM d, y, hh:mm a'),
                         PFID: data[pf][0].ID,
                         Currency: data[pf][0].Currency,
-                        Rate: data[pf][0].Budget,
+                        Rate: parseFloat(data[pf][0].Budget).toFixed(2),
                         HoursSpent: parseFloat(data[pf][0].HoursSpent.toFixed(2)),
                         BudgetHrs: data[pf][0].BudgetHrs,
                         Template: data[pf][0].Template,
@@ -393,7 +393,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         this.hourlyBasedColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; })));
         this.hourlyBasedColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; })));
 
-        const rate = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.Rate, value: a.Rate }; return b; }));
+        const rate = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: parseFloat(a.Rate), value: a.Rate }; return b; }));
         this.hourlyBasedColArray.Rate = this.fdDataShareServie.customSort(rate, 1, 'label');
         const hoursSpent = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.HoursSpent, value: a.HoursSpent }; return b; }));
         this.hourlyBasedColArray.HoursSpent = this.fdDataShareServie.customSort(hoursSpent, 1, 'label');

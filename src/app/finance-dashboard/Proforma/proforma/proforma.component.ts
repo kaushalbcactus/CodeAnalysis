@@ -308,7 +308,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             { field: 'Status', header: 'Status', visibility: true },
 
             { field: 'AddressType', header: 'AddressType', visibility: false },
-            { field: 'PO', header: 'PO Name', visibility: false },
+            { field: 'POName', header: 'PO Name', visibility: false },
             { field: 'MainPOC', header: 'MainPOC', visibility: false },
             { field: 'ClientLegalEntity', header: 'ClientLegalEntity', visibility: false },
             { field: 'AdditionalInfo', header: 'AdditionalInfo', visibility: false },
