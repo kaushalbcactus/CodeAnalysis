@@ -334,7 +334,9 @@ export class ConstantsService {
     NOTIFY_PM: 'NotifyPM',
     INVOICE_CONFIRM: 'ConfirmInvoice',
     CANCEL: 'Cancel',
-    APPROVED_PROJECT: 'ApproveProject'
+    APPROVED_PROJECT: 'ApproveProject',
+    BUDGET_REDUCTION: 'ApproveProjectBudget',
+    BUDGET_APPROVAL: 'OutcomeBudgetApproval'
   };
   public invoiceList = {
     status: {

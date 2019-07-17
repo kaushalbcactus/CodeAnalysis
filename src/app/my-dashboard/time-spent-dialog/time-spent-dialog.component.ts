@@ -62,7 +62,7 @@ export class TimeSpentDialogComponent implements OnInit {
 
       console.log('inside time');
       console.log(this.data);
-      
+
     }
 
   }
@@ -78,7 +78,7 @@ export class TimeSpentDialogComponent implements OnInit {
     this.getDatesForTimespent(this.data);
     this.SelectedTabType = this.data.tab;
     this.modalloaderenable = true;
-    
+
   }
 
 
@@ -105,44 +105,64 @@ export class TimeSpentDialogComponent implements OnInit {
     this.dateArray = [];
     var todayDate = new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
     var startDate = new Date(this.datePipe.transform(task.StartDate, 'MMM d, y'));
-       
-debugger;
-    if(this.currentTaskTimeSpent[0].TimeSpentPerDay)
-    {
+
+    debugger;
+    if (this.currentTaskTimeSpent[0].TimeSpentPerDay) {
       var timeSpentForTask = this.currentTaskTimeSpent[0].TimeSpentPerDay.split(/\n/);
 
-       if (timeSpentForTask.indexOf("") > -1) {
+      if (timeSpentForTask.indexOf("") > -1) {
         timeSpentForTask.splice(timeSpentForTask.indexOf(""), 1);
       }
 
-      startDate =  timeSpentForTask[0].split(':')[0] === timeSpentForTask[0] ? new Date( timeSpentForTask[0].split('#')[0]) : new Date(timeSpentForTask[0].split(':')[0].replace(/,/g, ", ")); 
+      startDate = timeSpentForTask[0].split(':')[0] === timeSpentForTask[0] ? new Date(timeSpentForTask[0].split('#')[0]) : new Date(timeSpentForTask[0].split(':')[0].replace(/,/g, ", "));
 
-      var endDate = this.SelectedTabType === 'MyCompletedTask' ?  new Date(this.datePipe.transform( new Date(new Date(task.Actual_x0020_End_x0020_Date).setDate(new Date(task.Actual_x0020_End_x0020_Date).getDate() + 1)),'MMM d, y')) : new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
+      var endDate = this.SelectedTabType === 'MyCompletedTask' ? new Date(this.datePipe.transform(new Date(new Date(task.Actual_x0020_End_x0020_Date)), 'MMM d, y')) : new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
 
-      var days = this.CalculateWorkingDays(startDate, endDate);
-      this.dateArray = this.CalculatePastBusinessDays(new Date(endDate), days).reverse();
+      endDate = task.Status ==="Auto Closed" ?  new Date(this.datePipe.transform(task.DueDate, 'MMM d, y'))  :endDate;
+
+      // var days = this.CalculateWorkingDays(startDate, endDate);
+      this.dateArray = await this.CalculatePastBusinessDays(new Date(startDate), new Date(endDate));
+      this.dateArray.reverse();
     }
-     else
-     {
-       if (startDate > todayDate) {
-         var endDate = new Date(todayDate.setDate(todayDate.getDate())) 
-         this.dateArray = this.CalculatePastBusinessDays(endDate, 3).reverse();
+    else {
+      debugger
+      if (startDate > todayDate) {
+
+        if (this.SelectedTabType === 'MyCompletedTask') {
+
+          endDate = task.Status ==="Auto Closed" ?  new Date(this.datePipe.transform(task.DueDate, 'MMM d, y'))  : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_End_x0020_Date), 'MMM d,y')));
+
+          startDate =  task.Status ==="Auto Closed" ?  new Date(this.datePipe.transform(task.StartDate, 'MMM d, y'))  : startDate;
         }
-      else {
-      var StartDate = startDate.getDay() === 6 ? new Date(startDate.setDate(startDate.getDate() - 1)) : startDate.getDay() === 0 ? new Date(startDate.setDate(startDate.getDate() - 2)) : new Date(startDate.setDate(startDate.getDate()))
-
-      if (this.SelectedTabType === 'MyCompletedTask') {
-        var days = this.CalculateWorkingDays(StartDate, new Date(this.datePipe.transform( new Date(new Date(task.Actual_x0020_End_x0020_Date).setDate(new Date(task.Actual_x0020_End_x0020_Date).getDate() + 1)) , 'MMM d,y')));
-
-        this.dateArray = this.CalculatePastBusinessDays(new Date( new Date(this.datePipe.transform( new Date(new Date(task.Actual_x0020_End_x0020_Date).setDate(new Date(task.Actual_x0020_End_x0020_Date).getDate() + 1)) , 'MMM d,y'))), days + 3).reverse();
+        else
+        {
+          startDate = await this.myDashboardConstantsService.CalculateminstartDateValue(todayDate, 3);
+          var endDate = new Date(todayDate.setDate(todayDate.getDate()))
+         
+        }
+        this.dateArray = await this.CalculatePastBusinessDays(startDate, endDate);
+        this.dateArray.reverse();
       }
       else {
-        var days = this.CalculateWorkingDays(StartDate, new Date(this.datePipe.transform(new Date(), 'MMM d,y')));
-        
-        this.dateArray = this.CalculatePastBusinessDays(new Date(), days + 3).reverse();
+        var StartDate = startDate.getDay() === 6 ? new Date(startDate.setDate(startDate.getDate() - 1)) : startDate.getDay() === 0 ? new Date(startDate.setDate(startDate.getDate() - 2)) : new Date(startDate.setDate(startDate.getDate()))
+
+        startDate = await this.myDashboardConstantsService.CalculateminstartDateValue(StartDate, 3);
+
+        if (this.SelectedTabType === 'MyCompletedTask') {
+
+          endDate = task.Status ==="Auto Closed" ?  new Date(this.datePipe.transform(task.DueDate, 'MMM d, y'))  : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_End_x0020_Date), 'MMM d,y')));
+
+          startDate =  task.Status ==="Auto Closed" ?  new Date(this.datePipe.transform(task.StartDate, 'MMM d, y'))  : startDate;
+
+          this.dateArray = await this.CalculatePastBusinessDays(startDate,endDate);
+          this.dateArray.reverse();
+        }
+        else {
+          this.dateArray = await this.CalculatePastBusinessDays(startDate, todayDate);
+          this.dateArray.reverse();
+        }
       }
     }
-  }
 
 
     if (this.currentTaskTimeSpent !== undefined) {
@@ -174,10 +194,9 @@ debugger;
     this.modalloaderenable = false;
   }
 
-  SetTime(time,timeObj)
-  {
-    
-    var  timespent =  time.split(':')[0] % 12 + ":" + time.split(':')[1] ;
+  SetTime(time, timeObj) {
+
+    var timespent = time.split(':')[0] % 12 + ":" + time.split(':')[1];
     timeObj.time = timespent;
   }
 
@@ -186,29 +205,26 @@ debugger;
   //  Calculate  pastworking  days for time spent
   // *************************************************************************************************************************************
 
-  CalculatePastBusinessDays(date, days) {
+  async CalculatePastBusinessDays(startDate, endDate) {
+  
     var businessDates = [];
-   
-    if (this.SelectedTabType !== 'MyCompletedTask') {
-      businessDates.push({ actualDate: new Date(), date: this.datePipe.transform(new Date(), 'EE, MMM d, y'), time: '00:00', edited: true });
-    }
-    const dayCount = days;
-    var tempDate = new Date(date);
-    while (days > 0) {
-
-      tempDate = new Date(tempDate.setDate(tempDate.getDate() - 1));
-      if (tempDate.getDay() !== 6 && tempDate.getDay() !== 0) {
-        days -= 1;
+    var enableEditDate = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3);
+    while (startDate <= endDate) {
+      if (endDate >= new Date( this.datePipe.transform(enableEditDate,'MMM d,y')) && endDate <= new Date()) {
+        businessDates.push({ actualDate: endDate, date: this.datePipe.transform(endDate, 'EE, MMM d, y'), time: '00:00', edited: true });
       }
-        if (dayCount - 3 <= days) {
-          businessDates.push({ actualDate: tempDate, date: this.datePipe.transform(tempDate, 'EE, MMM d, y'), time: '00:00', edited: true });
-        }
-        else {
-          businessDates.push({ actualDate: tempDate, date: this.datePipe.transform(tempDate, 'EE, MMM d, y'), time: '00:00', edited: false });
-        }
+      else {
+        businessDates.push({ actualDate: endDate, date: this.datePipe.transform(endDate, 'EE, MMM d, y'), time: '00:00', edited: false });
+      }
+      endDate = new Date(endDate.setDate(endDate.getDate() - 1));
     }
     return businessDates;
   }
+
+
+
+
+
 
   // *************************************************************************************************************************************
   //  Calculate  working days
@@ -285,7 +301,7 @@ debugger;
       ActualStartDate = task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date(ActualStartDate);
     }
 
-  
+
     var timeSpentString = dateArray.map(c => (c.date + ":" + c.time).replace(/ /g, '')).join('\n');
     var timeSpentHours = dateArray.map(c => c.time.split(":")).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
     var timeSpentMin = dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
