@@ -844,7 +844,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
             InvoiceTitle: this.selectedRowItem.ProformaTitle,
             TaggedAmount: this.addILIObj.TaggedAmount,
             IsTaggedFully: this.addILIObj.IsTaggedFully,
-            State: this.selectedRowItem.State
+            State: this.selectedRowItem.State,
+            ProformaLookup: this.selectedRowItem.Id
         }
         iObj['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
         const iEndpoint = this.fdConstantsService.fdComponent.addUpdateInvoice.create;
