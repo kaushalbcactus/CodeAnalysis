@@ -1964,12 +1964,12 @@ export class ManageFinanceComponent implements OnInit {
       if (poItem && poItem.length) {
         const data = {
           __metadata: { type: this.constant.listNames.PO.type },
-          TotalLinked: poItem[0].TotalLinked + element.Amount - (poExistItem ? poExistItem.TotalLinked : 0),
-          RevenueLinked: poItem[0].RevenueLinked + element.AmountRevenue - (poExistItem ? poExistItem.RevenueLinked : 0),
-          OOPLinked: poItem[0].OOPLinked + element.AmountOOP - (poExistItem ? poExistItem.OOPLinked : 0),
-          TaxLinked: poItem[0].TaxLinked + element.AmountTax - (poExistItem ? poExistItem.TaxLinked : 0),
-          TotalScheduled: poItem[0].TotalScheduled + element.TotalScheduled - (poExistItem ? poExistItem.TotalScheduled : 0),
-          ScheduledRevenue: poItem[0].ScheduledRevenue + element.ScheduledRevenue - (poExistItem ? poExistItem.ScheduledRevenue : 0),
+          TotalLinked: poItem[0].TotalLinked + element.Amount - (poExistItem ? poExistItem.Amount ? poExistItem.Amount : 0 : 0),
+          RevenueLinked: poItem[0].RevenueLinked + element.AmountRevenue - (poExistItem ? poExistItem.AmountRevenue ? poExistItem.AmountRevenue : 0  : 0),
+          OOPLinked: poItem[0].OOPLinked + element.AmountOOP - (poExistItem ? poExistItem.AmountOOP ? poExistItem.AmountOOP : 0  : 0),
+          TaxLinked: poItem[0].TaxLinked + element.AmountTax - (poExistItem ? poExistItem.AmountTax ? poExistItem.AmountTax : 0  : 0),
+          TotalScheduled: poItem[0].TotalScheduled + element.TotalScheduled - (poExistItem ? poExistItem.TotalScheduled ? poExistItem.TotalScheduled : 0 : 0),
+          ScheduledRevenue: poItem[0].ScheduledRevenue + element.ScheduledRevenue - (poExistItem ? poExistItem.ScheduledRevenue ? poExistItem.ScheduledRevenue : 0 : 0),
           ID: element.POLookup
         };
         porray.push(data);
