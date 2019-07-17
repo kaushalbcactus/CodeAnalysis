@@ -240,6 +240,7 @@ export class NonStandardprojectComponent implements OnInit {
     this.isStandardResourceNameDisabled = true;
     $('#standardTimeline').attr("disabled", 'true');
     $('#nonStandardTimeline').attr("disabled", 'true');
+    $('#nonstandardTimelineConfirm').attr("disabled", 'true');
   }
   setFieldProperties() {
     if (this.pmObject.addProject.Timeline.NonStandard.IsStandard) {

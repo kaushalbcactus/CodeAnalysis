@@ -109,7 +109,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.cleInfo();
         this.usStatesInfo();
         this.currencyInfo();
-
+        this.resourceCInfo();
         this.createOutstandingInvoiceCols();
         // this.getOutstandingData();
 
@@ -123,7 +123,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.getRequiredData();
     }
 
-    
+
     // Purchase Order Number
     purchaseOrdersList: any = [];
     poInfo() {
@@ -179,6 +179,17 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             if (res) {
                 this.cleData = res;
                 console.log('CLE Data ', this.cleData);
+            }
+        }))
+    }
+
+    // Resource Categorization
+    rcData: any = [];
+    resourceCInfo() {
+        this.subscription.add(this.fdDataShareServie.defaultRCData.subscribe((res) => {
+            if (res) {
+                this.rcData = res;
+                console.log('Resource Categorization ', this.rcData);
             }
         }))
     }
@@ -278,7 +289,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             { field: 'Amount', header: 'Amount', visibility: true },
             { field: 'Currency', header: 'Currency', visibility: true },
             { field: 'POC', header: 'POC', visibility: true },
-
+            { field: 'ModifiedBy', header: 'Modified By', visibility: true },
             { field: 'PONNumber', header: 'PO Number', visibility: false },
             { field: 'PaymentURL', header: 'Payment URL', visibility: false },
             { field: 'MainPOC', header: 'Main POC', visibility: false },
@@ -370,6 +381,11 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             }
             let POValues = ponn;
 
+            let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
+            if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
+                resCInfo = resCInfo.UserName.Title
+            }
+
             this.paidInvoicesRes.push({
                 Id: element.ID,
                 InvoiceStatus: element.Status,
@@ -403,7 +419,8 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
                 IsTaggedFully: element.IsTaggedFully,
                 Modified: element.Modified,
                 AdditionalPOC: element.AdditionalPOC,
-                Created: element.Created
+                Created: element.Created,
+                ModifiedBy: resCInfo
             })
         }
         this.paidInvoicesRes = [...this.paidInvoicesRes];
@@ -479,18 +496,22 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         Amount: [],
         POC: [],
         Currency: [],
+        ModifiedBy: []
     }
 
     createColFieldValues() {
         this.outInvoiceColArray.InvoiceStatus = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }));
-        this.outInvoiceColArray.InvoiceNumber = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }));
-        // this.outInvoiceColArray.PONumber = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
-        this.outInvoiceColArray.POValues = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }));
-        this.outInvoiceColArray.ClientLegalEntity = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
-        this.outInvoiceColArray.InvoiceDate = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: this.datePipe.transform(a.InvoiceDate, "MMM dd, yyyy"), value: a.InvoiceDate }; return b; }));
-        this.outInvoiceColArray.Amount = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
-        this.outInvoiceColArray.Currency = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
-        this.outInvoiceColArray.POC = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.POC, value: a.POC }; return b; }));
+        this.outInvoiceColArray.InvoiceNumber = this.commonService.sortData(this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; })));
+        // this.outInvoiceColArray.PONumber this.commonService.sortData(= this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; })));
+        this.outInvoiceColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; })));
+        this.outInvoiceColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; })));
+        const invoiceDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: this.datePipe.transform(a.InvoiceDate, "MMM dd, yyyy"), value: a.InvoiceDate }; return b; })));
+        this.outInvoiceColArray.ModifiedBy = this.commonService.sortData(this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; })));
+        this.outInvoiceColArray.InvoiceDate = invoiceDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; });
+        const amount = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
+        this.outInvoiceColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
+        this.outInvoiceColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; })));
+        this.outInvoiceColArray.POC = this.commonService.sortData(this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.POC, value: a.POC }; return b; })));
     }
 
     uniqueArrayObj(array: any) {

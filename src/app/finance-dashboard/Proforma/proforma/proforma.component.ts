@@ -308,7 +308,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             { field: 'Status', header: 'Status', visibility: true },
 
             { field: 'AddressType', header: 'AddressType', visibility: false },
-            { field: 'PO', header: 'PO Name', visibility: false },
+            { field: 'POName', header: 'PO Name', visibility: false },
             { field: 'MainPOC', header: 'MainPOC', visibility: false },
             { field: 'ClientLegalEntity', header: 'ClientLegalEntity', visibility: false },
             { field: 'AdditionalInfo', header: 'AdditionalInfo', visibility: false },
@@ -436,14 +436,16 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
 
     createColFieldValues() {
-        this.proformaColArray.ProformaNumber = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }));
-        this.proformaColArray.PONumber = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
-        this.proformaColArray.ProformaDate = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: this.datePipe.transform(a.ProformaDate, "MMM dd, yyyy"), value: a.ProformaDate }; return b; }));
-        this.proformaColArray.ProformaType = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.ProformaType, value: a.ProformaType }; return b; }));
-        this.proformaColArray.Status = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; }));
-        this.proformaColArray.Amount = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
-        this.proformaColArray.Currency = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
-        this.proformaColArray.POC = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.POC, value: a.POC }; return b; }));
+        this.proformaColArray.ProformaNumber = this.commonService.sortData(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; })));
+        this.proformaColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; })));
+        const proformaDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: this.datePipe.transform(a.ProformaDate, "MMM dd, yyyy"), value: a.ProformaDate }; return b; })));
+        this.proformaColArray.ProformaDate = proformaDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; });
+        this.proformaColArray.ProformaType = this.commonService.sortData(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.ProformaType, value: a.ProformaType }; return b; })));
+        this.proformaColArray.Status = this.commonService.sortData(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
+        const amount = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
+        this.proformaColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label')
+        this.proformaColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; })));
+        this.proformaColArray.POC = this.commonService.sortData(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.POC, value: a.POC }; return b; })));
     }
 
     uniqueArrayObj(array: any) {

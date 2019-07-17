@@ -353,26 +353,26 @@ export class FDDataShareService {
         // if (this.clePoPiRes.length) {
         //     return this.clePoPiRes;
         // } else {
-            const batchContents = new Array();
-            const batchGuid = this.spServices.generateUUID();
-            const clientLegalEntityEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
-            const projectPO = this.spServices.getReadURL('' + this.constantService.listNames.ProjectPO.name + '', this.fdConstantsService.fdComponent.projectPO);
-            let endPoints = [clientLegalEntityEndpoint, projectPO];
-            if (type === 'hourly') {
-                const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
-                endPoints = [clientLegalEntityEndpoint, projectPO, projectInfoEndpoint];
-            }
-            let userBatchBody;
-            for (let i = 0; i < endPoints.length; i++) {
-                const element = endPoints[i];
-                this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-            }
-            batchContents.push('--batch_' + batchGuid + '--');
-            userBatchBody = batchContents.join('\r\n');
+        const batchContents = new Array();
+        const batchGuid = this.spServices.generateUUID();
+        const clientLegalEntityEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
+        const projectPO = this.spServices.getReadURL('' + this.constantService.listNames.ProjectPO.name + '', this.fdConstantsService.fdComponent.projectPO);
+        let endPoints = [clientLegalEntityEndpoint, projectPO];
+        if (type === 'hourly') {
+            const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
+            endPoints = [clientLegalEntityEndpoint, projectPO, projectInfoEndpoint];
+        }
+        let userBatchBody;
+        for (let i = 0; i < endPoints.length; i++) {
+            const element = endPoints[i];
+            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        }
+        batchContents.push('--batch_' + batchGuid + '--');
+        userBatchBody = batchContents.join('\r\n');
 
-            const arrResults = await this.spServices.getFDData(batchGuid, userBatchBody);
-            // this.clePoPiRes = arrResults;
-            this.setClePOData(arrResults);
+        const arrResults = await this.spServices.getFDData(batchGuid, userBatchBody);
+        // this.clePoPiRes = arrResults;
+        this.setClePOData(arrResults);
         // }
     }
 
@@ -540,6 +540,25 @@ export class FDDataShareService {
         }
 
         return objReturn;
+    }
+
+    customSort(data, order: number, fieldName?: string) {
+        data.sort((row1, row2) => {
+            const val1 = fieldName ? row1[fieldName] : row1;
+            const val2 = fieldName ? row2[fieldName] : row2;
+            if (val1 === val2) {
+                return 0;
+            }
+            let result = -1;
+            if (val1 > val2) {
+                result = 1;
+            }
+            if (order < 0) {
+                result = -result;
+            }
+            return result;
+        });
+        return data;
     }
 
 
