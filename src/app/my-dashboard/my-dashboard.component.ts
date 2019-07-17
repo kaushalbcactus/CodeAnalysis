@@ -43,7 +43,7 @@ export class MyDashboardComponent implements OnInit {
       { label: 'My Timeline', routerLink: ['my-timeline'] },
       { label: 'My Projects', routerLink: ['my-projects'] },
       { label: 'My SOW', routerLink: ['my-sow'] },
-      { label: 'My Completed Task', routerLink: ['my-completed-tasks'] },
+      { label: 'My Completed Tasks', routerLink: ['my-completed-tasks'] },
       { label: 'Search Projects', routerLink: ['search-projects'] }
     ];
 

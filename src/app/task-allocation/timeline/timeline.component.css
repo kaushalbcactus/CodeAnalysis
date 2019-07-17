@@ -39,17 +39,25 @@
 
 
 
-.VisualRepresentation, .gstartdate div , .gcharttableh
+.VisualRepresentation, .VisualRepresentationpopup .gstartdate div , .gcharttableh
 {
     width:100%;
+}
+
+.VisualRepresentation > ng-gantt > div> .gchartcontainer > .gmainright
+{
+  width: 700px !important;
+}
+
+.VisualRepresentationpopup > ng-gantt > div> .gchartcontainer > .gmainright
+{
+  width: 725px !important;
 }
 
 .gmainleft {
   width: 570px !important;
 }
-.gmainright {
-  width: 890px !important;
-}
+
 
 .gstartdate div,
 .gplanstartdate,

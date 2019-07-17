@@ -285,7 +285,7 @@
     <!-- **********************************************************************************************************
                                                          gantt chart Data
            ********************************************************************************************************** -->
-    <div fxLayout="row" fxLayoutAlign=" start center" class="VisualRepresentation" [hidden]="visualgraph === false">
+    <div fxLayout="row" fxLayoutAlign=" start center" [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'"  [hidden]="visualgraph === false">
       <ng-gantt style="width:100%;" [options]="editorOptions" [data]="GanttchartData" #gantteditor></ng-gantt>
     </div>
 
