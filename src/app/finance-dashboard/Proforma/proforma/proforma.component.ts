@@ -699,7 +699,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (arrResults.length) {
             console.log(arrResults[0]);
             this.iliByPidRes = arrResults[0] ? arrResults[0] : [];
-            if (this.iliByPidRes) {
+            if (this.iliByPidRes.length) {
                 this.addILIObj = {
                     TaggedAmount: this.selectedRowItem.Amount,
                     IsTaggedFully: 'Yes'
@@ -877,22 +877,21 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (this.selectedRowItem) {
             proformaType = this.selectedRowItem.ProformaType;
             // tslint:disable
-            // InvoicedRevenue: (poItem.InvoicedRevenue ? poItem.InvoicedRevenue : 0 + this.selectedRowItem.Amount),
             this.selectedRowItem.Amount = parseFloat(this.selectedRowItem.Amount.toFixed(2));
             if (proformaType === 'revenue') {
-                poObj = {
-                    InvoicedRevenue: (poItem.InvoicedRevenue ? parseFloat(poItem.InvoicedRevenue.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
-                    ScheduledRevenue: (poItem.ScheduledRevenue ? parseFloat(poItem.ScheduledRevenue.toFixed(2))  - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount),
-                    TotalInvoiced: (poItem.TotalInvoiced ? parseFloat(poItem.TotalInvoiced.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
-                    TotalScheduled: (poItem.TotalScheduled ? parseFloat(poItem.TotalScheduled.toFixed(2)) - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount),
-                };
+                if (this.addILIObj.IsTaggedFully === 'Yes') {
+                    poObj.ScheduledRevenue = (poItem.ScheduledRevenue ? parseFloat(poItem.ScheduledRevenue.toFixed(2)) - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount);
+                    poObj.TotalScheduled = (poItem.TotalScheduled ? parseFloat(poItem.TotalScheduled.toFixed(2)) - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount);
+                }
+                poObj.InvoicedRevenue = (poItem.InvoicedRevenue ? parseFloat(poItem.InvoicedRevenue.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount);
+                poObj.TotalInvoiced = (poItem.TotalInvoiced ? parseFloat(poItem.TotalInvoiced.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount);
             } else if (proformaType === 'oop') {
-                poObj = {
-                    ScheduledOOP: (poItem.ScheduledOOP ?  parseFloat(poItem.ScheduledOOP.toFixed(2)) - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount),
-                    InvoicedOOP: (poItem.InvoicedOOP ? parseFloat(poItem.InvoicedOOP.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
-                    TotalInvoiced: (poItem.TotalInvoiced ? parseFloat(poItem.TotalInvoiced.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
-                    TotalScheduled: (poItem.TotalScheduled ? parseFloat(poItem.TotalScheduled.toFixed(2)) - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount),
-                };
+                if (this.addILIObj.IsTaggedFully === 'Yes') {
+                    poObj.ScheduledOOP = (poItem.ScheduledOOP ? parseFloat(poItem.ScheduledOOP.toFixed(2)) - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount);
+                    poObj.TotalScheduled = (poItem.TotalScheduled ? parseFloat(poItem.TotalScheduled.toFixed(2)) - this.selectedRowItem.Amount : 0 - this.selectedRowItem.Amount);
+                }
+                poObj.InvoicedOOP = (poItem.InvoicedOOP ? parseFloat(poItem.InvoicedOOP.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount);
+                poObj.TotalInvoiced = (poItem.TotalInvoiced ? parseFloat(poItem.TotalInvoiced.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount);
             }
             // tslint:disable
         }
