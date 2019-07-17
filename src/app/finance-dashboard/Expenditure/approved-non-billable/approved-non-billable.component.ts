@@ -313,19 +313,25 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
 
     createColFieldValues() {
 
-        this.anonBillableColArray.ProjectCode = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }));
-        this.anonBillableColArray.Category = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Category, value: a.Category }; return b; }));
-        this.anonBillableColArray.ExpenseType = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }));
-        this.anonBillableColArray.ClientAmount = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ClientAmount, value: a.ClientAmount }; return b; }));
-        this.anonBillableColArray.ClientCurrency = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }));
+        this.anonBillableColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; })));
+        this.anonBillableColArray.Category = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Category, value: a.Category }; return b; })));
+        this.anonBillableColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; })));
+        const clientAmount = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }));
+        this.anonBillableColArray.ClientAmount = this.fdDataShareServie.customSort(clientAmount, 1, 'label');
+        this.anonBillableColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; })));
 
-        this.anonBillableColArray.PaymentMode = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.PaymentMode, value: a.PaymentMode }; return b; }));
-        this.anonBillableColArray.PayingEntity = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.PayingEntity, value: a.PayingEntity }; return b; }));
-        this.anonBillableColArray.Status = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; }));
+        this.anonBillableColArray.PaymentMode = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.PaymentMode, value: a.PaymentMode }; return b; })));
+        this.anonBillableColArray.PayingEntity = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.PayingEntity, value: a.PayingEntity }; return b; })));
+        this.anonBillableColArray.Status = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
 
-        this.anonBillableColArray.Number = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Number, value: a.Number }; return b; }));
+        this.anonBillableColArray.Number = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Number, value: a.Number }; return b; })));
+        
         this.anonBillableColArray.PaymentDate = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }));
-        this.anonBillableColArray.Modified = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b; }));
+
+        const modified = this.commonService.sortDateArray(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b; })));
+        this.anonBillableColArray.Modified = modified.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; });
+
+
         this.anonBillableColArray.Created = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Created, value: a.Created }; return b; }));
 
         // this.anonBillableColArray.SOWCode = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }));

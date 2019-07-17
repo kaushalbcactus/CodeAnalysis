@@ -382,7 +382,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 Category: element.Category,
                 PONumber: element.PONumber,
                 ExpenseType: element.SpendType,
-                ClientAmount: parseFloat(element.ClientAmount).toFixed(2),
+                ClientAmount: parseFloat(element.ClientAmount ? element.ClientAmount : 0).toFixed(2),
                 ClientCurrency: element.ClientCurrency,
                 Created: new Date(this.datePipe.transform(element.Created, 'MMM dd, yyyy')),
                 CreatedDateFormat: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
@@ -474,19 +474,41 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     createColFieldValues() {
 
-        this.pendinExpenseColArray.VendorName = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }));
-        this.pendinExpenseColArray.RequestType = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.RequestType, value: a.RequestType }; return b; }));
-        this.pendinExpenseColArray.ProjectCode = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }));
-        this.pendinExpenseColArray.ClientLegalEntity = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
-        this.pendinExpenseColArray.SOWCode = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }));
-        this.pendinExpenseColArray.Category = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.Category, value: a.Category }; return b; }));
-        this.pendinExpenseColArray.ExpenseType = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }));
-        this.pendinExpenseColArray.ClientAmount = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ClientAmount, value: a.ClientAmount }; return b; }));
-        this.pendinExpenseColArray.ClientCurrency = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }));
-        this.pendinExpenseColArray.Created = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: this.datePipe.transform(a.Created, 'MMM dd, yyyy'), value: a.Created }; return b; }));
-        this.pendinExpenseColArray.CreatedBy = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }));
+        this.pendinExpenseColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; })));
+        this.pendinExpenseColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; })));
+        this.pendinExpenseColArray.RequestType = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.RequestType, value: a.RequestType }; return b; })));
+        this.pendinExpenseColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; })));
+        this.pendinExpenseColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; })));
+        this.pendinExpenseColArray.Category = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.Category, value: a.Category }; return b; })));
+        this.pendinExpenseColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; })));
+        const ClientAmount = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }));
+        this.pendinExpenseColArray.ClientAmount = this.fdDataShareServie.customSort(ClientAmount, 1, 'label');
+        this.pendinExpenseColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; })));
+        const Created = this.commonService.sortDateArray(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: this.datePipe.transform(a.Created, 'MMM dd, yyyy'), value: a.Created }; return b; })));
+        this.pendinExpenseColArray.Created = Created.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; });
+        this.pendinExpenseColArray.CreatedBy = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; })));
         this.pendinExpenseColArray.ModifiedBy = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }));
         this.pendinExpenseColArray.ModifiedDate = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b; }));
+    }
+
+    // MyData.sort(dynamicSort("name"));
+
+
+    dynamicSort(property) {
+        var sortOrder = 1;
+
+        if (property[0] === "-") {
+            sortOrder = -1;
+            property = property.substr(1);
+        }
+
+        return function (a, b) {
+            if (sortOrder == -1) {
+                return b[property].localeCompare(a[property]);
+            } else {
+                return a[property].localeCompare(b[property]);
+            }
+        }
     }
 
     uniqueArrayObj(array: any) {

@@ -384,17 +384,21 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     }
 
     createColFieldValues() {
-        this.hourlyBasedColArray.ProjectCode = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }));
-        this.hourlyBasedColArray.SOWCode = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }));
-        this.hourlyBasedColArray.ProjectMileStone = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }));
-        this.hourlyBasedColArray.ClientLegalEntity = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
-        this.hourlyBasedColArray.PONumber = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
-        this.hourlyBasedColArray.POName = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; }));
-        this.hourlyBasedColArray.Rate = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.Rate, value: a.Rate }; return b; }));
-        this.hourlyBasedColArray.HoursSpent = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.HoursSpent, value: a.HoursSpent }; return b; }));
-        this.hourlyBasedColArray.Currency = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
-        this.hourlyBasedColArray.POCName = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }));
-        this.hourlyBasedColArray.TotalInvoice = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.TotalInvoice, value: a.TotalInvoice }; return b; }));
+        this.hourlyBasedColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; })));
+        this.hourlyBasedColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; })));
+        this.hourlyBasedColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; })));
+        this.hourlyBasedColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; })));
+        this.hourlyBasedColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; })));
+        this.hourlyBasedColArray.POName = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; })));
+        this.hourlyBasedColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; })));
+        this.hourlyBasedColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; })));
+
+        const rate = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.Rate, value: a.Rate }; return b; }));
+        this.hourlyBasedColArray.Rate = this.fdDataShareServie.customSort(rate, 1, 'label');
+        const hoursSpent = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.HoursSpent, value: a.HoursSpent }; return b; }));
+        this.hourlyBasedColArray.HoursSpent = this.fdDataShareServie.customSort(hoursSpent, 1, 'label');
+        const totalInvoice = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.TotalInvoice, value: a.TotalInvoice }; return b; }));
+        this.hourlyBasedColArray.TotalInvoice = this.fdDataShareServie.customSort(totalInvoice, 1, 'label');
     }
 
     uniqueArrayObj(array: any) {
@@ -628,7 +632,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
     getSOWObj(sow: any) {
         this.sowObj.availableSOWBudget = parseFloat(sow.NetBudget ? sow.NetBudget : 0) - parseFloat(sow.RevenueLinked ? sow.RevenueLinked : 0);
-        this.sowData.TotalLinked  = sow.TotalLinked ? sow.TotalLinked : 0;
+        this.sowData.TotalLinked = sow.TotalLinked ? sow.TotalLinked : 0;
         this.sowData.ScheduledRevenue = sow.ScheduledRevenue ? sow.ScheduledRevenue : 0;
         this.sowData.TotalScheduled = sow.TotalScheduled = sow.TotalScheduled ? sow.TotalScheduled : 0;
         this.sowData.RevenueLinked = sow.RevenueLinked ? sow.RevenueLinked : 0;

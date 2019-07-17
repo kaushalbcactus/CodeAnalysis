@@ -3,22 +3,84 @@
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 
-<div class="p-grid">
+<div class="ui-g">
+    <div class="ui-g-6">
+        Select PO &nbsp;
+        <p-dropdown resetFilterOnHide="true" [options]="purchaseOrders" [(ngModel)]="selectedPurchaseNumber"
+            filter="true" placeholder="Select PO" optionLabel="Number" [showClear]="true" (onChange)="onChange($event)">
+            <ng-template let-item pTemplate="selectedItem">
+                <span style="vertical-align:middle">{{item.label}}
+                    {{item.value.Name ? ' -- '+ item.value.Name:'' }}
+                </span>
+            </ng-template>
+            <ng-template let-item pTemplate="item">
+                <div class="ui-helper-clearfix" style="position: relative;">
+                    <div style="font-size:14px;float: left;margin-top:4px;width: 300px;line-height: 20px;">
+                        {{item.label}} {{item.value.Name ? ' -- '+ item.value.Name:'' }}
+                    </div>
+                </div>
+            </ng-template>
+        </p-dropdown>
+    </div>
+    <div class="ui-g-6 f-right">
+        <div style="display: -webkit-inline-box;">
+            <div class="box" style="margin-right: 20px;">
+                <button type="button" pButton icon="fa fa-plus-circle" iconPos="left" label="Add to Proforma"
+                    (click)="addProforma()"></button>
+            </div>
+            <div class="box">
+                <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(cnf)"
+                    title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+            </div>
+        </div>
+
+    </div>
+    <!-- <div class="ui-g-3">
+        <div class="box">
+            <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(cnf)"
+                title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+        </div>
+    </div> -->
+</div>
+
+<div class="ui-g">
+    <div class="ui-g-3">
+        Revenue Balance : &nbsp; <label style="margin: 0 8px;">{{po.revenuBalance}}</label>
+    </div>
+    <div class="ui-g-3">
+        OOP Balance : &nbsp; <label style="margin: 0 8px;">{{po.oopBalance}}</label>
+    </div>
+    <div class="ui-g-3">
+        # Item : &nbsp; <label *ngIf="selectedAllRowData"
+            style="color:red;margin: 0 8px;">{{selectedAllRowData.length}}</label>
+    </div>
+    <div class="ui-g-3">
+        Total Amount : &nbsp;
+        <label *ngIf="selectedAllRowData" style="color:red;margin: 0 8px;">{{selectedTotalAmt}}</label>
+    </div>
+</div>
+
+
+<!-- <div class="p-grid">
     <div class="p-col-12 p-md-12 p-lg-12">
         <div class="inner-detail">
             <div class="p-col-8 p-md-8 p-lg-8 p-0">
                 <div class="inner-box">
                     <div class="box">
                         Select PO &nbsp;
-                        <p-dropdown resetFilterOnHide="true"[options]="purchaseOrders" [(ngModel)]="selectedPurchaseNumber" filter="true"
-                            placeholder="Select PO" optionLabel="Number" [showClear]="true"
-                            (onChange)="onChange($event)">
-                            <ng-template let-car pTemplate="item">
+                        <p-dropdown resetFilterOnHide="true" [options]="purchaseOrders"
+                            [(ngModel)]="selectedPurchaseNumber" filter="true" placeholder="Select PO"
+                            optionLabel="Number" [showClear]="true" (onChange)="onChange($event)">
+                            <ng-template let-item pTemplate="selectedItem">
+                                <span style="vertical-align:middle">{{item.label}}
+                                    {{item.value.Name ? ' -- '+ item.value.Name:'' }}
+                                </span>
+                            </ng-template>
+                            <ng-template let-item pTemplate="item">
                                 <div class="ui-helper-clearfix" style="position: relative;">
                                     <div
                                         style="font-size:14px;float: left;margin-top:4px;width: 300px;line-height: 20px;">
-                                        {{car.label}}
-                                        {{car.value.Name ? ' -- '+ car.value.Name:'' }}
+                                        {{item.label}} {{item.value.Name ? ' -- '+ item.value.Name:'' }}
                                     </div>
                                 </div>
                             </ng-template>
@@ -42,7 +104,6 @@
                         # Item : &nbsp;
                         <label *ngIf="selectedAllRowData"
                             style="color:red;margin: 0 8px;">{{selectedAllRowData.length}}</label>
-                        <!-- <label *ngIf="!selectedAllRowData">{{selectedRowItemData.length}}</label> -->
                         Total Amount : &nbsp;
                         <label *ngIf="selectedAllRowData" style="color:red;margin: 0 8px;">{{selectedTotalAmt}}</label>
                     </div>
@@ -55,8 +116,6 @@
                             (click)="addProforma()"></button>
                     </div>
                     <div class="box">
-                        <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(cnf)"
-                            style="float:left;margin: 0 8px;"></button> -->
                         <i style="font-size: 1.8em;cursor: pointer;"
                             (click)=" fdDataShareServie.convertToExcelFile(cnf)" title="Export To Excel"
                             class="fa fa-fw fa-file-excel-o"></i>
@@ -65,7 +124,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 <!-- <button (click)="checkSelectedRowData()">Check Data</button> -->
 <div class="financeTable">
     <p-table #cnf [columns]="confirmCols" [value]="confirmedRes" [paginator]="false" [resizableColumns]="true"
@@ -90,47 +149,61 @@
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                     <ng-container *ngIf="col.field">
                 <td></td>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProjectCode'" [options]="confirmedInColArray.ProjectCode"
-                    defaultLabel="All"  (onChange)="cnf.filter($event.value, col.field, 'in')">
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'ProjectCode'" [options]="confirmedInColArray.ProjectCode" defaultLabel="All"
+                    (onChange)="cnf.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'SOWValue'" [options]="confirmedInColArray.SOWCode" defaultLabel="All"
-                     (onChange)="cnf.filter($event.value, col.field, 'in')">
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'SOWValue'" [options]="confirmedInColArray.SOWCode" defaultLabel="All"
+                    (onChange)="cnf.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientLegalEntity'" [options]="confirmedInColArray.ClientLegalEntity"
-                    defaultLabel="All"  (onChange)="cnf.filter($event.value, col.field, 'in')">
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'ClientLegalEntity'" [options]="confirmedInColArray.ClientLegalEntity"
+                    defaultLabel="All" (onChange)="cnf.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProjectMileStone'" [options]="confirmedInColArray.ProjectMileStone"
-                    defaultLabel="All"  (onChange)="cnf.filter($event.value, col.field, 'in')">
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'ProjectMileStone'" [options]="confirmedInColArray.ProjectMileStone"
+                    defaultLabel="All" (onChange)="cnf.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'POName'" [options]="confirmedInColArray.POName" defaultLabel="All"
-                     (onChange)="cnf.filter($event.value, col.field, 'in')">
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'POName'" [options]="confirmedInColArray.POName" defaultLabel="All"
+                    (onChange)="cnf.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientName'" [options]="confirmedInColArray.ClientName"
-                    defaultLabel="All"  (onChange)="cnf.filter($event.value, col.field, 'in')">
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'ClientName'" [options]="confirmedInColArray.ClientName" defaultLabel="All"
+                    (onChange)="cnf.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientAmount'" [options]="confirmedInColArray.ClientAmount"
-                    defaultLabel="All"  (onChange)="cnf.filter($event.value, col.field, 'in')">
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'ClientAmount'" [options]="confirmedInColArray.ClientAmount" defaultLabel="All"
+                    (onChange)="cnf.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientCurrency'" [options]="confirmedInColArray.ClientCurrency"
-                    defaultLabel="All"  (onChange)="cnf.filter($event.value, col.field, 'in')">
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'ClientCurrency'" [options]="confirmedInColArray.ClientCurrency" defaultLabel="All"
+                    (onChange)="cnf.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ScheduledDate'" [options]="confirmedInColArray.ScheduledDate"
-                    defaultLabel="All"  (onChange)="cnf.filter($event.value, col.field, 'in')">
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'ScheduledDate'" [options]="confirmedInColArray.ScheduledDate" defaultLabel="All"
+                    (onChange)="cnf.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ScheduleType'" [options]="confirmedInColArray.ScheduleType"
-                    defaultLabel="All"  (onChange)="cnf.filter($event.value, col.field, 'in')">
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'ScheduleType'" [options]="confirmedInColArray.ScheduleType" defaultLabel="All"
+                    (onChange)="cnf.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'POC'" [options]="confirmedInColArray.POC" defaultLabel="All"
-                     (onChange)="cnf.filter($event.value, col.field, 'in')">
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'POC'"
+                    [options]="confirmedInColArray.POC" defaultLabel="All"
+                    (onChange)="cnf.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Amount'" [options]="confirmedInColArray.Amount" defaultLabel="All"
-                     (onChange)="cnf.filter($event.value, col.field, 'in')">
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'Amount'" [options]="confirmedInColArray.Amount" defaultLabel="All"
+                    (onChange)="cnf.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Currency'" [options]="confirmedInColArray.Currency" defaultLabel="All"
-                     (onChange)="cnf.filter($event.value, col.field, 'in')">
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'Currency'" [options]="confirmedInColArray.Currency" defaultLabel="All"
+                    (onChange)="cnf.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
-                <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'POCName'" [options]="confirmedInColArray.POCName" defaultLabel="All"
-                     (onChange)="cnf.filter($event.value, col.field, 'in')">
+                <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                    *ngSwitchCase="'POCName'" [options]="confirmedInColArray.POCName" defaultLabel="All"
+                    (onChange)="cnf.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
 
                 </ng-container>
@@ -153,12 +226,12 @@
                         <p>{{rowData[col.field] | date:'MMM dd, yyyy' }}</p>
                     </ng-container>
                     <ng-container *ngIf="col.field == ''">
-                            <div>
-                                <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu">
-                                </p-menu>
-                                <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                                    (click)="popupMenu.toggle($event);openPopup(rowData, popupMenu)"></i>
-                            </div>
+                        <div>
+                            <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu">
+                            </p-menu>
+                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                                (click)="popupMenu.toggle($event);openPopup(rowData, popupMenu)"></i>
+                        </div>
                     </ng-container>
                 </td>
             </tr>
@@ -315,9 +388,9 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-dropdown resetFilterOnHide="true"[options]="listOfPOCNames" formControlName="POCName" placeholder="Select POC Name"
-                        [filter]="true" optionLabel="FullName" (onChange)="pocChange($event)"
-                        [style]="{width: '215px'}">
+                    <p-dropdown resetFilterOnHide="true" [options]="listOfPOCNames" formControlName="POCName"
+                        placeholder="Select POC Name" [filter]="true" optionLabel="FullName"
+                        (onChange)="pocChange($event)" [style]="{width: '215px'}">
                         <ng-template let-item pTemplate="item">
                             <div class="ui-helper-clearfix" style="position: relative;height: 35px;">
                                 <div style="font-size:14px;float:left;margin-top:4px">{{item.label }}</div>
@@ -348,7 +421,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-dropdown resetFilterOnHide="true"[options]="addressTypes" formControlName="AddressType"
+                    <p-dropdown resetFilterOnHide="true" [options]="addressTypes" formControlName="AddressType"
                         placeholder="Select a Address Type" optionLabel="label">
                     </p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.AddressType.errors">
@@ -364,8 +437,8 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-dropdown resetFilterOnHide="true"[options]="proformatTemplates" formControlName="Template" placeholder="Select One"
-                        optionLabel="label" [showClear]="true"
+                    <p-dropdown resetFilterOnHide="true" [options]="proformatTemplates" formControlName="Template"
+                        placeholder="Select One" optionLabel="label" [showClear]="true"
                         (onChange)="showHideState(addToProforma_form.value.Template)">
                     </p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.Template.errors">
@@ -379,8 +452,8 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box" *ngIf="isTemplate4US">
-                    <p-dropdown resetFilterOnHide="true"[options]="usStatesData" formControlName="State" placeholder="Select One"
-                        optionLabel="Title" [showClear]="true"></p-dropdown>
+                    <p-dropdown resetFilterOnHide="true" [options]="usStatesData" formControlName="State"
+                        placeholder="Select One" optionLabel="Title" [showClear]="true"></p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidAddToProformaForm.State.errors">
                         <div *ngIf="isValidAddToProformaForm.State.errors.required" style="color:red;">Please
                             provide State.</div>

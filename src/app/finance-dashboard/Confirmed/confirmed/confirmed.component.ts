@@ -554,17 +554,21 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     createColFieldValues() {
-        this.confirmedInColArray.ProjectCode = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }));
-        this.confirmedInColArray.SOWCode = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }));
+        this.confirmedInColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; })));
+        this.confirmedInColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; })));
         this.confirmedInColArray.ProjectMileStone = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }));
         this.confirmedInColArray.POName = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; }));
         this.confirmedInColArray.ClientLegalEntity = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
         this.confirmedInColArray.PONumber = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }));
-        this.confirmedInColArray.ScheduledDate = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }));
-        this.confirmedInColArray.ScheduleType = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ScheduleType, value: a.ScheduleType }; return b; }));
-        this.confirmedInColArray.Amount = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
-        this.confirmedInColArray.Currency = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }));
-        this.confirmedInColArray.POCName = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }));
+
+        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; })));
+        this.confirmedInColArray.ScheduledDate = scheduledDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; });
+
+        this.confirmedInColArray.ScheduleType = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ScheduleType, value: a.ScheduleType }; return b; })));
+        const amount = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: parseFloat(a.Amount), value: a.Amount }; return b; }));
+        this.confirmedInColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
+        this.confirmedInColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; })));
+        this.confirmedInColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; })));
     }
 
     uniqueArrayObj(array: any) {
@@ -713,7 +717,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                     let myDate = new Date();
                     const locale = 'en-IN';
                     this.minProformaDate = new Date(Math.max.apply(null, this.selectedAllRowData.map(e => e.ScheduledDate)));
-                    myDate = this.minProformaDate > myDate ?  this.minProformaDate : myDate;
+                    myDate = this.minProformaDate > myDate ? this.minProformaDate : myDate;
                     const formattedDate = formatDate(myDate, format, locale);
                     this.addToProforma_form.patchValue({
                         ClientLegalEntity: this.selectedPurchaseNumber.ClientLegalEntity,

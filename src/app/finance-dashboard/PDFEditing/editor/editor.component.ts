@@ -120,7 +120,7 @@ export class EditorComponent implements OnInit {
             <table style="margin-top:10px;">
                 <tr>
                     <td style="font-size: 14px;text-align: center;">
-                        This is a computer generated proforma and does not require any signature
+                        This is a computer generated proforma and does not require any stamp or signature 
                     </td>
                 </tr>
             </table>
@@ -371,7 +371,7 @@ export class EditorComponent implements OnInit {
         <table style="margin-top:10px;">
             <tr>
                 <td style="font-size: 14px;text-align: center;">
-                    This is a computer generated proforma and does not require any stamp or signature
+                    This is a computer generated proforma
                 </td>
             </tr>
         </table>
@@ -427,14 +427,14 @@ export class EditorComponent implements OnInit {
             </td>
         </tr>
         </tbody> </table> </figure>`,
-        //     contactDetails2: `<tbody>
-        // <tr>
-        //     <td>
-        //         <p><strong>Address : </strong>[[Address1]]</p>
-        //         [[AddressMulti]]
-        //     </td>
-        // </tr>
-        // </tbody>`,
+            //     contactDetails2: `<tbody>
+            // <tr>
+            //     <td>
+            //         <p><strong>Address : </strong>[[Address1]]</p>
+            //         [[AddressMulti]]
+            //     </td>
+            // </tr>
+            // </tbody>`,
             address2: `<p>[[Address2]]</p>`,
             address3: `<p>[[Address3]]</p>`,
             address4: `<p>[[Address4]]</p>`,
@@ -568,7 +568,7 @@ export class EditorComponent implements OnInit {
         <table style="margin-top:10px;">
             <tr>
                 <td style="font-size: 14px;text-align: center;">
-                    This is a computer generated proforma and does not require any signature
+                This is computer generated invoice
                 </td>
             </tr>
         </table>
@@ -810,7 +810,7 @@ export class EditorComponent implements OnInit {
       <table style="margin-top:10px;">
           <tr>
               <td style="font-size: 14px;text-align: center;">
-                  This is a computer generated proforma and does not require any signature
+                  This is a computer generated proforma
               </td>
           </tr>
       </table>
@@ -1144,7 +1144,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
       <table style="margin-top:10px;">
           <tr>
               <td style="font-size: 14px;text-align: center;">
-                  This is a computer generated proforma and does not require any stamp or signature
+                  This is a computer generated proforma
               </td>
           </tr>
       </table>
@@ -1156,7 +1156,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         </tr>
         <tr>
             <td>
-                <p>510 Shalimar Morya Park, Off Link Road, Andheri (W), Mumbai 400053, India </p>
+                <p>A/603, 6th Floor, Satellite Gazebo, Guru Hargovind Singh Marg, Andheri (East), Mumbai 400093, India</p>
             </td>
         </tr>
         <tr>
@@ -1377,7 +1377,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
                             <p>IFSC: CITI0100000</p>
                             <p>Account #:  0256594118</p>
                             <p>Beneficiary Name : Cactus Communications Pvt. Ltd.</p>
-                            <p>Beneficiary Address : 510 Shalimar Morya Park, Off Link Road, Andheri (W), Mumbai 400053, India</p>
+                            <p>Beneficiary Address : A/603, 6th Floor, Satellite Gazebo, Guru Hargovind Singh Marg, Andheri (East), Mumbai 400093, India </p>
                             <p>Recipient Phone : +91 22 67148888 </p>
                         </li>
                         </ul>
@@ -1451,7 +1451,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
       <table style="margin-top:10px;">
           <tr>
               <td style="font-size: 14px;text-align: center;">
-                  This is a computer generated proforma and does not require any stamp or signature
+                  This is a computer generated proforma
               </td>
           </tr>
       </table>
@@ -1463,7 +1463,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         </tr>
         <tr>
             <td>
-                <p>510 Shalimar Morya Park, Off Link Road, Andheri (W), Mumbai 400053, India </p>
+                <p>A/603, 6th Floor, Satellite Gazebo, Guru Hargovind Singh Marg, Andheri (East), Mumbai 400093, India</p>
             </td>
         </tr>
         <tr>
@@ -1534,32 +1534,32 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             address2: `<p>[[Address2]]</p>`,
             address3: `<p>[[Address3]],</p>`,
             address4: `<p>[[Address4]]</p>`,
-        //     contactDetails2: `<tbody>
-        //     <tr>
-        //         <td>
-        //             <p><strong>Phone : </strong>[[Phone]]
-        //         </td>
-        //     </tr>
-        //     <tr>
-        //         <td>
-        //             <p><strong>Designation : </strong>[[Designation]]
-        //         </td>
-        //     </tr>
-        //     <tr>
-        //         <td>
-        //             <p><strong>Email : </strong>
-        //             <a href="#">[[Email]]</a>
-        //             </p>
-        //         </td>
-        //     </tr>
-        // </tbody>`,
-        //     address: `<tbody>
-        // <tr>
-        // <td>
-        //     <p><strong>Address : </strong>[[Address1]]</p>[[AddressMulti]]
-        // </td>
-        // </tr>
-        // </tbody>`,
+            //     contactDetails2: `<tbody>
+            //     <tr>
+            //         <td>
+            //             <p><strong>Phone : </strong>[[Phone]]
+            //         </td>
+            //     </tr>
+            //     <tr>
+            //         <td>
+            //             <p><strong>Designation : </strong>[[Designation]]
+            //         </td>
+            //     </tr>
+            //     <tr>
+            //         <td>
+            //             <p><strong>Email : </strong>
+            //             <a href="#">[[Email]]</a>
+            //             </p>
+            //         </td>
+            //     </tr>
+            // </tbody>`,
+            //     address: `<tbody>
+            // <tr>
+            // <td>
+            //     <p><strong>Address : </strong>[[Address1]]</p>[[AddressMulti]]
+            // </td>
+            // </tr>
+            // </tbody>`,
             purchaseOrder: `<tr class=indiaPurchase>
                 <td style="width: 40%; float: left;text-align: left;">
                     <p style="font-size:15px">
@@ -1644,7 +1644,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
                 <p>IFSC: CITI0100000</p>
                 <p>Account #:  0256594118</p>
                 <p>Beneficiary Name : Cactus Communications Pvt. Ltd.</p>
-                <p>Beneficiary Address : 510 Shalimar Morya Park, Off Link Road, Andheri (W), Mumbai 400053, India</p>
+                <p>Beneficiary Address : A/603, 6th Floor, Satellite Gazebo, Guru Hargovind Singh Marg, Andheri (East), Mumbai 400093, India</p>
                 <p>Recipient Phone : +91 22 67148888 </p>
             </li>
         `,
@@ -2136,20 +2136,20 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
             for (let i = 0; i < invoiceData.Appendix.length; i++) {
-               let appendixRow = IndiaInvoice.appendixRow;
-               appendixRow = appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].cactusSpCode);
-               appendixRow = appendixRow.replace('[[Title]]', invoiceData.Appendix[i].title);
-               appendixRow = appendixRow.replace('[[DVCode]]', invoiceData.Appendix[i].dvcode);
-               appendixRow = appendixRow.replace('[[Amount]]', invoiceData.Appendix[i].amount);
+                let appendixRow = IndiaInvoice.appendixRow;
+                appendixRow = appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].cactusSpCode);
+                appendixRow = appendixRow.replace('[[Title]]', invoiceData.Appendix[i].title);
+                appendixRow = appendixRow.replace('[[DVCode]]', invoiceData.Appendix[i].dvcode);
+                appendixRow = appendixRow.replace('[[Amount]]', invoiceData.Appendix[i].amount);
                 newArr.push(appendixRow);
             }
             IndiaInvoice.appendixCreate = IndiaInvoice.appendixCreate.replace('[[Appendix]]', newArr.join(''));
             IndiaInvoice.appendixCreate = IndiaInvoice.appendixCreate.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                 invoiceData.IndCurrencySymbol);
-            
+
         } else {
             this.showAppendix = false;
-            
+
         }
 
         let headerObj: any = this.headerstyle;
@@ -2396,7 +2396,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
     }
 
     async createUSProforma() {
-        
+
         const objReturn: any = this.createUSInvoice(this.invoicedata);
         const pdfContent: any = objReturn.pdf;
         pdfContent.Code = "TestingOnQAUS";
@@ -2429,9 +2429,9 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         this.fdConstantsService.fdComponent.selectedEditObject.Code = "TestingOnQAJapan";
         this.fdConstantsService.fdComponent.selectedEditObject.ListName = "ADFC";
         this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
-         ///// Call service 
-         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
-         await this.spOperationsServices.executeJS(pdfService, pdfContent);
+        ///// Call service 
+        const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+        await this.spOperationsServices.executeJS(pdfService, pdfContent);
     }
 
     async createIndiaProforma() {
@@ -2446,9 +2446,9 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         this.fdConstantsService.fdComponent.selectedEditObject.Code = "TestingOnQAIndia";
         this.fdConstantsService.fdComponent.selectedEditObject.ListName = "ADFC";
         this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
-         ///// Call service 
-         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
-         await this.spOperationsServices.executeJS(pdfService, pdfContent);
+        ///// Call service 
+        const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
+        await this.spOperationsServices.executeJS(pdfService, pdfContent);
     }
 }
 

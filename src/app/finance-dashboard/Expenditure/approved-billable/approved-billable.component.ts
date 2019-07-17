@@ -384,20 +384,21 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
     createColFieldValues() {
 
-        this.appBillableColArray.ProjectCode = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }));
-        this.appBillableColArray.Category = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Category, value: a.Category }; return b; }));
-        this.appBillableColArray.ExpenseType = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }));
-        this.appBillableColArray.ClientAmount = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ClientAmount, value: a.ClientAmount }; return b; }));
-        this.appBillableColArray.ClientCurrency = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }));
+        this.appBillableColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; })));
+        this.appBillableColArray.Category = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Category, value: a.Category }; return b; })));
+        this.appBillableColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; })));
+        const clientAmount = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }));
+        this.appBillableColArray.ClientAmount = this.fdDataShareServie.customSort(clientAmount, 1, 'label');
+        this.appBillableColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; })));
 
-        this.appBillableColArray.VendorName = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }));
-        this.appBillableColArray.RequestType = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.RequestType, value: a.RequestType }; return b; }));
+        this.appBillableColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; })));
+        this.appBillableColArray.RequestType = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.RequestType, value: a.RequestType }; return b; })));
 
-        this.appBillableColArray.PaymentMode = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.PaymentMode, value: a.PaymentMode }; return b; }));
-        this.appBillableColArray.PayingEntity = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.PayingEntity, value: a.PayingEntity }; return b; }));
-        this.appBillableColArray.Status = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; }));
+        this.appBillableColArray.PaymentMode = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.PaymentMode, value: a.PaymentMode }; return b; })));
+        this.appBillableColArray.PayingEntity = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.PayingEntity, value: a.PayingEntity }; return b; })));
+        this.appBillableColArray.Status = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
 
-        this.appBillableColArray.Number = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Number, value: a.Number }; return b; }));
+        this.appBillableColArray.Number = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Number, value: a.Number }; return b; })));
         this.appBillableColArray.PaymentDate = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }));
         this.appBillableColArray.Modified = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }));
         this.appBillableColArray.Created = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Created, value: a.Created }; return b; }));
@@ -503,7 +504,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 // if (this.selectedAllRowsItem[0].Status.includes('Approved')) {
                 if (sts) {
                     this.poNames = [];
-                   
+
                     let pInfo = this.getCleFromPC();
                     if (pInfo) {
                         this.getPONumberFromCLE(pInfo);
@@ -592,7 +593,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     // Project PO
     poNames: any = [];
     getPONumberFromCLE(cli) {
-        
+
         this.purchaseOrdersList.map((x) => {
             if (x.ClientLegalEntity === cli.ClientLegalEntity) {
                 if (this.matchCurrency(x)) {
@@ -673,7 +674,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         }
         if (this.oopBalance >= this.scheduleOopInvoice_form.getRawValue().Amount) {
             await this.getPfPfb();
-        } 
+        }
         else {
             this.submitBtn.isClicked = true;
             this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'OOP Balance must be greater than Scheduled oop Amount.', detail: '', life: 4000 });
