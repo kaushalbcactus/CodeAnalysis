@@ -278,7 +278,7 @@ export class EditorComponent implements OnInit {
                 <td style="font-size:14px">
                     <div id="paymentInstructions">
                     <ul>
-                    <li>Please make your payment within 75 days of receiving this proforma. For any questions
+                    <li>Please make your payment within 60 days of receiving this proforma. For any questions
                         regarding your
                         account<br />
                         contact <a href="#">payments@cactusglobal.com</a></li>
@@ -476,7 +476,7 @@ export class EditorComponent implements OnInit {
             </tr>
         </tbody>`,
             paymentInstructions: `<ul>
-        <li>Please make your payment within 75 days of receiving this proforma. For any questions
+        <li>Please make your payment within 60 days of receiving this proforma. For any questions
             regarding your
             account<br />
             contact <a href="#">payments@cactusglobal.com</a></li>

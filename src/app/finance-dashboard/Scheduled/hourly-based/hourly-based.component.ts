@@ -276,7 +276,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                         PFID: data[pf][0].ID,
                         Currency: data[pf][0].Currency,
                         Rate: data[pf][0].Budget,
-                        HoursSpent: data[pf][0].HoursSpent,
+                        HoursSpent: parseFloat(data[pf][0].HoursSpent.toFixed(2)),
                         BudgetHrs: data[pf][0].BudgetHrs,
                         Template: data[pf][0].Template,
                         TotalInvoice: this.updateTotal(data[pf][0].Budget, data[pf][0].HoursSpent),

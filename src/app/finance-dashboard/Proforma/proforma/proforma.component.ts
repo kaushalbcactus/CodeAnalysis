@@ -878,7 +878,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             proformaType = this.selectedRowItem.ProformaType;
             // tslint:disable
             // InvoicedRevenue: (poItem.InvoicedRevenue ? poItem.InvoicedRevenue : 0 + this.selectedRowItem.Amount),
-            this.selectedRowItem.Amount = parseFloat(this.selectedRowItem.Amount).toFixed(2);
+            this.selectedRowItem.Amount = parseFloat(this.selectedRowItem.Amount.toFixed(2));
             if (proformaType === 'revenue') {
                 poObj = {
                     InvoicedRevenue: (poItem.InvoicedRevenue ? parseFloat(poItem.InvoicedRevenue.toFixed(2)) + this.selectedRowItem.Amount : 0 + this.selectedRowItem.Amount),
