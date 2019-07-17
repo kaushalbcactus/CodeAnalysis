@@ -221,17 +221,6 @@ export class ManageFinanceComponent implements OnInit {
       type: '',
       listName: ''
     };
-    // // Get Billing Entity  ##0;
-    // const billingEntityGet = Object.assign({}, options);
-    // const billingEntityFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_OOP);
-    // billingEntityFilter.filter = billingEntityFilter.filter.replace(/{{projectCode}}/gi,
-    //   projectCode).replace(/{{status}}/gi, 'Billed');
-    // billingEntityGet.url = this.spServices.getReadURL(this.constant.listNames.SpendingInfo.name,
-    //   billingEntityFilter);
-    // billingEntityGet.type = 'GET';
-    // billingEntityGet.listName = this.constant.listNames.SpendingInfo.name;
-    // batchURL.push(billingEntityGet);
-
     // Get Po ##0
     const poGet = Object.assign({}, options);
     const poFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_PO);
@@ -267,16 +256,6 @@ export class ManageFinanceComponent implements OnInit {
 
     const arrResults = await this.spServices.executeBatch(batchURL);
     if (arrResults && arrResults.length) {
-      // const tempbudgetObject = $.extend(true, {}, this.budgetObj);
-      // const oopResult = arrResults[0].retItems;
-      // if (oopResult && oopResult.length) {
-      //   // set the OOP value and budget value.
-      //   tempbudgetObject.total = 0;
-      //   tempbudgetObject.oop = 0;
-      //   tempbudgetObject.revenue = 0;
-      //   tempbudgetObject.tax = 0;
-      //   tempbudgetObject.budget_hours = 0;
-      // }
       const unfilteredPOArray = arrResults[0].retItems;
       this.poArray = unfilteredPOArray.filter(x => x.Currency === currency);
       if (this.poArray && this.poArray) {
@@ -1103,7 +1082,13 @@ export class ManageFinanceComponent implements OnInit {
    * This method is used to save the PO.
    */
   savePo() {
-    this.savePOArray.push({ budget: this.budgetData, PO: this.poData, Rate: this.hourlyRate, OverNightRequest: this.selectedOverNightRequest });
+    this.savePOArray.push({ 
+      budget: this.budgetData, 
+      PO: this.poData, 
+      Rate: this.hourlyRate, 
+      OverNightRequest: this.selectedOverNightRequest, 
+      arrAdvanceInvoices : this.arrAdvanceInvoices
+     });
     // store value into global variable.
     this.pmObject.addProject.FinanceManagement.POListArray = this.poArray;
     this.pmObject.addProject.FinanceManagement.POArray = this.poData;
@@ -1620,6 +1605,12 @@ export class ManageFinanceComponent implements OnInit {
               budgetArr[0].oop = 0;
               budgetArr[0].tax = 0;
             }
+            else {
+              budgetArr[0].total = budgetArr[0].total - existingBudget.Budget;
+              budgetArr[0].revenue = budgetArr[0].revenue - existingBudget.RevenueBudget;
+              budgetArr[0].oop = 0;
+              budgetArr[0].tax = 0;
+            }
           } else {
             budgetArr = this.unassignedBudget;
             budgetArr[0].total = 0 - budgetArr[0].total;
@@ -1628,7 +1619,7 @@ export class ManageFinanceComponent implements OnInit {
             budgetArr[0].tax = 0 - budgetArr[0].tax;
             budgetArr[0].reason = this.selectedReason;
             budgetArr[0].reasonType = this.selectedReasonType;
-            budgetArr[0].budget_hours = this.budgetData[0].budget_hours - this.newBudgetHrs;
+            budgetArr[0].budget_hours = this.newBudgetHrs - this.budgetData[0].budget_hours;
           }
 
           const projectBudgetBreakupData = this.getProjectBudgetBreakupData(budgetArr, this.projObj, true, budgetArr[0].revenue < 0 ? true : false);
@@ -1651,8 +1642,6 @@ export class ManageFinanceComponent implements OnInit {
           sowUpdate.listName = this.constant.listNames.SOW.name;
           batchURL.push(sowUpdate);
         }
-
-      } else {
 
       }
 
@@ -1795,6 +1784,7 @@ export class ManageFinanceComponent implements OnInit {
     const data: any = {
       __metadata: { type: this.constant.listNames.ProjectFinanceBreakup.type },
     };
+    data.ID =  0;
     let totalScheduled = 0;
     let scRevenue = 0;
     let scOOP = 0;
@@ -1824,6 +1814,7 @@ export class ManageFinanceComponent implements OnInit {
     });
     data.POLookup = po.status === 'Deleted' ? null : po.poId;
     if (po.isExsitPO) {
+      data.ID = poInfoObj.Id;
       data.Status = po.status === 'Not Saved' ? 'Active' : po.status;
       if (projObj.ProjectType === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
         data.Amount = 0;
@@ -1939,7 +1930,9 @@ export class ManageFinanceComponent implements OnInit {
     let sowObj = this.sowObj;
     let data = {}
     if (sowObj) {
-      if (projectfinaceObj.RevenueBudget !== this.existBudgetArray.retItems[0].RevenueBudget) {
+      if (projectfinaceObj.RevenueBudget !== this.existBudgetArray.retItems[0].RevenueBudget 
+        || projectfinaceObj.ScheduledRevenue !== this.existBudgetArray.retItems[0].ScheduledRevenue
+        || projectfinaceObj.InvoicedRevenue !== this.existBudgetArray.retItems[0].InvoicedRevenue) {
         data = {
           __metadata: { type: this.constant.listNames.SOW.type },
           TotalLinked: sowObj.TotalLinked + projectfinaceObj.Budget - this.existBudgetArray.retItems[0].Budget,
@@ -1967,7 +1960,7 @@ export class ManageFinanceComponent implements OnInit {
     const poExistingItems = this.existPOArray.retItems;
     financeBreakupArray.forEach(element => {
       const poItem = poArray.filter(poObj => poObj.Id === element.POLookup);
-      const poExistItem = poExistingItems.find(poObj => poObj.ID === element.POLookup);
+      const poExistItem = poExistingItems.find(poObj => poObj.ID === element.ID);
       if (poItem && poItem.length) {
         const data = {
           __metadata: { type: this.constant.listNames.PO.type },
