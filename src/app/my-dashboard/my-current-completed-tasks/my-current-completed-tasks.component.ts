@@ -462,11 +462,13 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
         
         if (Commentobj.IsMarkComplete) {
           this.loaderenable = true;
+          this.allTasks=[];
           task.TaskComments = Commentobj.comment;
           task.Status = "Completed";
           var response = await this.myDashboardConstantsService.CompleteTask(task);
           if (response) {
             this.loaderenable = false;
+            this.GetDatabyDateSelection(this.selectedTab, this.days);
             this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
           }
           else {
@@ -592,7 +594,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
 
   async checkCompleteTask(task) {
-
+     debugger;
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
 
@@ -622,10 +624,11 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
           icon: 'pi pi-exclamation-triangle',
           accept: () => {
 
-            this.callComplete(task);
-
             this.loaderenable = true;
+            this.allTasks=[];
 
+            this.callComplete(task);
+          
             // this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Please upload the document and mark as final.' });
           },
           reject: () => {
@@ -635,6 +638,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
       }
       else {
+
         this.getAddUpdateComment(task, true);
       }
     }
@@ -651,6 +655,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
     if (response) {
       this.loaderenable = false;
+      this.GetDatabyDateSelection(this.selectedTab, this.days);
       this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
 
     }
