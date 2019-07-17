@@ -26,6 +26,6 @@
 :host() ::ng-deep .ui-treetable-table .ui-treetable-toggler .pi-chevron-right:before{
     content: "\e90d";
 }
-.ui-dropdown {
+.timeline-standard-section .ui-dropdown {
     width: 100% !important;
 }

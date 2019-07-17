@@ -116,7 +116,7 @@ export class SOWComponent implements OnInit, OnDestroy {
         command: (event) => this.addBudgetSOW(this.pmObject.selectedSOWTask)
       },
       {
-        label: 'View Project', target: '_blank',
+        label: 'View Projects', target: '_blank',
         command: (event) => this.viewProjectSOW(this.pmObject.selectedSOWTask)
       },
       {

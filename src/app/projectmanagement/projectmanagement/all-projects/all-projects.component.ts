@@ -124,7 +124,7 @@ export class AllProjectsComponent implements OnInit {
         label: 'Close Project', command: (event) =>
           this.changeProjectStatus(this.selectedProjectObj, this.pmConstant.ACTION.CLOSE_PROJECT)
       },
-      { label: 'View Project', command: (event) => this.viewProject(this.selectedProjectObj) },
+      { label: 'View Project Details', command: (event) => this.viewProject(this.selectedProjectObj) },
       { label: 'Edit Project', command: (event) => this.editProject(this.selectedProjectObj) },
       { label: 'Communications', command: (event) => this.communications(this.selectedProjectObj) },
       { label: 'Timeline', command: (event) => this.projectTimeline(this.selectedProjectObj) },
