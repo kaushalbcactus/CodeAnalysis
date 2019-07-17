@@ -149,6 +149,7 @@ export class ManageFinanceComponent implements OnInit {
   advanceInvArray = [];
   tagExistingInvSection = false;
   updateInvoices = [];
+  hideRemoveButton = false;
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -411,8 +412,8 @@ export class ManageFinanceComponent implements OnInit {
       objEmailBody.push({ key: '@@ProjectCode@@', value: this.projObj.ProjectCode });
       objEmailBody.push({ key: '@@ClientName@@', value: this.projObj.ClientLegalEntity });
       objEmailBody.push({ key: '@@SiteName@@', value: this.global.sharePointPageObject.webAbsoluteUrl });
-      objEmailBody.push({ key: '@@Title@@', value: this.pmObject.currLoginInfo.Title });
-      objEmailBody.push({ key: '@@POC@@', value: this.pmCommonService.extractNamefromPOC([this.projObj.MainPOC])[0]});
+      objEmailBody.push({ key: '@@Title@@', value: this.projObj.Title });
+      objEmailBody.push({ key: '@@POC@@', value: this.projObj.PrimaryPOCText[0]});
       objEmailBody.push({ key: '@@Currency@@', value: this.existBudgetArray.retItems[0].Currency });
       objEmailBody.push({ key: '@@Reason@@', value: this.selectedReasonType });
       objEmailBody.push({ key: '@@Comments@@', value: this.selectedReason });
@@ -432,14 +433,19 @@ export class ManageFinanceComponent implements OnInit {
       let tempArray = [];
       let arrayTo = [];
       const cm1IdArray = [];
-      // this.projObj.CMLevel1ID.forEach(element => {
-      //   cm1IdArray.push(element.ID);
-      // });
-      tempArray = tempArray.concat(cm1IdArray, this.projObj.CMLevel2ID);
+      let arrayCC = []
+      let ccIDs = [];
+      this.projObj.CMLevel1ID.forEach(element => {
+        cm1IdArray.push(element.ID);
+      });
+      arrayCC = arrayCC.concat([], cm1IdArray);
+      tempArray = tempArray.concat([], this.projObj.CMLevel2ID);
       arrayTo = this.pmCommonService.getEmailId(tempArray);
+      ccIDs = this.pmCommonService.getEmailId(arrayCC);
+      ccIDs.push(this.pmObject.currLoginInfo.Email);
       ///// Send approval message
       this.pmCommonService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.BUDGET_REDUCTION, objEmailBody, mailSubject, arrayTo,
-        [this.pmObject.currLoginInfo.Email]);
+        ccIDs);
     }
     else {
       if (!this.selectedReasonType) {
@@ -1106,6 +1112,7 @@ export class ManageFinanceComponent implements OnInit {
     this.budgetOutputData.emit(this.savePOArray);
   }
   async editManageFinances(projObj) {
+    this.hideRemoveButton = false;
     this.pmObject.isMainLoaderHidden = false;
     this.poData = [];
     this.isBudgetHoursDisabled = false;
@@ -1363,6 +1370,24 @@ export class ManageFinanceComponent implements OnInit {
       this.unassignedBudget.push(unassignedObj);
       this.showUnAssigned = unassignedObj.revenue ? true : false;
       this.isAddToProjectHidden = unassignedObj.revenue ? false : true;
+
+
+      ///// Remove all buttons if there is approval pending
+      const budgetPending =  this.existPBBBudgetArray.retItems.find(e=> e.Status === this.constant.projectBudgetBreakupList.status.ApprovalPending);
+      if(this.projectStatus !== this.constant.projectList.status.InDiscussion && budgetPending) {
+        this.hideRemoveButton = true;
+        this.isAddRateButtonHidden = true;
+        this.isAddBudgetButtonHidden = true;
+        this.isAddToProjectHidden = true;
+        this.poData.forEach(element => {
+          element.poInfo[0].showAdd = false;
+          element.poInfo[0].showDelete = false;
+          element.poInfo[0].showInvoice = false;
+          element.poInfoData.forEach(elementInv => {
+            elementInv.isInvoiceItemEdit = false;
+          });
+        });
+      }
 
       this.existPODataArray = this.poData;
       this.showPo = true;

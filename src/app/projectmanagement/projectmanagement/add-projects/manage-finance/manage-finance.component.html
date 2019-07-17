@@ -269,9 +269,12 @@
             <td>{{rowData.tax}}</td>
           </tr>
           <tr>
-            <td>
-              <p-button class="mt-20" label="Reduce project budget" (click)="removeUnassigned()" type="button">
+            <td colspan="5">
+              <p-button [hidden]="hideRemoveButton" class="mt-20" label="Reduce project budget" (click)="removeUnassigned()" type="button">
               </p-button>
+              <div [hidden]="!hideRemoveButton">
+                Budget reduction approval pending. Please either approve or reject the request. 
+              </div>
             </td>
           </tr>
         </ng-template>
