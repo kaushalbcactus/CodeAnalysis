@@ -668,7 +668,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
     iliByPidRes: any = [];
     addILIObj: any = {
         TaggedAmount: 0,
-        ProformaLookup: this.selectedRowItem.Id,
         IsTaggedFully: 'No'
     };
     async getILIByPID() {
@@ -703,7 +702,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
             if (this.iliByPidRes.length) {
                 this.addILIObj = {
                     TaggedAmount: this.selectedRowItem.Amount,
-                    ProformaLookup: this.selectedRowItem.Id,
                     IsTaggedFully: 'Yes'
                 }
             }
@@ -846,7 +844,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
             InvoiceTitle: this.selectedRowItem.ProformaTitle,
             TaggedAmount: this.addILIObj.TaggedAmount,
             IsTaggedFully: this.addILIObj.IsTaggedFully,
-            State: this.selectedRowItem.State
+            State: this.selectedRowItem.State,
+            ProformaLookup: this.selectedRowItem.Id
         }
         iObj['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
         const iEndpoint = this.fdConstantsService.fdComponent.addUpdateInvoice.create;
