@@ -38,6 +38,8 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
   selectedFile;
   fileReader;
   filePathUrl: any;
+  updateInvoices = [];
+  arrAdvanceInvoices = [];
   constructor(
     public pmObject: PMObjectService,
     private pmConstant: PmconstantService,
@@ -55,6 +57,8 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
   loadFinanceManagementInit() {
     setTimeout(() => {
       this.setHeaderColumn();
+      this.poData = [];
+      this.budgetData = [];
       this.budgethours = this.pmObject.addProject.Timeline.Standard.IsStandard ?
         this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours :
         this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours;
@@ -79,6 +83,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
       this.poData = this.manageData[0].PO;
       this.pmObject.addProject.FinanceManagement.Rate = this.manageData[0].Rate;
       this.pmObject.addProject.FinanceManagement.OverNightRequest = this.manageData[0].OverNightRequest;
+      this.arrAdvanceInvoices = this.manageData[0].arrAdvanceInvoices;
     }
   }
   setHeaderColumn() {
@@ -187,6 +192,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
    * This function is used to add and Update the project.
    */
   async addUpdateProject() {
+    this.updateInvoices = [];
     const batchURL = [];
     let counter = 0;
     const options = {
@@ -333,12 +339,12 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
     poArray.forEach((poInfoObj) => {
       poInfoObj.poInfoData.forEach(element => {
         if (element.status === this.constant.STATUS.NOT_STARTED) {
-          invoiceSc = element.amount;
-          scRevenue = element.amount;
+          invoiceSc = invoiceSc +  element.amount;
+          scRevenue = scRevenue +  element.amount;
         }
         if (element.status === this.constant.STATUS.APPROVED) {
-          invoice = element.amount;
-          invoiceRevenue = element.amount;
+          invoice = invoice +  element.amount;
+          invoiceRevenue = invoiceRevenue + element.amount;
         }
       });
     });
@@ -484,6 +490,15 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
         if (element.status === this.constant.STATUS.APPROVED) {
           data.ProformaLookup = element.proformaLookup;
           data.InvoiceLookup = element.invoiceLookup;
+          const invoice = this.arrAdvanceInvoices.find(e => e.ID === element.invoiceLookup);
+          const tagAmount = invoice.TaggedAmount ? invoice.TaggedAmount + element.amount : element.amount;
+          const dataInv: any = {
+            __metadata: { type: this.constant.listNames.Invoices.type },
+            ID: invoice.ID,
+            TaggedAmount: tagAmount,
+            IsTaggedFully: invoice.Amount === tagAmount ? 'Yes' : 'No'
+          };
+          this.updateInvoices.push(dataInv);
         }
         invoiceArray.push(data);
       });
@@ -745,6 +760,7 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
       if (this.router.url === '/projectMgmt/allProjects') {
         this.dataService.publish('reload-project');
       } else {
+        this.pmObject.allProjectItems = [];
         this.router.navigate(['/projectMgmt/allProjects']);
       }
     }, this.pmConstant.TIME_OUT);

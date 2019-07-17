@@ -116,7 +116,7 @@ export class SOWComponent implements OnInit, OnDestroy {
         command: (event) => this.addBudgetSOW(this.pmObject.selectedSOWTask)
       },
       {
-        label: 'View Project', target: '_blank',
+        label: 'View Projects', target: '_blank',
         command: (event) => this.viewProjectSOW(this.pmObject.selectedSOWTask)
       },
       {
@@ -218,6 +218,7 @@ export class SOWComponent implements OnInit, OnDestroy {
       }
     }
     if (this.pmObject.allSOWItems && this.pmObject.allSOWItems.length) {
+      this.pmObject.activeIndex = 0;
       const tempAllSOWArray = [];
       for (const task of this.pmObject.allSOWItems) {
         const sowObj = $.extend(true, {}, this.pmObject.allSOW);

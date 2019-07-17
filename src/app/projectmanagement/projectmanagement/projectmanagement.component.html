@@ -34,7 +34,9 @@
         <p-header>
             Add Project
         </p-header>
-        <app-add-projects></app-add-projects>
+        <div *ngIf="pmObject.isAddProjectVisible">
+            <app-add-projects></app-add-projects>
+        </div>
     </p-dialog>
 </div>
 <div class="add-sow-section">

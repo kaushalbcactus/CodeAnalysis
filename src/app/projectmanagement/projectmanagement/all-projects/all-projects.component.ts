@@ -71,7 +71,8 @@ export class AllProjectsComponent implements OnInit {
   public params = {
     ProjectCode: '',
     ActionStatus: '',
-    ProjectStatus: ''
+    ProjectStatus: '',
+    ProjectBudgetStatus: ''
   };
   newSelectedSOW;
   moveSOWObjectArray = [];
@@ -80,6 +81,7 @@ export class AllProjectsComponent implements OnInit {
   selectedReason;
   cancelReasonArray: SelectItem[];
   subscription;
+  isApprovalAction = false;
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   constructor(
     public pmObject: PMObjectService,
@@ -99,6 +101,7 @@ export class AllProjectsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.isApprovalAction = true;
     this.reloadAllProject();
   }
   reloadAllProject() {
@@ -121,7 +124,7 @@ export class AllProjectsComponent implements OnInit {
         label: 'Close Project', command: (event) =>
           this.changeProjectStatus(this.selectedProjectObj, this.pmConstant.ACTION.CLOSE_PROJECT)
       },
-      { label: 'View Project', command: (event) => this.viewProject(this.selectedProjectObj) },
+      { label: 'View Project Details', command: (event) => this.viewProject(this.selectedProjectObj) },
       { label: 'Edit Project', command: (event) => this.editProject(this.selectedProjectObj) },
       { label: 'Communications', command: (event) => this.communications(this.selectedProjectObj) },
       { label: 'Timeline', command: (event) => this.projectTimeline(this.selectedProjectObj) },
@@ -192,21 +195,78 @@ export class AllProjectsComponent implements OnInit {
       this.params.ProjectCode = this.route.snapshot.queryParams['ProjectCode'];
       this.params.ActionStatus = this.route.snapshot.queryParams['ActionStatus'];
       this.params.ProjectStatus = this.route.snapshot.queryParams['ProjectStatus'];
+      this.params.ProjectBudgetStatus = this.route.snapshot.queryParams['ProjectBudgetStatus'];
       const projectObj = this.pmObject.allProjectItems.filter(c => c.ProjectCode === this.params.ProjectCode);
-      if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.APPROVED) {
-        if (projectObj && projectObj.length) {
-          await this.getGetIds(projectObj[0], true);
-          this.changeProjectStatusCancelled(projectObj[0]);
+      if (this.params.ActionStatus) {
+        if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.APPROVED) {
+          if ((this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.sharePointPageObject.userId)) {
+            if (projectObj[0].Status === this.constants.projectStatus.AwaitingCancelApproval) {
+              await this.getGetIds(projectObj[0], true);
+              this.isApprovalAction = false;
+              await this.changeProjectStatusCancelled(projectObj[0]);
+            }
+          } else {
+            this.messageService.add({
+              key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+              detail: 'You are not authorized to Approve cancellation for this project - ' + this.params.ProjectCode + ' .'
+            });
+          }
+
+        } else if (!projectObj.length && this.isApprovalAction && this.params.ProjectCode && this.params.ActionStatus) {
+          this.messageService.add({
+            key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+            detail: 'Cancellation action on this project - ' + this.params.ProjectCode + ' is already completed.'
+          });
+        }
+
+        if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.REJECTED) {
+          window.history.pushState({}, 'Title', window.location.href.split('?')[0]);
+          if ((this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.sharePointPageObject.userId)) {
+            if (projectObj[0].Status === this.constants.projectStatus.AwaitingCancelApproval) {
+              const piUdpate: any = {
+                Status: this.params.ProjectStatus,
+                PrevStatus: this.constants.projectStatus.AwaitingCancelApproval
+              };
+              const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectInformation.name,
+                projectObj[0].ID, piUdpate, this.constants.listNames.ProjectInformation.type);
+              this.pmObject.allProjectItems = [];
+              this.isApprovalAction = false;
+              this.reloadAllProject();
+            } else if (this.isApprovalAction) {
+              this.messageService.add({
+                key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+                detail: 'Cancellation action on this project - ' + projectObj[0].ProjectCode + ' is already completed.'
+              });
+            }
+          } else {
+            this.messageService.add({
+              key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+              detail: 'You are not authorized to Reject cancellation for this project - ' + this.params.ProjectCode + ' .'
+            });
+          }
         }
       }
-      if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.REJECTED) {
-        const piUdpate: any = {
-          Status: this.params.ProjectStatus,
-          PrevStatus: this.constants.projectStatus.AwaitingCancelApproval
-        };
-        const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectInformation.name,
-          projectObj.ID, piUdpate, this.constants.listNames.ProjectInformation.type);
+      if (this.params.ProjectBudgetStatus) {
+        if (projectObj && projectObj.length) {
+          if (this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.sharePointPageObject.userId) {
+            await this.approveRejectBudgetReduction(this.params.ProjectBudgetStatus, projectObj[0]);
+          }
+          else {
+            this.messageService.add({
+              key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+              detail: 'You are not authorized to Approve / Reject budget reduction for this project - ' + this.params.ProjectCode + ' .'
+            });
+          }
+
+        }
+        else {
+          this.messageService.add({
+            key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+            detail: 'You dont have access to this project - ' + this.params.ProjectCode + ' .'
+          });
+        }
       }
+
     } else {
       if (this.pmObject.tabMenuItems.length) {
         this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';
@@ -328,6 +388,151 @@ export class AllProjectsComponent implements OnInit {
       this.isAllProjectTableHidden = false;
     }
   }
+
+  async approveRejectBudgetReduction(selectedStatus, projectObj) {
+    let batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+
+    // Get Project Finance  ##0;
+    const projectFinanceGet = Object.assign({}, options);
+    const projectFinaceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE);
+    projectFinaceFilter.filter = projectFinaceFilter.filter.replace(/{{projectCode}}/gi,
+      projectObj.ProjectCode);
+    projectFinanceGet.url = this.spServices.getReadURL(this.constants.listNames.ProjectFinances.name,
+      projectFinaceFilter);
+    projectFinanceGet.type = 'GET';
+    projectFinanceGet.listName = this.constants.listNames.ProjectFinances.name;
+    batchURL.push(projectFinanceGet);
+
+    // Get PBB  ##1;
+    const pbbGet = Object.assign({}, options);
+    const pbbFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_BUDGET_BREAKUP);
+    pbbFilter.filter = pbbFilter.filter.replace(/{{projectCode}}/gi,
+      projectObj.ProjectCode);
+    pbbGet.url = this.spServices.getReadURL(this.constants.listNames.ProjectBudgetBreakup.name,
+      pbbFilter);
+    pbbGet.type = 'GET';
+    pbbGet.listName = this.constants.listNames.ProjectBudgetBreakup.name;
+    batchURL.push(pbbGet);
+
+    // Get SOW ##2
+    const sowGet = Object.assign({}, options);
+    const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.SOW_CODE);
+    sowFilter.filter = sowFilter.filter.replace(/{{sowcode}}/gi, projectObj.SOWCode);
+    sowGet.url = this.spServices.getReadURL(this.constants.listNames.SOW.name,
+      sowFilter);
+    sowGet.type = 'GET';
+    sowGet.listName = this.constants.listNames.SOW.name;
+    batchURL.push(sowGet);
+
+    const result = await this.spServices.executeBatch(batchURL);
+
+    if (result && result.length) {
+      batchURL = [];
+      const existPF = result[0].retItems[0];
+      const existPBBArray = result[1].retItems;
+      const existSOW = result[2].retItems[0];
+
+      const pbb = existPBBArray.find(e => e.Status === this.constants.projectBudgetBreakupList.status.ApprovalPending)
+      if (pbb) {
+        const projectBudgetBreakupData = {
+          __metadata: { type: this.constants.listNames.ProjectBudgetBreakup.type },
+          ApprovalDate: new Date(),
+          Status: ''
+        };
+        if (selectedStatus === this.pmConstant.ACTION.APPROVED) {
+          ///// SOW data
+          const sowData = {
+            __metadata: { type: this.constants.listNames.SOW.type },
+            TotalLinked: existSOW.TotalLinked + pbb.OriginalBudget,
+            RevenueLinked: existSOW.RevenueLinked + pbb.NetBudget,
+          };
+
+          const sowUpdate = Object.assign({}, options);
+          sowUpdate.url = this.spServices.getItemURL(this.constants.listNames.SOW.name, existSOW.ID);
+          sowUpdate.data = sowData;
+          sowUpdate.type = 'PATCH';
+          sowUpdate.listName = this.constants.listNames.SOW.name;
+          batchURL.push(sowUpdate);
+
+          ///// PF Data
+
+          const pfData: any = {
+            __metadata: { type: this.constants.listNames.ProjectFinances.type },
+
+          };
+          pfData.BudgetHrs = existPF.BudgetHrs + pbb.BudgetHours;
+          pfData.Budget = existPF.Budget + pbb.OriginalBudget;
+          pfData.RevenueBudget = existPF.RevenueBudget + pbb.NetBudget;
+
+          const projectFinaceUpdate = Object.assign({}, options);
+          projectFinaceUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectFinances.name,
+            existPF.ID);
+          projectFinaceUpdate.data = pfData;
+          projectFinaceUpdate.type = 'PATCH';
+          projectFinaceUpdate.listName = this.constants.listNames.ProjectFinances.name;
+          batchURL.push(projectFinaceUpdate);
+
+          projectBudgetBreakupData.Status = this.constants.projectBudgetBreakupList.status.Approved;
+        }
+        else if (selectedStatus === this.pmConstant.ACTION.REJECTED) {
+          projectBudgetBreakupData.Status = this.constants.projectBudgetBreakupList.status.Rejected;
+        }
+        const projectBudgetBreakupUpdate = Object.assign({}, options);
+        projectBudgetBreakupUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectBudgetBreakup.name,
+          pbb.ID);
+        projectBudgetBreakupUpdate.data = projectBudgetBreakupData;
+        projectBudgetBreakupUpdate.type = 'PATCH';
+        projectBudgetBreakupUpdate.listName = this.constants.listNames.ProjectBudgetBreakup.name;
+        batchURL.push(projectBudgetBreakupUpdate);
+
+        const res = await this.spServices.executeBatch(batchURL);
+
+        const subjectVal = 'Budget reduction is ' + selectedStatus.toLowerCase();
+        const mailSubject = projectObj.ProjectCode + ': ' + subjectVal;
+        const objEmailBody = [];
+        objEmailBody.push({ key: '@@ProjectCode@@', value: projectObj.ProjectCode });
+        objEmailBody.push({ key: '@@ClientName@@', value: projectObj.ClientLegalEntity });
+        objEmailBody.push({ key: '@@Title@@', value: projectObj.Title });
+        objEmailBody.push({ key: '@@Outcome@@', value: selectedStatus.toLowerCase() });
+
+        let tempArray = [];
+        let arrayTo = [];
+        const cm1IdArray = [];
+        let arrayCC = []
+        let ccIDs = [];
+        if(projectObj.CMLevel1.hasOwnProperty('results')) {
+          projectObj.CMLevel1.results.forEach(element => {
+            cm1IdArray.push(element.ID);
+          });
+        }
+        
+        arrayCC = arrayCC.concat([], cm1IdArray);
+        tempArray = tempArray.concat([], projectObj.CMLevel2.ID);
+        arrayTo = this.pmCommonService.getEmailId(tempArray);
+        ccIDs = this.pmCommonService.getEmailId(arrayCC);
+        ccIDs.push(this.pmObject.currLoginInfo.Email);
+        ///// Send approval message
+        this.pmCommonService.getTemplate(this.constants.EMAIL_TEMPLATE_NAME.BUDGET_APPROVAL, objEmailBody, mailSubject, arrayTo,
+          ccIDs);
+      }
+      else {
+        this.messageService.add({
+          key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'No un-apporved budget reduction request found for project - ' + this.params.ProjectCode + ' .'
+        });
+      }
+
+    }
+    window.history.pushState({}, 'Title', window.location.href.split('?')[0]);
+
+  }
+
   /**
    * This method is used to filter the data based on selected filter.
    * @param event It takes event as a parameter.
@@ -591,7 +796,7 @@ export class AllProjectsComponent implements OnInit {
     this.pmObject.isReasonSectionVisible = false;
     this.messageService.add({
       key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-      detail: 'Email has send for approval to concern person.'
+      detail: 'Email has been sent for approval to concerned person.'
     });
     setTimeout(() => {
       if (this.router.url === '/projectMgmt/allProjects') {
@@ -780,10 +985,14 @@ export class AllProjectsComponent implements OnInit {
     this.pmObject.isReasonSectionVisible = false;
     this.messageService.add({
       key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-      detail: 'Project - ' + selectedProjectObj.ProjectCode + ' Updated Successfully.'
+      detail: 'Project - ' + selectedProjectObj.ProjectCode + ' cancelled successfully.'
     });
     setTimeout(() => {
       if (this.router.url === '/projectMgmt/allProjects') {
+        this.pmObject.allProjectItems = [];
+        this.reloadAllProject();
+      } else if (this.router.url.includes('/projectMgmt/allProjects?ProjectCode')) {
+        window.history.pushState({}, 'Title', window.location.href.split('?')[0]);
         this.pmObject.allProjectItems = [];
         this.reloadAllProject();
       } else {

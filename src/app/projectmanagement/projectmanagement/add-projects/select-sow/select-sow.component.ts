@@ -4,6 +4,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
+import { DataService } from 'src/app/Services/data.service';
 declare var $;
 @Component({
   selector: 'app-select-sow',
@@ -29,12 +30,14 @@ export class SelectSOWComponent implements OnInit {
   errorMsg = '';
   isSelectSOWLoaderHidden = false;
   isSelectSOWTableHidden = true;
+  subscription;
   constructor(
     public pmObject: PMObjectService,
     private commonService: CommonService,
     private pmConstant: PmconstantService,
     private spServices: SpOperationsService,
-    private constants: ConstantsService) { }
+    private constants: ConstantsService,
+    private dataService: DataService) { }
 
   ngOnInit() {
     this.isSelectSOWLoaderHidden = false;
@@ -45,6 +48,9 @@ export class SelectSOWComponent implements OnInit {
     if (this.pmObject.addProject.SOWSelect.GlobalFilterValue) {
       this.lazyLoadTask(this.pmObject.addProject.SOWSelect.GlobalFilterEvent);
     }
+  }
+  callReloadSOW() {
+    this.getSelectSOW();
   }
   async getSelectSOW() {
     const sowCodeTempArray = [];
@@ -100,8 +106,6 @@ export class SelectSOWComponent implements OnInit {
       this.selectSOW.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
       this.selectSOW.sowOwnerArray = this.commonService.unique(sowOwnerTempArray, 'value');
       this.pmObject.selectSOWArray = Object.assign([], tempAllSOWArray);
-      this.pmObject.totalRecords.SelectSOW = tempAllSOWArray.length;
-      this.pmObject.selectSOWArrayCopy = tempAllSOWArray.slice(0, 5);
       this.isSelectSOWLoaderHidden = true;
       this.isSelectSOWTableHidden = false;
     }
