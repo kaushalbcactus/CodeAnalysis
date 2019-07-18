@@ -15,6 +15,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectTimelineComponent } from './project-timeline/project-timeline.component';
 import { GlobalService } from 'src/app/Services/global.service';
 import { DataService } from 'src/app/Services/data.service';
+import { elementAt } from 'rxjs/operators';
 
 declare var $;
 @Component({
@@ -1417,6 +1418,9 @@ export class AllProjectsComponent implements OnInit {
         projectObj: projObj
       }
     });
+    ref.onClose.subscribe(element => {
+      this.pmCommonService.resetAddProject();
+    });
   }
   communications(selectedProjectObj) {
     const ref = this.dialogService.open(CommunicationComponent, {
@@ -1425,6 +1429,9 @@ export class AllProjectsComponent implements OnInit {
         projectObj: selectedProjectObj
       }
     });
+    ref.onClose.subscribe(element => {
+      this.pmCommonService.resetAddProject();
+    });
   }
   projectTimeline(selectedProjectObj) {
     const ref = this.dialogService.open(ProjectTimelineComponent, {
@@ -1432,6 +1439,9 @@ export class AllProjectsComponent implements OnInit {
       data: {
         projectObj: selectedProjectObj
       }
+    });
+    ref.onClose.subscribe(element => {
+      this.pmCommonService.resetAddProject();
     });
   }
   showTimeline(selectedProjectObj) {
@@ -1601,6 +1611,9 @@ export class AllProjectsComponent implements OnInit {
       data: {
         projectObj: projObj
       }
+    });
+    ref.onClose.subscribe(element => {
+      this.pmCommonService.resetAddProject();
     });
   }
   /**
