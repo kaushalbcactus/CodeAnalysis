@@ -948,9 +948,9 @@ export class AllProjectsComponent implements OnInit {
           };
           const poUpdate = Object.assign({}, options);
           poUpdate.data = poData;
-          poUpdate.listName = this.constants.listNames.SOW.name;
+          poUpdate.listName = this.constants.listNames.PO.name;
           poUpdate.type = 'PATCH';
-          poUpdate.url = this.spServices.getItemURL(this.constants.listNames.SOW.name,
+          poUpdate.url = this.spServices.getItemURL(this.constants.listNames.PO.name,
             poItem.ID);
           batchURL.push(poUpdate);
         }
