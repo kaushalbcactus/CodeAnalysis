@@ -1,6 +1,6 @@
 
 /** Loader **/
-@-webkit-keyframes spin {
+  @-webkit-keyframes spin {
     0% { -webkit-transform: rotate(0deg); }
     100% { -webkit-transform: rotate(360deg); }
   }
@@ -80,11 +80,14 @@
 
   .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
     background: #D7181F !important;
-}
-.ui-button:enabled:active{
-    background-color: #D7181F !important;
-    border-color: #D7181F !important;
-}
+  }
+  .ui-button:enabled:active{
+      background-color: #D7181F !important;
+      border-color: #D7181F !important;
+  }
 
-  
- 
+    
+  .ng-right-side-overlay .ui-sidebar {
+
+    overflow-x: auto; 
+  }
