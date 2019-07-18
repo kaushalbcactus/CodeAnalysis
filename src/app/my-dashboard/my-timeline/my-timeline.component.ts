@@ -312,8 +312,6 @@ export class MyTimelineComponent implements OnInit {
     this.events = [...this.events];
     this.CalendarLoader = false;
 
-    console.log(this.events);
-
   }
 
 

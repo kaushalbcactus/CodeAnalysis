@@ -15,6 +15,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectTimelineComponent } from './project-timeline/project-timeline.component';
 import { GlobalService } from 'src/app/Services/global.service';
 import { DataService } from 'src/app/Services/data.service';
+import { elementAt } from 'rxjs/operators';
 
 declare var $;
 @Component({
@@ -28,15 +29,16 @@ export class AllProjectsComponent implements OnInit {
   popItems: MenuItem[];
   selectedProjectObj;
   displayedColumns: any[] = [
-    { field: 'SOWCode', header: 'Sow Code' },
-    { field: 'ProjectCode', header: 'Project Code' },
-    { field: 'ShortTitle', header: 'Short Title' },
-    { field: 'ClientLegalEntity', header: 'Client Legal Entity' },
-    { field: 'DeliverableType', header: 'Deliverable Type' },
-    { field: 'ProjectType', header: 'Project Type' },
-    { field: 'Status', header: 'Status' },
-    { field: 'CreatedBy', header: 'Created By' },
-    { field: 'CreatedDate', header: 'Created Date' },
+    { field: 'SOWCode', header: 'Sow Code', visibility: true },
+    { field: 'ProjectCode', header: 'Project Code', visibility: true },
+    { field: 'ShortTitle', header: 'Short Title', visibility: true },
+    { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
+    { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
+    { field: 'ProjectType', header: 'Project Type', visibility: true },
+    { field: 'Status', header: 'Status', visibility: true },
+    { field: 'CreatedBy', header: 'Created By', visibility: true },
+    { field: 'CreatedDateFormat', header: 'Created Date', visibility: false },
+    { field: 'CreatedDate', header: 'Created Date', visibility: true, exportable: false }
   ];
   filterColumns: any[] = [
     { field: 'SOWCode' },
@@ -250,16 +252,14 @@ export class AllProjectsComponent implements OnInit {
         if (projectObj && projectObj.length) {
           if (this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.sharePointPageObject.userId) {
             await this.approveRejectBudgetReduction(this.params.ProjectBudgetStatus, projectObj[0]);
-          }
-          else {
+          } else {
             this.messageService.add({
               key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
               detail: 'You are not authorized to Approve / Reject budget reduction for this project - ' + this.params.ProjectCode + ' .'
             });
           }
 
-        }
-        else {
+        } else {
           this.messageService.add({
             key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
             detail: 'You dont have access to this project - ' + this.params.ProjectCode + ' .'
@@ -288,6 +288,7 @@ export class AllProjectsComponent implements OnInit {
         projObj.Status = task.Status;
         projObj.CreatedBy = task.Author ? task.Author.Title : '';
         projObj.CreatedDate = task.Created;
+        projObj.CreatedDateFormat = this.datePipe.transform(new Date(projObj.CreatedDate), 'MMM dd yyyy hh:mm:ss aa');
         projObj.PrimaryPOC = task.PrimaryPOC;
         projObj.PrimaryPOCText = this.pmCommonService.extractNamefromPOC([projObj.PrimaryPOC]);
         projObj.AdditionalPOC = task.POC ? task.POC.split(';#') : [];
@@ -438,7 +439,7 @@ export class AllProjectsComponent implements OnInit {
       const existPBBArray = result[1].retItems;
       const existSOW = result[2].retItems[0];
 
-      const pbb = existPBBArray.find(e => e.Status === this.constants.projectBudgetBreakupList.status.ApprovalPending)
+      const pbb = existPBBArray.find(e => e.Status === this.constants.projectBudgetBreakupList.status.ApprovalPending);
       if (pbb) {
         const projectBudgetBreakupData = {
           __metadata: { type: this.constants.listNames.ProjectBudgetBreakup.type },
@@ -479,8 +480,7 @@ export class AllProjectsComponent implements OnInit {
           batchURL.push(projectFinaceUpdate);
 
           projectBudgetBreakupData.Status = this.constants.projectBudgetBreakupList.status.Approved;
-        }
-        else if (selectedStatus === this.pmConstant.ACTION.REJECTED) {
+        } else if (selectedStatus === this.pmConstant.ACTION.REJECTED) {
           projectBudgetBreakupData.Status = this.constants.projectBudgetBreakupList.status.Rejected;
         }
         const projectBudgetBreakupUpdate = Object.assign({}, options);
@@ -504,14 +504,14 @@ export class AllProjectsComponent implements OnInit {
         let tempArray = [];
         let arrayTo = [];
         const cm1IdArray = [];
-        let arrayCC = []
+        let arrayCC = [];
         let ccIDs = [];
-        if(projectObj.CMLevel1.hasOwnProperty('results')) {
+        if (projectObj.CMLevel1.hasOwnProperty('results')) {
           projectObj.CMLevel1.results.forEach(element => {
             cm1IdArray.push(element.ID);
           });
         }
-        
+
         arrayCC = arrayCC.concat([], cm1IdArray);
         tempArray = tempArray.concat([], projectObj.CMLevel2.ID);
         arrayTo = this.pmCommonService.getEmailId(tempArray);
@@ -520,8 +520,7 @@ export class AllProjectsComponent implements OnInit {
         ///// Send approval message
         this.pmCommonService.getTemplate(this.constants.EMAIL_TEMPLATE_NAME.BUDGET_APPROVAL, objEmailBody, mailSubject, arrayTo,
           ccIDs);
-      }
-      else {
+      } else {
         this.messageService.add({
           key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
           detail: 'No un-apporved budget reduction request found for project - ' + this.params.ProjectCode + ' .'
@@ -904,11 +903,11 @@ export class AllProjectsComponent implements OnInit {
           ProjectCode: element.ProjectCode,
           ApprovalDate: new Date(element.ApprovalDate),
           Status: element.Status,
-          OriginalBudget: -element.OriginalBudget,
-          NetBudget: -element.NetBudget,
-          OOPBudget: -element.OOPBudget,
-          TaxBudget: -element.TaxBudget,
-          BudgetHours: -element.BudgetHours
+          OriginalBudget: element.OriginalBudget * -1,
+          NetBudget: element.NetBudget * -1,
+          OOPBudget: element.OOPBudget * -1,
+          TaxBudget: element.TaxBudget * -1,
+          BudgetHours: element.BudgetHours * -1
         };
         const projectBudgetBreakCreate = Object.assign({}, options);
         projectBudgetBreakCreate.url = this.spServices.getReadURL(this.constants.listNames.ProjectBudgetBreakup.name, null);
@@ -918,44 +917,46 @@ export class AllProjectsComponent implements OnInit {
         batchURL.push(projectBudgetBreakCreate);
       }
     });
-    const sowData = {
-      __metadata: {
-        type: this.constants.listNames.SOW.type
-      },
-      TotalBudget: sowObj.TotalBudget - projectFinanceObj.Budget,
-      NetBudget: sowObj.NetBudget - projectFinanceObj.RevenueBudget,
-      OOPBudget: sowObj.OOPBudget - projectFinanceObj.OOPBudget,
-      TaxBudget: sowObj.TaxBudget - projectFinanceObj.TaxBudget
-    };
-    const sowUpdate = Object.assign({}, options);
-    sowUpdate.data = sowData;
-    sowUpdate.listName = this.constants.listNames.SOW.name;
-    sowUpdate.type = 'PATCH';
-    sowUpdate.url = this.spServices.getItemURL(this.constants.listNames.SOW.name,
-      sowObj.ID);
-    batchURL.push(sowUpdate);
-    projectFinanceBreakObjs.forEach(element => {
-      const poLookUp = element.POLookup;
-      const poItem = POObjsArray.find(c => c.ID === poLookUp);
-      if (poItem && poItem.hasOwnProperty('Amount')) {
-        const poData = {
-          __metadata: {
-            type: this.constants.listNames.SOW.type
-          },
-          Amount: poItem.Amount - projectFinanceObj.Budget,
-          AmountRevenue: poItem.AmountRevenue - projectFinanceObj.RevenueBudget,
-          AmountOOP: poItem.AmountOOP - projectFinanceObj.OOPBudget,
-          AmountTax: poItem.AmountTax - projectFinanceObj.TaxBudget
-        };
-        const poUpdate = Object.assign({}, options);
-        poUpdate.data = poData;
-        poUpdate.listName = this.constants.listNames.SOW.name;
-        poUpdate.type = 'PATCH';
-        poUpdate.url = this.spServices.getItemURL(this.constants.listNames.SOW.name,
-          poItem.ID);
-        batchURL.push(poUpdate);
-      }
-    });
+    if (this.selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value) {
+      const sowData = {
+        __metadata: {
+          type: this.constants.listNames.SOW.type
+        },
+        TotalScheduled: sowObj.TotalScheduled - projectFinanceObj.InvoicesScheduled,
+        ScheduledRevenue: sowObj.ScheduledRevenue - projectFinanceObj.ScheduledRevenue,
+        TotalLinked: sowObj.TotalLinked - projectFinanceObj.Budget,
+        RevenueLinked: sowObj.RevenueLinked - projectFinanceObj.RevenueBudget
+      };
+      const sowUpdate = Object.assign({}, options);
+      sowUpdate.data = sowData;
+      sowUpdate.listName = this.constants.listNames.SOW.name;
+      sowUpdate.type = 'PATCH';
+      sowUpdate.url = this.spServices.getItemURL(this.constants.listNames.SOW.name,
+        sowObj.ID);
+      batchURL.push(sowUpdate);
+      projectFinanceBreakObjs.forEach(element => {
+        const poLookUp = element.POLookup;
+        const poItem = POObjsArray.find(c => c.ID === poLookUp);
+        if (poItem) {
+          const poData = {
+            __metadata: {
+              type: this.constants.listNames.PO.type
+            },
+            TotalLinked: poItem.TotalLinked - element.Amount,
+            RevenueLinked: poItem.RevenueLinked - element.AmountRevenue,
+            TotalScheduled: poItem.TotalScheduled - element.TotalScheduled,
+            ScheduledRevenue: poItem.ScheduledRevenue - element.ScheduledRevenue
+          };
+          const poUpdate = Object.assign({}, options);
+          poUpdate.data = poData;
+          poUpdate.listName = this.constants.listNames.PO.name;
+          poUpdate.type = 'PATCH';
+          poUpdate.url = this.spServices.getItemURL(this.constants.listNames.PO.name,
+            poItem.ID);
+          batchURL.push(poUpdate);
+        }
+      });
+    }
     for (const element of scheduleListObjs) {
       if (batchURL.length < 100) {
         const scUpdateData = {
@@ -1417,6 +1418,9 @@ export class AllProjectsComponent implements OnInit {
         projectObj: projObj
       }
     });
+    ref.onClose.subscribe(element => {
+      this.pmCommonService.resetAddProject();
+    });
   }
   communications(selectedProjectObj) {
     const ref = this.dialogService.open(CommunicationComponent, {
@@ -1425,6 +1429,9 @@ export class AllProjectsComponent implements OnInit {
         projectObj: selectedProjectObj
       }
     });
+    ref.onClose.subscribe(element => {
+      this.pmCommonService.resetAddProject();
+    });
   }
   projectTimeline(selectedProjectObj) {
     const ref = this.dialogService.open(ProjectTimelineComponent, {
@@ -1432,6 +1439,9 @@ export class AllProjectsComponent implements OnInit {
       data: {
         projectObj: selectedProjectObj
       }
+    });
+    ref.onClose.subscribe(element => {
+      this.pmCommonService.resetAddProject();
     });
   }
   showTimeline(selectedProjectObj) {
@@ -1602,20 +1612,40 @@ export class AllProjectsComponent implements OnInit {
         projectObj: projObj
       }
     });
+    ref.onClose.subscribe(element => {
+      this.pmCommonService.resetAddProject();
+    });
   }
   /**
    * This function is used to open the move to project dialog box.
    * @param projObj pass the project object as a parameter.
    */
-  moveSOW(projObj) {
+  async moveSOW(projObj) {
     this.sowDropDownArray = [];
     this.pmObject.isMainLoaderHidden = false;
-    this.newSelectedSOW = projObj.SOWCode;
+    // this.newSelectedSOW = projObj.SOWCode;
+    if (this.pmObject.allSOWItems.length === 0) {
+      let arrResults = [];
+      if (this.pmObject.userRights.isMangers
+        || this.pmObject.userRights.isHaveSOWFullAccess
+        || this.pmObject.userRights.isHaveSOWBudgetManager) {
+        const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW);
+        arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
+      } else {
+        const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
+        arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
+      }
+      if (arrResults && arrResults.length) {
+        this.pmObject.allSOWItems = arrResults;
+      }
+    }
     const sowArray = this.pmObject.allSOWItems;
     if (sowArray && sowArray.length) {
       sowArray.forEach(element => {
         this.sowDropDownArray.push({ label: element.SOWCode, value: element.SOWCode });
       });
+    } else {
+
     }
     this.pmObject.isMainLoaderHidden = true;
     this.pmObject.isMoveProjectToSOWVisible = true;
@@ -1624,10 +1654,26 @@ export class AllProjectsComponent implements OnInit {
    * This method is used to transfer the project from one sow code to another sow code.
    */
   async performSOWMove() {
-    this.pmObject.isMainLoaderHidden = false;
     const projObject = this.selectedProjectObj;
+    if (projObject.SOWCode === this.newSelectedSOW) {
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: 'Source sow code ' + projObject.SOWCode + ' and destination sow ' + this.newSelectedSOW + ' cannot be same.'
+      });
+      return;
+    }
+    this.pmObject.isMainLoaderHidden = false;
+
     const isValid = await this.validateSOWBudgetForProjectMovement(this.newSelectedSOW, projObject);
     if (isValid) {
+      if (isValid === 'InvoiceNotScheduled') {
+        this.messageService.add({
+          key: 'custom', severity: 'error', summary: 'Error Message',
+          detail: 'Project Movement to selected SOW ' + this.newSelectedSOW + ' is not possible due to confirmed invoice'
+        });
+        this.pmObject.isMainLoaderHidden = true;
+        return;
+      }
       const batchURL = [];
       const options = {
         data: null,
@@ -1697,6 +1743,7 @@ export class AllProjectsComponent implements OnInit {
         projectInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
         batchURL.push(projectInfoUpdate);
       }
+
       const sResult = await this.spServices.executeBatch(batchURL);
       this.pmObject.isMainLoaderHidden = true;
       this.messageService.add({
@@ -1712,15 +1759,11 @@ export class AllProjectsComponent implements OnInit {
         }
         this.closeMoveSOW();
       }, this.pmConstant.TIME_OUT);
-    } else if (isValid === 'InvoiceNotScheduled') {
-      this.messageService.add({
-        key: 'custom', severity: 'error', summary: 'Error Message',
-        detail: 'Project Movement to selected SOW ' + projObject.SOWCode + ' is not possible due to confirmed invoice'
-      });
     } else {
+      this.pmObject.isMainLoaderHidden = true;
       this.messageService.add({
         key: 'custom', severity: 'error', summary: 'Error Message',
-        detail: 'Project Movement to selected SOW ' + projObject.SOWCode + ' is not possible due to insufficient amount'
+        detail: 'Project Movement to selected SOW ' + this.newSelectedSOW + ' is not possible due to insufficient amount'
       });
     }
   }
@@ -1754,7 +1797,7 @@ export class AllProjectsComponent implements OnInit {
    */
   async validateSOWBudgetForProjectMovement(newSOWCode, projObj) {
     // get data from project finance based on project code.
-    let budgetValidateFlag = false;
+    let budgetValidateFlag = true;
     const allSOWArray = this.pmObject.allSOWItems;
     const batchURL = [];
     const options = {
@@ -1776,7 +1819,7 @@ export class AllProjectsComponent implements OnInit {
     // Get InvoiceLine Items ##1;
     const inoviceGet = Object.assign({}, options);
     const invoiceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.INVOICE_LINE_ITEMS_BY_PROJECTCODE);
-    invoiceFilter.filter = projectFinaceFilter.filter.replace(/{{projectCode}}/gi,
+    invoiceFilter.filter = invoiceFilter.filter.replace(/{{projectCode}}/gi,
       projObj.ProjectCode);
     inoviceGet.url = this.spServices.getReadURL(this.constants.listNames.InvoiceLineItems.name,
       invoiceFilter);
@@ -1794,27 +1837,28 @@ export class AllProjectsComponent implements OnInit {
           return 'InvoiceNotScheduled';
         }
       }
-      const sowItem = sowObj[0];
-      // add budget into project object to utilize for update operation.
-      projObj.Budget = fm.Budget ? fm.Budget : 0;
-      projObj.RevenueBudget = fm.RevenueBudget ? fm.RevenueBudget : 0;
-      projObj.OOPBudget = fm.OOPBudget ? fm.OOPBudget : 0;
-      projObj.TaxBudget = fm.TaxBudget ? fm.TaxBudget : 0;
-      projObj.InvoicesScheduled = fm.InvoicesScheduled ? fm.InvoicesScheduled : 0;
-      projObj.ScheduledRevenue = fm.ScheduledRevenue ? fm.ScheduledRevenue : 0;
-      projObj.ScheduledOOP = fm.ScheduledOOP ? fm.ScheduledOOP : 0;
-      const sowBalanceTotalBudget = sowItem.TotalBudget - sowItem.TotalLinked;
-      const sowBalanceRevenueBudget = sowItem.NetBudget - sowItem.RevenueLinked;
-      const sowBalanceOOPBudget = sowItem.OOPBudget - sowItem.OOPLinked;
-      const sowBalanceTaxBudget = sowItem.TaxBudget - sowItem.TaxLinked;
-      if (sowBalanceTotalBudget >= fm.Budget &&
-        sowBalanceRevenueBudget >= fm.RevenueBudget &&
-        sowBalanceOOPBudget >= fm.OOPBudget &&
-        sowBalanceTaxBudget >= fm.TaxBudget) {
-        budgetValidateFlag = true;
-      } else {
-        budgetValidateFlag = false;
+      if (this.selectedProjectObj.ProjectType !== this.pmConstant.PROJECT_TYPE.HOURLY.value) {
+        const sowItem = sowObj[0];
+        // add budget into project object to utilize for update operation.
+        projObj.Budget = fm.Budget ? fm.Budget : 0;
+        projObj.RevenueBudget = fm.RevenueBudget ? fm.RevenueBudget : 0;
+        projObj.OOPBudget = fm.OOPBudget ? fm.OOPBudget : 0;
+        projObj.TaxBudget = fm.TaxBudget ? fm.TaxBudget : 0;
+        projObj.InvoicesScheduled = fm.InvoicesScheduled ? fm.InvoicesScheduled : 0;
+        projObj.ScheduledRevenue = fm.ScheduledRevenue ? fm.ScheduledRevenue : 0;
+        projObj.ScheduledOOP = fm.ScheduledOOP ? fm.ScheduledOOP : 0;
+        const sowBalanceTotalBudget = sowItem.TotalBudget - (sowItem.TotalLinked ? sowItem.TotalLinked : 0);
+        const sowBalanceRevenueBudget = sowItem.NetBudget - (sowItem.RevenueLinked ? sowItem.RevenueLinked : 0);
+
+        if (sowBalanceTotalBudget >= projObj.Budget &&
+          sowBalanceRevenueBudget >= projObj.RevenueBudget
+        ) {
+          budgetValidateFlag = true;
+        } else {
+          budgetValidateFlag = false;
+        }
       }
+
     }
     return budgetValidateFlag;
   }

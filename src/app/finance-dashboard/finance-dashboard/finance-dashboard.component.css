@@ -865,10 +865,9 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
     overflow: visible!important;
 }
 
-
-/* .financeTable div.ui-table-wrapper {
-    min-height: 440px;
-} */
+.financeTable div.ui-table-wrapper {
+    overflow: visible!important;
+}
 
 .financeTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
     overflow: visible;

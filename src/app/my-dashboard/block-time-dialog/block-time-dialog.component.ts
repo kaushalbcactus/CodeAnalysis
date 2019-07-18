@@ -61,7 +61,7 @@ export class BlockTimeDialogComponent implements OnInit {
 
     this.getMaxDate();
     this.data = this.config.data;
-    console.log(this.data);
+   
     if (this.data.task !== undefined) {
 
     
@@ -278,7 +278,6 @@ export class BlockTimeDialogComponent implements OnInit {
 
     this.endtime = undefined;
     this.minEndTime = event;
-    console.log(this.sharedObject.DashboardData.ResourceCategorization);
 
   }
 

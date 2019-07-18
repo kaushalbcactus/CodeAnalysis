@@ -19,14 +19,16 @@ declare var $;
 })
 export class ClientReviewComponent implements OnInit {
   displayedColumns: any[] = [
-    { field: 'SLA', header: 'SLA' },
-    { field: 'ProjectCode', header: 'Project Code' },
-    { field: 'ClientLegalEntity', header: 'Client Legal Entity' },
-    { field: 'POC', header: 'POC' },
-    { field: 'DeliverableType', header: 'Deliverable Type' },
-    { field: 'DueDate', header: 'Due Date' },
-    { field: 'Milestone', header: 'Milestone' },
-    { field: 'DeliveryDate', header: 'Delivery Date' }];
+    { field: 'SLA', header: 'SLA', visibility: true },
+    { field: 'ProjectCode', header: 'Project Code', visibility: true },
+    { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
+    { field: 'POC', header: 'POC', visibility: true },
+    { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
+    { field: 'DueDate', header: 'Due Date', visibility: true, exportable: false },
+    { field: 'Milestone', header: 'Milestone', visibility: true },
+    { field: 'DeliveryDate', header: 'Delivery Date', visibility: true, exportable: false },
+    { field: 'DeliveryDateFormat', header: 'Delivery Date', visibility: false },
+    { field: 'DueDateFormat', header: 'Due Date', visibility: false }];
   filterColumns: any[] = [
     { field: 'ProjectCode' },
     { field: 'ClientLegalEntity' },
@@ -35,7 +37,7 @@ export class ClientReviewComponent implements OnInit {
     { field: 'DueDate' },
     { field: 'Milestone' },
     { field: 'DeliveryDate' }];
-  @ViewChild('crTableRef', {static: true}) crRef: ElementRef;
+  @ViewChild('crTableRef', { static: true }) crRef: ElementRef;
   // tslint:disable-next-line:variable-name
   private _success = new Subject<string>();
   // tslint:disable-next-line:variable-name
@@ -212,7 +214,7 @@ export class ClientReviewComponent implements OnInit {
         crObj.NextTasks = task.NextTasks;
         crObj.PreviousTask = task.PrevTasks;
         // tslint:disable-next-line:only-arrow-functions
-        const projectObj = this.pmObject.allProjectItems.filter( (obj) => {
+        const projectObj = this.pmObject.allProjectItems.filter((obj) => {
           return obj.ProjectCode === task.ProjectCode;
         });
         if (projectObj.length) {
@@ -228,7 +230,8 @@ export class ClientReviewComponent implements OnInit {
             crObj.POC = projecContObj[0].FullName;
           }
         }
-        crObj.DueDate = this.datePipe.transform(task.DueDate, 'MMM dd yyyy hh:mm:ss aa');
+        crObj.DueDate = task.DueDate;
+        crObj.DueDateFormat = this.datePipe.transform(new Date(crObj.DueDate), 'MMM dd yyyy hh:mm:ss aa');
         crObj.Milestone = task.Milestone;
 
         // Check Task Due is greater or smaller than current date.
@@ -265,7 +268,8 @@ export class ClientReviewComponent implements OnInit {
         if (prevTask[0] && prevTask[0].length) {
           taskItem.PreviousTaskStatus = prevTask[0][0].Status;
           this.crArrays.previousTaskArray.push(prevTask[0]);
-          taskItem.DeliveryDate = this.datePipe.transform(prevTask[0][0].DueDate, 'MMM dd yyyy hh:mm:ss aa');
+          taskItem.DeliveryDate = prevTask[0][0].DueDate;
+          taskItem.DeliveryDateFormat = this.datePipe.transform(new Date(prevTask[0][0].DueDate), 'MMM dd yyyy hh:mm:ss aa');
           deliveryDateTempArray.push({ label: taskItem.DeliveryDate, value: taskItem.DeliveryDate });
         }
       }

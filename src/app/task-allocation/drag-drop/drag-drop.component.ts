@@ -295,7 +295,7 @@ export class DragDropComponent implements OnInit {
         });
 
         this.ref.close(this.milestonesGraph);
-        console.log(this.milestonesGraph);
+
        // this.messageService.add({key: 'custom', severity:'Warn', summary: 'Success Message', detail:'Updating...' });
       }
     }
@@ -889,7 +889,6 @@ export class DragDropComponent implements OnInit {
       arrLinksCoord.push(coord);
     }
     
-    console.log(arrLinksCoord);
     return arrLinksCoord;
   }
 

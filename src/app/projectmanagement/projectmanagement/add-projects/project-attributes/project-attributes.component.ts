@@ -59,11 +59,13 @@ export class ProjectAttributesComponent implements OnInit {
       this.addProjectAttributesForm.get('clientLeagalEntity').disable();
       this.addProjectAttributesForm.get('billingEntity').disable();
       if (this.projObj) {
+        this.addProjectAttributesForm.get('billedBy').disable();
         this.editProject(this.projObj);
         this.showEditSave = true;
       } else {
         const sow = this.pmObject.allSOWItems.filter(objt => objt.SOWCode === this.pmObject.addProject.SOWSelect.SOWCode);
         if (sow && sow.length) {
+          this.addProjectAttributesForm.get('billedBy').enable();
           const sowObj = {
             ClientLegalEntity: sow[0].ClientLegalEntity,
             BillingEntity: sow[0].BillingEntity,
@@ -281,7 +283,7 @@ export class ProjectAttributesComponent implements OnInit {
     Object.keys(formGroup.controls).forEach(field => {
       const control = formGroup.get(field);
       if (control instanceof FormControl) {
-        control.markAsTouched({ onlySelf: true });
+        control.markAsTouched({ onlySelf: false });
       } else if (control instanceof FormGroup) {
         this.validateAllFormFields(control);
       }
@@ -375,27 +377,31 @@ export class ProjectAttributesComponent implements OnInit {
     this.setFieldProperties(this.pmObject.addProject.ProjectAttributes, null, false);
   }
   async saveEditProject() {
-    this.pmObject.isMainLoaderHidden = false;
-    this.setFormFieldValue();
-    if (this.selectedFile) {
-      await this.pmCommonService.submitFile(this.selectedFile, this.fileReader);
-    }
-    const projectInfo = this.pmCommonService.getProjectData(this.pmObject.addProject, false);
-    await this.spServices.updateItem(this.constant.listNames.ProjectInformation.name, this.projObj.ID, projectInfo,
-      this.constant.listNames.ProjectInformation.type);
-    this.pmObject.isMainLoaderHidden = true;
-    this.messageService.add({
-      key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-      detail: 'Project Updated Successfully for the projectcode - ' + this.projObj.ProjectCode
-    });
-    setTimeout(() => {
-      this.dynamicDialogRef.close();
-      if (this.router.url === '/projectMgmt/allProjects') {
-        this.dataService.publish('reload-project');
-      } else {
-        this.router.navigate(['/projectMgmt/allProjects']);
+    if (this.addProjectAttributesForm.valid) {
+      this.pmObject.isMainLoaderHidden = false;
+      this.setFormFieldValue();
+      if (this.selectedFile) {
+        await this.pmCommonService.submitFile(this.selectedFile, this.fileReader);
       }
-    }, this.pmConstant.TIME_OUT);
+      const projectInfo = this.pmCommonService.getProjectData(this.pmObject.addProject, false);
+      await this.spServices.updateItem(this.constant.listNames.ProjectInformation.name, this.projObj.ID, projectInfo,
+        this.constant.listNames.ProjectInformation.type);
+      this.pmObject.isMainLoaderHidden = true;
+      this.messageService.add({
+        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+        detail: 'Project Updated Successfully for the projectcode - ' + this.projObj.ProjectCode
+      });
+      setTimeout(() => {
+        this.dynamicDialogRef.close();
+        if (this.router.url === '/projectMgmt/allProjects') {
+          this.dataService.publish('reload-project');
+        } else {
+          this.router.navigate(['/projectMgmt/allProjects']);
+        }
+      }, this.pmConstant.TIME_OUT);
+    } else {
+      this.validateAllFormFields(this.addProjectAttributesForm);
+    }
   }
   /**
    * This method is called when file is selected

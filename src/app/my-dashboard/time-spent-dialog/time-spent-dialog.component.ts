@@ -57,12 +57,9 @@ export class TimeSpentDialogComponent implements OnInit {
       else {
         this.getDatesForTimespent(this.data);
       }
-      debugger;
+    
       this.SelectedTabType = this.data.tab;
       this.modalloaderenable = true;
-
-      console.log('inside time');
-      console.log(this.data);
 
     }
 
@@ -107,7 +104,7 @@ export class TimeSpentDialogComponent implements OnInit {
     var todayDate = new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
     var startDate = new Date(this.datePipe.transform(task.StartDate, 'MMM d, y'));
 
-    debugger;
+   
     if (this.currentTaskTimeSpent[0].TimeSpentPerDay) {
       var timeSpentForTask = this.currentTaskTimeSpent[0].TimeSpentPerDay.split(/\n/);
 
@@ -126,7 +123,6 @@ export class TimeSpentDialogComponent implements OnInit {
       this.dateArray.reverse();
     }
     else {
-      debugger
       if (startDate > todayDate) {
 
         if (this.SelectedTabType === 'MyCompletedTask' || task.Status ==="Completed" || task.Status ==="Auto Closed") {
@@ -307,9 +303,6 @@ export class TimeSpentDialogComponent implements OnInit {
     var timeSpentHours = dateArray.map(c => c.time.split(":")).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
     var timeSpentMin = dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
     var totalTimeSpent = timeSpentMin < 10 ? timeSpentHours + '.' + "0" + timeSpentMin : timeSpentHours + '.' + timeSpentMin;
-
-
-    console.log(task);
     const jsonData = {
       Actual_x0020_Start_x0020_Date: ActualStartDate,
       TimeSpent: totalTimeSpent,

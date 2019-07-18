@@ -15,7 +15,7 @@ declare var $: any;
   selector: 'app-inactive',
   templateUrl: './inactive.component.html',
   styleUrls: ['./inactive.component.css'],
-  encapsulation:ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None
 })
 export class InactiveComponent implements OnInit {
   displayedColumns: any[] = [
