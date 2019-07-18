@@ -388,7 +388,7 @@ export class FDDataShareService {
     }
 
     styleIndia(amount) {
-        return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount)
+        return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount.toFixed(2))
     }
 
     styleUSJapan(amount) {

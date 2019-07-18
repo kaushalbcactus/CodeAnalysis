@@ -235,7 +235,7 @@ body .ui-widget {font-family: Verdana !important;}
 body .ui-widget-content p {font-size: 16px;}
 body p {margin:0;line-height:1.5;}
 table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
-.logo-img{width: auto; margin: auto;margin-bottom: 20px;}
+.logo-img{width: 200px; height: auto; margin: auto}
 .header-left{width: 50%;padding-left: 40px;font-size: 15px;line-height: 2;font-weight: 500;margin: 0;text-align: left;}
 .header-left label{font-size: 26px; font-weight: 500}
 .header-right{width:10%; text-align:right; display:table-cell;}
@@ -262,6 +262,9 @@ table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
 .footer-table a{text-decoration: none;color: blue;}
 footer table:first-child{margin-top:10px}
 footer table:first-child tr td{font-size: 14px;text-align: center;}
+footer {height:175px;background-color:#c5d3e5}
+footer table:last-child {margin-top: 8px;}
+footer table:last-child tr td {padding: 4px;}
 
 /*Content*/
 body {font-size: 16px; color: #333;background-color: #fff;font-family: Verdana !important;}
