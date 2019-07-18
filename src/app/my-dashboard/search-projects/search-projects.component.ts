@@ -10,6 +10,7 @@ import { ViewUploadDocumentDialogComponent } from '../view-upload-document-dialo
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { TimelineHistoryComponent } from './../../timeline/timeline-history/timeline-history.component';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-search-projects',
@@ -18,13 +19,13 @@ import { TimelineHistoryComponent } from './../../timeline/timeline-history/time
 })
 export class SearchProjectsComponent implements OnInit, OnDestroy {
 
-  @ViewChild(ProjectDraftsComponent, {static: true})
+  @ViewChild(ProjectDraftsComponent, { static: true })
   projectDraftsComponent: ProjectDraftsComponent;
 
-  @ViewChild(TimelineComponent, {static: true})
+  @ViewChild(TimelineComponent, { static: true })
   timelineComponent: TimelineComponent;
 
-  @ViewChild(ViewUploadDocumentDialogComponent, {static: true})
+  @ViewChild(ViewUploadDocumentDialogComponent, { static: true })
   viewUploadDocumentDialogComponent: ViewUploadDocumentDialogComponent;
 
   @ViewChild('timelineRef', { static: true })
@@ -48,7 +49,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   projectDisplayTitle: any;
   ProjectPopupDetails: any;
   showDetails: boolean;
-  projectResource: any=[];
+  projectResource: any = [];
   public ProjectDetails = {
     hoursSpent: 0,
     spentHours: 0,
@@ -75,19 +76,20 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     deliverable: [],
     account: [],
   };
- 
+
 
   constructor(public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
     private spServices: SharepointoperationService,
+    private commonService: CommonService,
     private datePipe: DatePipe,
     public sharedObject: GlobalService, public router: Router) { }
 
   ngOnInit() {
-    const route  = this.router.url;
+    const route = this.router.url;
 
-    if(route.indexOf('search-projects') > -1) {
+    if (route.indexOf('search-projects') > -1) {
       this.onSearchProject = true;
     }
     else {
@@ -106,7 +108,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     ];
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
   }
 
 
@@ -117,7 +119,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     ];
   }
 
-  onCancel(){
+  onCancel() {
     this.projectDraftsComponent.ngOnDestroy();
     this.viewUploadDocumentDialogComponent.ngOnDestroy();
     this.timelineComponent.ngOnDestroy();
@@ -126,28 +128,30 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   createColFieldValues() {
 
     this.ProjectColArray = { SOWCode: [], ProjectCode: [], WBJID: [], ClientLegalEntity: [], DeliverableType: [], ProjectType: [], Status: [], CreatedBy: [], Created: [] };
-    this.ProjectColArray.SOWCode.push.apply(this.ProjectColArray.SOWCode, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; })));
+    this.ProjectColArray.SOWCode = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; })));
 
-    this.ProjectColArray.ProjectCode.push.apply(this.ProjectColArray.ProjectCode, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; })));
+    this.ProjectColArray.ProjectCode = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; })));
 
-    this.ProjectColArray.WBJID.push.apply(this.ProjectColArray.WBJID, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.WBJID, value: a.WBJID }; return b; })));
+    this.ProjectColArray.WBJID = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.WBJID, value: a.WBJID }; return b; })));
 
-    this.ProjectColArray.ClientLegalEntity.push.apply(this.ProjectColArray.ClientLegalEntity, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; })));
+    this.ProjectColArray.ClientLegalEntity = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; })));
 
-    this.ProjectColArray.DeliverableType.push.apply(this.ProjectColArray.DeliverableType, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.DeliverableType, value: a.DeliverableType }; return b; })));
+    this.ProjectColArray.DeliverableType = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.DeliverableType, value: a.DeliverableType }; return b; })));
 
-    this.ProjectColArray.ProjectType.push.apply(this.ProjectColArray.ProjectType, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.ProjectType, value: a.ProjectType }; return b; })));
+    this.ProjectColArray.ProjectType = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.ProjectType, value: a.ProjectType }; return b; })));
 
-    this.ProjectColArray.Status.push.apply(this.ProjectColArray.Status, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
+    this.ProjectColArray.Status = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
 
 
-    this.ProjectColArray.CreatedBy.push.apply(this.ProjectColArray.CreatedBy, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; })));
+    this.ProjectColArray.CreatedBy = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; })));
 
 
     this.ProjectColArray.Created.push.apply(this.ProjectColArray.Created, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: this.datePipe.transform(a.Created, "MMM d, y, h:mm a"), value: a.Created }; return b; })));
 
+
+
     this.ProjectColArray.Created = this.ProjectColArray.Created.sort((a, b) =>
-    new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
+      new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
     );
 
 
@@ -156,21 +160,21 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   }
 
   keyDownFunction(event) {
-    if(event.keyCode == 13) {
-     this.SearchProject();
+    if (event.keyCode == 13) {
+      this.SearchProject();
     }
   }
 
   async SearchProject() {
-   
+
     this.ProjectPopupDetails = Object.assign({}, this.ProjectDetails);
     this.ProjectPopupDetails = undefined;
-    this.projectResource=[];
-    this.ProjectList =undefined;
+    this.projectResource = [];
+    this.ProjectList = undefined;
     this.tableviewenable = false;
-    this.modalloaderenable=true;
+    this.modalloaderenable = true;
 
-    if (!this.ProjectCode  && !this.ProjectTitle) {
+    if (!this.ProjectCode && !this.ProjectTitle) {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Enter Project Code or Project Short Title.' });
     }
     else {
@@ -199,7 +203,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
         this.ProjectList.map(c => c.Created = new Date(c.Created));
 
-        this.ProjectList.map(c=>c.CreatedBy = c.Author.Title);
+        this.ProjectList.map(c => c.CreatedBy = c.Author.Title);
 
         this.createColFieldValues();
 
@@ -232,7 +236,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.showDetails = true;
     this.step = 4;
     this.ProjectDetails = project;
-  
+
     this.modalloaderenable = true;
     this.projectDisplayTitle = project.ProjectCode + " - " + project.ClientLegalEntity;
     this.ProjectPopupDetails = project;
@@ -240,7 +244,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.ProjectPopupDetails.POC = this.sharedObject.DashboardData.ProjectContacts.find(c => c.ID === project.PrimaryPOC) !== undefined ? this.sharedObject.DashboardData.ProjectContacts.find(c => c.ID === project.PrimaryPOC).FullName : '';
 
     this.modalloaderenable = false;
-  
+
     this.showDetailsenable = true;
     this.GetProjectResources();
 
@@ -280,38 +284,30 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     const ProjectResourcesUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', ProjectResources);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectResourcesUrl);
 
-
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-    // this.ProjectDetails = this.response[0];
-    // console.log(this.ProjectDetails);
-
-    // this.ProjectDetails = this.response[1];
-    // console.log(this.ProjectDetails);
-
     this.ProjectDetails.cmLevel1 = this.response[1][0].CMLevel1;
-    
 
-    this.projectResource.CMMembers =  this.response[1].map(c=>c).map(c=>c.CMLevel1)[0].results ? this.response[1].map(c=>c).map(c=>c.CMLevel1).map(c=>c.results)[0].map(c=>c.Title) + ", " + this.response[1][0].CMLevel2.Title : this.response[1][0].CMLevel2.Title;
 
-    this.projectResource.PMMembers =  this.response[1].map(c=>c).map(c=>c.DeliveryLevel1)[0].results ? this.response[1].map(c=>c).map(c=>c.DeliveryLevel1).map(c=>c.results)[0].map(c=>c.Title) + ", " + this.response[1][0].DeliveryLevel2.Title : this.response[1][0].DeliveryLevel2.Title;
+    this.projectResource.CMMembers = this.response[1].map(c => c).map(c => c.CMLevel1)[0].results ? this.response[1].map(c => c).map(c => c.CMLevel1).map(c => c.results)[0].map(c => c.Title) + ", " + this.response[1][0].CMLevel2.Title : this.response[1][0].CMLevel2.Title;
+
+    this.projectResource.PMMembers = this.response[1].map(c => c).map(c => c.DeliveryLevel1)[0].results ? this.response[1].map(c => c).map(c => c.DeliveryLevel1).map(c => c.results)[0].map(c => c.Title) + ", " + this.response[1][0].DeliveryLevel2.Title : this.response[1][0].DeliveryLevel2.Title;
 
     // this.projectResource.PMMembers = this.response[1][0].DeliveryLevel1.Title ? this.response[1][0].DeliveryLevel1.Title + ", " + this.response[1][0].DeliveryLevel2.Title : this.response[1][0].DeliveryLevel2.Title;
-    
-    this.projectResource.PrimaryResource = this.response[0].map(c=>c).map(c=> c.PrimaryResMembers).find(c=>c.results) !== undefined ? this.response[0].map(c=>c).map(c=> c.PrimaryResMembers).map(c=>c.results)[0].map(e => e.Title) : '';
 
-    this.projectResource.Writers = this.response[0].map(c=>c).map(c=> c.Writers).find(c=>c.results) !== undefined ? this.response[0].map(c=>c).map(c=> c.Writers).map(c=>c.results)[0].map(e => e.Title) : '';
+    this.projectResource.PrimaryResource = this.response[0].map(c => c).map(c => c.PrimaryResMembers).find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.PrimaryResMembers).map(c => c.results)[0].map(e => e.Title) : '';
 
-    this.projectResource.Reviewers = this.response[0].map(c=>c).map(c=> c.Reviewers).find(c=>c.results) !== undefined ? this.response[0].map(c=>c).map(c=> c.Reviewers).map(c=>c.results)[0].map(e => e.Title) : '';
+    this.projectResource.Writers = this.response[0].map(c => c).map(c => c.Writers).find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.Writers).map(c => c.results)[0].map(e => e.Title) : '';
 
-    this.projectResource.Editors = this.response[0].map(c=>c).map(c=> c.Editors).find(c=>c.results)!== undefined ?this.response[0].map(c=>c).map(c=> c.Editors).map(c=>c.results)[0].map(e => e.Title) : '';
+    this.projectResource.Reviewers = this.response[0].map(c => c).map(c => c.Reviewers).find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.Reviewers).map(c => c.results)[0].map(e => e.Title) : '';
 
-    this.projectResource.GraphicsMembers = this.response[0].map(c=>c).map(c=> c.GraphicsMembers).find(c=>c.results) !== undefined  ? this.response[0].map(c=>c).map(c=> c.GraphicsMembers).map(c=>c.results)[0].map(e => e.Title) : '';
+    this.projectResource.Editors = this.response[0].map(c => c).map(c => c.Editors).find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.Editors).map(c => c.results)[0].map(e => e.Title) : '';
 
-    this.projectResource.QC = this.response[0].map(c=>c).map(c=> c.QC).find(c=>c.results) !== undefined ?  this.response[0].map(c=>c).map(c=> c.QC).map(c=>c.results)[0].map(e => e.Title) : '';
+    this.projectResource.GraphicsMembers = this.response[0].map(c => c).map(c => c.GraphicsMembers).find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.GraphicsMembers).map(c => c.results)[0].map(e => e.Title) : '';
+
+    this.projectResource.QC = this.response[0].map(c => c).map(c => c.QC).find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.QC).map(c => c.results)[0].map(e => e.Title) : '';
 
 
-    this.projectResource.PubSupport = this.response[0].map(c=>c).map(c=> c.PSMembers).find(c=>c.results) !== undefined ?  this.response[0].map(c=>c).map(c=> c.PSMembers).map(c=>c.results)[0].map(e => e.Title) : '';
+    this.projectResource.PubSupport = this.response[0].map(c => c).map(c => c.PSMembers).find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.PSMembers).map(c => c.results)[0].map(e => e.Title) : '';
   }
 
   showTimeline(selectedProjectObj) {

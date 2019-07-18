@@ -135,7 +135,6 @@ export class TimelineComponent implements OnInit,OnDestroy {
       this.oProjectDetails.projectCode = this.projectDetails.projectCode;
       this.onPopupload();
 
-       console.log(this.sharedObject.oTaskAllocation.oProjectDetails);
      }
 
     this.sharedObject.currentUser.timeZone = this.commonService.getCurrentUserTimeZone();
@@ -1890,8 +1889,6 @@ export class TimelineComponent implements OnInit,OnDestroy {
         this.CancelChanges(tempSubmilestones, 'discardAll');
       }
 
-
-      console.log(this.milestoneData);
     });
   }
 
@@ -3276,8 +3273,6 @@ export class TimelineComponent implements OnInit,OnDestroy {
 
 
   async ViewTaskDetails(task) {
-
-    console.log(task);
 
     const ref = this.dialogService.open(TaskDetailsDialogComponent, {
       data: {

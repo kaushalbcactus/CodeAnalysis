@@ -2,11 +2,9 @@
 //  Plus icon to add booking
 ************************************************************************************************** -->
 
-<button type="button" #hiddenButton id="hiddenButton" style="display: none" pButton icon="fa fa-fw fa-list" label="Show"
-    (click)="menuPopup.toggle($event)"></button>
+<button type="button" #hiddenButton id="hiddenButton" style="display: none" pButton icon="fa fa-fw fa-list" label="Show" (click)="menuPopup.toggle($event)"></button>
 
-<p-menu #menuPopup [appendTo]="apeendMenuTest" class='menuPopup' [style]="{'width':'16em'}" [popup]="true"
-    [model]="items"></p-menu>
+<p-menu #menuPopup [appendTo]="apeendMenuTest" class='menuPopup' [style]="{'width':'16em'}" [popup]="true" [model]="items"></p-menu>
 
 
 
@@ -18,8 +16,7 @@
 
 
 <div class="dropdowninfo" style=" position: absolute !important; right:310px; margin-top:24px;">
-    <i class="pi pi-info-circle" (click)="op2.show($event)"
-        style="font-size:2em;cursor: pointer; vertical-align: middle;"></i>
+    <i class="pi pi-info-circle" (click)="op2.show($event)" style="font-size:2em;cursor: pointer; vertical-align: middle;"></i>
     <p-overlayPanel appendTo="body" #op2 [dismissable]="true" [style]="{'padding':'0em 0em 1em 1em'}">
         <span style="font-size:1.5em;font-weight: 500;color:#C53E3E">Task : </span>
         <div>
@@ -74,8 +71,7 @@
         </div>
     </p-overlayPanel>
 
-    <p-dropdown [style]="{'min-width':'10.5em'}" appendTo="body" [options]="taskTypes" (onChange)="onTaskTypeChange()"
-        [(ngModel)]="selectedType" optionLabel="name"></p-dropdown>
+    <p-dropdown [style]="{'min-width':'10.5em'}" appendTo="body" [options]="taskTypes" (onChange)="onTaskTypeChange()" [(ngModel)]="selectedType" optionLabel="name"></p-dropdown>
     <div #apeendMenuTest> </div>
 </div>
 <!--**************************************************************************************************
@@ -91,8 +87,7 @@
 // full calendar 
 ************************************************************************************************** -->
 
-<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
-    position="bottom-center">
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'" position="bottom-center">
 </p-toast>
 
 <p-fullCalendar #calendar [ngStyle]="{'margin':'1em;'}" [events]="events" [options]="options">
@@ -110,18 +105,15 @@
 ************************************************************************************************** -->
 <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
 
-<p-dialog *ngIf="taskdisplay" header="{{taskName}}" [contentStyle]="{'max-height':'90vh'}"
-    [style]="{'width':task.Task === 'Adhoc' ? '80vw': '100vw'}" [positionTop]="task.Task === 'Adhoc' ? '': '0'"
-    [modal]="true" [draggable]="false" appendTo='body' [closable]="false" [(visible)]="taskdisplay">
+<p-dialog *ngIf="taskdisplay" header="{{taskName}}" [contentStyle]="{'max-height':'90vh'}" [style]="{'width':task.Task === 'Adhoc' ? '80vw': '100vw'}" [positionTop]="task.Task === 'Adhoc' ? '': '0'" [modal]="true" [draggable]="false" appendTo='body' [closable]="false"
+    [(visible)]="taskdisplay">
 
     <div class="timeLineButton" fxLayout="row" fxLayoutAlign="end center">
 
 
 
-        <button type="button" pButton icon="pi pi-save" id="saveTime" style="margin-right:5px" (click)="UpdateTask()"
-            [disabled]="task.Status === SelectedStatus  ||  SelectedStatus === undefined" label="Update"></button>
-        <button type="button" pButton icon="pi pi-times" (click)="cancel();taskdisplay=false" label="Cancel"
-            class="ui-button-secondary" style="background-color:ghostwhite;"></button>
+        <button type="button" pButton icon="pi pi-save" id="saveTime" style="margin-right:5px" (click)="UpdateTask()" [disabled]="task.Status === SelectedStatus  ||  SelectedStatus === undefined" label="Update"></button>
+        <button type="button" pButton icon="pi pi-times" (click)="cancel();taskdisplay=false" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
 
     </div>
 
@@ -176,8 +168,7 @@
                 <ng-template matExpansionPanelContent>
 
 
-                    <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center"
-                        [hidden]="!modalloaderenable">
+                    <div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" [hidden]="!modalloaderenable">
                         <div id="modalInnerLoader"></div>
                         <div id="modalInnerLoaderText">Loading...</div>
                     </div>
@@ -209,9 +200,7 @@
 
                                 <span *ngIf="task.Status !== 'Not Started' && task.Status !== 'In Progress'">
                                     {{task.Status}} </span>
-                                <p-dropdown [hidden]="task.Status !== 'Not Started' && task.Status !== 'In Progress'"
-                                    [options]="statusOptions" [(ngModel)]="SelectedStatus" appendTo="body"
-                                    [style]="{'width':'100%'}"></p-dropdown>
+                                <p-dropdown [hidden]="task.Status !== 'Not Started' && task.Status !== 'In Progress'" [options]="statusOptions" [(ngModel)]="SelectedStatus" appendTo="body" [style]="{'width':'100%'}"></p-dropdown>
 
                             </td>
                             <th>Time Spent:</th>
@@ -223,10 +212,9 @@
                                 <div *ngFor="let task of tasks">
                                     <span *ngIf="task.TaskType === 'Previous Task'">
                                         {{task.Title}}
-                                        <span *ngIf="task.SubMilestones">
+                                        <span *ngIf="task.SubMilestones && task.SubMilestones !=='Default'">
                                             - {{task.SubMilestones}}
-                                        </span>
-                                        ({{task.AssignedTo.Title}} - {{task.Status}})
+                                        </span> ({{task.AssignedTo.Title}} - {{task.Status}})
                                     </span>
                                 </div>
                             </td>
@@ -235,10 +223,9 @@
                                 <div *ngFor="let task of tasks">
                                     <span *ngIf="task.TaskType === 'Next Task'">
                                         {{task.Title}}
-                                        <span *ngIf="task.SubMilestones">
+                                        <span *ngIf="task.SubMilestones && task.SubMilestones !=='Default' ">
                                             - {{task.SubMilestones}}
-                                        </span>
-                                        ({{task.AssignedTo.Title}} - {{task.Status}})
+                                        </span> ({{task.AssignedTo.Title}} - {{task.Status}})
                                     </span>
                                 </div>
                             </td>
@@ -313,8 +300,7 @@
     <p-footer *ngIf="task.Task === 'Adhoc'">
         <!-- <button type="button" pButton icon="fa fa-trash" (click)="MarkAsDelete(); taskdisplay=false" label="Delete" style=" background-color: #C53E3E !important;
         border:1px solid #C53E3E;"></button> -->
-        <button type="button" pButton icon="pi pi-times" (click)="taskdisplay=false" label="Close"
-            class="ui-button-secondary"></button>
+        <button type="button" pButton icon="pi pi-times" (click)="taskdisplay=false" label="Close" class="ui-button-secondary"></button>
     </p-footer>
 </p-dialog>
 

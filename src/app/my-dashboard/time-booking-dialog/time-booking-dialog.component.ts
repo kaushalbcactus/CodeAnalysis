@@ -98,7 +98,7 @@ export class TimeBookingDialogComponent implements OnInit {
 
 
   AddNewRow() {
-    console.log(this.UserMilestones);
+    
     const newMilestone = {
       ID: -1, Entity: '', ProjectCode: '', Milestone: '', type: "task", dbClientLegalEntities: this.dbClientLegalEntities, dbProjects: [{ label: 'Select Project', value: null }], dbMilestones: [{ label: 'Select Milestone', value: null }], isEditable: true, TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: new Date(this.datePipe.transform(this.MainminDate, 'yyyy-MM-dd')).getTime() <= new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() ? true : false }))
     }
@@ -157,8 +157,6 @@ export class TimeBookingDialogComponent implements OnInit {
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, AllMilestonesUrl);
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
-    console.log("milestone");
-    console.log(this.response[0]);
     var dbAllMilestones = this.response.length > 0 ? this.response[0].map(o => new Object({ label: o.Title, value: o.Title })) : [];
     rowData.dbMilestones.push.apply(rowData.dbMilestones, dbAllMilestones);
 
@@ -245,10 +243,6 @@ export class TimeBookingDialogComponent implements OnInit {
 
     this.allTasks = this.response[0];
 
-    console.log(this.allTasks);
-
-debugger;
-
     var tempMilestones = this.allTasks.map(o => new Object({ ID: o.ID, Entity: o.Entity, ProjectCode: o.ProjectCode === "Adhoc" ? '-' : o.ProjectCode, Milestone: o.Milestone === 'Select one' ? o.Comments : o.Milestone, type: o.Entity === null ? 'task' : 'Adhoc', TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: (new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() > new Date(this.datePipe.transform(minDate, 'yyyy-MM-dd')).getTime()) &&  (new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() <= new Date(this.datePipe.transform(new Date(), 'yyyy-MM-dd')).getTime())  ? true : false })) }));
 
     var dbActualMilestone = tempMilestones.length > 0 ? tempMilestones.filter(c => c.ProjectCode !== '-') : [];
@@ -262,9 +256,6 @@ debugger;
     this.UserMilestones.push.apply(this.UserMilestones, uniquedbTasks);
     this.UserMilestones.push.apply(this.UserMilestones, uniqueAdhoc);
 
-
-    console.log("allTasks")
-    console.log(this.allTasks)
     this.allTasks.forEach(task => {
 
       if (task.TimeSpentPerDay !== null) {
@@ -328,10 +319,6 @@ debugger;
       }
     });
 
-    console.log("taskTimeSpent");
-
-    console.log(this.UserMilestones);
-
     var allProjectCodes = this.UserMilestones !== undefined ? this.UserMilestones.map(c => c.ProjectCode) : [];
 
     this.batchContents = new Array();
@@ -354,9 +341,7 @@ debugger;
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
     this.projetInformations = this.response[0];
-    console.log(this.projetInformations);
-
-    
+ 
     if (this.UserMilestones !== undefined) {
       this.projetInformations.forEach(element => {
 
@@ -379,8 +364,6 @@ debugger;
 
     }
 
-    console.log("UserMilestones")
-    console.log(this.UserMilestones)
     this.thenBlock = this.tableId;
     this.modalloaderenable = false;
   }

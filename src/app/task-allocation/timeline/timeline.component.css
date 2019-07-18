@@ -1,546 +1,455 @@
-.mat-content
-{
+.mat-content {
     text-align: center;
 }
 
-
-
-#scInnerLoader{
-  border: 10px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 10px solid red;
-  border-bottom: 10px solid red;
-  width: 100px;
-  height: 100px;
-  -webkit-animation: spin 2s linear infinite;
-  animation: spin 2s linear infinite;
-  margin: 0 auto;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
- 
+#scInnerLoader {
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid red;
+    border-bottom: 10px solid red;
+    width: 100px;
+    height: 100px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
-#scInnerLoaderText{
-  -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
-  -o-animation: loading-text-opacity 2s linear 0s infinite normal;
-  -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
-  animation: loading-text-opacity 2s linear 0s infinite normal;
-  color: black;
-  font-family: "Helvetica Neue, "Helvetica", ""arial";
-  font-size: 10px;
-  font-weight: bold;
-  opacity: 0.5;
-  text-align: center;
-  text-transform: uppercase;
-  top: 0;
- 
+#scInnerLoaderText {
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, "Helvetica", ""arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
 }
-
-
-
-.VisualRepresentation, .VisualRepresentationpopup .gstartdate div , .gcharttableh
-{
-    width:100%;
-}
-
-.VisualRepresentation > ng-gantt > div> .gchartcontainer > .gmainright
-{
-  width: 700px !important;
-}
-
-.VisualRepresentationpopup > ng-gantt > div> .gchartcontainer > .gmainright
-{
-  width: 725px !important;
-}
-
-.gmainleft {
-  width: 570px !important;
-}
-
 
 .gstartdate div,
 .gplanstartdate,
 .gplanenddate,
 .gstartdate,
 .genddate {
-  text-align: center !important ;
-  min-width: 100% !important ;
-  /* width: 100%;
-  max-width: 100%; */
- 
+    text-align: center !important;
+    min-width: 100% !important;
 }
 
-
-/* .ui-contextmenu-selected > td > .txtTask > .ng-select-container
-{
-  border: none;
-  background-color: #007ad9;
-  border-radius: 0px;
-  color: white;
-  
-} */
-
 tr.ui-contextmenu-selected {
-  background: none !important;
-  color: #333 !important;
+    background: none !important;
+    color: #333 !important;
 }
 
 .mat-content h4 {
-  color: white !important;
+    color: white !important;
 }
 
-
-.milestoneTable > td > .txtTask > .ng-select-container
-{
-  border: none;
-  border-radius: 0px;
- 
+.milestoneTable>td>.txtTask>.ng-select-container {
+    border: none;
+    border-radius: 0px;
 }
 
-#calenderIcon  > .ui-calendar-w-btn > .ui-button> .ui-button-icon-left
-{
-  font-size: 2rem !important;
+#calenderIcon>.ui-calendar-w-btn>.ui-button>.ui-button-icon-left {
+    font-size: 2rem !important;
 }
 
-.ui-button.ui-button-icon-only .ui-button-text
-{
-  padding: 0px !important;
+.ui-button.ui-button-icon-only .ui-button-text {
+    padding: 0px !important;
 }
 
-.milestoneTable > td > span > #calenderIcon > span {
-  width: 100% !important;
+.milestoneTable>td>span>#calenderIcon>span {
+    width: 100% !important;
 }
 
-.milestoneTable > td > span > #calenderIcon > span > button {
-  margin: 0;
-  color: #000000;
-  background-color: #ffffff;
-  border:none;
-  font-size: 14px;
-  transition: background-color 0.2s, box-shadow 0.2s;
-  min-width: 40px !important;
-}
-.gtaskname div
-{
-    min-width: 100% !important ;
-    max-width:100% !important ;
-    width: 100% !important ;  
+.milestoneTable>td>span>#calenderIcon>span>button {
+    margin: 0;
+    color: #000000;
+    background-color: #ffffff;
+    border: none;
+    font-size: 14px;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    min-width: 40px !important;
 }
 
-/* .ui-contextmenu-selected > td > input , .ui-contextmenu-selected > td > span > #calenderIcon > span > input, .ui-contextmenu-selected > td > span > #calenderIcon > span > button
-{
-  background-color: #007ad9;
-  color:#ffffff;
-} */
-/* div.mat-expansion-panel-body {
-    padding-right: 0px;
-    padding-left: 0px;
-  } */
+.gtaskname div {
+    min-width: 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+}
 
-.mat-expansion-panel:not([class*=mat-elevation-z])
-{
+.mat-expansion-panel:not([class*=mat-elevation-z]) {
     box-shadow: none;
 }
-/* Gantt chart CSS */
 
-/* .gmainleft,  .gmainright {
-  overflow-x: hidden;
-} */
-
-#glisthead, .gtasktableh 
-{
-  width:100% !important ;
-  /* overflow-x: auto; */
+#glisthead,
+.gtasktableh {
+    width: 100% !important;
+    /* overflow-x: auto; */
 }
 
-.ui-treetable-table .ui-treetable-toggler .pi-chevron-right:before{
-  content: "\e90d";
-  
+.ui-treetable-table .ui-treetable-toggler .pi-chevron-right:before {
+    content: "\e90d";
 }
 
-.ui-treetable-table .ui-treetable-toggler .pi-chevron-down:before{
-  content: "\e90f";
+.ui-treetable-table .ui-treetable-toggler .pi-chevron-down:before {
+    content: "\e90f";
 }
 
-
-.budgetHr:focus {  
-  box-shadow: none;  
+.budgetHr:focus {
+    box-shadow: none;
 }
 
-/* body .pi {
-  font-size: 12px ;
-} */
-
-.ui-menuitem-icon
-{
-  font-size: 22px !important;
-}
- .pi-chevron-down ,  .pi-chevron-right
-{
-  color: #000000;
-  cursor: pointer;
-
+.ui-menuitem-icon {
+    font-size: 22px !important;
 }
 
-/*  
-.gmainright 
-{
-  width:50%;
-  overflow-x: auto;
-} */
-/* 
-/* @media (max-width: 640px)
-{
-  .gtaskname div, .gtaskname, .gadditional, .gresource,.gduration, .gpccomplete,.gcost, .gstartdate,.genddate,.gstartdate div, .gplanstartdate,.gplanenddate, .gtaskheading,.gmajorheading,.gminorheading,.gmajorheading,.gminorheading,.gminorheadingwkend,.gtaskcell, .gtaskcellwkend
-  {
-    font-size: 11px;
-  }
+.pi-chevron-down,
+.pi-chevron-right {
+    color: #000000;
+    cursor: pointer;
 }
-@media (min-width: 641px) and (max-width: 800px){
-  .gtaskname div, .gtaskname, .gadditional, .gresource,.gduration, .gpccomplete,.gcost, .gstartdate,.genddate,.gstartdate div, .gplanstartdate,.gplanenddate, .gtaskheading,.gmajorheading,.gminorheading,.gmajorheading,.gminorheading,.gminorheadingwkend,.gtaskcell, .gtaskcellwkend
-  {
-    font-size: 11px;
-  }
-  
-} */
- 
-
-/* 
-  ##Device = Desktops
-  ##Screen = 1281px to higher resolution desktops
-*/
 
 @media (min-width: 1400px) {
-  
-    .gtaskname div, .gtaskname, .gadditional, .gresource,.gduration, .gpccomplete,.gcost, .gstartdate,.genddate,.gstartdate div, .gplanstartdate,.gplanenddate, .gtaskheading,.gmajorheading,.gminorheading,.gmajorheading,.gminorheading,.gminorheadingwkend,.gtaskcell, .gtaskcellwkend
-    {
-      font-size: 14px !important ;
+    .gtaskname div,
+    .gtaskname,
+    .gadditional,
+    .gresource,
+    .gduration,
+    .gpccomplete,
+    .gcost,
+    .gstartdate,
+    .genddate,
+    .gstartdate div,
+    .gplanstartdate,
+    .gplanenddate,
+    .gtaskheading,
+    .gmajorheading,
+    .gminorheading,
+    .gmajorheading,
+    .gminorheading,
+    .gminorheadingwkend,
+    .gtaskcell,
+    .gtaskcellwkend {
+        font-size: 14px !important;
     }
-  
-    /* #btnCancel1
-    {
-      float: left;
-      padding: 6px 12px 6px 14px;
-      margin: 5px 0px 0px 29px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
-    } */
-    
-  }
-  
-  /* 
-    ##Device = Laptops, Desktops
-    ##Screen = B/w 1025px to 1280px
-  */
-  
-  @media (min-width: 1025px) and (max-width: 1400px) {
-    
-    .gtaskname div, .gtaskname, .gadditional, .gresource,.gduration, .gpccomplete,.gcost, .gstartdate,.genddate,.gstartdate div, .gplanstartdate,.gplanenddate, .gtaskheading,.gmajorheading,.gminorheading,.gmajorheading,.gminorheading,.gminorheadingwkend,.gtaskcell, .gtaskcellwkend
-    {
-      font-size: 11px;
+    .VisualRepresentation,
+    .VisualRepresentationpopup .gstartdate div,
+    .gcharttableh {
+        width: 100%;
     }
-  }
-  
-/*    
- 
-  
-  .gmainleft
-  {
-    overflow-x: hidden;
-  }
-  
-  .gadditional-allocated, 
-  .gadditional-spentTime, .gadditional-tat, .gadditional-allowStart
-  {
-    width: 5%;
-  }
-  .gadditional-budgetHours
-  {
-    width: 7%;
-  }
-  .gadditional-Action
-  {
-    width: 10%;
-  }
-    */
-  /* 
-  .ggroupitem {
-    background-color: #ffa7a7;
-   
-  }
-  
-  .gmileitem,
-  .glineitem {
-    background-color: #fff2f2;
-  } */
+    .VisualRepresentation>ng-gantt>div>.gchartcontainer>.gmainright {
+        width: 1050px !important;
+    }
+    .VisualRepresentationpopup>ng-gantt>div>.gchartcontainer>.gmainright {
+        width: 1090px !important;
+    }
+    .gmainleft {
+        width: 750px !important;
+    }
+}
 
+@media (min-width: 1025px) and (max-width: 1400px) {
+    .gtaskname div,
+    .gtaskname,
+    .gadditional,
+    .gresource,
+    .gduration,
+    .gpccomplete,
+    .gcost,
+    .gstartdate,
+    .genddate,
+    .gstartdate div,
+    .gplanstartdate,
+    .gplanenddate,
+    .gtaskheading,
+    .gmajorheading,
+    .gminorheading,
+    .gmajorheading,
+    .gminorheading,
+    .gminorheadingwkend,
+    .gtaskcell,
+    .gtaskcellwkend {
+        font-size: 11px;
+    }
+    .VisualRepresentation,
+    .VisualRepresentationpopup .gstartdate div,
+    .gcharttableh {
+        width: 100%;
+    }
+    .VisualRepresentation>ng-gantt>div>.gchartcontainer>.gmainright {
+        width: 700px !important;
+    }
+    .VisualRepresentationpopup>ng-gantt>div>.gchartcontainer>.gmainright {
+        width: 725px !important;
+    }
+    .gmainleft {
+        width: 570px !important;
+    }
+}
 
-  #timeline-header
-  {
+#timeline-header {
     border-radius: 5px;
     box-shadow: rgba(0, 0, 0, 0.2) 0px 3px 1px -2px, rgba(0, 0, 0, 0.14) 0px 2px 2px 0px, rgba(0, 0, 0, 0.12) 0px 1px 5px 0px;
- 
-  }
+}
 
-  body .ui-treetable .ui-treetable-thead > tr > th ,   body .ui-treetable .ui-treetable-tbody > tr > td
-  {
+body .ui-treetable .ui-treetable-thead>tr>th,
+body .ui-treetable .ui-treetable-tbody>tr>td {
     padding: 5px !important;
-  }
+}
 
-  body .ui-treetable .ui-treetable-tbody > tr > td:last-child {
+body .ui-treetable .ui-treetable-tbody>tr>td:last-child {
     padding: 0px !important;
-  }  
+}
 
-  
-  
-  .table-header-cell-timeline{
+.table-header-cell-timeline {
     /* display: table-cell; */
     padding: 8px;
     /* border: 1px solid darkgray; */
     text-align: center;
-  }
-  #resp-table-body-timeline{
+}
+
+#resp-table-body-timeline {
     display: table-row-group;
-  }
-  .resp-table-row-timeline{
+}
+
+.resp-table-row-timeline {
     display: table-row;
-  }
-  .table-body-cell-timeline{
+}
+
+.table-body-cell-timeline {
     /* display: table-cell; */
     /* vertical-align: middle; */
     padding: 8px;
     /* border: 1px solid darkgray; */
     background-color: #efefef;
-  }
-  
-  
-  .input-color {
+}
+
+.input-color {
     position: relative;
     float: left;
-  }
-  .input-color label {
+}
+
+.input-color label {
     padding-left: 45px;
     margin-bottom: 0.3rem;
-  }
-  .input-color .color-box {
+}
+
+.input-color .color-box {
     width: 30px;
     height: 20px;
     display: inline-block;
     background-color: #ccc;
     position: absolute;
     left: 13px;
-    
-  }
-  #taskName
-  {
+}
+
+#taskName {
     border: none;
-  }
-  /* completed */
-  .gtaskblue {
-    height: 14px !important ;
-    background: #3498DB !important ;
-    margin-top: 0px !important ;
-  }
-  
-  .gtaskbluecomplete
-  {
+}
+
+
+/* completed */
+
+.gtaskblue {
+    height: 14px !important;
+    background: #3498DB !important;
+    margin-top: 0px !important;
+}
+
+.gtaskbluecomplete {
     float: left;
     overflow: hidden;
     height: 14px;
     filter: alpha(opacity=80);
     opacity: 0.8;
-    background-color: #3498DB !important ;
-    margin-top: 0px !important ;
+    background-color: #3498DB !important;
+    margin-top: 0px !important;
     margin-bottom: 0px;
-  }
-  
-  /* In progress */
-  .gtaskgreen {
-    height: 14px !important ;
-    background: #6EDC6C !important ;
-    margin-top: 0px !important ;
-  }
-  
-  .gtaskgreencomplete
-  {
+}
+
+
+/* In progress */
+
+.gtaskgreen {
+    height: 14px !important;
+    background: #6EDC6C !important;
+    margin-top: 0px !important;
+}
+
+.gtaskgreencomplete {
     float: left;
     overflow: hidden;
-    height: 14px !important ;
+    height: 14px !important;
     filter: alpha(opacity=80);
     opacity: 0.8;
-    background-color: #6EDC6C !important ;
+    background-color: #6EDC6C !important;
     margin-top: 0px;
     margin-bottom: 0px;
-  }
-  
-  /* Planned */
-  .gtaskyellow {
-    height: 14px !important ;
-    background: #FFD34E !important ;
-    margin-top: 0px !important ;
-  }
-  
-  .gtaskyellowcomplete
-  {
+}
+
+
+/* Planned */
+
+.gtaskyellow {
+    height: 14px !important;
+    background: #FFD34E !important;
+    margin-top: 0px !important;
+}
+
+.gtaskyellowcomplete {
     float: left;
     overflow: hidden;
-    height: 14px !important ;
+    height: 14px !important;
     filter: alpha(opacity=80);
     opacity: 0.8;
-    background-color: #FFD34E !important ;
-    margin-top: 0px !important ;
+    background-color: #FFD34E !important;
+    margin-top: 0px !important;
     margin-bottom: 0px;
-  }
-  
-  
-  /* Not Started */
-  .ggroupblack {
-    height: 14px !important ;
-    background: #5F6273 !important ;
-    margin-top: 0px !important ;
-  }
-  
-  .ggroupblackcomplete
-  {
+}
+
+
+/* Not Started */
+
+.ggroupblack {
+    height: 14px !important;
+    background: #5F6273 !important;
+    margin-top: 0px !important;
+}
+
+.ggroupblackcomplete {
     float: left;
     overflow: hidden;
-    height: 14px !important ;
+    height: 14px !important;
     filter: alpha(opacity=80);
     opacity: 0.8;
-    background-color: #5F6273 !important ;
-    margin-top: 0px !important ;
+    background-color: #5F6273 !important;
+    margin-top: 0px !important;
     margin-bottom: 0px;
-  }
-  
-  /* on hold */
-  .gtaskred {
-    height: 14px !important ;
-    background: #FF3E56 !important ;
-    margin-top: 0px !important ;
-  }
-  
-  .gtaskred
-  {
+}
+
+
+/* on hold */
+
+.gtaskred {
+    height: 14px !important;
+    background: #FF3E56 !important;
+    margin-top: 0px !important;
+}
+
+.gtaskred {
     float: left;
     overflow: hidden;
-    height: 14px !important ;
+    height: 14px !important;
     filter: alpha(opacity=80);
     opacity: 0.8;
-    background-color: #FF3E56 !important ;
-    margin-top: 0px !important ;
+    background-color: #FF3E56 !important;
+    margin-top: 0px !important;
     margin-bottom: 0px;
-  }
-  
-  
-  
-  .ggroupblackendpointright , .ggroupblackendpointleft
-  {
+}
+
+.ggroupblackendpointright,
+.ggroupblackendpointleft {
     border: none;
-  }
-  
-  /* change connector line and arrow color */
-  
-  .gDepFS,
-    .gDepSS,
-    .gDepSF,
-    .gDepFF {
-    border-color: #cdcdcd !important ;
-  }
-  
-    .gDepFSArw,
-    .gDepSSArw {
-    border-left: 4px solid #cdcdcd !important ;
-  }
-  
-    .gDepFFArw,
-    .gDepSFArw {
-   border-right: 4px solid #cdcdcd !important ;
-  }
-  
-  
-  
-  .ggroupblack1
-  {
-    float: left;
-    overflow: hidden;
-    height: 3px;
-    filter: alpha(opacity=80);
-    opacity: 0.8;
-    background-color: #777777;
-    margin-top: 2px;
-    margin-bottom: 2px;
-  }
-  
-  .ggroupblack2
-  {
-    float: left;
-    overflow: hidden;
-    height: 3px;
-    filter: alpha(opacity=80);
-    opacity: 0.8;
-    background-color: #777777;
-    margin-top: 2px;
-    margin-bottom: 2px;
-  }
-  
-  .ggroupblack3
-  {
-    float: left;
-    overflow: hidden;
-    height: 3px;
-    filter: alpha(opacity=80);
-    opacity: 0.8;
-    background-color: #777777;
-    margin-top: 2px;
-    margin-bottom: 2px;
-  }
+}
 
-  #nextMilestone {
+
+/* change connector line and arrow color */
+
+.gDepFS,
+.gDepSS,
+.gDepSF,
+.gDepFF {
+    border-color: #cdcdcd !important;
+}
+
+.gDepFSArw,
+.gDepSSArw {
+    border-left: 4px solid #cdcdcd !important;
+}
+
+.gDepFFArw,
+.gDepSFArw {
+    border-right: 4px solid #cdcdcd !important;
+}
+
+.ggroupblack1 {
+    float: left;
+    overflow: hidden;
+    height: 3px;
+    filter: alpha(opacity=80);
+    opacity: 0.8;
+    background-color: #777777;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.ggroupblack2 {
+    float: left;
+    overflow: hidden;
+    height: 3px;
+    filter: alpha(opacity=80);
+    opacity: 0.8;
+    background-color: #777777;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.ggroupblack3 {
+    float: left;
+    overflow: hidden;
+    height: 3px;
+    filter: alpha(opacity=80);
+    opacity: 0.8;
+    background-color: #777777;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+#nextMilestone {
     cursor: pointer;
-  }
+}
 
-  .mat-expansion-panel-body {
+.mat-expansion-panel-body {
     padding: 0 12px 16px !important;
-  }
+}
 
-  .timePicker {
+.timePicker {
     text-transform: uppercase;
     margin-top: 5px;
-  }
+}
 
+#modalInnerLoader {
+    border: 5px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 5px solid red;
+    border-bottom: 5px solid red;
+    width: 50px;
+    height: 50px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
 
-  #modalInnerLoader{
-    border: 5px solid #f3f3f3 ;
-    border-radius: 50% ;
-    border-top: 5px solid red ;
-    border-bottom: 5px solid red ;
-    width: 50px ;
-    height: 50px ;
-    -webkit-animation: spin 2s linear infinite ;
-    animation: spin 2s linear infinite ;
-    margin: 0 auto ;
-    position: relative ;
-    top: 50% ;
-    transform: translateY(-50%) ;
-   
-  }
-  
-  #modalInnerLoaderText{
-    -moz-animation: loading-text-opacity 2s linear 0s infinite normal ;
-    -o-animation: loading-text-opacity 2s linear 0s infinite normal ;
-    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal ;
-    animation: loading-text-opacity 2s linear 0s infinite normal ;
-    color: black ;
-    font-family: "Helvetica Neue, "Helvetica", ""arial" ;
-    font-size: 10px ;
-    font-weight: bold ;
-    opacity: 0.5 ;
-    text-align: center ;
-    text-transform: uppercase ;
-    top: 0 ;
-   
-  }
-
-
+#modalInnerLoaderText {
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, "Helvetica", ""arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
+}

@@ -847,7 +847,7 @@ export class CommonService {
                 this.sharedTaskAllocateObj.oResources = this.response[2];
             }
 
-            debugger;
+          
             const project = this.response[0] !== "" ? this.response[0].length > 0 ? this.setLevel1Email(this.response[0][0]) : [] : [];
             if (project.length > 0) {
                 const returnedProject = project[0];

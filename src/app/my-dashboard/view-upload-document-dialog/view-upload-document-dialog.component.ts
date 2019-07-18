@@ -102,7 +102,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       { field: 'ModifiedDateString', header: 'Modified Date' },
     ];
 
-    console.log(this.selectedTask);
     this.getDocuments(this.selectedTask);
     this.loaderenable = true;
 

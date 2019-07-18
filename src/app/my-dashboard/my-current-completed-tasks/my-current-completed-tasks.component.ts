@@ -84,13 +84,15 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.cols = [
-      { field: 'MainStatus', header: 'Status' },
-      { field: 'Status', header: 'Task Status' },
-      { field: 'DisplayTitle', header: 'Task Name' },
-      { field: 'StartDate', header: 'Start Date' },
-      { field: 'DueDate', header: 'Due Date' },
-      { field: 'ExpectedTime', header: 'Allocated Time' },
-      { field: 'TimeSpent', header: 'Time Spent' },
+      { field: 'MainStatus', header: 'Status', visibility: true, exportable: true },
+      { field: 'Status', header: 'Task Status', visibility: true, exportable: true },
+      { field: 'DisplayTitle', header: 'Task Name', visibility: true, exportable: true },
+      { field: 'ExportStartDate', header: 'Start Date', visibility: false, exportable: true },
+      { field: 'ExportDueDate', header: 'End Date', visibility: false, exportable: true },
+      { field: 'StartDate', header: 'Start Date', visibility: true, exportable: false },
+      { field: 'DueDate', header: 'Due Date', visibility: true, exportable: false },
+      { field: 'ExpectedTime', header: 'Allocated Time', visibility: true, exportable: true },
+      { field: 'TimeSpent', header: 'Time Spent', visibility: true, exportable: true },
     ];
     this.myDashboardConstantsService.getEmailTemplate();
 
@@ -228,6 +230,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
       this.allTasks.map(c => c.StartDate = new Date(this.datePipe.transform(c.StartDate, 'MMM d, y, h:mm a')));
       this.allTasks.map(c => c.DueDate = new Date(this.datePipe.transform(c.DueDate, 'MMM d, y, h:mm a')));
 
+      this.allTasks.map(c => c.ExportStartDate = this.datePipe.transform(c.StartDate, 'MMM d, y, h:mm a'));
+
+      this.allTasks.map(c => c.ExportDueDate = this.datePipe.transform(c.DueDate, 'MMM d, y, h:mm a'));
+
+
+
       if (this.TabName === 'MyCompletedTask') {
         this.allTasks.filter(c => c.Status === 'Completed' || c.Status === 'Auto Closed').map(c => c.MainStatus = 'Closed');
 
@@ -259,7 +267,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
           }
           else {
             if (element.SubMilestones) {
-              element.DisplayTitle = element.Title + ' - ' + element.SubMilestones;
+              if (element.SubMilestones === "Default") {
+                element.DisplayTitle = element.Title;
+              }
+              else {
+                element.DisplayTitle = element.Title + ' - ' + element.SubMilestones;
+              }
             }
             else {
               element.DisplayTitle = element.Title;
@@ -282,18 +295,17 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
   // Column filter for search 
   // *************************************************************************************************************************************
 
-  
+
 
 
   createColFieldValues() {
 
-     
-    this.AllTaskColArray.TaskStatus.push.apply(this.AllTaskColArray.TaskStatus, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
-    this.AllTaskColArray.TaskName.push.apply(this.AllTaskColArray.TaskName, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.DisplayTitle, value: a.DisplayTitle }; return b; })));
-    this.AllTaskColArray.Status.push.apply(this.AllTaskColArray.Status, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.MainStatus, value: a.MainStatus }; return b; })));
+
+    this.AllTaskColArray.TaskStatus = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
+    this.AllTaskColArray.TaskName = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.DisplayTitle, value: a.DisplayTitle }; return b; })));
+    this.AllTaskColArray.Status = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: a.MainStatus, value: a.MainStatus }; return b; })));
     this.AllTaskColArray.StartDate.push.apply(this.AllTaskColArray.StartDate, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: this.datePipe.transform(a.StartDate, "MMM d, y, h:mm a"), value: a.StartDate }; return b; })));
     this.AllTaskColArray.DueDate.push.apply(this.AllTaskColArray.DueDate, this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => { let b = { label: this.datePipe.transform(a.DueDate, "MMM d, y, h:mm a"), value: a.DueDate }; return b; })));
-
 
     this.AllTaskColArray.StartDate = this.AllTaskColArray.StartDate.sort((a, b) =>
       new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
@@ -352,9 +364,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     if (task.PrevTasks)
       this.tasks.filter(c => previousTasks.includes(c.Title)).map(c => c.TaskType = "Previous Task");
 
-    console.log(this.tasks);
-
-
     return this.tasks;
   }
 
@@ -392,7 +401,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     const ref = this.dialogService.open(TimeSpentDialogComponent, {
       data: {
         task: task,
-        // passing task type 
         tab: this.TabName
 
       },
@@ -456,13 +464,13 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     });
     ref.onClose.subscribe(async (Commentobj: any) => {
 
-     
-     
+
+
       if (Commentobj) {
-        
+
         if (Commentobj.IsMarkComplete) {
           this.loaderenable = true;
-          this.allTasks=[];
+          this.allTasks = [];
           task.TaskComments = Commentobj.comment;
           task.Status = "Completed";
           var response = await this.myDashboardConstantsService.CompleteTask(task);
@@ -594,7 +602,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
 
   async checkCompleteTask(task) {
-     debugger;
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
 
@@ -625,10 +632,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
           accept: () => {
 
             this.loaderenable = true;
-            this.allTasks=[];
+            this.allTasks = [];
 
             this.callComplete(task);
-          
+
             // this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Please upload the document and mark as final.' });
           },
           reject: () => {
