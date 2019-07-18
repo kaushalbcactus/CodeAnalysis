@@ -73,7 +73,7 @@
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'ModifiedBy'" [options]="outInvoiceColArray.ModifiedBy" defaultLabel="All"
-                    (onChange)="outi.filter($event.value, col.field, 'in')">
+                    (onChange)="pi.filter($event.value, col.field, 'in')">
                 </p-multiSelect>
 
                 <!-- <p-dropdown resetFilterOnHide="true"[options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">
