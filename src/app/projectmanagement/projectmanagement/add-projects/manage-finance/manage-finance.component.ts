@@ -308,7 +308,7 @@ export class ManageFinanceComponent implements OnInit {
 
     this.unassignedBudget = [];
 
-    if ((this.sowObj.AmountRevenue - this.sowObj.RevenueLinked) < this.updatedBudget) {
+    if ((this.sowObj.NetBudget - this.sowObj.RevenueLinked) < this.updatedBudget) {
       this.messageService.add({
         key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
         detail: 'SOW revenue balance is less than addendum budget.'

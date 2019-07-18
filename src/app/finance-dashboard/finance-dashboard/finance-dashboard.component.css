@@ -484,6 +484,7 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
 
 .financeTable div.ui-table-wrapper {
   min-height: 440px;
+  overflow: visible!important;
 }
 
 .financeTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
