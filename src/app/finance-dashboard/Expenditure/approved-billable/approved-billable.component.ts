@@ -384,29 +384,29 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
     createColFieldValues() {
 
-        this.appBillableColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; })));
-        this.appBillableColArray.Category = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Category, value: a.Category }; return b; })));
-        this.appBillableColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; })));
-        const clientAmount = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }));
+        this.appBillableColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.Category = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
+        const clientAmount = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
         this.appBillableColArray.ClientAmount = this.fdDataShareServie.customSort(clientAmount, 1, 'label');
-        this.appBillableColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; })));
+        this.appBillableColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
 
-        this.appBillableColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; })));
-        this.appBillableColArray.RequestType = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.RequestType, value: a.RequestType }; return b; })));
+        this.appBillableColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.RequestType = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.RequestType, value: a.RequestType }; return b; }).filter(ele => ele.label)));
 
-        this.appBillableColArray.PaymentMode = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.PaymentMode, value: a.PaymentMode }; return b; })));
-        this.appBillableColArray.PayingEntity = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.PayingEntity, value: a.PayingEntity }; return b; })));
-        this.appBillableColArray.Status = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
+        this.appBillableColArray.PaymentMode = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.PaymentMode, value: a.PaymentMode }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.PayingEntity = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.PayingEntity, value: a.PayingEntity }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.Status = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
 
-        this.appBillableColArray.Number = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Number, value: a.Number }; return b; })));
-        this.appBillableColArray.PaymentDate = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }));
-        this.appBillableColArray.Modified = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }));
-        this.appBillableColArray.Created = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Created, value: a.Created }; return b; }));
+        this.appBillableColArray.Number = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Number, value: a.Number }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.PaymentDate = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }).filter(ele => ele.label));
+        this.appBillableColArray.Modified = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }).filter(ele => ele.label));
+        this.appBillableColArray.Created = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Created, value: a.Created }; return b; }).filter(ele => ele.label));
 
-        this.appBillableColArray.SOWCode = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }));
-        // this.appBillableColArray.DateCreated = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.DateCreated, value: a.DateCreated }; return b; }));
-        // this.appBillableColArray.ModifiedDate = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }));
-        // this.appBillableColArray.ModifiedDate = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }));
+        this.appBillableColArray.SOWCode = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label));
+        // this.appBillableColArray.DateCreated = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.DateCreated, value: a.DateCreated }; return b; }).filter(ele => ele.label));
+        // this.appBillableColArray.ModifiedDate = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
+        // this.appBillableColArray.ModifiedDate = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
     }
 
     uniqueArrayObj(array: any) {

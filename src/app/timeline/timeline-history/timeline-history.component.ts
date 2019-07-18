@@ -7,6 +7,7 @@ import { DatePipe } from '@angular/common';
 import { LazyLoadEvent } from 'primeng/primeng';
 import { SPOperationService } from '../../Services/spoperation.service';
 
+
 @Component({
   selector: 'app-timeline-history',
   templateUrl: './timeline-history.component.html',
@@ -73,6 +74,7 @@ export class TimelineHistoryComponent implements OnInit {
   public tableCSSTop = 0;
   public filterEnabled = false;
   public hideLoader = true;
+  public datesValues = '';
   constructor(private spStandardService: SPOperationService, private constant: TimelineConstantsService,
               private globalConstant: ConstantsService, private spcommon: SPCommonService, private datePipe: DatePipe,
               public elemRef: ElementRef, public global: GlobalService) { }
@@ -1192,6 +1194,7 @@ export class TimelineHistoryComponent implements OnInit {
       activitySubType: [],
       activityBy: []
     };
+    this.datesValues = '';
   }
 
   rowTrackBy(index: number, row: any) { return row.id; }

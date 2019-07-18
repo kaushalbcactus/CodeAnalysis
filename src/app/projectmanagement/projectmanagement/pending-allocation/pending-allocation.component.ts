@@ -18,15 +18,16 @@ declare var $: any;
 })
 export class PendingAllocationComponent implements OnInit {
   displayedColumns: any[] = [
-    { field: 'ProjectCode', header: 'Project Code' },
+    { field: 'ProjectCode', header: 'Project Code'},
     { field: 'ClientLegalEntity', header: 'Client' },
-    { field: 'POC', header: 'POC' },
+    { field: 'POC', header: 'POC'  },
     { field: 'DeliverableType', header: 'Deliverable Type' },
     { field: 'TA', header: 'TA' },
-    { field: 'Molecule', header: 'Molecule' },
+    { field: 'Molecule', header: 'Molecule'},
     { field: 'PrimaryResourceText', header: 'Primary Resource' },
     { field: 'Milestone', header: 'Milestone' },
-    { field: 'Status', header: 'Status' }];
+    { field: 'Status', header: 'Status' }
+  ];
   filterColumns: any[] = [
     { field: 'ProjectCode' },
     { field: 'ClientLegalEntity' },

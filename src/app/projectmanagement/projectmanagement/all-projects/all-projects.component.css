@@ -87,3 +87,9 @@
     border-color: #D7181F !important;
 }
 .clear{clear: both;margin-bottom: 20px}
+
+.ng-right-side-overlay .ui-sidebar {
+  /* background-color: #B13E3E !important;
+  color: #ffff !important;  */
+  overflow-x: auto; 
+}

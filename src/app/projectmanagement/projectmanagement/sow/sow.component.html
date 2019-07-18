@@ -13,7 +13,7 @@
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th class="lastColumnWidth">S.No</th>
-                <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                     {{ col.header }}
                     <p-sortIcon [field]="col.field"></p-sortIcon>
                 </th>
@@ -21,7 +21,7 @@
             </tr>
             <tr>
                 <th class="lastColumnWidth"></th>
-                <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
+                <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                     <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allSOW.sowCodeArray" defaultLabel="All"
                         (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>

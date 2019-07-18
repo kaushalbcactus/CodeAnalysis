@@ -18,15 +18,16 @@ declare var $;
 })
 export class SendToClientComponent implements OnInit {
   displayedColumns: any[] = [
-    { field: 'SLA', header: 'SLA' },
-    { field: 'ProjectCode', header: 'Project Code' },
-    { field: 'ClientLegalEntity', header: 'Client Legal Entity' },
-    { field: 'POC', header: 'POC' },
-    { field: 'DeliverableType', header: 'Deliverable Type' },
-    { field: 'DueDate', header: 'Due Date' },
-    { field: 'Milestone', header: 'Milestone' },
-    { field: 'PreviousTaskUser', header: 'Previous Task Owner' },
-    { field: 'PreviousTaskStatus', header: 'Previous Task Status' }];
+    { field: 'SLA', header: 'SLA', visibility: true },
+    { field: 'ProjectCode', header: 'Project Code', visibility: true },
+    { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
+    { field: 'POC', header: 'POC', visibility: true },
+    { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
+    { field: 'DueDate', header: 'Due Date', visibility: true, exportable: false },
+    { field: 'Milestone', header: 'Milestone', visibility: true },
+    { field: 'PreviousTaskUser', header: 'Previous Task Owner', visibility: true },
+    { field: 'PreviousTaskStatus', header: 'Previous Task Status', visibility: true },
+    { field: 'DueDateFormat', header: 'Due Date', visibility: false}];
   filterColumns: any[] = [
     { field: 'ProjectCode' },
     { field: 'ClientLegalEntity' },
@@ -36,7 +37,7 @@ export class SendToClientComponent implements OnInit {
     { field: 'Milestone' },
     { field: 'PreviousTaskUser' },
     { field: 'PreviousTaskStatus' }];
-  @ViewChild('sendToClientTableRef', {static: true}) sct: ElementRef;
+  @ViewChild('sendToClientTableRef', { static: true }) sct: ElementRef;
   // tslint:disable-next-line:variable-name
   private _success = new Subject<string>();
   // tslint:disable-next-line:variable-name
@@ -260,8 +261,8 @@ export class SendToClientComponent implements OnInit {
       filter: currentFilter,
       top: 4200
     };
-   
-    
+
+
     this.scArrays.taskItems = await this.spServices.read('' + this.Constant.listNames.Schedules.name + '', queryOptions);
     const projectCodeTempArray = [];
     const clientLegalEntityTempArray = [];
@@ -309,7 +310,8 @@ export class SendToClientComponent implements OnInit {
             scObj.POC = projecContObj[0].FullName;
           }
         }
-        scObj.DueDate = this.datePipe.transform(task.DueDate, 'MMM dd yyyy hh:mm:ss aa');
+        scObj.DueDate = task.DueDate;
+        scObj.DueDateFormat = this.datePipe.transform(new Date(scObj.DueDate), 'MMM dd yyyy hh:mm:ss aa');
         scObj.Milestone = task.Milestone;
         if (new Date(new Date(scObj.DueDate).setHours(0, 0, 0, 0)).getTime() === new Date(new Date().setHours(0, 0, 0, 0)).getTime()) {
           scObj.isBlueIndicator = true;
