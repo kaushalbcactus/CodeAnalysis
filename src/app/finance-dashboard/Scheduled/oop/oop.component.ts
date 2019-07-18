@@ -413,16 +413,16 @@ export class OopComponent implements OnInit, OnDestroy {
     }
 
     createColFieldValues() {
-        this.oopColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; })));
-        this.oopColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; })));
-        this.oopColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; })));
-        this.oopColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; })));
-        this.oopColArray.ClientName = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; })));
-        this.oopColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; })));
-        this.oopColArray.POC = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; })));
-        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; })));
-        this.oopColArray.ScheduledDate = scheduledDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; });
-        const amount = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }));
+        this.oopColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.ClientName = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.POC = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
+        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.ScheduledDate = scheduledDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
+        const amount = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
         this.oopColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label')
     }
 
