@@ -308,10 +308,10 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let poItem = this.getPONumber(element);
-            let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
-            if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
-                resCInfo = resCInfo.UserName.Title
-            }
+            // let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
+            // if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
+            //     resCInfo = resCInfo.UserName.Title
+            // }
             this.outstandingInvoicesRes.push({
                 Id: element.ID,
                 Amount: element.Amount,
@@ -347,8 +347,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
                 AdditionalPOC: element.AdditionalPOC,
                 Created: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
-                ModifiedBy: resCInfo
-            })
+                ModifiedBy: element.Editor ? element.Editor.Title : ''
+            });
         }
         this.outstandingInvoicesRes = [...this.outstandingInvoicesRes];
         this.isPSInnerLoaderHidden = true;

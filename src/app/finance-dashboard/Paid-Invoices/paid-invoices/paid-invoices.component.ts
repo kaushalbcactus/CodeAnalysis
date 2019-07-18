@@ -381,10 +381,10 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             }
             let POValues = ponn;
 
-            let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
-            if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
-                resCInfo = resCInfo.UserName.Title
-            }
+            // let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
+            // if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
+            //     resCInfo = resCInfo.UserName.Title
+            // }
 
             this.paidInvoicesRes.push({
                 Id: element.ID,
@@ -420,7 +420,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
                 Modified: element.Modified,
                 AdditionalPOC: element.AdditionalPOC,
                 Created: element.Created,
-                ModifiedBy: resCInfo
+                ModifiedBy: element.Editor ? element.Editor.Title : ''
             })
         }
         this.paidInvoicesRes = [...this.paidInvoicesRes];

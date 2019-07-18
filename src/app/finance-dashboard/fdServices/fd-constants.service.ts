@@ -247,7 +247,7 @@ export class FdConstantsService {
         // Outstanding Invoices
         invoicesForMangerIT: {
             // select: "ID,ClientLegalEntity,Title,InvoiceNumber,InvoiceDate,FiscalYear,Amount,Currency,MainPOC,AddressType,PO,Status,FileURL,Template,ProformaLookup,InvoiceType",
-            select1: "ID,ClientLegalEntity,InvoiceNumber,InvoiceDate,Amount,PaymentURL,FileURL,Currency,PO,Status,MainPOC,InvoiceTitle,AddressType,Template,ProformaLookup,LineItemsLookup,DisputeReason,DisputeComments,Reason,State,AdditionalInfo,InvoiceType,TaggedAmount,IsTaggedFully,Modified,Title,Created,InvoiceHtml,AuthorId,EditorId",
+            select: "ID,ClientLegalEntity,InvoiceNumber,InvoiceDate,Amount,PaymentURL,FileURL,Currency,PO,Status,MainPOC,InvoiceTitle,AddressType,Template,ProformaLookup,LineItemsLookup,DisputeReason,DisputeComments,Reason,State,AdditionalInfo,InvoiceType,TaggedAmount,IsTaggedFully,Modified,Title,Created,InvoiceHtml,AuthorId,EditorId, Editor/Id, Editor/Title",
             filter: "Status eq '" + this.constantService.invoicesStatus.AwaitingClosedCreditNote + "' or " +
                 "Status eq '" + this.constantService.invoicesStatus.AwaitingClosedDebitNote + "' or " +
                 "Status eq '" + this.constantService.invoicesStatus.AwaitingWriteOff + "' or " +
@@ -257,24 +257,24 @@ export class FdConstantsService {
                 "Status eq '" + this.constantService.invoicesStatus.SentForPayment + "' or " +
                 "Status eq '" + this.constantService.invoicesStatus.SentToAP + "'",
             orderby: "InvoiceDate",
-            // expand: "LineItems",
+            expand: "Editor",
             top: 4500
         },
         invoicesForNonManger: {
-            select: "ID,Title,InvoiceNumber,InvoiceDate,FiscalYear,Amount,Currency,MainPOC,AddressType,PO,Status,FileURL,AuthorId,EditorId",
+            select: "ID,Title,InvoiceNumber,InvoiceDate,FiscalYear,Amount,Currency,MainPOC,AddressType,PO,Status,FileURL,AuthorId,EditorId,  Editor/Id, Editor/Title",
             filter: "ID lt 0",
             // orderby: "ProformaDate",
-            // expand: "LineItems",
+            expand: "Editor",
             top: 4500
         },
 
         // Paid Invoices
         paidInvoices: {
             // select: "ID,ClientLegalEntity,InvoiceNumber,InvoiceDate,FiscalYear, FileURL,InvoiceTitle,Amount,Currency,MainPOC,AddressType,PO,Status,ProformaLookup,State, InvoiceType, Title",
-            select: "ID,ClientLegalEntity,InvoiceNumber,InvoiceDate,Amount,PaymentURL,FileURL,Currency,PO,Status,MainPOC,InvoiceTitle,AddressType,Template,ProformaLookup,LineItemsLookup,DisputeReason,DisputeComments,Reason,State,AdditionalInfo,InvoiceType,TaggedAmount,IsTaggedFully,Modified,Title,Created,AuthorId,EditorId",
+            select: "ID,ClientLegalEntity,InvoiceNumber,InvoiceDate,Amount,PaymentURL,FileURL,Currency,PO,Status,MainPOC,InvoiceTitle,AddressType,Template,ProformaLookup,LineItemsLookup,DisputeReason,DisputeComments,Reason,State,AdditionalInfo,InvoiceType,TaggedAmount,IsTaggedFully,Modified,Title,Created,AuthorId,EditorId, Editor/Id, Editor/Title",
             filter: "Status eq 'Paid' and Modified ge '{{StartDate}}' and Modified le '{{EndDate}}'",
             // orderby: "ProformaDate",
-            // expand: "LineItems",
+            expand: "Editor",
             top: 4500
         },
 
