@@ -160,7 +160,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             { field: 'Status', header: 'Status', visibility: true },
             { field: 'ApproverComments', header: 'Approver Comments', visibility: true },
             { field: 'ModifiedDateFormat', header: 'Approval / Billable Date', visibility: false },
-            { field: 'Modified', header: 'Approval / Billable Date', visibility: true },
+            { field: 'Modified', header: 'Approval / Billable Date', visibility: true, exportable: false },
 
             { field: 'Category', header: 'Category', visibility: false },
             { field: 'RequestType', header: 'Request Type', visibility: false },
@@ -325,7 +325,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         this.anonBillableColArray.Status = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
 
         this.anonBillableColArray.Number = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Number, value: a.Number }; return b; }).filter(ele => ele.label)));
-        
+
         this.anonBillableColArray.PaymentDate = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }).filter(ele => ele.label));
 
         const modified = this.commonService.sortDateArray(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b; }).filter(ele => ele.label)));

@@ -22,7 +22,7 @@
     <div style="clear: both;"></div>
 </div>
 <div class="financeTable">
-    <p-table #dt2 [columns]="pendingExpeseCols" [value]="pendingExpenses" [resizableColumns]="true" [paginator]="true"
+    <p-table #dt2 [columns]="pendingExpeseCols" [value]="pendingExpenses"  [paginator]="true"
         [rows]="10" exportFilename="Pending_Expenses" (onRowSelect)="onRowSelect($event)"
         (onRowUnselect)="onRowUnselect($event)" selectionMode="" [(selection)]="selectedAllRowsItem">
         <ng-template pTemplate="header" let-columns>

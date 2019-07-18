@@ -247,7 +247,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.confirmCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
-            { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true },
+            { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true, exportable: false },
             { field: 'ScheduledDateFormat', header: 'Scheduled Date', visibility: false },
             { field: 'ScheduleType', header: 'Schedule Type', visibility: true },
             { field: 'Amount', header: 'Amount', visibility: true },

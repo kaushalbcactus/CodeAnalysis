@@ -124,7 +124,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
             { field: 'ClientCurrency', header: 'Client Currency', visibility: true },
             { field: 'ApproverComments', header: 'Approver Comments', visibility: true },
             { field: 'ActionBy', header: 'Actioned By', visibility: true },
-            { field: 'Modified', header: 'Actioned Date', visibility: true },
+            { field: 'Modified', header: 'Actioned Date', visibility: true, exportable: false },
             { field: 'ModifiedDateFormat', header: 'Actioned Date', visibility: false },
             { field: 'SOWCode', header: 'SOW Code', visibility: false },
             { field: 'SOWName', header: 'SOW Name', visibility: false },

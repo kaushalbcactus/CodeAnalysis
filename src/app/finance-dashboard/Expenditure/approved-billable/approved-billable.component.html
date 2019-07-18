@@ -29,7 +29,7 @@
 
 <div class="financeTable">
 <p-table #ab [columns]="approvedBillableCols" [value]="approvedBillableRes" [paginator]="true" [rows]="10"
-    [(selection)]="selectedAllRowsItem" [resizableColumns]="true" (onRowSelect)="onRowSelect($event)"
+    [(selection)]="selectedAllRowsItem"  (onRowSelect)="onRowSelect($event)"
     (onRowUnselect)="onRowUnselect($event)" selectionMode="" exportFilename="Approved_Billable_Expenses">
     <ng-template pTemplate="header" let-columns let-rowData="rowData">
 
