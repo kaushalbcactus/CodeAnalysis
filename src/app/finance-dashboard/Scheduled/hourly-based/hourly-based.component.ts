@@ -1032,7 +1032,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     }
 
     sendConfirmInvoiceMail() {
-
+        const sharepointPageObject = this.globalService.sharePointPageObject;
         // Confirmation Mail 
         var mailSubject = this.selectedRowItem.ProjectCode + "/" + this.selectedRowItem.ClientLegalEntity + ": Confirmed line item for billing";
         let mailContent = this.mailContentRes[0].retItems[0].Content;
@@ -1049,8 +1049,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         let pcmailContent = this.mailContentRes[1].retItems[0].Content;
         pcmailContent = this.replaceContent(pcmailContent, "@@Val1@@", this.selectedRowItem.ProjectCode);
         pcmailContent = this.replaceContent(pcmailContent, "@@Val2@@", this.selectedRowItem.ClientLegalEntity);
-        pcmailContent = this.replaceContent(pcmailContent, "@@Val3@@", "Project Manager");
-
+        pcmailContent = this.replaceContent(pcmailContent, "@@Val5@@", this.selectedRowItem.BudgetHrs);
+        pcmailContent = this.replaceContent(pcmailContent, "@@Val6@@", sharepointPageObject.webAbsoluteUrl + '/fd');
 
         var ccUser = [];
         ccUser.push(this.currentUserInfoData.Email);
