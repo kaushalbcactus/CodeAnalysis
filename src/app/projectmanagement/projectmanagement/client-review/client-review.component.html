@@ -32,14 +32,14 @@
             [rows]="10" selectionMode="" exportFilename="Client Review">
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                    <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                         {{ col.header }}
                         <p-sortIcon [field]="col.field"></p-sortIcon>
                     </th>
                     <th class="lastColumnWidth"></th>
                 </tr>
                 <tr>
-                    <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
+                    <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                         <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="crArrays.projectCodeArray"
                             defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
@@ -73,9 +73,9 @@
                     <td>{{task.ClientLegalEntity}}</td>
                     <td>{{task.POC}}</td>
                     <td>{{task.DeliverableType}}</td>
-                    <td>{{task.DueDate}}</td>
+                    <td>{{task.DueDate | date:'MMM dd yyyy hh:mm:ss aa'}}</td>
                     <td>{{task.Milestone}}</td>
-                    <td>{{task.DeliveryDate}}</td>
+                    <td>{{task.DeliveryDate | date:'MMM dd yyyy hh:mm:ss aa'}}</td>
                     <td>
                         <div>
                             <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu

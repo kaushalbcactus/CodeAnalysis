@@ -28,15 +28,16 @@ export class AllProjectsComponent implements OnInit {
   popItems: MenuItem[];
   selectedProjectObj;
   displayedColumns: any[] = [
-    { field: 'SOWCode', header: 'Sow Code' },
-    { field: 'ProjectCode', header: 'Project Code' },
-    { field: 'ShortTitle', header: 'Short Title' },
-    { field: 'ClientLegalEntity', header: 'Client Legal Entity' },
-    { field: 'DeliverableType', header: 'Deliverable Type' },
-    { field: 'ProjectType', header: 'Project Type' },
-    { field: 'Status', header: 'Status' },
-    { field: 'CreatedBy', header: 'Created By' },
-    { field: 'CreatedDate', header: 'Created Date' },
+    { field: 'SOWCode', header: 'Sow Code', visibility: true },
+    { field: 'ProjectCode', header: 'Project Code', visibility: true },
+    { field: 'ShortTitle', header: 'Short Title', visibility: true },
+    { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
+    { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
+    { field: 'ProjectType', header: 'Project Type', visibility: true },
+    { field: 'Status', header: 'Status', visibility: true },
+    { field: 'CreatedBy', header: 'Created By', visibility: true },
+    { field: 'CreatedDateFormat', header: 'Created Date', visibility: false },
+    { field: 'CreatedDate', header: 'Created Date', visibility: true, exportable: false }
   ];
   filterColumns: any[] = [
     { field: 'SOWCode' },
@@ -250,16 +251,14 @@ export class AllProjectsComponent implements OnInit {
         if (projectObj && projectObj.length) {
           if (this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.sharePointPageObject.userId) {
             await this.approveRejectBudgetReduction(this.params.ProjectBudgetStatus, projectObj[0]);
-          }
-          else {
+          } else {
             this.messageService.add({
               key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
               detail: 'You are not authorized to Approve / Reject budget reduction for this project - ' + this.params.ProjectCode + ' .'
             });
           }
 
-        }
-        else {
+        } else {
           this.messageService.add({
             key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
             detail: 'You dont have access to this project - ' + this.params.ProjectCode + ' .'
@@ -288,6 +287,7 @@ export class AllProjectsComponent implements OnInit {
         projObj.Status = task.Status;
         projObj.CreatedBy = task.Author ? task.Author.Title : '';
         projObj.CreatedDate = task.Created;
+        projObj.CreatedDateFormat = this.datePipe.transform(new Date(projObj.CreatedDate), 'MMM dd yyyy hh:mm:ss aa');
         projObj.PrimaryPOC = task.PrimaryPOC;
         projObj.PrimaryPOCText = this.pmCommonService.extractNamefromPOC([projObj.PrimaryPOC]);
         projObj.AdditionalPOC = task.POC ? task.POC.split(';#') : [];
@@ -438,7 +438,7 @@ export class AllProjectsComponent implements OnInit {
       const existPBBArray = result[1].retItems;
       const existSOW = result[2].retItems[0];
 
-      const pbb = existPBBArray.find(e => e.Status === this.constants.projectBudgetBreakupList.status.ApprovalPending)
+      const pbb = existPBBArray.find(e => e.Status === this.constants.projectBudgetBreakupList.status.ApprovalPending);
       if (pbb) {
         const projectBudgetBreakupData = {
           __metadata: { type: this.constants.listNames.ProjectBudgetBreakup.type },
@@ -479,8 +479,7 @@ export class AllProjectsComponent implements OnInit {
           batchURL.push(projectFinaceUpdate);
 
           projectBudgetBreakupData.Status = this.constants.projectBudgetBreakupList.status.Approved;
-        }
-        else if (selectedStatus === this.pmConstant.ACTION.REJECTED) {
+        } else if (selectedStatus === this.pmConstant.ACTION.REJECTED) {
           projectBudgetBreakupData.Status = this.constants.projectBudgetBreakupList.status.Rejected;
         }
         const projectBudgetBreakupUpdate = Object.assign({}, options);
@@ -504,14 +503,14 @@ export class AllProjectsComponent implements OnInit {
         let tempArray = [];
         let arrayTo = [];
         const cm1IdArray = [];
-        let arrayCC = []
+        let arrayCC = [];
         let ccIDs = [];
-        if(projectObj.CMLevel1.hasOwnProperty('results')) {
+        if (projectObj.CMLevel1.hasOwnProperty('results')) {
           projectObj.CMLevel1.results.forEach(element => {
             cm1IdArray.push(element.ID);
           });
         }
-        
+
         arrayCC = arrayCC.concat([], cm1IdArray);
         tempArray = tempArray.concat([], projectObj.CMLevel2.ID);
         arrayTo = this.pmCommonService.getEmailId(tempArray);
@@ -520,8 +519,7 @@ export class AllProjectsComponent implements OnInit {
         ///// Send approval message
         this.pmCommonService.getTemplate(this.constants.EMAIL_TEMPLATE_NAME.BUDGET_APPROVAL, objEmailBody, mailSubject, arrayTo,
           ccIDs);
-      }
-      else {
+      } else {
         this.messageService.add({
           key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
           detail: 'No un-apporved budget reduction request found for project - ' + this.params.ProjectCode + ' .'
@@ -918,7 +916,7 @@ export class AllProjectsComponent implements OnInit {
         batchURL.push(projectBudgetBreakCreate);
       }
     });
-    if(this.selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value) {
+    if (this.selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value) {
       const sowData = {
         __metadata: {
           type: this.constants.listNames.SOW.type
@@ -1644,7 +1642,7 @@ export class AllProjectsComponent implements OnInit {
    */
   async performSOWMove() {
     const projObject = this.selectedProjectObj;
-    if(projObject.SOWCode === this.newSelectedSOW) {
+    if (projObject.SOWCode === this.newSelectedSOW) {
       this.messageService.add({
         key: 'custom', severity: 'error', summary: 'Error Message',
         detail: 'Source sow code ' + projObject.SOWCode + ' and destination sow ' + this.newSelectedSOW + ' cannot be same.'
@@ -1652,7 +1650,7 @@ export class AllProjectsComponent implements OnInit {
       return;
     }
     this.pmObject.isMainLoaderHidden = false;
-    
+
     const isValid = await this.validateSOWBudgetForProjectMovement(this.newSelectedSOW, projObject);
     if (isValid) {
       if (isValid === 'InvoiceNotScheduled') {
@@ -1732,7 +1730,7 @@ export class AllProjectsComponent implements OnInit {
         projectInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
         batchURL.push(projectInfoUpdate);
       }
-      
+
       const sResult = await this.spServices.executeBatch(batchURL);
       this.pmObject.isMainLoaderHidden = true;
       this.messageService.add({
@@ -1826,7 +1824,7 @@ export class AllProjectsComponent implements OnInit {
           return 'InvoiceNotScheduled';
         }
       }
-      if(this.selectedProjectObj.ProjectType !== this.pmConstant.PROJECT_TYPE.HOURLY.value) {
+      if (this.selectedProjectObj.ProjectType !== this.pmConstant.PROJECT_TYPE.HOURLY.value) {
         const sowItem = sowObj[0];
         // add budget into project object to utilize for update operation.
         projObj.Budget = fm.Budget ? fm.Budget : 0;
@@ -1838,16 +1836,16 @@ export class AllProjectsComponent implements OnInit {
         projObj.ScheduledOOP = fm.ScheduledOOP ? fm.ScheduledOOP : 0;
         const sowBalanceTotalBudget = sowItem.TotalBudget - (sowItem.TotalLinked ? sowItem.TotalLinked : 0);
         const sowBalanceRevenueBudget = sowItem.NetBudget - (sowItem.RevenueLinked ? sowItem.RevenueLinked : 0);
-  
+
         if (sowBalanceTotalBudget >= projObj.Budget &&
           sowBalanceRevenueBudget >= projObj.RevenueBudget
-         ) {
+        ) {
           budgetValidateFlag = true;
         } else {
           budgetValidateFlag = false;
         }
       }
-      
+
     }
     return budgetValidateFlag;
   }

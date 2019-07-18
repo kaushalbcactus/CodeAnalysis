@@ -21,12 +21,13 @@ declare var $;
 export class SOWComponent implements OnInit, OnDestroy {
   @Output() projectItem: EventEmitter<any> = new EventEmitter();
   displayedColumns: any[] = [
-    { field: 'SOWCode', header: 'SOW Code' },
-    { field: 'ShortTitle', header: 'SOW Title' },
-    { field: 'ClientLegalEntity', header: 'Client Legal Entity' },
-    { field: 'POC', header: 'POC' },
-    { field: 'CreatedBy', header: 'Created By' },
-    { field: 'CreatedDate', header: 'Created Date' },
+    { field: 'SOWCode', header: 'SOW Code', visibility: true },
+    { field: 'ShortTitle', header: 'SOW Title', visibility: true },
+    { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
+    { field: 'POC', header: 'POC', visibility: true },
+    { field: 'CreatedBy', header: 'Created By', visibility: true },
+    { field: 'CreatedDate', header: 'Created Date', visibility: true, exportable: false },
+    { field: 'CreatedDateFormat', header: 'Created Date', visibility: false },
   ];
   filterColumns: any[] = [
     { field: 'SOWCode' },
@@ -233,6 +234,7 @@ export class SOWComponent implements OnInit, OnDestroy {
         sowObj.POC = poc.length > 0 ? poc[0].FullName : '';
         sowObj.CreatedBy = task.Author ? task.Author.Title : '';
         sowObj.CreatedDate = task.Created;
+        sowObj.CreatedDateFormat = this.datePipe.transform(new Date(sowObj.CreatedDate), 'MMM dd yyyy hh:mm:ss aa');
         sowObj.TotalBudget = task.TotalBudget ? task.TotalBudget : 0;
         sowObj.NetBudget = task.NetBudget ? task.NetBudget : 0;
         sowObj.OOPBudget = task.OOPBudget ? task.OOPBudget : 0;
