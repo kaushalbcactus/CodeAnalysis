@@ -189,7 +189,7 @@ export class OopComponent implements OnInit, OnDestroy {
             { field: 'POValues', header: 'PO Number/ Name', visibility: true },
             { field: 'ClientName', header: 'Client LE', visibility: true },
             { field: 'ScheduledDateFormat', header: 'Scheduled Date', visibility: false },
-            { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true },
+            { field: 'ScheduledDate', header: 'Scheduled Date', visibility: true, exportable: false },
             { field: 'Amount', header: 'Amount', visibility: true },
             { field: 'Currency', header: 'Currency', visibility: true },
             { field: 'POCName', header: 'POC Name', visibility: true },

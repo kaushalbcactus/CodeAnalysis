@@ -284,7 +284,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             { field: 'InvoiceNumber', header: 'Invoice Number', visibility: true },
             { field: 'POValues', header: 'PO Name/ Number', visibility: true },
             { field: 'ClientLegalEntity', header: 'Client LE', visibility: true },
-            { field: 'InvoiceDate', header: 'Invoice Date', visibility: true },
+            { field: 'InvoiceDate', header: 'Invoice Date', visibility: true, exportable: false },
             { field: 'InvoiceDateFormat', header: 'Invoice Date', visibility: false },
             { field: 'Amount', header: 'Amount', visibility: true },
             { field: 'Currency', header: 'Currency', visibility: true },

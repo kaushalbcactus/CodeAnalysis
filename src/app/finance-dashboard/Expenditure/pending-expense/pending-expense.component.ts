@@ -224,10 +224,10 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             { field: 'ExpenseType', header: 'Expense Type', visibility: true },
             { field: 'ClientAmount', header: 'Client Amount', visibility: true },
             { field: 'ClientCurrency', header: 'Client Currency', visibility: true },
-            { field: 'Created', header: 'Date Created', visibility: true },
+            { field: 'Created', header: 'Date Created', visibility: true, exportable: false },
             { field: 'CreatedDateFormat', header: 'Date Created', visibility: false },
             { field: 'CreatedBy', header: 'Created By', visibility: true },
-            { field: 'Modified', header: 'Modified Date', visibility: false },
+            { field: 'Modified', header: 'Modified Date', visibility: false, exportable: false },
             { field: 'ModifiedDateFormat', header: 'Modified Date', visibility: false },
             { field: 'ModifiedBy', header: 'Modified By', visibility: false },
 

@@ -300,7 +300,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             { field: 'ProformaNumber', header: 'Proforma Number', visibility: true },
             { field: 'PONumber', header: 'PO Number', visibility: true },
             { field: 'ProformaDateFormat', header: 'Proforma Date', visibility: false },
-            { field: 'ProformaDate', header: 'Proforma Date', visibility: true },
+            { field: 'ProformaDate', header: 'Proforma Date', visibility: true, exportable: false },
             { field: 'ProformaType', header: 'Proforma Type', visibility: true },
             { field: 'Amount', header: 'Amount', visibility: true },
             { field: 'Currency', header: 'Currency', visibility: true },

@@ -604,7 +604,7 @@ export class PMCommonService {
       Molecule: addObj.ProjectAttributes.Molecule,
       IsPubSupport: addObj.ProjectAttributes.PUBSupportRequired ? 'Yes' : 'No',
       Description: addObj.ProjectAttributes.EndUseofDeliverable ? addObj.ProjectAttributes.EndUseofDeliverable : '',
-      POC: addObj.ProjectAttributes.PointOfContact2.join(';#'),
+      POC: addObj.ProjectAttributes.PointOfContact2 ? addObj.ProjectAttributes.PointOfContact2.join(';#') : '',
       Authors: addObj.ProjectAttributes.Authors ? addObj.ProjectAttributes.Authors : '',
       IsStandard: addObj.Timeline.Standard.IsStandard ? 'Yes' : 'No',
       ConferenceJournal: addObj.ProjectAttributes.ConferenceJournal ? addObj.ProjectAttributes.ConferenceJournal : '',

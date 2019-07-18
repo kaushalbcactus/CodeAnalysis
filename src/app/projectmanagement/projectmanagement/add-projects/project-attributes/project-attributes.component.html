@@ -26,7 +26,7 @@
           placeholder="Please Select" [showClear]="true">
         </p-dropdown>
         <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['billedBy'].valid&&addProjectAttributesForm.controls['billedBy'].touched">
+          *ngIf="!showEditSave && !addProjectAttributesForm.controls['billedBy'].required&&addProjectAttributesForm.controls['billedBy'].touched">
           Billed By is required</div>
       </div>
     </div>
