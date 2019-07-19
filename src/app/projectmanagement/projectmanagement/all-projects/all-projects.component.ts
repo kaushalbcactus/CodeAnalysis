@@ -895,6 +895,11 @@ export class AllProjectsComponent implements OnInit {
         batchURL.push(projectBudgetUpdate);
       }
       if (selectedProjectObj.Status === this.constants.projectStatus.AwaitingCancelApproval) {
+        element.OriginalBudget = element.OriginalBudget ? element.OriginalBudget : 0;
+        element.NetBudget = element.NetBudget ? element.NetBudget : 0;
+        element.OOPBudget = element.OOPBudget ? element.OOPBudget : 0;
+        element.TaxBudget = element.TaxBudget ? element.TaxBudget : 0;
+        element.BudgetHours = element.BudgetHours ? element.BudgetHours : 0;
         const projectBudgetBreakCreateData = {
           __metadata: {
             type: this.constants.listNames.ProjectBudgetBreakup.type
@@ -918,6 +923,14 @@ export class AllProjectsComponent implements OnInit {
       }
     });
     if (this.selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value) {
+      sowObj.TotalScheduled = sowObj.TotalScheduled ? sowObj.TotalScheduled : 0;
+      sowObj.ScheduledRevenue = sowObj.ScheduledRevenue ? sowObj.ScheduledRevenue : 0;
+      sowObj.TotalLinked = sowObj.TotalLinked ? sowObj.TotalLinked : 0;
+      sowObj.RevenueLinked = sowObj.RevenueLinked ? sowObj.RevenueLinked : 0;
+      projectFinanceObj.InvoicesScheduled = projectFinanceObj.InvoicesScheduled ? projectFinanceObj.InvoicesScheduled : 0;
+      projectFinanceObj.ScheduledRevenue = projectFinanceObj.ScheduledRevenue ? projectFinanceObj.ScheduledRevenue : 0;
+      projectFinanceObj.Budget = projectFinanceObj.Budget ? projectFinanceObj.Budget : 0;
+      projectFinanceObj.RevenueBudget = projectFinanceObj.RevenueBudget ? projectFinanceObj.RevenueBudget : 0;
       const sowData = {
         __metadata: {
           type: this.constants.listNames.SOW.type
@@ -938,6 +951,11 @@ export class AllProjectsComponent implements OnInit {
         const poLookUp = element.POLookup;
         const poItem = POObjsArray.find(c => c.ID === poLookUp);
         if (poItem) {
+          poItem.TotalLinked = poItem.TotalLinked ? poItem.TotalLinked : 0;
+          poItem.RevenueLinked = poItem.RevenueLinked ? poItem.RevenueLinked : 0;
+          poItem.TotalScheduled = poItem.TotalScheduled ? poItem.TotalScheduled : 0;
+          poItem.ScheduledRevenue = poItem.ScheduledRevenue ? poItem.ScheduledRevenue : 0;
+          element.Amount = element.Amount ? element.Amount : 0;
           const poData = {
             __metadata: {
               type: this.constants.listNames.PO.type

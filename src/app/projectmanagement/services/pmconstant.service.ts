@@ -432,7 +432,7 @@ export class PmconstantService {
     },
     SOW_BY_SOWCODE: {
       select: 'ID, ClientLegalEntity, SOWTitle, Currency, TotalBudget, NetBudget, OOPBudget, TaxBudget, Status,'
-        + 'PrimaryPOC',
+        + 'PrimaryPOC,TotalScheduled, ScheduledRevenue, TotalLinked, RevenueLinked,',
       filter: 'SOWCode eq \'{{sowCode}}\''
     },
     PROJECT_BUDGET_BREAKUP_CANCELLED_BY_PROJECTCODE: {
