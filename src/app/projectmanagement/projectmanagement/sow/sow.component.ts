@@ -323,9 +323,7 @@ export class SOWComponent implements OnInit, OnDestroy {
         let endDate = now.toISOString();
         if (this.rangeDates) {
           startDate = this.rangeDates[0].toISOString();
-          const newEndDate = this.rangeDates[1] ?
-            new Date(this.rangeDates[1]).setHours(23, 59, 59) : new Date(startDate).setHours(23, 59, 59);
-          endDate = new Date(newEndDate).toISOString();
+          endDate = this.rangeDates[1].toISOString();
         } else {
           this.rangeDates = [];
           this.rangeDates.push(new Date(startDate));

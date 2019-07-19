@@ -153,7 +153,7 @@ export class AllProjectsComponent implements OnInit {
           first: 0,
           globalFilter: null,
           multiSortMeta: undefined,
-          rows: 10,
+          rows: 5,
           sortField: undefined,
           sortOrder: 1
         };
@@ -895,6 +895,11 @@ export class AllProjectsComponent implements OnInit {
         batchURL.push(projectBudgetUpdate);
       }
       if (selectedProjectObj.Status === this.constants.projectStatus.AwaitingCancelApproval) {
+        element.OriginalBudget = element.OriginalBudget ? element.OriginalBudget : 0;
+        element.NetBudget = element.NetBudget ? element.NetBudget : 0;
+        element.OOPBudget = element.OOPBudget ? element.OOPBudget : 0;
+        element.TaxBudget = element.TaxBudget ? element.TaxBudget : 0;
+        element.BudgetHours = element.BudgetHours ? element.BudgetHours : 0;
         const projectBudgetBreakCreateData = {
           __metadata: {
             type: this.constants.listNames.ProjectBudgetBreakup.type
@@ -917,7 +922,15 @@ export class AllProjectsComponent implements OnInit {
         batchURL.push(projectBudgetBreakCreate);
       }
     });
-    if (selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value) {
+    if (this.selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value) {
+      sowObj.TotalScheduled = sowObj.TotalScheduled ? sowObj.TotalScheduled : 0;
+      sowObj.ScheduledRevenue = sowObj.ScheduledRevenue ? sowObj.ScheduledRevenue : 0;
+      sowObj.TotalLinked = sowObj.TotalLinked ? sowObj.TotalLinked : 0;
+      sowObj.RevenueLinked = sowObj.RevenueLinked ? sowObj.RevenueLinked : 0;
+      projectFinanceObj.InvoicesScheduled = projectFinanceObj.InvoicesScheduled ? projectFinanceObj.InvoicesScheduled : 0;
+      projectFinanceObj.ScheduledRevenue = projectFinanceObj.ScheduledRevenue ? projectFinanceObj.ScheduledRevenue : 0;
+      projectFinanceObj.Budget = projectFinanceObj.Budget ? projectFinanceObj.Budget : 0;
+      projectFinanceObj.RevenueBudget = projectFinanceObj.RevenueBudget ? projectFinanceObj.RevenueBudget : 0;
       const sowData = {
         __metadata: {
           type: this.constants.listNames.SOW.type
@@ -938,6 +951,11 @@ export class AllProjectsComponent implements OnInit {
         const poLookUp = element.POLookup;
         const poItem = POObjsArray.find(c => c.ID === poLookUp);
         if (poItem) {
+          poItem.TotalLinked = poItem.TotalLinked ? poItem.TotalLinked : 0;
+          poItem.RevenueLinked = poItem.RevenueLinked ? poItem.RevenueLinked : 0;
+          poItem.TotalScheduled = poItem.TotalScheduled ? poItem.TotalScheduled : 0;
+          poItem.ScheduledRevenue = poItem.ScheduledRevenue ? poItem.ScheduledRevenue : 0;
+          element.Amount = element.Amount ? element.Amount : 0;
           const poData = {
             __metadata: {
               type: this.constants.listNames.PO.type
@@ -1655,121 +1673,115 @@ export class AllProjectsComponent implements OnInit {
    */
   async performSOWMove() {
     const projObject = this.selectedProjectObj;
-    if (this.newSelectedSOW) {
-      if (projObject.SOWCode === this.newSelectedSOW) {
-        this.messageService.add({
-          key: 'custom', severity: 'error', summary: 'Error Message',
-          detail: 'Source sow code ' + projObject.SOWCode + ' and destination sow ' + this.newSelectedSOW + ' cannot be same.'
-        });
-        return;
-      }
-      this.pmObject.isMainLoaderHidden = false;
-      const isValid = await this.validateSOWBudgetForProjectMovement(this.newSelectedSOW, projObject);
-      if (isValid) {
-        if (isValid === 'InvoiceNotScheduled') {
-          this.messageService.add({
-            key: 'custom', severity: 'error', summary: 'Error Message',
-            detail: 'Project Movement to selected SOW ' + this.newSelectedSOW + ' is not possible due to confirmed invoice'
-          });
-          this.pmObject.isMainLoaderHidden = true;
-          return;
-        }
-        const batchURL = [];
-        const options = {
-          data: null,
-          url: '',
-          type: '',
-          listName: ''
-        };
-        // calculate New SOW Budget.
-        const allSOWArray = this.pmObject.allSOWItems;
-        const newSOWObj = allSOWArray.filter(x => x.SOWCode === this.newSelectedSOW);
-        const oldSOWObj = allSOWArray.filter(x => x.SOWCode === projObject.SOWCode);
-        if (newSOWObj && newSOWObj.length && oldSOWObj && oldSOWObj.length) {
-          const newSOW = newSOWObj[0];
-          const oldSOW = oldSOWObj[0];
-          const newSOWTotalBudget = newSOW.TotalLinked + projObject.Budget;
-          const newSOWRevenueBudget = newSOW.RevenueLinked + projObject.RevenueBudget;
-          const newSOWOOPBudget = newSOW.OOPLinked + projObject.OOPBudget;
-          const newSOWTaxBudget = newSOW.TaxLinked + projObject.TaxBudget;
-          const newSOWTotalScheduled = newSOW.TotalScheduled + projObject.InvoicesScheduled;
-          const newSOWScheduledRevenue = newSOW.ScheduledRevenue + projObject.ScheduledRevenue;
-          const newSOWScheduledOOP = newSOW.ScheduledOOP + projObject.ScheduledOOP;
-          const newSOWData = this.getSOWData(newSOWTotalBudget, newSOWRevenueBudget, newSOWOOPBudget,
-            newSOWTaxBudget, newSOWTotalScheduled, newSOWScheduledRevenue, newSOWScheduledOOP);
-          const newSOWUpdate = Object.assign({}, options);
-          newSOWUpdate.url = this.spServices.getItemURL(this.constants.listNames.SOW.name, newSOW.ID);
-          newSOWUpdate.data = newSOWData;
-          newSOWUpdate.type = 'PATCH';
-          newSOWUpdate.listName = this.constants.listNames.SOW.name;
-          batchURL.push(newSOWUpdate);
-          // calculate old sow Budget.
-          const oldSOWTotalBudget = oldSOW.TotalLinked - projObject.Budget;
-          const oldSOWRevenueBudget = oldSOW.RevenueLinked - projObject.RevenueBudget;
-          const oldSOWOOPBudget = oldSOW.OOPLinked - projObject.OOPBudget;
-          const oldSOWTaxBudget = oldSOW.TaxLinked - projObject.TaxBudget;
-          const oldSOWTotalScheduled = oldSOW.TotalScheduled - projObject.InvoicesScheduled;
-          const oldSOWScheduledRevenue = oldSOW.ScheduledRevenue - projObject.ScheduledRevenue;
-          const oldSOWScheduledOOP = oldSOW.ScheduledOOP - projObject.ScheduledOOP;
-          const oldSOWData = this.getSOWData(oldSOWTotalBudget, oldSOWRevenueBudget, oldSOWOOPBudget,
-            oldSOWTaxBudget, oldSOWTotalScheduled, oldSOWScheduledRevenue, oldSOWScheduledOOP);
-          const oldSOWUpdate = Object.assign({}, options);
-          oldSOWUpdate.url = this.spServices.getItemURL(this.constants.listNames.SOW.name, oldSOW.ID);
-          oldSOWUpdate.data = oldSOWData;
-          oldSOWUpdate.type = 'PATCH';
-          oldSOWUpdate.listName = this.constants.listNames.SOW.name;
-          batchURL.push(oldSOWUpdate);
-          const invoiceItemArray = this.moveSOWObjectArray[1].retItems;
-          invoiceItemArray.forEach(element => {
-            const data = {
-              __metadata: { type: this.constants.listNames.InvoiceLineItems.type },
-              SOWCode: this.newSelectedSOW
-            };
-            const invoiceUpdate = Object.assign({}, options);
-            invoiceUpdate.url = this.spServices.getItemURL(this.constants.listNames.InvoiceLineItems.name, element.ID);
-            invoiceUpdate.data = data;
-            invoiceUpdate.type = 'PATCH';
-            invoiceUpdate.listName = this.constants.listNames.InvoiceLineItems.name;
-            batchURL.push(invoiceUpdate);
-          });
-          const projectData = {
-            __metadata: { type: this.constants.listNames.ProjectInformation.type },
-            SOWCode: this.newSelectedSOW
-          };
-          const projectInfoUpdate = Object.assign({}, options);
-          projectInfoUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, projObject.ID);
-          projectInfoUpdate.data = projectData;
-          projectInfoUpdate.type = 'PATCH';
-          projectInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
-          batchURL.push(projectInfoUpdate);
-        }
-
-        const sResult = await this.spServices.executeBatch(batchURL);
-        this.pmObject.isMainLoaderHidden = true;
-        this.messageService.add({
-          key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-          detail: 'Project move to under new SOW Code - ' + this.newSelectedSOW + ''
-        });
-        setTimeout(() => {
-          if (this.router.url === '/projectMgmt/allProjects') {
-            this.pmObject.allProjectItems = [];
-            this.reloadAllProject();
-          } else {
-            this.router.navigate(['/projectMgmt/allProjects']);
-          }
-          this.closeMoveSOW();
-        }, this.pmConstant.TIME_OUT);
-      } else {
-        this.pmObject.isMainLoaderHidden = true;
-        this.messageService.add({
-          key: 'custom', severity: 'error', summary: 'Error Message',
-          detail: 'Project Movement to selected SOW ' + this.newSelectedSOW + ' is not possible due to insufficient amount'
-        });
-      }
-    } else {
+    if (projObject.SOWCode === this.newSelectedSOW) {
       this.messageService.add({
         key: 'custom', severity: 'error', summary: 'Error Message',
-        detail: 'Please Select the SOW.'
+        detail: 'Source sow code ' + projObject.SOWCode + ' and destination sow ' + this.newSelectedSOW + ' cannot be same.'
+      });
+      return;
+    }
+    this.pmObject.isMainLoaderHidden = false;
+
+    const isValid = await this.validateSOWBudgetForProjectMovement(this.newSelectedSOW, projObject);
+    if (isValid) {
+      if (isValid === 'InvoiceNotScheduled') {
+        this.messageService.add({
+          key: 'custom', severity: 'error', summary: 'Error Message',
+          detail: 'Project Movement to selected SOW ' + this.newSelectedSOW + ' is not possible due to confirmed invoice'
+        });
+        this.pmObject.isMainLoaderHidden = true;
+        return;
+      }
+      const batchURL = [];
+      const options = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
+      // calculate New SOW Budget.
+      const allSOWArray = this.pmObject.allSOWItems;
+      const newSOWObj = allSOWArray.filter(x => x.SOWCode === this.newSelectedSOW);
+      const oldSOWObj = allSOWArray.filter(x => x.SOWCode === projObject.SOWCode);
+      if (newSOWObj && newSOWObj.length && oldSOWObj && oldSOWObj.length) {
+        const newSOW = newSOWObj[0];
+        const oldSOW = oldSOWObj[0];
+        const newSOWTotalBudget = newSOW.TotalLinked + projObject.Budget;
+        const newSOWRevenueBudget = newSOW.RevenueLinked + projObject.RevenueBudget;
+        const newSOWOOPBudget = newSOW.OOPLinked + projObject.OOPBudget;
+        const newSOWTaxBudget = newSOW.TaxLinked + projObject.TaxBudget;
+        const newSOWTotalScheduled = newSOW.TotalScheduled + projObject.InvoicesScheduled;
+        const newSOWScheduledRevenue = newSOW.ScheduledRevenue + projObject.ScheduledRevenue;
+        const newSOWScheduledOOP = newSOW.ScheduledOOP + projObject.ScheduledOOP;
+        const newSOWData = this.getSOWData(newSOWTotalBudget, newSOWRevenueBudget, newSOWOOPBudget,
+          newSOWTaxBudget, newSOWTotalScheduled, newSOWScheduledRevenue, newSOWScheduledOOP);
+        const newSOWUpdate = Object.assign({}, options);
+        newSOWUpdate.url = this.spServices.getItemURL(this.constants.listNames.SOW.name, newSOW.ID);
+        newSOWUpdate.data = newSOWData;
+        newSOWUpdate.type = 'PATCH';
+        newSOWUpdate.listName = this.constants.listNames.SOW.name;
+        batchURL.push(newSOWUpdate);
+        // calculate old sow Budget.
+        const oldSOWTotalBudget = oldSOW.TotalLinked - projObject.Budget;
+        const oldSOWRevenueBudget = oldSOW.RevenueLinked - projObject.RevenueBudget;
+        const oldSOWOOPBudget = oldSOW.OOPLinked - projObject.OOPBudget;
+        const oldSOWTaxBudget = oldSOW.TaxLinked - projObject.TaxBudget;
+        const oldSOWTotalScheduled = oldSOW.TotalScheduled - projObject.InvoicesScheduled;
+        const oldSOWScheduledRevenue = oldSOW.ScheduledRevenue - projObject.ScheduledRevenue;
+        const oldSOWScheduledOOP = oldSOW.ScheduledOOP - projObject.ScheduledOOP;
+        const oldSOWData = this.getSOWData(oldSOWTotalBudget, oldSOWRevenueBudget, oldSOWOOPBudget,
+          oldSOWTaxBudget, oldSOWTotalScheduled, oldSOWScheduledRevenue, oldSOWScheduledOOP);
+        const oldSOWUpdate = Object.assign({}, options);
+        oldSOWUpdate.url = this.spServices.getItemURL(this.constants.listNames.SOW.name, oldSOW.ID);
+        oldSOWUpdate.data = oldSOWData;
+        oldSOWUpdate.type = 'PATCH';
+        oldSOWUpdate.listName = this.constants.listNames.SOW.name;
+        batchURL.push(oldSOWUpdate);
+        const invoiceItemArray = this.moveSOWObjectArray[1].retItems;
+        invoiceItemArray.forEach(element => {
+          const data = {
+            __metadata: { type: this.constants.listNames.InvoiceLineItems.type },
+            SOWCode: this.newSelectedSOW
+          };
+          const invoiceUpdate = Object.assign({}, options);
+          invoiceUpdate.url = this.spServices.getItemURL(this.constants.listNames.InvoiceLineItems.name, element.ID);
+          invoiceUpdate.data = data;
+          invoiceUpdate.type = 'PATCH';
+          invoiceUpdate.listName = this.constants.listNames.InvoiceLineItems.name;
+          batchURL.push(invoiceUpdate);
+        });
+        const projectData = {
+          __metadata: { type: this.constants.listNames.ProjectInformation.type },
+          SOWCode: this.newSelectedSOW
+        };
+        const projectInfoUpdate = Object.assign({}, options);
+        projectInfoUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, projObject.ID);
+        projectInfoUpdate.data = projectData;
+        projectInfoUpdate.type = 'PATCH';
+        projectInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
+        batchURL.push(projectInfoUpdate);
+      }
+
+      const sResult = await this.spServices.executeBatch(batchURL);
+      this.pmObject.isMainLoaderHidden = true;
+      this.messageService.add({
+        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+        detail: 'Project move to under new SOW Code - ' + this.newSelectedSOW + ''
+      });
+      setTimeout(() => {
+        if (this.router.url === '/projectMgmt/allProjects') {
+          this.pmObject.allProjectItems = [];
+          this.reloadAllProject();
+        } else {
+          this.router.navigate(['/projectMgmt/allProjects']);
+        }
+        this.closeMoveSOW();
+      }, this.pmConstant.TIME_OUT);
+    } else {
+      this.pmObject.isMainLoaderHidden = true;
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: 'Project Movement to selected SOW ' + this.newSelectedSOW + ' is not possible due to insufficient amount'
       });
     }
   }
