@@ -1047,6 +1047,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         // Propose Closure Mail Content
         var pcmailSubject = this.selectedRowItem.ProjectCode + "(" + this.selectedRowItem.Id + "): " + "Propose closure for project";
         let pcmailContent = this.mailContentRes[1].retItems[0].Content;
+        pcmailContent = this.replaceContent(pcmailContent, "@@Val3@@", 'All');
         pcmailContent = this.replaceContent(pcmailContent, "@@Val1@@", this.selectedRowItem.ProjectCode);
         pcmailContent = this.replaceContent(pcmailContent, "@@Val2@@", this.selectedRowItem.ClientLegalEntity);
         pcmailContent = this.replaceContent(pcmailContent, "@@Val5@@", this.selectedRowItem.BudgetHrs);
