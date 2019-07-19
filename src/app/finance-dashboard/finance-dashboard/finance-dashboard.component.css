@@ -257,7 +257,6 @@ body .ui-datepicker table td>a.ui-state-active:hover {
 
 
 /*Header */
-
 body .ui-widget {
     font-family: Verdana !important;
 }
@@ -279,9 +278,9 @@ table {
 }
 
 .logo-img {
-    width: auto;
-    margin: auto;
-    margin-bottom: 20px;
+    width: 200px; 
+    height: auto; 
+    margin: auto
 }
 
 .header-left {
