@@ -108,7 +108,7 @@ export class EditorComponent implements OnInit {
         <td class="header-right">
           <span>
               <img class="logo-img"
-              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWz03qNKymlBnTeC7MK8vEEBGbzHX6Q6TxaIPzYzavxx5Q">
+              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZ77yE3cAxlHgtyyoYl2TKUBN352fZbTRrUbfG9IIj7vLA">
           </span>
         </td>
         </tr>
@@ -248,7 +248,7 @@ export class EditorComponent implements OnInit {
                     [[InvoiceServiceDetails]]
                 </td>
                 <td>
-                    [[CurrencySymbol]] [[InvoiceFees]]<span>*</span>
+                    [[CurrencySymbol]] [[InvoiceFees]]<span style="display: [[ShowAsterisk]]">*</span>
                 </td>
             </tr>
             <tr>
@@ -262,7 +262,7 @@ export class EditorComponent implements OnInit {
             </tr>
         </tbody>
             </table>
-            <p style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
+            <p style="font-size: 15px;font-weight: 600; display: [[ShowAsteriskMessage]]">* Please refer to Appendix 1 for additional details</p>
         </div>
         </div>
         <tbody>
@@ -361,7 +361,7 @@ export class EditorComponent implements OnInit {
       <td class="header-right">
           <span>
               <img class="logo-img"
-               src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWz03qNKymlBnTeC7MK8vEEBGbzHX6Q6TxaIPzYzavxx5Q">
+               src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZ77yE3cAxlHgtyyoYl2TKUBN352fZbTRrUbfG9IIj7vLA">
           </span>
       </td>
       </tr>
@@ -556,7 +556,7 @@ export class EditorComponent implements OnInit {
         <td class="header-right">
           <span>
               <img class="logo-img"
-              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWz03qNKymlBnTeC7MK8vEEBGbzHX6Q6TxaIPzYzavxx5Q">
+              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZ77yE3cAxlHgtyyoYl2TKUBN352fZbTRrUbfG9IIj7vLA">
           </span>
         </td>
         </tr>
@@ -566,10 +566,10 @@ export class EditorComponent implements OnInit {
         </header>`,
             footerCreate: `<footer id="footer">
         <div>
-        <table style="margin-top:10px;">
+        <table>
             <tr>
                 <td style="font-size: 14px;text-align: center;">
-                This is computer generated proforma
+                This is a computer generated proforma
                 </td>
             </tr>
         </table>
@@ -658,7 +658,7 @@ export class EditorComponent implements OnInit {
                 <p>[[InvoiceServiceDetails]]</p>
             </td>
             <td>
-                <p>[[CurrencySymbol]] [[InvoiceFees]]<span>*</span></p>
+                <p>[[CurrencySymbol]] [[InvoiceFees]]<span style="display: [[ShowAsterisk]]">*</span></p>
             </td>
             </tr>
             <tr>
@@ -683,7 +683,7 @@ export class EditorComponent implements OnInit {
             </tr>
             </tbody>
                 </table>
-                <p style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
+                <p style="font-size: 15px;font-weight: 600; display: [[ShowAsteriskMessage]]">* Please refer to Appendix 1 for additional details</p>
             </div>
         </div>
         <tbody>
@@ -800,7 +800,7 @@ export class EditorComponent implements OnInit {
         <td class="header-right">
           <span>
               <img class="logo-img"
-              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWz03qNKymlBnTeC7MK8vEEBGbzHX6Q6TxaIPzYzavxx5Q">
+              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZ77yE3cAxlHgtyyoYl2TKUBN352fZbTRrUbfG9IIj7vLA">
           </span>
         </td>
         </tr>
@@ -808,7 +808,7 @@ export class EditorComponent implements OnInit {
         </table>
         </div>`,
             footer: `<div>
-      <table style="margin-top:10px;">
+      <table>
           <tr>
               <td style="font-size: 14px;text-align: center;">
                   This is a computer generated proforma
@@ -996,7 +996,6 @@ table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
 body p {margin:0;line-height:1.5;}
 .table-heading{width: 100%;  text-align: center;font-weight: bold;background: #d8d8d8; font-size: 16px;
 color: #000; padding: 10px;}
-/* .contact_details_japan{height:60px;} */
 .contact_details p,.contact_details_japan p{padding-top: 3px;padding-bottom: 3px;}
 .contact_details-table figure:first-child{width: 47%;margin: 0px !important; display: inline-block;vertical-align: top;};
 .contact_details-table figure:nth-child(3) table{width: 100%;}
@@ -1017,7 +1016,6 @@ p span{display: inline-flex;}
 .contact-detail-table p{margin: 0;line-height: 24px;font-size: 16px;}
 ul{line-height: 26px;padding-left:20px;list-style: unset;}
 .paymentDetails,.column-flex{display: inline-flex;}
-/* .paymentDetails ul{padding-left: 10px;} */
 .invoice-table{border-collapse: collapse;width: 100%;}
 .invoice-table td{border:1px solid #000 !important;padding: 0; vertical-align: middle;}
 .invoice-table th{border:1px solid #000 !important;padding: 0; vertical-align: middle;}
@@ -1124,7 +1122,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         <td class="header-left indHeader">
         <span>
               <img style="margin-bottom: 20px;" class="logo-img"
-              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWz03qNKymlBnTeC7MK8vEEBGbzHX6Q6TxaIPzYzavxx5Q">
+              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZ77yE3cAxlHgtyyoYl2TKUBN352fZbTRrUbfG9IIj7vLA">
         </span>
         <p>
             <span>GST Proforma No</span> : <br />
@@ -1145,7 +1143,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         </header>`,
             footerCreate: `<footer id="footer">
         <div>
-      <table style="margin-top:10px;">
+      <table>
           <tr>
               <td style="font-size: 14px;text-align: center;">
                   This is a computer generated proforma
@@ -1319,7 +1317,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             </td>
             <td>998399 (Other Professional, Technical and Business Services n. e. c.)</td>
             <td>
-                [[CurrencySymbol]] [[InvoiceFees]]<span>*</span>
+                [[CurrencySymbol]] [[InvoiceFees]]<span style="display: [[ShowAsterisk]]">*</span>
             </td>
             </tr>
             <tr>
@@ -1346,7 +1344,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             </tr>
             </tbody>
             </table>
-                <p style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
+                <p style="font-size: 15px;font-weight: 600; display: [[ShowAsteriskMessage]]">* Please refer to Appendix 1 for additional details</p>
             </div>
         </div>
     
@@ -1433,7 +1431,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         <td class="header-left indHeader">
         <span>
               <img style="margin-bottom: 20px;" class="logo-img"
-              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWz03qNKymlBnTeC7MK8vEEBGbzHX6Q6TxaIPzYzavxx5Q">
+              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZ77yE3cAxlHgtyyoYl2TKUBN352fZbTRrUbfG9IIj7vLA">
         </span>
         <p>
             <span>GST Proforma No</span> : <br />
@@ -1452,7 +1450,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         </table>
         </div>`,
             footer: `<div>
-      <table style="margin-top:10px;">
+      <table>
           <tr>
               <td style="font-size: 14px;text-align: center;">
                   This is a computer generated proforma
@@ -1812,6 +1810,8 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             invoiceData.usCurrencySymbol);
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
+            USInvoice.maincontent = USInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsterisk\\]\\]', 'gi'), 'inline-block');
+            USInvoice.maincontent = USInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsteriskMessage\\]\\]', 'gi'), 'block');
             for (let i = 0; i < invoiceData.Appendix.length; i++) {
                 let appendixRow = USInvoice.appendixRow;
                 appendixRow = appendixRow.replace('[[DvCode]]', invoiceData.Appendix[i].dvcode);
@@ -1827,6 +1827,8 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             USInvoice.appendixCreate = USInvoice.appendixCreate.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                 invoiceData.usCurrencySymbol);
         } else {
+            USInvoice.maincontent = USInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsterisk\\]\\]', 'gi'), 'none');
+            USInvoice.maincontent = USInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsteriskMessage\\]\\]', 'gi'), 'none');
             this.showAppendix = false;
         }
         console.log(newArr);
@@ -1927,6 +1929,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             invoiceData.usCurrencySymbol);
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
+            //USObject.invoiceDetail = USObject.invoiceDetail.replace(new RegExp('\\[\\[ShowAsterisk\\]\\]', 'gi'), 'inline-block');
             USObject.appendix = USObject.appendix.replace('[[Appendix]]', newArr.join(''));
             USObject.appendix = USObject.appendix.replace('[[Total]]', invoiceData.invoiceFees);
             USObject.appendix = USObject.appendix.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
@@ -1935,6 +1938,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             delete USObject.appendixRow;
         } else {
             this.showAppendix = false;
+            USObject.invoiceDetail = USObject.invoiceDetail.replace('<span>*</span>', '');
             delete USObject.appendix;
             delete USObject.appendixCreate;
             delete USObject.appendixRow;
@@ -1982,6 +1986,8 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             invoiceData.JpnCurrencySymbol);
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
+            JapanInvoice.maincontent = JapanInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsterisk\\]\\]', 'gi'), 'inline-block');
+            JapanInvoice.maincontent = JapanInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsteriskMessage\\]\\]', 'gi'), 'block');
             for (let i = 0; i < invoiceData.Appendix.length; i++) {
                 let appendixRow = JapanInvoice.appendixRow;
                 appendixRow = appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].cactusSpCode);
@@ -1996,6 +2002,8 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
                 invoiceData.JpnCurrencySymbol);
         } else {
             this.showAppendix = false;
+            JapanInvoice.maincontent = JapanInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsterisk\\]\\]', 'gi'), 'none');
+            JapanInvoice.maincontent = JapanInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsteriskMessage\\]\\]', 'gi'), 'none');
         }
 
         // const header = document.getElementById('header');
@@ -2054,6 +2062,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
 
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
+            //JapanObject.invoiceDetail = JapanObject.invoiceDetail.replace(new RegExp('\\[\\[ShowAsterisk\\]\\]', 'gi'), 'inline-block');
             JapanObject.appendix = JapanObject.appendix.replace('[[Appendix]]', newArr.join(''));
             // JapanObject.appendix = JapanObject.appendix.replace('[[Amount]]', invoiceData.invoiceFees);
             JapanObject.appendix = JapanObject.appendix.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
@@ -2062,6 +2071,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             delete JapanObject.appendixRow;
         } else {
             this.showAppendix = false;
+            JapanObject.invoiceDetail = JapanObject.invoiceDetail.replace('<span>*</span>', '');
             delete JapanObject.appendix;
             delete JapanObject.appendixCreate;
             delete JapanObject.appendixRow;
@@ -2139,6 +2149,8 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         }
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
+            IndiaInvoice.maincontent = IndiaInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsterisk\\]\\]', 'gi'), 'inline-block');
+            IndiaInvoice.maincontent = IndiaInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsteriskMessage\\]\\]', 'gi'), 'block');
             for (let i = 0; i < invoiceData.Appendix.length; i++) {
                 let appendixRow = IndiaInvoice.appendixRow;
                 appendixRow = appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].cactusSpCode);
@@ -2153,7 +2165,8 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
 
         } else {
             this.showAppendix = false;
-
+            IndiaInvoice.maincontent = IndiaInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsterisk\\]\\]', 'gi'), 'none');
+            IndiaInvoice.maincontent = IndiaInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsteriskMessage\\]\\]', 'gi'), 'none');
         }
 
         let headerObj: any = this.headerstyle;
@@ -2244,6 +2257,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
 
         if (invoiceData.Appendix.length > 0) {
             this.showAppendix = true;
+            //IndiaObject.invoiceDetail = IndiaObject.invoiceDetail.replace(new RegExp('\\[\\[ShowAsterisk\\]\\]', 'gi'), 'inline-block');
             IndiaObject.appendix = IndiaObject.appendix.replace('[[Appendix]]', newArr.join(''));
             IndiaObject.appendix = IndiaObject.appendix.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                 invoiceData.IndCurrencySymbol);
@@ -2251,6 +2265,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             delete IndiaInvoice.appendixRow;
         } else {
             this.showAppendix = false;
+            IndiaObject.invoiceDetail = IndiaObject.invoiceDetail.replace('<span>*</span>', '');
             delete IndiaInvoice.appendix;
             delete IndiaInvoice.appendixCreate;
             delete IndiaInvoice.appendixRow;

@@ -79,7 +79,7 @@
                     <table id="invoiceDetails" cellspacing="0" cellpadding="0"
                         [innerHTML]='USTemplateCopy.invoiceDetail'>
                     </table>
-                    <p style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
+                    <p *ngIf="showAppendix" style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
                 </div>
             </div>
 
@@ -207,7 +207,7 @@
                     <table cellspacing="0" cellpadding="0" id="invoiceDetails"
                         [innerHTML]='JapanTemplateCopy.invoiceDetail'>
                     </table>
-                    <p style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
+                    <p *ngIf="showAppendix" style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
                 </div>
             </div>
 
@@ -368,7 +368,7 @@
                     <table cellspacing="0" cellpadding="0" id="invoiceDetails"
                         [innerHTML]='IndiaTemplateCopy.invoiceDetail'>
                     </table>
-                    <p style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
+                    <p *ngIf="showAppendix" style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
                 </div>
             </div>
 

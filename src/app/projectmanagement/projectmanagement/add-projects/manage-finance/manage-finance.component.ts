@@ -382,6 +382,13 @@ export class ManageFinanceComponent implements OnInit {
         });
         return;
       }
+      if (this.budgetData[0].budget_hours < this.newBudgetHrs) {
+        this.messageService.add({
+          key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'New hours cant be more than old budget hours cant be same.'
+        });
+        return;
+      }
       this.showReduction = false;
       this.budgetData[0].edited = true;
       const pfPFB: any = await this.saveUpdatePO();
