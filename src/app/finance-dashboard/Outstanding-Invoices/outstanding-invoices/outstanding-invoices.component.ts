@@ -220,7 +220,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             { field: 'InvoiceNumber', header: 'Invoice Number', visibility: true },
             { field: 'POName', header: 'PO Name', visibility: true },
             { field: 'PONumber', header: 'PO Number', visibility: true },
-            { field: 'InvoiceDate', header: 'Invoice Date', visibility: true },
+            { field: 'InvoiceDate', header: 'Invoice Date', visibility: true, exportable: false },
             { field: 'InvoiceDateFormat', header: 'Invoice Date', visibility: false },
             { field: 'Amount', header: 'Amount', visibility: true },
             { field: 'Currency', header: 'Currency', visibility: true },

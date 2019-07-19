@@ -80,9 +80,10 @@ export class EditorComponent implements OnInit {
             phone: '+44 (0) 16255170000',
             // designation: 'Medical Editorial Reviewer',
             purchaseOrderNumber: '8300324481',
-            Appendix: [{ dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: '4,125.00' },
-            { dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: '4,125.00' },
-            { dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: '4,125.00' }],
+            //Appendix: [],
+            Appendix: [{ dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: 4125.24 },
+            { dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: 4125 },
+            { dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: 44125 }],
             tax: '39,564.45',
             // centralTax : '39,564.45',
             // stateTax : '19,782.22',
@@ -93,7 +94,7 @@ export class EditorComponent implements OnInit {
         };
 
         this.USTemplate = {
-            headerCreate: `<header id=header>
+            headerCreate: `<header id="header">
         <div>
         <table cellpadding="15" cellspacing="0">
             <tbody>
@@ -107,7 +108,7 @@ export class EditorComponent implements OnInit {
         <td class="header-right">
           <span>
               <img class="logo-img"
-              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWR1GHbosaFDvGM_F_SztpwBdGEOEaYmMAnQ38DJfzQAvA">
+              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWz03qNKymlBnTeC7MK8vEEBGbzHX6Q6TxaIPzYzavxx5Q">
           </span>
         </td>
         </tr>
@@ -115,9 +116,9 @@ export class EditorComponent implements OnInit {
         </table>
         </div>
         </header>`,
-            footerCreate: ` <footer id="footer">
+            footerCreate: ` <footer id="footer"">
         <div>
-            <table style="margin-top:10px;">
+            <table>
                 <tr>
                     <td style="font-size: 14px;text-align: center;">
                         This is a computer generated proforma and does not require any stamp or signature 
@@ -145,7 +146,7 @@ export class EditorComponent implements OnInit {
         </div>
         </footer>`,
             maincontent: `    <div id="main_content" class="usContact">
-        <div style='height:1300px;'>
+        <div style='height:1250px;'>
         <table style="margin: 15px 0">
             <tbody>
                 <tr>
@@ -293,7 +294,7 @@ export class EditorComponent implements OnInit {
                         Account name: Cactus Communications Inc.<br />
                         ABA/Routing #: 021 0000 89<br />
                         Purpose: Payment for Invoice – [[InvoiceNumber]]<br />
-                        Recipient Address: 2 Neshaminy Interplex, Suite 100, Trevose, PA 19053<br />
+                        Recipient Address: 214 Carnegie Center, Suite 102, Princeton, NJ 08540, USA<br />
                         Recipient Phone: 267-332-0051
                     </li>
                     </ul>
@@ -360,7 +361,7 @@ export class EditorComponent implements OnInit {
       <td class="header-right">
           <span>
               <img class="logo-img"
-               src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWR1GHbosaFDvGM_F_SztpwBdGEOEaYmMAnQ38DJfzQAvA">
+               src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWz03qNKymlBnTeC7MK8vEEBGbzHX6Q6TxaIPzYzavxx5Q">
           </span>
       </td>
       </tr>
@@ -368,10 +369,10 @@ export class EditorComponent implements OnInit {
         </table>
     </div>`,
             footer: `<div>
-        <table style="margin-top:10px;">
+        <table>
             <tr>
                 <td style="font-size: 14px;text-align: center;">
-                    This is a computer generated proforma
+                This is a computer generated proforma and does not require any stamp or signature
                 </td>
             </tr>
         </table>
@@ -489,7 +490,7 @@ export class EditorComponent implements OnInit {
                 Account name: Cactus Communications Inc.<br />
                 ABA/Routing #: 021 0000 89<br />
                 Purpose: Payment for Invoice – [[InvoiceNumber]]<br />
-                Recipient Address: 2 Neshaminy Interplex, Suite 100, Trevose, PA 19053<br />
+                Recipient Address: 214 Carnegie Center, Suite 102, Princeton, NJ 08540, USA<br />
                 Recipient Phone: 267-332-0051
             </li>
         `,
@@ -555,7 +556,7 @@ export class EditorComponent implements OnInit {
         <td class="header-right">
           <span>
               <img class="logo-img"
-              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWR1GHbosaFDvGM_F_SztpwBdGEOEaYmMAnQ38DJfzQAvA">
+              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWz03qNKymlBnTeC7MK8vEEBGbzHX6Q6TxaIPzYzavxx5Q">
           </span>
         </td>
         </tr>
@@ -568,7 +569,7 @@ export class EditorComponent implements OnInit {
         <table style="margin-top:10px;">
             <tr>
                 <td style="font-size: 14px;text-align: center;">
-                This is computer generated invoice
+                This is computer generated proforma
                 </td>
             </tr>
         </table>
@@ -591,7 +592,7 @@ export class EditorComponent implements OnInit {
         </div>
         </footer>`,
             maincontent: `    <div id="main_content">
-        <div style="height:1300px;">
+        <div style="height:1250px;">
         <table style="margin: 15px 0">
             <tbody>
                 <tr>
@@ -799,7 +800,7 @@ export class EditorComponent implements OnInit {
         <td class="header-right">
           <span>
               <img class="logo-img"
-              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWR1GHbosaFDvGM_F_SztpwBdGEOEaYmMAnQ38DJfzQAvA">
+              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWz03qNKymlBnTeC7MK8vEEBGbzHX6Q6TxaIPzYzavxx5Q">
           </span>
         </td>
         </tr>
@@ -937,7 +938,7 @@ export class EditorComponent implements OnInit {
                     body .ui-widget-content p {font-size: 16px;}
                     body p {margin:0;line-height:1.5;}
                     table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
-                    .logo-img{width: auto; margin: auto;margin-bottom: 20px;}
+                    .logo-img{width: 200px; height: auto; margin: auto}
                     .header-left{width: 50%;padding-left: 40px;font-size: 15px;line-height: 2;font-weight: 500;margin: 0;text-align: left;}
                     .header-left label{font-size: 26px; font-weight: 500}
                     .header-right{width:10%; text-align:right; display:table-cell;}
@@ -975,6 +976,9 @@ export class EditorComponent implements OnInit {
                 .footer-table a{text-decoration: none;color: blue;}
                 footer table:first-child{margin-top:10px}
                 footer table:first-child tr td{font-size: 14px;text-align: center;}
+                footer {height:175px;background-color:#c5d3e5}
+                footer table:last-child {margin-top: 8px;}
+                footer table:last-child tr td {padding: 4px;}
             </style>
     </head>
     <body>
@@ -1120,7 +1124,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         <td class="header-left indHeader">
         <span>
               <img style="margin-bottom: 20px;" class="logo-img"
-              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWR1GHbosaFDvGM_F_SztpwBdGEOEaYmMAnQ38DJfzQAvA">
+              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWz03qNKymlBnTeC7MK8vEEBGbzHX6Q6TxaIPzYzavxx5Q">
         </span>
         <p>
             <span>GST Proforma No</span> : <br />
@@ -1173,7 +1177,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         </div>
         </footer>`,
             maincontent: `<div id="main_content" class="indContact">
-        <div style="height:1300px;">
+        <div style="height:1250px;">
         <table style="margin: 15px 0;">
             <tbody>
                 <tr>
@@ -1429,7 +1433,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         <td class="header-left indHeader">
         <span>
               <img style="margin-bottom: 20px;" class="logo-img"
-              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWR1GHbosaFDvGM_F_SztpwBdGEOEaYmMAnQ38DJfzQAvA">
+              src="https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EWz03qNKymlBnTeC7MK8vEEBGbzHX6Q6TxaIPzYzavxx5Q">
         </span>
         <p>
             <span>GST Proforma No</span> : <br />
@@ -1813,7 +1817,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
                 appendixRow = appendixRow.replace('[[DvCode]]', invoiceData.Appendix[i].dvcode);
                 appendixRow = appendixRow.replace('[[CactusSpCode]]', invoiceData.Appendix[i].cactusSpCode);
                 appendixRow = appendixRow.replace('[[ProjectTitle]]', invoiceData.Appendix[i].title);
-                appendixRow = appendixRow.replace('[[Amount]]', invoiceData.Appendix[i].amount);
+                appendixRow = appendixRow.replace('[[Amount]]', this.fdShareDataService.styleUSJapan(invoiceData.Appendix[i].amount));
                 appendixRow = appendixRow.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                     invoiceData.usCurrencySymbol);
                 newArr.push(appendixRow);
@@ -1982,7 +1986,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
                 let appendixRow = JapanInvoice.appendixRow;
                 appendixRow = appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].cactusSpCode);
                 appendixRow = appendixRow.replace('[[Title]]', invoiceData.Appendix[i].title);
-                appendixRow = appendixRow.replace('[[Amount]]', invoiceData.Appendix[i].amount);
+                appendixRow = appendixRow.replace('[[Amount]]', this.fdShareDataService.styleUSJapan(invoiceData.Appendix[i].amount));
                 appendixRow = appendixRow.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                     invoiceData.JpnCurrencySymbol);
                 newArr.push(appendixRow);
@@ -2140,7 +2144,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
                 appendixRow = appendixRow.replace('[[ProjectCode]]', invoiceData.Appendix[i].cactusSpCode);
                 appendixRow = appendixRow.replace('[[Title]]', invoiceData.Appendix[i].title);
                 appendixRow = appendixRow.replace('[[DVCode]]', invoiceData.Appendix[i].dvcode);
-                appendixRow = appendixRow.replace('[[Amount]]', invoiceData.Appendix[i].amount);
+                appendixRow = appendixRow.replace('[[Amount]]', this.fdShareDataService.styleIndia(invoiceData.Appendix[i].amount));
                 newArr.push(appendixRow);
             }
             IndiaInvoice.appendixCreate = IndiaInvoice.appendixCreate.replace('[[Appendix]]', newArr.join(''));
@@ -2167,9 +2171,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             outerData = IndiaInvoice.maincontent.replace('[[Appendix]]', appendix);
             contentObj = contentObj + outerData + '</body></html>';
             console.log('Main Content Html', contentObj);
-
         }
-
 
         const footer = document.getElementById('footer');
         let footerObj: any = this.footerStyle;
@@ -2403,17 +2405,14 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         pdfContent.WebUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
         pdfContent.ID = '';
         pdfContent.Type = 'Proforma';
-        pdfContent.ListName = 'ADFC';
+        pdfContent.ListName = 'AAA01';
         pdfContent.HtmlContent = JSON.stringify(objReturn);
         this.fdConstantsService.fdComponent.selectedEditObject.Code = "TestingOnQAUS";
-        this.fdConstantsService.fdComponent.selectedEditObject.ListName = "ADFC";
+        this.fdConstantsService.fdComponent.selectedEditObject.ListName = "AAA01";
         this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
         ///// Call service 
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
-
-
-
     }
 
     async createJapanProforma() {
@@ -2424,10 +2423,10 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         pdfContent.WebUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
         pdfContent.ID = '';
         pdfContent.Type = 'Proforma';
-        pdfContent.ListName = 'ADFC';
+        pdfContent.ListName = 'AAA01';
         pdfContent.HtmlContent = JSON.stringify(objReturn);
         this.fdConstantsService.fdComponent.selectedEditObject.Code = "TestingOnQAJapan";
-        this.fdConstantsService.fdComponent.selectedEditObject.ListName = "ADFC";
+        this.fdConstantsService.fdComponent.selectedEditObject.ListName = "AAA01";
         this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
         ///// Call service 
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
@@ -2441,10 +2440,10 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         pdfContent.WebUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
         pdfContent.ID = '';
         pdfContent.Type = 'Proforma';
-        pdfContent.ListName = 'ADFC';
+        pdfContent.ListName = 'AAA01';
         pdfContent.HtmlContent = JSON.stringify(objReturn);
         this.fdConstantsService.fdComponent.selectedEditObject.Code = "TestingOnQAIndia";
-        this.fdConstantsService.fdComponent.selectedEditObject.ListName = "ADFC";
+        this.fdConstantsService.fdComponent.selectedEditObject.ListName = "AAA01";
         this.fdConstantsService.fdComponent.selectedEditObject.Type = "Proforma";
         ///// Call service 
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
