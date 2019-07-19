@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewEncapsulation, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation, TemplateRef, ViewChild, HostListener, ElementRef } from '@angular/core';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -14,7 +14,7 @@ import { ViewUploadDocumentDialogComponent } from '../view-upload-document-dialo
 import { PreviosNextTasksDialogComponent } from '../previos-next-tasks-dialog/previos-next-tasks-dialog.component';
 import { Table } from 'primeng/table';
 import { FeedbackPopupComponent } from '../feedback-popup/feedback-popup.component';
-import { SlideMenu } from 'primeng/primeng';
+import { SlideMenu, Menu } from 'primeng/primeng';
 
 @Component({
   selector: 'app-my-current-completed-tasks',
@@ -32,6 +32,8 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   @ViewChild('feedbackPopup', { static: true }) feedbackPopupComponent: FeedbackPopupComponent
   @ViewChild('taskId', { static: true }) taskId: Table;
+  appendpopupmenu: Menu;
+  @ViewChild('popupMenu', { static: true }) popupMenu: Menu;
   showCalender: boolean;
   selectedDate: any;
   rangeDates: Date[];
@@ -69,6 +71,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
   tableloaderenable: boolean;
   selectedindex: any;
   tempselectedDate: string;
+  text: string;
+  private wasInside = false;
+  tempClick: any;
+
 
   // yearsRange = new Date().getFullYear() + ':' + (new Date().getFullYear() + 10);
   constructor(private myDashboardConstantsService: MyDashboardConstantsService,
@@ -80,9 +86,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     public messageService: MessageService,
     private route: ActivatedRoute,
     public dialogService: DialogService,
-    private confirmationService: ConfirmationService) { }
+    private confirmationService: ConfirmationService, private eRef: ElementRef) { }
 
   ngOnInit() {
+
     this.cols = [
       { field: 'MainStatus', header: 'Status', visibility: true, exportable: true },
       { field: 'Status', header: 'Task Status', visibility: true, exportable: true },
@@ -143,6 +150,29 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
       this.getStatusFilterDropDownValue(this.TabName, dates);
     }
   }
+
+
+  // @HostListener('click')
+  // clickInside() {
+  //   debugger;
+  //   this.popupMenu.show(event);
+  //   this.wasInside = true;
+  // }
+
+  @HostListener('document:click', ['$event'])
+  clickout(event) {
+    if (event.target.className === "pi pi-ellipsis-v") {
+      if(this.tempClick)
+      this.tempClick.style.display="none";
+      event.target.parentElement.children[0].children[0].style.display="";
+      this.tempClick = event.target.parentElement.children[0].children[0];
+
+    } else {
+      if(this.tempClick)
+      this.tempClick.style.display="none";
+    
+  }
+}
 
   // *************************************************************************************************************************************
   // date selected on button Click or Custom
