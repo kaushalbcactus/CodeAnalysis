@@ -887,8 +887,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     selectedProjectInfo: any;
     cleForselectedPI: any;
     getPIorClient(rowItem) {
-        if (rowItem.ProjectCode.includes(' / ')) {
-            let pc = rowItem.ProjectCode.substr(0, rowItem.ProjectCode.indexOf(' / '));
+        if (rowItem.ProjectCode && rowItem.ClientLegalEntity) {
+            let pc = rowItem.ProjectCode;
             console.log('Project Code is ', pc);
             this.selectedProjectInfo = this.getPIByTitle(pc);
             console.log('this.selectedProjectInfo ', this.selectedProjectInfo);
