@@ -518,7 +518,7 @@ export class StandardprojectComponent implements OnInit {
       });
       let reviewerList_copy = this.reviewerListArray;
       const reviewer = reviewerList_copy.filter(function (obj) {
-        if (event.value.userType === 'Type') {
+        if (event.value && event.value.userType === 'Type') {
           return obj.userType === event.value.userType;
         } else {
           return obj.userType !== 'Type';
@@ -1846,21 +1846,21 @@ export class StandardprojectComponent implements OnInit {
       });
       return false;
     }
-    if (!this.selectedSkillObject || !this.selectedSkillObject.value.userType) {
+    if (!this.selectedSkillObject.value || !this.selectedSkillObject.value.userType) {
       this.messageService.add({
         key: 'custom', severity: 'error',
         summary: 'Error Message', detail: 'Please select the resource.'
       });
       return false;
     }
-    if (!this.selectedResourceObject || !this.selectedResourceObject.value.userType) {
+    if (!this.selectedResourceObject.value || !this.selectedResourceObject.value.userType) {
       this.messageService.add({
         key: 'custom', severity: 'error',
         summary: 'Error Message', detail: 'Please select the reviewer.'
       });
       return false;
     }
-    if (this.selectedSkillObject.value.userType === 'Type') {
+    if (!this.selectedSkillObject.value || this.selectedSkillObject.value.userType === 'Type') {
       if (!this.ngStandardProposedStartDate) {
         this.messageService.add({
           key: 'custom', severity: 'error',

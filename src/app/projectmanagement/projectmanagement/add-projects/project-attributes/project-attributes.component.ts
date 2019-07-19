@@ -29,7 +29,7 @@ export class ProjectAttributesComponent implements OnInit {
   deliveryLevel1: SelectItem[];
   deliveryLevel2: SelectItem[];
   isPubSupportDisabled = true;
-  showEditSave: boolean;
+  showEditSave = false;
   selectedFile;
   fileReader;
   projObj;
@@ -142,7 +142,7 @@ export class ProjectAttributesComponent implements OnInit {
     if (projObj.Indication) {
       this.addProjectAttributesForm.get('indication').setValue(projObj.Indication);
     }
-    if (projObj.PUBSupportRequired) {
+    if (projObj.PUBSupportRequired === 'Yes') {
       this.addProjectAttributesForm.get('pubSupport').setValue(projObj.PUBSupportRequired);
     }
     if (projObj.PUBSupportStatus) {

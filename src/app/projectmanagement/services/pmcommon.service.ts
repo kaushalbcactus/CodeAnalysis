@@ -602,7 +602,7 @@ export class PMCommonService {
       Priority: addObj.ProjectAttributes.Priority,
       Indication: addObj.ProjectAttributes.Indication,
       Molecule: addObj.ProjectAttributes.Molecule,
-      IsPubSupport: addObj.ProjectAttributes.PUBSupportRequired ? 'Yes' : 'No',
+      IsPubSupport: addObj.ProjectAttributes.PUBSupportRequired === 'Yes' ? 'Yes' : 'No',
       Description: addObj.ProjectAttributes.EndUseofDeliverable ? addObj.ProjectAttributes.EndUseofDeliverable : '',
       POC: addObj.ProjectAttributes.PointOfContact2 ? addObj.ProjectAttributes.PointOfContact2.join(';#') : '',
       Authors: addObj.ProjectAttributes.Authors ? addObj.ProjectAttributes.Authors : '',
@@ -698,7 +698,7 @@ export class PMCommonService {
     if (clientInfo && clientInfo.length) {
       libraryName = clientInfo[0].ListName;
     }
-    const folderPath: string = this.globalObject.sharePointPageObject.webAbsoluteUrl + '/' + libraryName + '/' + docFolder;
+    const folderPath: string = this.globalObject.sharePointPageObject.serverRelativeUrl + '/' + libraryName + '/' + docFolder;
     const filePathUrl = await this.spServices.getFileUploadUrl(folderPath, selectedFile.name, true);
     const res = await this.spServices.uploadFile(filePathUrl, fileReader.result);
     if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name') && !res.hasOwnProperty('hasError')) {
