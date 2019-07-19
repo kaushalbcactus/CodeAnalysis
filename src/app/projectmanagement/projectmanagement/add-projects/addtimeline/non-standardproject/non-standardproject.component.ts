@@ -46,6 +46,16 @@ export class NonStandardprojectComponent implements OnInit {
   public nonstandardProjectBudgetHrs;
   public yearRange: any;
   public selectedResource: any = {
+    Title: '',
+    value: {
+      userType: '',
+    },
+    TimeZone: {
+      Title: ''
+    },
+    SkillLevel: {
+      Title: ''
+    }
   };
   public ngNonStandardProposedStartDate;
   public ngNonStandardProposedEndDate;
@@ -175,7 +185,7 @@ export class NonStandardprojectComponent implements OnInit {
       });
       return false;
     }
-    if (!this.selectedResource) {
+    if (!this.selectedResource.value || !this.selectedResource.value.userType) {
       this.messageService.add({
         key: 'custom', severity: 'error',
         summary: 'Error Message', detail: 'Please select the resource.'
@@ -247,7 +257,7 @@ export class NonStandardprojectComponent implements OnInit {
       $('#nonStandardTimeline').attr("checked", "checked");
       this.pmObject.isStandardChecked = false;
     }
-    if(this.pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked) {
+    if (this.pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked) {
       this.disableField();
     }
     if (this.pmObject.addProject.Timeline.NonStandard.ProposedStartDate) {
@@ -272,7 +282,7 @@ export class NonStandardprojectComponent implements OnInit {
     }
     if (this.pmObject.addProject.Timeline.NonStandard.ResourceName) {
       const resource: any = this.pmObject.addProject.Timeline.NonStandard.ResourceName;
-      if(resource) {
+      if (resource) {
         this.registerNonStandardResourceName = [{ label: resource.Title, value: resource.Title }];
       }
     }
@@ -298,7 +308,7 @@ export class NonStandardprojectComponent implements OnInit {
   }
 
   goToFinanceMang() {
-    if(this.pmObject.addProject.Timeline.NonStandard.IsStandard) {
+    if (this.pmObject.addProject.Timeline.NonStandard.IsStandard) {
       this.pmObject.activeIndex = 3;
     } else {
       this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Please register the timeline.' });

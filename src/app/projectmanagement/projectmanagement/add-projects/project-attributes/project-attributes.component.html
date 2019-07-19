@@ -1,7 +1,7 @@
 <div [hidden]="isProjectAttributeLoaderHidden">
-    <div id="mainLoader"></div>
-    <div id="mainLoaderText">Loading...</div>
-  </div>
+  <div id="mainLoader"></div>
+  <div id="mainLoaderText">Loading...</div>
+</div>
 <div class="allSOW-section" [hidden]="isProjectAttributeTableHidden">
   <form [formGroup]="addProjectAttributesForm">
     <div class="ui-grid-row mt-20">
@@ -26,7 +26,7 @@
           placeholder="Please Select" [showClear]="true">
         </p-dropdown>
         <div class="error"
-          *ngIf="!showEditSave && !addProjectAttributesForm.controls['billedBy'].required&&addProjectAttributesForm.controls['billedBy'].touched">
+          *ngIf="!showEditSave && !addProjectAttributesForm.controls['billedBy'].valid&&addProjectAttributesForm.controls['billedBy'].touched">
           Billed By is required</div>
       </div>
     </div>
@@ -144,8 +144,7 @@
     <div class="ui-grid-row mt-20">
       <div class="ui-grid-col-2"><span class="compulsory">*</span>Project Title</div>
       <div class="ui-grid-col-6">
-        <textarea [rows]="2" [cols]="80" formControlName="projectTitle" pInputTextarea
-        ></textarea>
+        <textarea [rows]="2" [cols]="80" formControlName="projectTitle" pInputTextarea></textarea>
         <div class="error"
           *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
           Project Title is required</div>
@@ -172,15 +171,15 @@
     </div>
     <div class="ui-grid-row mt-20">
       <div class="ui-grid-col-2">Conference / Journal</div>
-      <textarea [rows]="2" [cols]="80" formControlName="conference" pInputTextarea ></textarea>
+      <textarea [rows]="2" [cols]="80" formControlName="conference" pInputTextarea></textarea>
     </div>
     <div class="ui-grid-row mt-20">
       <div class="ui-grid-col-2">Authors</div>
-      <textarea [rows]="2" [cols]="80" formControlName="authors" pInputTextarea ></textarea>
+      <textarea [rows]="2" [cols]="80" formControlName="authors" pInputTextarea></textarea>
     </div>
     <div class="ui-grid-row mt-20">
       <div class="ui-grid-col-2">Comments</div>
-      <textarea [rows]="2" [cols]="80" formControlName="comments" pInputTextarea ></textarea>
+      <textarea [rows]="2" [cols]="80" formControlName="comments" pInputTextarea></textarea>
     </div>
     <div *ngIf="showEditSave">
       <div class="ui-grid-col-2">Project SOW</div>
@@ -194,7 +193,8 @@
       <p-button class="mr-5" type="button" (click)="goToSow()" type="button" label="Back"></p-button>
     </div>
     <div class="mt-20" style="float: right">
-      <p-button class="mr-5" type="button" (click)="goToTimeline(addProjectAttributesForm.value)" label="Continue To Timeline">
+      <p-button class="mr-5" type="button" (click)="goToTimeline(addProjectAttributesForm.value)"
+        label="Continue To Timeline">
       </p-button>
     </div>
   </div>

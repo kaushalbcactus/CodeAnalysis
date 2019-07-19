@@ -44,8 +44,8 @@
                         <p-multiSelect *ngSwitchCase="'Milestone'" [options]="paArrays.milestoneArray"
                             defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'Status'" [options]="paArrays.statusArray" defaultLabel="All"
-                            (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
+                        <!-- <p-multiSelect *ngSwitchCase="'Status'" [options]="paArrays.statusArray" defaultLabel="All"
+                            (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect> -->
                     </th>
                     <th class="lastColumnWidth"></th>
                 </tr>

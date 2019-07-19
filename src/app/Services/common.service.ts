@@ -307,7 +307,7 @@ export class CommonService {
                         break;
                     case this.pmConstant.filterAction.ALL_PROJECTS:
                         this.pmObject.totalRecords.AllProject = data.length;
-                        this.pmObject.allProjectsArrayCopy = items;
+                        this.pmObject.allProjects = items;
                         this.pmObject.loading.AllProject = false;
                         break
                     case this.pmConstant.filterAction.SEND_TO_CLIENT:
@@ -847,7 +847,7 @@ export class CommonService {
                 this.sharedTaskAllocateObj.oResources = this.response[2];
             }
 
-          
+
             const project = this.response[0] !== "" ? this.response[0].length > 0 ? this.setLevel1Email(this.response[0][0]) : [] : [];
             if (project.length > 0) {
                 const returnedProject = project[0];
