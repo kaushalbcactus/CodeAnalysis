@@ -665,9 +665,11 @@ export class AllProjectsComponent implements OnInit {
           break;
         case this.pmConstant.ACTION.AUDIT_PROJECT:
           this.addRollingProjectArray = [
-            { parameter: 'All files uploaded correctly' },
-            { parameter: 'All tasks completed and hrs updated' },
             { parameter: 'All necessary project details updated' },
+            { parameter: 'All files uploaded' },
+            { parameter: 'All tasks completed and hrs updated' },
+            { parameter: 'Invoicing is complete' },
+            { parameter: 'Budget hours updated' },
           ];
           this.pmObject.isAuditRollingVisible = true;
           break;

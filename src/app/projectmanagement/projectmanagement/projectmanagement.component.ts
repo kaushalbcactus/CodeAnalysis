@@ -239,8 +239,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       comments: [null],
       total: [0, [Validators.required, Validators.min(1)]],
       net: [0, [Validators.required, Validators.min(1)]],
-      oop: [null],
-      tax: [null],
+      oop: [0, [Validators.required, Validators.min(0)]],
+      tax: [0, [Validators.required, Validators.min(0)]],
       cm: ['', Validators.required],
       cm2: ['', Validators.required],
       deliveryOptional: ['', Validators.required],
@@ -250,8 +250,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.addAdditionalBudgetForm = this.frmbuilder.group({
       addTotal: [0, [Validators.required, Validators.min(1)]],
       addNet: [0, [Validators.required, Validators.min(1)]],
-      addOOP: [null],
-      addTax: [null],
+      addOOP: [0, [Validators.required, Validators.min(0)]],
+      addTax: [0, [Validators.required, Validators.min(0)]],
     });
   }
   /**
