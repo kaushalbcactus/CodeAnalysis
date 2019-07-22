@@ -146,6 +146,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     }
   }
 
+  // *************************************************************************************************************************************
+  // hide popup menu on production 
+  // *************************************************************************************************************************************
+
   @HostListener('document:click', ['$event'])
   clickout(event) {
     if (event.target.className === "pi pi-ellipsis-v") {
