@@ -256,7 +256,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         let obj = Object.assign({}, isManager ? this.fdConstantsService.fdComponent.invoicesDel : this.fdConstantsService.fdComponent.invoicesDelCS);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
         if (!isManager) {
-            obj.filter = obj.filter.replace("{{UserId}}", this.globalService.sharePointPageObject.userId.toString());
+            obj.filter = obj.filter.replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
         }
         const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
