@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener } from '@angular/core';
 import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { Calendar } from 'primeng/primeng';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -365,12 +365,12 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         console.log('po ', po);
         if (po) {
             if (po.hasOwnProperty('AmountRevenue') && po.hasOwnProperty('InvoicedRevenue')) {
-                this.po.revenuBalance = (parseFloat(po.AmountRevenue ? po.AmountRevenue : 0) - parseFloat(po.InvoicedRevenue ? po.InvoicedRevenue : 0));
+                this.po.revenuBalance = (parseFloat(po.AmountRevenue ? po.AmountRevenue.toFixed(2) : 0) - parseFloat(po.InvoicedRevenue ? po.InvoicedRevenue.toFixed(2) : 0));
             } else {
                 this.po.revenuBalance = 0;
             }
             if (po.hasOwnProperty('AmountOOP') && po.hasOwnProperty('InvoicedOOP')) {
-                this.po.oopBalance = (parseFloat(po.AmountOOP ? po.AmountOOP : 0) - parseFloat(po.InvoicedOOP ? po.InvoicedOOP : 0));
+                this.po.oopBalance = (parseFloat(po.AmountOOP ? po.AmountOOP.toFixed(2) : 0) - parseFloat(po.InvoicedOOP ? po.InvoicedOOP.toFixed(2) : 0));
             } else {
                 this.po.oopBalance = 0;
             }
@@ -598,7 +598,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.uniqueST = true;
         for (let i = 0; i < this.selectedAllRowData.length; i++) {
             const element = this.selectedAllRowData[i];
-            this.selectedTotalAmt += element.Amount;
+            this.selectedTotalAmt += parseFloat(element.Amount.toFixed(2));
             let scheduleType = this.selectedAllRowData[0].ScheduleType;
             if (element.ScheduleType !== scheduleType) {
                 this.uniqueST = false;
@@ -608,6 +608,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             }
 
         }
+        this.selectedTotalAmt = parseFloat(this.selectedTotalAmt.toFixed(2));
     }
 
     checkSelectedRowData() {
@@ -735,9 +736,11 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
                     if (this.selectedAllRowData[0].Template === 'US') {
                         this.isTemplate4US = true
+                        this.addToProforma_form.addControl('State', new FormControl('', Validators.required));
                     }
                     else {
                         this.isTemplate4US = false;
+                        this.addToProforma_form.removeControl('State');
                     }
 
                     var cle = this.getCLEObj(this.selectedPurchaseNumber.ClientLegalEntity);
@@ -758,6 +761,11 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         console.log('val ', val);
         if (val) {
             val.value == "US" ? this.isTemplate4US = true : this.isTemplate4US = false;
+            if (this.isTemplate4US) {
+                this.addToProforma_form.addControl('State', new FormControl('', Validators.required));
+            } else {
+                this.addToProforma_form.removeControl('State');
+            }
         }
     }
 
@@ -1111,9 +1119,11 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         selectedProjects.forEach(element => {
             const project = projects.find(e => e.ProjectCode === element.ProjectCode);
             let appendix = Object.assign({}, appendixObj);
-            appendix.dvcode = project.WBJID;
-            appendix.cactusSpCode = project.ProjectCode;
-            appendix.title = project.Title;
+            if (project) {
+                appendix.dvcode = project.WBJID ? project.WBJID : '';
+                appendix.cactusSpCode = project.ProjectCode ? project.ProjectCode : '';
+                appendix.title = project.Title ? project.Title : '';
+            }
             appendix.amount = element.Amount;
             projectAppendix.push(appendix);
         });

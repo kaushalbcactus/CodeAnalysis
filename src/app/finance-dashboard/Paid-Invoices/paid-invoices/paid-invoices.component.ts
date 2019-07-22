@@ -401,7 +401,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
                 POC: this.getPOCName(element),
                 FileURL: element.FileURL,
                 FiscalYear: element.FiscalYear,
-                Title: element.Title,
+                Title: element.InvoiceTitle,
                 AddressType: element.AddressType,
 
                 PaymentURL: element.PaymentURL,
