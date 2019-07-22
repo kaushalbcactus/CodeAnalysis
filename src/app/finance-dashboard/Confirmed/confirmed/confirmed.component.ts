@@ -233,7 +233,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             ProformaNumber: [{ value: '', disabled: true }],
             ProformaTitle: ['', Validators.required],
             Template: ['', [Validators.required]],
-            State: [''],
+            State: ['', [Validators.required]],
             Amount: [{ value: '', disabled: true }],
             Currency: [{ value: '', disabled: true }],
             AddressType: ['', Validators.required],
@@ -733,13 +733,10 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
                     this.minProformaDate = new Date(Math.max.apply(null, this.selectedAllRowData.map(e => e.ScheduledDate)));
                     this.proformaModal = true;
-
-                    if (this.selectedAllRowData[0].Template === 'US') {
-                        this.isTemplate4US = true
+                    this.isTemplate4US = this.selectedAllRowData[0].Template === 'US' ? true : false;
+                    if (this.isTemplate4US) {
                         this.addToProforma_form.addControl('State', new FormControl('', Validators.required));
-                    }
-                    else {
-                        this.isTemplate4US = false;
+                    } else {
                         this.addToProforma_form.removeControl('State');
                     }
 
@@ -760,7 +757,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     showHideState(val: any) {
         console.log('val ', val);
         if (val) {
-            val.value == "US" ? this.isTemplate4US = true : this.isTemplate4US = false;
+            this.isTemplate4US = val.value === "US" ? true : false;
             if (this.isTemplate4US) {
                 this.addToProforma_form.addControl('State', new FormControl('', Validators.required));
             } else {
