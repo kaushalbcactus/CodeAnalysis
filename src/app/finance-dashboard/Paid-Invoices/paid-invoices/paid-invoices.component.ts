@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, HostListener } from '@angular/core';
 import { Message, ConfirmationService, MessageService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -19,7 +19,7 @@ import { Router } from '@angular/router';
     styleUrls: ['./paid-invoices.component.css']
 })
 export class PaidInvoicesComponent implements OnInit, OnDestroy {
-
+    tempClick: any;
     paidInvoicesRes: any = [];
     outstandingInCols: any[];
     msgs: Message[] = [];
@@ -691,6 +691,30 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         // unsubscribe to ensure no memory leaks
         this.subscription.unsubscribe();
+    }
+
+    @HostListener('document:click', ['$event'])
+    clickout(event) {
+        if (event.target.className === "pi pi-ellipsis-v") {
+            if (this.tempClick) {
+                this.tempClick.style.display = "none";
+                if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+                    this.tempClick = event.target.parentElement.children[0].children[0];
+                    this.tempClick.style.display = "";
+                } else {
+                    this.tempClick = undefined;
+                }
+            } else {
+                this.tempClick = event.target.parentElement.children[0].children[0];
+                this.tempClick.style.display = "";
+            }
+
+        } else {
+            if (this.tempClick) {
+                this.tempClick.style.display = "none";
+                this.tempClick = undefined;
+            }
+        }
     }
 
 }

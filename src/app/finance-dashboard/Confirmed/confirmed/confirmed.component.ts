@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener } from '@angular/core';
 import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { Calendar } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -22,7 +22,7 @@ import { Subscription } from 'rxjs';
     // encapsulation: ViewEncapsulation.None
 })
 export class ConfirmedComponent implements OnInit, OnDestroy {
-
+    tempClick: any;
     confirmedRes: any = [];
     confirmCols: any[];
     msgs: Message[] = [];
@@ -1167,6 +1167,30 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         // this.subscriptionPE.unsubscribe();
         this.subscription.unsubscribe();
+    }
+
+    @HostListener('document:click', ['$event'])
+    clickout(event) {
+        if (event.target.className === "pi pi-ellipsis-v") {
+            if (this.tempClick) {
+                this.tempClick.style.display = "none";
+                if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+                    this.tempClick = event.target.parentElement.children[0].children[0];
+                    this.tempClick.style.display = "";
+                } else {
+                    this.tempClick = undefined;
+                }
+            } else {
+                this.tempClick = event.target.parentElement.children[0].children[0];
+                this.tempClick.style.display = "";
+            }
+
+        } else {
+            if (this.tempClick) {
+                this.tempClick.style.display = "none";
+                this.tempClick = undefined;
+            }
+        }
     }
 
 }

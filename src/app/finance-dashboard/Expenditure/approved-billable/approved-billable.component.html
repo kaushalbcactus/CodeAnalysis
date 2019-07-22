@@ -120,7 +120,7 @@
                         <div>
                             <p-menu #popupMenu [popup]="true"  [model]="items" styleClass="borderMenu"></p-menu>
                             <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                                (click)="popupMenu.toggle($event);openTableAtt(rowData, popupMenu)"></i>
+                                (click)="openTableAtt(rowData, popupMenu);popupMenu.show($event);"></i>
                         </div>
                 </ng-container>
             </td>

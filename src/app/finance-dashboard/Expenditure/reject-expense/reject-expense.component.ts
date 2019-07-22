@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, HostListener } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { FormBuilder } from '@angular/forms';
 import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./reject-expense.component.css']
 })
 export class RejectExpenseComponent implements OnInit, OnDestroy {
-
+    tempClick: any;
     // Testing
     @Input() datas: string;
 
@@ -315,6 +315,30 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         // unsubscribe to ensure no memory leaks
         this.subscription.unsubscribe();
+    }
+
+    @HostListener('document:click', ['$event'])
+    clickout(event) {
+        if (event.target.className === "pi pi-ellipsis-v") {
+            if (this.tempClick) {
+                this.tempClick.style.display = "none";
+                if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+                    this.tempClick = event.target.parentElement.children[0].children[0];
+                    this.tempClick.style.display = "";
+                } else {
+                    this.tempClick = undefined;
+                }
+            } else {
+                this.tempClick = event.target.parentElement.children[0].children[0];
+                this.tempClick.style.display = "";
+            }
+
+        } else {
+            if (this.tempClick) {
+                this.tempClick.style.display = "none";
+                this.tempClick = undefined;
+            }
+        }
     }
 
 }

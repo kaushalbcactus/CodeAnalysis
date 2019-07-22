@@ -94,7 +94,7 @@
             },
             "qamydashboarddev": {
               "outputHashing": "none",
-              "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/MyDashboardDev/"
+              "deployUrl": "https://cactusglobal.sharepoint.com/sites/medcomqa/SiteAssets/AngularModules/MyDashboard/"
             },
             "qaPM": {
               "optimization": true,
@@ -126,7 +126,7 @@
             },
             "qaFDDev": {
               "outputHashing": "none",
-              "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/FDDev/"
+              "deployUrl": "https://cactusglobal.sharepoint.com/sites/medcomqa/SiteAssets/AngularModules/FD/"
             },
             "uatFD": {
               "optimization": true,

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, HostListener } from '@angular/core';
 import { Message, ConfirmationService, SelectItem, MessageService } from 'primeng/api';
 import { Calendar } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./oop.component.css']
 })
 export class OopComponent implements OnInit, OnDestroy {
-
+    tempClick: any;
     oopBasedRes: any = [];
     oopBasedCols: any[];
     msgs: Message[] = [];
@@ -695,5 +695,29 @@ export class OopComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         // unsubscribe to ensure no memory leaks
         this.subscription.unsubscribe();
+    }
+
+    @HostListener('document:click', ['$event'])
+    clickout(event) {
+        if (event.target.className === "pi pi-ellipsis-v") {
+            if (this.tempClick) {
+                this.tempClick.style.display = "none";
+                if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+                    this.tempClick = event.target.parentElement.children[0].children[0];
+                    this.tempClick.style.display = "";
+                } else {
+                    this.tempClick = undefined;
+                }
+            } else {
+                this.tempClick = event.target.parentElement.children[0].children[0];
+                this.tempClick.style.display = "";
+            }
+
+        } else {
+            if (this.tempClick) {
+                this.tempClick.style.display = "none";
+                this.tempClick = undefined;
+            }
+        }
     }
 }

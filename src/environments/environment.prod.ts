@@ -1,4 +1,4 @@
-export const Environment = {
+export const environment = {
   production: true,
   archiveURL: "/sites/medcomarchive"
 };

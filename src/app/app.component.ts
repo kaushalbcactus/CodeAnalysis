@@ -21,6 +21,9 @@ export class AppComponent {
   ) { }
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
+
+    if(environment.production) { if (window) { window.console.log = function () { }; } }
+
     this.globalObject.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
     this.globalObject.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1 ?
       '/sites/medcomcdn/PublishingImages/Images' :
@@ -71,6 +74,4 @@ export class AppComponent {
     window['pmComponentReference'] = null;
     window['myDashboardComponentReference'] = null;
   }
-
-
 }

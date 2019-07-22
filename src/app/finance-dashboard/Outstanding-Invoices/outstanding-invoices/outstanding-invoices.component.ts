@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener } from '@angular/core';
 import { Message, ConfirmationService, MessageService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -20,7 +20,7 @@ import { CommonService } from 'src/app/Services/common.service';
     styleUrls: ['./outstanding-invoices.component.css']
 })
 export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
-
+    tempClick: any;
     outstandingInvoicesRes: any = [];
     outstandingInCols: any[];
     msgs: Message[] = [];
@@ -957,6 +957,30 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         // this.subscriptionPE.unsubscribe();
         this.subscription.unsubscribe();
+    }
+
+    @HostListener('document:click', ['$event'])
+    clickout(event) {
+        if (event.target.className === "pi pi-ellipsis-v") {
+            if (this.tempClick) {
+                this.tempClick.style.display = "none";
+                if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+                    this.tempClick = event.target.parentElement.children[0].children[0];
+                    this.tempClick.style.display = "";
+                } else {
+                    this.tempClick = undefined;
+                }
+            } else {
+                this.tempClick = event.target.parentElement.children[0].children[0];
+                this.tempClick.style.display = "";
+            }
+
+        } else {
+            if (this.tempClick) {
+                this.tempClick.style.display = "none";
+                this.tempClick = undefined;
+            }
+        }
     }
 
 }

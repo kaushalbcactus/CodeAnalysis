@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { SharepointoperationService } from '../../../Services/sharepoint-operation.service';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./approved-billable.component.css']
 })
 export class ApprovedBillableComponent implements OnInit, OnDestroy {
-
+    tempClick: any;
     approvedBillableRes: any = [];
     approvedBillableCols: any[];
     scheduleOopInvoice_form: FormGroup;
@@ -1100,6 +1100,30 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         // unsubscribe to ensure no memory leaks
         this.subscription.unsubscribe();
+    }
+
+    @HostListener('document:click', ['$event'])
+    clickout(event) {
+        if (event.target.className === "pi pi-ellipsis-v") {
+            if (this.tempClick) {
+                this.tempClick.style.display = "none";
+                if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+                    this.tempClick = event.target.parentElement.children[0].children[0];
+                    this.tempClick.style.display = "";
+                } else {
+                    this.tempClick = undefined;
+                }
+            } else {
+                this.tempClick = event.target.parentElement.children[0].children[0];
+                this.tempClick.style.display = "";
+            }
+
+        } else {
+            if (this.tempClick) {
+                this.tempClick.style.display = "none";
+                this.tempClick = undefined;
+            }
+        }
     }
 
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { SelectItem, MessageService } from 'primeng/api';
 import { SharepointoperationService } from '../../../Services/sharepoint-operation.service';
@@ -19,7 +19,7 @@ import { Subscription } from 'rxjs';
     styleUrls: ['./pending-expense.component.css']
 })
 export class PendingExpenseComponent implements OnInit, OnDestroy {
-
+    tempClick: any;
     // Loadder
     isPSInnerLoaderHidden: boolean = true;
 
@@ -1082,6 +1082,30 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     ngOnDestroy() {
         // this.subscriptionPE.unsubscribe();
         this.subscription.unsubscribe();
+    }
+
+    @HostListener('document:click', ['$event'])
+    clickout(event) {
+        if (event.target.className === "pi pi-ellipsis-v") {
+            if (this.tempClick) {
+                this.tempClick.style.display = "none";
+                if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+                    this.tempClick = event.target.parentElement.children[0].children[0];
+                    this.tempClick.style.display = "";
+                } else {
+                    this.tempClick = undefined;
+                }
+            } else {
+                this.tempClick = event.target.parentElement.children[0].children[0];
+                this.tempClick.style.display = "";
+            }
+
+        } else {
+            if (this.tempClick) {
+                this.tempClick.style.display = "none";
+                this.tempClick = undefined;
+            }
+        }
     }
 
 }
