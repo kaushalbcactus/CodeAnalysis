@@ -376,7 +376,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.currClientLegalEntityObj = clientInfo;
       libraryName = clientInfo[0].ListName;
     }
-    const folderPath: string = this.globalObject.sharePointPageObject.webAbsoluteUrl + '/' + libraryName + '/' + docFolder;
+    const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
     this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
     const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
     console.log(res);

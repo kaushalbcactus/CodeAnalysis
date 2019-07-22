@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter, Output, ViewChild, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output, ViewChild, OnDestroy, ViewEncapsulation, HostListener } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -20,6 +20,8 @@ declare var $;
 })
 export class SOWComponent implements OnInit, OnDestroy {
   @Output() projectItem: EventEmitter<any> = new EventEmitter();
+  tempClick: any;
+
   displayedColumns: any[] = [
     { field: 'SOWCode', header: 'SOW Code', visibility: true },
     { field: 'ShortTitle', header: 'SOW Title', visibility: true },
@@ -323,7 +325,7 @@ export class SOWComponent implements OnInit, OnDestroy {
         let endDate = now.toISOString();
         if (this.rangeDates) {
           startDate = this.rangeDates[0].toISOString();
-          endDate = this.rangeDates[1].toISOString();
+          endDate = this.rangeDates[1] ? this.rangeDates[1].toISOString() : this.rangeDates[0].toISOString();
         } else {
           this.rangeDates = [];
           this.rangeDates.push(new Date(startDate));
@@ -450,4 +452,28 @@ export class SOWComponent implements OnInit, OnDestroy {
     this.pmObject.columnFilter.ProjectCode = [projObj.ProjectCode];
     this.router.navigate(['/projectMgmt/allProjects']);
   }
+
+  @HostListener('document:click', ['$event'])
+    clickout(event) {
+      if (event.target.className === "pi pi-ellipsis-v") {
+        if (this.tempClick) {
+          this.tempClick.style.display = "none";
+          if(this.tempClick !== event.target.parentElement.children[0].children[0]) {
+            this.tempClick = event.target.parentElement.children[0].children[0];
+            this.tempClick.style.display = "";
+          } else {
+            this.tempClick = undefined;
+          }
+        } else {
+          this.tempClick = event.target.parentElement.children[0].children[0];
+          this.tempClick.style.display = "";
+        }
+  
+      } else {
+        if (this.tempClick) {
+          this.tempClick.style.display = "none";
+          this.tempClick =  undefined;
+        }
+      }
+    }
 }

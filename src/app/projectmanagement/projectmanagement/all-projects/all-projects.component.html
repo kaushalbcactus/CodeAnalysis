@@ -73,7 +73,7 @@
                         <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu class="projectSlider"
                             [model]="popItems" [popup]="true"></p-menu>
                         <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
-                            (click)="storeRowData(rowData,menu); menu.toggle($event);"></i>
+                            (click)="storeRowData(rowData,menu); menu.show($event);"></i>
                     </div>
                 </td>
             </tr>

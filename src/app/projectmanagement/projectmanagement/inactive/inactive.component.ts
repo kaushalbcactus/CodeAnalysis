@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, HostListener } from '@angular/core';
 import { debounceTime } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -18,6 +18,8 @@ declare var $: any;
   encapsulation: ViewEncapsulation.None
 })
 export class InactiveComponent implements OnInit {
+  tempClick: any;
+
   displayedColumns: any[] = [
     { field: 'ProjectCode', header: 'Project Code' },
     { field: 'ClientLegalEntity', header: 'Client' },
@@ -211,4 +213,27 @@ export class InactiveComponent implements OnInit {
   storeRowData(rowData) {
     this.selectedIAPTask = rowData;
   }
+  @HostListener('document:click', ['$event'])
+    clickout(event) {
+      if (event.target.className === "pi pi-ellipsis-v") {
+        if (this.tempClick) {
+          this.tempClick.style.display = "none";
+          if(this.tempClick !== event.target.parentElement.children[0].children[0]) {
+            this.tempClick = event.target.parentElement.children[0].children[0];
+            this.tempClick.style.display = "";
+          } else {
+            this.tempClick = undefined;
+          }
+        } else {
+          this.tempClick = event.target.parentElement.children[0].children[0];
+          this.tempClick.style.display = "";
+        }
+  
+      } else {
+        if (this.tempClick) {
+          this.tempClick.style.display = "none";
+          this.tempClick =  undefined;
+        }
+      }
+    }
 }

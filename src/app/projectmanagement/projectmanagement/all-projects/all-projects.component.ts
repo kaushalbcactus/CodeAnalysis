@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation, HostListener } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -25,6 +25,7 @@ declare var $;
   encapsulation: ViewEncapsulation.None
 })
 export class AllProjectsComponent implements OnInit {
+  tempClick: any;
   @Output() sendOutput = new EventEmitter<string>();
   popItems: MenuItem[];
   selectedProjectObj;
@@ -1894,4 +1895,28 @@ export class AllProjectsComponent implements OnInit {
   closeMoveSOW() {
     this.pmObject.isMoveProjectToSOWVisible = false;
   }
+
+  @HostListener('document:click', ['$event'])
+    clickout(event) {
+      if (event.target.className === "pi pi-ellipsis-v") {
+        if (this.tempClick) {
+          this.tempClick.style.display = "none";
+          if(this.tempClick !== event.target.parentElement.children[0].children[0]) {
+            this.tempClick = event.target.parentElement.children[0].children[0];
+            this.tempClick.style.display = "";
+          } else {
+            this.tempClick = undefined;
+          }
+        } else {
+          this.tempClick = event.target.parentElement.children[0].children[0];
+          this.tempClick.style.display = "";
+        }
+  
+      } else {
+        if (this.tempClick) {
+          this.tempClick.style.display = "none";
+          this.tempClick =  undefined;
+        }
+      }
+    }
 }
