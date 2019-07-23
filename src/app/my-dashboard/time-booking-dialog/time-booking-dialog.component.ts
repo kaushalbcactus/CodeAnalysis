@@ -61,7 +61,7 @@ export class TimeBookingDialogComponent implements OnInit {
   };
   MainminDate: any;
   TotalOfTotal: any = [];
-  FinalTotal: string = "00:00";
+
   constructor(public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
     public messageService: MessageService,
@@ -243,7 +243,9 @@ export class TimeBookingDialogComponent implements OnInit {
 
     this.allTasks = this.response[0];
 
-    var tempMilestones = this.allTasks.map(o => new Object({ ID: o.ID, Entity: o.Entity, ProjectCode: o.ProjectCode === "Adhoc" ? '-' : o.ProjectCode, Milestone: o.Milestone === 'Select one' ? o.Comments : o.Milestone, type: o.Entity === null ? 'task' : 'Adhoc', TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: (new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() > new Date(this.datePipe.transform(minDate, 'yyyy-MM-dd')).getTime()) &&  (new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() <= new Date(this.datePipe.transform(new Date(), 'yyyy-MM-dd')).getTime())  ? true : false })) }));
+    var tempMilestones = this.allTasks.map(o => new Object({ ID: o.ID, Entity: o.Entity, ProjectCode: o.ProjectCode === "Adhoc" ? '-' : o.ProjectCode, 
+    Milestone: (!o.Milestone || (o.Milestone && o.Milestone === 'Select one')) ? o.Comments : o.Milestone, 
+    type: o.Entity === null ? 'task' : 'Adhoc', TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: (new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() > new Date(this.datePipe.transform(minDate, 'yyyy-MM-dd')).getTime()) &&  (new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() <= new Date(this.datePipe.transform(new Date(), 'yyyy-MM-dd')).getTime())  ? true : false })) }));
 
     var dbActualMilestone = tempMilestones.length > 0 ? tempMilestones.filter(c => c.ProjectCode !== '-') : [];
 
@@ -255,7 +257,7 @@ export class TimeBookingDialogComponent implements OnInit {
     this.UserMilestones = [];
     this.UserMilestones.push.apply(this.UserMilestones, uniquedbTasks);
     this.UserMilestones.push.apply(this.UserMilestones, uniqueAdhoc);
-
+   debugger;
     this.allTasks.forEach(task => {
 
       if (task.TimeSpentPerDay !== null) {
@@ -307,8 +309,8 @@ export class TimeBookingDialogComponent implements OnInit {
           var currentMilestone = milestone.TimeSpents.find(c => new Date(this.datePipe.transform(c.date, 'yyyy-MM-dd')).getTime() === new Date(this.datePipe.transform(task.Actual_x0020_Start_x0020_Date, 'yyyy-MM-dd')).getTime())
           if (currentMilestone !== undefined) {
             hoursArray.push(currentMilestone.MileHrs);
-            var timeSpentHours = hoursArray.map(c => c.split(":")).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
-            var timeSpentMin = hoursArray.map(c => c.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
+            var timeSpentHours = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? "." : ':')).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(c.indexOf('.') > -1 ? "." : ':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
+            var timeSpentMin = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? "." : ':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
             var timeSpentHours1 = timeSpentHours < 10 ? "0" + timeSpentHours : timeSpentHours;
             currentMilestone.MileHrs = timeSpentMin < 10 ? timeSpentHours1 + ':' + "0" + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
 
@@ -384,12 +386,12 @@ export class TimeBookingDialogComponent implements OnInit {
         dateArray.push(dateObject);
       }
 
-      var timeSpentString = dateArray.map(c => (c.date + ":" + c.time).replace(/ /g, '')).join('\n');
-      var timeSpentHours = dateArray.map(c => c.time.split(":")).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
-      var timeSpentMin = dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
+      var timeSpentString = dateArray.map(c => (c.date + ":" + c.time.replace('.',':')).replace(/ /g, '')).join('\n');
+      var timeSpentHours = dateArray.map(c => c.time.split(c.time.indexOf('.') > -1 ? "." : ':')).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(dateArray.map(c => c.time.split(c.time.indexOf('.') > -1 ? "." : ':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
+      var timeSpentMin = dateArray.map(c => c.time.split(c.time.indexOf('.') > -1 ? "." : ':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
 
       var timeSpentHours1 = timeSpentHours < 10 ? "0" + timeSpentHours : timeSpentHours;
-      var totalTimeSpent = timeSpentMin < 10 ? timeSpentHours1 + ':' + "0" + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
+      var totalTimeSpent = timeSpentMin < 10 ? timeSpentHours1 + '.' + "0" + timeSpentMin : timeSpentHours1 + '.' + timeSpentMin;
 
       var existingObjItem = this.allTasks.filter(c => c.ProjectCode === dbTasks[i].ProjectCode && c.Milestone === dbTasks[i].Milestone && c.Task === "Time Booking")
 
@@ -413,7 +415,7 @@ export class TimeBookingDialogComponent implements OnInit {
             this.messageService.add({ key: 'custom-booking', severity: 'warn', summary: 'Warning Message', detail: "Please Select Milestone / To remove unwanted line, please unselect Client" });
             return false;
           }
-          else if (totalTimeSpent !== "00:00") {
+          else if (totalTimeSpent !== "00.00") {
             this.modalloaderenable = true;
             if (dbTasks[i].Milestone && dbTasks[i].ProjectCode && dbTasks[i].Entity) {
               const obj = {
@@ -470,7 +472,7 @@ export class TimeBookingDialogComponent implements OnInit {
     var rminutes = Math.round(minutes);
     var tempminutes = rminutes < 10 ? "0" + rminutes : rminutes;
     var temphours = rhours < 10 ? "0" + rhours : rhours;
-    return temphours + ":" + tempminutes;
+    return temphours + "." + tempminutes;
   }
 
 

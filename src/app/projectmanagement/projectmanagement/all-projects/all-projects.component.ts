@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation, HostListener } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -15,7 +15,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ProjectTimelineComponent } from './project-timeline/project-timeline.component';
 import { GlobalService } from 'src/app/Services/global.service';
 import { DataService } from 'src/app/Services/data.service';
-import { elementAt } from 'rxjs/operators';
+import { Table } from 'primeng/table';
 
 declare var $;
 @Component({
@@ -25,6 +25,7 @@ declare var $;
   encapsulation: ViewEncapsulation.None
 })
 export class AllProjectsComponent implements OnInit {
+  tempClick: any;
   @Output() sendOutput = new EventEmitter<string>();
   popItems: MenuItem[];
   selectedProjectObj;
@@ -84,7 +85,9 @@ export class AllProjectsComponent implements OnInit {
   cancelReasonArray: SelectItem[];
   subscription;
   isApprovalAction = false;
+  showNavigateSOW = false;
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+  @ViewChild('allProjectRef', { static: true }) allProjectRef: Table;
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
@@ -103,9 +106,21 @@ export class AllProjectsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    if (this.router.url.indexOf('myDashboard') > -1) {
+      this.showNavigateSOW = false;
+    }
+    else {
+      this.showNavigateSOW = true;
+    }
+
     this.isApprovalAction = true;
     this.reloadAllProject();
   }
+  navigateToSOW(oProject) {
+    this.pmObject.columnFilter.SOWCode = [oProject.SOWCode];
+    this.router.navigate(['/projectMgmt/allSOW']);
+  }
+
   reloadAllProject() {
     this.isAllProjectTableHidden = true;
     this.isAllProjectLoaderHidden = false;
@@ -140,28 +155,10 @@ export class AllProjectsComponent implements OnInit {
           this.changeProjectStatus(this.selectedProjectObj, this.pmConstant.ACTION.CANCEL_PROJECT)
       },
     ];
-    setTimeout(() => {
-      this.getAllProjects();
-      if (this.pmObject.columnFilter.ProjectCode && this.pmObject.columnFilter.ProjectCode.length) {
-        const event = {
-          filters: {
-            ProjectCode: {
-              matchMode: 'in',
-              value: this.pmObject.columnFilter.ProjectCode
-            }
-          },
-          first: 0,
-          globalFilter: null,
-          multiSortMeta: undefined,
-          rows: 5,
-          sortField: undefined,
-          sortOrder: 1
-        };
-        this.lazyLoadTask(event);
-      }
-      this.pmObject.columnFilter.ProjectCode = [];
-    }, this.pmConstant.TIME_OUT);
+    this.getAllProjects();
+
     this.subscription = this.dataService.on('reload-project').subscribe(() => this.callReloadProject());
+
   }
   /**
    * This method is used to get all projects based on current user credentials.
@@ -171,6 +168,7 @@ export class AllProjectsComponent implements OnInit {
     this.reloadAllProject();
   }
   async getAllProjects() {
+
     const sowCodeTempArray = [];
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
@@ -327,7 +325,7 @@ export class AllProjectsComponent implements OnInit {
         projObj.DeliveryLevel2Title = task.DeliveryLevel2.Title;
         projObj.BusinessVertical = task.BusinessVertical ? task.BusinessVertical : '';
         projObj.BillingEntity = task.BillingEntity ? task.BillingEntity : '';
-        projObj.SOWLink = task.SOWLink ? task.BillingEntity : '';
+        projObj.SOWLink = task.SOWLink ? task.SOWLink : '';
         projObj.PubSupportStatus = task.PubSupportStatus ? task.PubSupportStatus : '';
         projObj.IsStandard = task.IsStandard ? task.IsStandard : '';
         projObj.StandardService = task.StandardService ? task.StandardService : '';
@@ -385,9 +383,18 @@ export class AllProjectsComponent implements OnInit {
       this.allProjects.createdByArray = this.commonService.unique(createdByTempArray, 'value');
       this.allProjects.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
       this.pmObject.allProjectsArray = tempAllProjectArray;
-      this.isAllProjectLoaderHidden = true;
-      this.isAllProjectTableHidden = false;
+
     }
+    if (this.params.ProjectCode) {
+      this.pmObject.columnFilter.ProjectCode = [this.params.ProjectCode];
+      window.history.pushState({}, 'Title', window.location.href.split('?')[0]);
+    }
+
+    if (this.pmObject.columnFilter.ProjectCode && this.pmObject.columnFilter.ProjectCode.length) {
+      this.allProjectRef.filter(this.pmObject.columnFilter.ProjectCode, 'ProjectCode', 'in');
+    }
+    this.isAllProjectLoaderHidden = true;
+    this.isAllProjectTableHidden = false;
   }
 
   async approveRejectBudgetReduction(selectedStatus, projectObj) {
@@ -646,7 +653,7 @@ export class AllProjectsComponent implements OnInit {
             header: 'Change Status of Project -' + selectedProjectObj.ProjectCode + '',
             icon: 'pi pi-exclamation-triangle',
             message: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
-              + ' from ' + status + ' to ' + this.constants.projectStatus.Unallocated + '?',
+              + ' from ' + selectedProjectObj.Status + ' to ' + this.constants.projectStatus.Unallocated + '?',
             accept: () => {
               this.changeProjectStatusUnallocated(selectedProjectObj);
             }
@@ -657,7 +664,7 @@ export class AllProjectsComponent implements OnInit {
             header: 'Change Status of Project -' + selectedProjectObj.ProjectCode + '',
             icon: 'pi pi-exclamation-triangle',
             message: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
-              + ' from ' + status + ' to ' + this.constants.projectStatus.AuditInProgress + '?',
+              + ' from ' + selectedProjectObj.Status + ' to ' + this.constants.projectStatus.AuditInProgress + '?',
             accept: () => {
               this.changeProjectStatusAuditInProgress(selectedProjectObj);
             }
@@ -678,7 +685,7 @@ export class AllProjectsComponent implements OnInit {
             header: 'Change Status of Project -' + selectedProjectObj.ProjectCode + '',
             icon: 'pi pi-exclamation-triangle',
             message: 'Are you sure you want to change the Status of Project - ' + selectedProjectObj.ProjectCode + ''
-              + ' from ' + status + ' to ' + this.constants.projectStatus.Closed + '?',
+              + ' from ' + selectedProjectObj.Status + ' to ' + this.constants.projectStatus.Closed + '?',
             accept: () => {
               this.changeProjectStatusClose(selectedProjectObj);
             }
@@ -1421,6 +1428,15 @@ export class AllProjectsComponent implements OnInit {
       this.pmObject.addProject.FinanceManagement.Budget.Net = fm.RevenueBudget;
       this.pmObject.addProject.FinanceManagement.Budget.OOP = fm.OOPBudget;
       this.pmObject.addProject.FinanceManagement.Budget.Tax = fm.TaxBudget;
+      this.pmObject.addProject.FinanceManagement.ProjectSOW = proj.SOWLink;
+      if (this.pmObject.addProject.FinanceManagement.ProjectSOW) {
+        if (this.pmObject.addProject.FinanceManagement.ProjectSOW.
+          indexOf(this.globalObject.sharePointPageObject.webRelativeUrl) === -1) {
+          const client = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(e => e.Title === proj.ClientLegalEntity);
+          this.pmObject.addProject.FinanceManagement.ProjectSOW = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + client.ListName + '/Finance/SOW/' +
+            this.pmObject.addProject.FinanceManagement.ProjectSOW;
+        }
+      }
     }
     this.projectViewDataArray.push(this.pmObject.addProject);
     this.pmObject.isProjectRightSideVisible = true;
@@ -1893,5 +1909,29 @@ export class AllProjectsComponent implements OnInit {
    */
   closeMoveSOW() {
     this.pmObject.isMoveProjectToSOWVisible = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  clickout(event) {
+    if (event.target.className === "pi pi-ellipsis-v") {
+      if (this.tempClick) {
+        this.tempClick.style.display = "none";
+        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+          this.tempClick = event.target.parentElement.children[0].children[0];
+          this.tempClick.style.display = "";
+        } else {
+          this.tempClick = undefined;
+        }
+      } else {
+        this.tempClick = event.target.parentElement.children[0].children[0];
+        this.tempClick.style.display = "";
+      }
+
+    } else {
+      if (this.tempClick) {
+        this.tempClick.style.display = "none";
+        this.tempClick = undefined;
+      }
+    }
   }
 }

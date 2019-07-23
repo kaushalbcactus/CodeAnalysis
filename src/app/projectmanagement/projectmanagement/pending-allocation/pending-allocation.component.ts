@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { debounceTime } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -10,6 +10,7 @@ import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { PMCommonService } from '../../services/pmcommon.service';
+import { Router } from '@angular/router';
 declare var $: any;
 @Component({
   selector: 'app-pending-allocation',
@@ -17,6 +18,8 @@ declare var $: any;
   styleUrls: ['./pending-allocation.component.css']
 })
 export class PendingAllocationComponent implements OnInit {
+  tempClick: any;
+
   displayedColumns: any[] = [
     { field: 'ProjectCode', header: 'Project Code'},
     { field: 'ClientLegalEntity', header: 'Client' },
@@ -70,7 +73,8 @@ export class PendingAllocationComponent implements OnInit {
     private spServices: SharepointoperationService,
     public pmObject: PMObjectService,
     private pmConstant: PmconstantService,
-    public pmCommonService: PMCommonService) { }
+    public pmCommonService: PMCommonService,
+    public router: Router) { }
 
   ngOnInit() {
     this.isPAInnerLoaderHidden = false;
@@ -187,8 +191,10 @@ export class PendingAllocationComponent implements OnInit {
       '/Pages/TaskAllocation.aspx?ProjectCode=' + task.ProjectCode, '_blank');
   }
   goToProjectManagement(task) {
-    window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/Pages/ProjectManagement.aspx?ProjectCode=' + task.ProjectCode, '_blank');
+    // window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
+    //   '/Pages/ProjectManagement.aspx?ProjectCode=' + task.ProjectCode, '_blank');
+    this.pmObject.columnFilter.ProjectCode = [task.ProjectCode];
+    this.router.navigate(['/projectMgmt/allProjects']);
   }
   paLazyLoadTask(event) {
     const paArray = this.pmObject.pendingAllocationArray;
@@ -197,4 +203,27 @@ export class PendingAllocationComponent implements OnInit {
   storeRowData(rowData) {
     this.selectedPATask = rowData;
   }
+  @HostListener('document:click', ['$event'])
+    clickout(event) {
+      if (event.target.className === "pi pi-ellipsis-v") {
+        if (this.tempClick) {
+          this.tempClick.style.display = "none";
+          if(this.tempClick !== event.target.parentElement.children[0].children[0]) {
+            this.tempClick = event.target.parentElement.children[0].children[0];
+            this.tempClick.style.display = "";
+          } else {
+            this.tempClick = undefined;
+          }
+        } else {
+          this.tempClick = event.target.parentElement.children[0].children[0];
+          this.tempClick.style.display = "";
+        }
+  
+      } else {
+        if (this.tempClick) {
+          this.tempClick.style.display = "none";
+          this.tempClick =  undefined;
+        }
+      }
+    }
 }

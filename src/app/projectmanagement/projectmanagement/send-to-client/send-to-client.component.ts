@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, HostListener} from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -17,6 +17,7 @@ declare var $;
   styleUrls: ['./send-to-client.component.css']
 })
 export class SendToClientComponent implements OnInit {
+  tempClick: any;
   displayedColumns: any[] = [
     { field: 'SLA', header: 'SLA', visibility: true },
     { field: 'ProjectCode', header: 'Project Code', visibility: true },
@@ -406,4 +407,27 @@ export class SendToClientComponent implements OnInit {
       menu.model[0].visible = false;
     }
   }
+  @HostListener('document:click', ['$event'])
+    clickout(event) {
+      if (event.target.className === "pi pi-ellipsis-v") {
+        if (this.tempClick) {
+          this.tempClick.style.display = "none";
+          if(this.tempClick !== event.target.parentElement.children[0].children[0]) {
+            this.tempClick = event.target.parentElement.children[0].children[0];
+            this.tempClick.style.display = "";
+          } else {
+            this.tempClick = undefined;
+          }
+        } else {
+          this.tempClick = event.target.parentElement.children[0].children[0];
+          this.tempClick.style.display = "";
+        }
+  
+      } else {
+        if (this.tempClick) {
+          this.tempClick.style.display = "none";
+          this.tempClick =  undefined;
+        }
+      }
+    }
 }

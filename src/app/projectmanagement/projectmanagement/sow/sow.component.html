@@ -23,22 +23,29 @@
                 <th class="lastColumnWidth"></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                     <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allSOW.sowCodeArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        [(ngModel)]="pmObject.columnFilter.SOWCode"
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
+                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="allSOW.shortTitleArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
+                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="allSOW.clientLegalEntityArray"
-                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
+                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'POC'" [options]="allSOW.pocArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
+                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'CreatedBy'" [options]="allSOW.createdByArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
+                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'CreatedDate'" [options]="allSOW.createdDateArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
+                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                 </th>
                 <th class="lastColumnWidth"></th>
@@ -59,8 +66,15 @@
                             [popup]="true">
                         </p-menu>
                         <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
-                            (click)="storeRowData(task, menu); menu.toggle($event);"></i>
+                            (click)="storeRowData(task, menu); menu.show($event);"></i>
                     </div>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td style="text-align:center" [attr.colspan]="9">
+                    No sow found
                 </td>
             </tr>
         </ng-template>
@@ -106,11 +120,21 @@
                                 <ng-template pTemplate="body" let-rowData let-task>
                                     <tr [pContextMenuRow]="rowData">
                                         <td>{{task.DeliverableType}}</td>
-                                        <td><a href="javascript:void(0)"
-                                                (click)="navigateToProject(task)">{{task.ProjectCode}}</a></td>
+                                        <td>
+                                            <a *ngIf="showProjectLink" href="javascript:void(0)"
+                                                (click)="navigateToProject(task)">{{task.ProjectCode}}</a>
+                                            <span *ngIf="!showProjectLink">{{task.ProjectCode}}</span>
+                                        </td>
                                         <td>{{task.Title}}</td>
                                         <td>{{task.Budget}}</td>
                                         <td>{{task.Status}}</td>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage" let-columns>
+                                    <tr>
+                                        <td style="text-align:center" [attr.colspan]="9">
+                                            No project found
+                                        </td>
                                     </tr>
                                 </ng-template>
                             </p-table>
@@ -154,11 +178,21 @@
                                 <ng-template pTemplate="body" let-rowData let-task>
                                     <tr [pContextMenuRow]="rowData">
                                         <td>{{task.DeliverableType}}</td>
-                                        <td><a href="javascript:void(0)"
-                                                (click)="navigateToProject(task)">{{task.ProjectCode}}</a></td>
+                                        <td>
+                                            <a *ngIf="showProjectLink" href="javascript:void(0)"
+                                                (click)="navigateToProject(task)">{{task.ProjectCode}}</a>
+                                            <span *ngIf="!showProjectLink">{{task.ProjectCode}}</span>
+                                        </td>
                                         <td>{{task.Title}}</td>
                                         <td>{{task.Budget}}</td>
                                         <td>{{task.Status}}</td>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage" let-columns>
+                                    <tr>
+                                        <td style="text-align:center" [attr.colspan]="9">
+                                            No project found
+                                        </td>
                                     </tr>
                                 </ng-template>
                             </p-table>
@@ -207,11 +241,21 @@
                                 <ng-template pTemplate="body" let-rowData let-task>
                                     <tr [pContextMenuRow]="rowData">
                                         <td>{{task.DeliverableType}}</td>
-                                        <td><a href="javascript:void(0)"
-                                                (click)="navigateToProject(task)">{{task.ProjectCode}}</a></td>
+                                        <td>
+                                            <a *ngIf="showProjectLink" href="javascript:void(0)"
+                                                (click)="navigateToProject(task)">{{task.ProjectCode}}</a>
+                                            <span *ngIf="!showProjectLink">{{task.ProjectCode}}</span>
+                                        </td>
                                         <td>{{task.Title}}</td>
                                         <td>{{task.Budget}}</td>
                                         <td>{{task.Status}}</td>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage" let-columns>
+                                    <tr>
+                                        <td style="text-align:center" [attr.colspan]="9">
+                                            No project found
+                                        </td>
                                     </tr>
                                 </ng-template>
                             </p-table>
@@ -249,15 +293,13 @@
                     <td>{{task.BillingEntity}}</td>
                 </tr>
                 <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">Practice Area</td>
+                    <td [ngStyle]="{'color':'#d7181f'}">Practice Areas</td>
                     <td>{{task.PracticeArea}}</td>
                 </tr>
                 <tr>
-                    <td colspan="2" [ngStyle]="{'color':'#d7181f'}">Client POC</td>
-                </tr>
-                <tr>
-                    <td>{{task.PocText}}</td>
-                    <td>{{task.PocOptionalText}}</td>
+                    <td [ngStyle]="{'color':'#d7181f'}">Client POC</td>
+                    <td>{{task.PocText}} <br />
+                        {{task.PocOptionalText}}</td>
                 </tr>
                 <tr>
                     <td [ngStyle]="{'color':'#d7181f'}">SOW Title</td>
@@ -280,11 +322,19 @@
                     <td>{{task.Comments}}</td>
                 </tr>
                 <tr>
+                    <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
+                </tr>
+                <tr>
                     <td [ngStyle]="{'color':'#d7181f'}">Currency</td>
                     <td>{{task.Currency}}</td>
                 </tr>
                 <tr>
-                    <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
+                    <td [ngStyle]="{'color':'#d7181f'}">SOW Document</td>
+                    <td>
+                        <span *ngIf="task.SOWDocument.length">
+                            <a href="{{task.SOWDocument}}" target="_blank" style="color:red">Click here</a>
+                        </span>
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="2" [ngStyle]="{'color':'#d7181f'}">Budget</td>
@@ -304,6 +354,22 @@
                 <tr>
                     <td [ngStyle]="{'color':'#d7181f'}">Tax</td>
                     <td>{{task.Budget.Tax}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Total Balance</td>
+                    <td>{{task.Budget.TotalBalance}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Net Balance</td>
+                    <td>{{task.Budget.NetBalance}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">OOP Balance</td>
+                    <td>{{task.Budget.OOPBalance}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Tax Balance</td>
+                    <td>{{task.Budget.TaxBalance}}</td>
                 </tr>
                 <tr>
                     <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>

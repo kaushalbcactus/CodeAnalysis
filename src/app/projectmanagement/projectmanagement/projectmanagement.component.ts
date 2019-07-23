@@ -252,6 +252,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       addNet: [0, [Validators.required, Validators.min(1)]],
       addOOP: [0, [Validators.required, Validators.min(0)]],
       addTax: [0, [Validators.required, Validators.min(0)]],
+      sowDocumentsAdd: [null],
     });
   }
   /**
@@ -282,6 +283,14 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    */
   async createSOW() {
     if (this.addSowForm.valid) {
+
+      if (!this.selectedFile) {
+        this.messageService.add({
+          key: 'custom', severity: 'error',
+          summary: 'Error Message', detail: 'Please select SOW document.'
+        });
+        return;
+      }
       // get all the value from form.
       this.pmObject.isMainLoaderHidden = false;
       this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity ? this.addSowForm.value.clientLegalEntity :
@@ -376,7 +385,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.currClientLegalEntityObj = clientInfo;
       libraryName = clientInfo[0].ListName;
     }
-    const folderPath: string = this.globalObject.sharePointPageObject.webAbsoluteUrl + '/' + libraryName + '/' + docFolder;
+    const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
     this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
     const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
     console.log(res);
@@ -750,7 +759,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.pmObject.addSOW.ClientLegalEntity = '';
     this.pmObject.addSOW.SOWCode = '';
     this.pmObject.addSOW.BillingEntity = '';
-    this.pmObject.addSOW.PracticeArea = [];
+    this.pmObject.addSOW.PracticeArea = '';
     this.pmObject.addSOW.Poc = '';
     this.pmObject.addSOW.PocOptional = [];
     this.pmObject.addSOW.SOWTitle = '';
@@ -790,6 +799,14 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   async addAdditionalBudget() {
     if (this.addAdditionalBudgetForm.valid) {
       // get the budget from SOW list based on SOWID.
+      if (!this.selectedFile) {
+        this.messageService.add({
+          key: 'custom', severity: 'error',
+          summary: 'Error Message', detail: 'Please select SOW document.'
+        });
+        return;
+      }
+
       this.pmObject.isMainLoaderHidden = false;
       const d = new Date();
       const today = this.pmService.toISODateString(d);
@@ -808,6 +825,18 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           this.pmService.setGlobalVariable(sowItemResult[0]);
         }
       }
+      if(this.pmObject.addSOW.SOWDocument.indexOf(this.selectedFile.name) > -1) {
+        this.messageService.add({
+          key: 'custom', severity: 'error',
+          summary: 'Error Message', detail: 'Addendum SOW document name same as original document name.'
+        });
+        return;
+      }
+    
+      if (this.selectedFile) {
+        await this.submitFile();
+      }
+
       const batchURL = [];
       const options = {
         data: null,
@@ -815,6 +844,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         type: '',
         listName: ''
       };
+
+
       // Assign form value to global variable
       this.pmObject.addSOW.Addendum.TotalBudget = this.addAdditionalBudgetForm.value.addTotal;
       this.pmObject.addSOW.Addendum.NetBudget = this.addAdditionalBudgetForm.value.addNet;
@@ -826,6 +857,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         NetBudget: this.pmObject.addSOW.Addendum.NetBudget + this.pmObject.addSOW.Budget.Net,
         OOPBudget: this.pmObject.addSOW.Addendum.OOPBudget + this.pmObject.addSOW.Budget.OOP,
         TaxBudget: this.pmObject.addSOW.Addendum.TaxBudget + this.pmObject.addSOW.Budget.Tax,
+        SOWLink: this.pmObject.addSOW.SOWFileURL,
         __metadata: {
           type: this.constant.listNames.SOW.type
         }
