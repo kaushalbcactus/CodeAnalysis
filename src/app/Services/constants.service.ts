@@ -59,6 +59,14 @@ export class ConstantsService {
       name: 'JCGalley',
       type: 'SP.Data.JCGalleyListItem'
     },
+    Journal: {
+      name: 'Journal',
+      type: 'SP.Data.JournalListItem'
+    },
+    Conference: {
+      name: 'Conference',
+      type: 'SP.Data.ConferenceListItem'
+    },
     // JCSubmission: 'JCSubmission',
     ProjectFinances: {
       name: 'ProjectFinances',

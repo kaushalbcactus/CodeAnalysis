@@ -22,18 +22,14 @@ export class AppComponent {
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
 
-    if(environment.production) { if (window) { window.console.log = function () { }; } }
+    if (environment.production) { if (window) { window.console.log = function () { }; } }
 
     this.globalObject.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
-    this.globalObject.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1 ?
-      '/sites/medcomcdn/PublishingImages/Images' :
-      '/sites/medcomcdn/PublishingImages/Images';
+    this.globalObject.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
 
     this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 103 : _spPageContextInfo.userId;
-    this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
-      : _spPageContextInfo.webAbsoluteUrl;
-    this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
-      : _spPageContextInfo.siteServerRelativeUrl;
+    this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev' : _spPageContextInfo.webAbsoluteUrl
+    this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev' : _spPageContextInfo.siteServerRelativeUrl;
     this.globalObject.sharePointPageObject.serverRelativeUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
     this.globalObject.sharePointPageObject.rootsite = window.origin;
     // tslint:disable-next-line:no-string-literal

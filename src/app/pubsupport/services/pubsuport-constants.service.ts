@@ -10,6 +10,7 @@ export class PubsuportConstantsService {
     constructor(private constantService: ConstantsService, private globalObject: GlobalService) { }
 
     pubsupportComponent = {
+        isPSInnerLoaderHidden: true,
         projectInfo: {
             select: "ID,ProjectCode,ClientLegalEntity,DeliverableType,Status,PubSupportStatus,PrimaryPOC,JournalSelectionURL,JournalSelectionDate,LastSubmissionDate,Milestones,ProjectFolder",
             filter: "Status ne 'Closed' and Status ne 'Cancelled' and Status ne 'In Discussion' and Status ne 'Pending Closure' and IsPubSupport eq 'Yes' and substringof('Writing', ProjectType)",
@@ -72,7 +73,7 @@ export class PubsuportConstantsService {
             top: 4500
         },
 
-    addJC: {
+        addJC: {
             addJCDetails: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.JournalConf.name + "')/items",
             updateJCDetails: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.JournalConf.name + "')/items({{Id}})",
         },
@@ -94,6 +95,12 @@ export class PubsuportConstantsService {
         },
         addJCGalley: {
             addNewJCGalley: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.jcGalley.name + "')/items",
+        },
+        addUpdateJournal:{
+            add:this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.Journal.name + "')/items",
+        },
+        addUpdateConference:{
+            add:this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.Conference.name + "')/items",
         }
 
     }
