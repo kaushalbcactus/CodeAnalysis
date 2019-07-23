@@ -307,7 +307,7 @@ export class CommonService {
                         break;
                     case this.pmConstant.filterAction.ALL_PROJECTS:
                         this.pmObject.totalRecords.AllProject = data.length;
-                        this.pmObject.allProjectsArrayCopy = items;
+                        this.pmObject.allProjectsArray = items;
                         this.pmObject.loading.AllProject = false;
                         break
                     case this.pmConstant.filterAction.SEND_TO_CLIENT:
@@ -338,6 +338,7 @@ export class CommonService {
                         this.pmObject.totalRecords.SelectSOW = data.length;
                         this.pmObject.selectSOWArrayCopy = items;
                         this.pmObject.loading.SelectSOW = false;
+                        break;
                     case this.pmConstant.filterAction.ACTIVE_PROJECT:
                         this.pmObject.totalRecords.activeProject = data.length;
                         this.pmObject.allProjects.activeProjectCopyArray = items;

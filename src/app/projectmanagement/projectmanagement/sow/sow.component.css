@@ -56,10 +56,6 @@
   }
 
 
-  .allSOW-section div.ui-table-wrapper {
-    min-height: 440px;
-  }
-  
   .allSOW-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
     overflow: visible;
   }
@@ -91,3 +87,7 @@
 
     overflow-x: auto; 
   }
+  .ui-table table {
+    table-layout: inherit !important;
+  }
+  

@@ -284,6 +284,7 @@ export class PMObjectService {
     },
     FinanceManagement: {
       Currency: '',
+      ProjectSOW:'',
       SelectedPO: '',
       POListArray: [],
       POArray: [],
@@ -309,7 +310,7 @@ export class PMObjectService {
     ClientLegalEntity: '',
     SOWCode: '',
     BillingEntity: '',
-    PracticeArea: [],
+    PracticeArea: '',
     Poc: '',
     PocText: '',
     PocOptional: [],
@@ -323,11 +324,16 @@ export class PMObjectService {
     SOWDocProperties: [],
     Comments: '',
     Currency: '',
+    SOWDocument: '',
     Budget: {
       Total: 0,
       Net: 0,
       OOP: 0,
-      Tax: 0
+      Tax: 0,
+      TotalBalance: 0,
+      NetBalance: 0,
+      OOPBalance: 0,
+      TaxBalance: 0,
     },
     CM1: [],
     CM1Text: '',
@@ -492,7 +498,8 @@ export class PMObjectService {
   public isMoveProjectToSOWVisible = false;
   public isProjectVisible = false;
   public columnFilter = {
-    ProjectCode: []
+    ProjectCode: [],
+    SOWCode: []
   };
   public isReasonSectionVisible = false;
 }

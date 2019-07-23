@@ -23,32 +23,41 @@
                 <th class="lastColumnWidth"></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                     <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allProjects.sowCodeArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
+                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProjectCode'" [(ngModel)]="pmObject.columnFilter.ProjectCode"
                         [options]="allProjects.projectCodeArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
+                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="allProjects.shortTitleArray"
-                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
+                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="allProjects.clientLegalEntityArray"
-                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
+                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="allProjects.deliveryTypeArray"
-                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
+                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProjectType'" [options]="allProjects.projectTypeArray"
-                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
+                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Status'" [options]="allProjects.statusArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
+                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'CreatedBy'" [options]="allProjects.createdByArray" defaultLabel="All"
-                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
+                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'CreatedDate'" [options]="allProjects.createdDateArray"
-                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')"
+                        (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                 </th>
                 <th class="lastColumnWidth"></th>
@@ -56,8 +65,11 @@
         </ng-template>
         <ng-template pTemplate="body" let-rowData let-task let-rowIndex="rowIndex">
             <tr>
-                <td >{{rowIndex+1}}</td>
-                <td>{{task.SOWCode}}</td>
+                <td>{{rowIndex+1}}</td>
+                <td>
+                    <a *ngIf="showNavigateSOW" href="javascript:void(0)" (click)="navigateToSOW(task)">{{task.SOWCode}}</a>
+                    <span *ngIf="!showNavigateSOW">{{task.SOWCode}}</span> 
+                </td>
                 <td>{{task.ProjectCode}}</td>
                 <td>{{task.ShortTitle}}</td>
                 <td>{{task.ClientLegalEntity}}</td>
@@ -70,11 +82,18 @@
                 <td>{{task.CreatedDate | date:'MMM dd yyyy hh:mm:ss aa'}}</td>
                 <td>
                     <div>
-                        <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu class="projectSlider"
-                            [model]="popItems" [popup]="true"></p-menu>
+                        <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu
+                            class="projectSlider" [model]="popItems" [popup]="true"></p-menu>
                         <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                             (click)="storeRowData(rowData,menu); menu.show($event);"></i>
                     </div>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td style="text-align:center" [attr.colspan]="11">
+                    No project found
                 </td>
             </tr>
         </ng-template>
@@ -130,11 +149,10 @@
                         <td>{{task.ProjectAttributes.ProjectStatus}}</td>
                     </tr>
                     <tr>
-                        <td colspan="2" [ngStyle]="{'color':'#d7181f'}">Client POC</td>
-                    </tr>
-                    <tr>
-                        <td>{{task.ProjectAttributes.PointOfContact1Text}}</td>
-                        <td>{{task.ProjectAttributes.PointOfContact2Text}}</td>
+                        <td [ngStyle]="{'color':'#d7181f'}">Client POC</td>
+
+                        <td>{{task.ProjectAttributes.PointOfContact1Text}}<br />
+                            {{task.ProjectAttributes.PointOfContact2Text}}</td>
                     </tr>
                     <tr>
                         <td [ngStyle]="{'color':'#d7181f'}">Molecule</td>
@@ -229,12 +247,21 @@
                         <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
                     </tr>
                     <tr>
-                        <td [ngStyle]="{'color':'#d7181f'}">currency</td>
+                        <td [ngStyle]="{'color':'#d7181f'}">Currency</td>
                         <td>{{task.FinanceManagement.Currency}}</td>
                     </tr>
                     <tr>
                         <td [ngStyle]="{'color':'#d7181f'}">Budget Hours</td>
                         <td>{{task.FinanceManagement.BudgetHours}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Project SOW</td>
+                        <td>
+                            <span *ngIf="task.FinanceManagement.ProjectSOW.length">
+                                <a href="{{task.FinanceManagement.ProjectSOW}}" target="_blank" style="color:red">Click
+                                    here</a>
+                            </span>
+                        </td>
                     </tr>
                     <tr>
                         <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
@@ -338,7 +365,8 @@
                 <div class="ui-grid-col-2"><span class="compulsory">*</span>Reason Type</div>
                 <div class="ui-grid-col-4">
                     <p-dropdown [(ngModel)]="selectedReasonType" [options]="cancelReasonArray"
-                        placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
+                        placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true">
+                    </p-dropdown>
                 </div>
             </div>
             <div class="ui-grid-row mt-20">

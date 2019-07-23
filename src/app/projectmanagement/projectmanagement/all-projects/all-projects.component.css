@@ -54,12 +54,6 @@
   body .ui-table .ui-table-tbody > tr > td {
     word-break: break-all;
   }
-
-
-
-  .allProjects-section div.ui-table-wrapper {
-    min-height: 440px;
-  }
   
   .allProjects-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
     overflow: visible;
@@ -92,4 +86,12 @@
   /* background-color: #B13E3E !important;
   color: #ffff !important;  */
   overflow-x: auto; 
+}
+
+.ui-dynamicdialog .VisualRepresentationpopup>ng-gantt>div>.gchartcontainer>.gmainright {
+  width: 540px !important;
+}
+
+.ui-table table {
+  table-layout: inherit !important;
 }

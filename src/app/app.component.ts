@@ -17,7 +17,7 @@ export class AppComponent {
   constructor(
     public globalObject: GlobalService,
     private router: Router,
-    private _ngZone: NgZone,
+    private _ngZone: NgZone, 
   ) { }
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
@@ -29,7 +29,7 @@ export class AppComponent {
       '/sites/medcomcdn/PublishingImages/Images' :
       '/sites/medcomcdn/PublishingImages/Images';
 
-    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 103 : _spPageContextInfo.userId;
+    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 208 : _spPageContextInfo.userId;
     this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
       : _spPageContextInfo.webAbsoluteUrl;
     this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'

@@ -168,6 +168,7 @@ export class PmconstantService {
     },
     SOW_BY_ID: {
       select: 'ID,Title,SOWCode,ClientLegalEntity,SOWTitle, TotalBudget, NetBudget, OOPBudget, TaxBudget , Currency, Status,'
+        + 'TotalLinked,RevenueLinked,OOPLinked,TaxLinked,SOWLink,'
         + 'PrimaryPOC,BusinessVertical,Comments,BD/ID, BD/Title,CMLevel1/ID, CMLevel1/Title,CMLevel2/ID, CMLevel2/Title,'
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,Year, AdditionalPOC, BillingEntity,'
         + 'CreatedDate, ExpiryDate',
@@ -432,7 +433,7 @@ export class PmconstantService {
     },
     SOW_BY_SOWCODE: {
       select: 'ID, ClientLegalEntity, SOWTitle, Currency, TotalBudget, NetBudget, OOPBudget, TaxBudget, Status,'
-        + 'PrimaryPOC,TotalScheduled, ScheduledRevenue, TotalLinked, RevenueLinked,',
+        + 'PrimaryPOC,TotalScheduled, ScheduledRevenue, TotalLinked, RevenueLinked',
       filter: 'SOWCode eq \'{{sowCode}}\''
     },
     PROJECT_BUDGET_BREAKUP_CANCELLED_BY_PROJECTCODE: {
