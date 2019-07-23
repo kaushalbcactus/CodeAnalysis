@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
 import { MessageService, MenuItem } from 'primeng/api';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
@@ -76,6 +76,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     deliverable: [],
     account: [],
   };
+  tempClick: any;
 
 
   constructor(public messageService: MessageService,
@@ -109,6 +110,33 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+  }
+
+
+
+  
+  @HostListener('document:click', ['$event'])
+  clickout(event) {
+    if (event.target.className === "pi pi-ellipsis-v") {
+      if (this.tempClick) {
+        this.tempClick.style.display = "none";
+        if(this.tempClick !== event.target.parentElement.children[0].children[0]) {
+          this.tempClick = event.target.parentElement.children[0].children[0];
+          this.tempClick.style.display = "";
+        } else {
+          this.tempClick = undefined;
+        }
+      } else {
+        this.tempClick = event.target.parentElement.children[0].children[0];
+        this.tempClick.style.display = "";
+      }
+
+    } else {
+      if (this.tempClick) {
+        this.tempClick.style.display = "none";
+        this.tempClick =  undefined;
+      }
+    }
   }
 
 
