@@ -713,9 +713,10 @@ export class PMCommonService {
     this.pmObject.addSOW.ClientLegalEntity = sowItem.ClientLegalEntity;
     this.pmObject.addSOW.SOWCode = sowItem.SOWCode;
     this.pmObject.addSOW.BillingEntity = sowItem.BillingEntity;
-    this.pmObject.addSOW.PracticeArea = sowItem.BusinessVertical.split(';#');
+    const PracticeArea = sowItem.BusinessVertical ? sowItem.BusinessVertical.split(';#') : [];
+    this.pmObject.addSOW.PracticeArea = PracticeArea.join(', ');
     this.pmObject.addSOW.Poc = sowItem.PrimaryPOC;
-    this.pmObject.addSOW.PocText = this.extractNamefromPOC([sowItem.PrimaryPOC]).join(',');
+    this.pmObject.addSOW.PocText = this.extractNamefromPOC([sowItem.PrimaryPOC]).join(', ');
     const oldAdditonalPocArray = sowItem.AdditionalPOC ? sowItem.AdditionalPOC.split(';#') : null;
     const newAdditionalPocArray = [];
     if (oldAdditonalPocArray && oldAdditonalPocArray.length) {
@@ -724,17 +725,35 @@ export class PMCommonService {
       });
     }
     this.pmObject.addSOW.PocOptional = newAdditionalPocArray;
-    this.pmObject.addSOW.PocOptionalText = this.extractNamefromPOC(newAdditionalPocArray).join(',');
+    this.pmObject.addSOW.PocOptionalText = this.extractNamefromPOC(newAdditionalPocArray).join(', ');
     this.pmObject.addSOW.SOWTitle = sowItem.Title;
     this.pmObject.addSOW.SOWCreationDate = new Date(sowItem.CreatedDate);
     this.pmObject.addSOW.SOWExpiryDate = new Date(sowItem.ExpiryDate);
     this.pmObject.addSOW.Status = sowItem.Status;
     this.pmObject.addSOW.Comments = sowItem.Comments ? sowItem.Comments : '';
     this.pmObject.addSOW.Currency = sowItem.Currency;
+    this.pmObject.addSOW.SOWDocument = sowItem.SOWLink ? sowItem.SOWLink : '';
+    if(this.pmObject.addSOW.SOWDocument) {
+      if(this.pmObject.addSOW.SOWDocument.indexOf(this.globalObject.sharePointPageObject.webRelativeUrl) === -1) {
+        const client = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(e=>e.Title === sowItem.ClientLegalEntity);
+        this.pmObject.addSOW.SOWDocument = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + client.ListName + '/Finance/SOW/' +
+          this.pmObject.addSOW.SOWDocument;
+      }
+    }
+    
+
     this.pmObject.addSOW.Budget.Total = sowItem.TotalBudget ? sowItem.TotalBudget : 0;
     this.pmObject.addSOW.Budget.Net = sowItem.NetBudget ? sowItem.NetBudget : 0;
     this.pmObject.addSOW.Budget.OOP = sowItem.OOPBudget ? sowItem.OOPBudget : 0;
     this.pmObject.addSOW.Budget.Tax = sowItem.TaxBudget ? sowItem.TaxBudget : 0;
+    this.pmObject.addSOW.Budget.TotalBalance = (sowItem.TotalBudget ? sowItem.TotalBudget : 0) - (sowItem.TotalLinked ? sowItem.TotalLinked : 0) ;
+    this.pmObject.addSOW.Budget.TotalBalance = parseFloat(this.pmObject.addSOW.Budget.TotalBalance.toFixed(2));
+    this.pmObject.addSOW.Budget.NetBalance = (sowItem.NetBudget ? sowItem.NetBudget : 0) - (sowItem.RevenueLinked ? sowItem.RevenueLinked : 0);
+    this.pmObject.addSOW.Budget.NetBalance = parseFloat(this.pmObject.addSOW.Budget.NetBalance.toFixed(2));
+    this.pmObject.addSOW.Budget.OOPBalance = (sowItem.OOPBudget ? sowItem.OOPBudget : 0) - (sowItem.OOPLinked ? sowItem.OOPLinked : 0);
+    this.pmObject.addSOW.Budget.OOPBalance = parseFloat(this.pmObject.addSOW.Budget.OOPBalance.toFixed(2));
+    this.pmObject.addSOW.Budget.TaxBalance = (sowItem.TaxBudget ? sowItem.TaxBudget : 0) - (sowItem.TaxLinked ? sowItem.TaxLinked : 0);
+    this.pmObject.addSOW.Budget.TaxBalance = parseFloat(this.pmObject.addSOW.Budget.TaxBalance.toFixed(2));
     let cm1Array = [];
     let delivery1Array = [];
     if (sowItem.CMLevel1.results && sowItem.CMLevel1.results.length) {
@@ -744,15 +763,15 @@ export class PMCommonService {
       delivery1Array = this.getIds(sowItem.DeliveryLevel1.results);
     }
     this.pmObject.addSOW.CM1 = cm1Array;
-    this.pmObject.addSOW.CM1Text = this.extractNameFromId(cm1Array).join(',');
+    this.pmObject.addSOW.CM1Text = this.extractNameFromId(cm1Array).join(', ');
     this.pmObject.addSOW.CM2 = sowItem.CMLevel2.ID;
-    this.pmObject.addSOW.CM2Text = this.extractNameFromId([sowItem.CMLevel2.ID]).join(',');
+    this.pmObject.addSOW.CM2Text = this.extractNameFromId([sowItem.CMLevel2.ID]).join(', ');
     this.pmObject.addSOW.Delivery = delivery1Array;
-    this.pmObject.addSOW.DeliveryText = this.extractNameFromId(delivery1Array).join(',');
+    this.pmObject.addSOW.DeliveryText = this.extractNameFromId(delivery1Array).join(', ');
     this.pmObject.addSOW.DeliveryOptional = sowItem.DeliveryLevel2.ID;
-    this.pmObject.addSOW.DeliveryOptionalText = this.extractNameFromId([sowItem.DeliveryLevel2.ID]).join(',');
+    this.pmObject.addSOW.DeliveryOptionalText = this.extractNameFromId([sowItem.DeliveryLevel2.ID]).join(', ');
     this.pmObject.addSOW.SOWOwner = sowItem.BD.ID;
-    this.pmObject.addSOW.SOWOwnerText = sowItem.BD.hasOwnProperty('ID') ? this.extractNameFromId([sowItem.BD.ID]).join(',') : '';
+    this.pmObject.addSOW.SOWOwnerText = sowItem.BD.hasOwnProperty('ID') ? this.extractNameFromId([sowItem.BD.ID]).join(', ') : '';
   }
   convertToExcelFile(cnf1) {
     if (Array.isArray(cnf1._selection)) {
@@ -774,13 +793,21 @@ export class PMCommonService {
   }
   async getProjects() {
     let arrResults: any = [];
-    if (this.pmObject.userRights.isMangers || this.pmObject.userRights.isHaveProjectFullAccess) {
-      const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.ALL_PROJECT_INFORMATION);
-      arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
+
+    const allProjects = localStorage.getItem('allProjects');
+    if(allProjects) {
+      arrResults = JSON.parse(allProjects);
+      localStorage.removeItem('allProjects');
     } else {
-      const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION);
-      arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
+      if (this.pmObject.userRights.isMangers || this.pmObject.userRights.isHaveProjectFullAccess) {
+        const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.ALL_PROJECT_INFORMATION);
+        arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
+      } else {
+        const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION);
+        arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
+      }
     }
+
     return arrResults;
   }
   /**

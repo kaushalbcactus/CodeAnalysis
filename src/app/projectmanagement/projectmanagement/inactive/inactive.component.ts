@@ -10,6 +10,7 @@ import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { PMCommonService } from '../../services/pmcommon.service';
+import { Router } from '@angular/router';
 declare var $: any;
 @Component({
   selector: 'app-inactive',
@@ -71,7 +72,8 @@ export class InactiveComponent implements OnInit {
     private Constant: ConstantsService,
     private spServices: SharepointoperationService,
     private pmConstant: PmconstantService,
-    public pmCommonService: PMCommonService
+    public pmCommonService: PMCommonService,
+    public router: Router,
   ) { }
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   ngOnInit() {
@@ -192,24 +194,18 @@ export class InactiveComponent implements OnInit {
       '/Pages/TaskAllocation.aspx?ProjectCode=' + task.ProjectCode, '_blank');
   }
   goToProjectManagement(task) {
-    window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/Pages/ProjectManagement.aspx?ProjectCode=' + task.ProjectCode, '_blank');
+    // window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
+    //   '/Pages/ProjectManagement.aspx?ProjectCode=' + task.ProjectCode, '_blank');
+    //this.pmObject.columnFilter.ProjectCode = [{ label: task.ProjectCode, value: task.ProjectCode }];
+    this.pmObject.columnFilter.ProjectCode = [task.ProjectCode];
+    this.router.navigate(['/projectMgmt/allProjects']);
+
   }
   iapLazyLoadTask(event) {
     const paArray = this.pmObject.inActiveProjectArray;
     this.commonService.lazyLoadTask(event, paArray, this.filterColumns, this.pmConstant.filterAction.INACTIVE_PROJECTS);
   }
-  onClickMenu(item: any) {
-    this.popItems.push({
-      label: 'Option 1',
-      command: (event: any) => {
-        this.doSomething(item);
-      }
-    });
-  }
-  doSomething(items) {
-    console.log(items);
-  }
+  
   storeRowData(rowData) {
     this.selectedIAPTask = rowData;
   }

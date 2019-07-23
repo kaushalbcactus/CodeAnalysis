@@ -1,6 +1,4 @@
-::ng-deep .slaExist div.ui-table-wrapper {
-    min-height: 440px;
-  }
+
   
   ::ng-deep .slaExist .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
     overflow: visible;

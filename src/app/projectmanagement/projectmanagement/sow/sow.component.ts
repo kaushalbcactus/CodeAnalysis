@@ -7,10 +7,11 @@ import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem, DialogService } from 'primeng/api';
 import { DataService } from 'src/app/Services/data.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
-import { AddProjectsComponent } from '../add-projects/add-projects.component';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router } from '@angular/router';
 import { PMCommonService } from '../../services/pmcommon.service';
+import { Table } from 'primeng/table';
+
 declare var $;
 @Component({
   selector: 'app-sow',
@@ -79,7 +80,9 @@ export class SOWComponent implements OnInit, OnDestroy {
   popItems: MenuItem[];
   sowViewDataArray = [];
   subscription;
+  showProjectLink = false;
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+  @ViewChild('allProjectRef', { static: true }) allProjectRef: Table;
   step: number;
   constructor(
     public pmObject: PMObjectService,
@@ -95,6 +98,12 @@ export class SOWComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    if (this.router.url.indexOf('myDashboard') > -1) {
+      this.showProjectLink = false;
+    }
+    else {
+      this.showProjectLink = true;
+    }
     this.loadSOWInit();
   }
   loadSOWInit() {
@@ -268,9 +277,25 @@ export class SOWComponent implements OnInit, OnDestroy {
       this.allSOW.createdByArray = this.commonService.unique(createdByTempArray, 'value');
       this.allSOW.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
       this.pmObject.allSOWArray = tempAllSOWArray;
-      this.isAllSOWLoaderHidden = true;
-      this.isAllSOWTableHidden = false;
+
     }
+
+    if (this.pmObject.columnFilter.SOWCode && this.pmObject.columnFilter.SOWCode.length) {
+      const getSOW = this.pmObject.allSOWArray.find(e => e.SOWCode === this.pmObject.columnFilter.SOWCode[0]);
+      if (getSOW) {
+        this.allProjectRef.filter(this.pmObject.columnFilter.SOWCode, 'SOWCode', 'in');
+        this.pmObject.selectedSOWTask = getSOW;
+        this.viewSOW(this.pmObject.selectedSOWTask);
+      }
+      else {
+        this.pmObject.columnFilter.SOWCode = [];
+      }
+
+    }
+
+    this.isAllSOWLoaderHidden = true;
+    this.isAllSOWTableHidden = false;
+
   }
   lazyLoadTask(event) {
     const allSOWArray = this.pmObject.allSOWArray;
@@ -354,10 +379,11 @@ export class SOWComponent implements OnInit, OnDestroy {
         projectObj.DeliverableType = projectItem.DeliverableType;
         projectObj.ProjectCode = projectItem.ProjectCode;
         projectObj.Title = projectItem.Title;
-        const tempBuget = budgetArray.filter(x => x.retItems[0] && x.retItems[0].length &&
+        const tempBuget = budgetArray.find(x => x.retItems && x.retItems.length &&
           x.retItems[0].Title === projectItem.ProjectCode);
-        projectObj.Budget = tempBuget && tempBuget.length && tempBuget[0] && tempBuget[0].retItems.length
-          ? tempBuget[0].retItems[0].RevenueBudget ? tempBuget[0].retItems[0].RevenueBudget : 0 : 0;
+        projectObj.Budget = tempBuget && tempBuget.retItems.length
+          ? (tempBuget.retItems[0].ApprovedBudget ? tempBuget.retItems[0].ApprovedBudget : 
+          (tempBuget.retItems[0].RevenueBudget ? tempBuget.retItems[0].RevenueBudget : 0)) : 0;
         projectObj.Status = projectItem.Status;
         tempProjectArray.push(projectObj);
       });
@@ -448,32 +474,38 @@ export class SOWComponent implements OnInit, OnDestroy {
     }
   }
   navigateToProject(projObj) {
-    this.pmObject.isProjectVisible = false;
-    this.pmObject.columnFilter.ProjectCode = [projObj.ProjectCode];
-    this.router.navigate(['/projectMgmt/allProjects']);
+    // this.pmObject.isProjectVisible = false;
+    // this.pmObject.columnFilter.ProjectCode = [projObj.ProjectCode];
+    // this.router.navigate(['/projectMgmt/allProjects']);
+    if (this.pmObject.allProjectItems) {
+      localStorage.setItem('allProjects', JSON.stringify(this.pmObject.allProjectItems));
+    }
+    let allProjects = window.location.href.replace('allSOW', 'allProjects');
+    allProjects = allProjects + '?ProjectCode=' + projObj.ProjectCode;
+    window.open(allProjects, '_blank');
   }
 
   @HostListener('document:click', ['$event'])
-    clickout(event) {
-      if (event.target.className === "pi pi-ellipsis-v") {
-        if (this.tempClick) {
-          this.tempClick.style.display = "none";
-          if(this.tempClick !== event.target.parentElement.children[0].children[0]) {
-            this.tempClick = event.target.parentElement.children[0].children[0];
-            this.tempClick.style.display = "";
-          } else {
-            this.tempClick = undefined;
-          }
-        } else {
+  clickout(event) {
+    if (event.target.className === "pi pi-ellipsis-v") {
+      if (this.tempClick) {
+        this.tempClick.style.display = "none";
+        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
           this.tempClick = event.target.parentElement.children[0].children[0];
           this.tempClick.style.display = "";
+        } else {
+          this.tempClick = undefined;
         }
-  
       } else {
-        if (this.tempClick) {
-          this.tempClick.style.display = "none";
-          this.tempClick =  undefined;
-        }
+        this.tempClick = event.target.parentElement.children[0].children[0];
+        this.tempClick.style.display = "";
+      }
+
+    } else {
+      if (this.tempClick) {
+        this.tempClick.style.display = "none";
+        this.tempClick = undefined;
       }
     }
+  }
 }

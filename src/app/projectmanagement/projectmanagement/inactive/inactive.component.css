@@ -1,6 +1,4 @@
-.inActiveTable div.ui-table-wrapper {
-    min-height: 440px;
-  }
+
   
   .inActiveTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
     overflow: visible;

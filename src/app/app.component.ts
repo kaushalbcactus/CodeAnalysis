@@ -17,7 +17,7 @@ export class AppComponent {
   constructor(
     public globalObject: GlobalService,
     private router: Router,
-    private _ngZone: NgZone,
+    private _ngZone: NgZone, 
   ) { }
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {

@@ -1,6 +1,4 @@
-.crTable div.ui-table-wrapper {
-    min-height: 440px;
-  }
+
   
   .crTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
     overflow: visible;

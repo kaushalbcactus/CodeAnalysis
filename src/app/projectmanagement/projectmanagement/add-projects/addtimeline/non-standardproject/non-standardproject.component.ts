@@ -45,8 +45,7 @@ export class NonStandardprojectComponent implements OnInit {
   isNonStandardTableHidden = true;
   public nonstandardProjectBudgetHrs;
   public yearRange: any;
-  public selectedResource: any = {
-  };
+  public selectedResource;
   public ngNonStandardProposedStartDate;
   public ngNonStandardProposedEndDate;
   ngOnInit() {
