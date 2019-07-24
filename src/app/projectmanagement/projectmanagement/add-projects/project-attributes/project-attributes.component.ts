@@ -18,6 +18,7 @@ import { DataService } from 'src/app/Services/data.service';
 export class ProjectAttributesComponent implements OnInit {
   groupedCars: SelectItemGroup[];
   addProjectAttributesForm: FormGroup;
+  addMolecule: FormGroup;
   @Output() billedType = new EventEmitter<string>();
   isProjectAttributeLoaderHidden = false;
   isProjectAttributeTableHidden = true;
@@ -34,6 +35,8 @@ export class ProjectAttributesComponent implements OnInit {
   fileReader;
   projObj;
   sowObj;
+  showMoleculeAdd = false;
+  formSubmit = false;
   constructor(
     private frmbuilder: FormBuilder,
     public pmObject: PMObjectService,
@@ -266,6 +269,10 @@ export class ProjectAttributesComponent implements OnInit {
       authors: [''],
       comments: ['']
     });
+
+    this.addMolecule = this.frmbuilder.group({
+      addMoleculeItem: ['', Validators.required]
+    });
   }
 
   goToTimeline(data) {
@@ -415,4 +422,60 @@ export class ProjectAttributesComponent implements OnInit {
       this.fileReader.readAsArrayBuffer(this.selectedFile);
     }
   }
+  openMoleculeAdd() {
+    this.formSubmit = false;
+    this.showMoleculeAdd = true;
+  }
+
+  resetMoleculeAdd() {
+    this.showMoleculeAdd = false;
+    this.addMolecule.get('addMoleculeItem').setValue('');
+  }
+  async addMoleculeToList() {
+    this.formSubmit = true;
+    if (this.addMolecule.valid) {
+      let val = this.addMolecule.get('addMoleculeItem').value;
+      val = val.trim();
+      const molecule = this.pmObject.oProjectCreation.oProjectInfo.molecule.find(e => e.label === val);
+      if (molecule) {
+        this.messageService.add({
+          key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+          detail: 'Molecule already exists'
+        });
+        return;
+      }
+      const batchURL = [];
+      const options = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
+
+      const data: any = {
+        __metadata: { type: this.constant.listNames.Molecules.type },
+        Title: val
+      };
+      const moleculeItemCreate = Object.assign({}, options);
+      moleculeItemCreate.url = this.spServices.getReadURL(this.constant.listNames.Molecules.name);
+      moleculeItemCreate.data = data;
+      moleculeItemCreate.type = 'POST';
+      moleculeItemCreate.listName = this.constant.listNames.Molecules.name;
+      batchURL.push(moleculeItemCreate);
+
+      await this.spServices.executeBatch(batchURL);
+
+      this.messageService.add({
+        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+        detail: 'Molecule added successfully'
+      });
+
+      this.showMoleculeAdd = false;
+      this.addMolecule.get('addMoleculeItem').setValue('');
+      this.pmObject.oProjectCreation.oProjectInfo.molecule.push({ label: val, value: val });
+    } else {
+      this.validateAllFormFields(this.addMolecule);
+    }
+  }
+
 }

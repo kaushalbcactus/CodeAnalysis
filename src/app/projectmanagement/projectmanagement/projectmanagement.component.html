@@ -58,14 +58,14 @@
                             [filter]="true" (onChange)="onChangeClientLegalEntity()" resetFilterOnHide="true">
                         </p-dropdown>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['clientLegalEntity'].valid&&addSowForm.controls['clientLegalEntity'].touched">
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['clientLegalEntity'].disabled && !addSowForm.controls['clientLegalEntity'].valid">
                             Client Legal Entity is required</div>
                     </div>
                     <div class="ui-g-2"><span class="compulsory">*</span>SOW Code</div>
                     <div class="ui-g-4">
                         <input class="mr-5" formControlName="sowCode" type="text" pInputText>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['sowCode'].valid&&addSowForm.controls['sowCode'].touched">SOW
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['sowCode'].disabled && !addSowForm.controls['sowCode'].valid">SOW
                             Code is required</div>
                     </div>
                 </div>
@@ -77,7 +77,7 @@
                             [filter]="true" resetFilterOnHide="true">
                         </p-dropdown>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['cactusBillingEntity'].valid&&addSowForm.controls['cactusBillingEntity'].touched">
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['cactusBillingEntity'].disabled && !addSowForm.controls['cactusBillingEntity'].valid">
                             Billing Entity is required</div>
                     </div>
                     <div class="ui-g-2"><span class="compulsory">*</span>Practice Area</div>
@@ -86,7 +86,7 @@
                             [panelStyle]="{minWidth:'12em'}" [style]="{'width':'85%'}" defaultLabel="Please Select"
                             [filter]="true" resetFilterOnHide="true"></p-multiSelect>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['practiceArea'].valid&&addSowForm.controls['practiceArea'].touched">
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['practiceArea'].valid">
                             Practice Area is required</div>
                     </div>
                 </div>
@@ -97,7 +97,7 @@
                             placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true">
                         </p-dropdown>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['poc'].valid&&addSowForm.controls['poc'].touched">
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['poc'].valid">
                             POC is required</div>
                     </div>
                     <div class="ui-g-3" style="margin-left: 25px">
@@ -111,7 +111,7 @@
                         <textarea class="mr-5" [rows]="5" [cols]="80" formControlName="sowTitle" pInputTextarea
                             autoResize="autoResize"></textarea>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['sowTitle'].valid&&addSowForm.controls['sowTitle'].touched">SOW
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['sowTitle'].valid">SOW
                             Title is required</div>
                     </div>
                 </div>
@@ -124,7 +124,7 @@
                             [monthNavigator]="true"   [yearNavigator]="true"   yearRange="{{pmObject.yearRange}}">
                         </p-calendar>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['sowCreationDate'].valid&&addSowForm.controls['sowCreationDate'].touched">
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['sowCreationDate'].disabled && !addSowForm.controls['sowCreationDate'].valid">
                             SOW Creation Date is required</div>
                     </div>
                     <div class="ui-g-2"><span class="compulsory">*</span>SOW Expiry Date</div>
@@ -135,7 +135,7 @@
                             [monthNavigator]="true"   [yearNavigator]="true"   yearRange="{{pmObject.yearRange}}">
                         </p-calendar>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['sowExpiryDate'].valid&&addSowForm.controls['sowExpiryDate'].touched">
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['sowExpiryDate'].valid">
                             SOW Expiry Date is required</div>
                     </div>
                 </div>
@@ -164,7 +164,7 @@
                             placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true">
                         </p-dropdown>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['currency'].valid&&addSowForm.controls['currency'].touched">
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['currency'].disabled && !addSowForm.controls['currency'].valid">
                             Currency is required</div>
                     </div>
                 </div>
@@ -180,28 +180,28 @@
                         <input formControlName="total" type="number" [attr.disabled]="true" placeholder="Total"
                             pInputText>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['total'].valid&&addSowForm.controls['total'].touched">Total is
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['total'].disabled && !addSowForm.controls['total'].valid">Total is
                             required</div>
                     </div>
                     <div class="ui-g-2  mr-5">
                         <input formControlName="net" value="0" min="0" type="number" (change)="setSOWTotal()"
                             placeholder="Net" pInputText>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['net'].valid&&addSowForm.controls['net'].touched">Net is
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['net'].disabled && !addSowForm.controls['net'].valid">Net is
                             required</div>
                     </div>
                     <div class="ui-g-2  mr-5">
                         <input formControlName="oop" value="0" min="0" type="number" (change)="setSOWTotal()"
                             placeholder="OOP" pInputText>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['oop'].valid&&addSowForm.controls['oop'].touched">OOP is
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['oop'].disabled && !addSowForm.controls['oop'].valid">OOP is
                             required</div>
                     </div>
                     <div class="ui-g-2">
                         <input formControlName="tax" value="0" min="0" type="number" (change)="setSOWTotal()"
                             placeholder="Tax" pInputText>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['tax'].valid&&addSowForm.controls['tax'].touched">TAX is
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['tax'].disabled && !addSowForm.controls['tax'].valid">TAX is
                             required</div>
                     </div>
                 </div>
@@ -212,14 +212,14 @@
                         <p-multiSelect formControlName="cm" [options]="sowDropDown.CMLevel1"
                             [panelStyle]="{minWidth:'12em'}" [style]="{'width':'85%'}" defaultLabel="Please Select"
                             [filter]="true" resetFilterOnHide="true"></p-multiSelect>
-                        <div class="error" *ngIf="!addSowForm.controls['cm'].valid&&addSowForm.controls['cm'].touched">
+                        <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['cm'].valid">
                             CM 1 is required</div>
                     </div>
                     <div class="ui-g-4">
                         <p-dropdown formControlName="cm2" [options]="sowDropDown.CMLevel2" placeholder="Please Select"
                             [showClear]="true" [filter]="true" resetFilterOnHide="true"></p-dropdown>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['cm2'].valid&&addSowForm.controls['cm2'].touched">CM 2 is
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['cm2'].valid">CM 2 is
                             required</div>
                     </div>
                 </div>
@@ -235,7 +235,7 @@
                             placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true">
                         </p-dropdown>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['deliveryOptional'].valid&&addSowForm.controls['deliveryOptional'].touched">
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['deliveryOptional'].valid">
                             Delivery 2 is required</div>
                     </div>
                 </div>
@@ -246,7 +246,7 @@
                             placeholder="Please Select" [showClear]="true" [filter]="true" resetFilterOnHide="true">
                         </p-dropdown>
                         <div class="error"
-                            *ngIf="!addSowForm.controls['sowOwner'].valid&&addSowForm.controls['sowOwner'].touched">SOW
+                            *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['sowOwner'].valid">SOW
                             Owner is required</div>
                     </div>
                 </div>
@@ -270,7 +270,7 @@
                     <input formControlName="addTotal" type="number" [attr.disabled]="true" placeholder="Total"
                         pInputText>
                     <div class="error"
-                        *ngIf="!addAdditionalBudgetForm.controls['addTotal'].valid&&addAdditionalBudgetForm.controls['addTotal'].touched">
+                        *ngIf="pmObject.isSOWFormSubmit && !addAdditionalBudgetForm.controls['addTotal'].valid">
                         Total is required</div>
                 </div>
             </div>
@@ -280,8 +280,8 @@
                     <input formControlName="addNet" min="0" (change)="setAddSOWTotal()" type="number" placeholder="Net"
                         pInputText>
                     <div class="error"
-                        *ngIf="!addAdditionalBudgetForm.controls['addNet'].valid&&addAdditionalBudgetForm.controls['addNet'].touched">
-                        Additinal Net is required </div>
+                        *ngIf="pmObject.isSOWFormSubmit && !addAdditionalBudgetForm.controls['addNet'].valid">
+                        Additinal Net should be greater than zero </div>
                 </div>
             </div>
             <div class="ui-g mt-20">
@@ -290,8 +290,8 @@
                     <input formControlName="addOOP" min="0" (change)="setAddSOWTotal()" type="number" placeholder="OOP"
                         pInputText>
                     <div class="error"
-                        *ngIf="!addAdditionalBudgetForm.controls['addOOP'].valid&&addAdditionalBudgetForm.controls['addOOP'].touched">
-                        Additinal OOP is required </div>
+                        *ngIf="pmObject.isSOWFormSubmit && !addAdditionalBudgetForm.controls['addOOP'].valid">
+                        Additinal OOP should be Non negative </div>
                 </div>
             </div>
             <div class="ui-g mt-20">
@@ -300,8 +300,8 @@
                     <input formControlName="addTax" min="0" (change)="setAddSOWTotal()" type="number" placeholder="Tax"
                         pInputText>
                     <div class="error"
-                        *ngIf="!addAdditionalBudgetForm.controls['addTax'].valid&&addAdditionalBudgetForm.controls['addTax'].touched">
-                        Additinal Tax is required </div>
+                        *ngIf="pmObject.isSOWFormSubmit && !addAdditionalBudgetForm.controls['addTax'].valid">
+                        Additinal Tax should be Non negative </div>
                 </div>
             </div>
             <div class="ui-g mt-20">

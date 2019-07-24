@@ -9,6 +9,8 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { GlobalService } from 'src/app/Services/global.service';
+import { SpOperationsService } from 'src/app/Services/sp-operations.service';
+
 declare var $;
 @Component({
   selector: 'app-manage-finance',
@@ -163,7 +165,8 @@ export class ManageFinanceComponent implements OnInit {
     private messageService: MessageService,
     private pmCommonService: PMCommonService,
     private commonService: CommonService,
-    private global: GlobalService
+    private global: GlobalService,
+    private spOperations: SpOperationsService
   ) {
     this.addPOForm = frmbuilder.group({
       poDate: ['', Validators.required],
@@ -1086,9 +1089,27 @@ export class ManageFinanceComponent implements OnInit {
       }
     });
   }
+  
+  lineItemConfirmAllowed(invoice) {
+    const currentDate = new Date();
+    const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+    const last3Days = this.commonService.getLastWorkingDay(3, new Date());
+
+    if(invoice.date >= last3Days && invoice.date < lastDay) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+  
   /***
    * This method is used to save the PO.
    */
+
+
+
   savePo() {
     this.savePOArray.push({
       budget: this.budgetData,
@@ -1290,7 +1311,7 @@ export class ManageFinanceComponent implements OnInit {
               || this.projectStatus === this.constant.projectStatus.OnHold
               || this.projectStatus === this.constant.projectStatus.AuthorReview
               || this.projectStatus === this.constant.projectStatus.PendingClosure) {
-              invoiceObj.isInvoiceItemConfirm = true;
+              invoiceObj.isInvoiceItemConfirm = this.lineItemConfirmAllowed(invoiceObj);
             }
             if (this.projectStatus === this.constant.projectStatus.Unallocated
               || this.projectStatus === this.constant.projectStatus.InProgress
@@ -1436,6 +1457,16 @@ export class ManageFinanceComponent implements OnInit {
     });
   }
   async commitInvoiceItem(rowData) {
+    const groupInfo = await this.spOperations.getGroupInfo('Invoice_Team');
+    var approvers = groupInfo.results;
+    var arrayTo = [];
+    if (approvers.length) {
+      for (var i in approvers) {
+        if (approvers[i].Email != undefined && approvers[i].Email != "") {
+          arrayTo.push(approvers[i].Email);
+        }
+      }
+    }
     const data = {
       Status: this.constant.STATUS.CONFIRMED
     };
@@ -1468,13 +1499,14 @@ export class ManageFinanceComponent implements OnInit {
       key: '@@Val7@@',
       value: this.projObj.SOWCode
     });
-    let arrayTo = [];
+    let arrayCC = [];
     let tempArray = [];
     tempArray = tempArray.concat(this.projObj.CMLevel1ID,
-      this.projObj.CMLevel2ID, this.projObj.DeliveryLevel1ID, this.projObj.DeliveryLevel2ID);
-    arrayTo = this.pmCommonService.getEmailId(tempArray);
+      this.projObj.CMLevel2ID);
+    arrayCC = this.pmCommonService.getEmailId(tempArray);
+    arrayCC.push(this.pmObject.currLoginInfo.Email);
     this.pmCommonService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.INVOICE_CONFIRM, objEmailBody,
-      mailSubject, arrayTo, [this.pmObject.currLoginInfo.Email]);
+      mailSubject, arrayTo, arrayCC);
     this.messageService.add({
       key: 'manageFinance', severity: 'success', summary: 'Success Message', sticky: true,
       detail: 'Invoice Line Items Confirmed Successfully'

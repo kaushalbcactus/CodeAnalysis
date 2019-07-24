@@ -487,6 +487,7 @@ export class PMObjectService {
   };
   public currLoginInfo: any = [];
   public isAdditionalBudgetVisible = false;
+  public isSOWFormSubmit = false;
   public isAddSOWVisible = false;
   public isSOWRightViewVisible = false;
   public isSOWCloseVisible = false;
