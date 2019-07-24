@@ -119,6 +119,13 @@ export class BlockTimeDialogComponent implements OnInit {
 
 
 
+  SetTime(time) {
+    debugger
+    var timespent = time.split(':')[0] % 12 + ":" + time.split(':')[1];
+    this.starttime = timespent;
+  }
+
+
   //*************************************************************************************************
   //  Save booking / create Meeting
   //*************************************************************************************************

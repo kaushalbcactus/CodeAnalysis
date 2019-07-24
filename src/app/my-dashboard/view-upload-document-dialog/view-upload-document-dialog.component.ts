@@ -45,7 +45,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   items: MenuItem[];
   activeItem: MenuItem;
   ngOnInit() {
-    
+
     this.loaderenable = true;
     this.DocumentArray = [];
     this.data = this.config.data === undefined ? this.taskData : this.config.data;
@@ -176,7 +176,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   // **************************************************************************************************************************************
 
   onChange(event) {
-    
+
     this.loaderenable = true;
     this.selectedDocuments = [];
     this.DocumentArray = [];
@@ -246,7 +246,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
   async loadDraftDocs(selectedTab) {
 
+    debugger;
     this.DocumentArray = [];
+
     var documentsUrl = '';
 
     if (selectedTab === 'Source Docs') {
@@ -304,14 +306,16 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.DocumentArray.map(c => c.ModifiedDateString = this.datePipe.transform(c.ListItemAllFields.Modified, 'MMM d, y, h:mm a'));
 
     if (this.DocumentArray.length) {
+
+      if (this.selectedTab === this.prevTask) {
+         this.DocumentArray = this.DocumentArray.filter(c => c.isFileMarkedAsFinal === true);
+      }
+
       this.DocumentArray = this.DocumentArray.sort((a, b) =>
         new Date(a.ModifiedDateString).getTime() < new Date(b.ModifiedDateString).getTime() ? 1 : -1
       );
     }
-
     this.selectedDocuments = [];
-
-
   };
 
   // **************************************************************************************************************************************
@@ -404,9 +408,18 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   // **************************************************************************************************************************************
 
   downloadFile() {
-
     if (this.selectedDocuments.length > 0) {
-      this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTask.Title);
+      if (this.selectedTask.DisplayTitle) {
+        this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTask.DisplayTitle);
+      }
+      else if (this.selectedTask.ProjectName) {
+        this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTask.ProjectName + " " + this.selectedTask.Milestone + " " + this.selectedTask.Task);
+      }
+      else {
+        var downloadName = this.selectedTask.WBJID ? this.selectedTask.ProjectCode + " (" + this.selectedTask.WBJID + " )" : this.selectedTask.ProjectCode;
+        this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), downloadName);
+      }
+
     } else {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Files.', life: 4000 })
     }
@@ -417,11 +430,10 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   // **************************************************************************************************************************************
   async uploadDocuments(event, type) {
 
-    if(event.files.length)
-    {
+    if (event.files.length) {
       var docFolder;
       this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Uploading....' });
-  
+
       var existingFiles = this.allDocuments.map(c => c.Name.toLowerCase());
       switch (type) {
         case 'Source Docs':
@@ -448,22 +460,22 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       var uploadedFiles = [];
       this.loaderenable = true;
       event.files.forEach(async element => {
-  
+
         var filename = element.name;
         if (existingFiles.includes(element.name.toLowerCase())) {
           filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(), "ddMMyyyyhhmmss") + "." + filename.split(/\.(?=[^\.]+$)/)[1];
         }
-  
+
         this.fileReader = new FileReader();
         this.fileReader.readAsArrayBuffer(element);
-  
+
         this.fileReader.onload = () => {
-  
+
           var filePathUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl('" + this.ProjectInformation.ProjectFolder + "/" + docFolder + "')/Files/add(url=@TargetFileName,overwrite='false')?" +
             "&@TargetFileName='" + filename + "'&$expand=ListItemAllFields";
-  
+
           this.nodeService.uploadFIle(filePathUrl, this.fileReader.result).subscribe(res => {
-  
+
             uploadedFiles.push(res.d);
             if (event.files.length === uploadedFiles.length) {
               if (this.selectedTab === 'My Drafts') {
@@ -474,14 +486,14 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
                 this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
               }
             }
-  
+
           });
-  
+
         };
         existingFiles.push(filename.toLowerCase());
       });
     }
-  
+
   };
 
 

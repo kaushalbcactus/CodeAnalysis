@@ -112,7 +112,8 @@
                     <span *ngIf="col.field === 'DisplayTitle' || (col.field ==='TimeSpent' && rowData.MainStatus !=='Planned')" (click)="showDialog(rowData,col.field,rowIndex)" style="cursor: pointer;color:#C53E3E;">
                         {{rowData[col.field]}} <div
                             *ngIf="col.field === 'DisplayTitle' && tableloaderenable && rowIndex === selectedindex"
-                            id="scTableInnerLoader"></div> </span>
+                            id="scTableInnerLoader"></div>
+                        <div *ngIf="col.field === 'DisplayTitle' && rowData.Comments">[{{rowData.Comments}}]</div> </span>
 
 
                 </td>
