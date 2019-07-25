@@ -22,6 +22,15 @@ p-calendar>span>.ui-button {
     border-color: #ffffff!important;
 }
 
+.timePicker {
+    width: 80% !important;
+    border: none !important;
+}
+
+.ngx-material-timepicker-toggle {
+    display: inline !important;
+}
+
 .taskAllocationTimeline .ui-treetable-wrapper tbody.ui-treetable-tbody>tr>td:last-child {
     overflow: visible;
 }
