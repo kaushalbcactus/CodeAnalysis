@@ -65,7 +65,7 @@ position="bottom-center">
                 <input placeholder="Select Hours" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:100%;    margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" (ngModelChange)="SetEndTime($event)"
                     [(ngModel)]="starttime" [ngxTimepicker]="StartTime" [format]="24" readonly>
 
-                <ngx-material-timepicker #StartTime [minutesGap]="15" (closed)="SetTime(starttime)" [ngxMaterialTimepickerTheme]="darkTheme">
+                <ngx-material-timepicker #StartTime [minutesGap]="15" [enableKeyboardInput]="true" (closed)="SetTime(starttime)" [ngxMaterialTimepickerTheme]="darkTheme">
                 </ngx-material-timepicker>
             </td>
 

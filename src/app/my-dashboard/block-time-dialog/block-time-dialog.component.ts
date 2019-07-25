@@ -157,6 +157,11 @@ export class BlockTimeDialogComponent implements OnInit {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'End Time should be Greater than Start Time.' });
       return false;
     }
+    else if(this.starttime === "0:00")
+    {
+      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Total hours should be Greater than 0.' });
+      return false;
+    }
     else {
       var startDateTime = new Date();
       var endDateTime = new Date();

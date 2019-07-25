@@ -772,7 +772,7 @@ export class PMCommonService {
     this.pmObject.addSOW.DeliveryOptional = sowItem.DeliveryLevel2.ID;
     this.pmObject.addSOW.DeliveryOptionalText = this.extractNameFromId([sowItem.DeliveryLevel2.ID]).join(', ');
     this.pmObject.addSOW.SOWOwner = sowItem.BD.ID;
-    this.pmObject.addSOW.SOWOwnerText = sowItem.BD.hasOwnProperty('ID') ? this.extractNameFromId([sowItem.BD.ID]).join(', ') : '';
+    this.pmObject.addSOW.SOWOwnerText = sowItem.BD ? sowItem.BD.hasOwnProperty('ID') ? this.extractNameFromId([sowItem.BD.ID]).join(', ') : '' : '';
   }
   convertToExcelFile(cnf1) {
     if (Array.isArray(cnf1._selection)) {

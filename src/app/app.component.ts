@@ -27,10 +27,17 @@ export class AppComponent {
     this.globalObject.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
     this.globalObject.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
 
+<<<<<<< HEAD
     this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 14 : _spPageContextInfo.userId;
     this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomm'
       : _spPageContextInfo.webAbsoluteUrl;
     this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomm'
+=======
+    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 287 : _spPageContextInfo.userId;
+    this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
+      : _spPageContextInfo.webAbsoluteUrl;
+    this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
+>>>>>>> 86fc6f8d0eca50e434c9a19c512c9e15ee88d9fe
       : _spPageContextInfo.siteServerRelativeUrl;
     this.globalObject.sharePointPageObject.serverRelativeUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
     this.globalObject.sharePointPageObject.rootsite = window.origin;
