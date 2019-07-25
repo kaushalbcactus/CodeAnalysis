@@ -314,7 +314,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     // Project Current Milestones
     getMilestones(pc: any) {
         let found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == pc.Title) {
+            if (x.ProjectCode == pc.ProjectCode) {
                 return x;
             }
         })

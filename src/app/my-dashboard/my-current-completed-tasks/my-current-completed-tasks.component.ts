@@ -150,7 +150,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     if (event.target.className === "pi pi-ellipsis-v") {
       if (this.tempClick) {
         this.tempClick.style.display = "none";
-        if(this.tempClick !== event.target.parentElement.children[0].children[0]) {
+        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
           this.tempClick = event.target.parentElement.children[0].children[0];
           this.tempClick.style.display = "";
         } else {
@@ -164,7 +164,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     } else {
       if (this.tempClick) {
         this.tempClick.style.display = "none";
-        this.tempClick =  undefined;
+        this.tempClick = undefined;
       }
     }
   }
@@ -270,6 +270,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
         this.allTasks.filter(c => c.Status === 'Not Started' || c.Status === 'In Progress').map(c => c.MainStatus = 'Not Completed');
         this.allTasks.filter(c => c.Status === 'Not Confirmed').map(c => c.MainStatus = 'Planned');
       }
+
 
 
       if (this.sharedObject.DashboardData.ProjectCodes.length > 0) {

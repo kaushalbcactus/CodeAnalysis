@@ -256,7 +256,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         let obj = Object.assign({}, isManager ? this.fdConstantsService.fdComponent.invoicesDel : this.fdConstantsService.fdComponent.invoicesDelCS);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
         if (!isManager) {
-            obj.filter = obj.filter.replace("{{UserId}}", this.globalService.sharePointPageObject.userId.toString());
+            obj.filter = obj.filter.replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
         }
         const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
@@ -510,8 +510,11 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         const currentDate = new Date();
         const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
         const last3Days = this.commonService.getLastWorkingDay(3, new Date());
+        const projectData = this.projectInfoData.find(e => e.ProjectCode === data.ProjectCode);
         const currentDay = new Date(this.datePipe.transform(new Date(), "yyyyMMdd"));
-        if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= new Date()) {
+        if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= new Date() &&
+             (projectData && projectData.Status !== this.constantService.projectList.status.InDiscussion &&
+              projectData.Status !== this.constantService.projectList.status.AwaitingCancelApproval)) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
             if (!(date >= last3Days && date <= lastDay)) {

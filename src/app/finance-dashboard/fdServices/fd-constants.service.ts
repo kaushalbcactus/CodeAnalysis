@@ -40,7 +40,7 @@ export class FdConstantsService {
         },
         projectInfoCode: {
             select: "ID,ProjectCode,ProjectType,WBJID,Title,Year,ClientLegalEntity,SOWCode,ProposedEndDate,PrimaryPOC,NextSCDate,Status,Milestone,BusinessVertical,AdditionalPOCLookup/ID,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail",
-            filter: "ProjectCode eq {{ProjectCode}}",
+            filter: "ProjectCode eq '{{ProjectCode}}'",
             orderby: "ProjectCode",
             top: 4500,
             expand: "AdditionalPOCLookup,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail"

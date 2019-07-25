@@ -100,7 +100,7 @@ export class TimeBookingDialogComponent implements OnInit {
   AddNewRow() {
     
     const newMilestone = {
-      ID: -1, Entity: '', ProjectCode: '', Milestone: '', type: "task", dbClientLegalEntities: this.dbClientLegalEntities, dbProjects: [{ label: 'Select Project', value: null }], dbMilestones: [{ label: 'Select Milestone', value: null }], isEditable: true, TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: new Date(this.datePipe.transform(this.MainminDate, 'yyyy-MM-dd')).getTime() <= new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() ? true : false }))
+      ID: -1, Entity: '', ProjectCode: '', Milestone: '', type: "task", dbClientLegalEntities: this.dbClientLegalEntities, dbProjects: [{ label: 'Select Project', value: null }], dbMilestones: [{ label: 'Select Milestone', value: null }], isEditable: true, TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: new Date(this.datePipe.transform(this.MainminDate, 'yyyy-MM-dd')).getTime() <= new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() &&  new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() <= new Date().getTime() ? true : false }))
     }
 
     this.UserMilestones.push(newMilestone);
@@ -157,6 +157,7 @@ export class TimeBookingDialogComponent implements OnInit {
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, AllMilestonesUrl);
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
+    debugger;
     var dbAllMilestones = this.response.length > 0 ? this.response[0].map(o => new Object({ label: o.Title, value: o.Title })) : [];
     rowData.dbMilestones.push.apply(rowData.dbMilestones, dbAllMilestones);
 

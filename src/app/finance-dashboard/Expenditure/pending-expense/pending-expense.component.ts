@@ -627,6 +627,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.getPIorClient(this.selectedRowItem);
         console.log(event);
         this.selectedAllRowsItem = [];
+        this.canRejExpenseFormField();
         this.selectedAllRowsItem.push(this.selectedRowItem);
         this.cancelRejectDialog.title = event.item.label;
         if (this.cancelRejectDialog.title.toLowerCase() === 'cancel expense' || this.cancelRejectDialog.title.toLowerCase() === 'reject expense') {
