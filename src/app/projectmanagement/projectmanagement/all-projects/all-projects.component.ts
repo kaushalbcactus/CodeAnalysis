@@ -211,7 +211,7 @@ export class AllProjectsComponent implements OnInit {
         if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.APPROVED) {
           if ((this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.sharePointPageObject.userId)) {
             if (projectObj[0].Status === this.constants.projectStatus.AwaitingCancelApproval) {
-              await this.getGetIds(projectObj[0], true);
+              await this.getGetIds(projectObj[0], this.pmConstant.ACTION.CANCEL_PROJECT);
               this.isApprovalAction = false;
               await this.changeProjectStatusCancelled(projectObj[0]);
             } else {
@@ -397,8 +397,11 @@ export class AllProjectsComponent implements OnInit {
       this.allProjects.statusArray = this.commonService.unique(statusTempArray, 'value');
       this.allProjects.createdByArray = this.commonService.unique(createdByTempArray, 'value');
       this.allProjects.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
+      this.pmObject.allProjectsArray = [];
       this.pmObject.allProjectsArray = tempAllProjectArray;
-
+      setTimeout(() => {
+        this.pmObject.allProjectsArray = [...this.pmObject.allProjectsArray];
+      }, 100);
     }
     if (this.params.ProjectCode) {
       this.pmObject.columnFilter.ProjectCode = [this.params.ProjectCode];
