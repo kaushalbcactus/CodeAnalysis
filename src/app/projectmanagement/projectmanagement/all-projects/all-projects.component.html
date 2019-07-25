@@ -3,10 +3,17 @@
     <div id="allProjectLoaderText">Loading...</div>
 </div>
 <div class="allProjects-section" [hidden]='isAllProjectTableHidden'>
+
     <div class="box excelIcon">
         <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(allProjectRef)"
             title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
     </div>
+    <!-- <div [hidden]='!showNavigateSOW' class="top-right-title">
+        <p-dropdown [options]="overAllValues" [(ngModel)]="selectedOption" styleClass="custom-dropDown"
+            optionLabel="name" (onChange)="onChangeSelect($event)"></p-dropdown>
+        <input type="text" (change)="searchClosedProject($event)" *ngIf="showProjectInput" id="projectCodeSelect"
+            placeholder="Project Code" pInputText [(ngModel)]="providedProjectCode" />
+    </div> -->
     <div class="clear"></div>
     <p-table #allProjectRef [columns]="displayedColumns" [value]="pmObject.allProjectsArray" [paginator]="true"
         [rows]="10" selectionMode="" exportFilename="All Projects">
@@ -67,8 +74,9 @@
             <tr>
                 <td>{{rowIndex+1}}</td>
                 <td>
-                    <a *ngIf="showNavigateSOW" href="javascript:void(0)" (click)="navigateToSOW(task)">{{task.SOWCode}}</a>
-                    <span *ngIf="!showNavigateSOW">{{task.SOWCode}}</span> 
+                    <a *ngIf="showNavigateSOW" href="javascript:void(0)"
+                        (click)="navigateToSOW(task)">{{task.SOWCode}}</a>
+                    <span *ngIf="!showNavigateSOW">{{task.SOWCode}}</span>
                 </td>
                 <td>{{task.ProjectCode}}</td>
                 <td>{{task.ShortTitle}}</td>

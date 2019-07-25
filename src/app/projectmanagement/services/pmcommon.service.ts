@@ -359,6 +359,7 @@ export class PMCommonService {
             break;
           case this.pmConstant.resourCatConstant.CMLevel2:
             this.pmObject.oProjectCreation.Resources.cmLevel2.push(element.UserName);
+            this.pmObject.oProjectCreation.Resources.businessDevelopment.push(element.UserName);
             break;
           case this.pmConstant.resourCatConstant.DELIVERY_LEVEL_1:
             this.pmObject.oProjectCreation.Resources.deliveryLevel1.push(element.UserName);
@@ -714,7 +715,7 @@ export class PMCommonService {
     this.pmObject.addSOW.SOWCode = sowItem.SOWCode;
     this.pmObject.addSOW.BillingEntity = sowItem.BillingEntity;
     const PracticeArea = sowItem.BusinessVertical ? sowItem.BusinessVertical.split(';#') : [];
-    this.pmObject.addSOW.PracticeArea = PracticeArea.join(', ');
+    this.pmObject.addSOW.PracticeArea = PracticeArea;
     this.pmObject.addSOW.Poc = sowItem.PrimaryPOC;
     this.pmObject.addSOW.PocText = this.extractNamefromPOC([sowItem.PrimaryPOC]).join(', ');
     const oldAdditonalPocArray = sowItem.AdditionalPOC ? sowItem.AdditionalPOC.split(';#') : null;

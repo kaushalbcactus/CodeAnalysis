@@ -64,6 +64,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.subscription = this.dataService.on('call-EditSOW').subscribe(() => this.getEditSOWData());
     this.subscription = this.dataService.on('call-Close-SOW').subscribe(() => this.closeSOW());
     this.pmObject.isAddSOWVisible = false;
+    this.pmObject.isSOWFormSubmit = false;
     this.pmObject.isSOWRightViewVisible = false;
     this.pmObject.isSOWCloseVisible = false;
     this.initForm();
@@ -132,6 +133,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.addSowForm.controls.clientLegalEntity.enable();
     this.addSowForm.controls.sowCreationDate.enable();
     this.pmObject.isAddSOWVisible = true;
+    this.pmObject.isSOWFormSubmit = false;
   }
   /**
    * This method is used to set the dropdown value of add sow form.
@@ -282,9 +284,10 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * This method is used to add the sow
    */
   async createSOW() {
+    this.pmObject.isSOWFormSubmit = true;
     if (this.addSowForm.valid) {
-
-      if (!this.selectedFile) {
+      this.pmObject.isSOWFormSubmit = false;
+      if (!this.selectedFile && !this.pmObject.addSOW.ID) {
         this.messageService.add({
           key: 'custom', severity: 'error',
           summary: 'Error Message', detail: 'Please select SOW document.'
@@ -292,7 +295,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         return;
       }
       // get all the value from form.
-      this.pmObject.isMainLoaderHidden = false;
+      
       this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity ? this.addSowForm.value.clientLegalEntity :
         this.pmObject.addSOW.ClientLegalEntity;
       this.pmObject.addSOW.SOWCode = this.addSowForm.value.sowCode ? this.addSowForm.value.sowCode + '-SOW' : this.pmObject.addSOW.SOWCode;
@@ -304,6 +307,18 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.addSOW.SOWCreationDate = this.addSowForm.value.sowCreationDate ? this.addSowForm.value.sowCreationDate :
         this.pmObject.addSOW.SOWCreationDate;
       this.pmObject.addSOW.SOWExpiryDate = this.addSowForm.value.sowExpiryDate;
+      if(this.pmObject.addSOW.SOWCreationDate && this.pmObject.addSOW.SOWExpiryDate) {
+        const creationDate = new Date(this.pmObject.addSOW.SOWCreationDate);
+        const expirtyDate = new Date(this.pmObject.addSOW.SOWExpiryDate);
+        if(expirtyDate <= creationDate) {
+          this.messageService.add({
+            key: 'custom', severity: 'error',
+            summary: 'Error Message', detail: 'SOW expiry date should be greater than sow creation date.'
+          });
+          return;
+        }
+      }
+      this.pmObject.isMainLoaderHidden = false;
       this.pmObject.addSOW.Status = this.addSowForm.value.status ? this.addSowForm.value.status : this.pmObject.addSOW.Status;
       this.pmObject.addSOW.Comments = this.addSowForm.value.comments;
       this.pmObject.addSOW.Currency = this.addSowForm.value.currency ? this.addSowForm.value.currency : this.pmObject.addSOW.Currency;
@@ -631,6 +646,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         });
         setTimeout(() => {
           this.pmObject.isAddSOWVisible = false;
+          this.pmObject.isSOWFormSubmit = false;
           if (this.router.url === '/projectMgmt/allSOW') {
             this.dataService.publish('reload-EditSOW');
           } else {
@@ -784,9 +800,11 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.pmObject.addSOW.Addendum.OOPBudget = +'';
     this.pmObject.addSOW.Addendum.TotalBudget = +'';
     this.pmObject.addSOW.Addendum.TaxBudget = +'';
+    this.pmObject.isSOWFormSubmit = false;
   }
   closeAdditonalPop() {
     this.addAdditionalBudgetForm.reset();
+    this.pmObject.isSOWFormSubmit = false;
     this.pmObject.isAdditionalBudgetVisible = false;
   }
   setAddSOWTotal() {
@@ -797,7 +815,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.addSOW.Additonal.OOPBudget + this.pmObject.addSOW.Additonal.TaxBudget);
   }
   async addAdditionalBudget() {
+    this.pmObject.isSOWFormSubmit = true;
     if (this.addAdditionalBudgetForm.valid) {
+      this.pmObject.isSOWFormSubmit = false;
       // get the budget from SOW list based on SOWID.
       if (!this.selectedFile) {
         this.messageService.add({
@@ -946,6 +966,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.addSowForm.controls.tax.disable();
       this.addSowForm.controls.clientLegalEntity.disable();
       this.addSowForm.controls.sowCreationDate.disable();
+      this.addSowForm.controls.cactusBillingEntity.disable();
       this.pmService.setGlobalVariable(sowItem);
       this.pmObject.addSOW.isSOWCodeDisabled = true;
       this.pmObject.addSOW.isStatusDisabled = false;
@@ -954,6 +975,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.sowButton = 'Edit SOW';
       this.setFieldProperties();
       this.pmObject.isAddSOWVisible = true;
+      this.pmObject.isSOWFormSubmit = false;
     }
   }
 

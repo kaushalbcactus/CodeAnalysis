@@ -110,6 +110,7 @@ export class SOWComponent implements OnInit, OnDestroy {
     this.isAllSOWTableHidden = true;
     this.isAllSOWLoaderHidden = false;
     this.pmObject.isAddSOWVisible = false;
+    this.pmObject.isSOWFormSubmit = false;
     this.pmObject.selectedSOWTask = '';
     setTimeout(() => {
       this.getAllSOW();
@@ -154,6 +155,7 @@ export class SOWComponent implements OnInit, OnDestroy {
    * @param task the parameter is selected sow obj.
    */
   addBudgetSOW(task) {
+    this.pmObject.isSOWFormSubmit = false;
     this.pmObject.isAdditionalBudgetVisible = true;
   }
   /**

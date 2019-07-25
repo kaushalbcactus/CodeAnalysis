@@ -5,6 +5,8 @@ import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant
 import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { DataService } from 'src/app/Services/data.service';
+import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
+
 declare var $;
 @Component({
   selector: 'app-select-sow',
@@ -37,7 +39,8 @@ export class SelectSOWComponent implements OnInit {
     private pmConstant: PmconstantService,
     private spServices: SpOperationsService,
     private constants: ConstantsService,
-    private dataService: DataService) { }
+    private dataService: DataService,
+    private pmCommonService: PMCommonService) { }
 
   ngOnInit() {
     this.isSelectSOWLoaderHidden = false;
@@ -93,10 +96,12 @@ export class SelectSOWComponent implements OnInit {
         sowObj.InvoicedRevenue = task.InvoicedRevenue ? task.InvoicedRevenue : 0;
         sowObj.ClientLegalEntity = task.ClientLegalEntity;
         // tslint:disable-next-line:only-arrow-functions
-        const poc = this.pmObject.projectContactsItems.filter((obj) => {
-          return (obj.ID === task.PrimaryPOC);
-        });
-        sowObj.SOWOwner = poc.length > 0 ? poc[0].FullName : '';
+        // const poc = this.pmObject.projectContactsItems.filter((obj) => {
+        //   return (obj.ID === task.PrimaryPOC);
+        // });
+        // sowObj.SOWOwner = poc.length > 0 ? poc[0].FullName : '';
+        //this.pmObject.addSOW.SOWOwner = sowObj.BD.ID;
+        sowObj.SOWOwner = sowObj.BD.hasOwnProperty('ID') ? this.pmCommonService.extractNameFromId([sowObj.BD.ID]).join(', ') : '';
         sowCodeTempArray.push({ label: sowObj.SOWCode, value: sowObj.SOWCode });
         shortTitleTempArray.push({ label: sowObj.ShortTitle, value: sowObj.ShortTitle });
         sowOwnerTempArray.push({ label: sowObj.SOWOwner, value: sowObj.SOWOwner });

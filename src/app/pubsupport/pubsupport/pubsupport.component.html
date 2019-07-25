@@ -1019,9 +1019,9 @@
                 List
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <p-dropdown resetFilterOnHide="true" [options]="journalArray" placeholder="Select document type"
+                <!-- <p-dropdown resetFilterOnHide="true" [options]="journalArray" placeholder="Select document type"
                     [style]="{'width':'100%'}" formControlName="EntryType">
-                </p-dropdown>
+                </p-dropdown> -->
                 <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.EntryType.errors">
                     <div *ngIf="isValidAddUpdateJCDetailsForm.EntryType.errors.required" style="color:red;">
                         Please select one of journal & try again.</div>

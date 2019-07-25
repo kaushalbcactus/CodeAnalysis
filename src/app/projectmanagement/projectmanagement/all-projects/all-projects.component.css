@@ -95,3 +95,9 @@
 .ui-table table {
   table-layout: inherit !important;
 }
+
+.top-right-title {
+  float: right;     
+  margin-right: 20px;
+  margin-top: 5px;
+}

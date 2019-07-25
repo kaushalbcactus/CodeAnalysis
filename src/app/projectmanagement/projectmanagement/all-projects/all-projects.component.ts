@@ -86,6 +86,10 @@ export class AllProjectsComponent implements OnInit {
   subscription;
   isApprovalAction = false;
   showNavigateSOW = false;
+  overAllValues : any;
+  selectedOption = '';
+  showProjectInput = false;
+  providedProjectCode = '';
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   @ViewChild('allProjectRef', { static: true }) allProjectRef: Table;
   constructor(
@@ -106,6 +110,12 @@ export class AllProjectsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.overAllValues = [
+      { name: 'Open', value: 'Open' },
+      { name: 'Closed', code: 'Closed' }
+    ];
+    this.selectedOption = this.overAllValues[0];
+    this.providedProjectCode = '';
     if (this.router.url.indexOf('myDashboard') > -1) {
       this.showNavigateSOW = false;
     }
@@ -204,6 +214,11 @@ export class AllProjectsComponent implements OnInit {
               await this.getGetIds(projectObj[0], true);
               this.isApprovalAction = false;
               await this.changeProjectStatusCancelled(projectObj[0]);
+            } else {
+              this.messageService.add({
+                key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+                detail: 'Cancellation action on this project - ' + this.params.ProjectCode + ' is already completed.'
+              });
             }
           } else {
             this.messageService.add({
@@ -391,7 +406,13 @@ export class AllProjectsComponent implements OnInit {
     }
 
     if (this.pmObject.columnFilter.ProjectCode && this.pmObject.columnFilter.ProjectCode.length) {
-      this.allProjectRef.filter(this.pmObject.columnFilter.ProjectCode, 'ProjectCode', 'in');
+      const codeExists = this.allProjects.projectCodeArray.find(e => e.label === this.pmObject.columnFilter.ProjectCode[0]);
+      if (codeExists) {
+        this.allProjectRef.filter(this.pmObject.columnFilter.ProjectCode, 'ProjectCode', 'in');
+      } else {
+        this.pmObject.columnFilter.ProjectCode = [];
+      }
+
     }
     this.isAllProjectLoaderHidden = true;
     this.isAllProjectTableHidden = false;
@@ -694,7 +715,38 @@ export class AllProjectsComponent implements OnInit {
         case this.pmConstant.ACTION.CANCEL_PROJECT:
           this.selectedReasonType = '';
           this.selectedReason = '';
-          await this.loadReasonDropDown();
+          const batchURL = [];
+          const options = {
+            data: null,
+            url: '',
+            type: '',
+            listName: ''
+          };
+
+          // Get InvoiceLine Items ##1;
+          const inoviceGet = Object.assign({}, options);
+          const invoiceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.INVOICE_LINE_ITEMS_BY_PROJECTCODE);
+          invoiceFilter.filter = invoiceFilter.filter.replace(/{{projectCode}}/gi,
+            selectedProjectObj.ProjectCode);
+          inoviceGet.url = this.spServices.getReadURL(this.constants.listNames.InvoiceLineItems.name,
+            invoiceFilter);
+          inoviceGet.type = 'GET';
+          inoviceGet.listName = this.constants.listNames.InvoiceLineItems.name;
+          batchURL.push(inoviceGet);
+          const sResult = await this.spServices.executeBatch(batchURL);
+          if (sResult && sResult.length) {
+            const invoiceItems = sResult[0].retItems;
+            for (const item of invoiceItems) {
+              if (item.Status !== this.constants.STATUS.SCHEDUELD) {
+                this.messageService.add({
+                  key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+                  detail: 'Cancellation not allowed as there is confirmed invoice line items.'
+                });
+                return;
+              }
+            }
+          }
+          this.loadReasonDropDown();
           this.pmObject.isReasonSectionVisible = true;
           break;
       }
@@ -807,8 +859,8 @@ export class AllProjectsComponent implements OnInit {
       detail: 'Email has been sent for approval to concerned person.'
     });
     setTimeout(() => {
+      this.pmObject.allProjectItems = [];
       if (this.router.url === '/projectMgmt/allProjects') {
-        this.pmObject.allProjectItems = [];
         this.reloadAllProject();
       } else {
         this.router.navigate(['/projectMgmt/allProjects']);
@@ -931,7 +983,7 @@ export class AllProjectsComponent implements OnInit {
         batchURL.push(projectBudgetBreakCreate);
       }
     });
-    if (this.selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value) {
+    if (selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value) {
       sowObj.TotalScheduled = sowObj.TotalScheduled ? sowObj.TotalScheduled : 0;
       sowObj.ScheduledRevenue = sowObj.ScheduledRevenue ? sowObj.ScheduledRevenue : 0;
       sowObj.TotalLinked = sowObj.TotalLinked ? sowObj.TotalLinked : 0;
@@ -1898,6 +1950,25 @@ export class AllProjectsComponent implements OnInit {
     }
     return budgetValidateFlag;
   }
+
+//   onChangeSelect(event) {
+//     if (this.selectedOption.name === 'Open') {
+//         this.isPSInnerLoaderHidden = false;
+//         this.showProjectInput = false;
+//         this.callGetProjects(false);
+//     } else {
+//         this.showProjectInput = true;
+//         this.pubSupportProjectInfoData = [];
+//         this.providedProjectCode = '';
+//     }
+// }
+
+// searchClosedProject(event) {
+//     // const projectCode = this.providedProjectCode;
+//     // alert(projectCode);
+//     this.isPSInnerLoaderHidden = false;
+//     this.call(true);
+// }
   /**
    * This method is used to close the dialog box.
    */
