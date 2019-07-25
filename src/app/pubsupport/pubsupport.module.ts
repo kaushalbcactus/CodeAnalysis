@@ -6,12 +6,13 @@ import { PrimengModule } from '../primeng/primeng.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PocDetailsPipe } from './Pipes/poc-details.pipe';
 // FIle upload
-import { FileUploadModule  } from 'ng2-file-upload';
+import { FileUploadModule } from 'ng2-file-upload';
 
 import { SharedModule } from '../shared/shared.module';
+import { CreateConferenceComponent } from './pubsupport/create-conference/create-conference.component';
 
 @NgModule({
-  declarations: [PubsupportComponent, PocDetailsPipe],
+  declarations: [PubsupportComponent, PocDetailsPipe, CreateConferenceComponent],
   imports: [
     CommonModule,
     PubsupportRoutingModule,
@@ -21,5 +22,6 @@ import { SharedModule } from '../shared/shared.module';
     SharedModule,
     FileUploadModule
   ],
+  entryComponents: [CreateConferenceComponent]
 })
 export class PubsupportModule { }

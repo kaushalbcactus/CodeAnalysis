@@ -250,7 +250,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <input type="text" pInputText formControlName="Title" style="width: 100%;" maxlength="30" />
+                    <input type="text" pInputText formControlName="Title" style="width: 100%;" maxlength="100" />
                     <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.Title.errors">
                         <div *ngIf="isValidCreateFreelancerForm.Title.errors.required" style="color:red;">
                             Please provide Name.</div>

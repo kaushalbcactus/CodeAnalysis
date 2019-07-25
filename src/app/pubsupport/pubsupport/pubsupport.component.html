@@ -5,13 +5,20 @@
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 
+<div class="tableLoader" [hidden]='pubsupportService.pubsupportComponent.isPSInnerLoaderHidden'>
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
+
 <div class="top-title-bottom">
     <div class="top-left-title">
         <span>PROJECT LISTING </span>
     </div>
     <div class="top-right-title">
-        <p-dropdown [options]="overAllValues" [(ngModel)]="selectedOption" styleClass="custom-dropDown" optionLabel="name" (onChange)="onChangeSelect($event)" ></p-dropdown>
-        <input type="text" (change)="searchClosedProject($event)" *ngIf="showProjectInput" id="projectCodeSelect" placeholder="Project Code" pInputText [(ngModel)]="providedProjectCode"/>
+        <p-dropdown [options]="overAllValues" [(ngModel)]="selectedOption" styleClass="custom-dropDown"
+            optionLabel="name" (onChange)="onChangeSelect($event)"></p-dropdown>
+        <input type="text" (change)="searchClosedProject($event)" *ngIf="showProjectInput" id="projectCodeSelect"
+            placeholder="Project Code" pInputText [(ngModel)]="providedProjectCode" />
     </div>
     <div class="clear">
     </div>
@@ -54,7 +61,7 @@
         filterPlaceholder="Search" sortField="LastSubmissionDate" [sortable]="true">
         <ng-template let-col let-projectCode="rowData" pTemplate="body" let-plistIndex="rowIndex">
             <!-- <p-progressBar [ngClass]="backgroundColor" [value]="value"></p-progressBar> -->
-            {{projectCode[col.field]  | date:'MMM d, y, hh:mm a' }}
+            {{projectCode[col.field] | date:'MMM d, y, hh:mm a' }}
         </ng-template>
     </p-column>
     <p-column field="Authors_and_Author_Forms" header="Authors and Author Forms" filterPlaceholder="Search">
@@ -133,8 +140,7 @@
                                                 data-parent="detail_1">
                                                 <i class="pi pi-plus-circle" *ngIf="i+1" style="padding-top: 5px;"></i>
                                                 <i class="pi pi-minus-circle" *ngIf="state && i == showJournalRowIndex"
-                                                    style="padding-top: 5px;"></i>
-                                                View details
+                                                    style="padding-top: 5px;"></i> View details
                                             </a>
 
                                         </td>
@@ -221,8 +227,7 @@
                                                             style="padding-top: 5px;"></i>
                                                         <i class="pi pi-chevron-down"
                                                             *ngIf="showSubDetails && i == showSubDetailsIndex"
-                                                            style="padding-top: 5px;"></i>
-                                                        Submission Details
+                                                            style="padding-top: 5px;"></i> Submission Details
                                                     </a>
                                                 </div>
                                             </div>
@@ -300,8 +305,8 @@
                                                                         style="padding-top: 5px;"></i>
                                                                     <i class="pi pi-minus-circle"
                                                                         *ngIf="showHideGalleyDetails"
-                                                                        style="padding-top: 5px;"></i>
-                                                                    View galley details
+                                                                        style="padding-top: 5px;"></i> View galley
+                                                                    details
                                                                 </a>
 
                                                             </td>
@@ -502,8 +507,7 @@
                                 </select>
                                 <div *ngIf="submitted && isValidConferenceForm.Milestone.errors"
                                     class="invalid-feedback">
-                                    <div *ngIf="isValidConferenceForm.Milestone.errors.required">Milestone is
-                                        required.
+                                    <div *ngIf="isValidConferenceForm.Milestone.errors.required">Milestone is required.
                                     </div>
                                 </div>
                             </div>
@@ -514,8 +518,7 @@
                                     formControlName="Comments"></textarea>
                                 <div *ngIf="submitted && isValidConferenceForm.Comments.errors"
                                     class="invalid-feedback">
-                                    <div *ngIf="isValidConferenceForm.Comments.errors.required">Comments are
-                                        required.
+                                    <div *ngIf="isValidConferenceForm.Comments.errors.required">Comments are required.
                                     </div>
                                 </div>
                             </div>
@@ -529,9 +532,8 @@
                                         [ngClass]="{'is-invalid': submitted && isValidConferenceForm.IF.errors}"
                                         formControlName="IF">
                                     <div *ngIf="submitted && isValidConferenceForm.IF.errors" class="invalid-feedback">
-                                        <div *ngIf="isValidConferenceForm.IF.errors.required">Impact
-                                            factor is
-                                            required.</div>
+                                        <div *ngIf="isValidConferenceForm.IF.errors.required">Impact factor is required.
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
@@ -556,8 +558,7 @@
                                     <div *ngIf="submitted && isValidConferenceForm.ExpectedReviewPeriod.errors"
                                         class="invalid-feedback">
                                         <div *ngIf="isValidConferenceForm.ExpectedReviewPeriod.errors.required">
-                                            Expected
-                                            Review is required.
+                                            Expected Review is required.
                                         </div>
                                     </div>
                                 </div>
@@ -569,8 +570,7 @@
                                     <div *ngIf="submitted && isValidConferenceForm.JournalEditorInfo.errors"
                                         class="invalid-feedback">
                                         <div *ngIf="isValidConferenceForm.JournalEditorInfo.errors.required">Journal
-                                            Editor info is
-                                            required.
+                                            Editor info is required.
                                         </div>
                                     </div>
                                 </div>
@@ -585,8 +585,8 @@
                                         formControlName="CongressDate">
                                     <div *ngIf="submitted && isValidConferenceForm.CongressDate.errors"
                                         class="invalid-feedback">
-                                        <div *ngIf="isValidConferenceForm.CongressDate.errors.required">Conference
-                                            Date is required.
+                                        <div *ngIf="isValidConferenceForm.CongressDate.errors.required">Conference Date
+                                            is required.
                                         </div>
                                     </div>
                                 </div>
@@ -598,8 +598,7 @@
                                     <div *ngIf="submitted && isValidConferenceForm.AbstractSubmissionDeadline.errors"
                                         class="invalid-feedback">
                                         <div *ngIf="isValidConferenceForm.AbstractSubmissionDeadline.errors.required">
-                                            Submission
-                                            Date is required.</div>
+                                            Submission Date is required.</div>
                                     </div>
                                 </div>
                             </div>
@@ -661,9 +660,9 @@
                                     formControlName="HighestDegree">
                                 <div *ngIf="submitted && isValidAddAuthorForm.HighestDegree.errors"
                                     class="invalid-feedback">
-                                    <div *ngIf="isValidAddAuthorForm.HighestDegree.errors.required">Highest Degree
-                                        is
-                                        required.</div>
+                                    <div *ngIf="isValidAddAuthorForm.HighestDegree.errors.required">Highest Degree is
+                                        required.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -701,7 +700,8 @@
                                 <div *ngIf="submitted && isValidAddAuthorForm.Affiliation.errors"
                                     class="invalid-feedback">
                                     <div *ngIf="isValidAddAuthorForm.Affiliation.errors.required">Affiliation is
-                                        required.</div>
+                                        required.
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">
@@ -713,7 +713,8 @@
                                 <div *ngIf="submitted && isValidAddAuthorForm.Phone_x0020_No.errors"
                                     class="invalid-feedback">
                                     <div *ngIf="isValidAddAuthorForm.Phone_x0020_No.errors.required">Phone Number is
-                                        required.</div>
+                                        required.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -868,7 +869,7 @@
                         <!-- (click)="update_author_form.reset(); submitted = false;" -->
                         <button type="button" class="btn btn-default" data-dismiss="modal"
                             (click)="update_author_form.reset();selectedType = '';noFileMsg = '' ">Close</button>
-                        <button type="submit" class="btn btn-danger"  [disabled]="submitBtn.isSubmit">Submit</button>
+                        <button type="submit" class="btn btn-danger" [disabled]="submitBtn.isSubmit">Submit</button>
                     </div>
                 </form>
             </div>
@@ -903,7 +904,8 @@
                                 <div *ngIf="submitted && isValidUpdatePublicationForm.Citation.errors"
                                     class="invalid-feedback">
                                     <div *ngIf="isValidUpdatePublicationForm.Citation.errors.required">Citation is
-                                        required.</div>
+                                        required.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -922,7 +924,8 @@
                                 <div *ngIf="submitted && isValidUpdatePublicationForm.PDFAvailable.errors"
                                     class="invalid-feedback">
                                     <div *ngIf="isValidUpdatePublicationForm.PDFAvailable.errors.required">Is PDF File
-                                        available?</div>
+                                        available?
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -936,7 +939,8 @@
                                 <div *ngIf="submitted && isValidUpdatePublicationForm.PublicationURL.errors"
                                     class="invalid-feedback">
                                     <div *ngIf="isValidUpdatePublicationForm.PublicationURL.errors.required">File is
-                                        required.</div>
+                                        required.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -972,8 +976,8 @@
                                     [ngClass]="{'is-invalid': submitted && isValidGalleyForm.GalleyURL.errors}"
                                     formControlName="GalleyURL" />
                                 <div *ngIf="submitted && isValidGalleyForm.GalleyURL.errors" class="invalid-feedback">
-                                    <div *ngIf="isValidGalleyForm.GalleyURL.errors.required">File is
-                                        required.</div>
+                                    <div *ngIf="isValidGalleyForm.GalleyURL.errors.required">File is required.
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -988,3 +992,266 @@
         </div>
     </div>
 </div>
+
+
+<!-- Add Journal & Conference Modal -->
+
+<p-dialog header="Add Journal conference details" [(visible)]="addJCDetailsModal" [modal]="true"
+    [contentStyle]="{'min-height':'350px','max-height':'450px'}" [responsive]="true" [style]="{'width': '55%'}"
+    (onHide)="cancelFormSub('addJCDetailsModal')">
+    <form id="myform" [formGroup]="journal_Conf_form">
+
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-1">
+                Type
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                <p-dropdown resetFilterOnHide="true" [options]="documentTypes" placeholder="Select document type"
+                    [style]="{'width':'100%'}" formControlName="EntryType"
+                    (onChange)="onChangeSelectedType($event.value)">
+                </p-dropdown>
+                <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.EntryType.errors">
+                    <div *ngIf="isValidAddUpdateJCDetailsForm.EntryType.errors.required" style="color:red;">
+                        Please select one of type & try again.</div>
+                </div>
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                List
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                <!-- <p-dropdown resetFilterOnHide="true" [options]="journalArray" placeholder="Select document type"
+                    [style]="{'width':'100%'}" formControlName="EntryType">
+                </p-dropdown> -->
+                <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.EntryType.errors">
+                    <div *ngIf="isValidAddUpdateJCDetailsForm.EntryType.errors.required" style="color:red;">
+                        Please select one of journal & try again.</div>
+                </div>
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-1">
+                <i class="pi pi-plus-circle" style="font-size: 3em;color:#c53e3e;margin-top: -7px;"
+                    (click)="createJC()"></i>
+            </div>
+        </div>
+
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-1">
+                Milestones
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                <p-dropdown resetFilterOnHide="true" [options]="milestonesList" placeholder="Select milestone"
+                    [style]="{'width':'100%'}" formControlName="Milestone">
+                </p-dropdown>
+                <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Milestone.errors">
+                    <div *ngIf="isValidAddUpdateJCDetailsForm.Milestone.errors.required" style="color:red;">
+                        Please select one of type & try again.</div>
+                </div>
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                List
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                <input type="text" pInputText formControlName="Name" style="width: 100%;" maxlength="30" />
+                <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.EntryType.errors">
+                    <div *ngIf="isValidAddUpdateJCDetailsForm.EntryType.errors.required" style="color:red;">
+                        Please select one of journal & try again.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-1">
+                Comments
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                <textarea rows="5" cols="30" pInputTextarea formControlName="Comments" maxlength="100"></textarea>
+                <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Comments.errors">
+                    <div *ngIf="isValidAddUpdateJCDetailsForm.Comments.errors.required" style="color:red;">
+                        Please provide comments & try again.</div>
+                </div>
+            </div>
+            <!-- <div class="ui-g-12 ui-md-6 ui-lg-2">
+                List
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                <input type="text" pInputText formControlName="Name" style="width: 100%;" maxlength="30" />
+                <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.EntryType.errors">
+                    <div *ngIf="isValidAddUpdateJCDetailsForm.EntryType.errors.required" style="color:red;">
+                        Please select one of journal & try again.</div>
+                </div>
+            </div> -->
+        </div>
+
+        <!-- <div class="p-grid">
+            <div class="p-col-1">
+                <div class="box">
+                    Type
+                </div>
+            </div>
+            <div class="p-col-3">
+                <div class="box">
+                    <p-dropdown resetFilterOnHide="true" [options]="documentTypes" placeholder="Select document type"
+                        [style]="{'width':'100%'}" formControlName="EntryType">
+                    </p-dropdown>
+                    <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.EntryType.errors">
+                        <div *ngIf="isValidAddUpdateJCDetailsForm.EntryType.errors.required" style="color:red;">
+                            Please select one of type & try again.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-col-2">
+                <div class="box">
+                    Journal List
+                </div>
+            </div>
+            <div class="p-col-5">
+                <div class="box">
+                    <p-dropdown resetFilterOnHide="true" [options]="documentTypes" placeholder="Select document type"
+                        [style]="{'width':'100%'}" formControlName="EntryType">
+                    </p-dropdown>
+                    <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.EntryType.errors">
+                        <div *ngIf="isValidAddUpdateJCDetailsForm.EntryType.errors.required" style="color:red;">
+                            Please select one of type & try again.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-col-1">
+                <i class="pi pi-plus-circle" style="font-size: 3em;color:#c53e3e;margin-top: -7px;"
+                    (click)="createJC()"></i>
+            </div>
+        </div> -->
+    </form>
+    <p-footer>
+        <button pButton type="button" label="Submit" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('addJCDetailsModal')"></button>
+        <button pButton type="button" label="Close" (click)="cancelFormSub('addJCDetailsModal')"></button>
+    </p-footer>
+</p-dialog>
+
+<!-- Create Journal Modal -->
+<p-dialog header="Create Journal" [(visible)]="createJournalModal" [modal]="true"
+    [contentStyle]="{'min-height':'350px','max-height':'450px'}" [style]="{'width': '65%'}" [responsive]="true"
+    (onHide)="cancelFormSub('createJournalModal')">
+    <form [formGroup]="createJournal_form">
+
+        <div class="ui-g">
+            <div class="p-col-12 p-md-6 p-lg-2">
+                Name
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                <input type="text" pInputText maxlength="30" formControlName="JournalName" style="width: 100%;"
+                    placeholder="Name" />
+                <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.JournalName.errors">
+                    <div *ngIf="isValidCreateJournalForm.JournalName.errors.required" style="color:red;">
+                        Please provide Name.</div>
+                </div>
+            </div>
+
+            <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
+                <div class="box">Expected Review Period</div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
+                <div class="box">
+                    <input type="text" pInputText maxlength="25" formControlName="ExpectedReviewPeriod"
+                        placeholder="12 Months">
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.ExpectedReviewPeriod.errors">
+                        <div *ngIf="isValidCreateJournalForm.ExpectedReviewPeriod.errors.required" style="color:red;">
+                            Expected Review is required.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-g">
+            <div class="p-col-12 p-md-6 p-lg-2">
+                Impact factor
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                <input type="text" maxlength="10" id="factor" name="name" placeholder="50%"
+                    formControlName="ImpactFactor">
+                <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.ImpactFactor.errors">
+                    <div *ngIf="isValidCreateJournalForm.ImpactFactor.errors.required" style="color:red;">Impact factor
+                        is required.
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
+                <div class="box">Rejection Ration</div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
+                <div class="box">
+                    <input type="text" maxlength="10" placeholder="20%" formControlName="RejectionRate">
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.RejectionRate.errors">
+                        <div *ngIf="isValidCreateJournalForm.RejectionRate.errors.required" style="color:red;">Rejection
+                            Rate is required.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-g">
+            <div class="p-col-12 p-md-6 p-lg-2">
+                Comments
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                <div class="box">
+                    <textarea rows="5" cols="30" pInputTextarea formControlName="Comments" maxlength="100"></textarea>
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.Comments.errors">
+                        <div *ngIf="isValidCreateJournalForm.Comments.errors.required" style="color:red;">
+                            Please provide Comments.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
+                <div class="box">Journal Editor Info</div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
+                <div class="box">
+                    <textarea rows="5" cols="30" pInputTextarea formControlName="JournalEditorInfo"
+                        maxlength="100"></textarea>
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.JournalEditorInfo.errors">
+                        <div *ngIf="isValidCreateJournalForm.JournalEditorInfo.errors.required" style="color:red;">
+                            Journal Editor Info is required.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    Billing terms
+                </div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    <textarea rows="5" cols="30" pInputTextarea formControlName="BillingTerms" maxlength="100"></textarea>
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.BillingTerms.errors">
+                        <div *ngIf="isValidCreateJournalForm.BillingTerms.errors.required" style="color:red;">
+                            Please provide Billing terms.</div>
+                    </div>
+                </div>
+            </div> -->
+
+
+    </form>
+    <p-footer>
+        <button pButton type="button" label="Create" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('createJournal')"></button>
+        <button pButton type="button" label="Cancel" (click)="cancelFormSub('createJournalModal')"></button>
+    </p-footer>
+</p-dialog>
+
+
+<!-- Create Conference Modal -->
+<p-dialog header="Create Conference" [(visible)]="createConferenceModal" [modal]="true"
+    [contentStyle]="{'min-height':'350px','max-height':'450px'}" [style]="{'width': '65%'}" [responsive]="true"
+    (onHide)="cancelFormSub('createConferenceModal')">
+
+    <p-footer>
+        <button pButton type="button" label="Create" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('createConference')"></button>
+        <button pButton type="button" label="Cancel" (click)="cancelFormSub('createConferenceModal')"></button>
+    </p-footer>
+</p-dialog>
