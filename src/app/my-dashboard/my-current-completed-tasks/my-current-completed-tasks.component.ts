@@ -275,9 +275,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
         this.allTasks.filter(c => c.Status === 'Not Started' || c.Status === 'In Progress').map(c => c.MainStatus = 'Not Completed');
         this.allTasks.filter(c => c.Status === 'Not Confirmed').map(c => c.MainStatus = 'Planned');
       }
-
-
-
       if (this.sharedObject.DashboardData.ProjectCodes.length > 0) {
         this.allTasks.forEach(element => {
 
