@@ -1110,7 +1110,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             });
 
             retProjects = await this.spOperationsService.executeBatch(batchURL);
-            projects = [...projects, ...retProjects];
+            const mappedProjects = retProjects.map( obj => obj.retItems.length ? obj.retItems[0] : []);
+            projects = [...projects, ...mappedProjects];
         }
         const appendixObj = { dvcode: '', cactusSpCode: '', title: '', amount: '' };
         selectedProjects.forEach(element => {
