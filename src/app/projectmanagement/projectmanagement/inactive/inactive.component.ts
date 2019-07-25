@@ -116,7 +116,7 @@ export class InactiveComponent implements OnInit {
     if (!this.pmObject.allProjectItems.length) {
       let arrResults: any = [];
       // Get all project information based on current user.
-      arrResults = await this.pmCommonService.getProjects();
+      arrResults = await this.pmCommonService.getProjects(true);
       this.pmObject.allProjectItems = arrResults;
     }
     this.iapArrays.projectItems = this.pmObject.allProjectItems.filter(x =>

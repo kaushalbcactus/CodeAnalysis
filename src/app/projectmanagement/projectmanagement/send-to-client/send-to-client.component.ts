@@ -277,7 +277,7 @@ export class SendToClientComponent implements OnInit {
       let arrResultsProj: any = [];
       if (!this.pmObject.allProjectItems.length) {
         // Get all project information based on current user.
-        arrResultsProj = await this.pmCommonService.getProjects();
+        arrResultsProj = await this.pmCommonService.getProjects(true);
         this.pmObject.allProjectItems = arrResultsProj;
       }
       this.pmObject.countObj.scCount = this.scArrays.taskItems.length;

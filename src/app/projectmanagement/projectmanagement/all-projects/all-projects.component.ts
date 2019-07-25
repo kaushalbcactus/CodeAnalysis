@@ -191,7 +191,7 @@ export class AllProjectsComponent implements OnInit {
     let arrResults: any = [];
     if (!this.pmObject.allProjectItems.length) {
       // Get all project information based on current user.
-      arrResults = await this.pmCommonService.getProjects();
+      arrResults = await this.pmCommonService.getProjects(this.showNavigateSOW);
       this.pmObject.allProjectItems = arrResults;
     }
     if (this.pmObject.allProjectItems.length) {

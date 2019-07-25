@@ -197,7 +197,7 @@ export class ClientReviewComponent implements OnInit {
       let arrResultsProj: any = [];
       if (!this.pmObject.allProjectItems.length) {
         // Get all project information based on current user.
-        arrResultsProj = await this.pmCommonService.getProjects();
+        arrResultsProj = await this.pmCommonService.getProjects(true);
         this.pmObject.allProjectItems = arrResultsProj;
       }
       this.pmObject.countObj.crCount = this.crArrays.taskItems.length;
