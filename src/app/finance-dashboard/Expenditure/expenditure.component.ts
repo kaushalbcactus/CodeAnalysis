@@ -746,7 +746,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                     console.log('pcurrency ', pcurrency);
                     let amt = this.convertAmtToCC(parseFloat(cc), parseFloat(pcurrency), parseFloat(element.AmountPerProject));
                     console.log('amt ----- ', amt);
-                    finalAmt = amt;
+                    finalAmt = parseFloat(amt.toFixed(2));
                 }
                 this.finalAddEArray.push({
                     Title: element.ProjectCode.ProjectCode ? element.ProjectCode.ProjectCode : element.projectItem.Title,

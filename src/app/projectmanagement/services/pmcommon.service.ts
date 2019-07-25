@@ -734,20 +734,20 @@ export class PMCommonService {
     this.pmObject.addSOW.Comments = sowItem.Comments ? sowItem.Comments : '';
     this.pmObject.addSOW.Currency = sowItem.Currency;
     this.pmObject.addSOW.SOWDocument = sowItem.SOWLink ? sowItem.SOWLink : '';
-    if(this.pmObject.addSOW.SOWDocument) {
-      if(this.pmObject.addSOW.SOWDocument.indexOf(this.globalObject.sharePointPageObject.webRelativeUrl) === -1) {
-        const client = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(e=>e.Title === sowItem.ClientLegalEntity);
+    if (this.pmObject.addSOW.SOWDocument) {
+      if (this.pmObject.addSOW.SOWDocument.indexOf(this.globalObject.sharePointPageObject.webRelativeUrl) === -1) {
+        const client = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(e => e.Title === sowItem.ClientLegalEntity);
         this.pmObject.addSOW.SOWDocument = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + client.ListName + '/Finance/SOW/' +
           this.pmObject.addSOW.SOWDocument;
       }
     }
-    
+
 
     this.pmObject.addSOW.Budget.Total = sowItem.TotalBudget ? sowItem.TotalBudget : 0;
     this.pmObject.addSOW.Budget.Net = sowItem.NetBudget ? sowItem.NetBudget : 0;
     this.pmObject.addSOW.Budget.OOP = sowItem.OOPBudget ? sowItem.OOPBudget : 0;
     this.pmObject.addSOW.Budget.Tax = sowItem.TaxBudget ? sowItem.TaxBudget : 0;
-    this.pmObject.addSOW.Budget.TotalBalance = (sowItem.TotalBudget ? sowItem.TotalBudget : 0) - (sowItem.TotalLinked ? sowItem.TotalLinked : 0) ;
+    this.pmObject.addSOW.Budget.TotalBalance = (sowItem.TotalBudget ? sowItem.TotalBudget : 0) - (sowItem.TotalLinked ? sowItem.TotalLinked : 0);
     this.pmObject.addSOW.Budget.TotalBalance = parseFloat(this.pmObject.addSOW.Budget.TotalBalance.toFixed(2));
     this.pmObject.addSOW.Budget.NetBalance = (sowItem.NetBudget ? sowItem.NetBudget : 0) - (sowItem.RevenueLinked ? sowItem.RevenueLinked : 0);
     this.pmObject.addSOW.Budget.NetBalance = parseFloat(this.pmObject.addSOW.Budget.NetBalance.toFixed(2));
@@ -792,11 +792,11 @@ export class PMCommonService {
     });
     return tempArray;
   }
-  async getProjects() {
+  async getProjects(bPM) {
     let arrResults: any = [];
 
     const allProjects = localStorage.getItem('allProjects');
-    if(allProjects) {
+    if (allProjects) {
       arrResults = JSON.parse(allProjects);
       localStorage.removeItem('allProjects');
     } else {
@@ -804,7 +804,13 @@ export class PMCommonService {
         const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.ALL_PROJECT_INFORMATION);
         arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
       } else {
-        const projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION);
+        let projectManageFilter: any;
+        if (bPM) {
+          projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION);
+        } else {
+          projectManageFilter = Object.assign({}, this.pmConstant.PM_QUERY.USER_SPECIFIC_PROJECT_INFORMATION_MY);
+        }
+
         arrResults = await this.spServices.readItems(this.constant.listNames.ProjectInformation.name, projectManageFilter);
       }
     }
