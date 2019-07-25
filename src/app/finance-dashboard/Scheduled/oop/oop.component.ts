@@ -11,6 +11,7 @@ import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
+import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 
 @Component({
     selector: 'app-oop',
@@ -50,7 +51,10 @@ export class OopComponent implements OnInit, OnDestroy {
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
-
+    // For Mail
+    currentUserInfoData: any;
+    groupInfo: any;
+    groupITInfo: any;
     DateRange: any = {
         startDate: '',
         endDate: '',
@@ -68,6 +72,7 @@ export class OopComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
+        private spOperationsService: SpOperationsService,
     ) {
         this.subscription.add(this.fdDataShareServie.getScheduleDateRange().subscribe(date => {
             this.DateRange = date;
@@ -106,6 +111,9 @@ export class OopComponent implements OnInit, OnDestroy {
 
         // Load address type
         this.getAddressType();
+        this.currentUserInfoData = await this.fdDataShareServie.getCurrentUserInfo();
+        this.groupInfo = await this.fdDataShareServie.getGroupInfo();
+        this.groupITInfo = await this.fdDataShareServie.getITInfo();
     }
     updateCalendarUI(calendar: Calendar) {
         calendar.updateUI();
@@ -228,7 +236,7 @@ export class OopComponent implements OnInit, OnDestroy {
         let obj = Object.assign({}, isManager ? this.fdConstantsService.fdComponent.invoicesOOP : this.fdConstantsService.fdComponent.invoicesOOPCS);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
         if (!isManager) {
-            obj.filter = obj.filter.replace("{{UserId}}", this.globalService.sharePointPageObject.userId.toString());
+            obj.filter = obj.filter.replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
         }
 
         // let obj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesOOP);
@@ -519,7 +527,9 @@ export class OopComponent implements OnInit, OnDestroy {
         console.log(event);
         this.deliverableDialog.title = event.item.label;
         if (this.deliverableDialog.title.toLowerCase() === 'confirm invoice') {
-            this.confirm1()
+            this.confirm1();
+            this.getApproveExpenseMailContent('ConfirmInvoice');
+            this.getPIByTitle(this.selectedRowItem);
         } else if (this.deliverableDialog.title.toLowerCase() === 'edit invoice') {
             // this.deliverableDialog.text = event.item.label.replace('Expense', '');
             this.deliverableModal = true;
@@ -674,7 +684,8 @@ export class OopComponent implements OnInit, OnDestroy {
         const arrResults = res;
         console.log('--oo ', arrResults);
         if (type === "confirmInvoice") {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice is Confirmed.', detail: '', life: 2000 })
+            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice is Confirmed.', detail: '', life: 2000 });
+            this.sendCreateExpenseMail();
             this.reFetchData();
         } else if (type === "editDeliverable") {
             this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Updated.', detail: '', life: 2000 })
@@ -684,6 +695,146 @@ export class OopComponent implements OnInit, OnDestroy {
         this.isPSInnerLoaderHidden = true;
 
         // });
+    }
+
+    // Mail Content
+    mailContentRes: any;
+    async getApproveExpenseMailContent(type) {
+        // const mailContentEndpoint = this.fdConstantsService.fdComponent.mailContent;
+        let mailContentEndpoint = {
+            filter: this.fdConstantsService.fdComponent.mailContent.filter.replace("{{MailType}}", type),
+            select: this.fdConstantsService.fdComponent.mailContent.select,
+            top: this.fdConstantsService.fdComponent.mailContent.top,
+        }
+        let obj = [{
+            url: this.spOperationsService.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
+            type: 'GET',
+            listName: this.constantService.listNames.MailContent.name
+        }]
+        const res = await this.spOperationsService.executeBatch(obj);
+        this.mailContentRes = res;
+        console.log('Approve Mail Content res ', this.mailContentRes);
+    }
+
+    replaceContent(mailContent, key, value) {
+        return mailContent.replace(new RegExp(key, 'g'), value);
+    }
+
+    sendCreateExpenseMail() {
+        // let isCleData = this.getCleByPC(expense.projectCode);
+        // let isCleData = this.cleForselectedPI;
+        // let author = this.getAuthor(expense.AuthorId);
+        // let val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.ProjectCode + ' (' + isCleData.ClientLegalEntity + ')' : expense.ProjectCode;
+        // var mailTemplate =  data.Status === "Approved" ? "ApproveExpense" :  data.Status === "Cancelled" ? "CancelExpense" : "RejectExpense";
+        var mailSubject = this.selectedRowItem.ProjectCode + "/" + this.selectedRowItem.ClientName + ": Confirmed line item for billing";
+
+        let mailContent = this.mailContentRes[0].retItems[0].Content;
+        mailContent = this.replaceContent(mailContent, "@@Val1@@", "Hello Invoice Team");
+        mailContent = this.replaceContent(mailContent, "@@Val2@@", this.selectedRowItem.ProjectCode);
+        mailContent = this.replaceContent(mailContent, "@@Val3@@", this.selectedRowItem.ClientName);
+        mailContent = this.replaceContent(mailContent, "@@Val4@@", this.selectedRowItem.PONumber);
+        mailContent = this.replaceContent(mailContent, "@@Val5@@", this.datePipe.transform(this.selectedRowItem.ScheduledDate, 'MMM dd, yyyy'));
+        mailContent = this.replaceContent(mailContent, "@@Val6@@", this.selectedRowItem.Currency + ' ' + this.selectedRowItem.Amount);
+        mailContent = this.replaceContent(mailContent, "@@Val7@@", this.selectedRowItem.SOWCode);
+
+        var ccUser = [];
+        ccUser.push(this.currentUserInfoData.Email);
+        let tos = this.getTosList();
+        this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
+        this.reFetchData();
+    }
+
+    getTosList() {
+        var approvers = this.groupInfo.results;
+        let itApprovers = this.groupITInfo.results;
+        var arrayTo = [];
+        if (approvers.length) {
+            for (var i in approvers) {
+                if (approvers[i].Email != undefined && approvers[i].Email != "") {
+                    arrayTo.push(approvers[i].Email);
+                }
+            }
+        }
+
+        if (itApprovers.length) {
+            for (var i in itApprovers) {
+                if (itApprovers[i].Email != undefined && itApprovers[i].Email != "") {
+                    arrayTo.push(itApprovers[i].Email);
+                }
+            }
+        }
+
+        if (this.resCatEmails.length) {
+            for (let e = 0; e < this.resCatEmails.length; e++) {
+                const element = this.resCatEmails[e];
+                if (element.UserName) {
+                    if (element.UserName.EMail)
+                        arrayTo.push(element.UserName.EMail);
+                } else if (element) {
+                    arrayTo.push(element.EMail);
+                }
+            }
+        }
+        arrayTo = arrayTo.filter(this.onlyUnique);
+        console.log('arrayTo ', arrayTo);
+        return arrayTo;
+    }
+
+    onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
+    }
+
+    selectedPI: any = [];
+    getPIByTitle(title) {
+        let found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode == title.ProjectCode) {
+                if (x.CMLevel1.hasOwnProperty('results')) {
+                    this.selectedPI = x.CMLevel1.results;
+                }
+                console.log('this.selectedPI ', this.selectedPI);
+                this.getResCatByCMLevel();
+                return x;
+            }
+        })
+        return found ? found : ''
+    }
+
+    cmLevelIdList: any = [];
+    getResCatByCMLevel() {
+        this.cmLevelIdList = [];
+        for (let l = 0; l < this.selectedPI.length; l++) {
+            const elements = this.selectedPI[l];
+            if (Array.isArray(elements)) {
+                for (let e = 0; e < elements.length; e++) {
+                    const ele = elements[e];
+                    this.cmLevelIdList.push(ele);
+                }
+            } else {
+                this.cmLevelIdList.push(elements);
+            }
+        }
+        console.log('this.cmLevelIdList ', this.cmLevelIdList);
+        this.resCatEmails = [];
+        this.resourceCatData();
+    }
+
+    resCatEmails: any = [];
+    resourceCatData() {
+        for (let c = 0; c < this.cmLevelIdList.length; c++) {
+            const element = this.cmLevelIdList[c];
+            let item = this.getResourceData(element);
+            item ? this.resCatEmails.push(item) : '';
+        }
+        console.log('resCatEmails ', this.resCatEmails);
+    }
+
+    getResourceData(ele) {
+        let found = this.rcData.find((x) => {
+            if (x.UserName.ID == ele.ID) {
+                return x;
+            }
+        })
+        return found ? found : ''
     }
 
     reFetchData() {

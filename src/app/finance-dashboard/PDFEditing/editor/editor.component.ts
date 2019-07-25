@@ -2261,14 +2261,14 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             IndiaObject.appendix = IndiaObject.appendix.replace('[[Appendix]]', newArr.join(''));
             IndiaObject.appendix = IndiaObject.appendix.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                 invoiceData.IndCurrencySymbol);
-            delete IndiaInvoice.appendixCreate;
-            delete IndiaInvoice.appendixRow;
+            delete IndiaObject.appendixCreate;
+            delete IndiaObject.appendixRow;
         } else {
             this.showAppendix = false;
             IndiaObject.invoiceDetail = IndiaObject.invoiceDetail.replace('<span>*</span>', '');
-            delete IndiaInvoice.appendix;
-            delete IndiaInvoice.appendixCreate;
-            delete IndiaInvoice.appendixRow;
+            delete IndiaObject.appendix;
+            delete IndiaObject.appendixCreate;
+            delete IndiaObject.appendixRow;
         }
 
         this.indiaHtmlObject = IndiaObject;
