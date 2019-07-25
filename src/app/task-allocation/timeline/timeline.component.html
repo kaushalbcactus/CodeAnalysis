@@ -104,10 +104,13 @@
         <!-- **********************************************************************************************************
                                                           Table View Data
            ********************************************************************************************************** -->
-        <div fxLayout="row" fxLayoutAlign="center start" [hidden]="visualgraph === true" *ngIf="!loaderenable">
+        <div fxLayout="row" class="taskAllocationTimeline" fxLayoutAlign="center start" [hidden]="visualgraph === true" *ngIf="!loaderenable">
             <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" position="bottom-center">
             </p-toast>
-            <p-treeTable [value]="milestoneData" [(contextMenuSelection)]="selectedNode" [contextMenu]="!projectDetails ? milestones : ''" (onContextMenuSelect)="milestoneContextMenuEvent($event, milestones)">
+            <!-- <p-treeTable [value]="milestoneData" [(contextMenuSelection)]="selectedNode" [contextMenu]="!projectDetails ? milestones : ''" (onContextMenuSelect)="milestoneContextMenuEvent($event, milestones)"> -->
+
+            <p-treeTable [value]="milestoneData">
+
 
                 <ng-template pTemplate="header">
                     <tr>
@@ -124,7 +127,8 @@
                 </ng-template>
 
                 <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
-                    <tr *ngIf="(rowData.status !== 'Deleted')" [ttContextMenuRow]="rowNode" class="milestoneTable" [style.font-weight]="rowData.type === 'milestone' || rowData.type === 'submilestone' || rowData.pName ==='Client Review' ? '700':''">
+                    <!-- [ttContextMenuRow]="rowNode" -->
+                    <tr *ngIf="(rowData.status !== 'Deleted')" class="milestoneTable" [style.font-weight]="rowData.type === 'milestone' || rowData.type === 'submilestone' || rowData.pName ==='Client Review' ? '700':''">
 
                         <td [style.text-align]="'left'" [style.padding-left.px]="rowData.pName ==='Client Review' ? '20':''">
                             <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
@@ -165,7 +169,7 @@
                   [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px','border':'none'}"></p-calendar>
                 <input [disabled]="rowData.tat" readonly [ngxTimepicker]="picker"
                   [(ngModel)]="rowData.pUserStartTimePart" class="timePicker">
-                <ngx-material-timepicker [preventOverlayClick]="true" (closed)="DateChangePart(rowData,'start')" #picker
+                <ngx-material-timepicker [preventOverlayClick]="true" (closed)="DateChangePart(rowData,'start')" #picker [ngxMaterialTimepickerTheme]="darkTheme"
                   [minutesGap]="15"></ngx-material-timepicker>
               </span>
 
@@ -191,7 +195,7 @@
                   [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px','border':'none'}"></p-calendar>
                 <input [disabled]="rowData.tat" readonly [ngxTimepicker]="picker" [(ngModel)]="rowData.pUserEndTimePart"
                   class="timePicker">
-                <ngx-material-timepicker [preventOverlayClick]="true" (closed)="DateChangePart(rowData,'start')" #picker
+                <ngx-material-timepicker [preventOverlayClick]="true" (closed)="DateChangePart(rowData,'start')" #picker [ngxMaterialTimepickerTheme]="darkTheme"
                   [minutesGap]="15"></ngx-material-timepicker>
               </span>
                         </td>
@@ -220,6 +224,12 @@
                                 type="button" (click)="CancelChanges(rowData,'task')" style="line-height: 0px;height: 0px;" mat-icon-button title="Cancel">
                 <mat-icon> cancel</mat-icon>
               </button>
+
+                            <div *ngIf="!rowData.editMode && rowData.type === 'task'" style="text-align: center;">
+                                <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu"></p-menu>
+
+                                <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData,rowNode, popupMenu);popupMenu.show($event);"></i>
+                            </div>
                         </td>
                     </tr>
                 </ng-template>
@@ -234,16 +244,16 @@
 
             </p-treeTable>
 
-            <p-contextMenu #milestones [hidden]="contextMenuvisible" appendTo="body" [model]="contextMenuOptions">
-            </p-contextMenu>
+            <!-- <p-contextMenu #milestones [hidden]="contextMenuvisible" appendTo="body" [model]="contextMenuOptions">
+            </p-contextMenu> -->
 
             <!-- **********************************************************************************************************
                                                          Comment Popup
            ********************************************************************************************************** -->
             <p-dialog header="Any specific instructions for task" [closable]="false" [modal]="true" [style]="{width: '450px', minWidth: '300px'}" [(visible)]="displayComment">
-                <textarea *ngIf="displayComment" placeholder="Leave Comment" rows="8" cols="30" pInputTextarea autoResize="autoResize" style="width:100%;padding: 3%;" [(ngModel)]="task.data.scope"> </textarea>
+                <textarea *ngIf="displayComment" placeholder="Leave Comment" rows="8" cols="30" pInputTextarea autoResize="autoResize" style="width:100%;padding: 3%;" [(ngModel)]="task.scope"> </textarea>
                 <p-footer>
-                    <button type="button" pButton icon="pi pi-check" (click)=" displayComment=false" label="Save"></button>
+                    <button type="button" pButton icon="pi pi-check" style="background-color: #af0b14;border-color:#af0b14;" (click)=" displayComment=false" label="Save"></button>
                     <button type="button" pButton icon="pi pi-times" (click)="cancelComment();displayComment=false" label="Cancel" class="ui-button-secondary"></button>
                 </p-footer>
             </p-dialog>

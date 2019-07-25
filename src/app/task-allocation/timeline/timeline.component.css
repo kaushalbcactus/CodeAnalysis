@@ -17,6 +17,29 @@
     transform: translateY(-50%);
 }
 
+p-calendar>span>.ui-button {
+    background-color: #ffffff !important;
+    border-color: #ffffff!important;
+}
+
+.taskAllocationTimeline .ui-treetable-wrapper tbody.ui-treetable-tbody>tr>td:last-child {
+    overflow: visible;
+}
+
+.taskAllocationTimeline .ui-treetable-wrapper tbody.ui-treetable-tbody>tr>td:last-child>div {
+    position: relative;
+}
+
+.taskAllocationTimeline .ui-treetable-wrapper tbody.ui-treetable-tbody>tr>td:last-child>div>i {
+    top: 0px !important;
+}
+
+.taskAllocationTimeline .ui-treetable-wrapper tbody.ui-treetable-tbody>tr>td:last-child>div div.ui-menu {
+    top: 0px !important;
+    left: inherit !important;
+    right: 56px !important;
+}
+
 #scInnerLoaderText {
     -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
     -o-animation: loading-text-opacity 2s linear 0s infinite normal;
