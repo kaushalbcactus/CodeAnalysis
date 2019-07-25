@@ -433,7 +433,7 @@ export class TimeBookingDialogComponent implements OnInit {
                 Task: "Time Booking",
                 TimeSpent: totalTimeSpent,
                 TimeSpentPerDay: timeSpentString,
-                Title: dbTasks[i].ProjectCode + " TB " + this.sharedObject.currentUser.title + " " + this.datePipe.transform(new Date(), 'MMM dd, yyyy'),
+                Title: dbTasks[i].ProjectCode + " " + dbTasks[i].Milestone + " TB " + this.sharedObject.currentUser.title,
                 AssignedToId: this.sharedObject.currentUser.id,
               }
               count++;

@@ -699,7 +699,7 @@ export class PMCommonService {
     if (clientInfo && clientInfo.length) {
       libraryName = clientInfo[0].ListName;
     }
-    const folderPath: string = this.globalObject.sharePointPageObject.webAbsoluteUrl + '/' + libraryName + '/' + docFolder;
+    const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
     const filePathUrl = await this.spServices.getFileUploadUrl(folderPath, selectedFile.name, true);
     const res = await this.spServices.uploadFile(filePathUrl, fileReader.result);
     if (res.hasOwnProperty('ServerRelativeUrl') && res.hasOwnProperty('Name') && !res.hasOwnProperty('hasError')) {
