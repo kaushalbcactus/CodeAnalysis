@@ -86,8 +86,8 @@ export class AllProjectsComponent implements OnInit {
   subscription;
   isApprovalAction = false;
   showNavigateSOW = false;
-  overAllValues : any;
-  selectedOption = '';
+  overAllValues: any;
+  selectedOption: any = '';
   showProjectInput = false;
   providedProjectCode = '';
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
@@ -118,8 +118,7 @@ export class AllProjectsComponent implements OnInit {
     this.providedProjectCode = '';
     if (this.router.url.indexOf('myDashboard') > -1) {
       this.showNavigateSOW = false;
-    }
-    else {
+    } else {
       this.showNavigateSOW = true;
     }
 
@@ -202,10 +201,10 @@ export class AllProjectsComponent implements OnInit {
         this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       }
-      this.params.ProjectCode = this.route.snapshot.queryParams['ProjectCode'];
-      this.params.ActionStatus = this.route.snapshot.queryParams['ActionStatus'];
-      this.params.ProjectStatus = this.route.snapshot.queryParams['ProjectStatus'];
-      this.params.ProjectBudgetStatus = this.route.snapshot.queryParams['ProjectBudgetStatus'];
+      this.params.ProjectCode = this.route.snapshot.queryParams.ProjectCode;
+      this.params.ActionStatus = this.route.snapshot.queryParams.ActionStatus;
+      this.params.ProjectStatus = this.route.snapshot.queryParams.ProjectStatus;
+      this.params.ProjectBudgetStatus = this.route.snapshot.queryParams.ProjectBudgetStatus;
       const projectObj = this.pmObject.allProjectItems.filter(c => c.ProjectCode === this.params.ProjectCode);
       if (this.params.ActionStatus) {
         if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.APPROVED) {
@@ -401,7 +400,7 @@ export class AllProjectsComponent implements OnInit {
       this.pmObject.allProjectsArray = tempAllProjectArray;
       setTimeout(() => {
         this.pmObject.allProjectsArray = [...this.pmObject.allProjectsArray];
-      }, 100);
+      }, this.pmConstant.TIME_OUT);
     }
     if (this.params.ProjectCode) {
       this.pmObject.columnFilter.ProjectCode = [this.params.ProjectCode];
@@ -1488,7 +1487,8 @@ export class AllProjectsComponent implements OnInit {
         if (this.pmObject.addProject.FinanceManagement.ProjectSOW.
           indexOf(this.globalObject.sharePointPageObject.webRelativeUrl) === -1) {
           const client = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(e => e.Title === proj.ClientLegalEntity);
-          this.pmObject.addProject.FinanceManagement.ProjectSOW = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + client.ListName + '/Finance/SOW/' +
+          this.pmObject.addProject.FinanceManagement.ProjectSOW =
+            this.globalObject.sharePointPageObject.webRelativeUrl + '/' + client.ListName + '/Finance/SOW/' +
             this.pmObject.addProject.FinanceManagement.ProjectSOW;
         }
       }
@@ -1954,24 +1954,41 @@ export class AllProjectsComponent implements OnInit {
     return budgetValidateFlag;
   }
 
-//   onChangeSelect(event) {
-//     if (this.selectedOption.name === 'Open') {
-//         this.isPSInnerLoaderHidden = false;
-//         this.showProjectInput = false;
-//         this.callGetProjects(false);
-//     } else {
-//         this.showProjectInput = true;
-//         this.pubSupportProjectInfoData = [];
-//         this.providedProjectCode = '';
-//     }
-// }
+  onChangeSelect(event) {
+    if (this.selectedOption.name === 'Open') {
+      this.showProjectInput = false;
+      this.callReloadProject();
+    } else {
+      const emptyProjects = [];
+      this.pmObject.allProjectsArray = [...emptyProjects];
+      this.showProjectInput = true;
+      this.providedProjectCode = '';
+    }
+  }
 
-// searchClosedProject(event) {
-//     // const projectCode = this.providedProjectCode;
-//     // alert(projectCode);
-//     this.isPSInnerLoaderHidden = false;
-//     this.call(true);
-// }
+  async searchClosedProject(event) {
+    this.isAllProjectLoaderHidden = false;
+    this.isAllProjectTableHidden = true;
+    setTimeout(() => {
+      this.getProjectByCode();
+    }, this.pmConstant.TIME_OUT);
+  }
+  async getProjectByCode() {
+    const projectCode = this.providedProjectCode;
+    const projectInfoFilter = Object.assign({}, this.pmConstant.PM_QUERY.PROJECT_INFORMATION_BY_PROJECTCODE);
+    projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi,
+      projectCode);
+    const results = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInfoFilter);
+    if (results && results.length) {
+      this.pmObject.allProjectItems = results;
+      this.reloadAllProject();
+    } else {
+      const emptyProjects = [];
+      this.pmObject.allProjectsArray = [...emptyProjects];
+    }
+    this.isAllProjectLoaderHidden = true;
+    this.isAllProjectTableHidden = false;
+  }
   /**
    * This method is used to close the dialog box.
    */
@@ -1987,23 +2004,23 @@ export class AllProjectsComponent implements OnInit {
 
   @HostListener('document:click', ['$event'])
   clickout(event) {
-    if (event.target.className === "pi pi-ellipsis-v") {
+    if (event.target.className === 'pi pi-ellipsis-v') {
       if (this.tempClick) {
-        this.tempClick.style.display = "none";
+        this.tempClick.style.display = 'none';
         if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
           this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = "";
+          this.tempClick.style.display = '';
         } else {
           this.tempClick = undefined;
         }
       } else {
         this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = "";
+        this.tempClick.style.display = '';
       }
 
     } else {
       if (this.tempClick) {
-        this.tempClick.style.display = "none";
+        this.tempClick.style.display = 'none';
         this.tempClick = undefined;
       }
     }
