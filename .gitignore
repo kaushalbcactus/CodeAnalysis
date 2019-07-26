@@ -49,4 +49,4 @@ New folder/package.json
 New folder/package-lock.json
 
 #App ignore
-#.app.component.ts
+# git rm --cached  src/app/app.component.ts
