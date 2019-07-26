@@ -159,7 +159,7 @@
                   [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}" appendTo="body"
                   hideOnDateTimeSelect="true" [stepMinute]="15" [showIcon]="true" [showOnFocus]="false"
                   [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')"
-                  [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px','border':'none'}"></p-calendar>
+                  [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
               </span>
                             <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Client Review' ">
                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart" [disabledDays]="[0,6]"
@@ -185,7 +185,7 @@
                   [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}" appendTo="body"
                   hideOnDateTimeSelect="true" [stepMinute]="15" [showIcon]="true" [showOnFocus]="false"
                   [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'end')"
-                  [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px','border':'none'}"></p-calendar>
+                  [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
 
               </span>
                             <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Client Review' ">
