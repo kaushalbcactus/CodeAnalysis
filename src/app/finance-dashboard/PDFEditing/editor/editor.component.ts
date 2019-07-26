@@ -7,7 +7,9 @@ import { MessageService } from 'primeng/api';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
-
+import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { DatePipe } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 declare var $: any;
 @Component({
@@ -49,6 +51,7 @@ export class EditorComponent implements OnInit {
     indiaHtmlObject: any = {};
     USHtmlObject: any = {};
     showAppendix = false;
+    private subscription: Subscription = new Subscription();
     constructor(
         private common: CommonService,
         private fdConstantsService: FdConstantsService,
@@ -56,7 +59,9 @@ export class EditorComponent implements OnInit {
         private messageService: MessageService,
         private globalObject: GlobalService,
         private spOperationsServices: SpOperationsService,
-        private constantsService : ConstantsService
+        private constantsService : ConstantsService,
+        private spServices: SharepointoperationService,
+        private datePipe: DatePipe,
     ) { }
 
     ngOnInit() {
@@ -936,6 +941,7 @@ export class EditorComponent implements OnInit {
                 <title></title>
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
                 <style>
+                    body {font-family: Verdana !important;}    
                     body .ui-widget {font-family: Verdana !important;}
                     body .ui-widget-content p {font-size: 16px;}
                     body p {margin:0;line-height:1.5;}
@@ -2468,10 +2474,186 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
     }
 
 
-    generateExistingProforma() {
-        const id = "";
+    async generateExistingProforma() {
+        await this.projectInfo();
+        await this.cleInfo();
+        this.poInfo();
+        this.projectContacts();
+        const id = "2393";
+        const batchContents = new Array();
+        const batchGuid = this.spServices.generateUUID();
         let invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.Proforma.name + '', this.fdConstantsService.fdComponent.proformaForUser);
         invoicesQuery = invoicesQuery.replace('{{ItemID}}', id);
+        let endPoints = [invoicesQuery];
+        let userBatchBody = '';
+        for (let i = 0; i < endPoints.length; i++) {
+            const element = endPoints[i];
+            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        }
+        batchContents.push('--batch_' + batchGuid + '--');
+        userBatchBody = batchContents.join('\r\n');
+        let arrResults: any = [];
+        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        //console.log('REs in Confirmed Invoice ', res);
+        arrResults = res;
+        if (arrResults.length) {
+            const prf = arrResults[0][0];
+            console.log(prf);
+            await this.getILIByPID(id);
+            console.log(this.iliByPidRes);
+
+            const projectAppendix = await this.createProjectAppendix(this.iliByPidRes);
+            await this.fdShareDataService.callProformaCreation(prf, this.cleData, this.projectContactsData, this.purchaseOrdersList, this, projectAppendix);
+            
+        }
+    }
+
+    
+    // Purchase Order Number
+    purchaseOrdersList: any = [];
+    poInfo() {
+        this.subscription.add(this.fdShareDataService.defaultPoData.subscribe((res) => {
+            if (res) {
+                this.purchaseOrdersList = res;
+                console.log('PO Data ', this.purchaseOrdersList);
+            }
+        }))
+    }
+
+    // Project COntacts
+    projectContactsData: any = [];
+    projectContacts() {
+        this.subscription.add(this.fdShareDataService.defaultPCData.subscribe((res) => {
+            if (res) {
+                this.projectContactsData = res;
+                console.log('this.projectContactsData ', this.projectContactsData);
+                // this.getPCForSentToAMForApproval();
+            }
+        }))
+    }
+
+    // Client Legal Entity
+    cleData: any = [];
+    async cleInfo() {
+       
+        await this.fdShareDataService.getClePO('confirm');
+      
+        this.cleData = [];
+        this.subscription.add(this.fdShareDataService.defaultCLEData.subscribe((res) => {
+            if (res) {
+                this.cleData = res;
+                console.log('CLE Data ', this.cleData);
+            }
+        }))
+    }
+
+     // Generate Invoice Data start
+     iliByPidRes: any = [];
+    
+     async getILIByPID(id) {
+
+         const batchContents = new Array();
+         const batchGuid = this.spServices.generateUUID();
+         let invoicesQuery = '';
+         let obj = {
+             filter: this.fdConstantsService.fdComponent.invoiceLineItem.filter.replace("{{ProformaLookup}}", id),
+             select: this.fdConstantsService.fdComponent.invoiceLineItem.select,
+             top: this.fdConstantsService.fdComponent.invoiceLineItem.top,
+             // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
+         }
+         invoicesQuery = this.spServices.getReadURL('' + this.constantsService.listNames.InvoiceLineItems.name + '', obj);
+         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
+ 
+         let endPoints = [invoicesQuery];
+         let userBatchBody = '';
+         for (let i = 0; i < endPoints.length; i++) {
+             const element = endPoints[i];
+             this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+         }
+         batchContents.push('--batch_' + batchGuid + '--');
+         userBatchBody = batchContents.join('\r\n');
+         let arrResults: any = [];
+         const res = await this.spServices.getFDData(batchGuid, userBatchBody);// .subscribe(res => {
+         arrResults = res;
+         if (arrResults.length) {
+             console.log(arrResults[0]);
+             this.iliByPidRes = arrResults[0] ? arrResults[0] : [];
+         }
+
+     }
+
+     // Project Info 
+    projectInfoData: any = [];
+    async projectInfo() {
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
+        // Check PI list
+        await this.fdShareDataService.checkProjectsAvailable();
+
+        this.subscription.add(this.fdShareDataService.defaultPIData.subscribe((res) => {
+            if (res) {
+                this.projectInfoData = res;
+                console.log('PI Data ', this.projectInfoData);
+            }
+        }))
+    }
+
+     async createProjectAppendix(selectedProjects) {
+
+        const projectAppendix = [];
+        let retProjects = [];
+        let projects = [];
+        const projectProcessed = [];
+        const callProjects = [];
+        selectedProjects.forEach(element => {
+            if (projectProcessed.indexOf(element.Title) === -1) {
+                const project = this.projectInfoData.find(e => e.ProjectCode === element.Title);
+                if (project) {
+                    projects.push(project);
+                    projectProcessed.push(project.ProjectCode);
+                }
+                else {
+                    callProjects.push(element.ProjectCode);
+                }
+            }
+        });
+
+        if (callProjects.length) {
+            const batchURL = [];
+            const options = {
+                data: null,
+                url: '',
+                type: '',
+                listName: ''
+            }
+
+            callProjects.forEach(element => {
+                var getPIData = Object.assign({}, options);
+                getPIData.url = this.spOperationsServices.getReadURL(this.constantsService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfoCode);
+                getPIData.url = getPIData.url.replace("{{ProjectCode}}", element);
+                getPIData.listName = this.constantsService.listNames.ProjectInformation.name;
+                getPIData.type = "GET";
+                batchURL.push(getPIData);
+
+            });
+
+            retProjects = await this.spOperationsServices.executeBatch(batchURL);
+            const mappedProjects = retProjects.map( obj => obj.retItems.length ? obj.retItems[0] : []);
+            projects = [...projects, ...mappedProjects];
+        }
+        const appendixObj = { dvcode: '', cactusSpCode: '', title: '', amount: '' };
+        selectedProjects.forEach(element => {
+            const project = projects.find(e => e.ProjectCode === element.Title);
+            let appendix = Object.assign({}, appendixObj);
+            if (project) {
+                appendix.dvcode = project.WBJID ? project.WBJID : '';
+                appendix.cactusSpCode = project.ProjectCode ? project.ProjectCode : '';
+                appendix.title = project.Title ? project.Title : '';
+            }
+            appendix.amount = element.Amount;
+            projectAppendix.push(appendix);
+        });
+
+        return projectAppendix;
     }
 }
 

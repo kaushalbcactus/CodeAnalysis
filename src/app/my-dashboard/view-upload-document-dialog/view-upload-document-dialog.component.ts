@@ -6,6 +6,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
 import { GlobalService } from 'src/app/Services/global.service';
+import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 
 
 @Component({
@@ -40,7 +41,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     private spServices: SharepointoperationService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
-    private nodeService: NodeService) { }
+    private nodeService: NodeService,
+    private spOperations: SpOperationsService) { }
 
   items: MenuItem[];
   activeItem: MenuItem;
@@ -308,7 +310,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     if (this.DocumentArray.length) {
 
       if (this.selectedTab === this.prevTask) {
-         this.DocumentArray = this.DocumentArray.filter(c => c.isFileMarkedAsFinal === true);
+        this.DocumentArray = this.DocumentArray.filter(c => c.isFileMarkedAsFinal === true);
       }
 
       this.DocumentArray = this.DocumentArray.sort((a, b) =>
@@ -459,6 +461,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       }
       var uploadedFiles = [];
       this.loaderenable = true;
+
+      const readers = [];
+
       event.files.forEach(async element => {
 
         var filename = element.name;
@@ -466,31 +471,44 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(), "ddMMyyyyhhmmss") + "." + filename.split(/\.(?=[^\.]+$)/)[1];
         }
 
-        this.fileReader = new FileReader();
-        this.fileReader.readAsArrayBuffer(element);
 
-        this.fileReader.onload = () => {
+        let fileReader = new FileReader();
+        fileReader.readAsArrayBuffer(element);
+        const fileObj = {
+          reader: fileReader,
+          name: filename
+        }
+
+        readers.push(fileObj);
+
+        existingFiles.push(filename.toLowerCase());
+      });
+
+      readers.forEach(async element => {
+        const fileObj = element
+        fileObj.reader.onload = async (readerEvt) => {
 
           var filePathUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl('" + this.ProjectInformation.ProjectFolder + "/" + docFolder + "')/Files/add(url=@TargetFileName,overwrite='false')?" +
-            "&@TargetFileName='" + filename + "'&$expand=ListItemAllFields";
+            "&@TargetFileName='" + fileObj.name + "'&$expand=ListItemAllFields";
 
-          this.nodeService.uploadFIle(filePathUrl, this.fileReader.result).subscribe(res => {
-
-            uploadedFiles.push(res.d);
-            if (event.files.length === uploadedFiles.length) {
-              if (this.selectedTab === 'My Drafts') {
-                this.LinkDoumentToProject(uploadedFiles);
-              }
-              else {
-                this.loadDraftDocs(this.selectedTab);
-                this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
-              }
+          const res = await this.spOperations.uploadFile(filePathUrl, fileObj.reader.result);
+          uploadedFiles.push(res);
+          if (readers.length === uploadedFiles.length) {
+            if (this.selectedTab === 'My Drafts') {
+              this.LinkDoumentToProject(uploadedFiles);
             }
+            else {
+              this.loadDraftDocs(this.selectedTab);
+              this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
+            }
+          }
+          // this.nodeService.uploadFIle(filePathUrl, this.fileReader.result).subscribe(res => {
 
-          });
+
+
+          // });
 
         };
-        existingFiles.push(filename.toLowerCase());
       });
     }
 

@@ -140,9 +140,9 @@ export class CommunicationComponent implements OnInit {
           filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' +
             this.datePipe.transform(new Date(), 'ddMMyyyyhhmmss') + '.' + filename.split(/\.(?=[^\.]+$)/)[1];
         }
-        this.fileReader = new FileReader();
-        this.fileReader.readAsArrayBuffer(element);
-        this.fileReader.onload = async () => {
+        const fileReader = new FileReader();
+        fileReader.readAsArrayBuffer(element);
+        fileReader.onload = async () => {
           const folderURl = this.projObj.ProjectFolder + docFolder;
           const filePathUrl = this.spServices.getFileUploadUrl(folderURl, filename, false);
           // this.nodeService.uploadFIle(filePathUrl, this.fileReader.result).subscribe(res => {
@@ -160,7 +160,7 @@ export class CommunicationComponent implements OnInit {
           //     }
           //   }
           // });
-          const uploadedFiles = await this.spServices.uploadFile(filePathUrl, this.fileReader.result);
+          const uploadedFiles = await this.spServices.uploadFile(filePathUrl, fileReader.result);
           if (event.files.length && uploadedFiles.hasOwnProperty('ServerRelativeUrl')) {
             counter += 1;
           }
