@@ -137,9 +137,9 @@ export class PmconstantService {
       select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget, '
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, InvoicedRevenue,'
         + 'BillingEntity, AdditionalPOC, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
-        + 'DeliveryLevel2/ID, DeliveryLevel2/Title, Currency',
+        + 'DeliveryLevel2/ID, DeliveryLevel2/Title, Currency, BD/ID, BD/Title',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
-        + 'DeliveryLevel2/ID, DeliveryLevel2/Title',
+        + 'DeliveryLevel2/ID, DeliveryLevel2/Title, BD/ID, BD/Title',
       filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\')',
       orderby: 'Modified desc',
       top: 4500

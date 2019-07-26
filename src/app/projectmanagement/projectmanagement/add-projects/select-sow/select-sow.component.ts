@@ -101,7 +101,7 @@ export class SelectSOWComponent implements OnInit {
         // });
         // sowObj.SOWOwner = poc.length > 0 ? poc[0].FullName : '';
         //this.pmObject.addSOW.SOWOwner = sowObj.BD.ID;
-        sowObj.SOWOwner = sowObj.BD ? sowObj.BD.hasOwnProperty('ID') ? this.pmCommonService.extractNameFromId([sowObj.BD.ID]).join(', ') : '' : '';
+        sowObj.SOWOwner = task.BD ? task.BD.hasOwnProperty('ID') ? this.pmCommonService.extractNameFromId([task.BD.ID]).join(', ') : '' : '';
         sowCodeTempArray.push({ label: sowObj.SOWCode, value: sowObj.SOWCode });
         shortTitleTempArray.push({ label: sowObj.ShortTitle, value: sowObj.ShortTitle }); 
         sowOwnerTempArray.push({ label: sowObj.SOWOwner, value: sowObj.SOWOwner });
