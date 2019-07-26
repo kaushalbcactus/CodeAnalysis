@@ -23,7 +23,8 @@ export class AppComponent {
   ngOnInit() {
     if (environment.production) { if (window) { window.console.log = function () { }; } }
     this.globalObject.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
-    this.globalObject.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
+    this.globalObject.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
+      ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
 
     this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 112 : _spPageContextInfo.userId;
     this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'

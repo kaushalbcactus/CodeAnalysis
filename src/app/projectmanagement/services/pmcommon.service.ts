@@ -747,9 +747,11 @@ export class PMCommonService {
     this.pmObject.addSOW.Budget.Net = sowItem.NetBudget ? sowItem.NetBudget : 0;
     this.pmObject.addSOW.Budget.OOP = sowItem.OOPBudget ? sowItem.OOPBudget : 0;
     this.pmObject.addSOW.Budget.Tax = sowItem.TaxBudget ? sowItem.TaxBudget : 0;
-    this.pmObject.addSOW.Budget.TotalBalance = (sowItem.TotalBudget ? sowItem.TotalBudget : 0) - (sowItem.TotalLinked ? sowItem.TotalLinked : 0);
+    this.pmObject.addSOW.Budget.TotalBalance = (sowItem.TotalBudget ? sowItem.TotalBudget : 0)
+      - (sowItem.TotalLinked ? sowItem.TotalLinked : 0);
     this.pmObject.addSOW.Budget.TotalBalance = parseFloat(this.pmObject.addSOW.Budget.TotalBalance.toFixed(2));
-    this.pmObject.addSOW.Budget.NetBalance = (sowItem.NetBudget ? sowItem.NetBudget : 0) - (sowItem.RevenueLinked ? sowItem.RevenueLinked : 0);
+    this.pmObject.addSOW.Budget.NetBalance = (sowItem.NetBudget ? sowItem.NetBudget : 0)
+      - (sowItem.RevenueLinked ? sowItem.RevenueLinked : 0);
     this.pmObject.addSOW.Budget.NetBalance = parseFloat(this.pmObject.addSOW.Budget.NetBalance.toFixed(2));
     this.pmObject.addSOW.Budget.OOPBalance = (sowItem.OOPBudget ? sowItem.OOPBudget : 0) - (sowItem.OOPLinked ? sowItem.OOPLinked : 0);
     this.pmObject.addSOW.Budget.OOPBalance = parseFloat(this.pmObject.addSOW.Budget.OOPBalance.toFixed(2));
@@ -772,7 +774,8 @@ export class PMCommonService {
     this.pmObject.addSOW.DeliveryOptional = sowItem.DeliveryLevel2.ID;
     this.pmObject.addSOW.DeliveryOptionalText = this.extractNameFromId([sowItem.DeliveryLevel2.ID]).join(', ');
     this.pmObject.addSOW.SOWOwner = sowItem.BD.ID;
-    this.pmObject.addSOW.SOWOwnerText = sowItem.BD ? sowItem.BD.hasOwnProperty('ID') ? this.extractNameFromId([sowItem.BD.ID]).join(', ') : '' : '';
+    this.pmObject.addSOW.SOWOwnerText = sowItem.BD ?
+      sowItem.BD.hasOwnProperty('ID') ? this.extractNameFromId([sowItem.BD.ID]).join(', ') : '' : '';
   }
   convertToExcelFile(cnf1) {
     if (Array.isArray(cnf1._selection)) {

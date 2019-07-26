@@ -284,7 +284,7 @@ export class PMObjectService {
     },
     FinanceManagement: {
       Currency: '',
-      ProjectSOW:'',
+      ProjectSOW: '',
       SelectedPO: '',
       POListArray: [],
       POArray: [],

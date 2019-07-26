@@ -130,7 +130,24 @@ export class PmconstantService {
       filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllOperationresources/Id eq ' + this.global.sharePointPageObject.userId + ' or AllDeliveryResources/Id eq ' + this.global.sharePointPageObject.userId + ')',
       orderby: 'Modified desc',
       top: 4500
-    }
+    },
+    PROJECT_INFORMATION_BY_PROJECTCODE: {
+      // tslint:disable-next-line:max-line-length
+      select: 'ID,Title,ProjectCode,DeliverableType,PrimaryPOC,ClientLegalEntity,ProjectFolder,SOWCode,WBJID,ProjectType,Status,Author/Id,Author/Title,Created,'
+        + 'Authors,POC,SubDivision, Priority, TA, ProposedStartDate, ProposedEndDate, ActualStartDate, ActualEndDate,'
+        // tslint:disable-next-line:max-line-length
+        + 'Description, ConferenceJournal, Comments, PO, Milestones, Milestone, Molecule, Indication, IsPubSupport, SOWBoxLink, StandardBudgetHrs,'
+        + 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID,'
+        + 'DeliveryLevel2/Title, BusinessVertical, BillingEntity, SOWLink, PubSupportStatus, IsStandard, StandardService,'
+        + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
+      expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
+        + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
+        + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
+      filter: '(Status eq \'Closed\') and (AllOperationresources/Id eq ' + this.global.sharePointPageObject.userId + ') and'
+        + ' ProjectCode eq \'{{projectCode}}\'',
+      orderby: 'Modified desc',
+      top: 4500
+    },
   };
   public SOW_QUERY = {
     ALL_SOW: {
@@ -365,11 +382,14 @@ export class PmconstantService {
     GET_OOP: {
       select: 'ID,Title,Amount, ClientAmount,Category,Currency,DollarAmount,FileURL,FiscalYear,Number,PayingEntity,PayingEntity',
       filter: 'Title eq \'{{projectCode}}\' and Status eq \'{{status}}\'',
+      top: 4900
     },
     GET_PO: {
       select: 'ID,Title, ClientLegalEntity, Currency, Number, Name, Amount, AmountOOP, AmountRevenue, AmountTax,'
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked,TotalScheduled,ScheduledRevenue',
-      filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\''
+      filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\'',
+      orderby: 'Created desc',
+      top: 4900
     },
     PROJECT_FINANCE_BY_PROJECTCODE: {
       select: 'ID, Title, Currency, ApprovedBudget, Budget, RevenueBudget, OOPBudget, TaxBudget,BudgetHrs,' +
@@ -377,7 +397,8 @@ export class PmconstantService {
       filter: 'Title eq \'{{projectCode}}\''
     },
     PROJECT_FINANCE_BREAKUP_BY_PROJECTCODE: {
-      select: 'ID,Title,POLookup,ProjectNumber,Amount, AmountRevenue, AmountOOP, AmountTax, TotalScheduled, ScheduledRevenue, ScheduledOOP, TotalInvoiced, InvoicedRevenue, InvoicedOOP, Status',
+      select: 'ID,Title,POLookup,ProjectNumber,Amount, AmountRevenue, AmountOOP, AmountTax, TotalScheduled, ScheduledRevenue,'
+        + ' ScheduledOOP, TotalInvoiced, InvoicedRevenue, InvoicedOOP, Status',
       filter: 'ProjectNumber eq \'{{projectCode}}\' and Status eq \'Active\''
     },
     INVOICE_LINE_ITEMS_BY_PROJECTCODE: {
@@ -393,7 +414,8 @@ export class PmconstantService {
       top: 1
     },
     ADV_INVOICES: {
-      select: 'ID, ClientLegalEntity, Amount, AddressType, InvoiceNumber, PO, ProformaLookup, IsTaggedFully, TaggedAmount, InvoiceDate, MainPOC, FileURL',
+      select: 'ID, ClientLegalEntity, Amount, AddressType, InvoiceNumber, PO, ProformaLookup, IsTaggedFully, TaggedAmount,'
+        + ' InvoiceDate, MainPOC, FileURL',
       filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and IsTaggedFully eq \'No\'',
       top: 4500
     }
@@ -451,7 +473,8 @@ export class PmconstantService {
     SOW_BY_SOWCODE: {
       select: 'ID, ClientLegalEntity, SOWTitle, Currency, TotalBudget, NetBudget, OOPBudget, TaxBudget, Status,'
         + 'PrimaryPOC,TotalScheduled, ScheduledRevenue, TotalLinked, RevenueLinked',
-      filter: 'SOWCode eq \'{{sowCode}}\''
+      filter: 'SOWCode eq \'{{sowCode}}\'',
+      top: 4900
     },
     PROJECT_BUDGET_BREAKUP_CANCELLED_BY_PROJECTCODE: {
       select: 'ID, Title, ProjectLookup, Status, ApprovalDate, OriginalBudget, NetBudget, OOPBudget, TaxBudget, ProjectCode,'
@@ -501,4 +524,3 @@ export class PmconstantService {
     INPUT_ERROR: 'Input error',
   };
 }
- 
