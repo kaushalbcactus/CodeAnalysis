@@ -86,7 +86,7 @@ export class AllProjectsComponent implements OnInit {
   subscription;
   isApprovalAction = false;
   showNavigateSOW = false;
-  overAllValues : any;
+  overAllValues: any;
   selectedOption = '';
   showProjectInput = false;
   providedProjectCode = '';
@@ -118,8 +118,7 @@ export class AllProjectsComponent implements OnInit {
     this.providedProjectCode = '';
     if (this.router.url.indexOf('myDashboard') > -1) {
       this.showNavigateSOW = false;
-    }
-    else {
+    } else {
       this.showNavigateSOW = true;
     }
 
