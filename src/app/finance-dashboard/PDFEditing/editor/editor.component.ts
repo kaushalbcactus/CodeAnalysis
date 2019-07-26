@@ -83,7 +83,7 @@ export class EditorComponent implements OnInit {
             //Appendix: [],
             Appendix: [{ dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: 4125.24 },
             { dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: 4125 },
-            { dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: 44125 }],
+            { dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: 441255.67 }],
             tax: '39,564.45',
             // centralTax : '39,564.45',
             // stateTax : '19,782.22',
