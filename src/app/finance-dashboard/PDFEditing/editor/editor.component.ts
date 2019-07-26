@@ -6,6 +6,7 @@ import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { MessageService } from 'primeng/api';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SpOperationsService } from 'src/app/Services/sp-operations.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 
 
 declare var $: any;
@@ -54,7 +55,8 @@ export class EditorComponent implements OnInit {
         private fdShareDataService: FDDataShareService,
         private messageService: MessageService,
         private globalObject: GlobalService,
-        private spOperationsServices: SpOperationsService
+        private spOperationsServices: SpOperationsService,
+        private constantsService : ConstantsService
     ) { }
 
     ngOnInit() {
@@ -2463,6 +2465,13 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         ///// Call service 
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
         await this.spOperationsServices.executeJS(pdfService, pdfContent);
+    }
+
+
+    generateExistingProforma() {
+        const id = "";
+        let invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.Proforma.name + '', this.fdConstantsService.fdComponent.proformaForUser);
+        invoicesQuery = invoicesQuery.replace('{{ItemID}}', id);
     }
 }
 

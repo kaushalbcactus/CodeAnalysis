@@ -47,3 +47,6 @@ testem.log
 Thumbs.db
 New folder/package.json
 New folder/package-lock.json
+
+#App ignore
+#.app.component.ts

@@ -236,6 +236,16 @@ export class FdConstantsService {
             expand: "LineItems",
             top: 4500
         },
+
+        // Proforma
+        proformaForUser: {
+            // select: "ID,Title,ProformaDate,ProformaHtml,ProformaType,ClientLegalEntity,FiscalYear,Amount,Currency,MainPOC,AddressType,LineItems/Id,LineItems/Title,PO,Status,FileURL,Template,AdditionalInfo",
+            select: "Title,ClientLegalEntity,ProformaType,ProformaDate,Amount,Currency,PO,Status,MainPOC,AdditionalInfo,ProformaTitle,AddressType,Template,InvoiceLookup,LineItemsLookup,FileURL,Reason,State,Modified,ID,ProformaHtml,LineItems/Id,LineItems/Title,AuthorId,EditorId",
+            filter: "ID eq '{{ItemID}}'",
+            orderby: "ProformaDate",
+            expand: "LineItems",
+            top: 4500
+        },
         proformaForNonManger: {
             select: "ID,Title,ProformaDate,ProformaType,ClientLegalEntity,FiscalYear,Amount,Currency,MainPOC,AddressType,LineItems,PO,Status,FileURL",
             filter: "ID lt 0",
