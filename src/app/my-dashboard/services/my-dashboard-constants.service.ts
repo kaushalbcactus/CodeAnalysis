@@ -161,7 +161,7 @@ export class MyDashboardConstantsService {
       orderby: "DueDate asc",
       filter: "AssignedTo eq  {{userId}} and ",
       filterNotCompleted: "(Status ne 'Not Confirmed') and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
-      filterDate: "and ((StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}') or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}') or (Actual_x0020_Start_x0020_Date ge '{{startDateString}}' and Actual_x0020_Start_x0020_Date le '{{endDateString}}') or (StartDate le '{{startDateString}}' and DueDate ge '{{endDateString}}') or (StartDate ge '{{startDateString}}' and DueDate le '{{endDateString}}') or (Actual_x0020_Start_x0020_Date le '{{startDateString}}' and DueDate ge '{{endDateString}}'))",
+      filterDate: "and ((StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}') or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}') or (Actual_x0020_Start_x0020_Date ge '{{startDateString}}' and Actual_x0020_Start_x0020_Date le '{{endDateString}}') or (Actual_x0020_End_x0020_Date ge '{{startDateString}}' and Actual_x0020_End_x0020_Date le '{{endDateString}}') or (StartDate le '{{startDateString}}' and DueDate ge '{{endDateString}}') or (StartDate ge '{{startDateString}}' and DueDate le '{{endDateString}}') or (Actual_x0020_Start_x0020_Date le '{{startDateString}}' and DueDate ge '{{endDateString}}'))",
       top: 4500
     },
     ProjectInformation:

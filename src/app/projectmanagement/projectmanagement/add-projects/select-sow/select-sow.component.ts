@@ -103,7 +103,7 @@ export class SelectSOWComponent implements OnInit {
         //this.pmObject.addSOW.SOWOwner = sowObj.BD.ID;
         sowObj.SOWOwner = sowObj.BD ? sowObj.BD.hasOwnProperty('ID') ? this.pmCommonService.extractNameFromId([sowObj.BD.ID]).join(', ') : '' : '';
         sowCodeTempArray.push({ label: sowObj.SOWCode, value: sowObj.SOWCode });
-        shortTitleTempArray.push({ label: sowObj.ShortTitle, value: sowObj.ShortTitle });
+        shortTitleTempArray.push({ label: sowObj.ShortTitle, value: sowObj.ShortTitle }); 
         sowOwnerTempArray.push({ label: sowObj.SOWOwner, value: sowObj.SOWOwner });
         tempAllSOWArray.push(sowObj);
       }
