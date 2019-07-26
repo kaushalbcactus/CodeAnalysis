@@ -1,22 +1,21 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { DynamicDialogRef, MessageService, DynamicDialogConfig } from 'primeng/api';
-import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
-import { SpOperationsService } from '../../../Services/sp-operations.service';
-import { ConstantsService } from '../../../Services/constants.service';
-import { GlobalService } from '../../../Services/global.service';
+import { SpOperationsService } from 'src/app/Services/sp-operations.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
+import { DynamicDialogRef, MessageService, DynamicDialogConfig } from 'primeng/api';
+// import { Journal } from "./journal-interface";
 
 @Component({
-    selector: 'app-create-conference',
-    templateUrl: './create-conference.component.html',
-    styleUrls: ['./create-conference.component.css'],
-    encapsulation: ViewEncapsulation.Emulated
+    selector: 'app-create-journal',
+    templateUrl: './create-journal.component.html',
+    styleUrls: ['./create-journal.component.css']
 })
-export class CreateConferenceComponent implements OnInit {
+export class CreateJournalComponent implements OnInit {
 
-    createConference_form: FormGroup;
-    conferenceListArray: any = [];
+    createJournal_form: FormGroup;
+    journalListArray: any = [];
 
     submitBtn: any = {
         isClicked: false
@@ -26,8 +25,6 @@ export class CreateConferenceComponent implements OnInit {
         isSubmit: false
     }
 
-    yearsRange = new Date().getFullYear() + ':' + (new Date().getFullYear() + 10);
-
     constructor(
         private fb: FormBuilder,
         public ref: DynamicDialogRef,
@@ -35,31 +32,33 @@ export class CreateConferenceComponent implements OnInit {
         private spOperationsService: SpOperationsService,
         private spServices: SharepointoperationService,
         private constantService: ConstantsService,
-        private GlobalService: GlobalService,
         private messageService: MessageService,
         public config: DynamicDialogConfig,
 
     ) { }
 
     async ngOnInit() {
-        this.createConferenceFormField();
-        this.conferenceListArray = this.config.data;
-        if (!this.conferenceListArray.length) {
-            await this.getConferenceList();
+        this.createJournalFormField();
+        this.journalListArray = this.config.data;
+        if (!this.journalListArray.length) {
+            await this.getJournalList();
         }
     }
 
-    // Create Conference Form Field 
-    createConferenceFormField() {
-        this.createConference_form = this.fb.group({
-            ConferenceDate: ['', Validators.required],
-            SubmissionDeadline: ['', Validators.required],
-            ConferenceName: ['', Validators.required],
+    // Create Journal Form Field 
+    createJournalFormField() {
+        this.createJournal_form = this.fb.group({
+            JournalName: ['', Validators.required],
+            ExpectedReviewPeriod: ['', Validators.required],
+            ImpactFactor: ['', Validators.required],
+            RejectionRate: ['', Validators.required],
             Comments: ['', Validators.required],
+            JournalEditorInfo: ['', Validators.required],
         })
     }
 
-    async getConferenceList() {
+
+    async getJournalList() {
         this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = false;
         let data = [{
             url: this.spOperationsService.getReadURL(this.constantService.listNames.Journal.name, this.psConstantService.pubsupportComponent.journal),
@@ -72,8 +71,8 @@ export class CreateConferenceComponent implements OnInit {
         if (res.hasError) {
             this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error', detail: res.message.value, life: 4000 });
         } else {
-            this.conferenceListArray = res;
-            console.log('conferenceListArray ', this.conferenceListArray);
+            this.journalListArray = res;
+            console.log('journalListArray ', this.journalListArray);
         }
         this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = true;
     }
@@ -84,8 +83,8 @@ export class CreateConferenceComponent implements OnInit {
 
     uniqueJName: boolean = false;
     checkUniqueName() {
-        let found = this.conferenceListArray.find(item => {
-            if (item.ConferenceName.toLowerCase().replace(/\s/g, '') === this.createConference_form.value.ConferenceName.toLowerCase().replace(/\s/g, '')) {
+        let found = this.journalListArray.find(item => {
+            if (item.JournalName.toLowerCase().replace(/\s/g, '') === this.createJournal_form.value.JournalName.toLowerCase().replace(/\s/g, '')) {
                 this.uniqueJName = true;
                 return item;
             }
@@ -93,12 +92,12 @@ export class CreateConferenceComponent implements OnInit {
         return found ? found : '';
     }
 
-    get isValidAddConferenceDetailsForm() {
-        return this.createConference_form.controls;
+    get isValidCreateJournalForm() {
+        return this.createJournal_form.controls;
     }
 
     cancelFormSub() {
-        this.createConference_form.reset();
+        this.createJournal_form.reset();
         this.formSubmit.isSubmit = false;
         this.submitBtn.isClicked = false;
         this.ref.close();
@@ -107,22 +106,21 @@ export class CreateConferenceComponent implements OnInit {
     onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
         this.submitBtn.isClicked = true;
-        if (type === 'createConference') {
-            if (this.createConference_form.invalid) {
+        if (type === 'createJournal') {
+            if (this.createJournal_form.invalid || this.uniqueJName) {
                 this.submitBtn.isClicked = false;
                 return;
             }
             this.submitBtn.isClicked = true;
             this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = false;
-            console.log('createConference_form ', this.createConference_form.value);
-            let obj = this.createConference_form.value;
-            obj['__metadata'] = { type: this.constantService.listNames.Conference.type }
-            const endpoint = this.psConstantService.pubsupportComponent.addUpdateConference.add;
+            let obj = this.createJournal_form.value;
+            obj['__metadata'] = { type: this.constantService.listNames.Journal.type }
+            const endpoint = this.psConstantService.pubsupportComponent.addUpdateJournal.add;
             let data = [{
                 data: obj,
                 url: endpoint,
                 type: 'POST',
-                listName: this.constantService.listNames.Conference.name
+                listName: this.constantService.listNames.Journal.name
             }];
             this.submitForm(data);
         }

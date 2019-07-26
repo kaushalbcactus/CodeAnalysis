@@ -654,3 +654,7 @@ input[type=submit]:hover {
     position: relative;
     margin-bottom: 1%;
 }
+
+::ng-deep .calendarWidth {
+    width: auto !important;
+}

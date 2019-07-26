@@ -1,0 +1,19 @@
+::ng-deep .blockBookingButton
+{
+  position: fixed !important;
+  width: 100% !important;
+  margin: -50px !important;
+  text-align: right;
+}
+/* , ::ng-deep input[type=text] */
+::ng-deep .ui-datepicker-title >select {
+    width: auto !important;
+}
+
+::ng-deep .ui-datepicker-calendar>tbody>tr>td{
+    border: none !important
+}
+
+::ng-deep .padding15{
+    padding: 15px 0px 0px 0px;
+}

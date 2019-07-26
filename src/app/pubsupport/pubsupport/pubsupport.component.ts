@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { MessageService, DialogService } from 'primeng/api';
+import { MessageService, DialogService, ConfirmationService } from 'primeng/api';
 import { NodeService } from '../../node.service';
 import { MenuItem } from 'primeng/components/common/menuitem';
 import { HttpClient } from '@angular/common/http';
@@ -13,6 +13,8 @@ import { GlobalService } from '../../Services/global.service';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { CreateConferenceComponent } from './create-conference/create-conference.component';
+import { CreateJournalComponent } from './create-journal/create-journal.component';
+import { DatePipe } from '@angular/common';
 
 @Component({
     selector: 'app-pubsupport',
@@ -34,7 +36,10 @@ export class PubsupportComponent implements OnInit {
         private messageService: MessageService,
         private router: Router,
         private activatedRoute: ActivatedRoute,
-        private dialogService: DialogService) {
+        private dialogService: DialogService,
+        private datePipe: DatePipe,
+        private confirmationService: ConfirmationService,
+    ) {
 
         // subscribe to the router events - storing the subscription so
         // we can unsubscribe later.
@@ -96,7 +101,7 @@ export class PubsupportComponent implements OnInit {
     update_decision_details: FormGroup;
     update_publication_form: FormGroup;
     galley_form: FormGroup;
-    createJournal_form: FormGroup;
+    journal_Conference_Detail_form: FormGroup;
 
     submitted = false;
     showProjectInput = false;
@@ -134,6 +139,9 @@ export class PubsupportComponent implements OnInit {
         Comments: 'Eribulin monotherapy improved survivals in patients with ER-positive HER2-negative metastatic breast cancer in the real world; a single institutional review.',
         Journal_editor_info: 'Laura Walsh Philip Drive 101 Norwell, MA 02061 United States of America Phone: 1 (781) 244-7919'
     };
+
+    // Year Range
+    yearsRange = new Date().getFullYear() + ':' + (new Date().getFullYear() + 10);
 
 
     submission_details_data: any = [];
@@ -231,10 +239,11 @@ export class PubsupportComponent implements OnInit {
         this.display = true;
     }
 
-    ngOnInit() {
+    todayDate: any = {};
+    async ngOnInit() {
+        this.todayDate = new Date();
         this.isSubmisssionDetails = false;
         this.journalConfFormField();
-        this.createJournalFormField();
 
         this.getDocuTypes();
         this.cols = [
@@ -275,6 +284,7 @@ export class PubsupportComponent implements OnInit {
         this.updateDeceionFormField();
         this.updatePublicationFormField();
         this.galleyFormField();
+        this.jcDetailsForm();
     }
 
     documentTypes: any = [];
@@ -327,7 +337,7 @@ export class PubsupportComponent implements OnInit {
             arrEndPoints.push(projectInfoEndpoint);
             // this.spServices.getBatchBodyGet(batchContents, batchGuid, projectInfoEndpoint);
             projectInfoEndpoint = this.spServices.getReadURLArchive('' + this.constantService.listNames.ProjectInformation.name + '', this.pubsupportService.pubsupportComponent.projectInfoClosed);
-            arrEndPointsArchive.push(projectInfoEndpoint);
+            // arrEndPointsArchive.push(projectInfoEndpoint);
             // this.spServices.getBatchBodyGet(batchContents, batchGuid, projectInfoEndpoint);
         } else {
             if (isManager) {
@@ -446,7 +456,8 @@ export class PubsupportComponent implements OnInit {
             case 'selected': {
                 this.items = [
                     { label: 'Add Authors', command: e => this.openMenuContent(e, data) },
-                    { label: 'Update Author forms & emails', command: e => this.openMenuContent(e, data) }
+                    { label: 'Update Author forms & emails', command: e => this.openMenuContent(e, data) },
+                    { label: 'Cancel Journal Conference', command: e => this.openMenuContent(e, data) },
                 ];
                 break;
             }
@@ -499,9 +510,6 @@ export class PubsupportComponent implements OnInit {
 
             // GET JC & JCSubmission top
             this.getJC_JCSubID();
-
-            // Get projectCode from ClientLegalEntity
-            this.getProjectCode();
         }
     }
     async getJC_JCSubID() {
@@ -643,9 +651,13 @@ export class PubsupportComponent implements OnInit {
         } else if (this.selectedModal === 'Add Journal conference') {
             // this.journalConfFormField();
             this.addJCDetailsModal = true;
+            this.formatMilestone(this.milestonesList);
+            console.log('this.pubSupportProjectInfoData ', this.pubSupportProjectInfoData);
             return;
         } else if (this.selectedModal === 'Update Author forms & emails') {
             this.selectedType = '';
+            // Get projectCode from ClientLegalEntity
+            this.getProjectCode();
             this.updateAuthorFormField();
         } else if (this.selectedModal === 'Update Decision detailse') {
             this.updateDeceionFormField();
@@ -653,10 +665,35 @@ export class PubsupportComponent implements OnInit {
             this.updatePublicationFormField();
         } else if (this.selectedModal === 'Override Galley') {
             this.galleyFormField();
+        } else if (this.selectedModal === 'Cancel Journal Conference') {
+            this.cancelJCDetails();
         }
         document.getElementById('openModalButton').click();
     }
     addJCDetailsModal: boolean = false;
+
+    milestoneListArray: any = [];
+    formatMilestone(milestones) {
+        this.milestoneListArray = [];
+        for (let m = 0; m < milestones.length; m++) {
+            const element = milestones[m];
+            this.milestoneListArray.push({
+                label: element,
+                value: element
+            })
+        }
+    }
+
+    jcDetailsForm() {
+        this.journal_Conference_Detail_form = this.formBuilder.group({
+            EntryType: ['', Validators.required],
+            jcLineItem: ['', Validators.required],
+            Milestone: ['', Validators.required],
+            Name: { value: '', disabled: true },
+            Comments: ['', [Validators.required]]
+        })
+    }
+
     journalConfFormField() {
         this.journal_Conf_form = this.formBuilder.group({
             EntryType: ['', Validators.required],
@@ -729,37 +766,164 @@ export class PubsupportComponent implements OnInit {
         })
     }
 
-    // Create Journal Form Field 
-    createJournalFormField() {
-        this.createJournal_form = this.formBuilder.group({
-            JournalName: ['', Validators.required],
-            ExpectedReviewPeriod: ['', Validators.required],
-            ImpactFactor: ['', Validators.required],
-            RejectionRate: ['', Validators.required],
-            Comments: ['', Validators.required],
-            JournalEditorInfo: ['', Validators.required],
-        })
+    // Cancel Journal Conference
+    async cancelJCDetails() {
+        const obj = {
+            filter: this.pubsupportService.pubsupportComponent.activeJC.filter.replace('{{ProjectCode}}', this.selectedProject.ProjectCode).replace('{{Status}}', 'Selected'),
+            select: this.pubsupportService.pubsupportComponent.activeJC.select,
+            top: this.pubsupportService.pubsupportComponent.activeJC.top,
+            orderby: this.pubsupportService.pubsupportComponent.activeJC.orderby
+        };
+        const jcEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.JournalConf.name + '', obj);
+
+        let objData = [
+            {
+                url: jcEndpoint,
+                type: 'GET',
+                listName: this.constantService.listNames.JournalConf.name
+            }
+        ]
+        const arrResults = await this.spOperationsService.executeBatch(objData);
+        let jcLineItem = arrResults[0].retItems[0].Id;
+        console.log('jcLineItem ', jcLineItem);
+
+        // confirm() {
+        this.confirmationService.confirm({
+            message: 'Are you sure that you want to Cancel Journal Conference Details?',
+            accept: () => {
+                //Project status empty, journalConference pubsuport status cancel
+                // Update ProjectInformation
+                let piObj = {
+                    PubSupportStatus: ''
+                }
+                piObj['__metadata'] = { type: this.constantService.listNames.ProjectInformation.type }
+                // let end = this.pubsupportService.pubsupportComponent.updateProjectInfo.updateProjInfo.replace('{{projectId}}', this.selectedProject.Id);
+                const piEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.ProjectInformation.name, this.selectedProject.Id);
+
+                // Update JC
+                let jcObj = {
+                    Status: 'Cancelled'
+                }
+                jcObj['__metadata'] = { type: this.constantService.listNames.JournalConf.type }
+                const jcEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JournalConf.name, jcLineItem);
+                let data = [
+                    {
+                        data: piObj,
+                        url: piEndpoint,
+                        type: 'PATCH',
+                        listName: this.constantService.listNames.ProjectInformation.name
+                    },
+                    {
+                        data: jcObj,
+                        url: jcEndpoint,
+                        type: 'PATCH',
+                        listName: this.constantService.listNames.JournalConf.name
+                    }
+                ];
+            },
+            reject: () => {
+
+            },
+        });
+        // }
     }
-
-
 
     onChangeSelectedType(type: any) {
         console.log('type ', type);
+        this.journal_Conference_Detail_form.get('jcLineItem').setValue('');
+        this.getJCList(type);
+    }
 
+    jcListArray: any = [];
+    optionLabel: any = {
+        title: ''
+    };
+    async getJCList(type: string) {
+        if (!type) {
+            return false;
+        }
+        this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
+        let endpoint;
+        let jcObj = [];
         if (type === 'journal') {
-            this.journal_Conf_form.addControl('IF', new FormControl('', Validators.required));
-            this.journal_Conf_form.addControl('RejectionRate', new FormControl('', Validators.required));
-            this.journal_Conf_form.addControl('ExpectedReviewPeriod', new FormControl('', Validators.required));
-            this.journal_Conf_form.addControl('JournalEditorInfo', new FormControl('', Validators.required));
-            this.journal_Conf_form.removeControl('CongressDate');
-            this.journal_Conf_form.removeControl('AbstractSubmissionDeadline');
-        } else {
-            this.journal_Conf_form.addControl('CongressDate', new FormControl('', Validators.required));
-            this.journal_Conf_form.addControl('AbstractSubmissionDeadline', new FormControl('', Validators.required));
-            this.journal_Conf_form.removeControl('IF');
-            this.journal_Conf_form.removeControl('RejectionRate');
-            this.journal_Conf_form.removeControl('ExpectedReviewPeriod');
-            this.journal_Conf_form.removeControl('JournalEditorInfo');
+            this.optionLabel.title = 'JournalName';
+            endpoint = this.spServices.getReadURL('' + this.constantService.listNames.Journal.name + '', this.pubsupportService.pubsupportComponent.journal);
+            jcObj = [{
+                url: endpoint,
+                type: 'GET',
+                listName: this.constantService.listNames.Journal.name
+            }];
+        } else if (type === 'conference') {
+            this.optionLabel.title = 'ConferenceName';
+            endpoint = this.spServices.getReadURL('' + this.constantService.listNames.Conference.name + '', this.pubsupportService.pubsupportComponent.conference);
+            jcObj = [{
+                url: endpoint,
+                type: 'GET',
+                listName: this.constantService.listNames.Conference.name
+            }];
+        }
+        const res = await this.spOperationsService.executeBatch(jcObj);
+        if (res[0].retItems.hasError) {
+            this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error', detail: res[0].retItems.message.value, life: 4000 });
+            this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+            return;
+        } else if (res[0].retItems) {
+            console.log('Res ', res);
+            this.jcListArray = res[0].retItems;
+            console.log('this.jcListArray ', this.jcListArray);
+        }
+        this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+    }
+
+    onChangeSelectedJCItem(item: any, type: string) {
+        console.log('item ', item);
+        if (item.value) {
+
+
+            if (type === 'journal') {
+                // this.journal_Conference_Detail_form.addControl('Name', new FormControl({ value: '', disabled: true }, Validators.required));
+                this.journal_Conference_Detail_form.addControl('ExpectedReviewPeriod', new FormControl([''], Validators.required));
+                this.journal_Conference_Detail_form.addControl('IF', new FormControl([''], Validators.required));
+                this.journal_Conference_Detail_form.addControl('RejectionRate', new FormControl([''], Validators.required));
+                this.journal_Conference_Detail_form.addControl('Comments', new FormControl([''], Validators.required));
+                this.journal_Conference_Detail_form.addControl('JournalEditorInfo', new FormControl([''], Validators.required));
+                this.journal_Conference_Detail_form.addControl('UserName', new FormControl('', [Validators.required]));
+                this.journal_Conference_Detail_form.addControl('Password', new FormControl('', [Validators.required]));
+
+                // Set New Values
+                this.journal_Conference_Detail_form.get('Name').setValue(item.value.JournalName);
+                this.journal_Conference_Detail_form.get('ExpectedReviewPeriod').setValue(item.value.ExpectedReviewPeriod);
+                this.journal_Conference_Detail_form.get('IF').setValue(item.value.ImpactFactor);
+                this.journal_Conference_Detail_form.get('RejectionRate').setValue(item.value.RejectionRate);
+                this.journal_Conference_Detail_form.get('Comments').setValue(item.value.Comments);
+                this.journal_Conference_Detail_form.get('JournalEditorInfo').setValue(item.value.JournalEditorInfo);
+
+                // Remove Conference Form
+                this.journal_Conference_Detail_form.removeControl('CongressDate');
+                this.journal_Conference_Detail_form.removeControl('AbstractSubmissionDeadline');
+                // this.journal_Conference_Detail_form.removeControl('Name');
+            } else {
+                // this.journal_Conference_Detail_form.addControl('Name', new FormControl({ value: '', disabled: true }, Validators.required));
+                this.journal_Conference_Detail_form.addControl('CongressDate', new FormControl(new Date(), [Validators.required]));
+                this.journal_Conference_Detail_form.addControl('AbstractSubmissionDeadline', new FormControl(new Date(), [Validators.required]));
+                this.journal_Conference_Detail_form.addControl('Comments', new FormControl([''], Validators.required));
+
+                this.journal_Conference_Detail_form.get('Name').setValue(item.value.ConferenceName);
+                this.journal_Conference_Detail_form.get('CongressDate').setValue(this.datePipe.transform(new Date(item.value.ConferenceDate), 'MMM dd, yyyy'));
+                this.journal_Conference_Detail_form.get('AbstractSubmissionDeadline').setValue(this.datePipe.transform(new Date(item.value.SubmissionDeadline), 'MMM dd, yyyy'));
+                this.journal_Conference_Detail_form.get('Comments').setValue(item.value.Comments);
+
+                // Remove Journal Form
+                this.journal_Conference_Detail_form.removeControl('UserName');
+                this.journal_Conference_Detail_form.removeControl('Password');
+                // this.journal_Conference_Detail_form.removeControl('Name');
+                this.journal_Conference_Detail_form.removeControl('ExpectedReviewPeriod');
+                this.journal_Conference_Detail_form.removeControl('IF');
+                this.journal_Conference_Detail_form.removeControl('RejectionRate');
+                this.journal_Conference_Detail_form.removeControl('JournalEditorInfo');
+            }
+            this.journal_Conference_Detail_form.updateValueAndValidity();
+            console.log(this.journal_Conference_Detail_form.controls);
         }
     }
 
@@ -783,28 +947,34 @@ export class PubsupportComponent implements OnInit {
     }
 
     get isValidAddUpdateJCDetailsForm() {
-        return this.journal_Conf_form.controls;
+        return this.journal_Conference_Detail_form.controls;
+        // this.journal_Conf_form
     }
-
-    get isValidCreateJournalForm() {
-        return this.createJournal_form.controls;
-    }
-
 
     createJournalModal: boolean = false;
     createConferenceModal: boolean = false;
     createJC() {
-        let type = this.journal_Conf_form.get('EntryType').value;
+        let type = this.journal_Conference_Detail_form.get('EntryType').value;
         this.formSubmit.isSubmit = false;
         this.submitBtn.isClicked = false;
         if (type === 'journal') {
-            this.createJournalModal = true;
+            const ref = this.dialogService.open(CreateJournalComponent, {
+                data: this.jcListArray,
+                closable: false,
+                header: 'Create Journal',
+                width: '85%'
+            });
+
+            ref.onClose.subscribe((conference) => {
+                if (conference) {
+                    this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success', detail: 'Journal Created.', life: 4000 });
+                    this.getJCList('journal');
+                }
+            });
         } else if (type === 'conference') {
-            // this.createConferenceModal = true;
+
             const ref = this.dialogService.open(CreateConferenceComponent, {
-                // data: {
-                //     id: '51gF3'
-                // },
+                data: this.jcListArray,
                 closable: false,
                 header: 'Create Conference',
                 width: '85%'
@@ -812,7 +982,8 @@ export class PubsupportComponent implements OnInit {
 
             ref.onClose.subscribe((conference) => {
                 if (conference) {
-                    this.messageService.add({ severity: 'info', summary: 'Car Selected', detail: 'Vin:' });
+                    this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success', detail: 'Conference Created.', life: 4000 });
+                    this.getJCList('conference');
                 }
             });
 
@@ -825,9 +996,7 @@ export class PubsupportComponent implements OnInit {
     cancelFormSub(formType) {
         if (formType === 'addJCDetailsModal') {
             this.addJCDetailsModal = false;
-        } else if (formType === 'createConferenceModal') {
-            this.createConferenceModal = false;
-            this.createJournal_form.reset();
+            this.journal_Conference_Detail_form.reset();
         }
         this.formSubmit.isSubmit = false;
         this.submitBtn.isClicked = false;
@@ -922,16 +1091,52 @@ export class PubsupportComponent implements OnInit {
             }
             this.submitBtn.isSubmit = true;
             this.uploadFileData('galley');
-        } else if (type === 'createJournal') {
-            if (this.createJournal_form.invalid) {
+        } else if (type === 'addJCDetailsModal') {
+            if (this.journal_Conference_Detail_form.invalid) {
                 this.submitBtn.isClicked = false;
                 return;
             }
-            this.submitBtn.isClicked = true;
-            console.log('createJournal_form ', this.createJournal_form.value);
+            this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
+            let obj = this.journal_Conference_Detail_form.getRawValue();
+            obj['Status'] = 'Selected';
+            obj['Title'] = this.selectedProject.ProjectCode;
+            delete obj['jcLineItem']
+            obj['JournalConferenceId'] = this.journal_Conference_Detail_form.getRawValue().jcLineItem.ID;
+            obj['__metadata'] = { type: this.constantService.listNames.JournalConf.type }
+            console.log('this.journal_Conference_Detail_form ', obj);
+
+            const endpoint = this.pubsupportService.pubsupportComponent.addJC.addJCDetails;
+            // const data = [
+            //     {
+            //         objData: obj,
+            //         endpoint,
+            //         requestPost: true
+            //     }
+            // ];
+            let data = [{
+                data: obj,
+                url: endpoint,
+                type: 'POST',
+                listName: this.constantService.listNames.ProjectInformation.name
+            }]
+            this.submit(data, type);
         }
     }
-    submit(dataEndpointArray, type: string) {
+    async submit(dataEndpointArray, type: string) {
+
+        if (type === 'addJCDetailsModal') {
+            const result = await this.spOperationsService.executeBatch(dataEndpointArray);
+            const res = result[0].retItems;
+            if (res.hasError) {
+                this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error', detail: res.message.value, life: 4000 });
+            } else {
+                console.log('res ', res);
+                this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success', detail: 'Journal Conference details submitted Successfully.', life: 4000 });
+            }
+            this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+            this.addJCDetailsModal = false;
+        }
+
         this.batchContents = [];
 
         const batchGuid = this.spServices.generateUUID();
@@ -947,6 +1152,7 @@ export class PubsupportComponent implements OnInit {
         const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
         batchBodyContent.push('--batch_' + batchGuid + '--');
         const sBatchData = batchBodyContent.join('\r\n');
+
         this.spServices.getData(batchGuid, sBatchData).subscribe(res => {
             this.projInfoResponse = res;
             const arrResults = [];

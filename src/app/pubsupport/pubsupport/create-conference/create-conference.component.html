@@ -1,7 +1,7 @@
 <form [formGroup]="createConference_form">
     <div class='blockBookingButton'>
         <button type="button" pButton icon="pi pi-save" id="saveBooking"
-            [ngStyle]="{'margin-right':'5px','cursor':'pointer' }" (click)="onSubmit('createConference')" label="Create"></button>
+            [ngStyle]="{'margin-right':'5px','cursor':'pointer' }" [disabled]="submitBtn.isClicked" (click)="onSubmit('createConference')" label="Create"></button>
 
         <button type="button" pButton icon="pi pi-times" (click)="cancelFormSub();" label="Cancel"
             class="ui-button-secondary" style="background-color:ghostwhite;"></button>
@@ -12,8 +12,12 @@
             Conference Name
         </div>
         <div class="p-col-12 p-md-6 p-lg-10">
-            <input type="text" pInputText maxlength="30" formControlName="ConferenceName"
-                style="width: 100% !important;" placeholder="Name" />
+            <!-- <input type="text" pInputText maxlength="30" formControlName="ConferenceName" style="width: 100% !important;" placeholder="Name" /> -->
+            <textarea rows="5" cols="30" pInputTextarea formControlName="ConferenceName" maxlength="200"
+            (keyup)="onKey($event.value)" (blur)="checkUniqueName()"></textarea>
+            <span *ngIf="uniqueJName" style="color:red;">Please provide unique name.</span>
+            <span *ngIf="createConference_form.value.ConferenceName" style="float: right;">{{createConference_form.value.ConferenceName.length}}/200</span>
+            <span *ngIf="createConference_form.value.ConferenceName.length >= '200'" style="color:red;float: right;">You have enter maximum length of Conference Name</span>
             <div *ngIf="formSubmit.isSubmit && isValidAddConferenceDetailsForm.ConferenceName.errors">
                 <div *ngIf="isValidAddConferenceDetailsForm.ConferenceName.errors.required" style="color:red;">
                     Please provide Conference Name.</div>
@@ -42,12 +46,12 @@
         <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
             <div class="box">
                 <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true"
-                    placeholder="Select Date" formControlName="submissionDeadline" [disabledDays]="[0,6]"
+                    placeholder="Select Date" formControlName="SubmissionDeadline" [disabledDays]="[0,6]"
                     dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
                     [yearNavigator]="true">
                 </p-calendar>
-                <div *ngIf="formSubmit.isSubmit && isValidAddConferenceDetailsForm.submissionDeadline.errors">
-                    <div *ngIf="isValidAddConferenceDetailsForm.submissionDeadline.errors.required" style="color:red;">
+                <div *ngIf="formSubmit.isSubmit && isValidAddConferenceDetailsForm.SubmissionDeadline.errors">
+                    <div *ngIf="isValidAddConferenceDetailsForm.SubmissionDeadline.errors.required" style="color:red;">
                         Please provide Submission Deadline Date.</div>
                 </div>
             </div>
