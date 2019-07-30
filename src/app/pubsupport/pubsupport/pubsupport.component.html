@@ -264,7 +264,7 @@
                                                     </tbody>
                                                     <!--Submission Detail Body Start-->
                                                     <tbody
-                                                        *ngFor="let s of submission_details_data[0]; let galleyIndex=index;">
+                                                        *ngFor="let s of submission_details_data; let galleyIndex=index;">
                                                         <tr>
                                                             <td>
                                                                 <span>{{galleyIndex + 1}}</span>
@@ -324,7 +324,7 @@
                                                         <ng-container
                                                             *ngIf="showHideGalleyDetails && galleyIndex === galleyIndexChecked && showHideGalleyData">
                                                             <!--View Gallery Detail Start-->
-                                                            <tr *ngFor="let g of galleyDetailsData[0]; let i=index;">
+                                                            <tr *ngFor="let g of galleyDetailsData; let i=index;">
                                                                 <td></td>
                                                                 <td>
                                                                     <label>Galley N0.</label><br>
@@ -1053,7 +1053,7 @@
         </div>
 
         <div
-            *ngIf="journal_Conference_Detail_form.value.EntryType === 'journal' && journal_Conference_Detail_form.value.jcLineItem">
+            *ngIf="(journal_Conference_Detail_form.value.EntryType === 'journal' || journal_Conference_Detail_form.value.EntryType === 'conference') && journal_Conference_Detail_form.value.jcLineItem">
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
                     User Name
@@ -1079,6 +1079,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div
+            *ngIf="journal_Conference_Detail_form.value.EntryType === 'journal' && journal_Conference_Detail_form.value.jcLineItem">
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
                     Name

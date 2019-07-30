@@ -33,9 +33,7 @@ export class CreateConferenceComponent implements OnInit {
         public ref: DynamicDialogRef,
         public psConstantService: PubsuportConstantsService,
         private spOperationsService: SpOperationsService,
-        private spServices: SharepointoperationService,
         private constantService: ConstantsService,
-        private GlobalService: GlobalService,
         private messageService: MessageService,
         public config: DynamicDialogConfig,
 
