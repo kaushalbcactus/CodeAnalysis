@@ -100,8 +100,7 @@ export class SOWComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if (this.router.url.indexOf('myDashboard') > -1) {
       this.showProjectLink = false;
-    }
-    else {
+    } else {
       this.showProjectLink = true;
     }
     this.loadSOWInit();
@@ -288,8 +287,7 @@ export class SOWComponent implements OnInit, OnDestroy {
         this.allProjectRef.filter(this.pmObject.columnFilter.SOWCode, 'SOWCode', 'in');
         this.pmObject.selectedSOWTask = getSOW;
         this.viewSOW(this.pmObject.selectedSOWTask);
-      }
-      else {
+      } else {
         this.pmObject.columnFilter.SOWCode = [];
       }
 
@@ -384,8 +382,8 @@ export class SOWComponent implements OnInit, OnDestroy {
         const tempBuget = budgetArray.find(x => x.retItems && x.retItems.length &&
           x.retItems[0].Title === projectItem.ProjectCode);
         projectObj.Budget = tempBuget && tempBuget.retItems.length
-          ? (tempBuget.retItems[0].ApprovedBudget ? tempBuget.retItems[0].ApprovedBudget : 
-          (tempBuget.retItems[0].RevenueBudget ? tempBuget.retItems[0].RevenueBudget : 0)) : 0;
+          ? (tempBuget.retItems[0].ApprovedBudget ? tempBuget.retItems[0].ApprovedBudget :
+            (tempBuget.retItems[0].RevenueBudget ? tempBuget.retItems[0].RevenueBudget : 0)) : 0;
         projectObj.Status = projectItem.Status;
         tempProjectArray.push(projectObj);
       });
@@ -489,23 +487,23 @@ export class SOWComponent implements OnInit, OnDestroy {
 
   @HostListener('document:click', ['$event'])
   clickout(event) {
-    if (event.target.className === "pi pi-ellipsis-v") {
+    if (event.target.className === 'pi pi-ellipsis-v') {
       if (this.tempClick) {
-        this.tempClick.style.display = "none";
+        this.tempClick.style.display = 'none';
         if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
           this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = "";
+          this.tempClick.style.display = '';
         } else {
           this.tempClick = undefined;
         }
       } else {
         this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = "";
+        this.tempClick.style.display = '';
       }
 
     } else {
       if (this.tempClick) {
-        this.tempClick.style.display = "none";
+        this.tempClick.style.display = 'none';
         this.tempClick = undefined;
       }
     }

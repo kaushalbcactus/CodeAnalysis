@@ -1,7 +1,6 @@
 import { Component, OnInit, NgZone, ViewEncapsulation, OnDestroy } from '@angular/core';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { CommonService } from 'src/app/Services/common.service';
 import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
 import { PmconstantService } from '../services/pmconstant.service';
 import { PMObjectService } from '../services/pmobject.service';
@@ -295,7 +294,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         return;
       }
       // get all the value from form.
-      
       this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity ? this.addSowForm.value.clientLegalEntity :
         this.pmObject.addSOW.ClientLegalEntity;
       this.pmObject.addSOW.SOWCode = this.addSowForm.value.sowCode ? this.addSowForm.value.sowCode + '-SOW' : this.pmObject.addSOW.SOWCode;
@@ -307,10 +305,10 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.addSOW.SOWCreationDate = this.addSowForm.value.sowCreationDate ? this.addSowForm.value.sowCreationDate :
         this.pmObject.addSOW.SOWCreationDate;
       this.pmObject.addSOW.SOWExpiryDate = this.addSowForm.value.sowExpiryDate;
-      if(this.pmObject.addSOW.SOWCreationDate && this.pmObject.addSOW.SOWExpiryDate) {
+      if (this.pmObject.addSOW.SOWCreationDate && this.pmObject.addSOW.SOWExpiryDate) {
         const creationDate = new Date(this.pmObject.addSOW.SOWCreationDate);
         const expirtyDate = new Date(this.pmObject.addSOW.SOWExpiryDate);
-        if(expirtyDate <= creationDate) {
+        if (expirtyDate <= creationDate) {
           this.messageService.add({
             key: 'custom', severity: 'error',
             summary: 'Error Message', detail: 'SOW expiry date should be greater than sow creation date.'
@@ -845,14 +843,14 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           this.pmService.setGlobalVariable(sowItemResult[0]);
         }
       }
-      if(this.pmObject.addSOW.SOWDocument.indexOf(this.selectedFile.name) > -1) {
+      if (this.pmObject.addSOW.SOWDocument.indexOf(this.selectedFile.name) > -1) {
         this.messageService.add({
           key: 'custom', severity: 'error',
           summary: 'Error Message', detail: 'Addendum SOW document name same as original document name.'
         });
         return;
       }
-    
+
       if (this.selectedFile) {
         await this.submitFile();
       }
