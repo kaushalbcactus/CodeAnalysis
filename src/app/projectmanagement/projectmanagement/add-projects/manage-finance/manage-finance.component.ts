@@ -1379,7 +1379,9 @@ export class ManageFinanceComponent implements OnInit {
       ///// Remove all buttons if there is approval pending
       const budgetPending = this.existPBBBudgetArray.retItems.find(e =>
         e.Status === this.constant.projectBudgetBreakupList.status.ApprovalPending);
-      if (this.projectStatus !== this.constant.projectList.status.InDiscussion && budgetPending) {
+      if ((this.projectStatus !== this.constant.projectList.status.InDiscussion && budgetPending)
+        || this.projectStatus !== this.constant.projectList.status.Closed
+        || this.projectStatus !== this.constant.projectList.status.Cancelled) {
         this.hideRemoveButton = true;
         this.isAddRateButtonHidden = true;
         this.isAddBudgetButtonHidden = true;

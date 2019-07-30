@@ -299,8 +299,6 @@ export class TimeBookingDialogComponent implements OnInit {
 
       }
       else if (task.ProjectCode === 'Adhoc') {
-
-
         var milestone = this.UserMilestones.find(c => c.Entity === task.Entity && c.Milestone === task.Comments);
 
         var hoursArray = [];
@@ -317,9 +315,26 @@ export class TimeBookingDialogComponent implements OnInit {
 
           }
         }
-
-
       }
+      else if (task.Task === 'Adhoc') {
+        var milestone = this.UserMilestones.find(c => c.Entity === task.Entity && c.Milestone === task.Milestone);
+
+        var hoursArray = [];
+        hoursArray.push(task.TimeSpent);
+
+        if (milestone !== undefined) {
+          var currentMilestone = milestone.TimeSpents.find(c => new Date(this.datePipe.transform(c.date, 'yyyy-MM-dd')).getTime() === new Date(this.datePipe.transform(task.Actual_x0020_Start_x0020_Date, 'yyyy-MM-dd')).getTime())
+          if (currentMilestone !== undefined) {
+            hoursArray.push(currentMilestone.MileHrs);
+            var timeSpentHours = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? "." : ':')).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(c.indexOf('.') > -1 ? "." : ':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
+            var timeSpentMin = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? "." : ':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
+            var timeSpentHours1 = timeSpentHours < 10 ? "0" + timeSpentHours : timeSpentHours;
+            currentMilestone.MileHrs = timeSpentMin < 10 ? timeSpentHours1 + ':' + "0" + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
+
+          }
+        }
+      }
+
     });
 
     var allProjectCodes = this.UserMilestones !== undefined ? this.UserMilestones.map(c => c.ProjectCode) : [];
