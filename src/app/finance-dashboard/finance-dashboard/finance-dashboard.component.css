@@ -625,7 +625,7 @@ ul {
     font-weight: bold;
 }
 
-.col10 figure table tr:first-child td:first-child {
+/* .col10 figure table tr:first-child td:first-child {
     width: 5%;
 }
 
@@ -663,7 +663,20 @@ ul {
 
 .col10 figure table tr:first-child td:nth-child(10) {
     width: 13%;
-}
+} */
+
+
+.col10 figure table tr:first-child td:first-child{width:10%;}
+.col10 figure table tr:first-child td:nth-child(2){width:6%;}
+.col10 figure table tr:first-child td:nth-child(3){width:8%;}
+.col10 figure table tr:first-child td:nth-child(4){width:10%;}
+.col10 figure table tr:first-child td:nth-child(5){width:12%;}
+.col10 figure table tr:first-child td:nth-child(6){width:10%;}
+.col10 figure table tr:first-child td:nth-child(7){width:9%;}
+.col10 figure table tr:first-child td:nth-child(8){width:10%;}
+.col10 figure table tr:first-child td:nth-child(9){width:10%;}
+.col10 figure table tr:first-child td:nth-child(10){width:15%;}
+
 
 .proformaDetail table tbody tr td {
     text-align: left;

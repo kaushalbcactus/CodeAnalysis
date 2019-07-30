@@ -59,7 +59,7 @@ export class EditorComponent implements OnInit {
         private messageService: MessageService,
         private globalObject: GlobalService,
         private spOperationsServices: SpOperationsService,
-        private constantsService : ConstantsService,
+        private constantsService: ConstantsService,
         private spServices: SharepointoperationService,
         private datePipe: DatePipe,
     ) { }
@@ -90,7 +90,8 @@ export class EditorComponent implements OnInit {
             //Appendix: [],
             Appendix: [{ dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: 4125.24 },
             { dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: 4125 },
-            { dvcode: '150833', cactusSpCode: 'ASZ01-MSS-193242', title: 'MOFFITT Resubmission 2', amount: 441255.67 }],
+
+            ],
             tax: '39,564.45',
             // centralTax : '39,564.45',
             // stateTax : '19,782.22',
@@ -774,6 +775,7 @@ export class EditorComponent implements OnInit {
     </table>
     <div class="invoice-table">
         <div id="appendix" class="col3">
+        <figure>
         <table>
         <thead>
             <tr style="text-align: center; font-size: 16px; font-weight: bold;">
@@ -792,6 +794,7 @@ export class EditorComponent implements OnInit {
             [[Appendix]]
         </tbody>
         </table>
+        </figure>
         </div>
     </div>`,
             header: `<div>
@@ -1045,16 +1048,16 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
 .col3 table tr:first-child td:nth-child(2){width:34%;}
 .col4 table tr:first-child td:first-child{width:16%;}
 .col10 figure table tr:first-child td{font-weight: bold;}
-.col10 figure table tr:first-child td:first-child{width:5%;}
-.col10 figure table tr:first-child td:nth-child(2){width:13%;}
+.col10 figure table tr:first-child td:first-child{width:10%;}
+.col10 figure table tr:first-child td:nth-child(2){width:6%;}
 .col10 figure table tr:first-child td:nth-child(3){width:8%;}
 .col10 figure table tr:first-child td:nth-child(4){width:10%;}
 .col10 figure table tr:first-child td:nth-child(5){width:12%;}
 .col10 figure table tr:first-child td:nth-child(6){width:10%;}
 .col10 figure table tr:first-child td:nth-child(7){width:9%;}
-.col10 figure table tr:first-child td:nth-child(8){width:11%;}
-.col10 figure table tr:first-child td:nth-child(9){width:9%;}
-.col10 figure table tr:first-child td:nth-child(10){width:13%;}
+.col10 figure table tr:first-child td:nth-child(8){width:10%;}
+.col10 figure table tr:first-child td:nth-child(9){width:10%;}
+.col10 figure table tr:first-child td:nth-child(10){width:15%;}
 .proformaDetail table tbody tr td{text-align: left;padding: 16px 10px;}
 .proformaDetail table tbody tr:last-child td:nth-child(2){text-align: center; font-weight: bold;}
 .indiaPurchase td:first-child p strong {
@@ -1408,7 +1411,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         </table>
     
         <div class="invoice-table appendix">
-            <div id="appendix">
+            <div id="appendix"> <figure>
             <table>
         <thead>
             <tr style="text-align: center; font-size: 16px; font-weight: bold;">
@@ -1429,7 +1432,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         <tbody>
             [[Appendix]]
         </tbody>
-        </table>
+        </table></figure>
             </div>
         </div>`,
             header: `<div id=header>
@@ -1834,6 +1837,8 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             USInvoice.appendixCreate = USInvoice.appendixCreate.replace('[[Total]]', invoiceData.invoiceFees);
             USInvoice.appendixCreate = USInvoice.appendixCreate.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                 invoiceData.usCurrencySymbol);
+            USInvoice.appendixCreate = USInvoice.appendixCreate.replace('<figure>', '');
+            USInvoice.appendixCreate = USInvoice.appendixCreate.replace('</figure>', '');
         } else {
             USInvoice.maincontent = USInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsterisk\\]\\]', 'gi'), 'none');
             USInvoice.maincontent = USInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsteriskMessage\\]\\]', 'gi'), 'none');
@@ -2008,6 +2013,9 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             JapanInvoice.appendixCreate = JapanInvoice.appendixCreate.replace('[[Appendix]]', newArr.join(''));
             JapanInvoice.appendixCreate = JapanInvoice.appendixCreate.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                 invoiceData.JpnCurrencySymbol);
+            JapanInvoice.appendixCreate = JapanInvoice.appendixCreate.replace('<figure>', '');
+            JapanInvoice.appendixCreate = JapanInvoice.appendixCreate.replace('</figure>', '');
+
         } else {
             this.showAppendix = false;
             JapanInvoice.maincontent = JapanInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsterisk\\]\\]', 'gi'), 'none');
@@ -2170,6 +2178,8 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             IndiaInvoice.appendixCreate = IndiaInvoice.appendixCreate.replace('[[Appendix]]', newArr.join(''));
             IndiaInvoice.appendixCreate = IndiaInvoice.appendixCreate.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                 invoiceData.IndCurrencySymbol);
+            IndiaInvoice.appendixCreate = IndiaInvoice.appendixCreate.replace('<figure>', '');
+            IndiaInvoice.appendixCreate = IndiaInvoice.appendixCreate.replace('</figure>', '');
 
         } else {
             this.showAppendix = false;
@@ -2504,11 +2514,11 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
 
             const projectAppendix = await this.createProjectAppendix(this.iliByPidRes);
             await this.fdShareDataService.callProformaCreation(prf, this.cleData, this.projectContactsData, this.purchaseOrdersList, this, projectAppendix);
-            
+
         }
     }
 
-    
+
     // Purchase Order Number
     purchaseOrdersList: any = [];
     poInfo() {
@@ -2535,9 +2545,9 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
     // Client Legal Entity
     cleData: any = [];
     async cleInfo() {
-       
+
         await this.fdShareDataService.getClePO('confirm');
-      
+
         this.cleData = [];
         this.subscription.add(this.fdShareDataService.defaultCLEData.subscribe((res) => {
             if (res) {
@@ -2547,42 +2557,42 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         }))
     }
 
-     // Generate Invoice Data start
-     iliByPidRes: any = [];
-    
-     async getILIByPID(id) {
+    // Generate Invoice Data start
+    iliByPidRes: any = [];
 
-         const batchContents = new Array();
-         const batchGuid = this.spServices.generateUUID();
-         let invoicesQuery = '';
-         let obj = {
-             filter: this.fdConstantsService.fdComponent.invoiceLineItem.filter.replace("{{ProformaLookup}}", id),
-             select: this.fdConstantsService.fdComponent.invoiceLineItem.select,
-             top: this.fdConstantsService.fdComponent.invoiceLineItem.top,
-             // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
-         }
-         invoicesQuery = this.spServices.getReadURL('' + this.constantsService.listNames.InvoiceLineItems.name + '', obj);
-         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
- 
-         let endPoints = [invoicesQuery];
-         let userBatchBody = '';
-         for (let i = 0; i < endPoints.length; i++) {
-             const element = endPoints[i];
-             this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-         }
-         batchContents.push('--batch_' + batchGuid + '--');
-         userBatchBody = batchContents.join('\r\n');
-         let arrResults: any = [];
-         const res = await this.spServices.getFDData(batchGuid, userBatchBody);// .subscribe(res => {
-         arrResults = res;
-         if (arrResults.length) {
-             console.log(arrResults[0]);
-             this.iliByPidRes = arrResults[0] ? arrResults[0] : [];
-         }
+    async getILIByPID(id) {
 
-     }
+        const batchContents = new Array();
+        const batchGuid = this.spServices.generateUUID();
+        let invoicesQuery = '';
+        let obj = {
+            filter: this.fdConstantsService.fdComponent.invoiceLineItem.filter.replace("{{ProformaLookup}}", id),
+            select: this.fdConstantsService.fdComponent.invoiceLineItem.select,
+            top: this.fdConstantsService.fdComponent.invoiceLineItem.top,
+            // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
+        }
+        invoicesQuery = this.spServices.getReadURL('' + this.constantsService.listNames.InvoiceLineItems.name + '', obj);
+        // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
-     // Project Info 
+        let endPoints = [invoicesQuery];
+        let userBatchBody = '';
+        for (let i = 0; i < endPoints.length; i++) {
+            const element = endPoints[i];
+            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        }
+        batchContents.push('--batch_' + batchGuid + '--');
+        userBatchBody = batchContents.join('\r\n');
+        let arrResults: any = [];
+        const res = await this.spServices.getFDData(batchGuid, userBatchBody);// .subscribe(res => {
+        arrResults = res;
+        if (arrResults.length) {
+            console.log(arrResults[0]);
+            this.iliByPidRes = arrResults[0] ? arrResults[0] : [];
+        }
+
+    }
+
+    // Project Info 
     projectInfoData: any = [];
     async projectInfo() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
@@ -2597,7 +2607,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         }))
     }
 
-     async createProjectAppendix(selectedProjects) {
+    async createProjectAppendix(selectedProjects) {
 
         const projectAppendix = [];
         let retProjects = [];
@@ -2637,7 +2647,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             });
 
             retProjects = await this.spOperationsServices.executeBatch(batchURL);
-            const mappedProjects = retProjects.map( obj => obj.retItems.length ? obj.retItems[0] : []);
+            const mappedProjects = retProjects.map(obj => obj.retItems.length ? obj.retItems[0] : []);
             projects = [...projects, ...mappedProjects];
         }
         const appendixObj = { dvcode: '', cactusSpCode: '', title: '', amount: '' };

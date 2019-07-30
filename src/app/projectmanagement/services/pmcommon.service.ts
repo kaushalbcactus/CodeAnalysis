@@ -656,7 +656,7 @@ export class PMCommonService {
           };
           break;
         case this.constant.SKILL_LEVEL.GRAPHICS:
-          data.GraphicsId = {
+          data.GraphicsMembersId = {
             results: [resource.UserName.ID]
           };
           break;

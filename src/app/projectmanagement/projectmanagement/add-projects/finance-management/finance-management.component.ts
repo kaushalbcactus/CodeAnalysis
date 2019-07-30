@@ -305,21 +305,23 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
    * @param projectCode pass the project code.
    */
   createFolderArray(ClientLegalEnity, projectCode) {
+    const legalEntity = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.find(e=>e.Title === ClientLegalEnity);
+    const listName = legalEntity.ListName;
     const arrFolders = [
-      ClientLegalEnity + '/' + projectCode,
-      ClientLegalEnity + '/' + projectCode + '/Communications',
-      ClientLegalEnity + '/' + projectCode + '/Drafts',
-      ClientLegalEnity + '/' + projectCode + '/Emails',
-      ClientLegalEnity + '/' + projectCode + '/Graphics',
-      ClientLegalEnity + '/' + projectCode + '/Miscellaneous',
-      ClientLegalEnity + '/' + projectCode + '/Publication Support',
-      ClientLegalEnity + '/' + projectCode + '/References',
-      ClientLegalEnity + '/' + projectCode + '/Source Documents',
-      ClientLegalEnity + '/' + projectCode + '/Drafts/Client',
-      ClientLegalEnity + '/' + projectCode + '/Drafts/Internal',
-      ClientLegalEnity + '/' + projectCode + '/Publication Support/Author List Emails',
-      ClientLegalEnity + '/' + projectCode + '/Publication Support/Forms',
-      ClientLegalEnity + '/' + projectCode + '/Publication Support/Published Papers'
+      listName + '/' + projectCode,
+      listName + '/' + projectCode + '/Communications',
+      listName + '/' + projectCode + '/Drafts',
+      listName + '/' + projectCode + '/Emails',
+      listName + '/' + projectCode + '/Graphics',
+      listName + '/' + projectCode + '/Miscellaneous',
+      listName + '/' + projectCode + '/Publication Support',
+      listName + '/' + projectCode + '/References',
+      listName + '/' + projectCode + '/Source Documents',
+      listName + '/' + projectCode + '/Drafts/Client',
+      listName + '/' + projectCode + '/Drafts/Internal',
+      listName + '/' + projectCode + '/Publication Support/Author List Emails',
+      listName + '/' + projectCode + '/Publication Support/Forms',
+      listName + '/' + projectCode + '/Publication Support/Published Papers'
     ];
     return arrFolders;
   }

@@ -286,8 +286,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       this.DocumentArray = this.allDocuments.filter(c => c.ListItemAllFields.TaskName === this.selectedTask.Title);
     }
     else if (this.selectedTab === this.prevTask) {
-      var previouTasks = this.selectedTask.PrevTasks.indexOf(";#") > -1 ? this.selectedTask.PrevTasks.split(";#") : this.selectedTask.PrevTasks;
-      this.DocumentArray = this.allDocuments.filter(c => previouTasks.includes(c.ListItemAllFields.TaskName));
+      var previouTasks = this.selectedTask.PrevTasks.indexOf(";#") > -1 ? this.selectedTask.PrevTasks.split(";#") : [this.selectedTask.PrevTasks];
+      this.DocumentArray = this.allDocuments.filter(c => (previouTasks.indexOf(c.ListItemAllFields.TaskName) > -1));
     }
     else {
       this.DocumentArray = this.allDocuments;

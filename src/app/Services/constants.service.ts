@@ -413,12 +413,12 @@ export class ConstantsService {
       AwaitingCancelApproval: 'Awaiting Cancel Approval',
       PendingClosure: 'Pending Closure',
       SentToAMForApproval: 'Sent to AM for Approval',
-      Selected: 'Selected',
-      Galleyed: 'Galleyed',
-      Submitted: 'Submitted',
-      Published: 'Published',
-      Accepted: 'Accepted',
-      Rejected: 'Rejected'
+      // Selected: 'Selected',
+      // Galleyed: 'Galleyed',
+      // Submitted: 'Submitted',
+      // Published: 'Published',
+      // Accepted: 'Accepted',
+      // Rejected: 'Rejected'
     },
     columns: {
       Title: 'Title',

@@ -112,7 +112,7 @@ export class AllProjectsComponent implements OnInit {
   ngOnInit() {
     this.overAllValues = [
       { name: 'Open', value: 'Open' },
-      { name: 'Closed', code: 'Closed' }
+      { name: 'Closed / Cancelled', value: 'Closed' }
     ];
     this.selectedOption = this.overAllValues[0];
     this.providedProjectCode = '';
@@ -613,7 +613,7 @@ export class AllProjectsComponent implements OnInit {
           menu.model[1].visible = false;
           menu.model[2].visible = false;
           menu.model[3].visible = false;
-          menu.model[10].visible = false;
+          //menu.model[10].visible = false;
           break;
         case this.constants.projectStatus.Unallocated:
         case this.constants.projectStatus.InProgress:
@@ -629,24 +629,35 @@ export class AllProjectsComponent implements OnInit {
           menu.model[1].visible = false;
           menu.model[3].visible = false;
           menu.model[13].visible = false;
-          menu.model[10].visible = false;
+          //menu.model[10].visible = false;
           break;
         case this.constants.projectStatus.PendingClosure:
           menu.model[0].visible = false;
           menu.model[1].visible = false;
           menu.model[2].visible = false;
-          menu.model[6].visible = false;
+          menu.model[5].visible = false;
           menu.model[13].visible = false;
-          menu.model[10].visible = false;
+         // menu.model[10].visible = false;
+          break;
+        case this.constants.projectStatus.Closed:
+        case this.constants.projectStatus.Cancelled:
+          menu.model[0].visible = false;
+          menu.model[1].visible = false;
+          menu.model[2].visible = false;
+          menu.model[3].visible = false;
+          menu.model[5].visible = false;
+          menu.model[9].visible = false;
+          menu.model[13].visible = false;
+          //menu.model[10].visible = false;
           break;
         case this.constants.projectStatus.SentToAMForApproval:
           menu.model[0].visible = false;
           menu.model[1].visible = false;
           menu.model[2].visible = false;
           menu.model[3].visible = false;
-          menu.model[6].visible = false;
+          menu.model[5].visible = false;
           menu.model[13].visible = false;
-          menu.model[10].visible = false;
+          //menu.model[10].visible = false;
           break;
         case this.constants.projectStatus.AwaitingCancelApproval:
           menu.model[0].visible = false;
@@ -1975,7 +1986,14 @@ export class AllProjectsComponent implements OnInit {
   }
   async getProjectByCode() {
     const projectCode = this.providedProjectCode;
-    const projectInfoFilter = Object.assign({}, this.pmConstant.PM_QUERY.PROJECT_INFORMATION_BY_PROJECTCODE);
+    let projectInfoFilter;
+    if (this.pmObject.userRights.isMangers || this.pmObject.userRights.isHaveProjectFullAccess) {
+      projectInfoFilter = Object.assign({}, this.pmConstant.PM_QUERY.PROJECT_INFORMATION_BY_PROJECTCODE_ALL);
+    }
+    else {
+      projectInfoFilter = Object.assign({}, this.pmConstant.PM_QUERY.PROJECT_INFORMATION_BY_PROJECTCODE);
+    }
+    
     projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi,
       projectCode);
     const results = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInfoFilter);
