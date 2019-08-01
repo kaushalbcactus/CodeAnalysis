@@ -10,6 +10,8 @@ import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.ser
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { Router } from '@angular/router';
+import { DataService } from 'src/app/Services/data.service';
 declare var $;
 @Component({
   selector: 'app-standardproject',
@@ -91,7 +93,9 @@ export class StandardprojectComponent implements OnInit {
     private pmConstant: PmconstantService,
     private pmCommonService: PMCommonService,
     private sharedObject: GlobalService,
-    public messageService: MessageService) {
+    public messageService: MessageService,
+    private router: Router,
+    private dataService: DataService) {
   }
 
   getDatePart(date) {
@@ -288,7 +292,7 @@ export class StandardprojectComponent implements OnInit {
       filter: 'LegalEntity/Title eq \'' + clientLegalEntity + '\' and Active eq \'Yes \''
     };
     standardTemplate = await this.spService.readItems(this.constants.listNames.StandardTemplates.name, standardTemplateOptions);
-    if(standardTemplate && standardTemplate.length) {
+    if (standardTemplate && standardTemplate.length) {
       this.loadServiceDropDown(standardTemplate);
     }
   }
@@ -669,6 +673,7 @@ export class StandardprojectComponent implements OnInit {
       milestoneObj.data.minEndDateValue = milestoneObj.data.StartDate;
       milestoneObj.data.ClientReviewDays = orginalMilestone[index].ClientReviewDays;
       milestoneObj.data.strSubMilestone = orginalMilestone[index].SubMilestones;
+      milestoneObj.data.SwimlaneCount = orginalMilestone[index].SwimlaneCount;
       milestoneObj.SubMilestones = this.getSubMilestones(orginalMilestone[index].SubMilestones);
       // check If submilestones is present or not
       if (milestoneObj.SubMilestones) {
@@ -981,6 +986,7 @@ export class StandardprojectComponent implements OnInit {
           taskObj.data.Skill = milestoneTask[index].Skill;
           taskObj.data.TaskDays = milestoneTask[index].TaskDays;
           taskObj.data.UseTaskDays = milestoneTask[index].UseTaskDays;
+          taskObj.data.TaskPosition = milestoneTask[index].TaskPosition;
           taskObj.data.Title = milestoneTask[index].Title;
           taskObj.data.Name = taskObj.data.TaskName;
           taskObj.data.isStartDateDisabled = false;
@@ -1963,7 +1969,7 @@ export class StandardprojectComponent implements OnInit {
    * This method get called when register button is clicked.
    * This set all the milestone and other object so that it will directly available on angular 1 or js file.
    */
-  saveTimelineData() {
+  async saveTimelineData() {
     const isTrue = this.validateRequiredField(true);
     if (isTrue) {
       this.disableField();
@@ -1982,6 +1988,21 @@ export class StandardprojectComponent implements OnInit {
       this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours = this.standardProjectBudgetHrs;
       this.pmObject.addProject.Timeline.Standard.StandardBudgetHrs = this.standardBudgetHrs;
       this.pmObject.addProject.Timeline.Standard.standardArray = this.standardFiles;
+      this.pmObject.addProject.FinanceManagement.BudgetHours = this.pmObject.addProject.Timeline.Standard.StandardProjectBugetHours;
+      await this.pmCommonService.validateAndSave();
+      this.messageService.add({
+        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+        detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
+      });
+      setTimeout(() => {
+        this.pmObject.isAddProjectVisible = false;
+        if (this.router.url === '/projectMgmt/allProjects') {
+          this.dataService.publish('reload-project');
+        } else {
+          this.pmObject.allProjectItems = [];
+          this.router.navigate(['/projectMgmt/allProjects']);
+        }
+      }, this.pmConstant.TIME_OUT);
     }
   }
   setFieldProperties() {
@@ -2115,14 +2136,14 @@ export class StandardprojectComponent implements OnInit {
     return startDate;
   }
   goToProjectAttributes() {
-    this.pmObject.activeIndex = 1;
+    this.pmObject.activeIndex = 2;
   }
 
-  goToFinanceMang() {
-    if (this.pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked) {
-      this.pmObject.activeIndex = 3;
-    } else {
-      this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Please generate and register the task.' });
-    }
-  }
+  // goToFinanceMang() {
+  //   if (this.pmObject.addProject.Timeline.Standard.IsRegisterButtonClicked) {
+  //     this.pmObject.activeIndex = 3;
+  //   } else {
+  //     this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Please generate and register the task.' });
+  //   }
+  // }
 }

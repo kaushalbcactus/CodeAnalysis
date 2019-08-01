@@ -213,7 +213,9 @@ export class PMObjectService {
       GlobalFilterValue: '',
       GlobalFilterEvent: '',
       SOWCode: '',
-      SOWSelectedItem: {}
+      SOWSelectedItem: {},
+      sowTotalBalance: 0,
+      sowNetBalance: 0
     },
     ProjectAttributes: {
       ID: 0,
@@ -302,7 +304,11 @@ export class PMObjectService {
         Tax: 0
       },
       OverNightRequest: '',
-      Rate: 0
+      Rate: 0,
+      ClientLegalEntity: '',
+      BilledBy: '',
+      selectedFile: '',
+      isBudgetRateAdded: false
     }
   };
   public addSOW = {
@@ -503,6 +509,12 @@ export class PMObjectService {
     SOWCode: []
   };
   public isReasonSectionVisible = false;
+  public billedBy = [];
+  public arrAdvanceInvoices = [];
+  public milestoneArray = [];
+  public taskArray = [];
+  public fileReader: any = '';
+  public updateInvoices = [];
 }
 
 
