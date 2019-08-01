@@ -6,6 +6,7 @@ import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 
 @Component({
   selector: 'app-time-spent-dialog',
@@ -44,7 +45,9 @@ export class TimeSpentDialogComponent implements OnInit {
     private constants: ConstantsService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
-    private spServices: SharepointoperationService, public messageService: MessageService,
+    private spServices: SharepointoperationService, 
+    public messageService: MessageService,
+    public spOperations: SPOperationService,
   ) { }
 
   ngOnInit() {
@@ -207,22 +210,20 @@ export class TimeSpentDialogComponent implements OnInit {
     var businessDates = [];
     var enableEditDate = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3);
     while (startDate <= endDate) {
-      if (endDate >= new Date( this.datePipe.transform(enableEditDate,'MMM d,y')) && endDate <= new Date()) {
-        businessDates.push({ actualDate: endDate, date: this.datePipe.transform(endDate, 'EE, MMM d, y'), time: '00:00', edited: true });
+      const copyDate = new Date(endDate.getTime());
+      if (copyDate >= new Date( this.datePipe.transform(enableEditDate,'MMM d,y')) && copyDate <= new Date()) {
+        businessDates.push({ actualDate: copyDate, date: this.datePipe.transform(copyDate, 'EE, MMM d, y'), time: '00:00', edited: true });
       }
       else {
-        businessDates.push({ actualDate: endDate, date: this.datePipe.transform(endDate, 'EE, MMM d, y'), time: '00:00', edited: false });
+        businessDates.push({ actualDate: copyDate, date: this.datePipe.transform(copyDate, 'EE, MMM d, y'), time: '00:00', edited: false });
       }
+      
       endDate = new Date(endDate.setDate(endDate.getDate() - 1));
     }
     return businessDates;
   }
 
-
-
-
-
-
+  
   // *************************************************************************************************************************************
   //  Calculate  working days
   // *************************************************************************************************************************************
@@ -309,7 +310,7 @@ export class TimeSpentDialogComponent implements OnInit {
       TimeSpentPerDay: timeSpentString,
       Status: task.Status === "Not Started" ? "In Progress" : task.Status
     };
-    await this.spServices.update(this.constants.listNames.Schedules.name, task.ID, jsonData, "SP.Data.SchedulesListItem");
+    await this.spOperations.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, "SP.Data.SchedulesListItem");
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task Time updated successfully.' });
 
   };

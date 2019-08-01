@@ -5,11 +5,9 @@ import { MyDashboardConstantsService } from '../services/my-dashboard-constants.
 import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
 import { DatePipe } from '@angular/common';
 import { GlobalService } from 'src/app/Services/global.service';
-import { ElementSchemaRegistry } from '@angular/compiler';
-import { eraseStyles } from '@angular/animations/browser/src/util';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { Table } from 'primeng/table';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 
 @Component({
   selector: 'app-time-booking-dialog',
@@ -69,7 +67,8 @@ export class TimeBookingDialogComponent implements OnInit {
     private myDashboardConstantsService: MyDashboardConstantsService,
     private spServices: SharepointoperationService,
     private datePipe: DatePipe,
-    public sharedObject: GlobalService
+    public sharedObject: GlobalService,
+    public spOperations: SPOperationService,
   ) { }
 
 
@@ -417,7 +416,7 @@ export class TimeBookingDialogComponent implements OnInit {
           existingObj.TimeSpent = totalTimeSpent;
           existingObj.TimeSpentPerDay = timeSpentString;
           count++;
-          await this.spServices.update(this.constants.listNames.Schedules.name, existingObj.ID, existingObj, "SP.Data.SchedulesListItem");
+          await this.spOperations.updateItem(this.constants.listNames.Schedules.name, existingObj.ID, existingObj, "SP.Data.SchedulesListItem");
         }
       } else {
         if (dbTasks[i].Entity) {

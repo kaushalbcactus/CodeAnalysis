@@ -86,6 +86,7 @@ export class AllProjectsComponent implements OnInit {
   subscription;
   isApprovalAction = false;
   showNavigateSOW = false;
+  showFilterOptions = false;
   overAllValues: any;
   selectedOption: any = '';
   showProjectInput = false;
@@ -133,6 +134,7 @@ export class AllProjectsComponent implements OnInit {
   reloadAllProject() {
     this.isAllProjectTableHidden = true;
     this.isAllProjectLoaderHidden = false;
+    this.showFilterOptions = false;
     this.popItems = [
       {
         label: 'Confirm Project', command: (event) =>
@@ -201,10 +203,18 @@ export class AllProjectsComponent implements OnInit {
         this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       }
-      this.params.ProjectCode = this.route.snapshot.queryParams.ProjectCode;
-      this.params.ActionStatus = this.route.snapshot.queryParams.ActionStatus;
-      this.params.ProjectStatus = this.route.snapshot.queryParams.ProjectStatus;
-      this.params.ProjectBudgetStatus = this.route.snapshot.queryParams.ProjectBudgetStatus;
+      if(this.route.snapshot.queryParams) {
+        this.params.ProjectCode = this.route.snapshot.queryParams.ProjectCode;
+        this.params.ActionStatus = this.route.snapshot.queryParams.ActionStatus;
+        this.params.ProjectStatus = this.route.snapshot.queryParams.ProjectStatus;
+        this.params.ProjectBudgetStatus = this.route.snapshot.queryParams.ProjectBudgetStatus;
+      } else {
+        this.params.ProjectCode = '';
+        this.params.ActionStatus = '';
+        this.params.ProjectStatus = '';
+        this.params.ProjectBudgetStatus = '';
+      }
+      
       const projectObj = this.pmObject.allProjectItems.filter(c => c.ProjectCode === this.params.ProjectCode);
       if (this.params.ActionStatus) {
         if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.APPROVED) {
@@ -418,6 +428,21 @@ export class AllProjectsComponent implements OnInit {
     }
     this.isAllProjectLoaderHidden = true;
     this.isAllProjectTableHidden = false;
+
+    if (this.pmObject.allProjectsArray.length) {
+      if (this.pmObject.allProjectsArray[0].Status === this.constants.projectList.status.Cancelled ||
+        this.pmObject.allProjectsArray[0].Status === this.constants.projectList.status.Closed) {
+        this.selectedOption = this.overAllValues[1];
+        this.showProjectInput = true;
+        this.providedProjectCode = this.pmObject.allProjectsArray[0].ProjectCode;
+      } else {
+        this.selectedOption = this.overAllValues[0];
+        this.showProjectInput = false;
+        this.providedProjectCode = '';
+      }
+    }
+
+    this.showFilterOptions = true;
   }
 
   async approveRejectBudgetReduction(selectedStatus, projectObj) {
@@ -637,7 +662,7 @@ export class AllProjectsComponent implements OnInit {
           menu.model[2].visible = false;
           menu.model[5].visible = false;
           menu.model[13].visible = false;
-         // menu.model[10].visible = false;
+          // menu.model[10].visible = false;
           break;
         case this.constants.projectStatus.Closed:
         case this.constants.projectStatus.Cancelled:
@@ -1086,8 +1111,11 @@ export class AllProjectsComponent implements OnInit {
         this.reloadAllProject();
       } else if (this.router.url.includes('/projectMgmt/allProjects?ProjectCode')) {
         window.history.pushState({}, 'Title', window.location.href.split('?')[0]);
+        this.route.snapshot.queryParams = null;
         this.pmObject.allProjectItems = [];
-        this.reloadAllProject();
+        this.selectedOption = this.overAllValues[1];
+        this.providedProjectCode = this.params.ProjectCode;
+        this.searchClosedProject(null);
       } else {
         this.router.navigate(['/projectMgmt/allProjects']);
       }
@@ -1974,12 +2002,15 @@ export class AllProjectsComponent implements OnInit {
       this.pmObject.allProjectsArray = [...emptyProjects];
       this.showProjectInput = true;
       this.providedProjectCode = '';
+      this.pmObject.tabMenuItems[0].label = 'All Projects (0)';
+      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
     }
   }
 
   async searchClosedProject(event) {
     this.isAllProjectLoaderHidden = false;
     this.isAllProjectTableHidden = true;
+    this.showFilterOptions = false;
     setTimeout(() => {
       this.getProjectByCode();
     }, this.pmConstant.TIME_OUT);
@@ -1993,7 +2024,7 @@ export class AllProjectsComponent implements OnInit {
     else {
       projectInfoFilter = Object.assign({}, this.pmConstant.PM_QUERY.PROJECT_INFORMATION_BY_PROJECTCODE);
     }
-    
+
     projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi,
       projectCode);
     const results = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInfoFilter);
@@ -2003,9 +2034,12 @@ export class AllProjectsComponent implements OnInit {
     } else {
       const emptyProjects = [];
       this.pmObject.allProjectsArray = [...emptyProjects];
+      this.pmObject.tabMenuItems[0].label = 'All Projects (0)';
+      this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
     }
     this.isAllProjectLoaderHidden = true;
     this.isAllProjectTableHidden = false;
+    this.showFilterOptions = true;
   }
   /**
    * This method is used to close the dialog box.

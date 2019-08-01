@@ -14,8 +14,8 @@ import { ViewUploadDocumentDialogComponent } from '../view-upload-document-dialo
 import { PreviosNextTasksDialogComponent } from '../previos-next-tasks-dialog/previos-next-tasks-dialog.component';
 import { Table } from 'primeng/table';
 import { FeedbackPopupComponent } from '../feedback-popup/feedback-popup.component';
-import { SlideMenu } from 'primeng/primeng';
 
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 @Component({
   selector: 'app-my-current-completed-tasks',
   templateUrl: './my-current-completed-tasks.component.html',
@@ -81,7 +81,8 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     public messageService: MessageService,
     private route: ActivatedRoute,
     public dialogService: DialogService,
-    private confirmationService: ConfirmationService) { }
+    private confirmationService: ConfirmationService,
+    public spOperations: SPOperationService) { }
 
   ngOnInit() {
     this.cols = [
@@ -491,8 +492,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     });
     ref.onClose.subscribe(async (Commentobj: any) => {
 
-
-
       if (Commentobj) {
 
         if (Commentobj.IsMarkComplete) {
@@ -535,7 +534,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
       TaskComments: comment
     }
 
-    await this.spServices.update(this.constants.listNames.Schedules.name, task.ID, data, "SP.Data.SchedulesListItem");
+    await this.spOperations.updateItem(this.constants.listNames.Schedules.name, task.ID, data, "SP.Data.SchedulesListItem");
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
   }
 
@@ -672,7 +671,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
       }
       else {
-
         this.getAddUpdateComment(task, true);
       }
     }

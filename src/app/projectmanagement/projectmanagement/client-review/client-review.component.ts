@@ -10,6 +10,8 @@ import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
+
 declare var $;
 @Component({
   selector: 'app-client-review',
@@ -76,6 +78,7 @@ export class ClientReviewComponent implements OnInit {
     public pmObject: PMObjectService,
     private pmConstant: PmconstantService,
     public pmCommonService: PMCommonService,
+    public spOperations: SPOperationService,
   ) { }
 
   ngOnInit() {
@@ -336,10 +339,10 @@ export class ClientReviewComponent implements OnInit {
   async closeTaskWithStatus(task, options, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
-      await this.spServices.update(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
+      await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
       const projectInfoOptions = { Status: 'Unallocated' };
       const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
-      await this.spServices.update(this.Constant.listNames.ProjectInformation.name, projectID[0].ID,
+      await this.spOperations.updateItem(this.Constant.listNames.ProjectInformation.name, projectID[0].ID,
         projectInfoOptions, this.Constant.listNames.ProjectInformation.type);
       this.changeSuccessMessage(task.Title + ' is completed Sucessfully');
       const index = this.pmObject.clientReviewArray.findIndex(item => item.ID === task.ID);

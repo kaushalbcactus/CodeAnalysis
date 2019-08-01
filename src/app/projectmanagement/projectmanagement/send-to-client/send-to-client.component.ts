@@ -10,6 +10,8 @@ import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
+
 declare var $;
 @Component({
   selector: 'app-send-to-client',
@@ -105,6 +107,7 @@ export class SendToClientComponent implements OnInit {
     public pmObject: PMObjectService,
     private pmConstant: PmconstantService,
     public pmCommonService: PMCommonService,
+    public spOperations: SPOperationService,
   ) {
   }
   public changeSuccessMessage(message) {
@@ -153,10 +156,10 @@ export class SendToClientComponent implements OnInit {
   async closeTaskWithStatus(task, options, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
-      await this.spServices.update(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
+      await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
       const projectInfoOptions = { Status: 'Author Review' };
       const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
-      await this.spServices.update(this.Constant.listNames.ProjectInformation.name, projectID[0].ID, projectInfoOptions,
+      await this.spOperations.updateItem(this.Constant.listNames.ProjectInformation.name, projectID[0].ID, projectInfoOptions,
         this.Constant.listNames.ProjectInformation.type);
       // check whether next task is null or not.
       // Update the next task columnn PreviousTaskClosureDate with current date and time.
@@ -164,7 +167,7 @@ export class SendToClientComponent implements OnInit {
         const nextOptions = { PreviousTaskClosureDate: new Date() };
         const nextTask = this.scArrays.nextTaskArray.filter(item => item.Title === task.NextTasks);
         if (nextTask && nextTask.length) {
-          await this.spServices.update(this.Constant.listNames.Schedules.name, nextTask[0].ID, nextOptions,
+          await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, nextTask[0].ID, nextOptions,
             this.Constant.listNames.Schedules.type);
         }
       }

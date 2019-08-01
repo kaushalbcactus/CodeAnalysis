@@ -12,7 +12,7 @@ import { MyDashboardConstantsService } from '../services/my-dashboard-constants.
 import { BlockTimeDialogComponent } from '../block-time-dialog/block-time-dialog.component';
 import { DatePipe } from '@angular/common';
 import { FeedbackPopupComponent } from '../feedback-popup/feedback-popup.component';
-
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 declare var Tooltip: any;
 
 @Component({
@@ -59,6 +59,7 @@ export class MyTimelineComponent implements OnInit {
     public dialogService: DialogService,
     private confirmationService: ConfirmationService,
     private datePipe: DatePipe,
+    public spOperations: SPOperationService,
   ) { }
 
   ngAfterViewInit() {
@@ -128,7 +129,7 @@ export class MyTimelineComponent implements OnInit {
         }
       },
       eventMouseEnter: function (event, jsEvent, view) {
-      
+
         event.el.Tooltip.show();
       },
 
@@ -236,7 +237,7 @@ export class MyTimelineComponent implements OnInit {
     var filterDates = [];
 
     if (firstLoad) {
-    
+
       startDate = new Date(new Date().setDate((new Date().getDate() - new Date().getDay()))),
         endDate = new Date(new Date().setDate((new Date().getDate() - new Date().getDay()) + 6));
     }
@@ -528,7 +529,7 @@ export class MyTimelineComponent implements OnInit {
             }
             else {
 
-              await this.spServices.update(this.constants.listNames.Schedules.name, task.ID, blockTimeobj, "SP.Data.SchedulesListItem");
+              await this.spOperations.updateItem(this.constants.listNames.Schedules.name, task.ID, blockTimeobj, "SP.Data.SchedulesListItem");
 
               this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time Booking updated successfully.' });
             }
@@ -552,7 +553,7 @@ export class MyTimelineComponent implements OnInit {
       Status: 'Deleted'
     }
 
-    await this.spServices.update(this.constants.listNames.Schedules.name, this.task.ID, data, "SP.Data.SchedulesListItem");
+    await this.spOperations.updateItem(this.constants.listNames.Schedules.name, this.task.ID, data, "SP.Data.SchedulesListItem");
 
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Adhoc  deleted successfully' });
 
@@ -611,35 +612,47 @@ export class MyTimelineComponent implements OnInit {
       }
       else {
         this.CalendarLoader = false;
-        this.confirmationService.confirm({
-          message: 'Are you sure that you want to proceed?',
-          header: 'Confirmation',
-          icon: 'pi pi-exclamation-triangle',
-          accept: async () => {
-            this.SelectedStatus = undefined;
-            this.taskdisplay = false;
-            this.CalendarLoader = true;
-            var response = await this.myDashboardConstantsService.CompleteTask(task);
+        if (task.Status === "Completed") {
+          this.confirmationService.confirm({
+            message: 'Are you sure that you want to proceed?',
+            header: 'Confirmation',
+            icon: 'pi pi-exclamation-triangle',
+            accept: async () => {
+              this.SelectedStatus = undefined;
+              this.taskdisplay = false;
+              this.CalendarLoader = true;
+              var response = await this.myDashboardConstantsService.CompleteTask(task);
 
-            if (response) {
-              this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
+              if (response) {
+                this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
 
-            }
-            else {
-              this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated successfully.' });
-
-              if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1 && task.Status === 'Completed') {
-                this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
               }
-            }
-            this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start, this.fullCalendar.calendar.state.dateProfile.currentRange.end);
-          },
-          reject: () => {
-            task.Status = earlierStaus;
-          }
-        });
-      }
+              else {
+                this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated successfully.' });
 
+                if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1 && task.Status === 'Completed') {
+                  this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
+                }
+              }
+              this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start, this.fullCalendar.calendar.state.dateProfile.currentRange.end);
+            },
+            reject: () => {
+              task.Status = earlierStaus;
+            }
+          });
+        } else {
+          this.SelectedStatus = undefined;
+          this.taskdisplay = false;
+          this.CalendarLoader = true;
+          const jsonData = {
+            Actual_x0020_Start_x0020_Date: task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date(),
+            Status: task.Status,
+          };
+          await this.spOperations.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, "SP.Data.SchedulesListItem");
+          this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task updated successfully.' });
+          this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start, this.fullCalendar.calendar.state.dateProfile.currentRange.end);
+        }
+      }
 
     }
     else {

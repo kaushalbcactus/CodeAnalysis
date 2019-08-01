@@ -2,8 +2,8 @@
     <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(allProjectRef)"
         title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
 </div>
-<div [hidden]='!showNavigateSOW' class="top-right-title">
-    <input class="mr-5" type="text" (change)="searchClosedProject($event)" *ngIf="showProjectInput" id="projectCodeSelect"
+<div [hidden]='!(showNavigateSOW && showFilterOptions)' class="top-right-title">
+    <input class="mr-5" type="text" (keydown.enter)="searchClosedProject($event); $event.preventDefault()" (change)="searchClosedProject($event)" *ngIf="showProjectInput" id="projectCodeSelect"
         placeholder="Project Code" pInputText [(ngModel)]="providedProjectCode" />
     <p-dropdown [options]="overAllValues" [(ngModel)]="selectedOption" styleClass="custom-dropDown" optionLabel="name"
         (onChange)="onChangeSelect($event)"></p-dropdown>

@@ -330,12 +330,16 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.addSOW.SOWOwner = this.addSowForm.value.sowOwner;
       // Add user to all operation field.
       this.pmObject.addSOW.AllOperationId.push(this.pmObject.currLoginInfo.Id);
-      this.pmObject.addSOW.CM1.forEach(element => {
-        this.pmObject.addSOW.AllOperationId.push(element);
-      });
-      this.pmObject.addSOW.Delivery.forEach(element => {
-        this.pmObject.addSOW.AllOperationId.push(element);
-      });
+      if(this.pmObject.addSOW.CM1 && this.pmObject.addSOW.CM1.length) {
+        this.pmObject.addSOW.CM1.forEach(element => {
+          this.pmObject.addSOW.AllOperationId.push(element);
+        });
+      }
+      if(this.pmObject.addSOW.Delivery && this.pmObject.addSOW.Delivery.length) {
+        this.pmObject.addSOW.Delivery.forEach(element => {
+          this.pmObject.addSOW.AllOperationId.push(element);
+        });
+      }
       this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.SOWOwner);
       this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.CM2);
       this.pmObject.addSOW.AllOperationId.push(this.pmObject.addSOW.DeliveryOptional);
