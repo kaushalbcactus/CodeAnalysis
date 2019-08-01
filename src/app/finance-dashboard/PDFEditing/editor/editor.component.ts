@@ -2362,6 +2362,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         contentObj = contentObj + outerData + '</body></html>';
         // console.log('Main Content Html', contentObj);
 
+        
 
         const footer = document.getElementById('footer');
         let footerObj: any = this.footerStyle;
