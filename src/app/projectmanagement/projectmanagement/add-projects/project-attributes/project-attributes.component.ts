@@ -52,7 +52,6 @@ export class ProjectAttributesComponent implements OnInit {
   ) { }
   ngOnInit() {
     this.initForm();
-    this.pmCommonService.setBilledBy();
     this.isProjectAttributeLoaderHidden = false;
     this.isProjectAttributeTableHidden = true;
     setTimeout(() => {
@@ -69,9 +68,7 @@ export class ProjectAttributesComponent implements OnInit {
       } else {
         const sow = this.pmObject.allSOWItems.filter(objt => objt.SOWCode === this.pmObject.addProject.SOWSelect.SOWCode);
         if (sow && sow.length) {
-          this.addProjectAttributesForm.get('billedBy').setValue(this.pmObject.addProject.FinanceManagement.BilledBy);
-          this.addProjectAttributesForm.get('billedBy').disable();
-          this.onBilledByChanged();
+          this.addProjectAttributesForm.get('billedBy').enable();
           const sowObj = {
             ClientLegalEntity: sow[0].ClientLegalEntity,
             BillingEntity: sow[0].BillingEntity,
@@ -192,6 +189,10 @@ export class ProjectAttributesComponent implements OnInit {
   }
   async setDropDownValue(clientLeagalEntity) {
     this.subDivisionArray = [];
+    this.billedBy = [
+      { label: this.pmConstant.PROJECT_TYPE.DELIVERABLE.display, value: this.pmConstant.PROJECT_TYPE.DELIVERABLE.value },
+      { label: this.pmConstant.PROJECT_TYPE.HOURLY.display, value: this.pmConstant.PROJECT_TYPE.HOURLY.value }
+    ];
     this.priority = [
       { label: 'Pilot', value: 'Pilot' },
       { label: 'Pilot-low complexity', value: 'Pilot-low complexity' },
@@ -277,13 +278,13 @@ export class ProjectAttributesComponent implements OnInit {
   goToTimeline(data) {
     if (this.addProjectAttributesForm.valid) {
       this.setFormFieldValue();
-      this.pmObject.activeIndex = 3;
+      this.pmObject.activeIndex = 2;
     } else {
       this.validateAllFormFields(this.addProjectAttributesForm);
     }
   }
   goToSow() {
-    this.pmObject.activeIndex = 1;
+    this.pmObject.activeIndex = 0;
   }
   validateAllFormFields(formGroup: FormGroup) {
     Object.keys(formGroup.controls).forEach(field => {

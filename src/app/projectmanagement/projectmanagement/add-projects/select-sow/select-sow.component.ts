@@ -17,14 +17,12 @@ export class SelectSOWComponent implements OnInit {
   displayedColumns: any[] = [
     { field: 'SOWCode', header: 'SOW Code' },
     { field: 'ShortTitle', header: 'SOW Title' },
-    { field: 'SOWOwner', header: 'SOW Owner' },
-    { field: 'ClientLegalEntity', header: 'Client LegalEntity' }
+    { field: 'SOWOwner', header: 'SOW Owner' }
   ];
   filterColumns: any[] = [
     { field: 'SOWCode' },
     { field: 'ShortTitle' },
-    { field: 'SOWOwner' },
-    { field: 'ClientLegalEntity' },
+    { field: 'SOWOwner' }
   ];
   public selectSOW = {
     sowCodeArray: [],
@@ -126,15 +124,7 @@ export class SelectSOWComponent implements OnInit {
   }
   setSelectedSOWObject(task) {
     this.pmObject.addProject.SOWSelect.SOWSelectedItem = {};
-    this.pmObject.addProject.SOWSelect.sowTotalBalance = 0;
-    this.pmObject.addProject.SOWSelect.sowNetBalance = 0;
     if (task) {
-      this.pmObject.addProject.SOWSelect.sowTotalBalance = (task.TotalBudget ? task.TotalBudget : 0)
-        - (task.TotalLinked ? task.TotalLinked : 0);
-      this.pmObject.addProject.SOWSelect.sowTotalBalance = parseFloat(this.pmObject.addProject.SOWSelect.sowTotalBalance.toFixed(2));
-      this.pmObject.addProject.SOWSelect.sowNetBalance = (task.NetBudget ? task.NetBudget : 0)
-        - (task.RevenueLinked ? task.RevenueLinked : 0);
-      this.pmObject.addProject.SOWSelect.sowNetBalance = parseFloat(this.pmObject.addProject.SOWSelect.sowNetBalance.toFixed(2));
       this.pmObject.addProject.SOWSelect.SOWSelectedItem = task;
     }
   }

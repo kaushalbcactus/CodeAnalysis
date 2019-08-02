@@ -78,7 +78,7 @@
           </tr>
           <tr>
             <td>
-              <p-button class="mt-20" [hidden]="isAddBudgetButtonHidden" label="Add Budget"
+              <p-button class="mt-20" [hidden]="isAddBudgetButtonHidden" label="Add Budget to Project"
                 (click)="addBudgetToProject()" type="button">
               </p-button>
             </td>
@@ -121,7 +121,7 @@
           <p-dropdown filter="true" [options]="poList" placeholder="Select Po" [(ngModel)]="selectedPo" resetFilterOnHide="true"></p-dropdown>
         </div>
         <div [hidden]="isAddToProjectHidden" class="ui-grid-col-4">
-          <p-button type="button" class="mr-5" label="Add Po" (click)="addPoToProject()">
+          <p-button type="button" class="mr-5" label="Add Po to Project" (click)="addPoToProject()">
           </p-button>
         </div>
       </div>
