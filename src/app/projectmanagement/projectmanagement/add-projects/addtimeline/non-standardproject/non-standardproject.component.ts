@@ -6,6 +6,8 @@ import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.ser
 import { AddTimelineComponent } from '../addtimeline.component';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
+import { DataService } from 'src/app/Services/data.service';
 declare var $;
 @Component({
   selector: 'app-non-standardproject',
@@ -22,7 +24,9 @@ export class NonStandardprojectComponent implements OnInit {
     private pmCommonService: PMCommonService,
     private constants: ConstantsService,
     private timelineObject: AddTimelineComponent,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+    private router: Router,
+    private dataService: DataService) { }
   public nonStandardDeliverableType = [];
   public nonStandardSubType = [];
   public nonStandardService = [];
@@ -276,7 +280,7 @@ export class NonStandardprojectComponent implements OnInit {
       }
     }
   }
-  nonStandardConfirm() {
+  async nonStandardConfirm() {
     const isValid = this.validateRequiredField();
     if (isValid) {
       this.disableField();
@@ -290,17 +294,32 @@ export class NonStandardprojectComponent implements OnInit {
       this.pmObject.addProject.Timeline.NonStandard.ProposedStartDate = this.ngNonStandardProposedStartDate;
       this.pmObject.addProject.Timeline.NonStandard.ProposedEndDate = this.ngNonStandardProposedEndDate;
       this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours = this.nonstandardProjectBudgetHrs;
+      this.pmObject.addProject.FinanceManagement.BudgetHours = this.pmObject.addProject.Timeline.NonStandard.ProjectBudgetHours;
+      await this.pmCommonService.validateAndSave();
+      this.messageService.add({
+        key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+        detail: 'Project Created Successfully - ' + this.pmObject.addProject.ProjectAttributes.ProjectCode
+      });
+      setTimeout(() => {
+        this.pmObject.isAddProjectVisible = false;
+        if (this.router.url === '/projectMgmt/allProjects') {
+          this.dataService.publish('reload-project');
+        } else {
+          this.pmObject.allProjectItems = [];
+          this.router.navigate(['/projectMgmt/allProjects']);
+        }
+      }, this.pmConstant.TIME_OUT);
     }
   }
   goToProjectAttributes() {
-    this.pmObject.activeIndex = 1;
+    this.pmObject.activeIndex = 2;
   }
 
-  goToFinanceMang() {
-    if(this.pmObject.addProject.Timeline.NonStandard.IsStandard) {
-      this.pmObject.activeIndex = 3;
-    } else {
-      this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Please register the timeline.' });
-    }
-  }
+  // goToFinanceMang() {
+  //   if(this.pmObject.addProject.Timeline.NonStandard.IsStandard) {
+  //     this.pmObject.activeIndex = 3;
+  //   } else {
+  //     this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Please register the timeline.' });
+  //   }
+  // }
 }
