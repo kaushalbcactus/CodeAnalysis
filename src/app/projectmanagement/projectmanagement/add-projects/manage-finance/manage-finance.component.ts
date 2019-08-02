@@ -460,7 +460,6 @@ export class ManageFinanceComponent implements OnInit {
   }
 
   removeUnassigned() {
-
     const isBudgetRedAllowed = this.projObj ? true : false;
     if (!isBudgetRedAllowed) {
       this.messageService.add({
@@ -500,20 +499,15 @@ export class ManageFinanceComponent implements OnInit {
    * This method is used to add the budget to project.
    */
   addBudgetToProject() {
-
     let showError = false;
     if (this.projectStatus === this.constant.projectStatus.InDiscussion) {
-      if (this.updatedBudget === 0 && this.budgetHours === 0) {
+      if (this.updatedBudget === 0) {
         showError = true;
       } else if (this.updatedBudget < 0) {
         showError = true;
-      } else if (this.updatedBudget !== 0 && this.budgetHours === 0) {
-        showError = true;
       }
     } else {
-      if (this.updatedBudget === 0 && this.budgetHours === 0) {
-        showError = true;
-      } else if (this.updatedBudget !== 0 && this.budgetHours === 0) {
+      if (this.updatedBudget === 0) {
         showError = true;
       } else if (this.updatedBudget < 0) {
         showError = true;
@@ -540,9 +534,12 @@ export class ManageFinanceComponent implements OnInit {
       this.assignBudgetToProject('', '');
     } else {
       this.error = true;
-      if (!this.budgetHours) {
-        this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGETHrs;
-      } else {
+      // if (!this.budgetHours) {
+      //   this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGETHrs;
+      // } else {
+      //   this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGET;
+      // }
+      if (this.updatedBudget <= 0) {
         this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGET;
       }
     }
@@ -1715,7 +1712,6 @@ export class ManageFinanceComponent implements OnInit {
 
         });
       });
-
       if (this.updateInvoices && this.updateInvoices.length) {
         this.updateInvoices.forEach(element => {
           const invoicecreate = Object.assign({}, options);

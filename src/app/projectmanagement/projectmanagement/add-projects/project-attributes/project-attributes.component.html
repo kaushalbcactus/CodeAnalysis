@@ -22,12 +22,9 @@
             </div>
             <div class="ui-grid-col-2"><span class="compulsory">*</span>Billed By</div>
             <div class="ui-grid-col-4">
-                <p-dropdown [options]="billedBy" (onChange)="onBilledByChanged()" formControlName="billedBy"
+                <p-dropdown [options]="pmObject.billedBy" (onChange)="onBilledByChanged()" formControlName="billedBy"
                     placeholder="Please Select" [showClear]="true">
                 </p-dropdown>
-                <div class="error"
-                    *ngIf="!showEditSave && !addProjectAttributesForm.controls['billedBy'].valid &&addProjectAttributesForm.controls['billedBy'].touched">
-                    Billed By is required</div>
             </div>
         </div>
         <div class="ui-grid-row mt-20">

@@ -37,6 +37,12 @@ export class AddProjectsComponent implements OnInit {
       }
     },
     {
+      label: 'Finance & Management',
+      command: (event: any) => {
+        this.pmObject.activeIndex = event.index;
+      }
+    },
+    {
       label: 'Project Attributes',
       command: (event: any) => {
         this.pmObject.activeIndex = event.index;
@@ -44,12 +50,6 @@ export class AddProjectsComponent implements OnInit {
     },
     {
       label: 'Timeline',
-      command: (event: any) => {
-        this.pmObject.activeIndex = event.index;
-      }
-    },
-    {
-      label: 'Finance & Management',
       command: (event: any) => {
         this.pmObject.activeIndex = event.index;
       }
