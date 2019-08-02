@@ -38,8 +38,8 @@ export class PubsuportConstantsService {
             top: 4500
         },
         journalConf: {
-            select: "ID, Title, Name, IF, RejectionRate, ExpectedReviewPeriod, JournalEditorInfo, IsSelected, Status, UserName, Password, PublicationDate, PublicationURL, PublicationTitle, Citation, PDFAvailable, JournalRequirementURL, EntryType, AbstractSubmissionDeadline, CongressDate, Milestone, JournalRequirementDate, Created, Comments",
-            filter: "Title eq '{{ProjectCode}}' ",
+            select: "ID, Title, Name, IF, RejectionRate, ExpectedReviewPeriod, JournalEditorInfo, IsSelected, Status, UserName, Password, PublicationDate, PublicationURL, PublicationTitle, Citation, PDFAvailable, JournalRequirementURL, EntryType, AbstractSubmissionDeadline, CongressDate, Milestone, JournalRequirementDate, Created, Comments, JournalRequirementResponse",
+            filter: "Title eq '{{ProjectCode}}' and Status ne 'Cancelled' ",
             top: 4500,
             orderby: "Created desc"
         },
@@ -88,7 +88,7 @@ export class PubsuportConstantsService {
             updateJCDetails: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.JournalConf.name + "')/items({{Id}})",
         },
         addJCSubmission: {
-            addJCDetails: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.JCSubmission.name + "')/items",
+            add: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.JCSubmission.name + "')/items",
             updateJCSubmssion: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.JCSubmission.name + "')/items({{Id}})",
         },
         addAuthor: {

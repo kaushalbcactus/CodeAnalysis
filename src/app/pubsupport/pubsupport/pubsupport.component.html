@@ -49,9 +49,15 @@
     </p-column>
     <p-column field="Status" header="Status" [filter]="true" filterMatchMode="contains" filterPlaceholder="Search"
         sortField="Status" [sortable]="true">
+        <!-- [rowStyleClass]="applyReadFlagStyle" -->
         <ng-template let-col let-projectCode="rowData" pTemplate="body" let-plistIndex="rowIndex">
+            <!-- <p-progressBar [ngClass]="{'lightgreen': projectCode[col.field] =='In Progress' }" [value]="projectCode[col.field]" [unit]="''"></p-progressBar> -->
             <!-- <p-progressBar [ngClass]="backgroundColor" [value]="value"></p-progressBar> -->
-            {{projectCode[col.field] }}
+            <div [ngClass]="{'lightgreen': projectCode[col.field] =='In Progress', 'lightblue': projectCode[col.field] =='Unallocated',  'lightcoral': projectCode[col.field] =='In Discussion'}"
+                style="height: 35px;padding: 7px 0px 0px 2px;">
+                {{projectCode[col.field] }}
+            </div>
+            <!-- {{projectCode[col.field] }} -->
         </ng-template>
     </p-column>
     <p-column field="PubSupportStatus" header="Pub Sup Status" [filter]="true" filterMatchMode="contains"
@@ -72,7 +78,8 @@
     </p-column>
     <p-column [style]="{'width':'50px'}">
         <ng-template pTemplate let-i="rowIndex" let-node="rowData">
-            <p-menu #popupMenu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
+            <p-menu #popupMenu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"
+                [style]="{'width':'20em'}"></p-menu>
             <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
                 (click)="popupMenu.toggle($event);openPopup(node, popupMenu)"></i>
         </ng-template>
@@ -95,12 +102,14 @@
                                         <th>Milestone</th>
                                         <th>Journal <br>Requirement date</th>
                                         <th colspan="1">Journal Requirement document</th>
-                                        <th>Journal selection <br>date</th>
-                                        <th colspan="3"></th>
+                                        <th colspan="1">Journal selection <br>date</th>
+                                        <th>Journal Requirement Response</th>
+                                        <th colspan="1"></th>
                                     </tr>
                                 </thead>
                                 <!--Inner Open Main Accordian Head End-->
-                                <tbody *ngIf="journal_Conf_data &&journal_Conf_data[0].element.length == 0">
+                                <!-- <tbody *ngIf="journal_Conf_data &&journal_Conf_data[0].element.length == 0"> -->
+                                <tbody *ngIf="journal_Conf_data.length == 0">
                                     <tr>
                                         <td colspan="10"
                                             style="text-align:center;color:#d7181f;cursor: auto !important;">
@@ -108,32 +117,36 @@
                                         </td>
                                     </tr>
                                 </tbody>
-                                <tbody class="inner-hide-detail"
-                                    *ngFor="let item of journal_Conf_data[0].element; let i = index">
+                                <tbody class="inner-hide-detail" *ngFor="let item of journal_Conf_data; let i = index">
                                     <tr class="model-open inner-first-accordian">
                                         <td>
                                             <span>{{i + 1}}</span>
                                         </td>
                                         <td>
                                             <!-- <span> Journal of Pharmacology and<br> Experimental Therapeutics</span> -->
-                                            <span>{{item.Name}}</span>
+                                            <span>{{item.element.Name}}</span>
                                         </td>
                                         <td>
-                                            <span>{{item.EntryType}}</span>
+                                            <span>{{item.element.EntryType}}</span>
                                         </td>
                                         <td>
-                                            <span>{{item.Milestone}}</span>
+                                            <span>{{item.element.Milestone}}</span>
                                         </td>
                                         <td>
-                                            <span>{{item.JournalRequirementDate | date:'MMM d, y, hh:mm a'}}</span>
+                                            <span>{{item.element.JournalRequirementDate | date:'MMM d, y, hh:mm a'}}</span>
                                         </td>
                                         <td>
-                                            <a style="color: red;" *ngIf="item.JournalRequirementURL"
-                                                (click)="downloadFile(item.JournalRequirementURL, 'ProjctCode_JournalRequirement')">Download
+                                            <a style="color: red;" *ngIf="item.element.JournalRequirementURL"
+                                                (click)="downloadFile(item.element.JournalRequirementURL, 'ProjctCode_JournalRequirement')">Download
                                                 &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
                                         </td>
-                                        <td colspan="2">
-                                            <span>{{journal_Conf_data[0].project.JournalSelectionDate | date:'MMM d, y, hh:mm a'}}</span>
+                                        <td>
+                                            <span>{{item.project.JournalSelectionDate | date:'MMM d, y, hh:mm a'}}</span>
+                                        </td>
+                                        <td>
+                                            <a style="color: red;" *ngIf="item.element.JournalRequirementResponse"
+                                                (click)="downloadFile(item.element.JournalRequirementResponse, 'JournalRequirementResponse')">Download
+                                                &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
                                         </td>
                                         <td>
                                             <a (click)="jcViewDetails(i)" class="btn go view_details"
@@ -334,18 +347,19 @@
                                                                     <label>Galley Date:</label><br>
                                                                     <span><b>{{g.GalleyDate | date:'MMM d, y, hh:mm a'}}</b></span>
                                                                 </td>
-                                                                <td *ngIf="g.GalleyURL">
+                                                                <td  colspan="6">
                                                                     <label>Galley Document</label><br>
                                                                     <a style="color: red;"
                                                                         (click)="downloadFile(g.GalleyURL, 'ProjctCode_GalleyDoc')">Download
                                                                         &nbsp;<i class="fa fa-download"
                                                                             aria-hidden="true"></i></a>
                                                                 </td>
+                                                                <!-- <td></td>
                                                                 <td></td>
                                                                 <td></td>
                                                                 <td></td>
                                                                 <td></td>
-                                                                <td></td>
+                                                                <td></td> -->
                                                             </tr>
                                                         </ng-container>
                                                     </tbody>
@@ -830,7 +844,6 @@
                             <div class="col-lg-6">
                                 <input type="file" name="myfile" class="form-control" id="myfile"
                                     (change)="onFileChange($event)" #fileInput placeholder="updateAuthorForms"
-                                    [ngClass]="{'is-invalid': submitted && isValidUpdateAuthorForm.file.errors}"
                                     formControlName="file">
                                 <div *ngIf="submitted && isValidUpdateAuthorForm.file.errors" class="invalid-feedback">
                                     <div *ngIf="isValidUpdateAuthorForm.file.errors.required ">File is required.
@@ -846,7 +859,6 @@
                                 <select id="type" name="existingAuthorList" class="form-control"
                                     [(ngModel)]="selectedType"
                                     (ngModelChange)="updateAuthorFormsFiles(selectedType, $event)"
-                                    [ngClass]="{'is-invalid': submitted && isValidUpdateAuthorForm.existingAuthorList.errors}"
                                     formControlName="existingAuthorList">
                                     <option value="">Select</option>
                                     <ng-container *ngFor="let projctCode of projectCodeRes; let i = index">
@@ -1249,5 +1261,36 @@
         <button pButton type="button" label="Submit" [disabled]="submitBtn.isClicked"
             (click)="onSubmit('addJCDetailsModal')"></button>
         <button pButton type="button" label="Close" (click)="cancelFormSub('addJCDetailsModal')"></button>
+    </p-footer>
+</p-dialog>
+
+<!-- Update Journal Requirement Modal -->
+
+<p-dialog header="Update journal requirement details" [(visible)]="updateJCRequirementModal" [modal]="true"
+    [contentStyle]="{'min-height':'150px','max-height':'450px'}" [responsive]="true" [style]="{'width': '45%'}"
+    (onHide)="cancelFormSub('updateJCRequirementModal')">
+
+    <form id="myform" [formGroup]="update_Journal_Requirement_form">
+        <div class="ui-g">
+            <div class="row container">
+                <div class="col-lg-4">
+                    <label for="upload-document">Upload files:</label>
+                </div>
+                <div class="col-lg-8">
+                    <input type="file" name="myfile" class="form-control" (change)="onFileChange($event)"
+                        formControlName="JournalRequirementResponse" #fileInput />
+                    <div
+                        *ngIf="formSubmit.isSubmit && isValidUpdateJCRequirementForm.JournalRequirementResponse.errors">
+                        <div *ngIf="isValidUpdateJCRequirementForm.JournalRequirementResponse.errors.required"
+                            style="color:red;">File is required.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <p-footer>
+        <button pButton type="button" label="Submit" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('updateJCRequirementModal')"></button>
+        <button pButton type="button" label="Close" (click)="cancelFormSub('updateJCRequirementModal')"></button>
     </p-footer>
 </p-dialog>

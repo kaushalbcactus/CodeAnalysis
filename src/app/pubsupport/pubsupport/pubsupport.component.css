@@ -460,6 +460,18 @@ input[type=submit]:hover {
     background: green;
   }
 
+  .lightgreen{
+    background: lightgreen;
+  }
+  
+  .lightblue{
+    background: lightblue;
+  }
+  
+  .lightcoral{
+    background: lightcoral;
+  }
+
   /* Loadder ICON  */
 
   @-webkit-keyframes spin {
@@ -657,4 +669,9 @@ input[type=submit]:hover {
 
 ::ng-deep .calendarWidth {
     width: auto !important;
+}
+
+body .ui-button {
+    background-color: #d7181f !important;
+    border: 1px solid #d7181f !important;
 }
