@@ -1111,6 +1111,7 @@ export class ManageFinanceComponent implements OnInit {
     this.pmObject.addProject.FinanceManagement.BudgetArray = this.budgetData;
     this.pmObject.addProject.FinanceManagement.UnassignedArray = this.unassignedBudget;
     this.budgetOutputData.emit(this.savePOArray);
+    this.pmObject.addProject.FinanceManagement.isBudgetRateAdded = true;
   }
   async editManageFinances(projObj) {
     this.hideRemoveButton = false;
@@ -1374,10 +1375,11 @@ export class ManageFinanceComponent implements OnInit {
 
 
       ///// Remove all buttons if there is approval pending
-      const budgetPending = this.existPBBBudgetArray.retItems.find(e => e.Status === this.constant.projectBudgetBreakupList.status.ApprovalPending);
-      if ((this.projectStatus !== this.constant.projectList.status.InDiscussion && budgetPending) 
-      || this.projectStatus === this.constant.projectList.status.Closed
-      || this.projectStatus === this.constant.projectList.status.Cancelled) {
+      const budgetPending = this.existPBBBudgetArray.retItems.find(e =>
+        e.Status === this.constant.projectBudgetBreakupList.status.ApprovalPending);
+      if ((this.projectStatus !== this.constant.projectList.status.InDiscussion && budgetPending)
+        || this.projectStatus === this.constant.projectList.status.Closed
+        || this.projectStatus === this.constant.projectList.status.Cancelled) {
         this.hideRemoveButton = true;
         this.isAddRateButtonHidden = true;
         this.isAddBudgetButtonHidden = true;

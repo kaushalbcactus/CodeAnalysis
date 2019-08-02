@@ -638,7 +638,7 @@ export class AllProjectsComponent implements OnInit {
           menu.model[1].visible = false;
           menu.model[2].visible = false;
           menu.model[3].visible = false;
-          //menu.model[10].visible = false;
+          // menu.model[10].visible = false;
           break;
         case this.constants.projectStatus.Unallocated:
         case this.constants.projectStatus.InProgress:
