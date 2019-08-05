@@ -319,6 +319,15 @@ body .ui-treetable .ui-treetable-tbody>tr>td:last-child {
     margin-top: 0px !important;
 }
 
+
+/* AutoClosed */
+
+.gtaskred {
+    height: 14px !important;
+    background: #8183CC !important;
+    margin-top: 0px !important;
+}
+
 .gtaskgreencomplete {
     float: left;
     overflow: hidden;

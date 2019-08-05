@@ -356,7 +356,7 @@ export class DragDropComponent implements OnInit {
   // *************************************************************************************************************************************
   // To Add milestone / submilestone To milestonesGraph
   // *************************************************************************************************************************************
- // tslint:disable
+  // tslint:disable
   onDrop(event, miletype) {
     this.resizeGraph = miletype;
     let prvnode = [];
@@ -409,10 +409,20 @@ export class DragDropComponent implements OnInit {
         });
       }
 
-      var link = {
-        source: miletype === 'milestone' ? (previousnode !== null ? (parseInt(previousnode[0])).toString() : '1') : prvnode.length > 0 && this.tempSubmileArray.length > 1 ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === prvnode[0].data).id : this.subpreviousSource !== undefined ? this.subpreviousSource : (previousnode !== null && event.position !== '1' ? (parseInt(previousnode[previousnode.length - 1])).toString() : '0'),
-        target: previousnode !== null && event.position !== '1' ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : '0'
-      };
+      if (event.position) {
+        var link = {
+          source: miletype === 'milestone' ? (previousnode !== null ? (parseInt(previousnode[0])).toString() : '1') : prvnode.length > 0 && this.tempSubmileArray.length > 1 ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === prvnode[0].data).id : this.subpreviousSource !== undefined ? this.subpreviousSource : (previousnode !== null && event.position !== '1' ? (parseInt(previousnode[previousnode.length - 1])).toString() : '0'),
+          target: previousnode !== null && event.position.toString() !== '1' ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : '0'
+        };
+      }
+      else {
+        var link = {
+          source: miletype === 'milestone' ? (previousnode !== null ? (parseInt(previousnode[0])).toString() : '1') : prvnode.length > 0 && this.tempSubmileArray.length > 1 ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === prvnode[0].data).id : this.subpreviousSource !== undefined ? this.subpreviousSource : (previousnode !== null && event.position !== '1' ? (parseInt(previousnode[previousnode.length - 1])).toString() : '0'),
+          target: previousnode !== null && event.position !== '1' ? (parseInt(previousnode[previousnode.length - 1]) + 1).toString() : '0'
+        };
+
+      }
+
 
       if (miletype !== 'milestone') {
         this.milestonesGraph.nodes[this.milestoneIndex].allsubmilestones.push(node.label);
@@ -500,7 +510,7 @@ export class DragDropComponent implements OnInit {
           this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.push.apply(this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links, DefaultList);
         }
       }
-      debugger;
+    
       this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.push(node);
       if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length > 1) {
 
@@ -541,11 +551,11 @@ export class DragDropComponent implements OnInit {
       this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = [...this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links];
 
     }
-    debugger;
+    
     if (!this.initialLoad)
       this.GraphResize();
   }
- // tslint:enable
+  // tslint:enable
 
   async GetAllTasksMilestones() {
 
@@ -572,7 +582,7 @@ export class DragDropComponent implements OnInit {
       = this.taskAllocationService.taskallocationComponent.submilestonesList.filter.replace
         (/{{status}}/gi, 'Yes');
     const submilestoneListUrl = this.spServices.getReadURL
-    ('' + this.constants.listNames.SubMilestones.name + '', this.taskAllocationService.taskallocationComponent.submilestonesList);
+      ('' + this.constants.listNames.SubMilestones.name + '', this.taskAllocationService.taskallocationComponent.submilestonesList);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, submilestoneListUrl);
 
 
@@ -581,9 +591,9 @@ export class DragDropComponent implements OnInit {
     // ************************************************************************************************
 
     this.taskAllocationService.taskallocationComponent.taskList.filter
-    = this.taskAllocationService.taskallocationComponent.taskList.filter.replace(/{{status}}/gi, 'Active');
+      = this.taskAllocationService.taskallocationComponent.taskList.filter.replace(/{{status}}/gi, 'Active');
     const taskListUrl = this.spServices.getReadURL
-    ('' + this.constants.listNames.MilestoneTasks.name + '', this.taskAllocationService.taskallocationComponent.taskList);
+      ('' + this.constants.listNames.MilestoneTasks.name + '', this.taskAllocationService.taskallocationComponent.taskList);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, taskListUrl);
 
 
@@ -601,7 +611,7 @@ export class DragDropComponent implements OnInit {
   // *************************************************************************************************************************************
   //  To Select particlar  milestone / submilestone
   // *************************************************************************************************************************************
- // tslint:disable
+  // tslint:disable
   SelectMilestone(event, mileType) {
 
     this.taskUp = null;
@@ -626,14 +636,14 @@ export class DragDropComponent implements OnInit {
     }
     else if (mileType === 'submilestone') {
 
-      debugger;
+      
       if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.color === '#d26767') !== undefined) {
         this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.color === '#d26767').color = '#e2e2e2';
       }
       this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.id === event.id).color = '#d26767';
       this.submilestoneIndex = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.indexOf(this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.id === event.id));
       this.selectedSubMilestone = event.label;
-      debugger;
+      
       if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.length > 0) {
 
         var nodeId = Math.max.apply(null, this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.map(c => parseInt(c.id)))
@@ -658,8 +668,8 @@ export class DragDropComponent implements OnInit {
     this.GraphResize();
 
   }
-  
- 
+
+
   // *************************************************************************************************************************************
   // To Remove milestone / submilestone from milestonesGraph
   // *************************************************************************************************************************************
@@ -799,7 +809,7 @@ export class DragDropComponent implements OnInit {
     this.resizeGraph = mileType;
     this.GraphResize();
   }
- 
+
   // *************************************************************************************************************************************
   // To Switch  milestone / submilestone 
   // *************************************************************************************************************************************
@@ -929,7 +939,7 @@ export class DragDropComponent implements OnInit {
 
   onTaskDrop(event) {
 
-    debugger;
+    
     const originalType = event.data;
     event.data = event.data === 'Send to client' ? 'SC' : event.data;
 
@@ -1078,7 +1088,7 @@ export class DragDropComponent implements OnInit {
 
   loadLinks(event, links) {
 
-    debugger;
+    
     var preTasks = event.previousTask !== undefined && event.previousTask !== null ? event.previousTask.split(';') : [];
     var nextTasks = event.nextTask !== undefined && event.nextTask !== null ? event.nextTask.split(';') : [];
 
@@ -1123,7 +1133,7 @@ export class DragDropComponent implements OnInit {
     return links;
   }
   onPageLoad(event) {
-    debugger;
+    
     var MilTask = undefined;
     if (this.sharedObject.oTaskAllocation.arrTasks !== undefined) {
       MilTask = this.sharedObject.oTaskAllocation.arrTasks.find(c => c === event.taskType);
@@ -1179,8 +1189,8 @@ export class DragDropComponent implements OnInit {
         this.taskUp = node;
 
         if (this.taskDown.taskType !== 'Client Review' &&
-        (this.taskDown.taskType !== 'Send to client' &&
-        this.taskUp.taskType !== 'Client Review')) {
+          (this.taskDown.taskType !== 'Send to client' &&
+            this.taskUp.taskType !== 'Client Review')) {
           var link = {
             source: (parseInt(this.taskDown.id)).toString(),
             target: (parseInt(this.taskUp.id)).toString(),
@@ -1260,6 +1270,7 @@ export class DragDropComponent implements OnInit {
             }
           }
           else {
+            if(submilestone.task.links.filter(c => c.source === link.source).length > 1)
             this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Send to client can have only one outgoing path' });
           }
         }

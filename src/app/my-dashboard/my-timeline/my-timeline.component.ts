@@ -279,7 +279,6 @@ export class MyTimelineComponent implements OnInit {
     this.allLeaves = this.response[1] !== "" ? this.response[1] : [];
     this.events = [];
 
-    debugger;
     this.allTasks.forEach(element => {
 
       if (element.SubMilestones) {

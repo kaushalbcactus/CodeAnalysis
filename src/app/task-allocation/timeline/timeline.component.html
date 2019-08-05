@@ -7,7 +7,7 @@
 
 <div fxLayout="row" fxLayoutAlign="start center" style="width:100%;">
 
-    <div *ngIf="GanttChartView" fxLayout="column" fxLayoutAlign="center start" style="margin-top: 1vh;">
+    <div *ngIf="GanttChartView" fxLayout="column" fxLayoutAlign="center start" style="margin-top: 1vh;width: 100%;">
 
         <!-- **********************************************************************************************************
                                                          Heading buget Hours etc. Data
@@ -87,6 +87,12 @@
                 </div>
             </div>
             <div>
+                <div *ngIf="!visualgraph && changeInRestructure " class="input-color" fxLayoutAlign="end center" style="margin-right: 10px;">
+                    <button *ngIf="!projectDetails" mat-raised-button type="button" (click)="CancelChanges(projectDetails,'discardAll')">
+            <mat-icon>delete_forever</mat-icon> Discard All
+          </button>
+                </div>
+
                 <div *ngIf="visualgraph === false && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress'"
                     class="input-color" fxLayoutAlign="end center">
                     <button *ngIf="!projectDetails" mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks()">
@@ -94,6 +100,7 @@
           </button>
                 </div>
             </div>
+
         </div>
 
         <div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" *ngIf="loaderenable">
@@ -135,7 +142,8 @@
                             <span *ngIf="rowData.type !=='task'"> {{rowData.pName}}</span>
                             <span style="color:#dc2038;cursor: pointer;" *ngIf="rowData.type ==='task'" (click)="ViewTaskDetails(rowData)"> {{rowData.pName}}</span>
 
-                            <div id="nextMilestone" title="Set as Current Milestone" (click)="rowData.type==='milestone' ? setAsNextMilestoneCall() : setAsNextSubMilestoneCall()" *ngIf="rowData.isNext === true" style="display: inline;" [hidden]=" (rowData.type==='milestone' && (oProjectDetails.status ==='In Discussion' || rowData.status === 'Completed' || rowData.pID === -1)) || (rowData.type==='submilestone' &&  rowData.status === 'Not Confirmed') || projectDetails ">
+                            <div id="nextMilestone" [title]=" rowData.type==='milestone' ? 'Set as Current Milestone':'Set as Current Sub-Milestone'" (click)=" setAsNextMilestoneCall(rowData)" *ngIf="(rowData.isNext === true && !rowData.subMilestonePresent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isCurrent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isNext &&   !changeInRestructure)  "
+                                style="display: inline;" [hidden]=" (rowData.type==='milestone' && (oProjectDetails.status ==='In Discussion' || rowData.status === 'Completed' || rowData.pID === -1)) || (rowData.type==='submilestone' &&  rowData.status !== 'Not Confirmed') || projectDetails ">
                                 <i class="pi pi-check" style="font-size: 2em;vertical-align: middle;"></i>
                             </div>
                         </td>
@@ -168,7 +176,7 @@
                   [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')"
                   [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
                 <input [disabled]="rowData.tat" readonly [ngxTimepicker]="picker"
-                  [(ngModel)]="rowData.pUserStartTimePart" class="timePicker">
+                  [(ngModel)]="rowData.pUserStartTimePart"   class="timePicker">
                   <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
                 <ngx-material-timepicker [preventOverlayClick]="true" (closed)="DateChangePart(rowData,'start')" #picker [ngxMaterialTimepickerTheme]="darkTheme"
                   [minutesGap]="15"></ngx-material-timepicker>
@@ -194,7 +202,7 @@
                   hideOnDateTimeSelect="true" [stepMinute]="15" [showIcon]="true" [showOnFocus]="false"
                   [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'end')"
                   [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
-                <input [disabled]="rowData.tat" readonly [ngxTimepicker]="picker" [(ngModel)]="rowData.pUserEndTimePart"
+                <input [disabled]="rowData.tat" readonly [ngxTimepicker]="picker" [min]="rowData.pUserStartTimePart" [(ngModel)]="rowData.pUserEndTimePart"
                   class="timePicker">
                   <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
                 <ngx-material-timepicker [preventOverlayClick]="true" (closed)="DateChangePart(rowData,'start')" #picker [ngxMaterialTimepickerTheme]="darkTheme"
@@ -217,13 +225,13 @@
                             <p-checkbox *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.pName !=='Client Review' && rowData.pName !=='SC')" [(ngModel)]="rowData.allowStart" binary="true"></p-checkbox>
                         </td>
                         <td [style.backgroundColor]="rowData.color">
-                            <div *ngIf="(rowData.type === 'milestone' && rowData.type === 'submilestone' ) && ((rowData.isCurrent || rowData.isFuture) && rowData.status  !== 'Completed') ">
+                            <!-- <div *ngIf="(rowData.type === 'milestone' && rowData.type === 'submilestone' ) && ((rowData.isCurrent || rowData.isFuture) && rowData.status  !== 'Completed') ">
                                 <button type="button" [hidden]="rowData.editMode === false" (click)="CancelChanges(rowData,'milestone')" style="line-height: 0px;height: 0px;" mat-icon-button title="Cancel">
                   <mat-icon> cancel</mat-icon>
                 </button>
-                            </div>
-                            <button *ngIf="rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && (rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') " [hidden]="rowData.editMode === false"
-                                type="button" (click)="CancelChanges(rowData,'task')" style="line-height: 0px;height: 0px;" mat-icon-button title="Cancel">
+                            </div> -->
+                            <button *ngIf="rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && (rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') && !changeInRestructure  "
+                                [hidden]="rowData.editMode === false" type="button" (click)="CancelChanges(rowData,'task')" style="line-height: 0px;height: 0px;" mat-icon-button title="Cancel">
                 <mat-icon> cancel</mat-icon>
               </button>
 
