@@ -120,6 +120,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    */
   showSOW() {
     this.addSowForm.reset();
+    this.resetAddSOW();
     this.sowHeader = 'Add SOW';
     this.sowButton = 'Add SOW';
     this.setSOWDropDownValue();
@@ -720,11 +721,11 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       ExpiryDate: sowObj.SOWExpiryDate,
       SOWLink: sowObj.SOWFileURL,
       CMLevel1Id: {
-        results: sowObj.CM1,
+        results: sowObj.CM1 ? sowObj.CM1 : [],
       },
       CMLevel2Id: sowObj.CM2,
       DeliveryLevel1Id: {
-        results: sowObj.Delivery,
+        results: sowObj.Delivery ? sowObj.Delivery : [],
       },
       DeliveryLevel2Id: sowObj.DeliveryOptional,
       BDId: sowObj.SOWOwner,

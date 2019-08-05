@@ -459,7 +459,7 @@ export class ManageFinanceComponent implements OnInit {
     }
   }
 
-  removeUnassigned() {
+  async removeUnassigned() {
 
     const isBudgetRedAllowed = this.projObj ? true : false;
     if (!isBudgetRedAllowed) {
@@ -469,31 +469,40 @@ export class ManageFinanceComponent implements OnInit {
       });
       return;
     }
-    this.selectedReason = '';
-    this.selectedReasonType = '';
-    this.newBudgetHrs = 0;
-    this.budgetDecreaseArray = [];
-    this.budgetDecreaseArray = [
-      {
-        label: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.SCOPE_REDUCE,
-        value: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.SCOPE_REDUCE
-      }
-      ,
-      {
-        label: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.QUALITY,
-        value: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.QUALITY
-      }
-      ,
-      {
-        label: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.RELATIONSHIP,
-        value: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.RELATIONSHIP
-      },
-      {
-        label: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.INPUT_ERROR,
-        value: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.INPUT_ERROR
-      }
-    ];
-    this.showReduction = true;
+    if (this.projectStatus === this.constant.projectList.status.InDiscussion) {
+      this.budgetData[0].edited = true;
+      this.budgetData[0].total = this.budgetData[0].total - this.unassignedBudget[0].total;
+      this.budgetData[0].revenue = this.budgetData[0].revenue - this.unassignedBudget[0].revenue;
+      const pfPFB: any = await this.saveUpdatePO();
+    } else {
+      this.selectedReason = '';
+      this.selectedReasonType = '';
+      this.newBudgetHrs = 0;
+      this.budgetDecreaseArray = [];
+      this.budgetDecreaseArray = [
+        {
+          label: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.SCOPE_REDUCE,
+          value: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.SCOPE_REDUCE
+        }
+        ,
+        {
+          label: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.QUALITY,
+          value: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.QUALITY
+        }
+        ,
+        {
+          label: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.RELATIONSHIP,
+          value: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.RELATIONSHIP
+        },
+        {
+          label: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.INPUT_ERROR,
+          value: this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.INPUT_ERROR
+        }
+      ];
+      this.showReduction = true;
+
+    }
+
   }
 
   /**
@@ -660,10 +669,10 @@ export class ManageFinanceComponent implements OnInit {
         const retPOInfo = this.poData[poIndex].poInfo[0];
         if (this.budgetData && this.budgetData.length && this.unassignedBudget && this.unassignedBudget.length
           && this.budgetData[0].total === this.unassignedBudget[0].total) {
-          retPOInfo.poRevenue = this.budgetData[0].total;
+          retPOInfo.poRevenue = this.budgetData[0].revenue;
           retPOInfo.poTotal = this.budgetData[0].total;
         } else {
-          retPOInfo.poRevenue = this.unassignedBudget[0].total;
+          retPOInfo.poRevenue = this.unassignedBudget[0].revenue;
           retPOInfo.poTotal = this.unassignedBudget[0].total;
         }
       }
@@ -934,6 +943,9 @@ export class ManageFinanceComponent implements OnInit {
           }
         }
         this.invoiceObj.amount = amount;
+        //if(amount === 0) {
+        this.invoiceObj.isInvoiceItemConfirm = false;
+        //}
         this.invoiceObj.poc = this.addPOForm.value.primarypoc;
         this.invoiceObj.pocText = this.pmCommonService.extractNamefromPOC([this.invoiceObj.poc]);
         this.invoiceObj.address = this.addPOForm.value.address;
@@ -1086,7 +1098,7 @@ export class ManageFinanceComponent implements OnInit {
     const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
     const last3Days = this.commonService.getLastWorkingDay(3, new Date());
 
-    if (invoice.date >= last3Days && invoice.date < lastDay) {
+    if (invoice.date >= last3Days && invoice.date < lastDay && invoice.amount > 0) {
       return true;
     } else {
       return false;
@@ -1378,9 +1390,9 @@ export class ManageFinanceComponent implements OnInit {
 
       ///// Remove all buttons if there is approval pending
       const budgetPending = this.existPBBBudgetArray.retItems.find(e => e.Status === this.constant.projectBudgetBreakupList.status.ApprovalPending);
-      if ((this.projectStatus !== this.constant.projectList.status.InDiscussion && budgetPending) 
-      || this.projectStatus === this.constant.projectList.status.Closed
-      || this.projectStatus === this.constant.projectList.status.Cancelled) {
+      if ((this.projectStatus !== this.constant.projectList.status.InDiscussion && budgetPending)
+        || this.projectStatus === this.constant.projectList.status.Closed
+        || this.projectStatus === this.constant.projectList.status.Cancelled) {
         this.hideRemoveButton = true;
         this.isAddRateButtonHidden = true;
         this.isAddBudgetButtonHidden = true;
@@ -2032,6 +2044,7 @@ export class ManageFinanceComponent implements OnInit {
           MainPOC: element.poc,
           AddressType: element.address,
           Status: element.amount === 0 ? 'Deleted' : element.status,
+          PO: element.amount === 0 ? null : element.poId,
         };
         if (element.status === this.constant.STATUS.APPROVED) {
           data.ProformaLookup = element.proformaLookup;

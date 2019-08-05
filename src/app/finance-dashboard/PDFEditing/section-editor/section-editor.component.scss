@@ -21,4 +21,8 @@
     }
 }
 
+::ng-deep #table1 .ck-content.ck-editor__editable {
+    max-height: 300px;
+}
+
 

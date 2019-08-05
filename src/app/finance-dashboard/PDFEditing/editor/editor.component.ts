@@ -2342,6 +2342,14 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             }
         }, 1000);
     }
+    remove_last_occurrence(str, searchstr)       {
+        var index = str.lastIndexOf(searchstr);
+        if (index === -1) {
+            return str;
+        }
+        return str.slice(0, index) + str.slice(index + searchstr.length);
+    }
+
 
     confirm() {
         this.disableButton();
@@ -2362,7 +2370,19 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         contentObj = contentObj + outerData + '</body></html>';
         // console.log('Main Content Html', contentObj);
 
-        
+        const figureContent1 = 'id="appendix"><figure class="table">';
+        const figureContent2 = 'id="appendix"><figure>';
+        const figureContent = 'id="appendix">';
+        if (contentObj.indexOf(figureContent1) > -1 || contentObj.indexOf(figureContent2) > -1) {
+            if (contentObj.indexOf(figureContent1) > -1) {
+                contentObj = contentObj.replace(figureContent1, figureContent);
+            }
+            else {
+                contentObj = contentObj.replace(figureContent2, figureContent);
+            }
+
+            contentObj = this.remove_last_occurrence(contentObj, '</figure>');
+        }
 
         const footer = document.getElementById('footer');
         let footerObj: any = this.footerStyle;

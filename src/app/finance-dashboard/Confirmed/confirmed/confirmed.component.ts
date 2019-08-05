@@ -741,7 +741,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                     }
 
                     var cle = this.getCLEObj(this.selectedPurchaseNumber.ClientLegalEntity);
-                    this.generateProformaNumber(cle);
+                    this.generateProformaNumber(cle, myDate);
                     this.getPOCNamesForEditInv(cle);
                 }
                 else {
@@ -829,7 +829,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         console.log(this.poNames);
     }
 
-    generateProformaNumber(cle: any) {
+    generateProformaNumber(cle: any, date: Date) {
         let cleAcronym = '';
         let proformaCounter: number = 0;
         let proformaDate = '';
@@ -845,7 +845,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             let sNum = '000' + proformaCounter;
             let sFinalNum = sNum.substr(sNum.length - 4);
             // console.log('proformaCounter,', proformaCounter);
-            proformaDate = this.datePipe.transform(new Date(), 'MM') + this.datePipe.transform(new Date(), 'yy');
+            proformaDate = this.datePipe.transform(date, 'MM') + this.datePipe.transform(date, 'yy');
             // console.log('proformaDate,', proformaDate);
             let finalVal = isOOP ? cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum + '-OOP' : cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum;
             this.addToProforma_form.get('ProformaNumber').setValue(finalVal);
@@ -853,9 +853,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }
     }
 
-    updatePrformaNumFromPT(cle, ptVal: any) {
-        this.generateProformaNumber(cle);
-    }
+    // updatePrformaNumFromPT(cle, ptVal: any) {
+    //     this.generateProformaNumber(cle);
+    // }
 
     getPIByPC(pc) {
         let found = this.projectInfoData.find((x) => {
