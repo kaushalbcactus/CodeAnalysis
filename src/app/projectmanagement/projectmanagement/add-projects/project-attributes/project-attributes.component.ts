@@ -89,6 +89,12 @@ export class ProjectAttributesComponent implements OnInit {
       }
     }, this.pmConstant.TIME_OUT);
   }
+  /**
+   * This method is to set the field properties for all project object.
+   * @param projObj Pass projectObj as parameter.
+   * @param sowObj Pass sowObj as parameter.
+   * @param isCreate pass isCreate as parameter.
+   */
   async setFieldProperties(projObj, sowObj, isCreate) {
     if (isCreate) {
       await this.setDropDownValue(sowObj.ClientLegalEntity);
@@ -190,6 +196,10 @@ export class ProjectAttributesComponent implements OnInit {
     this.isProjectAttributeTableHidden = false;
     this.isProjectAttributeLoaderHidden = true;
   }
+  /**
+   * This method is used to set dropdown values.
+   * @param clientLeagalEntity Pass the clientlegalEntity as parameter.
+   */
   async setDropDownValue(clientLeagalEntity) {
     this.subDivisionArray = [];
     this.priority = [
@@ -239,6 +249,9 @@ export class ProjectAttributesComponent implements OnInit {
       this.deliveryLevel2.push({ label: element.Title, value: element.ID });
     });
   }
+  /**
+   * This method is used to initiliaze the project attributes forms.
+   */
   initForm() {
     this.addProjectAttributesForm = this.frmbuilder.group({
       clientLeagalEntity: [''],
@@ -250,7 +263,7 @@ export class ProjectAttributesComponent implements OnInit {
       poc: ['', Validators.required],
       poc2: [null],
       therapeuticArea: ['', Validators.required],
-      indication: [''],
+      indication: ['', Validators.maxLength(255)],
       molecule: ['', Validators.required],
       priority: ['', Validators.required],
       projectStatus: [''],
@@ -260,10 +273,10 @@ export class ProjectAttributesComponent implements OnInit {
       selectedActiveCM2: ['', Validators.required],
       selectedActiveAD1: [''],
       selectedActiveAD2: ['', Validators.required],
-      projectTitle: ['', Validators.required],
-      shortTitle: ['', Validators.required],
+      projectTitle: ['', [Validators.required, Validators.maxLength(255)]],
+      shortTitle: ['', [Validators.required, Validators.maxLength(255)]],
       endUseDeliverable: [''],
-      sowBoxLink: [''],
+      sowBoxLink: ['', Validators.maxLength(255)],
       conference: [''],
       authors: [''],
       comments: ['']
@@ -273,7 +286,9 @@ export class ProjectAttributesComponent implements OnInit {
       addMoleculeItem: ['', Validators.required]
     });
   }
-
+  /**
+   * This method is used to goto timeline page.
+   */
   goToTimeline(data) {
     if (this.addProjectAttributesForm.valid) {
       this.setFormFieldValue();
@@ -282,9 +297,16 @@ export class ProjectAttributesComponent implements OnInit {
       this.validateAllFormFields(this.addProjectAttributesForm);
     }
   }
+  /**
+   * This method is used to navigate to SOW page.
+   */
   goToSow() {
     this.pmObject.activeIndex = 1;
   }
+  /**
+   * This method is used to validate project attributes field.
+   * @param formGroup Pass the formGroup as parameter.
+   */
   validateAllFormFields(formGroup: FormGroup) {
     Object.keys(formGroup.controls).forEach(field => {
       const control = formGroup.get(field);
@@ -295,6 +317,9 @@ export class ProjectAttributesComponent implements OnInit {
       }
     });
   }
+  /**
+   * This method is used to the form field value.
+   */
   setFormFieldValue() {
     this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = this.addProjectAttributesForm.get('clientLeagalEntity').value;
     this.pmObject.addProject.ProjectAttributes.SubDivision = this.addProjectAttributesForm.get('subDivision').value;
@@ -323,6 +348,9 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.Authors = this.addProjectAttributesForm.get('authors').value;
     this.pmObject.addProject.ProjectAttributes.Comments = this.addProjectAttributesForm.get('comments').value;
   }
+  /**
+   * This method get called when user changed the billed by dropdonw value.
+   */
   onBilledByChanged() {
     if (this.addProjectAttributesForm.get('billedBy').value === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
       if (this.addProjectAttributesForm.get('pubSupport').value) {
@@ -333,6 +361,10 @@ export class ProjectAttributesComponent implements OnInit {
       this.isPubSupportDisabled = false;
     }
   }
+  /**
+   * This method is used to the edit the project.
+   * @param projObj Pass the projObj as parameter.
+   */
   editProject(projObj) {
     this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = projObj.ClientLegalEntity;
     this.pmObject.addProject.ProjectAttributes.SubDivision = projObj.SubDivision;
@@ -382,6 +414,9 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.Comments = projObj.Comments;
     this.setFieldProperties(this.pmObject.addProject.ProjectAttributes, null, false);
   }
+  /**
+   * This method is used to update the project.
+   */
   async saveEditProject() {
     if (this.addProjectAttributesForm.valid) {
       this.pmObject.isMainLoaderHidden = false;
@@ -421,15 +456,23 @@ export class ProjectAttributesComponent implements OnInit {
       this.fileReader.readAsArrayBuffer(this.selectedFile);
     }
   }
+  /**
+   * This method is used open the molecule.
+   */
   openMoleculeAdd() {
     this.formSubmit = false;
     this.showMoleculeAdd = true;
   }
-
+  /**
+   * This method is used to reset molecule.
+   */
   resetMoleculeAdd() {
     this.showMoleculeAdd = false;
     this.addMolecule.get('addMoleculeItem').setValue('');
   }
+  /**
+   * This method is ued to add molecule to list.
+   */
   async addMoleculeToList() {
     this.formSubmit = true;
     if (this.addMolecule.valid) {
