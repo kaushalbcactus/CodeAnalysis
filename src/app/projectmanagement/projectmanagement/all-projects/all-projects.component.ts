@@ -203,7 +203,7 @@ export class AllProjectsComponent implements OnInit {
         this.pmObject.tabMenuItems[0].label = 'All Projects (' + this.pmObject.countObj.allProjectCount + ')';
         this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       }
-      if(this.route.snapshot.queryParams) {
+      if (this.route.snapshot.queryParams) {
         this.params.ProjectCode = this.route.snapshot.queryParams.ProjectCode;
         this.params.ActionStatus = this.route.snapshot.queryParams.ActionStatus;
         this.params.ProjectStatus = this.route.snapshot.queryParams.ProjectStatus;
@@ -214,7 +214,6 @@ export class AllProjectsComponent implements OnInit {
         this.params.ProjectStatus = '';
         this.params.ProjectBudgetStatus = '';
       }
-      
       const projectObj = this.pmObject.allProjectItems.filter(c => c.ProjectCode === this.params.ProjectCode);
       if (this.params.ActionStatus) {
         if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.APPROVED) {

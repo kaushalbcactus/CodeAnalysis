@@ -59,6 +59,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.loadProjectManagementInit();
   }
+  /**
+   * This method is used to load project management.
+   */
   loadProjectManagementInit() {
     this.subscription = this.dataService.on('call-EditSOW').subscribe(() => this.getEditSOWData());
     this.subscription = this.dataService.on('call-Close-SOW').subscribe(() => this.closeSOW());
@@ -70,6 +73,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.bindMenuItems();
     this.setYearRange();
   }
+  /**
+   * This method is used to destroy the subscription.
+   */
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
@@ -231,8 +237,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       pocOptional: [null],
       cactusBillingEntity: ['', Validators.required],
       practiceArea: ['', Validators.required],
-      sowCode: [null, Validators.required],
-      sowTitle: ['', Validators.required],
+      sowCode: [null, [Validators.required, Validators.maxLength(255)]],
+      sowTitle: ['', [Validators.required, Validators.maxLength(255)]],
       sowCreationDate: ['', Validators.required],
       sowExpiryDate: ['', Validators.required],
       currency: ['', Validators.required],
@@ -273,6 +279,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       }
     });
   }
+  /**
+   * This method is use to set the SOW total.
+   */
   setSOWTotal() {
     this.pmObject.addSOW.Budget.Net = this.addSowForm.value.net;
     this.pmObject.addSOW.Budget.OOP = this.addSowForm.value.oop ? this.addSowForm.value.oop : 0;
@@ -394,6 +403,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.addSowForm.get('delivery').setValue(this.pmObject.addSOW.Delivery);
     this.addSowForm.get('sowOwner').setValue(this.pmObject.addSOW.SOWOwner);
   }
+  /**
+   * This method is used to upload the file on finance/sow.
+   */
   async submitFile() {
     const docFolder = 'Finance/SOW';
     let libraryName = '';
@@ -415,6 +427,10 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     }
     return res;
   }
+  /**
+   * This method get called when we change the file.
+   * @param event Pass the file properties as a parameter.
+   */
   onFileChange(event) {
     this.selectedFile = null;
     this.fileReader = new FileReader();
@@ -460,6 +476,11 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       };
     });
   }
+  /**
+   * This method is used to create or update the SOW.
+   * @param isUpdate Pass true if want to update sow else true.
+   * @param sowObj Pass the sowObj as parameter.
+   */
   createUpdateSOW(isUpdate, sowObj) {
     if (!isUpdate) {
       this.addUpdateSOW(sowObj);
@@ -467,6 +488,11 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.addUpdateSOW(sowObj);
     }
   }
+  /**
+   * This method is used to send e-mail based sow status.
+   * @param sowObj Pass sowObj as a parameter.
+   * @param sowStatus Pass the status as parameter.
+   */
   addUpdateSOWsendEmail(sowObj, sowStatus) {
     const objEmailBody = [];
     let mailSubject = '';
@@ -533,6 +559,10 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.pmService.getTemplate(this.constant.EMAIL_TEMPLATE_NAME.APPROVED_SOW, objEmailBody, mailSubject, arrayTo,
       ccArray); // Send Mail
   }
+  /**
+   * This method is used send email when budget will updated.
+   * @param sowObj Pass sowObj as parameter.
+   */
   updateBudgetEmail(sowObj) {
     const objEmailBody = [];
     const mailSubject = sowObj.SOWCode + ' - Budget Updated';
@@ -680,6 +710,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       }, this.pmConstant.TIME_OUT);
     }
   }
+  /**
+   * This function is used to update the parent SOW budget.
+   */
   async updateParentSOWBudget(obj, predecessor, budget) {
     const contentFilter = Object.assign({}, this.pmConstant.SOW_QUERY.PREDECESSOR);
     // tslint:disable-next-line:max-line-length
@@ -773,6 +806,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     };
     return budgetBreakUpOptions;
   }
+  /**
+   * This method is used reset the SOW add/update field.
+   */
   resetAddSOW() {
     this.pmObject.addSOW.ID = 0;
     this.pmObject.addSOW.ClientLegalEntity = '';
@@ -805,11 +841,17 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.pmObject.addSOW.Addendum.TaxBudget = +'';
     this.pmObject.isSOWFormSubmit = false;
   }
+  /**
+   * This method is used to close the additional Popup.
+   */
   closeAdditonalPop() {
     this.addAdditionalBudgetForm.reset();
     this.pmObject.isSOWFormSubmit = false;
     this.pmObject.isAdditionalBudgetVisible = false;
   }
+  /**
+   * This method is used to add sow total.
+   */
   setAddSOWTotal() {
     this.pmObject.addSOW.Additonal.NetBudget = this.addAdditionalBudgetForm.value.addNet;
     this.pmObject.addSOW.Additonal.OOPBudget = this.addAdditionalBudgetForm.value.addOOP ? this.addAdditionalBudgetForm.value.addOOP : 0;
@@ -817,6 +859,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.addAdditionalBudgetForm.get('addTotal').setValue(this.pmObject.addSOW.Additonal.NetBudget +
       this.pmObject.addSOW.Additonal.OOPBudget + this.pmObject.addSOW.Additonal.TaxBudget);
   }
+  /**
+   * This method is used to add additional budget.
+   */
   async addAdditionalBudget() {
     this.pmObject.isSOWFormSubmit = true;
     if (this.addAdditionalBudgetForm.valid) {
@@ -933,6 +978,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.validateAllFormFields(this.addAdditionalBudgetForm);
     }
   }
+  /**
+   * This method is used to get the edit SOWObj value based on selected sow.
+   */
   async getEditSOWData() {
     const currSelectedSOW = this.pmObject.selectedSOWTask;
     const batchURL = [];
@@ -981,7 +1029,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.isSOWFormSubmit = false;
     }
   }
-
+  /**
+   * This method is used to close the sow.
+   */
   closeSOW() {
     this.pmObject.isSOWCloseVisible = true;
     this.confirmationService.confirm({
@@ -993,6 +1043,9 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       }
     });
   }
+  /**
+   * This method is used to update the sow status based on selected sow.
+   */
   async updateStatus() {
     const currSelectedSOW = this.pmObject.selectedSOWTask;
     const sowUpdateOptions = {
