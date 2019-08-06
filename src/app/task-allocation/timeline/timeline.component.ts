@@ -6,7 +6,7 @@ import { SharepointoperationService } from 'src/app/Services/sharepoint-operatio
 import { TaskAllocationConstantsService } from '../services/task-allocation-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { GanttEditorComponent, GanttEditorOptions } from 'ng-gantt';
-import { TreeNode, MessageService, DialogService } from 'primeng/api';
+import { TreeNode, MessageService, DialogService, ConfirmationService } from 'primeng/api';
 import { MenuItem } from 'primeng/api';
 import { UserCapacityComponent } from '../user-capacity/user-capacity.component';
 import { DragDropComponent } from '../drag-drop/drag-drop.component';
@@ -144,6 +144,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     public datepipe: DatePipe,
     public dialogService: DialogService,
     private messageService: MessageService,
+    private confirmationService: ConfirmationService
   ) {
 
   }
@@ -261,7 +262,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           const milestoneHoursSpent = [];
           milestoneSubmilestones = milestone.SubMilestones !== null ? milestone.SubMilestones.replace(/#/gi, "").split(';') : [];
 
-          var dbSubMilestones : Array<any> = milestoneSubmilestones.length > 0 ? milestoneSubmilestones.map(o => new Object({ subMile: o.split(':')[0], position: o.split(':')[1], status: o.split(':')[2] })) : [];
+          var dbSubMilestones: Array<any> = milestoneSubmilestones.length > 0 ? milestoneSubmilestones.map(o => new Object({ subMile: o.split(':')[0], position: o.split(':')[1], status: o.split(':')[2] })) : [];
 
           var NextSubMilestone = dbSubMilestones.length > 0 ? dbSubMilestones.find(c => c.status === 'Not Confirmed') !== undefined ? dbSubMilestones.find(c => c.status === 'Not Confirmed') : new Object({ subMile: '', position: '', status: '' }) : new Object({ subMile: '', position: '', status: '' });
 
@@ -1311,7 +1312,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
         this.taskMenu.push({ label: 'Scope', icon: 'pi pi-comment', command: (event) => this.openComment(data, rowNode) });
 
-        if ((data.AssignedTo.ID !== undefined && data.AssignedTo.ID > -1) || data.pRes) {
+        if (data.AssignedTo.ID !== undefined && data.AssignedTo.ID > -1 && data.pRes !== 'QC' && data.pRes !== 'Edit') {
           this.taskMenu.push({ label: 'User Capacity', icon: 'pi pi-camera', command: (event) => this.getUserCapacity(data) });
         }
       }
@@ -2903,15 +2904,41 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
   setAsNextMilestoneCall(rowData) {
     //  const validateNextMilestone = true;
-    this.selectedSubMilestone = rowData;
-    const validateNextMilestone = this.validateNextMilestone();
-    if (validateNextMilestone) {
-      this.loaderenable = true;
-      // const newCurrentMilestoneText = this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone;
-      // this.messageService.add({key: 'custom', severity:'warn', summary: 'Warning Message',
-      // detail:' Setting ' + newCurrentMilestoneText + ' as current milestone'});
-      setTimeout(() => { this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
+
+    const currentMilestone = this.milestoneData.filter((obj) => {
+      return obj.data.isCurrent === true;
+    });
+    let Title;
+    if (currentMilestone.length > 0) {
+      if (currentMilestone[0].children.length > 0) {
+
+        const T1 = currentMilestone[0].data.pName.indexOf('(');
+        Title = T1 > 0 ? currentMilestone[0].data.pName.slice(0, T1) + ' - ' + rowData.pName :
+        currentMilestone[0].data.pName + ' - ' + rowData.pName;
+
+      } else {
+        Title = rowData.pName;
+      }
     }
+
+    this.confirmationService.confirm({
+      message: 'Are you sure that you want to Confirm ' + Title + ' ?',
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.selectedSubMilestone = rowData;
+        const validateNextMilestone = this.validateNextMilestone();
+        if (validateNextMilestone) {
+          this.loaderenable = true;
+          // const newCurrentMilestoneText = this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone;
+          // this.messageService.add({key: 'custom', severity:'warn', summary: 'Warning Message',
+          // detail:' Setting ' + newCurrentMilestoneText + ' as current milestone'});
+          setTimeout(() => { this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
+        }
+      },
+      reject: () => {
+      }
+    });
   }
 
   async setAsNextMilestone(subMile) {
