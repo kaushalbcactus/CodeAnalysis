@@ -1,0 +1,3 @@
+::ng-deep .ui-calendar-w-btn>input {
+    width: 80% !important;
+}

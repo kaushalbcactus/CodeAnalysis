@@ -173,7 +173,7 @@ export class UsercapacityComponent implements OnInit {
     const selectedUserID = oUser.uid;
     // tslint:disable
     const endpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl
-    +"/_api/web/lists/getbytitle('" + this.Schedules + "')/items?$select=ID,Milestone,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone&$top=4500&$filter=(AssignedTo/Id eq "+selectedUserID+") and("+
+    +"/_api/web/lists/getbytitle('" + this.Schedules + "')/items?$select=ID,Milestone, SubMilestones, Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone&$top=4500&$filter=(AssignedTo/Id eq "+selectedUserID+") and("+
     "(StartDate ge '"+startDateString+"' and StartDate le '"+endDateString+"') or (DueDate ge '"+startDateString+"' and DueDate le '"+endDateString+"') or (StartDate le '"+startDateString+"' and DueDate ge '"+endDateString+"')"+
     ") and Status ne 'Abandon' and Status ne 'Deleted'&$orderby=StartDate";
     // tslint:enable
@@ -317,6 +317,7 @@ export class UsercapacityComponent implements OnInit {
                       oUser.tasks[j].timeAllocatedPerDay.replace('.', ':') : oUser.tasks[j].timeAllocatedPerDay,
                       status : oUser.tasks[j].Status,
                       totalAllocatedTime : totalAllocatedTime ,
+                      SubMilestones: oUser.tasks[j].SubMilestones,
                       displayTotalAllocatedTime : totalAllocatedTime !== null ? oUser.tasks[j].Task !== 'Adhoc' ?
                         totalAllocatedTime : totalAllocatedTime.replace('.', ':') : totalAllocatedTime
                     };
@@ -429,7 +430,7 @@ export class UsercapacityComponent implements OnInit {
               +  "/_api/web/lists/getbytitle('" + this.ProjectInformation + "')/items?$select=WBJID&&$filter=ProjectCode eq '"+tasks[taskIndex].projectCode+"'";
               this.spService.getBatchBodyGet(batchContents, batchGuid, url);
               var sSchedulesURL = this.sharedObject.sharePointPageObject.webAbsoluteUrl
-              +  "/_api/web/lists/getbytitle('" + this.Schedules + "')/items?$select=ID,Task,Title,ExpectedTime,StartDate,DueDate,TimeZone,Status,AssignedToText,ContentType/Name&$expand=ContentType&$filter=startswith(Title,'"+tasks[taskIndex].projectCode+"') and Milestone eq '"+tasks[taskIndex].milestone+"' and Status ne 'Abandon' and Status ne 'Completed' and Status ne 'Deleted' and Status ne 'Auto Closed'";
+              +  "/_api/web/lists/getbytitle('" + this.Schedules + "')/items?$select=ID,Task,Title,ExpectedTime,StartDate,DueDate,TimeZone,Status,AssignedToText, SubMilestones, ContentType/Name&$expand=ContentType&$filter=startswith(Title,'"+tasks[taskIndex].projectCode+"') and Milestone eq '"+tasks[taskIndex].milestone+"' and Status ne 'Abandon' and Status ne 'Completed' and Status ne 'Deleted' and Status ne 'Auto Closed'";
               this.spService.getBatchBodyGet(batchContents, batchGuid, sSchedulesURL);
               // tslint:enable
           }

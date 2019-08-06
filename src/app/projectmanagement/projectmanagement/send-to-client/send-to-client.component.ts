@@ -254,14 +254,14 @@ export class SendToClientComponent implements OnInit {
     const endDateString = new Date(this.commonService.formatDate(endDate) + ' 23:59:00').toISOString();
     const currentFilter = 'AssignedTo eq ' + this.globalObject.sharePointPageObject.userId + ' and ' +
       '(Status eq \'Not Started\') and (Task eq \'Send to client\') and ' +
-      '((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString + '\') and ' +
+      '((StartDate ge \'' + startDateString + '\' and StartDate le \'' + endDateString + '\') and ' +
       ' (DueDate ge \'' + startDateString + '\' and DueDate le \'' + endDateString + '\'))';
     this.getSendToClient(currentFilter);
   }
 
   async getSendToClient(currentFilter) {
     const queryOptions = {
-      select: 'ID,Title,ProjectCode,StartDate,DueDate,PreviousTaskClosureDate,Milestone,PrevTasks,NextTasks',
+      select: 'ID,Title,ProjectCode,StartDate,DueDate,PreviousTaskClosureDate,Milestone,PrevTasks,SubMilestones, NextTasks',
       filter: currentFilter,
       top: 4200
     };
@@ -290,6 +290,7 @@ export class SendToClientComponent implements OnInit {
       const tempSendToClientArray = [];
       const batchContents = new Array();
       const batchGuid = this.spServices.generateUUID();
+      debugger;
       for (const task of this.scArrays.taskItems) {
         const scObj: any = $.extend(true, {}, this.pmObject.sendToClient);
         scObj.ID = task.ID;
@@ -316,7 +317,8 @@ export class SendToClientComponent implements OnInit {
         }
         scObj.DueDate = task.DueDate;
         scObj.DueDateFormat = this.datePipe.transform(new Date(scObj.DueDate), 'MMM dd yyyy hh:mm:ss aa');
-        scObj.Milestone = task.Milestone;
+        scObj.Milestone = task.SubMilestones ?
+        task.Milestone + ' - ' + task.SubMilestones  : task.Milestone;
         if (new Date(new Date(scObj.DueDate).setHours(0, 0, 0, 0)).getTime() === new Date(new Date().setHours(0, 0, 0, 0)).getTime()) {
           scObj.isBlueIndicator = true;
           scObj.SLA = this.pmConstant.ColorIndicator.BLUE;
