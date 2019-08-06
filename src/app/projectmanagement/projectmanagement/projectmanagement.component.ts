@@ -237,7 +237,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       pocOptional: [null],
       cactusBillingEntity: ['', Validators.required],
       practiceArea: ['', Validators.required],
-      sowCode: [null, [Validators.required, Validators.maxLength(255)]],
+      sowCode: [null, [Validators.required, Validators.maxLength(50)]],
       sowTitle: ['', [Validators.required, Validators.maxLength(255)]],
       sowCreationDate: ['', Validators.required],
       sowExpiryDate: ['', Validators.required],
