@@ -100,7 +100,7 @@ export class TimeBookingDialogComponent implements OnInit {
 
   AddNewRow() {
     const newMilestone = {
-      ID: -1, Entity: '', ProjectCode: '', Milestone: '', type: 'task',
+      ID: -1, Entity: '', ProjectCode: '', Milestone: '', SubMilestone: '', displayName: '', type: 'task',
       dbClientLegalEntities: this.dbClientLegalEntities, dbProjects: [{
         label: 'Select Project',
         value: null
@@ -159,9 +159,36 @@ export class TimeBookingDialogComponent implements OnInit {
     const AllMilestonesUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', AllMilestones);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, AllMilestonesUrl);
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-    const dbAllMilestones = this.response.length > 0 ? this.response[0].map(o => new Object({ label: o.Title, value: o.Title })) : [];
+    debugger;
+    const dbAllMilestones = this.response.length > 0 ? await this.getSubMilestoneMilestones(this.response[0]) : [];
     rowData.dbMilestones.push.apply(rowData.dbMilestones, dbAllMilestones);
+
+  }
+
+  async getSubMilestoneMilestones(Milestones) {
+    // this.response[0].map(o => new Object({ label: o.Title, value: o.Title }))
+    const subMileArray = [];
+    Milestones.forEach(element => {
+
+      if (element.SubMilestones) {
+        const SubMilestone = element.SubMilestones.split(';#');
+        SubMilestone.forEach((value, i) => {
+          subMileArray.push(new Object({
+            label: element.Title + ' - ' + value.substr(0,
+              value.indexOf(':')), value: element.Title + ' - ' + value.substr(0, value.indexOf(':'))
+          }));
+        });
+
+
+      } else {
+        subMileArray.push(new Object({ label: element.Title, value: element.Title }));
+      }
+
+    });
+
+
+    return subMileArray;
+
 
   }
 
@@ -215,7 +242,7 @@ export class TimeBookingDialogComponent implements OnInit {
 
   unique(arr, keyProps) {
     const kvArray = arr.map(entry => {
-      const key = keyProps.map(k => entry[k]).join('|');
+      const key = keyProps.map(k => entry[k] ? entry[k] : '').join('|');
       return [key, entry];
     });
     const map = new Map(kvArray);
@@ -242,10 +269,14 @@ export class TimeBookingDialogComponent implements OnInit {
 
     this.allTasks = this.response[0];
 
+    debugger;
+
     const tempMilestones = this.allTasks.map(o => new Object({
       ID: o.ID, Entity: o.Entity,
       ProjectCode: o.ProjectCode === 'Adhoc' ? '-' : o.ProjectCode,
       Milestone: o.Milestone === 'Select one' ? o.Comments : o.Milestone,
+      SubMilestone: o.SubMilestones,
+      displayName: o.Milestone === 'Select one' ?  o.Comments : o.SubMilestones ? o.Milestone + ' - ' + o.SubMilestones : o.Milestone,
       type: o.Entity === null ? 'task' : 'Adhoc',
       TimeSpents: this.weekDays.map(c => new Object({
         date: c, MileHrs: '00:00', minHrs: '00: 00',
@@ -260,7 +291,8 @@ export class TimeBookingDialogComponent implements OnInit {
 
     const dbActualAdhoc = tempMilestones.length > 0 ? tempMilestones.filter(c => c.ProjectCode === '-') : [];
 
-    const uniquedbTasks = dbActualMilestone.length > 0 ? this.unique(dbActualMilestone, ['ProjectCode', 'Milestone']) : [];
+    const uniquedbTasks = dbActualMilestone.length > 0 ?
+      this.unique(dbActualMilestone, ['ProjectCode', 'Milestone', 'SubMilestone']) : [];
     const uniqueAdhoc = dbActualAdhoc.length > 0 ? this.unique(dbActualAdhoc, ['Entity', 'Milestone']) : [];
 
     this.UserMilestones = [];
@@ -452,7 +484,7 @@ export class TimeBookingDialogComponent implements OnInit {
       const totalTimeSpent = timeSpentMin < 10 ? timeSpentHours1 + ':' + '0' + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
 
       const existingObjItem = this.allTasks.filter(c => c.ProjectCode === dbTasks[i].ProjectCode &&
-        c.Milestone === dbTasks[i].Milestone && c.Task === 'Time Booking');
+        c.Milestone === dbTasks[i].Milestone && c.SubMilestone === dbTasks[i].SubMilestone && c.Task === 'Time Booking');
 
       if (existingObjItem.length) {
         const existingObj = existingObjItem[0];
@@ -466,13 +498,17 @@ export class TimeBookingDialogComponent implements OnInit {
         if (dbTasks[i].Entity) {
 
           if (!dbTasks[i].ProjectCode) {
-            this.messageService.add({ key: 'custom-booking', severity: 'warn', summary: 'Warnin Message',
-            detail: 'Please Select Project / To remove unwanted line, please unselect Client' });
+            this.messageService.add({
+              key: 'custom-booking', severity: 'warn', summary: 'Warnin Message',
+              detail: 'Please Select Project / To remove unwanted line, please unselect Client'
+            });
 
             return false;
           } else if (!dbTasks[i].Milestone) {
-            this.messageService.add({ key: 'custom-booking', severity: 'warn', summary: 'Warning Message',
-             detail: 'Please Select Milestone / To remove unwanted line, please unselect Client' });
+            this.messageService.add({
+              key: 'custom-booking', severity: 'warn', summary: 'Warning Message',
+              detail: 'Please Select Milestone / To remove unwanted line, please unselect Client'
+            });
             return false;
           } else if (totalTimeSpent !== '00:00') {
             this.modalloaderenable = true;
@@ -489,6 +525,7 @@ export class TimeBookingDialogComponent implements OnInit {
                 DueDate: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[6].date, 'yyyy-MM-dd') + 'T09:00:00.000'),
                 ExpectedTime: '0',
                 Milestone: dbTasks[i].Milestone,
+                SubMilestones : dbTasks[i].SubMilestone,
                 ProjectCode: dbTasks[i].ProjectCode,
                 StartDate: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[0].date, 'yyyy-MM-dd') + 'T09:00:00.000'),
                 Status: 'Completed',
@@ -496,7 +533,7 @@ export class TimeBookingDialogComponent implements OnInit {
                 TimeSpent: totalTimeSpent,
                 TimeSpentPerDay: timeSpentString,
                 Title: dbTasks[i].ProjectCode + ' TB ' + this.sharedObject.currentUser.title + ' ' +
-                this.datePipe.transform(new Date(), 'MMM dd, yyyy'),
+                  this.datePipe.transform(new Date(), 'MMM dd, yyyy'),
                 AssignedToId: this.sharedObject.currentUser.id,
               };
               count++;
@@ -516,15 +553,20 @@ export class TimeBookingDialogComponent implements OnInit {
 
   checkMilestone(event, rowData) {
 
+    rowData.Milestone = event.split('-')[0].trim();
+    rowData.SubMilestone = event.split('-').length > 0 ? event.split('-')[1].trim() : null;
+
     if (this.UserMilestones.filter(c => c.Entity === rowData.Entity && c.ProjectCode ===
-      rowData.ProjectCode && c.Milestone === rowData.Milestone).length > 1) {
+      rowData.ProjectCode && c.displayName === event).length > 1) {
       const index = this.UserMilestones.indexOf(rowData);
 
       if (index > -1) {
         this.UserMilestones.splice(index, 1);
       }
-      this.messageService.add({ key: 'custom-booking', severity: 'warn', summary: 'Warning Message',
-       detail: 'Selected combination already exist. Please check above' });
+      this.messageService.add({
+        key: 'custom-booking', severity: 'warn', summary: 'Warning Message',
+        detail: 'Selected combination already exist. Please check above'
+      });
     }
   }
 
@@ -532,8 +574,8 @@ export class TimeBookingDialogComponent implements OnInit {
   async DifferenceHours(startTime, EndTime) {
     // tslint:disable-next-line: radix
     const TotalMinDiff = ((EndTime.split(':')[0] * 60) + parseInt(EndTime.split(':')[1])) -
-    // tslint:disable-next-line: radix
-    ((startTime.split(':')[0] * 60) + parseInt(startTime.split(':')[1]));
+      // tslint:disable-next-line: radix
+      ((startTime.split(':')[0] * 60) + parseInt(startTime.split(':')[1]));
     const hours = (TotalMinDiff / 60);
     const rhours = Math.floor(hours);
     const minutes = (hours - rhours) * 60;
@@ -548,8 +590,8 @@ export class TimeBookingDialogComponent implements OnInit {
 
     const hours = milestone.TimeSpents.map(c => c.MileHrs);
     const timeSpentHours = hours.map(c => c.split(':')).map(c => c[0]).map(Number).reduce((sum, num) =>
-     sum + num, 0) + Math.floor(hours.map(c => c.split(':')).map(c => c[1]).map(Number)
-     .reduce((sum, num) => sum + num, 0) / 60);
+      sum + num, 0) + Math.floor(hours.map(c => c.split(':')).map(c => c[1]).map(Number)
+        .reduce((sum, num) => sum + num, 0) / 60);
     const timeSpentMin = hours.map(c => c.split(':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
     const tempminutes = timeSpentMin < 10 ? '0' + timeSpentMin : timeSpentMin;
     const temphours = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
@@ -564,8 +606,8 @@ export class TimeBookingDialogComponent implements OnInit {
     }
 
     const timeSpentHours = TotalOfTotal.map(c => c.split(':')).map(c => c[0]).map(Number).
-    reduce((sum, num) => sum + num, 0) + Math.floor(TotalOfTotal.map(c => c.split(':')).map(c => c[1])
-    .map(Number).reduce((sum, num) => sum + num, 0) / 60);
+      reduce((sum, num) => sum + num, 0) + Math.floor(TotalOfTotal.map(c => c.split(':')).map(c => c[1])
+        .map(Number).reduce((sum, num) => sum + num, 0) / 60);
     const timeSpentMin = TotalOfTotal.map(c => c.split(':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
     const tempminutes = timeSpentMin < 10 ? '0' + timeSpentMin : timeSpentMin;
     const temphours = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
@@ -580,8 +622,8 @@ export class TimeBookingDialogComponent implements OnInit {
       timespanArray.push(tempcolumnValues[i].map(c => c.MileHrs)[column]);
     }
     const timeSpentHours = timespanArray.map(c => c.split(':')).map(c => c[0]).map(Number)
-    .reduce((sum, num) => sum + num, 0) + Math.floor(timespanArray.map(c => c.split(':')).map(c => c[1])
-    .map(Number).reduce((sum, num) => sum + num, 0) / 60);
+      .reduce((sum, num) => sum + num, 0) + Math.floor(timespanArray.map(c => c.split(':')).map(c => c[1])
+        .map(Number).reduce((sum, num) => sum + num, 0) / 60);
     const timeSpentMin = timespanArray.map(c => c.split(':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
     const tempminutes = timeSpentMin < 10 ? '0' + timeSpentMin : timeSpentMin;
     const temphours = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;

@@ -2880,26 +2880,29 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const newCurrentMilestone = this.milestoneData.filter((obj) => {
       return obj.data.pName.split(' (')[0] === nextMilestoneText;
     });
-    let currMilTasks = this.getTasksFromMilestones(newCurrentMilestone[0], false);
-    currMilTasks = currMilTasks.filter((objt) => {
-      return objt.status !== 'Deleted' && objt.status !== 'Abandon';
-    });
+    if (newCurrentMilestone.length > 0) {
+      let currMilTasks = this.getTasksFromMilestones(newCurrentMilestone[0], false);
+      currMilTasks = currMilTasks.filter((objt) => {
+        return objt.status !== 'Deleted' && objt.status !== 'Abandon';
+      });
 
-    const uniqueSub = currMilTasks.map(item => item.submilestone);
-    if (uniqueSub.length === 0) {
-      currMilTasks.forEach(element => {
-        const title = element.AssignedTo.Title;
-        if (!title) {
-          validateNextMilestone = false;
-        }
-      });
+      const uniqueSub = currMilTasks.map(item => item.submilestone);
+      if (uniqueSub.length === 0) {
+        currMilTasks.forEach(element => {
+          const title = element.AssignedTo.Title;
+          if (!title) {
+            validateNextMilestone = false;
+          }
+        });
+      }
+      if (!validateNextMilestone) {
+        this.messageService.add({
+          key: 'custom', severity: 'warn', summary: 'Warning Message',
+          detail: 'All tasks should be assigned to either a resource or skill before setting the milestone as current milestone.'
+        });
+      }
     }
-    if (!validateNextMilestone) {
-      this.messageService.add({
-        key: 'custom', severity: 'warn', summary: 'Warning Message',
-        detail: 'All tasks should be assigned to either a resource or skill before setting the milestone as current milestone.'
-      });
-    }
+
     return validateNextMilestone;
   }
   setAsNextMilestoneCall(rowData) {
@@ -2914,7 +2917,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
         const T1 = currentMilestone[0].data.pName.indexOf('(');
         Title = T1 > 0 ? currentMilestone[0].data.pName.slice(0, T1) + ' - ' + rowData.pName :
-        currentMilestone[0].data.pName + ' - ' + rowData.pName;
+          currentMilestone[0].data.pName + ' - ' + rowData.pName;
 
       } else {
         Title = rowData.pName;
