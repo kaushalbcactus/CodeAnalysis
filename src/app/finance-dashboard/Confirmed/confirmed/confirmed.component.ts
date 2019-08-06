@@ -741,7 +741,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                     }
 
                     var cle = this.getCLEObj(this.selectedPurchaseNumber.ClientLegalEntity);
-                    this.generateProformaNumber(cle, myDate);
+                    this.generateProformaNumber(cle);
                     this.getPOCNamesForEditInv(cle);
                 }
                 else {
@@ -829,11 +829,10 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         console.log(this.poNames);
     }
 
-    generateProformaNumber(cle: any, date: Date) {
+    generateProformaNumber(cle: any) {
         let cleAcronym = '';
         let proformaCounter: number = 0;
         let proformaDate = '';
-        let sType: string = 'Proforma';
         let isOOP: boolean = false;
         if (this.selectedAllRowData[0].ScheduleType) {
             isOOP = this.selectedAllRowData[0].ScheduleType.toLowerCase() === 'oop' ? true : false;
@@ -845,17 +844,20 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             let sNum = '000' + proformaCounter;
             let sFinalNum = sNum.substr(sNum.length - 4);
             // console.log('proformaCounter,', proformaCounter);
+            const date = this.addToProforma_form.value.ProformaDate ? new Date(this.addToProforma_form.value.ProformaDate) : new Date();
             proformaDate = this.datePipe.transform(date, 'MM') + this.datePipe.transform(date, 'yy');
             // console.log('proformaDate,', proformaDate);
-            let finalVal = isOOP ? cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum + '-OOP' : cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum;
+            let finalVal = isOOP ? (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum + '-OOP') : 
+                                    (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum);
             this.addToProforma_form.get('ProformaNumber').setValue(finalVal);
 
         }
     }
 
-    // updatePrformaNumFromPT(cle, ptVal: any) {
-    //     this.generateProformaNumber(cle);
-    // }
+    updatePrformaNumFromPT() {
+        var cle = this.getCLEObj(this.selectedPurchaseNumber.ClientLegalEntity);
+        this.generateProformaNumber(cle);
+    }
 
     getPIByPC(pc) {
         let found = this.projectInfoData.find((x) => {

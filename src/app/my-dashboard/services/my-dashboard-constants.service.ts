@@ -99,18 +99,18 @@ export class MyDashboardConstantsService {
     },
     SubmissionPkg: {
       select: 'ID,Title,JCID,SubmissionDate,SubmissionURL,SubmissionPkgURL,DecisionURL,DecisionDate,Decision,Status',
-      filter: "Status eq '{{Status}}' and Title eq '{{projectCode}}'",
+      filter: "Title eq '{{projectCode}}' and Status eq '{{Status}}'",
       top: 1
     },
 
-    GalleyCat: {
-      select: 'ID,Title,Status',
-      filter: "Status eq '{{Status}}' and Title eq '{{projectCode}}'",
+    GalleySubCat: {
+      select: 'ID,Title,JCID,SubmissionDate,SubmissionURL,SubmissionPkgURL,DecisionURL,DecisionDate,Decision,Status',
+      filter: "Title eq '{{projectCode}}' and (Status eq '{{Status}}' or  Status eq '{{Status1}}')",
       top: 1
     },
     Submit: {
       select: 'ID,Title,Status',
-      filter: "(Status eq '{{Status}}' or  Status eq '{{Status1}}') and Title eq '{{projectCode}}'",
+      filter: "Title eq '{{projectCode}}' and (Status eq '{{Status}}' or  Status eq '{{Status1}}')",
       top: 1
     },
     JournalRequirement:
@@ -387,13 +387,13 @@ export class MyDashboardConstantsService {
       this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubUrl);
     }
     else if (task.Task === 'Galley') {
-      let jcSub = Object.assign({}, this.mydashboardComponent.SubmissionPkg);
-      jcSub.filter = jcSub.filter.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Accepted');
+      let jcSub = Object.assign({}, this.mydashboardComponent.GalleySubCat);
+      jcSub.filter = jcSub.filter.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Accepted').replace(/{{Status1}}/gi, 'Galleyed');
       const jcSubUrl = this.spServices.getReadURL('' + this.constants.listNames.JCSubmission.name + '', jcSub);
       this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubUrl);
 
-      let jcSubCat = Object.assign({}, this.mydashboardComponent.GalleyCat);
-      jcSubCat.filter = jcSubCat.filter.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Accepted');
+      let jcSubCat = Object.assign({}, this.mydashboardComponent.Submit);
+      jcSubCat.filter = jcSubCat.filter.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Accepted').replace(/{{Status1}}/gi, 'Galleyed');
       const jcSubCatUrl = this.spServices.getReadURL('' + this.constants.listNames.JournalConf.name + '', jcSubCat);
       this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubCatUrl);
     }

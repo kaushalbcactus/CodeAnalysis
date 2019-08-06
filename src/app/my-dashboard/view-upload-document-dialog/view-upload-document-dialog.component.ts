@@ -434,8 +434,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
     if (event.files.length) {
       var docFolder;
-      this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Uploading....' });
-
       var existingFiles = this.allDocuments.map(c => c.Name.toLowerCase());
       switch (type) {
         case 'Source Docs':
@@ -460,13 +458,17 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           break;
       }
       var uploadedFiles = [];
-      this.loaderenable = true;
-
+     
       const readers = [];
-
+      let bUpload = true;
       event.files.forEach(async element => {
 
         var filename = element.name;
+        var sNewFileName = filename.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, "");
+        if(filename !== sNewFileName) {
+          bUpload = false;
+          return;
+        }
         if (existingFiles.includes(element.name.toLowerCase())) {
           filename = filename.split(/\.(?=[^\.]+$)/)[0] + '.' + this.datePipe.transform(new Date(), "ddMMyyyyhhmmss") + "." + filename.split(/\.(?=[^\.]+$)/)[1];
         }
@@ -483,33 +485,33 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
         existingFiles.push(filename.toLowerCase());
       });
-
-      readers.forEach(async element => {
-        const fileObj = element
-        fileObj.reader.onload = async (readerEvt) => {
-
-          var filePathUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl('" + this.ProjectInformation.ProjectFolder + "/" + docFolder + "')/Files/add(url=@TargetFileName,overwrite='false')?" +
-            "&@TargetFileName='" + fileObj.name + "'&$expand=ListItemAllFields";
-
-          const res = await this.spOperations.uploadFile(filePathUrl, fileObj.reader.result);
-          uploadedFiles.push(res);
-          if (readers.length === uploadedFiles.length) {
-            if (this.selectedTab === 'My Drafts') {
-              this.LinkDoumentToProject(uploadedFiles);
+      if(bUpload) {
+        this.messageService.add({ key: 'custom', severity: 'info', summary: 'Info Message', detail: 'Uploading....' });
+        this.loaderenable = true;
+        readers.forEach(async element => {
+          const fileObj = element
+          fileObj.reader.onload = async (readerEvt) => {
+  
+            var filePathUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl('" + this.ProjectInformation.ProjectFolder + "/" + docFolder + "')/Files/add(url=@TargetFileName,overwrite='false')?" +
+              "&@TargetFileName='" + fileObj.name + "'&$expand=ListItemAllFields";
+  
+            const res = await this.spOperations.uploadFile(filePathUrl, fileObj.reader.result);
+            uploadedFiles.push(res);
+            if (readers.length === uploadedFiles.length) {
+              if (this.selectedTab === 'My Drafts') {
+                this.LinkDocumentToProject(uploadedFiles);
+              }
+              else {
+                this.loadDraftDocs(this.selectedTab);
+                this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
+              }
             }
-            else {
-              this.loadDraftDocs(this.selectedTab);
-              this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
-            }
-          }
-          // this.nodeService.uploadFIle(filePathUrl, this.fileReader.result).subscribe(res => {
-
-
-
-          // });
-
-        };
-      });
+          };
+        });
+      } else {
+        this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+        detail: 'There are certain files with special characters. Please rename them. List of special characters ~ # % & * { } \ : / + < > ? " @ \'' });
+      }
     }
 
   };
@@ -519,7 +521,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   //   link uploaded documents to projects 
   // **************************************************************************************************************************************
 
-  LinkDoumentToProject(uploadedFiles) {
+  LinkDocumentToProject(uploadedFiles) {
     const objPost = {
       __metadata: { type: 'SP.ListItem' },
       Status: "-",
