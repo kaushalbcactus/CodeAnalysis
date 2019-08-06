@@ -34,24 +34,6 @@ export class SectionEditorComponent implements OnInit {
     // console.log(changes);
     if (changes.editableData !== undefined) {
       this.data = changes.editableData.currentValue;
-      // console.log(this.data);
-      // setTimeout(() => {
-      //   this.editor = this.Editor;
-      //   this.editor.setData(this.data);
-      //   // const toolbarContainer = document.querySelector('.document-editor__toolbar');
-      //   // toolbarContainer.appendChild(editor.ui.view.toolbar.element);
-      //   // this.editor = editor;
-      //   // DecoupledEditor
-      //   //   .create(document.querySelector('.document-editor__editable'), {
-      //   //     // plugins: [Base64UploadAdapter]
-      //   //   })
-      //   //   .then(editor => {
-
-      //   //   })
-      //   //   .catch(err => {
-      //   //     console.error(err);
-      //   //   });
-      // }, 100);
     }
   }
 

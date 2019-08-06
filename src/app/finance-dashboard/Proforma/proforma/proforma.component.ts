@@ -824,6 +824,9 @@ export class ProformaComponent implements OnInit, OnDestroy {
         let sNum = '000' + invCounter;
         let sFinalNum = sNum.substr(sNum.length - 4);
         this.invoiceNumber = cleItem.Acronym + '-' + mmyy + '-' + sFinalNum;
+        if(this.selectedRowItem.ProformaType === 'oop') {
+            this.invoiceNumber = this.invoiceNumber + '-OOP';
+        }
         console.log('this.invoiceNumber ', this.invoiceNumber);
 
         // Final Array
@@ -1202,7 +1205,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
         let cleAcronym = '';
         let proformaCounter: number = 0;
         let proformaDate = '';
-        let sType: string = 'Proforma';
         let isOOP: boolean = false;
         if (this.createProforma_form.value.ProformaType) {
             isOOP = this.createProforma_form.value.ProformaType.value.toLowerCase() === 'oop' ? true : false;
@@ -1217,7 +1219,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
             const date = this.createProforma_form.value.ProformaDate ? new Date(this.createProforma_form.value.ProformaDate) : new Date();
             proformaDate = this.datePipe.transform(date, 'MM') + this.datePipe.transform(date, 'yy');
             // console.log('proformaDate,', proformaDate);
-            let finalVal = isOOP ? cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum + '-OOP' : cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum;
+            let finalVal = isOOP ? (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum + '-OOP') : 
+                                   (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum);
             this.createProforma_form.get('ProformaNumber').setValue(finalVal);
         }
     }

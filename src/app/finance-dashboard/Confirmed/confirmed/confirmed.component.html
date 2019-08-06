@@ -472,6 +472,7 @@
                     <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
                         yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" [minDate]="minProformaDate"
                         (onFocus)="updateCalendarUI(fromCalendar)" #fromCalendar
+                        (onClose)="updatePrformaNumFromPT(addToProforma_form.value.ClientLegalEntity,$event)" 
                         [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}"
                         formControlName="ProformaDate">
                     </p-calendar>
