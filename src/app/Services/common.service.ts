@@ -796,7 +796,7 @@ export class CommonService {
 
     async getProjectResources(projectCode, bFirstCall, bSaveRes) {
 
-
+           debugger;
         this.batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
         let projectResource = '';
@@ -845,8 +845,8 @@ export class CommonService {
         if (this.response.length > 0) {
 
         
-            this.sharedTaskAllocateObj.oResources = this.response.length > 2 ? this.response[2]:[];
-            this.sharedTaskAllocateObj.oCentralGroup = this.response.length > 2 ? this.response[3]:[];
+            this.sharedTaskAllocateObj.oResources = this.response.length > 2 ? this.response[2]:this.sharedTaskAllocateObj.oResources;
+            this.sharedTaskAllocateObj.oCentralGroup = this.response.length > 2 ? this.response[3]: this.sharedTaskAllocateObj.oCentralGroup;
             console.log("Central group");
             
             console.log(this.sharedTaskAllocateObj.oCentralGroup);

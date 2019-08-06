@@ -225,6 +225,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // tslint:disable
   public async getMilestones(bFirstLoad) {
 
+
+    debugger;
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
 

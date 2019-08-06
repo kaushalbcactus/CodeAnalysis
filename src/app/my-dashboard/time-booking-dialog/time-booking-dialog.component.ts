@@ -108,8 +108,9 @@ export class TimeBookingDialogComponent implements OnInit {
       TimeSpents: this.weekDays.map(c => new Object({
         date: c, MileHrs: '00:00', minHrs: '00:00',
         editable: new Date(this.datePipe.transform(this.MainminDate, 'yyyy-MM-dd')).getTime() <=
-        new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime()
-         &&  new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() <= new Date().getTime() ? true : false }))
+          new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime()
+          && new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() <= new Date().getTime() ? true : false
+      }))
     };
 
 
@@ -275,7 +276,7 @@ export class TimeBookingDialogComponent implements OnInit {
       ProjectCode: o.ProjectCode === 'Adhoc' ? '-' : o.ProjectCode,
       Milestone: o.Milestone === 'Select one' ? o.Comments : o.Milestone,
       SubMilestone: o.SubMilestones,
-      displayName: o.Milestone === 'Select one' ?  o.Comments : o.SubMilestones ? o.Milestone + ' - ' + o.SubMilestones : o.Milestone,
+      displayName: o.Milestone === 'Select one' ? o.Comments : o.SubMilestones ? o.Milestone + ' - ' + o.SubMilestones : o.Milestone,
       type: o.Entity === null ? 'task' : 'Adhoc',
       TimeSpents: this.weekDays.map(c => new Object({
         date: c, MileHrs: '00:00', minHrs: '00: 00',
@@ -372,37 +373,37 @@ export class TimeBookingDialogComponent implements OnInit {
             hoursArray.push(currentMilestone.MileHrs);
             // tslint:disable-next-line: no-shadowed-variable
             const timeSpentHours = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[0]).map(Number).reduce
-            ((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':'))
-            .map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
+              ((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':'))
+                .map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
             // tslint:disable-next-line: no-shadowed-variable
             const timeSpentMin = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[1]).map(Number).reduce
-            ((sum, num) => sum + num, 0) % 60;
+              ((sum, num) => sum + num, 0) % 60;
             // tslint:disable-next-line: no-shadowed-variable
             const timeSpentHours1 = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
             currentMilestone.MileHrs = timeSpentMin < 10 ?
-            timeSpentHours1 + ':' + '0' + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
+              timeSpentHours1 + ':' + '0' + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
 
           }
         }
-      }  else if (task.Task === 'Adhoc') {
+      } else if (task.Task === 'Adhoc') {
         const milestone = this.UserMilestones.find(c => c.Entity === task.Entity && c.Milestone === task.Milestone);
 
-        const  hoursArray = [];
+        const hoursArray = [];
         hoursArray.push(task.TimeSpent);
 
         if (milestone !== undefined) {
           const currentMilestone = milestone.TimeSpents.find(c => new Date(this.datePipe.transform(c.date, 'yyyy-MM-dd')).getTime() ===
-          new Date(this.datePipe.transform(task.Actual_x0020_Start_x0020_Date, 'yyyy-MM-dd')).getTime());
+            new Date(this.datePipe.transform(task.Actual_x0020_Start_x0020_Date, 'yyyy-MM-dd')).getTime());
           if (currentMilestone !== undefined) {
             hoursArray.push(currentMilestone.MileHrs);
             const timeSpentHours = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[0]).map(Number)
-            .reduce((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[1])
-            .map(Number).reduce((sum, num) => sum + num, 0) / 60);
+              .reduce((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[1])
+                .map(Number).reduce((sum, num) => sum + num, 0) / 60);
             const timeSpentMin = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[1]).map(Number)
-            .reduce((sum, num) => sum + num, 0) % 60;
+              .reduce((sum, num) => sum + num, 0) % 60;
             const timeSpentHours1 = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
             currentMilestone.MileHrs = timeSpentMin < 10 ?
-            timeSpentHours1 + ':' + '0' + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
+              timeSpentHours1 + ':' + '0' + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
 
           }
         }
@@ -484,10 +485,10 @@ export class TimeBookingDialogComponent implements OnInit {
 
       const timeSpentString = dateArray.map(c => (c.date + ':' + c.time.replace('.', ':')).replace(/ /g, '')).join('\n');
       const timeSpentHours = dateArray.map(c => c.time.split(c.time.indexOf('.') > -1 ? '.' : ':')).map(c => c[0]).map(Number).
-      reduce((sum, num) => sum + num, 0) + Math.floor(dateArray.map(c => c.time.split(c.time.indexOf('.') > -1 ? '.' : ':'))
-      .map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
+        reduce((sum, num) => sum + num, 0) + Math.floor(dateArray.map(c => c.time.split(c.time.indexOf('.') > -1 ? '.' : ':'))
+          .map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
       const timeSpentMin = dateArray.map(c => c.time.split(c.time.indexOf('.') > -1 ? '.' : ':')).map(c => c[1]).map(Number)
-      .reduce((sum, num) => sum + num, 0) % 60;
+        .reduce((sum, num) => sum + num, 0) % 60;
 
       const timeSpentHours1 = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
       const totalTimeSpent = timeSpentMin < 10 ? timeSpentHours1 + '.' + '0' + timeSpentMin : timeSpentHours1 + '.' + timeSpentMin;
@@ -502,7 +503,7 @@ export class TimeBookingDialogComponent implements OnInit {
           existingObj.TimeSpentPerDay = timeSpentString;
           count++;
           await
-          this.spOperations.updateItem(this.constants.listNames.Schedules.name, existingObj.ID, existingObj, 'SP.Data.SchedulesListItem');
+            this.spOperations.updateItem(this.constants.listNames.Schedules.name, existingObj.ID, existingObj, 'SP.Data.SchedulesListItem');
         }
       } else {
         if (dbTasks[i].Entity) {
@@ -520,7 +521,7 @@ export class TimeBookingDialogComponent implements OnInit {
               detail: 'Please Select Milestone / To remove unwanted line, please unselect Client'
             });
             return false;
-          }  else if (totalTimeSpent !== '00.00') {
+          } else if (totalTimeSpent !== '00.00') {
             this.modalloaderenable = true;
             if (dbTasks[i].Milestone && dbTasks[i].ProjectCode && dbTasks[i].Entity) {
               const obj = {
@@ -535,7 +536,7 @@ export class TimeBookingDialogComponent implements OnInit {
                 DueDate: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[6].date, 'yyyy-MM-dd') + 'T09:00:00.000'),
                 ExpectedTime: '0',
                 Milestone: dbTasks[i].Milestone,
-                SubMilestones : dbTasks[i].SubMilestone,
+                SubMilestones: dbTasks[i].SubMilestone,
                 ProjectCode: dbTasks[i].ProjectCode,
                 StartDate: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[0].date, 'yyyy-MM-dd') + 'T09:00:00.000'),
                 Status: 'Completed',
@@ -583,8 +584,8 @@ export class TimeBookingDialogComponent implements OnInit {
   async DifferenceHours(startTime, EndTime) {
     // tslint:disable-next-line: radix
     const TotalMinDiff = ((EndTime.split(':')[0] * 60) + parseInt(EndTime.split(':')[1])) -
-    // tslint:disable-next-line: radix
-    ((startTime.split(':')[0] * 60) + parseInt(startTime.split(':')[1]));
+      // tslint:disable-next-line: radix
+      ((startTime.split(':')[0] * 60) + parseInt(startTime.split(':')[1]));
     const hours = (TotalMinDiff / 60);
     const rhours = Math.floor(hours);
     const minutes = (hours - rhours) * 60;
