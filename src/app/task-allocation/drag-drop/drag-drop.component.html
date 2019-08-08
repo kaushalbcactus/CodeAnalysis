@@ -256,7 +256,7 @@
                         </ng-template>
 
                         <ng-template #nodeTemplate let-node>
-                            <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (click)="ontaskClick(node)" (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'task'): ErrorMessage($event,'Task')">
+                            <svg:g class="node" *ngIf="node.taskType !== 'Adhoc' && node.taskType !== 'TB' " ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (click)="ontaskClick(node)" (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'task'): ErrorMessage($event,'Task')">
                                 <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
                                 <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}
                                 </svg:text>
@@ -283,11 +283,13 @@
                         </ng-template>
 
                         <ng-template #nodeTemplate let-node>
-                            <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (click)="ontaskClick(node)" (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'task'): ErrorMessage($event,'Task')">
+
+                            <svg:g class="node" *ngIf="node.type !== 'Adhoc' && node.type !== 'TB' " ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (click)="ontaskClick(node)" (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'task'): ErrorMessage($event,'Task')">
                                 <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
                                 <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}
                                 </svg:text>
                             </svg:g>
+
                         </ng-template>
                         <ng-template #linkTemplate let-link>
                             <svg:g class="edge">

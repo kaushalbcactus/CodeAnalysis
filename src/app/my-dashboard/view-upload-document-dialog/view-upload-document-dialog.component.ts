@@ -248,7 +248,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
   async loadDraftDocs(selectedTab) {
 
-    debugger;
+
     this.DocumentArray = [];
 
     var documentsUrl = '';

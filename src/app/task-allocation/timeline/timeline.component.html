@@ -88,12 +88,12 @@
             </div>
             <div>
                 <div *ngIf="!visualgraph && changeInRestructure " class="input-color" fxLayoutAlign="end center" style="margin-right: 10px;">
-                    <button *ngIf="!projectDetails" mat-raised-button type="button" (click)="CancelChanges(projectDetails,'discardAll')">
+                    <button *ngIf="!projectDetails" mat-raised-button type="button" (click)="CancelChanges(projectDetails,'discardAll')" [disabled]="disableSave">
             <mat-icon>delete_forever</mat-icon> Discard All
           </button>
                 </div>
 
-                <div *ngIf="visualgraph === false && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress'"
+                <div *ngIf=" !visualgraph && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress'"
                     class="input-color" fxLayoutAlign="end center">
                     <button *ngIf="!projectDetails" mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks()">
             <mat-icon>save</mat-icon> Save Tasks

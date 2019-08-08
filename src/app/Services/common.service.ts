@@ -796,7 +796,7 @@ export class CommonService {
 
     async getProjectResources(projectCode, bFirstCall, bSaveRes) {
 
-           debugger;
+         
         this.batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
         let projectResource = '';

@@ -42,12 +42,12 @@ export class DragDropComponent implements OnInit {
   subMilestoneHeight: number = 80;
   subMilestoneMaxHeight: number = 350;
   taskWidth: number = 1200;
-  taskHeight: number = 80;
+  taskHeight: number = 120;
   taskMaxHeight: number = 300;
   width: number = 700;
   height: number = 80;
   minWidth: number = 1200;
-  minHeight: number = 80;
+  minHeight: number = 120;
   tooltipDisabled: boolean = false;
   taskArray = [];
   data: any;
@@ -59,6 +59,7 @@ export class DragDropComponent implements OnInit {
   grapLoading: boolean = false;
   subMilestoneHoritontal: boolean = true;
   tasksHoritontal: boolean = true;
+  showSvg = false;
   // tslint:enable
   constructor(
     public ref: DynamicDialogRef,
@@ -84,7 +85,8 @@ export class DragDropComponent implements OnInit {
           position: element.data.position,
           preTask: element.data.previousTask,
           nextTask: element.data.nextTask,
-          taskType: element.data.itemType,
+          taskType:  element.data.pName.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
+          element.data.pName.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
           status: element.data.status,
         };
         this.submilestoneIndex = 0;
@@ -107,7 +109,8 @@ export class DragDropComponent implements OnInit {
                 position: element.data.position,
                 preTask: element.data.previousTask,
                 nextTask: element.data.nextTask,
-                taskType: element.data.itemType,
+                taskType:  element.data.pName.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
+                element.data.pName.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
                 IsCentrallyAllocated: element.data.IsCentrallyAllocated,
                 status: element.data.status,
               };
@@ -136,7 +139,8 @@ export class DragDropComponent implements OnInit {
                     position: element.data.position,
                     preTask: element.data.previousTask,
                     nextTask: element.data.nextTask,
-                    taskType: element.data.itemType,
+                    taskType:  element.data.pName.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
+                    element.data.pName.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
                     IsCentrallyAllocated: element.data.IsCentrallyAllocated,
                     status: element.data.status,
                   };
@@ -233,7 +237,8 @@ export class DragDropComponent implements OnInit {
               return false;
             }
 
-            if (milestone.submilestone.nodes.length > 1 && submilestone.label === 'Default' && submilestone.task.nodes.length > 1) {
+            if (milestone.submilestone.nodes.length > 1 && submilestone.label === 'Default' &&
+            submilestone.task.nodes.filter(c => c.taskType !== 'Adhoc' && c.taskType !== 'TB').length > 1) {
               errorM++;
               this.messageService.add({
                 key: 'custom', severity: 'warn', summary: 'Warning Message',
@@ -244,7 +249,7 @@ export class DragDropComponent implements OnInit {
             const tempnodes = submilestone.task.nodes.map(c => c.id).filter(c => !submilestone.task.links.map(d => d.source).includes(c) &&
               !submilestone.task.links.map(d => d.target).includes(c)).
               filter(c => !submilestone.task.nodes.filter(d => (d.taskType === 'Client Review'
-                || c.taskType === 'Adhoc')).map(d => d.id).includes(c));
+               ) || (c.taskType !== 'Adhoc' && c.taskType !== 'TB')).map(d => d.id).includes(c));
 
             if (tempnodes.length > 0 && errorM === 0) {
               const missingLinkTasks = submilestone.task.nodes.filter(c => tempnodes.includes(c.id))
@@ -1428,6 +1433,8 @@ export class DragDropComponent implements OnInit {
           var nodeHeight = Math.ceil(outerHtmlElement.getBBox().height);
           var nodeLinksHeight = Math.ceil(outerHtmlElementLinks.getBBox().height);
           nodeHeight = nodeHeight > nodeLinksHeight ? nodeHeight : nodeLinksHeight;
+
+    
           if (nodeWidth > this.minWidth) {
             this.taskWidth = nodeWidth + 150;
             changeTaskGraph = true;
@@ -1436,7 +1443,7 @@ export class DragDropComponent implements OnInit {
             this.taskWidth = this.minWidth;
           }
           if (nodeHeight > this.taskMaxHeight) {
-            this.taskHeight = nodeHeight + 150;
+            this.taskHeight = nodeHeight + 200;
             changeTaskGraph = true;
           }
           else {
@@ -1444,7 +1451,7 @@ export class DragDropComponent implements OnInit {
               this.taskHeight = this.minHeight;
             }
             else {
-              this.taskHeight = nodeHeight + 150;
+              this.taskHeight = nodeHeight + 200;
             }
           }
           if (changeTaskGraph) {

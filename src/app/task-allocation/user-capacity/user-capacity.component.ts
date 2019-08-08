@@ -40,7 +40,7 @@ export class UserCapacityComponent implements OnInit {
 
   ngOnInit() {
 
-    debugger;
+
 
     this.data = this.config.data;
     if (this.data !== undefined) {

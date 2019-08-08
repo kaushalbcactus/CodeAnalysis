@@ -226,7 +226,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   public async getMilestones(bFirstLoad) {
 
 
-    debugger;
+ 
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
 
@@ -539,11 +539,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
               if (tempSubmilestones.length > 0) {
+
+                const tempSubmilestonesWOAT = tempSubmilestones.filter(c=>c.data.itemType !=='Time Booking');
                 const subMilData = this.GanttchartData.find(c => c.pName === element.subMile && c.pParent === milestone.Id);
-                subMilData.pStart = tempSubmilestones[0].data.pStart;
-                subMilData.pEnd = tempSubmilestones[tempSubmilestones.length - 1].data.pEnd;
-                subMilData.pUserStart = tempSubmilestones[0].data.pStart;
-                subMilData.pUserEnd = tempSubmilestones[tempSubmilestones.length - 1].data.pEnd;
+                subMilData.pStart = tempSubmilestonesWOAT[0].data.pStart;
+                subMilData.pEnd = tempSubmilestonesWOAT[tempSubmilestonesWOAT.length - 1].data.pEnd;
+                subMilData.pUserStart = tempSubmilestonesWOAT[0].data.pStart;
+                subMilData.pUserEnd = tempSubmilestonesWOAT[tempSubmilestonesWOAT.length - 1].data.pEnd;
                 subMilData.pUserStartDatePart = this.getDatePart(subMilData.pUserStart);
                 subMilData.pUserStartTimePart = this.getTimePart(subMilData.pUserStart);
                 subMilData.pUserEndDatePart = this.getDatePart(subMilData.pUserEnd);
@@ -1195,10 +1197,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
               task.data.pUserEndTimePart = this.getTimePart(task.data.pUserEnd);
               task.data.tatVal = this.commonService.calcBusinessDays(new Date(task.data.pStart), new Date(task.data.pEnd));
             });
-            submilestone.data.pStart = new Date(submilestone.children[0].data.pStart);
-            submilestone.data.pEnd = new Date(submilestone.children[submilestone.children.length - 1].data.pEnd);
-            submilestone.data.pUserStart = new Date(submilestone.children[0].data.pUserStart);
-            submilestone.data.pUserEnd = new Date(submilestone.children[submilestone.children.length - 1].data.pUserEnd);
+
+            const subMiledb =  submilestone.children.filter(c => c.data.pName.toLowerCase().indexOf
+            ('adhoc') === -1 && c.data.pName.toLowerCase().indexOf('tb') === -1 );
+            submilestone.data.pStart = new Date(subMiledb[0].data.pStart);
+            submilestone.data.pEnd = new Date(subMiledb[subMiledb.length - 1].data.pEnd);
+            submilestone.data.pUserStart = new Date(subMiledb[0].data.pUserStart);
+            submilestone.data.pUserEnd = new Date(subMiledb[subMiledb.length - 1].data.pUserEnd);
             submilestone.data.pUserStartDatePart = this.getDatePart(submilestone.data.pUserStart);
             submilestone.data.pUserStartTimePart = this.getTimePart(submilestone.data.pUserStart);
             submilestone.data.pUserEndDatePart = this.getDatePart(submilestone.data.pUserEnd);
@@ -1209,10 +1214,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
         });
-        milestone.data.pStart = new Date(milestone.children[0].data.pStart);
-        milestone.data.pEnd = new Date(milestone.children[milestone.children.length - 1].data.pEnd);
-        milestone.data.pUserStart = new Date(milestone.children[0].data.pUserStart);
-        milestone.data.pUserEnd = new Date(milestone.children[milestone.children.length - 1].data.pUserEnd);
+
+        const tempMile = milestone.children.filter(c => c.data.pName.toLowerCase().indexOf('adhoc') ===
+        -1 && c.data.pName.toLowerCase().indexOf('tb') === -1 );
+        milestone.data.pStart = new Date(tempMile[0].data.pStart);
+        milestone.data.pEnd = new Date(tempMile[tempMile.length - 1].data.pEnd);
+        milestone.data.pUserStart = new Date(tempMile[0].data.pUserStart);
+        milestone.data.pUserEnd = new Date(tempMile[tempMile.length - 1].data.pUserEnd);
         milestone.data.pUserStartDatePart = this.getDatePart(milestone.data.pUserStart);
         milestone.data.pUserStartTimePart = this.getTimePart(milestone.data.pUserStart);
         milestone.data.pUserEndDatePart = this.getDatePart(milestone.data.pUserEnd);
@@ -1492,7 +1500,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     }
                     oExistingTask.nextTask = nextTasks;
                     oExistingTask.previousTask = previousTasks;
-                    if (submilestoneObj.pName === 'Default') {
+                    if (submilestoneObj.pName === 'Default' && task.taskType !== 'Adhoc' && task.taskType !== 'TB') {
                       CRObj = { 'data': oExistingTask };
                       allReturnedTasks.push(oExistingTask);
                     }
@@ -1503,7 +1511,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     }
                   }
                   else {
-                    if (submilestoneObj.pName === 'Default') {
+                    if (submilestoneObj.pName === 'Default' && task.taskType !== 'Adhoc' && task.taskType !== 'TB') {
                       milestoneedit = true;
                       CRObj = { 'data': TaskObj };
                       allReturnedTasks.push(TaskObj);
@@ -1533,6 +1541,17 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   }
                   temptasks = [];
                   submile.push(tempsub);
+                }
+                else if (submilestoneObj.pName === 'Default' || temptasks.length > 0) {
+                  temptasks.forEach(element => {
+ 
+                    const tempsub = {
+                      'data': this.tempGanttchartData.find(c => c.pID === element.data.pID),
+                    }
+
+                    submile.push(tempsub);
+                  });
+                  temptasks = [];
                 }
 
               }
@@ -1648,7 +1667,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         this.milestoneData = [...this.milestoneData];
         console.log(this.milestoneData);
 
-        debugger;
+
         this.changeInRestructure = this.milestoneData.find(c => c.data.editMode === true) !== undefined ? true : false;
         if (this.changeInRestructure) {
           setTimeout(() => {
@@ -1727,6 +1746,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // **************************************************************************************************
   // tslint:disable
   cascadeNode(previousNode, node) {
+    debugger;
     var nodeData = node.hasOwnProperty('data') ? node.data : node;
     var prevNodeData = previousNode.hasOwnProperty('data') ? previousNode.data : previousNode;
     const startDate = nodeData.pUserStart;
@@ -1773,23 +1793,23 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   sortDates(node, type) {
-    const nodeCopy = Object.assign({}, node);
-
+    const  nodeCopy = Object.assign({}, node).children.filter(c =>
+    c.data.pName.toLowerCase().indexOf('adhoc') === -1 && c.data.pName.toLowerCase().indexOf('tb') === -1);
     switch (type) {
       case 'start':
-        nodeCopy.children.sort((a, b) => {
+        nodeCopy.sort((a, b) => {
           const startDate = new Date(a.data.pStart);
           const dueDate = new Date(b.data.pStart);
           return startDate > dueDate ? 1 : -1;
         });
-        return nodeCopy.children[0].data.pStart;
+        return nodeCopy[0].data.pStart;
       case 'end':
-        nodeCopy.children.sort((a, b) => {
+        nodeCopy.sort((a, b) => {
           const startDate = new Date(a.data.pEnd);
           const dueDate = new Date(b.data.pEnd);
           return dueDate > startDate ? 1 : -1;
         });
-        return nodeCopy.children[0].data.pEnd;
+        return nodeCopy[0].data.pEnd;
       default:
         nodeCopy.sort((a, b) => {
           const startDate = new Date(a.data.pStart);
@@ -1828,15 +1848,18 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   ResetStartAndEnd() {
+
     this.milestoneData.forEach(milestone => {
 
       if (milestone.children !== undefined) {
         milestone.children.forEach(submilestone => {
           if (submilestone.data.type === 'submilestone') {
+
             this.setStartAndEnd(submilestone);
           }
         });
       }
+
       this.setStartAndEnd(milestone);
     });
   }
