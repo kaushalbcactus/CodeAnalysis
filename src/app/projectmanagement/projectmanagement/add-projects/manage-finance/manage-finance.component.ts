@@ -511,13 +511,17 @@ export class ManageFinanceComponent implements OnInit {
   addBudgetToProject() {
     let showError = false;
     if (this.projectStatus === this.constant.projectStatus.InDiscussion) {
-      if (this.updatedBudget === 0) {
+      if (this.updatedBudget === 0 && this.budgetHours === 0) {
         showError = true;
       } else if (this.updatedBudget < 0) {
         showError = true;
+      } else if (this.updatedBudget !== 0 && this.budgetHours === 0) {
+        showError = true;
       }
     } else {
-      if (this.updatedBudget === 0) {
+      if (this.updatedBudget === 0 && this.budgetHours === 0) {
+        showError = true;
+      } else if (this.updatedBudget !== 0 && this.budgetHours === 0) {
         showError = true;
       } else if (this.updatedBudget < 0) {
         showError = true;
@@ -544,12 +548,9 @@ export class ManageFinanceComponent implements OnInit {
       this.assignBudgetToProject('', '');
     } else {
       this.error = true;
-      // if (!this.budgetHours) {
-      //   this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGETHrs;
-      // } else {
-      //   this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGET;
-      // }
-      if (this.updatedBudget <= 0) {
+      if (!this.budgetHours) {
+        this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGETHrs;
+      } else {
         this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGET;
       }
     }
@@ -1624,7 +1625,8 @@ export class ManageFinanceComponent implements OnInit {
         const currentBudget = this.existBudgetArray.retItems[0];
         if (projectFinaceData.RevenueBudget !== currentBudget.RevenueBudget
           || projectFinaceData.ScheduledRevenue !== currentBudget.ScheduledRevenue
-          || projectFinaceData.InvoicedRevenue !== currentBudget.InvoicedRevenue) {
+          || projectFinaceData.InvoicedRevenue !== currentBudget.InvoicedRevenue
+          || projectFinaceData.BudgetHrs !== currentBudget.BudgetHrs) {
           const projectFinaceUpdate = Object.assign({}, options);
           projectFinaceUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectFinances.name,
             this.existBudgetArray.retItems[0].ID);
@@ -1670,7 +1672,7 @@ export class ManageFinanceComponent implements OnInit {
               budgetArr[0].budget_hours = this.newBudgetHrs - this.budgetData[0].budget_hours;
             }
 
-            if (budgetArr[0].revenue !== 0 && budgetArr[0].budget_hours !== 0) {
+            if (budgetArr[0].revenue !== 0 || budgetArr[0].budget_hours !== 0) {
               const projectBudgetBreakupData = this.getProjectBudgetBreakupData(budgetArr,
                 this.projObj, true, budgetArr[0].revenue < 0 ? true : false);
               const projectBudgetBreakupCreate = Object.assign({}, options);
