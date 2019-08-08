@@ -100,9 +100,9 @@
 
 
         </mat-expansion-panel>
-        <!--***************************************************************************************************************************************
+        <!-- *******************************************************************************************
                                                    Sub Milestones  panel      
-****************************************************************************************************************************************-->
+        ********************************************************************************************-->
 
         <mat-expansion-panel *ngIf="milestoneIndex > -1" [expanded]="step === 1" (opened)="setStep(1)" style="border: 1px solid #db1721;border-radius: 0px;width: 100%;">
             <mat-expansion-panel-header style=" background: #db1721;" [collapsedHeight]="customCollapsedHeight" [expandedHeight]="customCollapsedHeight">
@@ -156,7 +156,8 @@
                         </ng-template>
 
                         <ng-template #nodeTemplate let-node>
-                            <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (mouseup)="onMilestoneUp($event, node)" (mousedown)="onMilestoneDown($event, node)" (click)="SelectMilestone(node,'submilestone')" (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'submilestone'): ErrorMessage($event,'Submilestone')">
+                            <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (mouseup)="onMilestoneUp($event, node)" (mousedown)="onMilestoneDown($event, node)" (click)="SelectMilestone(node,'submilestone')" (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'submilestone'): ErrorMessage($event,'Submilestone')"
+                                *ngIf=" (milestonesGraph.nodes[milestoneIndex].submilestone.nodes.length > 1 && node.label !== 'Default') || milestonesGraph.nodes[milestoneIndex].submilestone.nodes.length === 1 ">
 
                                 <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
                                 <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}
@@ -184,7 +185,8 @@
                         </ng-template>
 
                         <ng-template #nodeTemplate let-node>
-                            <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (mouseup)="onMilestoneUp($event, node)" (mousedown)="onMilestoneDown($event, node)" (click)="SelectMilestone(node,'submilestone')" (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'submilestone'): ErrorMessage($event,'Submilestone')">
+                            <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (mouseup)="onMilestoneUp($event, node)" (mousedown)="onMilestoneDown($event, node)" (click)="SelectMilestone(node,'submilestone')" (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'submilestone'): ErrorMessage($event,'Submilestone')"
+                                *ngIf="(milestonesGraph.nodes[milestoneIndex].submilestone.nodes.length > 1 && node.label !=='Default') || milestonesGraph.nodes[milestoneIndex].submilestone.nodes.length === 1 ">
 
                                 <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
                                 <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}
@@ -208,9 +210,9 @@
         </mat-expansion-panel>
 
 
-        <!--***************************************************************************************************************************************
+        <!--********************************************************************************************
                                                   Task  panel      
-****************************************************************************************************************************************-->
+         ******************************************************************************************-->
 
         <mat-expansion-panel *ngIf="submilestoneIndex > -1  " [expanded]="step === 2" (opened)="setStep(2)" style="border: 1px solid #db1721;border-radius: 0px;width: 100%;">
             <mat-expansion-panel-header style=" background: #db1721;" [collapsedHeight]="customCollapsedHeight" [expandedHeight]="customCollapsedHeight">
