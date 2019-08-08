@@ -4,16 +4,16 @@ import { PubsupportRoutingModule } from './pubsupport-routing.module';
 import { PubsupportComponent } from './pubsupport/pubsupport.component';
 import { PrimengModule } from '../primeng/primeng.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { PocDetailsPipe } from './Pipes/poc-details.pipe';
 // FIle upload
 import { FileUploadModule } from 'ng2-file-upload';
 
 import { SharedModule } from '../shared/shared.module';
 import { CreateConferenceComponent } from './pubsupport/create-conference/create-conference.component';
 import { CreateJournalComponent } from './pubsupport/create-journal/create-journal.component';
+import { AddAuthorComponent } from './pubsupport/add-author/add-author.component';
 
 @NgModule({
-  declarations: [PubsupportComponent, PocDetailsPipe, CreateConferenceComponent, CreateJournalComponent],
+  declarations: [PubsupportComponent, CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent],
   imports: [
     CommonModule,
     PubsupportRoutingModule,
@@ -21,9 +21,9 @@ import { CreateJournalComponent } from './pubsupport/create-journal/create-journ
     FormsModule,
     ReactiveFormsModule,
     SharedModule,
-    FileUploadModule
+    // FileUploadModule
   ],
-  entryComponents: [CreateConferenceComponent, CreateJournalComponent],
+  entryComponents: [CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent],
   providers: [DatePipe]
 })
 export class PubsupportModule { }

@@ -1,14 +1,5 @@
 <!-- Loadder -->
 <div></div>
-<div class="tableLoader" [hidden]='isPSInnerLoaderHidden'>
-    <div id="scInnerLoader"></div>
-    <div id="scInnerLoaderText">Loading...</div>
-</div>
-
-<div class="tableLoader" [hidden]='pubsupportService.pubsupportComponent.isPSInnerLoaderHidden'>
-    <div id="scInnerLoader"></div>
-    <div id="scInnerLoaderText">Loading...</div>
-</div>
 
 <div class="top-title-bottom">
     <div class="top-left-title">
@@ -137,7 +128,7 @@
                                         </td>
                                         <td>
                                             <a style="color: red;" *ngIf="item.element.JournalRequirementURL"
-                                                (click)="downloadFile(item.element.JournalRequirementURL, 'ProjctCode_JournalRequirement')">Download
+                                                (click)="downloadFile(item.element.JournalRequirementURL, item.element.Title+'_JournalRequirementDocument_files')">Download
                                                 &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
                                         </td>
                                         <td>
@@ -145,7 +136,7 @@
                                         </td>
                                         <td>
                                             <a style="color: red;" *ngIf="item.element.JournalRequirementResponse"
-                                                (click)="downloadFile(item.element.JournalRequirementResponse, 'JournalRequirementResponse')">Download
+                                                (click)="downloadFile(item.element.JournalRequirementResponse, item.element.Title+'_JournalRequirementResponse_files')">Download
                                                 &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
                                         </td>
                                         <td>
@@ -181,7 +172,7 @@
                                             <td colspan="2">
                                                 <label>Journal selection document :</label><br>
                                                 <a style="color: red;"
-                                                    (click)="downloadFile(journal_Conf_data[0].project.JournalSelectionURL, 'ProjctCode_JournalSelection')">Download
+                                                    (click)="downloadFile(journal_Conf_data[0].project.JournalSelectionURL, journal_Conf_data[0].project.ProjectCode+'_JournalSelection_files')">Download
                                                     &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
 
                                             </td>
@@ -195,7 +186,7 @@
                                             <td colspan="3">
                                                 <label>Published PDF:</label><br>
                                                 <a style="color: red;"
-                                                    (click)="downloadFile(journal_Conf_details.PublicationURL, 'ProjctCode_PublishPdf')">Download
+                                                    (click)="downloadFile(journal_Conf_details.PublicationURL, journal_Conf_details.Title+'_PublishPDFfile')">Download
                                                     &nbsp;<i class="fa fa-download" aria-hidden="true"></i></a>
                                             </td>
                                             <td colspan="3">
@@ -287,13 +278,13 @@
                                                             </td>
                                                             <td>
                                                                 <a style="color: red;"
-                                                                    (click)="downloadFile(s.SubmissionPkgURL, 'ProjctCode_SubmissionPkg')">Download
+                                                                    (click)="downloadFile(s.SubmissionPkgURL, s.Title+'_SubmissionPkg_files')">Download
                                                                     &nbsp;<i class="fa fa-download"
                                                                         aria-hidden="true"></i></a>
                                                             </td>
                                                             <td>
                                                                 <a style="color: red;"
-                                                                    (click)="downloadFile(s.SubmissionURL,'ProjctCode_SubmissionConfirmation')">Download
+                                                                    (click)="downloadFile(s.SubmissionURL, s.Title+'_SubmissionConfirmation_files')">Download
                                                                     &nbsp;<i class="fa fa-download"
                                                                         aria-hidden="true"></i></a>
                                                             </td>
@@ -305,7 +296,7 @@
                                                             </td>
                                                             <td>
                                                                 <a style="color: red;"
-                                                                    (click)="downloadFile(s.DecisionURL, 'ProjctCode_DecisionDoc')">Download
+                                                                    (click)="downloadFile(s.DecisionURL,s.Title+'_Decision_files')">Download
                                                                     &nbsp;<i class="fa fa-download"
                                                                         aria-hidden="true"></i></a>
                                                             </td>
@@ -347,10 +338,10 @@
                                                                     <label>Galley Date:</label><br>
                                                                     <span><b>{{g.GalleyDate | date:'MMM d, y, hh:mm a'}}</b></span>
                                                                 </td>
-                                                                <td  colspan="6">
+                                                                <td colspan="6">
                                                                     <label>Galley Document</label><br>
                                                                     <a style="color: red;"
-                                                                        (click)="downloadFile(g.GalleyURL, 'ProjctCode_GalleyDoc')">Download
+                                                                        (click)="downloadFile(g.GalleyURL,g.Title+'_GalleyDoc_files')">Download
                                                                         &nbsp;<i class="fa fa-download"
                                                                             aria-hidden="true"></i></a>
                                                                 </td>
@@ -385,6 +376,233 @@
 <!-- Toast Messages -->
 <p-toast position="bottom-right" key="myKey1"></p-toast>
 <!-- Modal  -->
+
+<!-- Add author Component Start-->
+<ng-container #addAuthorcontainer></ng-container>
+<!-- <app-add-author [events]="eventsAddAuthor.asObservable()"></app-add-author> -->
+<!-- Add author Component End -->
+
+<!-- Update author forms & emails -->
+<p-dialog header="Update Author forms & emails" [(visible)]="updateAuthorModal_1" [modal]="true" [draggable]="true"
+    [style]="{'width': '50%'}" [maximizable]="false" [baseZIndex]="10000" [contentStyle]="{'height': '150px'}"
+    (onHide)="cancelFormSub('updateAuthorModal')">
+    <form [formGroup]="update_author_form">
+        <div class="ui-g" *ngIf="!selectedType">
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                Upload files:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-8">
+                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)"
+                    #fileInput placeholder="updateAuthorForms" formControlName="file">
+                <div *ngIf="formSubmit.isSubmit && isValidUpdateAuthorForm.file.errors">
+                    <div *ngIf="isValidUpdateAuthorForm.file.errors.required" style="color: red;">File is required.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-g" *ngIf="!update_author_form.value.file">
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                Select from Existing Author Forms:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-8">
+                <select id="type" name="existingAuthorList" class="form-control" [(ngModel)]="selectedType"
+                    (ngModelChange)="updateAuthorFormsFiles(selectedType, $event)" formControlName="existingAuthorList">
+                    <option value="">Select</option>
+                    <ng-container *ngFor="let projctCode of projectCodeRes; let i = index">
+                        <option *ngIf="projctCode.ProjectCode !=selectedProject.ProjectCode" [ngValue]="projctCode">
+                            {{projctCode.ProjectCode}}
+                        </option>
+                    </ng-container>
+                </select>
+                <div *ngIf="formSubmit.isSubmit && isValidUpdateAuthorForm.existingAuthorList.errors">
+                    <div *ngIf="isValidUpdateAuthorForm.existingAuthorList.errors.required" style="color: red;">Existing
+                        author is required.</div>
+                </div>
+                <div style="color:#d7181f;">{{noFileMsg}}</div>
+            </div>
+        </div>
+
+    </form>
+    <p-footer>
+        <button pButton type="button" label="Update" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('updateAuthor')"></button>
+        <button pButton type="button" label="Cancel" (click)="cancelFormSub('updateAuthorModal')"></button>
+    </p-footer>
+
+</p-dialog>
+
+<!-- End -->
+
+<!-- Update Decision Detais -->
+<p-dialog header="Update Decision details" [(visible)]="updateDecisionModal" [modal]="true" [draggable]="true"
+    [style]="{'width': '50%'}" [maximizable]="false" [baseZIndex]="10000" [contentStyle]="{'height': '150px'}"
+    (onHide)="cancelFormSub('updateDecisionModal')">
+    <form [formGroup]="update_decision_details">
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                Upload files:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-8">
+                <input type="file" name="myfile" class="form-control" (change)="onFileChange($event)"
+                    formControlName="file" #fileInput />
+                <div *ngIf="formSubmit.isSubmit && isValidDecisionForm.file.errors">
+                    <div *ngIf="isValidDecisionForm.file.errors.required" style="color:red;">File is required.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                Decision:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-8">
+                <select id="type" name="Decision" class="form-control" formControlName="Decision">
+                    <option value="">Select</option>
+                    <option value="Accepted"
+                        *ngIf="selectedProject.DeliverableType != 'Poster' && selectedProject.DeliverableType != 'Oral Presentation' ">
+                        Accepted</option>
+                    <option value="Presented"
+                        *ngIf="selectedProject.DeliverableType== 'Poster' || selectedProject.DeliverableType== 'Oral Presentation' ">
+                        Presented</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Resubmit to same journal"
+                        *ngIf="selectedProject.DeliverableType != 'Poster' && selectedProject.DeliverableType != 'Oral Presentation' && selectedProject.DeliverableType != 'Abstract'  ">
+                        Resubmit to same journal</option>
+                </select>
+                <div *ngIf="formSubmit.isSubmit && isValidDecisionForm.Decision.errors">
+                    <div *ngIf="isValidDecisionForm.Decision.errors.required" style="color:red;">Decision is required.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+    <p-footer>
+        <button pButton type="button" label="Update" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('updateDecision')"></button>
+        <button pButton type="button" label="Cancel" (click)="cancelFormSub('updateDecisionModal')"></button>
+    </p-footer>
+
+</p-dialog>
+<!-- End -->
+
+<!-- Update Decision Detais -->
+<p-dialog header="Update Publication details" [(visible)]="updatePublicatoinModal" [modal]="true" [draggable]="true"
+    [style]="{'width': '60%'}" [maximizable]="false" [baseZIndex]="10000" [contentStyle]="{'height': '150px'}"
+    (onHide)="cancelFormSub('updatePublicatoinModal')">
+    <form [formGroup]="update_publication_form">
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                Publication Title:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                <textarea maxlength="1000" placeholder="Title" class="form-control"
+                    formControlName="PublicationTitle"></textarea>
+                <div *ngIf="formSubmit.isSubmit && isValidUpdatePublicationForm.PublicationTitle.errors">
+                    <div *ngIf="isValidUpdatePublicationForm.PublicationTitle.errors.required" style="color: red;">Title
+                        is
+                        required.
+                    </div>
+                </div>
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                Citation:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                <textarea maxlength="1000" placeholder="Title" class="form-control"
+                    formControlName="Citation"></textarea>
+                <div *ngIf="formSubmit.isSubmit && isValidUpdatePublicationForm.Citation.errors">
+                    <div *ngIf="isValidUpdatePublicationForm.Citation.errors.required" style="color: red;">Citation is
+                        required.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                PDF Available?:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                <select id="type" name="country" class="form-control"
+                    [ngClass]="{'is-invalid': submitted && isValidUpdatePublicationForm.PDFAvailable.errors}"
+                    formControlName="PDFAvailable">
+                    <option value="">Select</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+                <div *ngIf="formSubmit.isSubmit && isValidUpdatePublicationForm.PDFAvailable.errors">
+                    <div *ngIf="isValidUpdatePublicationForm.PDFAvailable.errors.required" style="color: red;">Is PDF
+                        File
+                        available?
+                    </div>
+                </div>
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                Upload Published paper:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)"
+                    #fileInput formControlName="PublicationURL" />
+                <div *ngIf="formSubmit.isSubmit && isValidUpdatePublicationForm.PublicationURL.errors">
+                    <div *ngIf="isValidUpdatePublicationForm.PublicationURL.errors.required" style="color: red;">File is
+                        required.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+    <p-footer>
+        <button pButton type="button" label="Update" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('updatePublication')"></button>
+        <button pButton type="button" label="Cancel" (click)="cancelFormSub('updatePublicatoinModal')"></button>
+    </p-footer>
+
+</p-dialog>
+
+
+<!-- Galley Form -->
+<p-dialog header="Override Galley" [(visible)]="overrideGalleyModal" [modal]="true" [draggable]="true"
+    [style]="{'width': '30%'}" [maximizable]="false" [baseZIndex]="10000" [contentStyle]="{'height': '150px'}"
+    (onHide)="cancelFormSub('overrideGalleyModal')">
+    <form [formGroup]="galley_form">
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-2"></div>
+            <div class="ui-g-12 ui-md-6 ui-lg-8">
+                Upload file to enable Update Publication details option:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-2"></div>
+
+        </div>
+
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                Upload file:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-8">
+                <input type="file" name="myfile" class="form-control" id="myfile" (change)="onFileChange($event)"
+                    #fileInput formControlName="GalleyURL" />
+                <div *ngIf="formSubmit.isSubmit && isValidGalleyForm.GalleyURL.errors">
+                    <div *ngIf="isValidGalleyForm.GalleyURL.errors.required" style="color: red;">File is required.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </form>
+    <p-footer>
+        <button pButton type="button" label="Update" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('overrideGalleyModal')"></button>
+        <button pButton type="button" label="Cancel" (click)="cancelFormSub('galley')"></button>
+    </p-footer>
+
+</p-dialog>
+<!-- End -->
+
+<!-- End -->
 
 <!-- Trigger the modal with a button -->
 <button id="openModalButton" type="button" [hidden]=true class="btn btn-info btn-lg" data-toggle="modal"
@@ -474,14 +692,13 @@
     <div class="modal fade" id="myModal" role="dialog" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
             <!-- Modal content-->
-            <div class="modal-content" *ngIf="selectedModal == 'Add Journal conference'">
+            <!-- <div class="modal-content" *ngIf="selectedModal == 'Add Journal conference'">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">Add Journal conference details</h4>
                 </div>
                 <form [formGroup]="journal_Conf_form" (ngSubmit)="onSubmit('addJournal')">
                     <div class="modal-body">
-                        <!-- <form [formGroup]="journal_Conf_form" (ngSubmit)="onSubmit()"> -->
                         <div class="row container">
                             <div class="col-lg-6">
                                 <label for="type">Type :</label>
@@ -624,8 +841,8 @@
                         <button type="submit" class="btn btn-danger" [disabled]="submitBtn.isSubmit">Submit</button>
                     </div>
                 </form>
-            </div>
-            <div class="modal-content" *ngIf="selectedModal == 'Add Authors'">
+            </div> -->
+            <!-- <div class="modal-content" *ngIf="selectedModal == 'Add Authors'">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"
                         (click)="add_author_form.reset()">&times;</button>
@@ -768,8 +985,8 @@
                         <button type="submit" class="btn btn-danger" [disabled]="submitBtn.isSubmit">Submit</button>
                     </div>
                 </form>
-            </div>
-            <div class="modal-content" *ngIf="selectedModal == 'Update Decision details'">
+            </div> -->
+            <!-- <div class="modal-content" *ngIf="selectedModal == 'Update Decision details'">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"
                         (click)="update_decision_details.reset()">&times;</button>
@@ -780,7 +997,6 @@
                         <div class="row container">
                             <div class="col-lg-6">
                                 <label for="upload-document">Upload files:</label>
-                                <!-- <button id="upload-document" class="btn">Upload a file</button> -->
                             </div>
                             <div class="col-lg-6">
                                 <input type="file" name="myfile" class="form-control" (change)="onFileChange($event)"
@@ -825,21 +1041,18 @@
                         <button type="submit" class="btn btn-danger" [disabled]="submitBtn.isSubmit">Submit</button>
                     </div>
                 </form>
-            </div>
-            <div class="modal-content" *ngIf="selectedModal == 'Update Author forms & emails'">
+            </div> -->
+            <!-- <div class="modal-content" *ngIf="selectedModal == 'Update Author forms & emails'">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"
                         (click)="update_author_form.reset();noFileMsg = '' ">&times;</button>
-                    <!-- (click)="update_author_form.reset()" -->
                     <h4 class="modal-title">Update Author forms & emails</h4>
                 </div>
                 <form [formGroup]="update_author_form" (ngSubmit)="onSubmit('updateAuthor')">
-                    <!-- <form [formGroup]="update_author_form" (ngSubmit)="onSubmit('updateAuthor')"> -->
                     <div class="modal-body">
                         <div class="row container" *ngIf="!selectedType">
                             <div class="col-lg-6">
                                 <label for="upload-document">Upload files: </label>
-                                <!-- <button id="upload-document" class="btn">Upload a file</button> -->
                             </div>
                             <div class="col-lg-6">
                                 <input type="file" name="myfile" class="form-control" id="myfile"
@@ -878,14 +1091,13 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <!-- (click)="update_author_form.reset(); submitted = false;" -->
                         <button type="button" class="btn btn-default" data-dismiss="modal"
                             (click)="update_author_form.reset();selectedType = '';noFileMsg = '' ">Close</button>
                         <button type="submit" class="btn btn-danger" [disabled]="submitBtn.isSubmit">Submit</button>
                     </div>
                 </form>
-            </div>
-            <div class="modal-content" *ngIf="selectedModal == 'Update Publication details'">
+            </div> -->
+            <!-- <div class="modal-content" *ngIf="selectedModal == 'Update Publication details'">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"
                         (click)="update_publication_form.reset()">&times;</button>
@@ -896,7 +1108,6 @@
                         <div class="row container">
                             <div class="col-lg-6">Publication Title:</div>
                             <div class="col-lg-6">
-                                <!-- <label for="publication">Publication Title:</label> -->
                                 <textarea maxlength="1000" placeholder="Title" class="form-control"
                                     [ngClass]="{'is-invalid': submitted && isValidUpdatePublicationForm.PublicationTitle.errors}"
                                     formControlName="PublicationTitle"></textarea>
@@ -909,7 +1120,6 @@
                             </div>
                             <div class="col-lg-6">Citation:</div>
                             <div class="col-lg-6">
-                                <!-- <label for="Citation">Citation:</label> -->
                                 <textarea maxlength="1000" placeholder="Title" class="form-control"
                                     [ngClass]="{'is-invalid': submitted && isValidUpdatePublicationForm.Citation.errors}"
                                     formControlName="Citation"></textarea>
@@ -963,8 +1173,8 @@
                         <button type="submit" class="btn btn-danger" [disabled]="submitBtn.isSubmit">Submit</button>
                     </div>
                 </form>
-            </div>
-            <div class="modal-content" *ngIf="selectedModal == 'Override Galley'">
+            </div> -->
+            <!-- <div class="modal-content" *ngIf="selectedModal == 'Override Galley'">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"
                         (click)="galley_form.reset()">&times;</button>
@@ -1000,10 +1210,12 @@
                         <button type="submit" class="btn btn-danger" [disabled]="submitBtn.isSubmit">Submit</button>
                     </div>
                 </form>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>
+
+
 
 <!-- Cancel Journal Conference Dialog -->
 <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
