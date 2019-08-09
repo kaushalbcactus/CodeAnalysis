@@ -599,13 +599,13 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         for (let i = 0; i < this.selectedAllRowData.length; i++) {
             const element = this.selectedAllRowData[i];
             this.selectedTotalAmt += parseFloat(element.Amount.toFixed(2));
-            let scheduleType = this.selectedAllRowData[0].ScheduleType;
-            if (element.ScheduleType !== scheduleType) {
-                this.uniqueST = false;
-                this.selectedAllRowData.splice(element);
-                this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Please select same Schedule type & try again.' });
-                break;
-            }
+            //let scheduleType = this.selectedAllRowData[0].ScheduleType;
+            // if (element.ScheduleType !== scheduleType) {
+            //     this.uniqueST = false;
+            //     this.selectedAllRowData.splice(element);
+            //     this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Please select same Schedule type & try again.' });
+            //     break;
+            // }
 
         }
         this.selectedTotalAmt = parseFloat(this.selectedTotalAmt.toFixed(2));
@@ -713,6 +713,15 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Please select Purchase order Number & try again.' });
         } else {
             if (this.selectedAllRowData.length) {
+                for (let i = 0; i < this.selectedAllRowData.length; i++) {
+                    const element = this.selectedAllRowData[i];
+                    
+                    let scheduleType = this.selectedAllRowData[0].ScheduleType;
+                    if (element.ScheduleType !== scheduleType) {
+                        this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Please select same Schedule type & try again.' });
+                        return;
+                    }
+                }
                 if (new Date(this.selectedPurchaseNumber.POExpiryDate) >= new Date()) {
                     const format = 'dd MMM , yyyy';
                     let myDate = new Date();

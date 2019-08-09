@@ -352,7 +352,7 @@ export class ManageFinanceComponent implements OnInit {
     this.unassignedBudget = [];
     this.unassignedBudget.push(unassignedObj);
     this.showUnAssigned = unassignedObj.revenue ? true : false;
-    this.isAddToProjectHidden = unassignedObj.revenue ? false : true;
+    this.isAddToProjectHidden = unassignedObj.revenue || !this.projObj ? false : true;
 
     this.isAddBudgetButtonHidden = true;
     this.isrevenueFieldDisabled = true;
@@ -511,13 +511,21 @@ export class ManageFinanceComponent implements OnInit {
   addBudgetToProject() {
     let showError = false;
     if (this.projectStatus === this.constant.projectStatus.InDiscussion) {
-      if (this.updatedBudget === 0 && this.budgetHours === 0) {
-        showError = true;
-      } else if (this.updatedBudget < 0) {
-        showError = true;
-      } else if (this.updatedBudget !== 0 && this.budgetHours === 0) {
-        showError = true;
+      if(this.projObj) {
+        if (this.updatedBudget === 0 && this.budgetHours === 0) {
+          showError = true;
+        } else if (this.updatedBudget < 0) {
+          showError = true;
+        } else if (this.updatedBudget !== 0 && this.budgetHours === 0) {
+          showError = true;
+        }
+      } else {
+        if(this.updatedBudget < 0) {
+          this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGET;
+          return
+        }
       }
+      
     } else {
       if (this.updatedBudget === 0 && this.budgetHours === 0) {
         showError = true;

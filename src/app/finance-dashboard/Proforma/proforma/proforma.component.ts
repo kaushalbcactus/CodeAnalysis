@@ -309,12 +309,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
             { field: 'AddressType', header: 'AddressType', visibility: false },
             { field: 'POName', header: 'PO Name', visibility: false },
-            { field: 'MainPOC', header: 'MainPOC', visibility: false },
+            { field: 'MainPOC', header: 'MainPOC', visibility: false, exportable: false },
             { field: 'ClientLegalEntity', header: 'ClientLegalEntity', visibility: false },
             { field: 'AdditionalInfo', header: 'AdditionalInfo', visibility: false },
             { field: 'Template', header: 'Template', visibility: false },
             { field: 'FileURL', header: 'FileURL', visibility: false },
-            { field: 'ProformaHtml', header: 'ProformaHtml', visibility: false },
+            { field: 'ProformaHtml', header: 'ProformaHtml', visibility: false, exportable: false },
             { field: 'ProformaTitle', header: 'ProformaTitle', visibility: false },
             // { field: 'InvoiceLookup', header: 'InvoiceLookup', visibility: false },
             // { field: 'LineItemsLookup', header: 'LineItemsLookup', visibility: false },
@@ -1479,11 +1479,13 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
             if (proformHtml) {
                 const proformaDate = this.datePipe.transform(this.selectedRowItem.ProformaDate, 'MMM dd, yyyy');
+                const proformaDateSingle = this.datePipe.transform(this.selectedRowItem.ProformaDate, 'MMM d, yyyy');
                 proformHtml = proformHtml.replace(new RegExp("Proforma", "g"), "Invoice");
                 proformHtml = proformHtml.replace(new RegExp("PROFORMA", "g"), "INVOICE");
                 proformHtml = proformHtml.replace(new RegExp("proforma", "g"), "invoice");
                 proformHtml = proformHtml.replace(new RegExp(this.selectedRowItem.ProformaNumber, "g"), oInv.InvoiceNumber);
                 proformHtml = proformHtml.replace(new RegExp(proformaDate, "g"), this.datePipe.transform(oInv.InvoiceDate, 'MMM dd, yyyy'));
+                proformHtml = proformHtml.replace(new RegExp(proformaDateSingle, "g"), this.datePipe.transform(oInv.InvoiceDate, 'MMM dd, yyyy'));
                 const invObject = JSON.parse(proformHtml);
 
                 const pdfCall = invObject.pdf;
