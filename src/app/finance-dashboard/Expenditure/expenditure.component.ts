@@ -713,9 +713,13 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             this.createFreelancer_form.get('RecordType').setValue(this.createFreelancer_form.value.RecordType.value);
             this.createFreelancer_form.value["__metadata"] = { type: 'SP.Data.VendorFreelancerListItem' };
             const endpoint = this.fdConstantsService.fdComponent.addUpdateFreelancer.create;
+            let formValue : any =  this.createFreelancer_form.value;
+            if(!formValue.ContractEndDate) {
+                formValue.ContractEndDate = null;
+            }
             let data = [
                 {
-                    objData: this.createFreelancer_form.value,
+                    objData: formValue,
                     endpoint: endpoint,
                     requestPost: true
                 }
