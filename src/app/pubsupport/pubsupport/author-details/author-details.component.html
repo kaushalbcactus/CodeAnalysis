@@ -1,0 +1,64 @@
+<p-dialog header="Authors & Authors Form" [(visible)]="authorDetailModal" [modal]="true" [draggable]="true"
+    [style]="{'width': '80%'}" [maximizable]="false" [contentStyle]="{'max-height':'450px'}"
+    (onHide)="cancelFormSub()">
+    <!-- <p-header>Header</p-header> -->
+    <p-tabView>
+        <p-tabPanel header="Authors" id="authorTab" style="background-color: red;">
+            <p colspan="10" style="text-align:center;color:#d7181f;cursor: auto !important;"
+                *ngIf="authorsData.length == 0 ">
+                <b>No Data available.</b>
+            </p>
+            <p-table [value]="authorsData" *ngIf="authorsData.length">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Name</th>
+                        <th>Highest Degree</th>
+                        <th>Address</th>
+                        <th>Affiliation</th>
+                        <th colspan="2">Email Address</th>
+                        <th>Author Type</th>
+                        <th>Phone No</th>
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-author>
+                    <tr>
+                        <td>{{author.FirstName+ ' '+ author.LastName }}</td>
+                        <td>{{author.HighestDegree}}</td>
+                        <td>{{author.Address}}</td>
+                        <td>{{author.Affiliation}}</td>
+                        <td colspan="2">{{author.EmailAddress}}</td>
+                        <td>{{author.AuthorType}}</td>
+                        <td>{{author.Phone_x0020_No}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-tabPanel>
+        <p-tabPanel header="Authors Forms" id="authorTab">
+            <p colspan="10" style="text-align:center;color:#d7181f;cursor: auto !important;"
+                *ngIf="authorsFiles.length == 0 ">
+                <b>No Data available.</b>
+            </p>
+            <p-table [value]="authorsFiles" *ngIf="authorsFiles.length">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Last Modified</th>
+                        <!-- <th>Address</th> -->
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-authorsFile>
+                    <tr>
+                        <td>
+                            <a style="color:#d7181f" href="{{authorsFile.ServerRelativeUrl}}"
+                                target="_blank">{{authorsFile.Name}}</a>
+                        </td>
+                        <td>{{authorsFile.TimeLastModified | date:'MMM d, y, hh:mm a'}}</td>
+                        <!-- <td>{{author.Address}}</td> -->
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-tabPanel>
+    </p-tabView>
+    <!-- <p-footer>Footer</p-footer> -->
+</p-dialog>

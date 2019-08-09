@@ -1,0 +1,16 @@
+::ng-deep .ui-dialog {
+    top:50px !important;
+}
+
+/* ::ng-deep .ui-tabview.ui-tabview-top .ui-tabview-nav li.ui-state-active:hover, .ui-tabview.ui-tabview-bottom .ui-tabview-nav li.ui-state-active:hover, .ui-tabview.ui-tabview-left .ui-tabview-nav li.ui-state-active:hover, .ui-tabview.ui-tabview-right .ui-tabview-nav li.ui-state-active:hover {
+    border: 1px solid #d7181f !important;
+    background-color: #d7181f !important;
+} */
+
+::ng-deep #authorTab .ui-tabview-nav{
+    background-color: #d7181f !important;
+}
+
+::ng-deep .ui-dialog .ui-dialog-titlebar {
+    text-align: center !important;
+}

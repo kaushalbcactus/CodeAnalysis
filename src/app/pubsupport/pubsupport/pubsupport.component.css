@@ -675,3 +675,7 @@ body .ui-button {
     background-color: #d7181f !important;
     border: 1px solid #d7181f !important;
 }
+
+::ng-deep .ui-dialog .ui-dialog-titlebar {
+    text-align: center !important;
+}

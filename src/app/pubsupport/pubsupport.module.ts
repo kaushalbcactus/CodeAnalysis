@@ -11,9 +11,10 @@ import { SharedModule } from '../shared/shared.module';
 import { CreateConferenceComponent } from './pubsupport/create-conference/create-conference.component';
 import { CreateJournalComponent } from './pubsupport/create-journal/create-journal.component';
 import { AddAuthorComponent } from './pubsupport/add-author/add-author.component';
+import { AuthorDetailsComponent } from './pubsupport/author-details/author-details.component';
 
 @NgModule({
-  declarations: [PubsupportComponent, CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent],
+  declarations: [PubsupportComponent, CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent, AuthorDetailsComponent],
   imports: [
     CommonModule,
     PubsupportRoutingModule,
@@ -23,7 +24,7 @@ import { AddAuthorComponent } from './pubsupport/add-author/add-author.component
     SharedModule,
     // FileUploadModule
   ],
-  entryComponents: [CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent],
+  entryComponents: [CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent, AuthorDetailsComponent],
   providers: [DatePipe]
 })
 export class PubsupportModule { }

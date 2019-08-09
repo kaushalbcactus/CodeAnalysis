@@ -19,10 +19,11 @@ export class AddAuthorComponent implements OnInit {
     @Input() formType: string;
     @Input() events: any;
 
+    // tslint:disable-next-line: variable-name
     add_author_form: FormGroup;
+    // tslint:disable-next-line: variable-name
     update_author_form: FormGroup;
     addAuthorModal: boolean;
-    
 
     selectedRowItem: any;
 
@@ -32,7 +33,7 @@ export class AddAuthorComponent implements OnInit {
 
     formSubmit: any = {
         isSubmit: false
-    }
+    };
 
     constructor(
         private fb: FormBuilder,
@@ -104,7 +105,7 @@ export class AddAuthorComponent implements OnInit {
         this.add_author_form.value.Title = this.selectedRowItem.ProjectCode;
         this.add_author_form.value.__metadata = { type: this.constantService.listNames.addAuthor.type };
         const endpoint = this.pubsupportService.pubsupportComponent.addAuthor.addAuthorDetails;
-        let data = [{
+        const data = [{
             data: this.add_author_form.value,
             url: endpoint,
             type: 'POST',
@@ -122,7 +123,8 @@ export class AddAuthorComponent implements OnInit {
         if (res.hasOwnProperty('hasError')) {
             this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error message', detail: res.message.value, life: 4000 });
         } else if (type === 'addAuthor') {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message', detail: 'Author Created.', life: 4000 });
+            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message',
+             detail: 'Author Created.', life: 4000 });
             this.addAuthorModal = false;
             this.add_author_form.reset();
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
@@ -137,6 +139,7 @@ export class AddAuthorComponent implements OnInit {
         }, 200);
     }
 
+    // tslint:disable-next-line: use-life-cycle-interface
     ngOnDestroy() {
     }
 

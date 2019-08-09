@@ -1,6 +1,11 @@
 <!-- Loadder -->
 <div></div>
 
+<div class="tableLoader" [hidden]='pubsupportService.pubsupportComponent.isPSInnerLoaderHidden'>
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
+
 <div class="top-title-bottom">
     <div class="top-left-title">
         <span>PROJECT LISTING </span>
@@ -63,8 +68,8 @@
     </p-column>
     <p-column field="Authors_and_Author_Forms" header="Authors and Author Forms" filterPlaceholder="Search">
         <ng-template pTemplate let-i="rowIndex" let-node="rowData">
-            <a style="color:#d7181f" (click)="openAuthorModal(node)" data-target="#authorsModal"
-                data-toggle="modal">Author Details</a>
+            <a style="color:#d7181f" (click)="openAuthorModal(node)">Author Details</a>
+            <!-- data-target="#authorsModal" data-toggle="modal" -->
         </ng-template>
     </p-column>
     <p-column [style]="{'width':'50px'}">
@@ -382,6 +387,10 @@
 <!-- <app-add-author [events]="eventsAddAuthor.asObservable()"></app-add-author> -->
 <!-- Add author Component End -->
 
+<!-- Add author Component Start-->
+<ng-container #authorDetailscontainer></ng-container>
+<!-- Add author Component End -->
+
 <!-- Update author forms & emails -->
 <p-dialog header="Update Author forms & emails" [(visible)]="updateAuthorModal_1" [modal]="true" [draggable]="true"
     [style]="{'width': '50%'}" [maximizable]="false" [baseZIndex]="10000" [contentStyle]="{'height': '150px'}"
@@ -611,16 +620,16 @@
 <button id="closeModalButton" type="button" [hidden]=true class="btn btn-info btn-lg" data-toggle="modal"
     data-target="#myModal">Close Modal {{selectedModal}}</button>
 
-<div class="container">
+<!-- <div class="container">
     <div class="modal fade" id="authorsModal" role="dialog" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog" id="authorModal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <!-- <button type="button" class="close" data-dismiss="modal">&times;</button> -->
+                    
                     <button type="button" class="close" aria-label="Close" data-dismiss="modal" href="#">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <!-- <a href="#" class="btn btn-info" role="button" class="close" data-dismiss="modal">X</a> -->
+                    
                     <h4 class="modal-title">Authors & Authors Form</h4>
                 </div>
                 <div class="modal-body">
@@ -666,7 +675,6 @@
                                     <tr>
                                         <th>Project Name</th>
                                         <th>Last Modified</th>
-                                        <!-- <th>Address</th> -->
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="body" let-authorsFile>
@@ -676,7 +684,6 @@
                                                 target="_blank">{{authorsFile.Name}}</a>
                                         </td>
                                         <td>{{authorsFile.TimeLastModified | date:'MMM d, y, hh:mm a'}}</td>
-                                        <!-- <td>{{author.Address}}</td> -->
                                     </tr>
                                 </ng-template>
                             </p-table>
@@ -686,13 +693,13 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
-<div class="container">
+<!-- <div class="container">
     <div class="modal fade" id="myModal" role="dialog" data-backdrop="static" data-keyboard="false">
-        <div class="modal-dialog">
-            <!-- Modal content-->
-            <!-- <div class="modal-content" *ngIf="selectedModal == 'Add Journal conference'">
+        <div class="modal-dialog"> -->
+<!-- Modal content-->
+<!-- <div class="modal-content" *ngIf="selectedModal == 'Add Journal conference'">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">Add Journal conference details</h4>
@@ -842,7 +849,7 @@
                     </div>
                 </form>
             </div> -->
-            <!-- <div class="modal-content" *ngIf="selectedModal == 'Add Authors'">
+<!-- <div class="modal-content" *ngIf="selectedModal == 'Add Authors'">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"
                         (click)="add_author_form.reset()">&times;</button>
@@ -986,7 +993,7 @@
                     </div>
                 </form>
             </div> -->
-            <!-- <div class="modal-content" *ngIf="selectedModal == 'Update Decision details'">
+<!-- <div class="modal-content" *ngIf="selectedModal == 'Update Decision details'">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"
                         (click)="update_decision_details.reset()">&times;</button>
@@ -1042,7 +1049,7 @@
                     </div>
                 </form>
             </div> -->
-            <!-- <div class="modal-content" *ngIf="selectedModal == 'Update Author forms & emails'">
+<!-- <div class="modal-content" *ngIf="selectedModal == 'Update Author forms & emails'">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"
                         (click)="update_author_form.reset();noFileMsg = '' ">&times;</button>
@@ -1097,7 +1104,7 @@
                     </div>
                 </form>
             </div> -->
-            <!-- <div class="modal-content" *ngIf="selectedModal == 'Update Publication details'">
+<!-- <div class="modal-content" *ngIf="selectedModal == 'Update Publication details'">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"
                         (click)="update_publication_form.reset()">&times;</button>
@@ -1174,7 +1181,7 @@
                     </div>
                 </form>
             </div> -->
-            <!-- <div class="modal-content" *ngIf="selectedModal == 'Override Galley'">
+<!-- <div class="modal-content" *ngIf="selectedModal == 'Override Galley'">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"
                         (click)="galley_form.reset()">&times;</button>
@@ -1211,9 +1218,9 @@
                     </div>
                 </form>
             </div> -->
-        </div>
+<!-- </div>
     </div>
-</div>
+</div> -->
 
 
 
@@ -1223,7 +1230,7 @@
 <!-- Add Journal & Conference Modal -->
 
 <p-dialog header="Add Journal conference details" [(visible)]="addJCDetailsModal" [modal]="true"
-    [contentStyle]="{'min-height':'350px','max-height':'450px'}" [responsive]="true" [style]="{'width': '55%'}"
+    [contentStyle]="{'min-height':'350px','max-height':'450px'}" [responsive]="true" [style]="{'width': '75%'}"
     (onHide)="cancelFormSub('addJCDetailsModal')">
 
     <form id="myform" [formGroup]="journal_Conference_Detail_form">
@@ -1271,7 +1278,7 @@
                 </p-dropdown>
                 <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Milestone.errors">
                     <div *ngIf="isValidAddUpdateJCDetailsForm.Milestone.errors.required" style="color:red;">
-                        Please select one of type & try again.</div>
+                        Please select one of milestone & try again.</div>
                 </div>
             </div>
         </div>

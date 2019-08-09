@@ -12,6 +12,7 @@ import { CreateJournalComponent } from './create-journal/create-journal.componen
 import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { AddAuthorComponent } from './add-author/add-author.component';
+import { AuthorDetailsComponent } from './author-details/author-details.component';
 
 @Component({
     selector: 'app-pubsupport',
@@ -36,9 +37,9 @@ export class PubsupportComponent implements OnInit {
         private componentFactoryResolver: ComponentFactoryResolver
     ) {
 
-        this.router.routeReuseStrategy.shouldReuseRoute = function () {
+        this.router.routeReuseStrategy.shouldReuseRoute = () => {
             return false;
-        }
+        };
 
         // subscribe to the router events - storing the subscription so
         // we can unsubscribe later.
@@ -57,6 +58,44 @@ export class PubsupportComponent implements OnInit {
         this.selectedOption = this.overAllValues[0];
     }
 
+    get isValidAddUpdateJCDetailsForm() {
+        return this.journal_Conference_Detail_form.controls;
+        // this.journal_Conf_form
+    }
+
+    // convenience getter for easy access to form fields
+    get isValidConferenceForm() {
+        return this.journal_Conf_form.controls;
+    }
+
+
+    get isValidUpdateAuthorForm() {
+        return this.update_author_form.controls;
+    }
+
+    get isValidUpdatePublicationForm() {
+        return this.update_publication_form.controls;
+    }
+
+    get isValidGalleyForm() {
+        return this.galley_form.controls;
+    }
+
+    get isValidDecisionForm() {
+        return this.update_decision_details.controls;
+    }
+
+    get isValidUpdateJCRequirementForm() {
+        return this.update_Journal_Requirement_form.controls;
+    }
+
+    updateAuthorModal_1: boolean;
+    updateDecisionModal: boolean;
+    updatePublicatoinModal: boolean;
+    overrideGalleyModal: boolean;
+
+    updatePI_JCSub: boolean;
+
     isSubmisssionDetails = false;
     // files: TreeNode[];
     items: MenuItem[];
@@ -70,6 +109,7 @@ export class PubsupportComponent implements OnInit {
     selectedOption: any;
 
     // Modals Field
+    // tslint:disable
     journal_Conf_form: FormGroup;
     update_author_form: FormGroup;
     update_decision_details: FormGroup;
@@ -77,7 +117,7 @@ export class PubsupportComponent implements OnInit {
     galley_form: FormGroup;
     journal_Conference_Detail_form: FormGroup;
     update_Journal_Requirement_form: FormGroup;
-
+    // tslint:enable
     submitted = false;
     showProjectInput = false;
     // Progress Bar status
@@ -98,6 +138,7 @@ export class PubsupportComponent implements OnInit {
 
     // show/hide Add Author Component
     @ViewChild('addAuthorcontainer', { read: ViewContainerRef, static: true }) addAuthorcontainer: ViewContainerRef;
+    @ViewChild('authorDetailscontainer', { read: ViewContainerRef, static: true }) authorDetailscontainer: ViewContainerRef;
 
     journal_Conf_details: any = {};
 
@@ -122,7 +163,7 @@ export class PubsupportComponent implements OnInit {
 
     formSubmit: any = {
         isSubmit: false
-    }
+    };
 
     loggedInUserInfo: any = [];
     loggedInUserGroup: any = [];
@@ -187,11 +228,29 @@ export class PubsupportComponent implements OnInit {
     authorsData: any = [];
 
     authorsFiles: any = [];
+
+    todayDate: any = {};
+
+    documentTypes: any = [];
+    addJCDetailsModal: boolean = false;
+    updateJCRequirementModal: boolean = false;
+
+    milestoneListArray: any = [];
+
+    journalConference_form: FormGroup;
+
+    jcListArray: any = [];
+    optionLabel: any = {
+        title: ''
+    };
+
+    createJournalModal: boolean = false;
+    createConferenceModal: boolean = false;
+
+    tempClick: any;
     showDialog() {
         this.display = true;
     }
-
-    todayDate: any = {};
     async ngOnInit() {
         this.todayDate = new Date();
         this.isSubmisssionDetails = false;
@@ -238,8 +297,6 @@ export class PubsupportComponent implements OnInit {
         this.galleyFormField();
         this.jcDetailsForm();
     }
-
-    documentTypes: any = [];
     getDocuTypes() {
         this.documentTypes = [
             { label: 'Select type', value: '' },
@@ -307,7 +364,7 @@ export class PubsupportComponent implements OnInit {
         arrEndPoints.push(projectContactEndPoint);
 
         let arrProjects = [], arrProjectContacts = [];
-        let pipcObj = [
+        const pipcObj = [
             {
                 url: projectInfoEndpoint,
                 type: 'GET',
@@ -320,11 +377,11 @@ export class PubsupportComponent implements OnInit {
             }
         ];
 
-        let piObj = [{
+        const piObj = [{
             url: projectInfoEndpoint,
             type: 'GET',
             listName: this.constantService.listNames.ProjectInformation.name
-        }]
+        }];
 
         arrResults = await this.spOperationsService.executeBatch(pipcObj);
         if (arrEndPointsArchive.length) {
@@ -389,6 +446,7 @@ export class PubsupportComponent implements OnInit {
     applyReadFlagStyle(rowData) {
         // console.log('rowData ',rowData);
         if (rowData.Status) {
+            // tslint:disable-next-line: max-line-length
             return rowData.Status === 'In Progress' ? 'lightgreen' : rowData.Status === 'Unallocated' ? 'lightblue' : rowData.Status === 'In Discussion' ? 'lightcoral' : '';
         }
     }
@@ -446,6 +504,7 @@ export class PubsupportComponent implements OnInit {
             case 'accepted': {
                 // this.items = [];
 
+                // tslint:disable-next-line: max-line-length
                 if (this.selectedProject.DeliverableType !== 'Abstract' && this.selectedProject.DeliverableType !== 'Poster' && this.selectedProject.DeliverableType !== 'Oral Presentation') {
                     this.items = [
                         { label: 'Override Galley', command: e => this.openMenuContent(e, data) }
@@ -479,11 +538,6 @@ export class PubsupportComponent implements OnInit {
             this.getJC_JCSubID();
         }
     }
-
-    updateAuthorModal_1: boolean;
-    updateDecisionModal: boolean;
-    updatePublicatoinModal: boolean;
-    overrideGalleyModal: boolean;
 
     openMenuContent(index, data) {
         if (data.Milestones) {
@@ -524,7 +578,7 @@ export class PubsupportComponent implements OnInit {
         } else if (this.selectedModal === 'Update Publication details') {
             this.updatePublicationFormField();
             this.updatePublicatoinModal = true;
-            return
+            return;
         } else if (this.selectedModal === 'Override Galley') {
             this.galleyFormField();
             this.overrideGalleyModal = true;
@@ -536,12 +590,8 @@ export class PubsupportComponent implements OnInit {
             this.updateJCRequirementModal = true;
             return;
         }
-        document.getElementById('openModalButton').click();
+        // document.getElementById('openModalButton').click();
     }
-    addJCDetailsModal: boolean = false;
-    updateJCRequirementModal: boolean = false;
-
-    milestoneListArray: any = [];
     formatMilestone(milestones) {
         this.milestoneListArray = [];
         for (let m = 0; m < milestones.length; m++) {
@@ -549,7 +599,7 @@ export class PubsupportComponent implements OnInit {
             this.milestoneListArray.push({
                 label: element,
                 value: element
-            })
+            });
         }
     }
 
@@ -615,8 +665,6 @@ export class PubsupportComponent implements OnInit {
             GalleyURL: ['', Validators.required],
         });
     }
-
-    journalConference_form: FormGroup;
     createJCDetailsForm() {
         this.journalConference_form = this.formBuilder.group({
             EntryType: ['', Validators.required],
@@ -627,15 +675,12 @@ export class PubsupportComponent implements OnInit {
     }
 
     async getJC_JCSubID() {
-        const obj = {
-            filter: this.pubsupportService.pubsupportComponent.activeJC.filter.replace('{{ProjectCode}}', this.selectedProject.ProjectCode).replace('{{Status}}', this.selectedProject.PubSupportStatus),
-            select: this.pubsupportService.pubsupportComponent.activeJC.select,
-            top: this.pubsupportService.pubsupportComponent.activeJC.top,
-            orderby: this.pubsupportService.pubsupportComponent.activeJC.orderby
-        };
+        const obj = Object.assign({}, this.pubsupportService.pubsupportComponent.activeJC);
+        obj.filter = obj.filter.replace('{{ProjectCode}}', this.selectedProject.ProjectCode).replace('{{Status}}',
+            this.selectedProject.PubSupportStatus);
         const jcEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.JournalConf.name + '', obj);
         const jcsEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.JCSubmission.name + '', obj);
-        let objData = [
+        const objData = [
             {
                 url: jcEndpoint,
                 type: 'GET',
@@ -646,7 +691,7 @@ export class PubsupportComponent implements OnInit {
                 type: 'GET',
                 listName: this.constantService.listNames.JCSubmission.name
             },
-        ]
+        ];
         this.jc_jcSubId = [];
         const arrResults = await this.spOperationsService.executeBatch(objData); //.subscribe(res => {
         this.jc_jcSubId = arrResults;
@@ -654,18 +699,14 @@ export class PubsupportComponent implements OnInit {
 
     async getProjectCode() {
         this.projectCodeRes = [];
-        const obj = {
-            filter: this.pubsupportService.pubsupportComponent.projectInfoCode.filter.replace('{{ClientLegalEntity}}', this.selectedProject.ClientLegalEntity),
-            select: this.pubsupportService.pubsupportComponent.projectInfoCode.select,
-            top: this.pubsupportService.pubsupportComponent.projectInfoCode.top,
-            orderby: this.pubsupportService.pubsupportComponent.projectInfoCode.orderby
-        };
-        let pinfoendpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', obj);
-        let obj1 = [{
+        const obj = Object.assign({}, this.pubsupportService.pubsupportComponent.projectInfoCode);
+        obj.filter = obj.filter.replace('{{ClientLegalEntity}}', this.selectedProject.ClientLegalEntity);
+        const pinfoendpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', obj);
+        const obj1 = [{
             url: pinfoendpoint,
             type: 'GET',
             listName: this.constantService.listNames.ProjectInformation.name
-        }]
+        }];
         const res = await this.spOperationsService.executeBatch(obj1);
         console.log(res);
         this.projectCodeRes = res[0].retItems;
@@ -740,27 +781,27 @@ export class PubsupportComponent implements OnInit {
             accept: () => {
                 //Project status empty, journalConference pubsuport status cancelled, jcSubmission Status Cancelled
                 // Update ProjectInformation
-                let piObj = {
+                const piObj = {
                     PubSupportStatus: ''
-                }
+                };
                 piObj['__metadata'] = { type: this.constantService.listNames.ProjectInformation.type }
                 const piEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.ProjectInformation.name, this.selectedProject.Id);
 
                 // Update JC
-                let jcObj = {
+                const jcObj = {
                     Status: 'Cancelled'
-                }
+                };
                 jcObj['__metadata'] = { type: this.constantService.listNames.JournalConf.type }
                 const jcEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JournalConf.name, SelectedRowJCItemId);
 
                 // Update JCSubmission
-                let jcSubObj = {
+                const jcSubObj = {
                     Status: 'Cancelled'
-                }
+                };
                 jcSubObj['__metadata'] = { type: this.constantService.listNames.JCSubmission.type }
                 const jcSubEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JCSubmission.name, SelectedRowJCSubItemId);
 
-                let data = [
+                const data = [
                     {
                         data: piObj,
                         url: piEndpoint,
@@ -794,11 +835,6 @@ export class PubsupportComponent implements OnInit {
         this.journal_Conference_Detail_form.get('jcLineItem').setValue('');
         this.getJCList(type);
     }
-
-    jcListArray: any = [];
-    optionLabel: any = {
-        title: ''
-    };
     async getJCList(type: string) {
         if (!type) {
             return false;
@@ -900,16 +936,8 @@ export class PubsupportComponent implements OnInit {
             this.journal_Conf_form.removeControl('JournalEditorInfo');
         }
     }
-
-    get isValidAddUpdateJCDetailsForm() {
-        return this.journal_Conference_Detail_form.controls;
-        // this.journal_Conf_form
-    }
-
-    createJournalModal: boolean = false;
-    createConferenceModal: boolean = false;
     createJC() {
-        let type = this.journal_Conference_Detail_form.get('EntryType').value;
+        const type = this.journal_Conference_Detail_form.get('EntryType').value;
         this.formSubmit.isSubmit = false;
         this.submitBtn.isClicked = false;
         if (type === 'journal') {
@@ -922,7 +950,10 @@ export class PubsupportComponent implements OnInit {
 
             ref.onClose.subscribe((conference) => {
                 if (conference) {
-                    this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message', detail: 'Journal Created.', life: 4000 });
+                    this.messageService.add({
+                        key: 'myKey1', severity: 'success', summary: 'Success message',
+                        detail: 'Journal Created.', life: 4000
+                    });
                     this.getJCList('journal');
                 }
             });
@@ -937,41 +968,21 @@ export class PubsupportComponent implements OnInit {
 
             ref.onClose.subscribe((conference) => {
                 if (conference) {
-                    this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message', detail: 'Conference Created.', life: 4000 });
+                    this.messageService.add({
+                        key: 'myKey1', severity: 'success', summary: 'Success message',
+                        detail: 'Conference Created.', life: 4000
+                    });
                     this.getJCList('conference');
                 }
             });
 
         } else {
-            this.messageService.add({ key: 'myKey1', severity: 'info', summary: 'Info message', detail: 'Please select document type & try again.', life: 4000 });
+            this.messageService.add({
+                key: 'myKey1', severity: 'info', summary: 'Info message',
+                detail: 'Please select document type & try again.', life: 4000
+            });
             return;
         }
-    }
-
-    // convenience getter for easy access to form fields
-    get isValidConferenceForm() {
-        return this.journal_Conf_form.controls;
-    }
-
-
-    get isValidUpdateAuthorForm() {
-        return this.update_author_form.controls;
-    }
-
-    get isValidUpdatePublicationForm() {
-        return this.update_publication_form.controls;
-    }
-
-    get isValidGalleyForm() {
-        return this.galley_form.controls;
-    }
-
-    get isValidDecisionForm() {
-        return this.update_decision_details.controls;
-    }
-
-    get isValidUpdateJCRequirementForm() {
-        return this.update_Journal_Requirement_form.controls;
     }
 
     cancelFormSub(formType) {
@@ -982,7 +993,8 @@ export class PubsupportComponent implements OnInit {
             this.updateJCRequirementModal = false;
             this.update_Journal_Requirement_form.reset();
         } else if (formType === 'updateAuthorModal') {
-            // if (this.update_author_form.controls.hasOwnProperty('file') || this.update_author_form.controls.hasOwnProperty('existingAuthorList')) {
+            // if (this.update_author_form.controls.hasOwnProperty('file') || 
+            // this.update_author_form.controls.hasOwnProperty('existingAuthorList')) {
             //     this.update_author_form.reset();
             // }
             this.updateAuthorModal_1 = false;
@@ -1030,20 +1042,22 @@ export class PubsupportComponent implements OnInit {
             }
             this.submitBtn.isClicked = true;
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
-            let obj = this.journal_Conference_Detail_form.getRawValue();
+            const obj = this.journal_Conference_Detail_form.getRawValue();
+            /* tslint:disable:no-string-literal */
             obj['Status'] = 'Selected';
             obj['Title'] = this.selectedProject.ProjectCode;
             delete obj['jcLineItem']
             obj['JournalConferenceId'] = this.journal_Conference_Detail_form.getRawValue().jcLineItem.ID;
-            obj['__metadata'] = { type: this.constantService.listNames.JournalConf.type }
+            obj['__metadata'] = { type: this.constantService.listNames.JournalConf.type };
+            /* tslint:enable:no-string-literal */
             // console.log('this.journal_Conference_Detail_form ', obj);
             const endpoint = this.pubsupportService.pubsupportComponent.addJC.addJCDetails;
-            let data = [{
+            const data = [{
                 data: obj,
                 url: endpoint,
                 type: 'POST',
                 listName: this.constantService.listNames.JournalConf.name
-            }]
+            }];
             this.submit(data, type);
         } else if (type === 'updateJCRequirementModal') {
             if (this.update_Journal_Requirement_form.invalid) {
@@ -1056,12 +1070,15 @@ export class PubsupportComponent implements OnInit {
             console.log('selectedFile uploaded .', res.ServerRelativeUrl);
             if (res.hasError) {
                 this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
-                this.messageService.add({ key: 'myKey1', severity: 'info', summary: 'File not uploaded.', detail: 'Folder / ' + res.message.value + '', life: 3000 });
+                this.messageService.add({
+                    key: 'myKey1', severity: 'info', summary: 'File not uploaded.',
+                    detail: 'Folder / ' + res.message.value + '', life: 3000
+                });
                 return;
             }
-            let objData = {
+            const objData = {
                 JournalRequirementResponse: res.ServerRelativeUrl
-            }
+            };
             objData['__metadata'] = { type: this.constantService.listNames.JournalConf.type };
 
             // Get Selected Line item JournalConference Id
@@ -1071,7 +1088,7 @@ export class PubsupportComponent implements OnInit {
                 }
             });
             const endpoint = this.pubsupportService.pubsupportComponent.addJC.updateJCDetails.replace('{{Id}}', this.jcId);
-            let data = []
+            let data = [];
             if (res.ServerRelativeUrl) {
                 data = [{
                     data: objData,
@@ -1093,7 +1110,10 @@ export class PubsupportComponent implements OnInit {
             if (this.filesToCopy.length) {
                 this.update_author_form.removeControl('file');
                 const fileCopyEndPoint = await this.spOperationsService.copyFiles(this.fileSourcePath, this.fileDestinationPath);
-                this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message', detail: 'Author details updated.', life: 4000 });
+                this.messageService.add({
+                    key: 'myKey1', severity: 'success', summary: 'Success message',
+                    detail: 'Author details updated.', life: 4000
+                });
                 document.getElementById('closeModalButton').click();
                 this.reload();
             } else {
@@ -1135,42 +1155,61 @@ export class PubsupportComponent implements OnInit {
             this.uploadFileData('galley');
         }
     }
-    updatePI_JCSub: boolean;
+
     async submit(dataEndpointArray, type: string) {
 
-        if (type === 'addJCDetailsModal' || type === 'addAuthor' || type === 'updateDecision' || type === 'galley' || type === 'updatePublication' || type === 'cancelJC' || type === 'updateJCRequirementModal') {
+        if (type === 'addJCDetailsModal' || type === 'addAuthor' || type === 'updateDecision' || type === 'galley' ||
+            type === 'updatePublication' || type === 'cancelJC' || type === 'updateJCRequirementModal') {
             const result = await this.spOperationsService.executeBatch(dataEndpointArray);
             let res: any = {};
             if (result.length) {
                 res = result[0].retItems;
             }
             if (res.hasOwnProperty('hasError')) {
-                this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error message', detail: res.message.value, life: 4000 });
+                this.messageService.add({
+                    key: 'myKey1', severity: 'error', summary: 'Error message',
+                    detail: res.message.value, life: 4000
+                });
             } else if (type === 'addJCDetailsModal') {
                 console.log('res ', res);
                 this.updateProjectSts_JCSubmissionDetails(res, type);
 
             } else if (type === 'updateDecision') {
                 this.update_decision_details.reset();
-                this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message', detail: 'Updated Decision', life: 4000 });
+                this.messageService.add({
+                    key: 'myKey1', severity: 'success', summary: 'Success message',
+                    detail: 'Updated Decision', life: 4000
+                });
                 document.getElementById('closeModalButton').click();
                 this.reload();
             } else if (type === 'galley') {
                 this.galley_form.reset();
-                this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message', detail: 'Galley Overrided.', life: 4000 });
+                this.messageService.add({
+                    key: 'myKey1', severity: 'success', summary: 'Success message',
+                    detail: 'Galley Overrided.', life: 4000
+                });
                 document.getElementById('closeModalButton').click();
                 this.reload();
             } else if (type === 'updatePublication') {
                 this.update_publication_form.reset();
 
-                this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message', detail: 'Publication details Updated.', life: 4000 });
+                this.messageService.add({
+                    key: 'myKey1', severity: 'success', summary: 'Success message',
+                    detail: 'Publication details Updated.', life: 4000
+                });
                 document.getElementById('closeModalButton').click();
                 this.reload();
             } else if (type === 'cancelJC') {
-                this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message', detail: 'Journal Conference Cancelled', life: 4000 });
+                this.messageService.add({
+                    key: 'myKey1', severity: 'success', summary: 'Success message',
+                    detail: 'Journal Conference Cancelled', life: 4000
+                });
                 this.reload();
             } else if (type === 'updateJCRequirementModal') {
-                this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message', detail: 'Updated Journal Requirement document.', life: 4000 });
+                this.messageService.add({
+                    key: 'myKey1', severity: 'success', summary: 'Success message',
+                    detail: 'Updated Journal Requirement document.', life: 4000
+                });
                 this.updateJCRequirementModal = false;
                 this.reload();
             }
@@ -1185,6 +1224,7 @@ export class PubsupportComponent implements OnInit {
         // dataEndpointArray.forEach(element => {
         //     if (element) {
 
+        // tslint:disable-next-line: max-line-length
         //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
         //     }
         // });
@@ -1238,7 +1278,8 @@ export class PubsupportComponent implements OnInit {
         //     } else if (type === 'updatePublication') {
         //         this.update_publication_form.reset();
 
-        //         this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Publication details Updated.', detail: '', life: 4000 });
+        //         this.messageService.add({ key: 'myKey1', severity: 'success',
+        // summary: 'Publication details Updated.', detail: '', life: 4000 });
         //         document.getElementById('closeModalButton').click();
         //         this.reload();
         //     }
@@ -1247,17 +1288,18 @@ export class PubsupportComponent implements OnInit {
 
     async updateProjectSts_JCSubmissionDetails(res: any, type: string) {
         // Update PI
-        const projEndpoint = this.pubsupportService.pubsupportComponent.updateProjectInfo.updateProjInfo.replace('{{projectId}}', this.selectedProject.Id);
+        const projEndpoint = this.pubsupportService.pubsupportComponent.updateProjectInfo.updateProjInfo
+            .replace('{{projectId}}', this.selectedProject.Id);
         const projObj: any = {
             PubSupportStatus: 'Selected'
         };
         projObj.__metadata = { type: this.constantService.listNames.ProjectInformation.type };
-        let piObj = {
+        const piObj = {
             data: projObj,
             url: projEndpoint,
             type: 'PATCH',
             listName: this.constantService.listNames.ProjectInformation.name
-        }
+        };
 
         // Update JCSubmission
         const jcSubEndpoint = this.pubsupportService.pubsupportComponent.addJCSubmission.add;
@@ -1267,12 +1309,12 @@ export class PubsupportComponent implements OnInit {
             Status: res.Status
         };
         jcSubObj.__metadata = { type: this.constantService.listNames.JCSubmission.type };
-        let jcsObj = {
+        const jcsObj = {
             data: jcSubObj,
             url: jcSubEndpoint,
             type: 'POST',
             listName: this.constantService.listNames.JCSubmission.name
-        }
+        };
 
         const arr = [];
         arr.push(piObj, jcsObj);
@@ -1294,7 +1336,8 @@ export class PubsupportComponent implements OnInit {
     }
 
     updateProjectInfo(res: any, type: string) {
-        const endpoint = this.pubsupportService.pubsupportComponent.updateProjectInfo.updateProjInfo.replace('{{projectId}}', this.selectedProject.Id);
+        const endpoint = this.pubsupportService.pubsupportComponent.updateProjectInfo.updateProjInfo
+            .replace('{{projectId}}', this.selectedProject.Id);
         const obj: any = {};
         if (type === 'updateDecision') {
             obj.PubSupportStatus = this.update_decision_details.value.Decision;
@@ -1309,7 +1352,7 @@ export class PubsupportComponent implements OnInit {
             url: endpoint,
             type: 'PATCH',
             listName: this.constantService.listNames.ProjectInformation.name
-        }
+        };
     }
     updateJCSubmissionDetails(fileUrl: string, type: string) {
         let jcSubId;
@@ -1336,7 +1379,7 @@ export class PubsupportComponent implements OnInit {
             url: endpoint,
             type: 'PATCH',
             listName: this.constantService.listNames.JCSubmission.name
-        }
+        };
     }
 
     addJCSubmission() {
@@ -1352,7 +1395,7 @@ export class PubsupportComponent implements OnInit {
             url: jcSubEndpoint,
             type: 'POST',
             listName: this.constantService.listNames.JCSubmission.name
-        }
+        };
     }
     updateJCDetails(fileUrl: string, type: string) {
         this.jc_jcSubId[0].retItems.forEach(element => {
@@ -1380,7 +1423,7 @@ export class PubsupportComponent implements OnInit {
             url: endpoint,
             type: 'PATCH',
             listName: this.constantService.listNames.JournalConf.name
-        }
+        };
     }
 
     addJCGalley(fileUrl: string) {
@@ -1403,7 +1446,7 @@ export class PubsupportComponent implements OnInit {
             url: jcGalleyEndpoint,
             type: 'POST',
             listName: this.constantService.listNames.jcGalley.name
-        }
+        };
     }
 
     async uploadFileData(type: string) {
@@ -1412,7 +1455,10 @@ export class PubsupportComponent implements OnInit {
         if (res.hasError) {
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
             document.getElementById('closeModalButton').click();
-            this.messageService.add({ key: 'myKey1', severity: 'info', summary: 'File not uploaded.', detail: 'Folder / ' + res.message.value + '', life: 4000 });
+            this.messageService.add({
+                key: 'myKey1', severity: 'info', summary: 'File not uploaded.',
+                detail: 'Folder / ' + res.message.value + '', life: 4000
+            });
             return;
         }
         if (res.ServerRelativeUrl && type !== 'updateAuthors') {
@@ -1431,9 +1477,13 @@ export class PubsupportComponent implements OnInit {
             this.submit(arrayUpdateData, type);
         }
         if (type === 'updateAuthors') {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message', detail: 'Author details updated.', life: 4000 });
+            this.messageService.add({
+                key: 'myKey1', severity: 'success', summary: 'Success message',
+                detail: 'Author details updated.', life: 4000
+            });
             this.reload();
-            document.getElementById('closeModalButton').click();
+            this.updateAuthorModal_1 = false;
+            // document.getElementById('closeModalButton').click();
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
         }
     }
@@ -1455,10 +1505,10 @@ export class PubsupportComponent implements OnInit {
     async getJCDetails(project: any) {
         // this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         this.selectedProject = project;
-        let obj = Object.assign({}, this.pubsupportService.pubsupportComponent.journalConf);
+        const obj = Object.assign({}, this.pubsupportService.pubsupportComponent.journalConf);
         obj.filter = obj.filter.replace('{{ProjectCode}}', this.selectedProject.ProjectCode);
         const jcEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.JournalConf.name + '', obj);
-        let jcObj = [{
+        const jcObj = [{
             url: jcEndpoint,
             type: 'GET',
             listName: this.constantService.listNames.JournalConf.name
@@ -1497,10 +1547,10 @@ export class PubsupportComponent implements OnInit {
         }
     }
     async getSubmissionDetails(index: any, selectedJC: any) {
-        let obj = Object.assign({}, this.pubsupportService.pubsupportComponent.jcSubmission);
+        const obj = Object.assign({}, this.pubsupportService.pubsupportComponent.jcSubmission);
         obj.filter = obj.filter.replace('{{ProjectCode}}', selectedJC.Title).replace('{{JCID}}', selectedJC.ID);
         const jsEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.JCSubmission.name + '', obj);
-        let data = [{
+        const data = [{
             url: jsEndpoint,
             type: 'GET',
             listName: this.constantService.listNames.JCSubmission.name
@@ -1526,10 +1576,10 @@ export class PubsupportComponent implements OnInit {
     async getGalleyDetails(index: any, selectedJC: any) {
         // this.selectedProject = selectedJC;
         this.galleyDetailsData = [];
-        let obj = Object.assign({}, this.pubsupportService.pubsupportComponent.jcGalley);
+        const obj = Object.assign({}, this.pubsupportService.pubsupportComponent.jcGalley);
         obj.filter = obj.filter.replace('{{ProjectCode}}', selectedJC.Title).replace('{{JCSubID}}', selectedJC.ID);
         const jsEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.jcGalley.name + '', obj);
-        let data = [{
+        const data = [{
             url: jsEndpoint,
             type: 'GET',
             listName: this.constantService.listNames.jcGalley.name
@@ -1541,7 +1591,8 @@ export class PubsupportComponent implements OnInit {
 
     // On Click of Project code
     goToProjectDetails(data: any, index: number) {
-        window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl + '/project-mgmt?ProjectCode=' + data.ProjectCode);
+        window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' +
+            data.ProjectCode);
     }
 
     submissionDetails(index: number) {
@@ -1554,7 +1605,10 @@ export class PubsupportComponent implements OnInit {
         console.log('File ', fileName);
         // console.log('File ', JSON.stringify(fileName));
         if (file) {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message', detail: 'Files are downloading...', life: 2000 });
+            this.messageService.add({
+                key: 'myKey1', severity: 'success', summary: 'Success message',
+                detail: 'Files are downloading...', life: 2000
+            });
             const fileArray = file.split(';#');
             this.spOperationsService.createZip(fileArray, fileName);
         } else {
@@ -1574,7 +1628,9 @@ export class PubsupportComponent implements OnInit {
                     // this.update_author_form.value.
                     this.update_author_form.removeControl('existingAuthorList');
                 }
-                this.filePathUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + this.selectedProject.ProjectFolder + '' + folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' +
+                this.filePathUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+                    '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + this.selectedProject.ProjectFolder + '' +
+                    folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' +
                     '&@TargetFileName=\'' + this.selectedFile.name + '\'';
             };
             this.update_author_form.updateValueAndValidity();
@@ -1590,9 +1646,7 @@ export class PubsupportComponent implements OnInit {
         //     // window.location.reload();
         //     this.currentUserInfo();
         // }, 3000);
-
-
-        // 
+        //
 
         setTimeout(() => {
             this.router.navigated = false;
@@ -1604,36 +1658,43 @@ export class PubsupportComponent implements OnInit {
     }
 
     async openAuthorModal(data: any) {
-        this.selectedProject = [];
-        this.selectedProject = data;
-        let obj = Object.assign({}, this.pubsupportService.pubsupportComponent.authors);
-        obj.filter = obj.filter.replace('{{ProjectCode}}', data.ProjectCode);
-        const authEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.addAuthor.name + '', obj);
-        let authorsObj = [{
-            url: authEndpoint,
-            type: 'GET',
-            listName: this.constantService.listNames.addAuthor.name
-        }]
-        const res = await this.spOperationsService.executeBatch(authorsObj);
-        this.authorsData = res[0].retItems;
-        this.onTabChange();
+
+        const factory = this.componentFactoryResolver.resolveComponentFactory(AuthorDetailsComponent);
+        const componentRef = this.authorDetailscontainer.createComponent(factory);
+        componentRef.instance.events = data;
+        // componentRef.instance.formType = 'addAuthor';
+        return;
+        // this.selectedProject = [];
+        // this.selectedProject = data;
+        // const obj = Object.assign({}, this.pubsupportService.pubsupportComponent.authors);
+        // obj.filter = obj.filter.replace('{{ProjectCode}}', data.ProjectCode);
+        // const authEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.addAuthor.name + '', obj);
+        // const authorsObj = [{
+        //     url: authEndpoint,
+        //     type: 'GET',
+        //     listName: this.constantService.listNames.addAuthor.name
+        // }];
+        // const res = await this.spOperationsService.executeBatch(authorsObj);
+        // this.authorsData = res[0].retItems;
+        // this.onTabChange();
     }
-    async onTabChange() {
-        this.authorsFiles = [];
-        const fileEndPoint = this.selectedProject.ProjectFolder + '/Publication Support/Forms/';
-        const authorFilesGet = await this.spOperationsService.readFiles(fileEndPoint);
-        // tslint:disable-next-line:only-arrow-functions
-        authorFilesGet.sort(function (a, b) {
-            a = new Date(a.TimeLastModified);
-            b = new Date(b.TimeLastModified);
-            return a < b ? -1 : a > b ? 1 : 0;
-        });
-        this.authorsFiles = authorFilesGet;
-    }
+    // async onTabChange() {
+    //     this.authorsFiles = [];
+    //     const fileEndPoint = this.selectedProject.ProjectFolder + '/Publication Support/Forms/';
+    //     const authorFilesGet = await this.spOperationsService.readFiles(fileEndPoint);
+    //     // tslint:disable-next-line:only-arrow-functions
+    //     authorFilesGet.sort((a, b) => {
+    //         a = new Date(a.TimeLastModified);
+    //         b = new Date(b.TimeLastModified);
+    //         return a < b ? -1 : a > b ? 1 : 0;
+    //     });
+    //     this.authorsFiles = authorFilesGet;
+    // }
 
     // tslint:disable-next-line:use-life-cycle-interface
     ngOnDestroy() {
-        // avoid memory leaks here by cleaning up after ourselves. If we don't then we will continue to run our initialiseInvites() method on every navigationEnd event.
+        // avoid memory leaks here by cleaning up after ourselves. If we don't then we will
+        // continue to run our initialiseInvites() method on every navigationEnd event.
         if (this.navigationSubscription) {
             this.navigationSubscription.unsubscribe();
         }
@@ -1657,27 +1718,25 @@ export class PubsupportComponent implements OnInit {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         this.callGetProjects(true);
     }
-
-    tempClick: any;
     @HostListener('document:click', ['$event'])
     clickout(event) {
-        if (event.target.className === "pi pi-ellipsis-v") {
+        if (event.target.className === 'pi pi-ellipsis-v') {
             if (this.tempClick) {
-                this.tempClick.style.display = "none";
+                this.tempClick.style.display = 'none';
                 if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
                     this.tempClick = event.target.parentElement.children[0].children[0];
-                    this.tempClick.style.display = "";
+                    this.tempClick.style.display = '';
                 } else {
                     this.tempClick = undefined;
                 }
             } else {
                 this.tempClick = event.target.parentElement.children[0].children[0];
-                this.tempClick.style.display = "";
+                this.tempClick.style.display = '';
             }
 
         } else {
             if (this.tempClick) {
-                this.tempClick.style.display = "none";
+                this.tempClick.style.display = 'none';
                 this.tempClick = undefined;
             }
         }

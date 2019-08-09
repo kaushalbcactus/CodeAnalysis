@@ -6,9 +6,9 @@
   text-align: right;
 }
 
-::ng-deep .ui-datepicker-title >select, ::ng-deep input[type=text] {
+/* ::ng-deep .ui-datepicker-title >select, ::ng-deep input[type=text] {
     width: auto !important;
-}
+} */
 
 ::ng-deep .ui-datepicker-calendar>tbody>tr>td{
     border: none !important
