@@ -226,7 +226,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   public async getMilestones(bFirstLoad) {
 
 
- 
+
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
 
@@ -540,7 +540,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
               if (tempSubmilestones.length > 0) {
 
-                const tempSubmilestonesWOAT = tempSubmilestones.filter(c=>c.data.itemType !=='Time Booking');
+                const tempSubmilestonesWOAT = tempSubmilestones.filter(c => c.data.itemType !== 'Time Booking');
                 const subMilData = this.GanttchartData.find(c => c.pName === element.subMile && c.pParent === milestone.Id);
                 subMilData.pStart = tempSubmilestonesWOAT[0].data.pStart;
                 subMilData.pEnd = tempSubmilestonesWOAT[tempSubmilestonesWOAT.length - 1].data.pEnd;
@@ -1198,8 +1198,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
               task.data.tatVal = this.commonService.calcBusinessDays(new Date(task.data.pStart), new Date(task.data.pEnd));
             });
 
-            const subMiledb =  submilestone.children.filter(c => c.data.pName.toLowerCase().indexOf
-            ('adhoc') === -1 && c.data.pName.toLowerCase().indexOf('tb') === -1 );
+            const subMiledb = submilestone.children.filter(c => c.data.pName.toLowerCase().indexOf
+              ('adhoc') === -1 && c.data.pName.toLowerCase().indexOf('tb') === -1);
             submilestone.data.pStart = new Date(subMiledb[0].data.pStart);
             submilestone.data.pEnd = new Date(subMiledb[subMiledb.length - 1].data.pEnd);
             submilestone.data.pUserStart = new Date(subMiledb[0].data.pUserStart);
@@ -1216,7 +1216,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         });
 
         const tempMile = milestone.children.filter(c => c.data.pName.toLowerCase().indexOf('adhoc') ===
-        -1 && c.data.pName.toLowerCase().indexOf('tb') === -1 );
+          -1 && c.data.pName.toLowerCase().indexOf('tb') === -1);
         milestone.data.pStart = new Date(tempMile[0].data.pStart);
         milestone.data.pEnd = new Date(tempMile[tempMile.length - 1].data.pEnd);
         milestone.data.pUserStart = new Date(tempMile[0].data.pUserStart);
@@ -1544,7 +1544,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                 }
                 else if (submilestoneObj.pName === 'Default' || temptasks.length > 0) {
                   temptasks.forEach(element => {
- 
+
                     const tempsub = {
                       'data': this.tempGanttchartData.find(c => c.pID === element.data.pID),
                     }
@@ -1793,8 +1793,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   sortDates(node, type) {
-    const  nodeCopy = Object.assign({}, node).children.filter(c =>
-    c.data.pName.toLowerCase().indexOf('adhoc') === -1 && c.data.pName.toLowerCase().indexOf('tb') === -1);
+    const nodeCopy = Object.assign({}, node).children.filter(c =>
+      c.data.pName.toLowerCase().indexOf('adhoc') === -1 && c.data.pName.toLowerCase().indexOf('tb') === -1);
     switch (type) {
       case 'start':
         nodeCopy.sort((a, b) => {
@@ -3256,6 +3256,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
     for (const milestone of milestonesData) {
 
       const AllTasks = this.getTasksFromMilestones(milestone, false);
+
+
+
       const milestoneTasks = AllTasks.filter(t => t.status !== 'Abandon' && t.itemType !== 'Adhoc');
       // tslint:disable
       const checkTaskAllocatedTime = milestoneTasks.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
@@ -3303,6 +3306,11 @@ export class TimelineComponent implements OnInit, OnDestroy {
         });
         return false;
       }
+
+      if (milestoneTasks.length > 0) {
+
+        this.LinkScToClientReview(milestoneTasks);
+      }
       // let validateNextMilestone = true;
       // milestoneTasks.forEach(element => {
       //   const title = element.AssignedTo !== null ? (element.AssignedTo.Title ? element.AssignedTo.Title : '') : '';
@@ -3322,6 +3330,23 @@ export class TimelineComponent implements OnInit, OnDestroy {
       previousNode = milestone.data;
     }
     return true;
+  }
+
+
+
+  LinkScToClientReview(milestoneTasks) {
+
+    const LatestSCDate = new Date(Math.max.apply(null, milestoneTasks.filter(c => c.itemType === 'Send to client').map(c => c.pUserEnd)));
+
+    const LatestSC = milestoneTasks.find(c => c.itemType === 'Send to client' &&
+      new Date(c.pUserEnd).getTime() === LatestSCDate.getTime());
+
+    const CR = milestoneTasks.find(c => c.itemType === 'Client Review');
+
+    if (LatestSC && CR) {
+      LatestSC.nextTask = CR ? CR.pName : null;
+      CR.previousTask = LatestSC ? LatestSC.pName : null;
+    }
   }
 
 
