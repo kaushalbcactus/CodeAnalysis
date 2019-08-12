@@ -17,7 +17,8 @@ export class CreateConferenceComponent implements OnInit {
 
     createConference_form: FormGroup;
     conferenceListArray: any = [];
-
+    batchContents: any = [];
+    uniqueJName: boolean;
     submitBtn: any = {
         isClicked: false
     };
@@ -59,7 +60,8 @@ export class CreateConferenceComponent implements OnInit {
 
     async getConferenceList() {
         this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = false;
-        let data = [{
+        const data = [{
+            // tslint:disable-next-line: max-line-length
             url: this.spOperationsService.getReadURL(this.constantService.listNames.Journal.name, this.psConstantService.pubsupportComponent.journal),
             type: 'GET',
             listName: this.constantService.listNames.Journal.name
@@ -80,9 +82,8 @@ export class CreateConferenceComponent implements OnInit {
         this.uniqueJName = this.uniqueJName ? this.uniqueJName = false : false;
     }
 
-    uniqueJName: boolean = false;
     checkUniqueName() {
-        let found = this.conferenceListArray.find(item => {
+        const found = this.conferenceListArray.find(item => {
             if (item.ConferenceName.toLowerCase().replace(/\s/g, '') === this.createConference_form.value.ConferenceName.toLowerCase().replace(/\s/g, '')) {
                 this.uniqueJName = true;
                 return item;
@@ -114,9 +115,9 @@ export class CreateConferenceComponent implements OnInit {
             this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = false;
             console.log('createConference_form ', this.createConference_form.value);
             let obj = this.createConference_form.value;
-            obj['__metadata'] = { type: this.constantService.listNames.Conference.type }
-            const endpoint = this.psConstantService.pubsupportComponent.addUpdateConference.add;
-            let data = [{
+            obj['__metadata'] = { type: this.constantService.listNames.Conference.type };
+            const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.Conference.name);
+            const data = [{
                 data: obj,
                 url: endpoint,
                 type: 'POST',
@@ -126,7 +127,6 @@ export class CreateConferenceComponent implements OnInit {
         }
     }
 
-    batchContents: any = [];
     async submitForm(data) {
         const res = await this.spOperationsService.executeBatch(data);
         if (res) {

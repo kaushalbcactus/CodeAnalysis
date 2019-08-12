@@ -392,8 +392,8 @@
 <!-- Add author Component End -->
 
 <!-- Update author forms & emails -->
-<p-dialog header="Update Author forms & emails" [(visible)]="updateAuthorModal_1" [modal]="true" [draggable]="true"
-    [style]="{'width': '50%'}" [maximizable]="false" [baseZIndex]="10000" [contentStyle]="{'height': '150px'}"
+<p-dialog header="Update Author forms & emails" [(visible)]="updateAuthorModal_1" [modal]="true" [draggable]="false"
+    [style]="{'width': '50%'}" [maximizable]="false" [contentStyle]="{'height': '150px'}"
     (onHide)="cancelFormSub('updateAuthorModal')">
     <form [formGroup]="update_author_form">
         <div class="ui-g" *ngIf="!selectedType">
@@ -444,8 +444,8 @@
 <!-- End -->
 
 <!-- Update Decision Detais -->
-<p-dialog header="Update Decision details" [(visible)]="updateDecisionModal" [modal]="true" [draggable]="true"
-    [style]="{'width': '50%'}" [maximizable]="false" [baseZIndex]="10000" [contentStyle]="{'height': '150px'}"
+<p-dialog header="Update Decision details" [(visible)]="updateDecisionModal" [modal]="true" [draggable]="false"
+    [style]="{'width': '50%'}" [maximizable]="false" [contentStyle]="{'height': '150px'}"
     (onHide)="cancelFormSub('updateDecisionModal')">
     <form [formGroup]="update_decision_details">
         <div class="ui-g">
@@ -498,8 +498,8 @@
 <!-- End -->
 
 <!-- Update Decision Detais -->
-<p-dialog header="Update Publication details" [(visible)]="updatePublicatoinModal" [modal]="true" [draggable]="true"
-    [style]="{'width': '60%'}" [maximizable]="false" [baseZIndex]="10000" [contentStyle]="{'height': '150px'}"
+<p-dialog header="Update Publication details" [(visible)]="updatePublicatoinModal" [modal]="true" [draggable]="false"
+    [style]="{'width': '60%'}" [maximizable]="false" [contentStyle]="{'height': '150px'}"
     (onHide)="cancelFormSub('updatePublicatoinModal')">
     <form [formGroup]="update_publication_form">
         <div class="ui-g">
@@ -574,16 +574,16 @@
 
 
 <!-- Galley Form -->
-<p-dialog header="Override Galley" [(visible)]="overrideGalleyModal" [modal]="true" [draggable]="true"
-    [style]="{'width': '30%'}" [maximizable]="false" [baseZIndex]="10000" [contentStyle]="{'height': '150px'}"
+<p-dialog header="Override Galley" [(visible)]="overrideGalleyModal" [modal]="true" [draggable]="false"
+    [style]="{'width': '30%'}" [maximizable]="false" [contentStyle]="{'height': '150px'}"
     (onHide)="cancelFormSub('overrideGalleyModal')">
     <form [formGroup]="galley_form">
         <div class="ui-g">
-            <div class="ui-g-12 ui-md-6 ui-lg-2"></div>
-            <div class="ui-g-12 ui-md-6 ui-lg-8">
+            <!-- <div class="ui-g-12 ui-md-6 ui-lg-2"></div> -->
+            <div class="ui-g-12 ui-md-6 ui-lg-12">
                 Upload file to enable Update Publication details option:
             </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-2"></div>
+            <!-- <div class="ui-g-12 ui-md-6 ui-lg-2"></div> -->
 
         </div>
 
@@ -604,8 +604,8 @@
     </form>
     <p-footer>
         <button pButton type="button" label="Update" [disabled]="submitBtn.isClicked"
-            (click)="onSubmit('overrideGalleyModal')"></button>
-        <button pButton type="button" label="Cancel" (click)="cancelFormSub('galley')"></button>
+            (click)="onSubmit('galley')"></button>
+        <button pButton type="button" label="Cancel" (click)="cancelFormSub('overrideGalleyModal')"></button>
     </p-footer>
 
 </p-dialog>

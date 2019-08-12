@@ -14,17 +14,6 @@ import { DynamicDialogRef, MessageService, DynamicDialogConfig } from 'primeng/a
 })
 export class CreateJournalComponent implements OnInit {
 
-    createJournal_form: FormGroup;
-    journalListArray: any = [];
-
-    submitBtn: any = {
-        isClicked: false
-    };
-
-    formSubmit: any = {
-        isSubmit: false
-    }
-
     constructor(
         private fb: FormBuilder,
         public ref: DynamicDialogRef,
@@ -36,6 +25,25 @@ export class CreateJournalComponent implements OnInit {
         public config: DynamicDialogConfig,
 
     ) { }
+
+    get isValidCreateJournalForm() {
+        return this.createJournal_form.controls;
+    }
+
+    createJournal_form: FormGroup;
+    journalListArray: any = [];
+
+    submitBtn: any = {
+        isClicked: false
+    };
+
+    formSubmit: any = {
+        isSubmit: false
+    };
+
+    uniqueJName: boolean;
+
+    batchContents: any = [];
 
     async ngOnInit() {
         this.createJournalFormField();
@@ -54,13 +62,13 @@ export class CreateJournalComponent implements OnInit {
             RejectionRate: ['', Validators.required],
             Comments: ['', Validators.required],
             JournalEditorInfo: ['', Validators.required],
-        })
+        });
     }
 
 
     async getJournalList() {
         this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = false;
-        let data = [{
+        const data = [{
             url: this.spOperationsService.getReadURL(this.constantService.listNames.Journal.name, this.psConstantService.pubsupportComponent.journal),
             type: 'GET',
             listName: this.constantService.listNames.Journal.name
@@ -80,20 +88,14 @@ export class CreateJournalComponent implements OnInit {
     onKey(val: string) {
         this.uniqueJName = this.uniqueJName ? this.uniqueJName = false : false;
     }
-
-    uniqueJName: boolean = false;
     checkUniqueName() {
-        let found = this.journalListArray.find(item => {
+        const found = this.journalListArray.find(item => {
             if (item.JournalName.toLowerCase().replace(/\s/g, '') === this.createJournal_form.value.JournalName.toLowerCase().replace(/\s/g, '')) {
                 this.uniqueJName = true;
                 return item;
             }
         })
         return found ? found : '';
-    }
-
-    get isValidCreateJournalForm() {
-        return this.createJournal_form.controls;
     }
 
     cancelFormSub() {
@@ -114,9 +116,9 @@ export class CreateJournalComponent implements OnInit {
             this.submitBtn.isClicked = true;
             this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = false;
             let obj = this.createJournal_form.value;
-            obj['__metadata'] = { type: this.constantService.listNames.Journal.type }
-            const endpoint = this.psConstantService.pubsupportComponent.addUpdateJournal.add;
-            let data = [{
+            obj['__metadata'] = { type: this.constantService.listNames.Journal.type };
+            const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.Journal.name);
+            const data = [{
                 data: obj,
                 url: endpoint,
                 type: 'POST',
@@ -125,8 +127,6 @@ export class CreateJournalComponent implements OnInit {
             this.submitForm(data);
         }
     }
-
-    batchContents: any = [];
     async submitForm(data) {
         const res = await this.spOperationsService.executeBatch(data);
         if (res) {

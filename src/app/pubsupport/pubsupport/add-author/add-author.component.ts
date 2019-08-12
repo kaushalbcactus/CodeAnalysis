@@ -52,8 +52,6 @@ export class AddAuthorComponent implements OnInit {
         if (this.formType === 'addAuthor') {
             this.addAuthorFormField();
             this.addAuthorModal = true;
-        } else if (this.formType === 'updateAuthor') {
-            this.updateAuthorFormField();
         }
         this.selectedRowItem = this.events;
         console.log('this.selectedRowItem ', this.selectedRowItem);
@@ -71,13 +69,6 @@ export class AddAuthorComponent implements OnInit {
             Phone_x0020_No: ['', Validators.required],
             Fax: ['', Validators.required],
             AuthorType: ['', Validators.required],
-        });
-    }
-
-    updateAuthorFormField() {
-        this.update_author_form = this.fb.group({
-            file: ['', Validators.required],
-            existingAuthorList: ['', Validators.required]
         });
     }
 
@@ -104,7 +95,8 @@ export class AddAuthorComponent implements OnInit {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         this.add_author_form.value.Title = this.selectedRowItem.ProjectCode;
         this.add_author_form.value.__metadata = { type: this.constantService.listNames.addAuthor.type };
-        const endpoint = this.pubsupportService.pubsupportComponent.addAuthor.addAuthorDetails;
+        // const endpoint = this.pubsupportService.pubsupportComponent.addAuthor.addAuthorDetails;
+        const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.addAuthor.name);
         const data = [{
             data: this.add_author_form.value,
             url: endpoint,
@@ -123,8 +115,10 @@ export class AddAuthorComponent implements OnInit {
         if (res.hasOwnProperty('hasError')) {
             this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error message', detail: res.message.value, life: 4000 });
         } else if (type === 'addAuthor') {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message',
-             detail: 'Author Created.', life: 4000 });
+            this.messageService.add({
+                key: 'myKey1', severity: 'success', summary: 'Success message',
+                detail: 'Author Created.', life: 4000
+            });
             this.addAuthorModal = false;
             this.add_author_form.reset();
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;

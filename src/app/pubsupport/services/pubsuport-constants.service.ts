@@ -106,12 +106,12 @@ export class PubsuportConstantsService {
         addJCGalley: {
             addNewJCGalley: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.jcGalley.name + "')/items",
         },
-        addUpdateJournal: {
-            add: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.Journal.name + "')/items",
-        },
-        addUpdateConference: {
-            add: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.Conference.name + "')/items",
-        }
+        // addUpdateJournal: {
+        //     add: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.Journal.name + "')/items",
+        // },
+        // addUpdateConference: {
+        //     add: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.Conference.name + "')/items",
+        // }
 
     }
 }

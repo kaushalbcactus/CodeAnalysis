@@ -552,7 +552,7 @@ export class PubsupportComponent implements OnInit {
         this.selectedModal = index.item.label;
 
         if (this.selectedModal === 'Add Authors') {
-            // this.addAuthorcontainer.clear();
+            this.addAuthorcontainer.clear();
             const factory = this.componentFactoryResolver.resolveComponentFactory(AddAuthorComponent);
             const componentRef = this.addAuthorcontainer.createComponent(factory);
             componentRef.instance.events = this.selectedProject;
@@ -761,17 +761,26 @@ export class PubsupportComponent implements OnInit {
             if (this.jc_jcSubId[0].retItems.length) {
                 SelectedRowJCItemId = this.jc_jcSubId[0].retItems[0].ID;
             } else {
-                this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error message', detail: 'There is no line item available in Journal Conference Listname.', life: 4000 });
+                this.messageService.add({
+                    key: 'myKey1', severity: 'error', summary: 'Error message',
+                    detail: 'There is no line item available in Journal Conference Listname.', life: 4000
+                });
                 return;
             }
             if (this.jc_jcSubId[1].retItems.length) {
                 SelectedRowJCSubItemId = this.jc_jcSubId[1].retItems[0].ID;
             } else {
-                this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error message', detail: 'There is no line item available in JCSubmission Listname.', life: 4000 });
+                this.messageService.add({
+                    key: 'myKey1', severity: 'error', summary: 'Error message',
+                    detail: 'There is no line item available in JCSubmission Listname.', life: 4000
+                });
                 return;
             }
         } else {
-            this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error message', detail: 'There is no line item available in Journal Conference / JCSubmission  Listname.', life: 4000 });
+            this.messageService.add({
+                key: 'myKey1', severity: 'error', summary: 'Error message',
+                detail: 'There is no line item available in Journal Conference / JCSubmission  Listname.', life: 4000
+            });
             return;
         }
 
@@ -825,7 +834,7 @@ export class PubsupportComponent implements OnInit {
                 this.submit(data, 'cancelJC');
             },
             reject: () => {
-                console.info('User cancel current action.');
+                console.log('User cancel current action.');
             },
         });
     }
@@ -1180,7 +1189,7 @@ export class PubsupportComponent implements OnInit {
                     key: 'myKey1', severity: 'success', summary: 'Success message',
                     detail: 'Updated Decision', life: 4000
                 });
-                document.getElementById('closeModalButton').click();
+                this.updateDecisionModal = false;
                 this.reload();
             } else if (type === 'galley') {
                 this.galley_form.reset();
@@ -1188,7 +1197,7 @@ export class PubsupportComponent implements OnInit {
                     key: 'myKey1', severity: 'success', summary: 'Success message',
                     detail: 'Galley Overrided.', life: 4000
                 });
-                document.getElementById('closeModalButton').click();
+                this.overrideGalleyModal = false;
                 this.reload();
             } else if (type === 'updatePublication') {
                 this.update_publication_form.reset();
@@ -1197,7 +1206,7 @@ export class PubsupportComponent implements OnInit {
                     key: 'myKey1', severity: 'success', summary: 'Success message',
                     detail: 'Publication details Updated.', life: 4000
                 });
-                document.getElementById('closeModalButton').click();
+                this.updatePublicatoinModal = false;
                 this.reload();
             } else if (type === 'cancelJC') {
                 this.messageService.add({
