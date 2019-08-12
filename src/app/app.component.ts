@@ -26,7 +26,7 @@ export class AppComponent {
     this.globalObject.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
 
-    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 112 : _spPageContextInfo.userId;
+    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 287 : _spPageContextInfo.userId;
     this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
       : _spPageContextInfo.webAbsoluteUrl;
     this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'

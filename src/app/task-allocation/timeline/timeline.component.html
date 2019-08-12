@@ -240,14 +240,14 @@
                   <mat-icon> cancel</mat-icon>
                 </button>
                             </div> -->
-                            <button *ngIf="rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && (rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') && !changeInRestructure  "
+                            <button *ngIf="rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && (rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') && !changeInRestructure"
                                 [hidden]="rowData.editMode === false" type="button" (click)="CancelChanges(rowData,'task')" style="line-height: 0px;height: 0px;" mat-icon-button title="Cancel">
                 <mat-icon> cancel</mat-icon>
               </button>
 
                             <div *ngIf=" !rowData.editMode && rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' &&
                             (rowData.status !== 'Completed' && rowData.status !== 'Abandon' && rowData.status !== 'Auto Closed'
-                              && rowData.status !== 'Hold')" style="text-align: center;">
+                              && rowData.status !== 'Hold') && !projectDetails" style="text-align: center;">
                                 <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu"></p-menu>
 
                                 <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData,rowNode, popupMenu);popupMenu.show($event);"></i>
