@@ -663,6 +663,7 @@ export class ManageFinanceComponent implements OnInit {
             const invIndex = element.poInfoData.findIndex(item => item === elementInv);
             element.poInfoData.splice(invIndex, 1);
             elementInv.poId = tempPOObj.poId;
+            elementInv.status = 'Scheduled';
             tempObj.poInfoData.push(elementInv);
           });
         });
