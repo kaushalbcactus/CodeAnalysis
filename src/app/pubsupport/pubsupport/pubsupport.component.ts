@@ -887,6 +887,7 @@ export class PubsupportComponent implements OnInit {
             this.journal_Conference_Detail_form.addControl('UserName', new FormControl('', [Validators.required]));
             this.journal_Conference_Detail_form.addControl('Password', new FormControl('', [Validators.required]));
             if (type === 'journal') {
+                // tslint:disable-next-line: max-line-length
                 // this.journal_Conference_Detail_form.addControl('Name', new FormControl({ value: '', disabled: true }, Validators.required));
                 this.journal_Conference_Detail_form.addControl('ExpectedReviewPeriod', new FormControl([''], Validators.required));
                 this.journal_Conference_Detail_form.addControl('IF', new FormControl([''], Validators.required));
@@ -907,6 +908,7 @@ export class PubsupportComponent implements OnInit {
                 this.journal_Conference_Detail_form.removeControl('AbstractSubmissionDeadline');
                 // this.journal_Conference_Detail_form.removeControl('Name');
             } else {
+                // tslint:disable-next-line: max-line-length
                 // this.journal_Conference_Detail_form.addControl('Name', new FormControl({ value: '', disabled: true }, Validators.required));
                 this.journal_Conference_Detail_form.addControl('CongressDate', new FormControl(new Date(), [Validators.required]));
                 this.journal_Conference_Detail_form.addControl('AbstractSubmissionDeadline', new FormControl(new Date(), [Validators.required]));
@@ -1002,7 +1004,7 @@ export class PubsupportComponent implements OnInit {
             this.updateJCRequirementModal = false;
             this.update_Journal_Requirement_form.reset();
         } else if (formType === 'updateAuthorModal') {
-            // if (this.update_author_form.controls.hasOwnProperty('file') || 
+            // if (this.update_author_form.controls.hasOwnProperty('file') ||
             // this.update_author_form.controls.hasOwnProperty('existingAuthorList')) {
             //     this.update_author_form.reset();
             // }
@@ -1023,28 +1025,7 @@ export class PubsupportComponent implements OnInit {
         this.formSubmit.isSubmit = true;
         this.submitBtn.isClicked = true;
         this.submitted = true;
-        if (type === 'addJournal') {
-
-            // stop here if form is invalid
-            if (this.journal_Conf_form.invalid) {
-                return;
-            }
-            this.submitBtn.isSubmit = true;
-            this.journal_Conf_form.value.Status = 'Selected';
-            this.journal_Conf_form.value.Title = this.selectedProject.ProjectCode;
-            this.journal_Conf_form.value.__metadata = { type: 'SP.Data.JournalConferenceListItem' };
-            const endpoint = this.pubsupportService.pubsupportComponent.addJC.addJCDetails;
-
-            const data = [
-                {
-                    objData: this.journal_Conf_form.value,
-                    endpoint,
-                    requestPost: true
-                }
-            ];
-            this.submit(data, type);
-
-        } else if (type === 'addJCDetailsModal') {
+        if (type === 'addJCDetailsModal') {
             if (this.journal_Conference_Detail_form.invalid) {
                 this.submitBtn.isClicked = false;
                 return;
@@ -1055,12 +1036,12 @@ export class PubsupportComponent implements OnInit {
             /* tslint:disable:no-string-literal */
             obj['Status'] = 'Selected';
             obj['Title'] = this.selectedProject.ProjectCode;
-            delete obj['jcLineItem']
+            delete obj['jcLineItem'];
             obj['JournalConferenceId'] = this.journal_Conference_Detail_form.getRawValue().jcLineItem.ID;
             obj['__metadata'] = { type: this.constantService.listNames.JournalConf.type };
             /* tslint:enable:no-string-literal */
             // console.log('this.journal_Conference_Detail_form ', obj);
-            const endpoint = this.pubsupportService.pubsupportComponent.addJC.addJCDetails;
+            const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.JournalConf.name);
             const data = [{
                 data: obj,
                 url: endpoint,
@@ -1096,7 +1077,8 @@ export class PubsupportComponent implements OnInit {
                     this.jcId = element.ID;
                 }
             });
-            const endpoint = this.pubsupportService.pubsupportComponent.addJC.updateJCDetails.replace('{{Id}}', this.jcId);
+            // const endpoint = this.pubsupportService.pubsupportComponent.addJC.updateJCDetails.replace('{{Id}}', this.jcId);
+            const endpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JournalConf.name, this.jcId);
             let data = [];
             if (res.ServerRelativeUrl) {
                 data = [{
@@ -1123,7 +1105,7 @@ export class PubsupportComponent implements OnInit {
                     key: 'myKey1', severity: 'success', summary: 'Success message',
                     detail: 'Author details updated.', life: 4000
                 });
-                document.getElementById('closeModalButton').click();
+                // document.getElementById('closeModalButton').click();
                 this.reload();
             } else {
                 this.uploadFileData('updateAuthors');
@@ -1297,8 +1279,11 @@ export class PubsupportComponent implements OnInit {
 
     async updateProjectSts_JCSubmissionDetails(res: any, type: string) {
         // Update PI
-        const projEndpoint = this.pubsupportService.pubsupportComponent.updateProjectInfo.updateProjInfo
-            .replace('{{projectId}}', this.selectedProject.Id);
+        // tslint:disable-next-line: max-line-length
+        // const projEndpoint = this.spOperationsService.getItemURL(this.pubsupportService.pubsupportComponent.updateProjectInfo.updateProjInfo)
+        //     .replace('{{projectId}}', this.selectedProject.Id);
+        // tslint:disable-next-line: max-line-length
+        const projEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.ProjectInformation.name, this.selectedProject.Id);
         const projObj: any = {
             PubSupportStatus: 'Selected'
         };
@@ -1311,7 +1296,7 @@ export class PubsupportComponent implements OnInit {
         };
 
         // Update JCSubmission
-        const jcSubEndpoint = this.pubsupportService.pubsupportComponent.addJCSubmission.add;
+        const jcSubEndpoint = this.spOperationsService.getReadURL(this.constantService.listNames.JCSubmission.name);
         const jcSubObj: any = {
             JCID: res.ID,
             Title: res.Title,
@@ -1345,8 +1330,10 @@ export class PubsupportComponent implements OnInit {
     }
 
     updateProjectInfo(res: any, type: string) {
-        const endpoint = this.pubsupportService.pubsupportComponent.updateProjectInfo.updateProjInfo
-            .replace('{{projectId}}', this.selectedProject.Id);
+        // const endpoint = this.pubsupportService.pubsupportComponent.updateProjectInfo.updateProjInfo
+        //     .replace('{{projectId}}', this.selectedProject.Id);
+        // tslint:disable-next-line: max-line-length
+        const endpoint = this.spOperationsService.getItemURL(this.constantService.listNames.ProjectInformation.name, this.selectedProject.Id);
         const obj: any = {};
         if (type === 'updateDecision') {
             obj.PubSupportStatus = this.update_decision_details.value.Decision;
@@ -1370,7 +1357,8 @@ export class PubsupportComponent implements OnInit {
                 jcSubId = element.ID;
             }
         });
-        const endpoint = this.pubsupportService.pubsupportComponent.addJCSubmission.updateJCSubmssion.replace('{{Id}}', jcSubId);
+        // const endpoint = this.pubsupportService.pubsupportComponent.addJCSubmission.updateJCSubmssion.replace('{{Id}}', jcSubId);
+        const endpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JCSubmission.name, jcSubId);
         const obj: any = {};
         if (type === 'updateDecision') {
             obj.DecisionURL = fileUrl;
@@ -1392,7 +1380,7 @@ export class PubsupportComponent implements OnInit {
     }
 
     addJCSubmission() {
-        const jcSubEndpoint = this.pubsupportService.pubsupportComponent.addJCSubmission.add;
+        const jcSubEndpoint = this.spOperationsService.getReadURL(this.constantService.listNames.JCSubmission.name);
         const jcSubObj: any = {
             JCID: this.jcId,
             Title: this.selectedProject.ProjectCode,
@@ -1412,7 +1400,8 @@ export class PubsupportComponent implements OnInit {
                 this.jcId = element.ID;
             }
         });
-        const endpoint = this.pubsupportService.pubsupportComponent.addJC.updateJCDetails.replace('{{Id}}', this.jcId);
+        // const endpoint = this.pubsupportService.pubsupportComponent.addJC.updateJCDetails.replace('{{Id}}', this.jcId);
+        const endpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JournalConf.name, this.jcId);
         const obj: any = {};
         if (type === 'updateDecision') {
             obj.Status = this.update_decision_details.value.Decision;
@@ -1442,7 +1431,7 @@ export class PubsupportComponent implements OnInit {
                 jcSubId = element.ID;
             }
         });
-        const jcGalleyEndpoint = this.pubsupportService.pubsupportComponent.addJCGalley.addNewJCGalley;
+        const jcGalleyEndpoint = this.spOperationsService.getReadURL(this.constantService.listNames.jcGalley.name);
         const jcGalleyObj: any = {
             Title: this.selectedProject.ProjectCode,
             JCSubmissionID: jcSubId,
@@ -1463,7 +1452,7 @@ export class PubsupportComponent implements OnInit {
         console.log('selectedFile uploaded .', res.ServerRelativeUrl);
         if (res.hasError) {
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
-            document.getElementById('closeModalButton').click();
+            // document.getElementById('closeModalButton').click();
             this.messageService.add({
                 key: 'myKey1', severity: 'info', summary: 'File not uploaded.',
                 detail: 'Folder / ' + res.message.value + '', life: 4000
