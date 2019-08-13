@@ -1,0 +1,21 @@
+.mt-20{
+    margin-top: 20px;
+}
+
+.mr-10 {
+    margin-right: 10px;
+}
+
+.error{
+    color: red;
+}
+
+/* form {
+    width: 70%;
+    margin: 0 auto;
+} */
+
+.ui-dialog-content {
+    overflow: scroll;
+    height: 500px;
+}

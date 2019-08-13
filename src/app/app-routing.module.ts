@@ -9,16 +9,12 @@ const routes: Routes = [
   { path: 'accessleveldashboard', loadChildren: './accessleveldashboard/accessleveldashboard.module#AccessleveldashboardModule' },
   { path: 'dashboard', loadChildren: './dashboard/dashboard.module#DashboardModule' },
   { path: 'pubSupport', loadChildren: './pubsupport/pubsupport.module#PubsupportModule' },
-  { path: 'projectMgmt', canLoad: [AuthGuard], loadChildren: './projectmanagement/projectmanagement.module#ProjectmanagementModule' },
-  { path: 'myDashboard', canLoad: [AuthGuard], loadChildren: './my-dashboard/my-dashboard.module#MyDashboardModule' },
-  { path: 'taskAllocation', canLoad: [AuthGuard], loadChildren: './task-allocation/task-allocation.module#TaskAllocationModule' },
-  { path: 'financeDashboard', canLoad: [FdAuthGuard], loadChildren: './finance-dashboard/finance-dashboard.module#FinanceDashboardModule' },
-  { path: 'centralallocation', loadChildren: './ca/ca.module#CAModule'},
+  { path: 'projectMgmt', loadChildren: './projectmanagement/projectmanagement.module#ProjectmanagementModule' },
+  { path: 'myDashboard', loadChildren: './my-dashboard/my-dashboard.module#MyDashboardModule' },
+  { path: 'taskAllocation', loadChildren: './task-allocation/task-allocation.module#TaskAllocationModule' },
+  { path: 'financeDashboard', loadChildren: './finance-dashboard/finance-dashboard.module#FinanceDashboardModule' },
   { path: 'qms', loadChildren: './qms/qms.module#QmsModule' },
-  { path: 'admin', loadChildren: './admin/admin.module#AdminModule' },
-  { path: '**', redirectTo: '/404' },
-  { path: '404', component: PageNotFoundComponent },
-
+  { path: 'admin', loadChildren: './admin/admin.module#AdminModule' }
 ];
 
 

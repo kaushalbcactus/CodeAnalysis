@@ -1,33 +1,97 @@
+<div>
+  <a (click)="downloadExcel(up)" class="download-worksheet td-none"><i class="fa fa-download" aria-hidden="true"></i>
+      Download worksheet</a>
+</div>
+
 <p-table #up [columns]="userProfileColumns" [value]="userProfileRows" exportFilename="User Profile">
+  <ng-template pTemplate="header" let-columns>
+      <tr>
+          <th>Sr.No.</th>
+          <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+              {{col.header}}
+              <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+          </th>
+          <th></th>
+      </tr>
+      <tr>
+          <th></th>
+          <th *ngFor="let col of columns" [ngSwitch]="col.field">
+              <p-multiSelect *ngSwitchCase="'User'" [style]="{'width':'100%'}" appendTo="body"
+                  [options]="userProfileColArray.User" defaultLabel="User"
+                  (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                  filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body"
+                  [options]="userProfileColArray.LastUpdated" defaultLabel="LastUpdated"
+                  (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                  filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body"
+                  [options]="userProfileColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
+                  (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                  filter="true" resetFilterOnHide="true"></p-multiSelect>
+          </th>
+          <th></th>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+      <tr>
+          <td>{{ rowIndex+1 }}</td>
+          <td *ngFor="let col of columns">
+              <ng-container *ngIf="col.field != ''">
+                  {{rowData[col.field]}}
+              </ng-container>
+          </td>
+          <td>
+              <p-menu #menu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
+              <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                  (click)="menu.toggle($event);"></i>
+          </td>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+      <tr>
+          <td [attr.colspan]="columns.length">
+              No Data found
+          </td>
+      </tr>
+  </ng-template>
+</p-table>
+
+<div style="text-align: center;margin-top:10px;">
+  <p-button icon="pi pi-plus-circle" label="Add New User" (click)="showAddUserModal()"></p-button>
+</div>
+
+<!-- <div style="margin-top: 10px;">
+<h3 style="text-align: center">Audit History</h3>
+</div>
+
+<p-table #ah [columns]="auditHistoryColumns" [value]="auditHistoryRows" exportFilename="Audit History">
     <ng-template pTemplate="header" let-columns>
         <tr>
+            <th>Sr.No.</th>
             <th *ngFor="let col of columns" [pSortableColumn]="col.field">
                 {{col.header}}
                 <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
             </th>
-            <th></th>
         </tr>
         <tr>
-            <th *ngFor="let col of columns" [ngSwitch]="col.field">
-                <p-multiSelect *ngSwitchCase="'Sr'" [style]="{'width':'100%'}" appendTo="body" [options]="userProfileColArray.Sr" defaultLabel="Sr" (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'User'" [style]="{'width':'100%'}" appendTo="body" [options]="userProfileColArray.User" defaultLabel="User" (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body" [options]="userProfileColArray.LastUpdated" defaultLabel="LastUpdated" (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body" [options]="userProfileColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy" (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-            </th>
             <th></th>
+            <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                <p-multiSelect *ngSwitchCase="'User'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.User" defaultLabel="User" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.ActionBy" defaultLabel="ActionBy" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'ActionDate'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.ActionDate" defaultLabel="ActionDate" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Details'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.Details" defaultLabel="Details" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>                
+            </th>
         </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
         <tr>
+            <td>{{ rowIndex+1 }}</td>
             <td *ngFor="let col of columns">
                 <ng-container *ngIf="col.field != ''">
                     {{rowData[col.field]}}
                 </ng-container>
-           </td>
-           <td>
-              <p-menu #menu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
-              <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-            (click)="menu.toggle($event);"></i>
            </td>
         </tr>
     </ng-template>
@@ -40,25 +104,22 @@
     </ng-template>
   </p-table>
 
-  <div style="text-align: center;margin-top:10px;">
-    <p-button icon="pi pi-plus-circle" label="Add New User" (click)="showAddUserModal()"></p-button>
-  </div>
+<div style="margin-top: 10px;">
+  <h3 style="text-align: center">Audit History (On Line Item Selection)</h3>
+</div>
 
-  <div style="margin-top: 10px;">
-  <h3 style="text-align: center">Audit History</h3>
-  </div>
-
-  <p-table #ah [columns]="auditHistoryColumns" [value]="auditHistoryRows" exportFilename="Audit History">
+<p-table  [columns]="auditHistoryColumns" [value]="auditHistoryRows" exportFilename="Audit History">
       <ng-template pTemplate="header" let-columns>
           <tr>
+              <th>Sr.No.</th>
               <th *ngFor="let col of columns" [pSortableColumn]="col.field">
                   {{col.header}}
                   <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
               </th>
           </tr>
           <tr>
+              <th></th>
               <th *ngFor="let col of columns" [ngSwitch]="col.field">
-                  <p-multiSelect *ngSwitchCase="'Sr'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.Sr" defaultLabel="Sr" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
                   <p-multiSelect *ngSwitchCase="'User'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.User" defaultLabel="User" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
                   <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.ActionBy" defaultLabel="ActionBy" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
                   <p-multiSelect *ngSwitchCase="'ActionDate'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.ActionDate" defaultLabel="ActionDate" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
@@ -66,8 +127,9 @@
               </th>
           </tr>
       </ng-template>
-      <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
           <tr>
+              <td>{{ rowIndex+1 }}</td>
               <td *ngFor="let col of columns">
                   <ng-container *ngIf="col.field != ''">
                       {{rowData[col.field]}}
@@ -80,283 +142,463 @@
               <td [attr.colspan]="columns.length">
                   No Data found
               </td>
-          </tr>
+          </tr>s
       </ng-template>
-    </p-table>
+  </p-table> -->
 
-  <div style="margin-top: 10px;">
-    <h3 style="text-align: center">Audit History (On Line Item Selection)</h3>
-  </div>
+<p-dialog header="Add New User" [(visible)]="showModal" [modal]="true"
+  [contentStyle]="{'max-height':'500px', 'top':'0px'}" [style]="{width: '60%'}">
+  <p-header>
+      Add New User
+  </p-header>
+  <form [formGroup]='addUser'>
+      <div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">User Name</div>
+              <div class="ui-grid-col-4">
+                  <input class="mr-5" type="text" size="30" formControlName="username" placeholder="User Name"
+                      pInputText>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.username.errors">
+                      <div *ngIf="addUser.controls.username.errors.required">User Name is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Manager</div>
+              <div class="ui-grid-col-4">
+                  <input class="mr-5" type="text" size="30" formControlName="manager" placeholder="Manager"
+                      pInputText>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.manager.errors">
+                      <div *ngIf="addUser.controls.manager.errors.required"> Manager is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">Bucket</div>
+              <div class="ui-grid-col-4">
+                  <p-multiSelect [options]="options" defaultLabel="Select Bucket" formControlName="bucket"
+                      (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                  </p-multiSelect>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.bucket.errors">
+                      <div *ngIf="addUser.controls.bucket.errors.required">Bucket is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Practice Area</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Practice Area" [options]="options" formControlName="practiceArea">
+                  </p-dropdown>
 
-  <p-table #ahs [columns]="auditHistoryColumns" [value]="auditHistoryRows" exportFilename="Audit History">
-      <ng-template pTemplate="header" let-columns>
-          <tr>
-              <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-                  {{col.header}}
-                  <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-              </th>
-          </tr>
-          <tr>
-              <th *ngFor="let col of columns" [ngSwitch]="col.field">
-                  <p-multiSelect *ngSwitchCase="'Sr'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.Sr" defaultLabel="Sr" (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                  <p-multiSelect *ngSwitchCase="'User'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.User" defaultLabel="User" (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                  <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.ActionBy" defaultLabel="ActionBy" (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                  <p-multiSelect *ngSwitchCase="'ActionDate'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.ActionDate" defaultLabel="ActionDate" (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                  <p-multiSelect *ngSwitchCase="'Details'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.Details" defaultLabel="Details" (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>                
-              </th>
-          </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-rowData let-columns="columns">
-          <tr>
-              <td *ngFor="let col of columns">
-                  <ng-container *ngIf="col.field != ''">
-                      {{rowData[col.field]}}
-                  </ng-container>
-             </td>
-          </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage" let-columns>
-          <tr>
-              <td [attr.colspan]="columns.length">
-                  No Data found
-              </td>
-          </tr>
-      </ng-template>
-    </p-table>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.practiceArea.errors">
+                      <div *ngIf="addUser.controls.practiceArea.errors.required">Practice Area is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">Time Zone</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Time Zone" [options]="options" formControlName="timeZone">
+                  </p-dropdown>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.timeZone.errors">
+                      <div *ngIf="addUser.controls.timeZone.errors.required">Time Zone is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Date of Joining</div>
+              <div class="ui-grid-col-4">
+                  <p-calendar formControlName="dateofjoin" placeholder="Date of Joining"></p-calendar>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.dateofjoin.errors">
+                      <div *ngIf="addUser.controls.dateofjoin.errors.required"> Date of Joining is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">Go Live Date</div>
+              <div class="ui-grid-col-4">
+                  <p-calendar formControlName="liveDate" placeholder="Go Live Date"></p-calendar>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.liveDate.errors">
+                      <div *ngIf="addUser.controls.liveDate.errors.required">Go Live Date is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Designation</div>
+              <div class="ui-grid-col-4">
+                  <input class="mr-5" type="text" size="30" formControlName="designation" placeholder="Designation"
+                      pInputText>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.designation.errors">
+                      <div *ngIf="addUser.controls.designation.errors.required">Designation is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">InCapacity</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select InCapacity" [options]="options" formControlName="inCapacity">
+                  </p-dropdown>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.inCapacity.errors">
+                      <div *ngIf="addUser.controls.inCapacity.errors.required">InCapacity is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Pooled</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Pooled" [options]="options" formControlName="pooled"></p-dropdown>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.pooled.errors">
+                      <div *ngIf="addUser.controls.pooled.errors.required">Pooled is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">MaxHrs</div>
+              <div class="ui-grid-col-4">
+                  <input class="mr-5" type="text" size="30" formControlName="maxHrs" placeholder="MaxHrs" pInputText>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.maxHrs.errors">
+                      <div *ngIf="addUser.controls.maxHrs.errors.required">MaxHrs is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Primary Skill</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Primary Skill" [options]="options" formControlName="primarySkill">
+                  </p-dropdown>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.primarySkill.errors">
+                      <div *ngIf="addUser.controls.primarySkill.errors.required"> Primary Skill is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">Skill Level</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Skill Level" [options]="options" formControlName="skillLevel">
+                  </p-dropdown>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.skillLevel.errors">
+                      <div *ngIf="addUser.controls.skillLevel.errors.required">Skill Level is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Role</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Role" [options]="options" formControlName="role"></p-dropdown>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.role.errors">
+                      <div *ngIf="addUser.controls.role.errors.required">Role is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">Ready To</div>
+              <div class="ui-grid-col-4">
+                  <textarea [rows]="5" [cols]="60" formControlName="readyTo" pInputTextarea></textarea>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.readyTo.errors">
+                      <div *ngIf="addUser.controls.readyTo.errors.required">
+                          Ready To is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">Task</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Task" [options]="options" formControlName="task"></p-dropdown>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.task.errors">
+                      <div *ngIf="addUser.controls.task.errors.required">Task is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Account</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Account" [options]="options" placeholder="Select Account"
+                      formControlName="account"></p-dropdown>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.account.errors">
+                      <div *ngIf="addUser.controls.account.errors.required">
+                          Account is required</div>
+                  </div>
+              </div>
 
-<p-dialog [(visible)]="showModal" [modal]="true" [style]="{width: '1000px', height: '500px'}">
-    <p-header>
-        Add New User
-    </p-header>
-    <div style="text-align: center;">
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">User Name</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="User Name" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Account</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Account" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Bucket</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Bucket" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Date of Exit</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Date of Exit" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Date of Joining</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Date of Joining" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Deliverable Exclusion</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Deliverable Exclusion" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Deliverable</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Deliverable" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Designation</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Designation" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Go Live Date</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Go Live Date" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">InCapacity</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="InCapacity" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">IsActive</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="IsActive" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">IsLeader</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="IsLeader" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Manager</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Manager" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">MaxHrs</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="MaxHrs" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Pooled</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Pooled" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Primary Skill</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Primary Skill" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Ready To</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Ready To" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Role</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Role" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Skill Level</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Skill Level" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">TA</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="TA" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">TA Exclusion</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="TA Exclusion" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Task</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Task" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Time Zone</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Time Zone" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Title</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Title" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2">Practice Area</div>
-        <div class="ui-grid-col-4">
-            <input class="mr-5" type="text" size="30"  placeholder="Practice Area" pInputText>
-        <!-- <div class="error"
-          *ngIf="!addProjectAttributesForm.controls['projectTitle'].valid&&addProjectAttributesForm.controls['projectTitle'].touched">
-          Project Title is required</div> -->
-        </div>
-    </div>
-    </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">Deliverable</div>
+              <div class="ui-grid-col-4">
+                  <p-multiSelect [options]="options" defaultLabel="Select Deliverable" formControlName="deliverable"
+                      (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                  </p-multiSelect>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.deliverable.errors">
+                      <div *ngIf="addUser.controls.deliverable.errors.required">
+                          Deliverable is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Deliverable Exclusion</div>
+              <div class="ui-grid-col-4">
+                  <p-multiSelect [options]="options" defaultLabel="Select Deliverable Exclusion"
+                      formControlName="deliverableExclusion" (keydown.enter)="$event.preventDefault()" filter="true"
+                      resetFilterOnHide="true">
+                  </p-multiSelect>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.deliverableExclusion.errors">
+                      <div *ngIf="addUser.controls.deliverableExclusion.errors.required">
+                          Deliverable Exclusion is required</div>
+                  </div>
+              </div>
 
-    <div style="margin-top:10px;">
-        <!-- <p-button label="Submit" (click)="submit()"></p-button> -->
-    </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">TA</div>
+              <div class="ui-grid-col-4">
+                  <p-multiSelect [options]="options" defaultLabel="Select TA" formControlName="ta"
+                      (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                  </p-multiSelect>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.ta.errors">
+                      <div *ngIf="addUser.controls.ta.errors.required">TA is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">TA Exclusion</div>
+              <div class="ui-grid-col-4">
+                  <p-multiSelect [options]="options" defaultLabel="Select TA Exclusion" formControlName="taExclusion"
+                      (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                  </p-multiSelect>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.taExclusion.errors">
+                      <div *ngIf="addUser.controls.taExclusion.errors.required">
+                          TA Exclusione is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">IsActive</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select IsActive" [options]="options" formControlName="isActive">
+                  </p-dropdown>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.isActive.errors">
+                      <div *ngIf="addUser.controls.isActive.errors.required">
+                          IsActive is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Date of Exit</div>
+              <div class="ui-grid-col-4">
+                  <p-calendar formControlName="dateofexit" placeholder="Date of Exit"></p-calendar>
+                  <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.dateofexit.errors">
+                      <div *ngIf="addUser.controls.dateofexit.errors.required">
+                          Date of Exit is required</div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </form>
+  <p-footer>
+      <button pButton label="Submit" type="submit" (click)="saveUser(addUser)"></button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog header="Edit New User" [(visible)]="showeditUser" [modal]="true" [style]="{width: '60%'}">
+  <form [formGroup]='editUser'>
+      <div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">User Name</div>
+              <div class="ui-grid-col-4">
+                  <input class="mr-5" type="text" size="30" formControlName="username" placeholder="User Name"
+                      pInputText>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.username.errors">
+                      <div *ngIf="editUser.controls.username.errors.required">User Name is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Manager</div>
+              <div class="ui-grid-col-4">
+                  <input class="mr-5" type="text" size="30" formControlName="manager" placeholder="Manager"
+                      pInputText>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.manager.errors">
+                      <div *ngIf="editUser.controls.manager.errors.required"> Manager is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">Bucket</div>
+              <div class="ui-grid-col-4">
+                  <p-multiSelect [options]="options" defaultLabel="Select Bucket" formControlName="bucket"
+                      (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                  </p-multiSelect>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.bucket.errors">
+                      <div *ngIf="editUser.controls.bucket.errors.required">Bucket is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Practice Area</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Practice Area" [options]="options" formControlName="practiceArea">
+                  </p-dropdown>
+
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.practiceArea.errors">
+                      <div *ngIf="editUser.controls.practiceArea.errors.required">Practice Area is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">Time Zone</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Time Zone" [options]="options" formControlName="timeZone">
+                  </p-dropdown>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.timeZone.errors">
+                      <div *ngIf="editUser.controls.timeZone.errors.required">Time Zone is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Date of Joining</div>
+              <div class="ui-grid-col-4">
+                  <p-calendar formControlName="dateofjoin" placeholder="Date of Joining"></p-calendar>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.dateofjoin.errors">
+                      <div *ngIf="editUser.controls.dateofjoin.errors.required"> Date of Joining is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">Go Live Date</div>
+              <div class="ui-grid-col-4">
+                  <p-calendar formControlName="liveDate" placeholder="Go Live Date"></p-calendar>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.liveDate.errors">
+                      <div *ngIf="editUser.controls.liveDate.errors.required">Go Live Date is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Designation</div>
+              <div class="ui-grid-col-4">
+                  <input class="mr-5" type="text" size="30" formControlName="designation" placeholder="Designation"
+                      pInputText>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.designation.errors">
+                      <div *ngIf="editUser.controls.designation.errors.required">Designation is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">InCapacity</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select InCapacity" [options]="options" formControlName="inCapacity">
+                  </p-dropdown>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.inCapacity.errors">
+                      <div *ngIf="editUser.controls.inCapacity.errors.required">InCapacity is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Pooled</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Pooled" [options]="options" formControlName="pooled"></p-dropdown>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.pooled.errors">
+                      <div *ngIf="editUser.controls.pooled.errors.required">Pooled is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">MaxHrs</div>
+              <div class="ui-grid-col-4">
+                  <input class="mr-5" type="text" size="30" formControlName="maxHrs" placeholder="MaxHrs" pInputText>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.maxHrs.errors">
+                      <div *ngIf="editUser.controls.maxHrs.errors.required">MaxHrs is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Primary Skill</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Primary Skill" [options]="options" formControlName="primarySkill">
+                  </p-dropdown>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.primarySkill.errors">
+                      <div *ngIf="editUser.controls.primarySkill.errors.required"> Primary Skill is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">Skill Level</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Skill Level" [options]="options" formControlName="skillLevel">
+                  </p-dropdown>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.skillLevel.errors">
+                      <div *ngIf="editUser.controls.skillLevel.errors.required">Skill Level is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Role</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Role" [options]="options" formControlName="role"></p-dropdown>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.role.errors">
+                      <div *ngIf="editUser.controls.role.errors.required">Role is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">Ready To</div>
+              <div class="ui-grid-col-4">
+                  <textarea [rows]="5" [cols]="60" formControlName="readyTo" pInputTextarea></textarea>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.readyTo.errors">
+                      <div *ngIf="editUser.controls.readyTo.errors.required">
+                          Ready To is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">Task</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Task" [options]="options" formControlName="task"></p-dropdown>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.task.errors">
+                      <div *ngIf="editUser.controls.task.errors.required">Task is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Account</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select Account" [options]="options" placeholder="Select Account"
+                      formControlName="account"></p-dropdown>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.account.errors">
+                      <div *ngIf="editUser.controls.account.errors.required">
+                          Account is required</div>
+                  </div>
+              </div>
+
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">Deliverable</div>
+              <div class="ui-grid-col-4">
+                  <p-multiSelect [options]="options" defaultLabel="Select Deliverable" formControlName="deliverable"
+                      (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                  </p-multiSelect>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.deliverable.errors">
+                      <div *ngIf="editUser.controls.deliverable.errors.required">
+                          Deliverable is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Deliverable Exclusion</div>
+              <div class="ui-grid-col-4">
+                  <p-multiSelect [options]="options" defaultLabel="Select Deliverable Exclusion"
+                      formControlName="deliverableExclusion" (keydown.enter)="$event.preventDefault()" filter="true"
+                      resetFilterOnHide="true">
+                  </p-multiSelect>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.deliverableExclusion.errors">
+                      <div *ngIf="editUser.controls.deliverableExclusion.errors.required">
+                          Deliverable Exclusion is required</div>
+                  </div>
+              </div>
+
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">TA</div>
+              <div class="ui-grid-col-4">
+                  <p-multiSelect [options]="options" defaultLabel="Select TA" formControlName="ta"
+                      (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                  </p-multiSelect>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.ta.errors">
+                      <div *ngIf="editUser.controls.ta.errors.required">TA is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">TA Exclusion</div>
+              <div class="ui-grid-col-4">
+                  <p-multiSelect [options]="options" defaultLabel="Select TA Exclusion" formControlName="taExclusion"
+                      (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                  </p-multiSelect>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.taExclusion.errors">
+                      <div *ngIf="editUser.controls.taExclusion.errors.required">
+                          TA Exclusione is required</div>
+                  </div>
+              </div>
+          </div>
+          <div class="ui-grid-row mt-20">
+              <div class="ui-grid-col-2 ">IsActive</div>
+              <div class="ui-grid-col-4">
+                  <p-dropdown placeholder="Select IsActive" [options]="options" formControlName="isActive">
+                  </p-dropdown>
+
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.isActive.errors">
+                      <div *ngIf="editUser.controls.isActive.errors.required">
+                          IsActive is required</div>
+                  </div>
+              </div>
+              <div class="ui-grid-col-2 ">Date of Exit</div>
+              <div class="ui-grid-col-4">
+                  <p-calendar formControlName="dateofexit" placeholder="Date of Exit"></p-calendar>
+                  <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.dateofexit.errors">
+                      <div *ngIf="editUser.controls.dateofexit.errors.required">
+                          Date of Exit is required</div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </form>
+  <p-footer>
+      <button pButton label="Submit" type="submit" (click)="saveUser(editUser)"></button>
+  </p-footer>
 </p-dialog>
