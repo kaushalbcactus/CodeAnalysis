@@ -676,6 +676,6 @@ body .ui-button {
     border: 1px solid #d7181f !important;
 }
 
-::ng-deep .ui-dialog .ui-dialog-titlebar {
+.ui-dialog .ui-dialog-titlebar {
     text-align: center !important;
 }

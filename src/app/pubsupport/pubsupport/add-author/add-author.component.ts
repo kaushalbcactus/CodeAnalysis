@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -18,6 +18,7 @@ export class AddAuthorComponent implements OnInit {
 
     @Input() formType: string;
     @Input() events: any;
+    @Output() messageEvent: EventEmitter<any> = new EventEmitter();
 
     // tslint:disable-next-line: variable-name
     add_author_form: FormGroup;

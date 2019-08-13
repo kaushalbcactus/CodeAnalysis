@@ -383,8 +383,10 @@
 <!-- Modal  -->
 
 <!-- Add author Component Start-->
-<ng-container #addAuthorcontainer></ng-container>
-<!-- <app-add-author [events]="eventsAddAuthor.asObservable()"></app-add-author> -->
+<ng-template #addAuthorcontainer></ng-template>
+<!-- <ng-template [ngIf]="ref">
+        <app-add-author (messageEvent)="destroyAddAuthorModal($event)"></app-add-author>
+    </ng-template> -->
 <!-- Add author Component End -->
 
 <!-- Add author Component Start-->

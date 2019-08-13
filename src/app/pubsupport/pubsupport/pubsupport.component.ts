@@ -137,8 +137,8 @@ export class PubsupportComponent implements OnInit {
     showHideGalleyData = false;
 
     // show/hide Add Author Component
-    @ViewChild('addAuthorcontainer', { read: ViewContainerRef, static: true }) addAuthorcontainer: ViewContainerRef;
-    @ViewChild('authorDetailscontainer', { read: ViewContainerRef, static: true }) authorDetailscontainer: ViewContainerRef;
+    @ViewChild('addAuthorcontainer', { read: ViewContainerRef, static: false }) addAuthorcontainer: ViewContainerRef;
+    @ViewChild('authorDetailscontainer', { read: ViewContainerRef, static: false }) authorDetailscontainer: ViewContainerRef;
 
     journal_Conf_details: any = {};
 
@@ -248,6 +248,7 @@ export class PubsupportComponent implements OnInit {
     createConferenceModal: boolean = false;
 
     tempClick: any;
+    ref: any;
     showDialog() {
         this.display = true;
     }
@@ -557,6 +558,7 @@ export class PubsupportComponent implements OnInit {
             const componentRef = this.addAuthorcontainer.createComponent(factory);
             componentRef.instance.events = this.selectedProject;
             componentRef.instance.formType = 'addAuthor';
+            this.ref = componentRef;
             return;
         } else if (this.selectedModal === 'Add Journal conference') {
             // this.journalConfFormField();
@@ -592,6 +594,16 @@ export class PubsupportComponent implements OnInit {
         }
         // document.getElementById('openModalButton').click();
     }
+
+    @HostListener('click', ['$event'])
+    clickEvent(event) {
+        if ((event.target.innerText === 'Cancel' || event.target.className === 'pi pi-times') && this.ref) {
+            console.log('this.ref ', this.ref);
+            this.ref.destroy();
+        }
+    }
+
+
     formatMilestone(milestones) {
         this.milestoneListArray = [];
         for (let m = 0; m < milestones.length; m++) {
@@ -1660,6 +1672,7 @@ export class PubsupportComponent implements OnInit {
         const factory = this.componentFactoryResolver.resolveComponentFactory(AuthorDetailsComponent);
         const componentRef = this.authorDetailscontainer.createComponent(factory);
         componentRef.instance.events = data;
+        this.ref = componentRef;
         // componentRef.instance.formType = 'addAuthor';
         return;
         // this.selectedProject = [];
