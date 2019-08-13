@@ -212,7 +212,7 @@ export class DragDropComponent implements OnInit {
               } else if (this.submilestoneIndex === -1) {
                 this.messageService.add({
                   key: 'custom', severity: 'warn',
-                  summary: 'Warning Message', detail: 'Please click on' + submilestone.label + 'Sub Milestone to add Tasks.'
+                  summary: 'Warning Message', detail: 'Please click on ' + submilestone.label + 'Sub Milestone to add Tasks.'
                 });
                 return false;
               } else {
@@ -364,7 +364,7 @@ export class DragDropComponent implements OnInit {
   // tslint:disable
   onDrop(event, miletype) {
 
-    debugger;
+  
     this.resizeGraph = miletype;
     let prvnode = [];
     if (miletype === 'milestone' ? this.milestonesGraph.nodes.length > 0 : this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length > 0) {
@@ -475,7 +475,7 @@ export class DragDropComponent implements OnInit {
         }
 
       }
-      debugger;
+
       if(!event.id){
         const e = {
           data: 'Client Review',
@@ -500,7 +500,7 @@ export class DragDropComponent implements OnInit {
         this.GraphResize();
     }
     else {
-      debugger;
+     
       const submilestone = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === 'Default');
 
       if (submilestone.task.nodes.length > 1 || submilestone.task.nodes.filter(c => c.taskType !== 'Client Review').length > 0) {

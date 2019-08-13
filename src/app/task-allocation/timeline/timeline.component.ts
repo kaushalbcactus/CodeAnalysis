@@ -1746,7 +1746,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // **************************************************************************************************
   // tslint:disable
   cascadeNode(previousNode, node) {
-    debugger;
+
     var nodeData = node.hasOwnProperty('data') ? node.data : node;
     var prevNodeData = previousNode.hasOwnProperty('data') ? previousNode.data : previousNode;
     const startDate = nodeData.pUserStart;
@@ -2931,23 +2931,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
     return validateNextMilestone;
   }
   setAsNextMilestoneCall(rowData, rowNode) {
-    //  const validateNextMilestone = true;
-    console.log(rowNode);
-    const currentMilestone = this.milestoneData.filter((obj) => {
-      return obj.data.isCurrent === true;
-    });
-    let Title;
-    if (currentMilestone.length > 0) {
-      if (currentMilestone[0].children.length > 0) {
 
-        const T1 = currentMilestone[0].data.pName.indexOf('(');
-        Title = T1 > 0 ? currentMilestone[0].data.pName.slice(0, T1) + ' - ' + rowData.pName :
-          currentMilestone[0].data.pName + ' - ' + rowData.pName;
-
-      }
-    } else {
-      Title = rowNode.parent ? rowNode.parent.data.pName + ' - ' + rowData.pName : rowData.pName;
-    }
+    const Title = rowNode.parent ? rowNode.parent.data.pName + ' - ' + rowData.pName : rowData.pName;
 
     this.confirmationService.confirm({
       message: 'Are you sure that you want to Confirm ' + Title + ' ?',
