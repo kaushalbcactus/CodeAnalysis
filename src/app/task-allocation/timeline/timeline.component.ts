@@ -2930,9 +2930,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     return validateNextMilestone;
   }
-  setAsNextMilestoneCall(rowData) {
+  setAsNextMilestoneCall(rowData, rowNode) {
     //  const validateNextMilestone = true;
-
+    console.log(rowNode);
     const currentMilestone = this.milestoneData.filter((obj) => {
       return obj.data.isCurrent === true;
     });
@@ -2944,9 +2944,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
         Title = T1 > 0 ? currentMilestone[0].data.pName.slice(0, T1) + ' - ' + rowData.pName :
           currentMilestone[0].data.pName + ' - ' + rowData.pName;
 
-      } else {
-        Title = rowData.pName;
       }
+    } else {
+      Title = rowNode.parent ? rowNode.parent.data.pName + ' - ' + rowData.pName : rowData.pName;
     }
 
     this.confirmationService.confirm({
