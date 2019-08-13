@@ -199,98 +199,103 @@ export class DragDropComponent implements OnInit {
     let ScPresent = false;
     if (this.milestonesGraph.nodes.length > 0) {
       this.milestonesGraph.nodes.forEach(milestone => {
-        milestone.submilestone.nodes.forEach(submilestone => {
-          if (submilestone.task.nodes.length === 0) {
-            if (errorM <= 0) {
-              errorM++;
-              if (this.milestoneIndex === -1) {
+
+        if (milestone.status !== 'Completed') {
+          milestone.submilestone.nodes.forEach(submilestone => {
+            if (submilestone.task.nodes.length === 0) {
+              if (errorM <= 0) {
+                errorM++;
+                if (this.milestoneIndex === -1) {
+                  this.messageService.add({
+                    key: 'custom', severity: 'warn',
+                    summary: 'Warning Message', detail: 'Please click on Milestone to add Sub Milestone/Tasks.'
+                  });
+                  return false;
+                } else if (this.submilestoneIndex === -1) {
+                  this.messageService.add({
+                    key: 'custom', severity: 'warn',
+                    summary: 'Warning Message', detail: 'Please click on ' + submilestone.label + 'Sub Milestone to add Tasks.'
+                  });
+                  return false;
+                } else {
+                  this.messageService.add({
+                    key: 'custom', severity: 'warn',
+                    summary: 'Warning Message', detail: 'Please add Tasks in ' + submilestone.label + ' of ' + milestone.label + '.'
+                  });
+                  return false;
+                }
+              }
+            } else {
+
+              ScPresent = ScPresent === false ? (submilestone.task.nodes.find(c => c.taskType ===
+                'Send to client') !== undefined ? true : false) : true;
+
+              if (submilestone.label === 'Default' && submilestone.task.nodes.find(c => c.taskType === 'Client Review') === undefined) {
+                errorM++;
                 this.messageService.add({
-                  key: 'custom', severity: 'warn',
-                  summary: 'Warning Message', detail: 'Please click on Milestone to add Sub Milestone/Tasks.'
+                  key: 'custom', severity: 'warn', summary: 'Warning Message',
+                  detail: 'Please add Client Review Task in ' + submilestone.label + ' of ' + milestone.label
                 });
                 return false;
-              } else if (this.submilestoneIndex === -1) {
+              }
+
+              if (milestone.submilestone.nodes.length > 1 && submilestone.label === 'Default' &&
+                submilestone.task.nodes.filter(c => c.taskType !== 'Adhoc' && c.taskType !== 'TB').length > 1) {
+                errorM++;
                 this.messageService.add({
-                  key: 'custom', severity: 'warn',
-                  summary: 'Warning Message', detail: 'Please click on ' + submilestone.label + 'Sub Milestone to add Tasks.'
+                  key: 'custom', severity: 'warn', summary: 'Warning Message',
+                  detail: 'Please remove Task in ' + submilestone.label + ' of ' + milestone.label + ' only Client Review is Required.'
                 });
                 return false;
-              } else {
+              }
+              const tempnodes = submilestone.task.nodes.map(c => c.id).filter(c =>
+                !submilestone.task.links.map(d => d.source).includes(c) &&
+                !submilestone.task.links.map(d => d.target).includes(c)).
+                filter(c => !submilestone.task.nodes.filter(d => (d.taskType === 'Client Review'
+                ) || (c.taskType !== 'Adhoc' && c.taskType !== 'TB')).map(d => d.id).includes(c));
+
+              if (tempnodes.length > 0 && errorM === 0) {
+                const missingLinkTasks = submilestone.task.nodes.filter(c => tempnodes.includes(c.id))
+                  .map(c => submilestone.label + ' - ' + c.label);
+                errorM++;
                 this.messageService.add({
                   key: 'custom', severity: 'warn',
-                  summary: 'Warning Message', detail: 'Please add Tasks in ' + submilestone.label + ' of ' + milestone.label + '.'
+                  summary: 'Warning Message', detail: 'Paths missing for following tasks ' + missingLinkTasks + ' of ' + milestone.label
                 });
                 return false;
               }
             }
-          } else {
 
-            ScPresent = ScPresent === false ? (submilestone.task.nodes.find(c => c.taskType ===
-              'Send to client') !== undefined ? true : false) : true;
-
-            if (submilestone.label === 'Default' && submilestone.task.nodes.find(c => c.taskType === 'Client Review') === undefined) {
-              errorM++;
-              this.messageService.add({
-                key: 'custom', severity: 'warn', summary: 'Warning Message',
-                detail: 'Please add Client Review Task in ' + submilestone.label + ' of ' + milestone.label
+            let circularPresent = false;
+            if (submilestone.task.links.length > 0) {
+              submilestone.task.links.forEach(link => {
+                if (circularPresent === false) {
+                  const currentPath = link.source;
+                  const target = link.target;
+                  circularPresent = this.getNextTarget(link.source, target, submilestone, currentPath, circularPresent);
+                }
               });
-              return false;
-            }
-
-            if (milestone.submilestone.nodes.length > 1 && submilestone.label === 'Default' &&
-              submilestone.task.nodes.filter(c => c.taskType !== 'Adhoc' && c.taskType !== 'TB').length > 1) {
-              errorM++;
-              this.messageService.add({
-                key: 'custom', severity: 'warn', summary: 'Warning Message',
-                detail: 'Please remove Task in ' + submilestone.label + ' of ' + milestone.label + ' only Client Review is Required.'
-              });
-              return false;
-            }
-            const tempnodes = submilestone.task.nodes.map(c => c.id).filter(c => !submilestone.task.links.map(d => d.source).includes(c) &&
-              !submilestone.task.links.map(d => d.target).includes(c)).
-              filter(c => !submilestone.task.nodes.filter(d => (d.taskType === 'Client Review'
-              ) || (c.taskType !== 'Adhoc' && c.taskType !== 'TB')).map(d => d.id).includes(c));
-
-            if (tempnodes.length > 0 && errorM === 0) {
-              const missingLinkTasks = submilestone.task.nodes.filter(c => tempnodes.includes(c.id))
-                .map(c => submilestone.label + ' - ' + c.label);
-              errorM++;
-              this.messageService.add({
-                key: 'custom', severity: 'warn',
-                summary: 'Warning Message', detail: 'Paths missing for following tasks ' + missingLinkTasks + ' of ' + milestone.label
-              });
-              return false;
-            }
-          }
-
-          let circularPresent = false;
-          if (submilestone.task.links.length > 0) {
-            submilestone.task.links.forEach(link => {
-              if (circularPresent === false) {
-                const currentPath = link.source;
-                const target = link.target;
-                circularPresent = this.getNextTarget(link.source, target, submilestone, currentPath, circularPresent);
+              if (circularPresent) {
+                errorM++;
+                this.messageService.add({
+                  key: 'custom', severity: 'warn', summary: 'Warning Message',
+                  detail: 'Circular links present. Please delete the circular links in ' + submilestone.label + '-' + milestone.label
+                });
+                return false;
               }
-            });
-            if (circularPresent) {
-              errorM++;
-              this.messageService.add({
-                key: 'custom', severity: 'warn', summary: 'Warning Message',
-                detail: 'Circular links present. Please delete the circular links in ' + submilestone.label + '-' + milestone.label
-              });
-              return false;
             }
-          }
-        });
-
-        if (ScPresent === false && errorM === 0) {
-          errorM++;
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Please add Send to Client in ' + milestone.label
           });
-          return false;
+
+          if (ScPresent === false && errorM === 0) {
+            errorM++;
+            this.messageService.add({
+              key: 'custom', severity: 'warn', summary: 'Warning Message',
+              detail: 'Please add Send to Client in ' + milestone.label
+            });
+            return false;
+          }
         }
+
         ScPresent = false;
       });
 
@@ -364,7 +369,7 @@ export class DragDropComponent implements OnInit {
   // tslint:disable
   onDrop(event, miletype) {
 
-  
+
     this.resizeGraph = miletype;
     let prvnode = [];
     if (miletype === 'milestone' ? this.milestonesGraph.nodes.length > 0 : this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length > 0) {
@@ -464,8 +469,8 @@ export class DragDropComponent implements OnInit {
 
     if (miletype === 'milestone') {
 
-    
-    
+
+
       this.milestonesGraph.nodes.push(node);
       this.milestonesGraph.nodeOrder.push(node.id);
 
@@ -476,15 +481,15 @@ export class DragDropComponent implements OnInit {
 
       }
 
-      if(!event.id){
+      if (!event.id) {
         const e = {
           data: 'Client Review',
           type: 'Client Review'
         }
-       
-         
-        this.DropCRDefault(e ,this.milestonesGraph.nodes.length - 1,0);
-        
+
+
+        this.DropCRDefault(e, this.milestonesGraph.nodes.length - 1, 0);
+
       }
 
       this.previoussubeventdd = node.submilestone.nodes[0];
@@ -500,7 +505,7 @@ export class DragDropComponent implements OnInit {
         this.GraphResize();
     }
     else {
-     
+
       const submilestone = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === 'Default');
 
       if (submilestone.task.nodes.length > 1 || submilestone.task.nodes.filter(c => c.taskType !== 'Client Review').length > 0) {
@@ -1498,7 +1503,7 @@ export class DragDropComponent implements OnInit {
   // To  Drop client Review By default
   // *************************************************************************************************
 
-  DropCRDefault(event ,milestoneIndex,submilestoneIndex) {
+  DropCRDefault(event, milestoneIndex, submilestoneIndex) {
 
     const selectedSubMilestone = 'Default';
     const originalType = event.data;

@@ -799,6 +799,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
             let tempSubmilestones = [];
             let GanttTaskObj;
+            let CRObj;
             for (const milestoneTask of milestoneTasks) {
 
               var taskName = '';
@@ -912,6 +913,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
                   if (milestoneTask.Task === 'Client Review') {
                     i = milestoneTask.Id;
+                    CRObj = { 'data': GanttTaskObj };
+
                   }
                   taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
                   //if(GanttTaskObj.status !== 'Deleted') {
@@ -942,9 +945,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
               this.milestoneData.push(tempmilestone);
             }
 
-            if (taskName.replace(/[0-9]/g, '').trim() === 'Client Review') {
+            if (!CRObj && taskName && taskName.replace(/[0-9]/g, '').trim() === 'Client Review') {
               const tempmilestone = { 'data': GanttTaskObj, 'children': [] }
               this.milestoneData.push(tempmilestone);
+            }
+            else if (CRObj) {
+              this.milestoneData.push(CRObj);
             }
           }
         }
@@ -974,6 +980,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.visualgraph = false;
     this.milestoneDataCopy = this.milestoneData;
     this.oProjectDetails.hoursSpent = this.commonService.convertToHrs(projectHoursSpent.length > 0 ? this.commonService.ajax_addHrsMins(projectHoursSpent) : '0:0');
+    this.oProjectDetails.hoursSpent = parseFloat(this.oProjectDetails.hoursSpent.toFixed(2));
     this.oProjectDetails.allocatedHours = projectHoursAllocated.reduce((a, b) => a + b, 0).toFixed(2);
     this.oProjectDetails.spentHours = projectAvailableHours.reduce((a, b) => a + b, 0).toFixed(2);
     this.oProjectDetails.totalMilestoneBudgetHours = totalMilestoneBudgetHours.reduce((a, b) => a + b, 0);
@@ -1672,7 +1679,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         if (this.changeInRestructure) {
           setTimeout(() => {
 
-            this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'There are some unsaved changes, Please saved them.' });
+            this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'There are some unsaved changes, Please save them.' });
 
           }, 300);
         }
@@ -2911,15 +2918,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
         return objt.status !== 'Deleted' && objt.status !== 'Abandon';
       });
 
-      const uniqueSub = currMilTasks.map(item => item.submilestone);
-      if (uniqueSub.length === 0) {
-        currMilTasks.forEach(element => {
-          const title = element.AssignedTo.Title;
-          if (!title) {
-            validateNextMilestone = false;
-          }
-        });
-      }
+      currMilTasks.forEach(element => {
+        const title = element.AssignedTo.Title;
+        if (!title) {
+          validateNextMilestone = false;
+        }
+      });
       if (!validateNextMilestone) {
         this.messageService.add({
           key: 'custom', severity: 'warn', summary: 'Warning Message',
@@ -3216,6 +3220,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // **************************************************************************************************
 
   validate() {
+
+
     const projectBudgetHours = this.oProjectDetails.budgetHours;
     const milestonesData = this.milestoneData;
     const allMilestones = milestonesData.filter(c => c.data.type === 'milestone').map(c => c.data);
@@ -3240,79 +3246,65 @@ export class TimelineComponent implements OnInit, OnDestroy {
     let previousNode;
     for (const milestone of milestonesData) {
 
-      const AllTasks = this.getTasksFromMilestones(milestone, false);
+      debugger;
+      if (milestone.data.status !== 'Completed') {
+        const AllTasks = this.getTasksFromMilestones(milestone, false);
 
+        const milestoneTasks = AllTasks.filter(t => t.status !== 'Abandon' && t.itemType !== 'Adhoc');
+        // tslint:disable
+        const checkTaskAllocatedTime = milestoneTasks.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
+          && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed');
+        // tslint:enable
+        if (checkTaskAllocatedTime.length > 0) {
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            detail: 'Allocated time for task cannot be equal or less than 0.'
+          });
 
+          return false;
+        }
+        const checkDates = milestoneTasks.filter(e => (e.pUserStart === null || e.pUserEnd === null));
+        if (checkDates.length > 0) {
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            detail: 'Please select valid date for ' + milestone.data.pName + ' - ' + checkDates[0].pName
+          });
 
-      const milestoneTasks = AllTasks.filter(t => t.status !== 'Abandon' && t.itemType !== 'Adhoc');
-      // tslint:disable
-      const checkTaskAllocatedTime = milestoneTasks.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
-        && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed');
-      // tslint:enable
-      if (checkTaskAllocatedTime.length > 0) {
-        this.messageService.add({
-          key: 'custom', severity: 'warn', summary: 'Warning Message',
-          detail: 'Allocated time for task cannot be equal or less than 0.'
-        });
+          return false;
+        }
+        const compareDates = milestoneTasks.filter(e => (e.pEnd <= e.pStart && e.tat === false
+          && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' &&
+          e.itemType !== 'Follow up' && e.status !== 'Completed'));
+        if (compareDates.length > 0) {
 
-        return false;
-      }
-      const checkDates = milestoneTasks.filter(e => (e.pUserStart === null || e.pUserEnd === null));
-      if (checkDates.length > 0) {
-        this.messageService.add({
-          key: 'custom', severity: 'warn', summary: 'Warning Message',
-          detail: 'Please select valid date for ' + milestone.data.pName + ' - ' + checkDates[0].pName
-        });
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            detail: 'End date should be greater than start date of ' + milestone.data.pName + ' - ' + compareDates[0].pName
+          });
 
-        return false;
-      }
-      const compareDates = milestoneTasks.filter(e => (e.pEnd <= e.pStart && e.tat === false
-        && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' &&
-        e.itemType !== 'Follow up' && e.status !== 'Completed'));
-      if (compareDates.length > 0) {
-
-        this.messageService.add({
-          key: 'custom', severity: 'warn', summary: 'Warning Message',
-          detail: 'End date should be greater than start date of ' + milestone.data.pName + ' - ' + compareDates[0].pName
-        });
-
-        return false;
-      }
-
-      if (previousNode !== undefined && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart)) {
-        let errormessage = 'Previous Client Review';
-        if (previousNode.pName !== 'Client Review') {
-          errormessage = previousNode.pName;
+          return false;
         }
 
-        this.messageService.add({
-          key: 'custom', severity: 'warn', summary: 'Warning Message',
-          detail: 'Start Date of ' + milestone.data.pName + '  should be greater than end date of ' + errormessage
-        });
-        return false;
+        if (previousNode !== undefined && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart)) {
+          let errormessage = 'Previous Client Review';
+          if (previousNode.pName !== 'Client Review') {
+            errormessage = previousNode.pName;
+          }
+
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            detail: 'Start Date of ' + milestone.data.pName + '  should be greater than end date of ' + errormessage
+          });
+          return false;
+        }
+
+        if (milestoneTasks.length > 0) {
+
+          this.LinkScToClientReview(milestoneTasks);
+        }
+        previousNode = milestone.data;
       }
 
-      if (milestoneTasks.length > 0) {
-
-        this.LinkScToClientReview(milestoneTasks);
-      }
-      // let validateNextMilestone = true;
-      // milestoneTasks.forEach(element => {
-      //   const title = element.AssignedTo !== null ? (element.AssignedTo.Title ? element.AssignedTo.Title : '') : '';
-
-      //   if (!title && (element.status === 'Not Started' || (element.status === 'Not Saved'
-      // && milestone.data.status === 'In Progress'))) {
-      //     validateNextMilestone = false;
-      //   }
-      // });
-      // if (!validateNextMilestone) {
-      //   this.messageService.add({ key: 'custom', severity: 'warn',
-      // summary: 'Warning Message',detail: 'All tasks should be assigned to either a
-      // resource or skill before setting the milestone as current milestone.' });
-      //   return false;
-      // }
-
-      previousNode = milestone.data;
     }
     return true;
   }

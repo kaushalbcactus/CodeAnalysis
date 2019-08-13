@@ -175,10 +175,15 @@ export class TimeBookingDialogComponent implements OnInit {
       if (element.SubMilestones) {
         const SubMilestone = element.SubMilestones.split(';#');
         SubMilestone.forEach((value, i) => {
-          subMileArray.push(new Object({
-            label: element.Title + ' - ' + value.substr(0,
-              value.indexOf(':')), value: element.Title + ' - ' + value.substr(0, value.indexOf(':'))
-          }));
+
+          const tempValue = value.split(':');
+          if (tempValue[2] !== 'Not Confirmed') {
+            subMileArray.push(new Object({
+              label: element.Title + ' - ' + value.substr(0,
+                value.indexOf(':')), value: element.Title + ' - ' + value.substr(0, value.indexOf(':'))
+            }));
+          }
+
         });
 
 

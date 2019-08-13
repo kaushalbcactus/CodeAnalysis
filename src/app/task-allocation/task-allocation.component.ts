@@ -9,6 +9,7 @@ import { trigger, transition, animate, style, state } from '@angular/animations'
 import { TaskAllocationConstantsService } from './services/task-allocation-constants.service';
 import { TimelineComponent } from './timeline/timeline.component';
 import { CommonService } from '../Services/common.service';
+import { SPOperationService } from '../Services/spoperation.service';
 
 @Component({
   selector: 'app-taskallocation',
@@ -60,6 +61,7 @@ export class TaskAllocationComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router, public spServices: SharepointoperationService,
+    private sPOperationService: SPOperationService,
     public constants: ConstantsService,
     public globalObject: GlobalService,
     public taskAllocatinoService: TaskAllocationConstantsService,
@@ -88,13 +90,13 @@ export class TaskAllocationComponent implements OnInit {
 
 
   async currentUserGroup() {
-    const currentUser = await this.spServices.getUserInfo(this.globalObject.sharePointPageObject.userId.toString());
+    const currentUser = await this.sPOperationService.getUserInfo(this.globalObject.sharePointPageObject.userId);
     this.globalObject.currentUser.id = currentUser.Id;
     this.globalObject.currentUser.email = currentUser.Email;
     this.globalObject.currentUser.title = currentUser.Title;
 
-    const curruentUsrInfo = await this.spServices.getCurrentUser();
-    this.globalObject.currentUser.loggedInUserInfo = curruentUsrInfo.d.Groups.results;
+    // const curruentUsrInfo = await this.spServices.getCurrentUser();
+    this.globalObject.currentUser.loggedInUserInfo = currentUser.Groups.results;
 
     this.globalObject.currentUser.loggedInUserInfo.forEach(element => {
       if (element) {
@@ -118,6 +120,7 @@ export class TaskAllocationComponent implements OnInit {
     this.errormessage = '';
     this.loaderenable = true;
     this.SearchView = false;
+
     this.isUserManager = this.globalObject.currentUser.loggedInUserGroup.
       findIndex(c => (c === 'Managers' || c === 'Project-FullAccess')) !== -1 ? true : false;
 
