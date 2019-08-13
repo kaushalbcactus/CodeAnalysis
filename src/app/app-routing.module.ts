@@ -8,7 +8,9 @@ const routes: Routes = [
   { path: 'projectMgmt', loadChildren: './projectmanagement/projectmanagement.module#ProjectmanagementModule' },
   { path: 'myDashboard', loadChildren: './my-dashboard/my-dashboard.module#MyDashboardModule' },
   { path: 'taskAllocation', loadChildren: './task-allocation/task-allocation.module#TaskAllocationModule' },
-  { path: 'financeDashboard', loadChildren: './finance-dashboard/finance-dashboard.module#FinanceDashboardModule' }
+  { path: 'financeDashboard', loadChildren: './finance-dashboard/finance-dashboard.module#FinanceDashboardModule' },
+  { path: 'qms', loadChildren: './qms/qms.module#QmsModule' },
+  { path: 'admin', loadChildren: './admin/admin.module#AdminModule' }
 ];
 
 
