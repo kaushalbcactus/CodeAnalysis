@@ -1,3 +1,7 @@
-<p>
-  attribute works!
-</p>
+<p-tabMenu [model]="navLinks">
+  <ng-template pTemplate="link" let-link let-i="index">
+      {{link.label}}
+  </ng-template>
+</p-tabMenu>
+<router-outlet>
+</router-outlet>

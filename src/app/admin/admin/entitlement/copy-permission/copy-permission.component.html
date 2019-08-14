@@ -1,0 +1,30 @@
+<div>
+  <div class="userRole">
+    <span style="padding-right: 10px;">User:</span>
+    <p-dropdown [options]="Users" filter="true" optionLabel="label" resetFilterOnHide="true" placeholder='Select User'
+      [(ngModel)]="selectedUsers" (onChange)="userChange()">
+    </p-dropdown>
+  </div>
+
+  <div class="userRole">
+    <textarea pInputTextarea [(ngModel)]="permissions1"></textarea>
+  </div>
+</div>
+
+<div>
+  <div class="userRole">
+    <span style="padding-right: 10px;">User:</span>
+    <p-dropdown [options]="Users" filter="true" optionLabel="label" resetFilterOnHide="true" placeholder='Select User'
+      [(ngModel)]="selectedCopyUsers" (onChange)="userCopyChange()">
+    </p-dropdown>
+  </div>
+
+  <div class="userRole">
+    <textarea pInputTextarea [(ngModel)]="permissions2"></textarea>
+  </div>
+
+</div>
+
+<div class="userRole">
+  <p-button label="Save" (onClick)="save()"></p-button>
+</div>
