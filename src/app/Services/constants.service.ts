@@ -266,6 +266,14 @@ export class ConstantsService {
       name: 'VendorFreelancer',
       type: 'SP.Data.VendorFreelancerListItem'
     },
+    FocusGroup: {
+      name: 'Focus Group',
+      type: 'SP.Data.Focus_x0020_GroupListItem'
+    },
+    TimeZones: {
+      name: 'TimeZones',
+      type: 'SP.Data.TimeZonesListItem'
+    },
   };
 
   public projectStatus = {

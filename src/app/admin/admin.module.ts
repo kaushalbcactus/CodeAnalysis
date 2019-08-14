@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { PrimengModule } from '../primeng/primeng.module';
 import { FormsModule , ReactiveFormsModule} from '@angular/forms';
 import { DatePipe} from '@angular/common';
-
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin/admin.component';
 import { UserProfileComponent } from './admin/user-profile/user-profile.component';
@@ -20,36 +19,31 @@ import { RoleUserMappingComponent } from './admin/entitlement/role-user-mapping/
 import { UserRoleMappingComponent } from './admin/entitlement/user-role-mapping/user-role-mapping.component';
 import { ReferenceDataComponent } from './admin/reference-data/reference-data.component';
 import { RulesComponent } from './admin/rules/rules.component';
-import { CopyPermissionComponent } from './admin/entitlement/copy-permission/copy-permission.component';
-import { AddUserToSowComponent } from './admin/entitlement/add-user-to-sow/add-user-to-sow.component';
-import { AddUserToProjectsComponent } from './admin/entitlement/add-user-to-projects/add-user-to-projects.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
-  declarations:
-    [AdminComponent,
-      UserProfileComponent,
-      AttributeComponent,
-      BucketMasterdataComponent,
-      DeliverableTypesComponent,
-      PracticeAreasComponent,
-      ProjectTypesComponent,
-      TherapeuticAreasComponent,
-      ClientMasterdataComponent,
-      EntitlementComponent,
-      RoleUserMappingComponent,
-      UserRoleMappingComponent,
-      ReferenceDataComponent,
-      RulesComponent,
-      CopyPermissionComponent,
-      AddUserToSowComponent,
-      AddUserToProjectsComponent],
+  declarations: [
+    AdminComponent,
+    UserProfileComponent,
+    AttributeComponent,
+    BucketMasterdataComponent,
+    DeliverableTypesComponent,
+    PracticeAreasComponent,
+    ProjectTypesComponent,
+    TherapeuticAreasComponent,
+    ClientMasterdataComponent,
+    EntitlementComponent,
+    RoleUserMappingComponent,
+    UserRoleMappingComponent,
+    ReferenceDataComponent,
+    RulesComponent],
   imports: [
     CommonModule,
     AdminRoutingModule,
     PrimengModule,
     FormsModule,
-    ReactiveFormsModule
-  ],
-  providers: [DatePipe]
+    ReactiveFormsModule,
+    NgbModule,
+  ]
 })
 export class AdminModule { }
