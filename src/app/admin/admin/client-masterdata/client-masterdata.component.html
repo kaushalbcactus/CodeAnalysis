@@ -1,3 +1,1483 @@
-<p>
-  client-masterdata works!
-</p>
+<div>
+  <a (click)="downloadExcel(cmd)" class="download-worksheet td-none"><i class="fa fa-download" aria-hidden="true"></i>
+      Download worksheet</a>
+</div>
+
+<p-table #cmd [columns]="clientMasterDataColumns" [value]="clientMasterDataRows" exportFilename="Client Master Data">
+  <ng-template pTemplate="header" let-columns>
+      <tr>
+          <th>Sr.No.</th>
+          <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+              {{col.header}}
+              <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+          </th>
+          <th></th>
+      </tr>
+      <tr>
+          <th></th>
+          <th *ngFor="let col of columns" [ngSwitch]="col.field">
+              <p-multiSelect *ngSwitchCase="'ClientLegalEntry'" [style]="{'width':'100%'}" appendTo="body"
+                  [options]="clientMasterDataColArray.ClientLegalEntry" defaultLabel="Client Legal Entry"
+                  (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                  filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body"
+                  [options]="clientMasterDataColArray.LastUpdated" defaultLabel="LastUpdated"
+                  (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                  filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body"
+                  [options]="clientMasterDataColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
+                  (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                  filter="true" resetFilterOnHide="true"></p-multiSelect>
+          </th>
+          <th></th>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+      <tr>
+          <td>{{ rowIndex+1 }}</td>
+          <td *ngFor="let col of columns">
+              <ng-container *ngIf="col.field != ''">
+                  {{rowData[col.field]}}
+              </ng-container>
+          </td>
+          <td>
+              <p-menu #menu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
+              <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                  (click)="menu.toggle($event);openMenuPopup(rowData)"></i>
+          </td>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+      <tr>
+          <td [attr.colspan]="columns.length">
+              No Data found
+          </td>
+      </tr>
+  </ng-template>
+</p-table>
+
+<div style="text-align: center;margin-top:10px;">
+  <p-button icon="pi pi-plus-circle" label="Add New Client Form" (click)="showAddClientModal()"></p-button>
+</div>
+
+<!-- Audit History -->
+<!-- <div style="margin-top: 10px;">
+  <h3 style="text-align: center">Audit History (On Page Open)</h3>
+</div>
+
+<p-table #ah [columns]="auditHistoryColumns" [value]="auditHistoryRows" exportFilename="Audit History">
+  <ng-template pTemplate="header" let-columns>
+      <tr>
+          <th>Sr.No.</th>
+          <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+              {{col.header}}
+              <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+          </th>
+      </tr>
+      <tr>
+          <th></th>
+          <th *ngFor="let col of columns" [ngSwitch]="col.field">
+              <p-multiSelect *ngSwitchCase="'Action'" [style]="{'width':'100%'}" appendTo="body"
+                  [options]="auditHistoryArray.Action" defaultLabel="Action"
+                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                  filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body"
+                  [options]="auditHistoryArray.ActionBy" defaultLabel="ActionBy"
+                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                  filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" appendTo="body"
+                  [options]="auditHistoryArray.Date" defaultLabel="Date"
+                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                  filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'Details'" [style]="{'width':'100%'}" appendTo="body"
+                  [options]="auditHistoryArray.Details" defaultLabel="Details"
+                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                  filter="true" resetFilterOnHide="true"></p-multiSelect>
+          </th>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+      <tr>
+          <td>{{ rowIndex+1 }}</td>
+          <td *ngFor="let col of columns">
+              <ng-container *ngIf="col.field != ''">
+                  {{rowData[col.field]}}
+              </ng-container>
+          </td>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+      <tr>
+          <td [attr.colspan]="columns.length">
+              No Data found
+          </td>
+      </tr>
+  </ng-template>
+</p-table>
+
+<div style="margin-top: 10px;">
+  <h3 style="text-align: center">Audit History (On Line Item Selection)</h3>
+</div>
+
+<p-table [columns]="auditHistorySelectedColumns" [value]="auditHistorySelectedRows" exportFilename="Audit History">
+  <ng-template pTemplate="header" let-columns>
+      <tr>
+          <th>Sr.No.</th>
+          <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+              {{col.header}}
+              <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+                  ariaLabelDesc="Activate to sort in descending order"
+                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+          </th>
+      </tr>
+      <tr>
+          <th></th>
+          <th *ngFor="let col of columns" [ngSwitch]="col.field">
+              <p-multiSelect *ngSwitchCase="'ClientLegalEntry'" [style]="{'width':'100%'}" appendTo="body"
+                  [options]="auditHistorySelectedArray.ClientLegalEntry" defaultLabel="Client Legal Entry"
+                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                  filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'Action'" [style]="{'width':'100%'}" appendTo="body"
+                  [options]="auditHistorySelectedArray.Action" defaultLabel="Action"
+                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                  filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body"
+                  [options]="auditHistorySelectedArray.ActionBy" defaultLabel="ActionBy"
+                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                  filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" appendTo="body"
+                  [options]="auditHistorySelectedArray.Date" defaultLabel="Date"
+                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                  filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'Details'" [style]="{'width':'100%'}" appendTo="body"
+                  [options]="auditHistorySelectedArray.Details" defaultLabel="Details"
+                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                  filter="true" resetFilterOnHide="true"></p-multiSelect>
+          </th>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+      <tr>
+          <td>{{ rowIndex+1 }}</td>
+          <td *ngFor="let col of columns">
+              <ng-container *ngIf="col.field != ''">
+                  {{rowData[col.field]}}
+              </ng-container>
+          </td>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+      <tr>
+          <td [attr.colspan]="columns.length">
+              No Data found
+          </td>
+      </tr>
+  </ng-template>
+</p-table> -->
+
+<p-dialog [(visible)]="showaddClientModal" [modal]="true" [style]="{width: '1000px', height: '500px'}">
+  <p-header>
+      Add Client Legal Entry
+  </p-header>
+  <form [formGroup]='addClient'>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2">Name</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="name" placeholder="Name" pInputText>
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.name.errors">
+                  <div *ngIf="addClient.controls.name.errors.required">
+                      Name is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2">Acronym</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="acronym" placeholder="Acronym" pInputText>
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.acronym.errors">
+                  <div *ngIf="addClient.controls.acronym.errors.required">
+                      Acronym is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2">Group</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Group" formControlName="group"></p-dropdown>
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.group.errors">
+                  <div *ngIf="addClient.controls.group.errors.required">
+                      Group is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2">Distribution List</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="distributionList"
+                  placeholder="Distribution List" pInputText>
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.distributionList.errors">
+                  <div *ngIf="addClient.controls.distributionList.errors.required">
+                      Distribution List is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Invoice Name</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="invoiceName" placeholder="Invoice Name"
+                  pInputText>
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.invoiceName.errors">
+                  <div *ngIf="addClient.controls.invoiceName.errors.required">
+                      Invoice Name is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">Realization</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="realization" placeholder="Realization"
+                  pInputText>
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.realization.errors">
+                  <div *ngIf="addClient.controls.realization.errors.required">
+                      Realization is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Market</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Market" formControlName="market"></p-dropdown>
+
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.market.errors">
+                  <div *ngIf="addClient.controls.market.errors.required">
+                      Market is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">Billing Entry</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Billing Entry" formControlName="billingEntry">
+              </p-dropdown>
+
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.billingEntry.errors">
+                  <div *ngIf="addClient.controls.billingEntry.errors.required">
+                      Billing Entry is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">PO Required</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Po Required" formControlName="poRequired">
+              </p-dropdown>
+
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.poRequired.errors">
+                  <div *ngIf="addClient.controls.poRequired.errors.required">
+                      PO Required is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">Time Zone</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Time Zone" formControlName="timeZone"></p-dropdown>
+
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.timeZone.errors">
+                  <div *ngIf="addClient.controls.timeZone.errors.required">
+                      Time Zone is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">CM Level 1</div>
+          <div class="ui-grid-col-4">
+              <p-multiSelect [options]="options" defaultLabel="Select CM Level 1" formControlName="cmLevel1"
+                  (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.cmLevel1.errors">
+                  <div *ngIf="addClient.controls.cmLevel1.errors.required">
+                      CM Level 1 is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">CM Level 2</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select CM Level 2" formControlName="cmLevel2"></p-dropdown>
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.deliveryLevel1.errors">
+                  <div *ngIf="addClient.controls.deliveryLevel1.errors.required">
+                      CM Level 2 is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Delivery Level 1</div>
+          <div class="ui-grid-col-4">
+              <p-multiSelect [options]="options" defaultLabel="Select Delivery Level 1"
+                  formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
+                  resetFilterOnHide="true"></p-multiSelect>
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.deliveryLevel1.errors">
+                  <div *ngIf="addClient.controls.deliveryLevel1.errors.required">
+                      Delivery Level 1 is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">Delivery Level 2</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Delivery Level 2" formControlName="deliveryLevel2">
+              </p-dropdown>
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.deliveryLevel2.errors">
+                  <div *ngIf="addClient.controls.deliveryLevel2.errors.required">
+                      Delivery Level 2 is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Currency</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Currency" formControlName="currency"></p-dropdown>
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.currency.errors">
+                  <div *ngIf="addClient.controls.currency.errors.required">
+                      Currency is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">AP Email</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="APEmail" placeholder="AP Email" pInputText>
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.APEmail.errors">
+                  <div *ngIf="addClient.controls.APEmail.errors.required">
+                      AP Email is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Address</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="address1" pInputText>
+              <input class="mr-5" style="margin-top: 5px;" type="text" size="60" formControlName="address2"
+                  pInputText>
+              <input class="mr-5" style="margin-top: 5px;" type="text" size="60" formControlName="address3"
+                  pInputText>
+              <input class="mr-5" style="margin-top: 5px;" type="text" size="60" formControlName="address4"
+                  pInputText>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Notes</div>
+          <div class="ui-grid-col-4">
+              <!-- <input class="mr-5" type="text" size="60" formControlName="notes" placeholder="Notes" pInputText> -->
+              <textarea [rows]="5" [cols]="60" formControlName="notes" pInputTextarea></textarea>
+
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.notes.errors">
+                  <div *ngIf="addClient.controls.notes.errors.required">
+                      Notes is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Bucket</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Bucket" formControlName="bucket"></p-dropdown>
+              <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.bucket.errors">
+                  <div *ngIf="addClient.controls.bucket.errors.required">
+                      Bucket is required</div>
+              </div>
+          </div>
+      </div>
+  </form>
+  <p-footer>
+      <button pButton label="Submit" type="button" (click)="saveClient(addClient)"></button>
+  </p-footer>
+</p-dialog>
+
+
+<p-dialog [(visible)]="editClientLegalEntry" [modal]="true" [style]="{width: '1000px', height: '500px'}">
+  <p-header>
+      Edit Client Legal Entry
+  </p-header>
+  <form [formGroup]='editClient'>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2">Name</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="name" placeholder="Name" pInputText>
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.name.errors">
+                  <div *ngIf="editClient.controls.name.errors.required">
+                      Name is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2">Acronym</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="acronym" placeholder="Acronym" pInputText>
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.acronym.errors">
+                  <div *ngIf="editClient.controls.acronym.errors.required">
+                      Acronym is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2">Group</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Group" formControlName="group"></p-dropdown>
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.group.errors">
+                  <div *ngIf="editClient.controls.group.errors.required">
+                      Group is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2">Distribution List</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="distributionList"
+                  placeholder="Distribution List" pInputText>
+              <div class="error"
+                  *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.distributionList.errors">
+                  <div *ngIf="editClient.controls.distributionList.errors.required">
+                      Distribution List is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Invoice Name</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="invoiceName" placeholder="Invoice Name"
+                  pInputText>
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.invoiceName.errors">
+                  <div *ngIf="editClient.controls.invoiceName.errors.required">
+                      Invoice Name is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">Realization</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="realization" placeholder="Realization"
+                  pInputText>
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.realization.errors">
+                  <div *ngIf="editClient.controls.realization.errors.required">
+                      Realization is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Market</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Market" formControlName="market"></p-dropdown>
+
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.market.errors">
+                  <div *ngIf="editClient.controls.market.errors.required">
+                      Market is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">Billing Entry</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Billing Entry" formControlName="billingEntry">
+              </p-dropdown>
+
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.billingEntry.errors">
+                  <div *ngIf="editClient.controls.billingEntry.errors.required">
+                      Billing Entry is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">PO Required</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Po Required" formControlName="poRequired">
+              </p-dropdown>
+
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.poRequired.errors">
+                  <div *ngIf="editClient.controls.poRequired.errors.required">
+                      PO Required is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">Time Zone</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Time Zone" formControlName="timeZone"></p-dropdown>
+
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.timeZone.errors">
+                  <div *ngIf="editClient.controls.timeZone.errors.required">
+                      Time Zone is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">CM Level 1</div>
+          <div class="ui-grid-col-4">
+              <p-multiSelect [options]="options" defaultLabel="Select CM Level 1" formControlName="cmLevel1"
+                  (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.cmLevel1.errors">
+                  <div *ngIf="editClient.controls.cmLevel1.errors.required">
+                      CM Level 1 is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">CM Level 2</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select CM Level 2" formControlName="cmLevel2"></p-dropdown>
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.deliveryLevel1.errors">
+                  <div *ngIf="editClient.controls.deliveryLevel1.errors.required">
+                      CM Level 2 is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Delivery Level 1</div>
+          <div class="ui-grid-col-4">
+              <p-multiSelect [options]="options" defaultLabel="Select Delivery Level 1"
+                  formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
+                  resetFilterOnHide="true"></p-multiSelect>
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.deliveryLevel1.errors">
+                  <div *ngIf="editClient.controls.deliveryLevel1.errors.required">
+                      Delivery Level 1 is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">Delivery Level 2</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Delivery Level 2" formControlName="deliveryLevel2">
+              </p-dropdown>
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.deliveryLevel2.errors">
+                  <div *ngIf="editClient.controls.deliveryLevel2.errors.required">
+                      Delivery Level 2 is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Currency</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Currency" formControlName="currency"></p-dropdown>
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.currency.errors">
+                  <div *ngIf="editClient.controls.currency.errors.required">
+                      Currency is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">AP Email</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="APEmail" placeholder="AP Email" pInputText>
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.APEmail.errors">
+                  <div *ngIf="editClient.controls.APEmail.errors.required">
+                      AP Email is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Address</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="address1" pInputText>
+              <input class="mr-5" style="margin-top: 5px;" type="text" size="60" formControlName="address2"
+                  pInputText>
+              <input class="mr-5" style="margin-top: 5px;" type="text" size="60" formControlName="address3"
+                  pInputText>
+              <input class="mr-5" style="margin-top: 5px;" type="text" size="60" formControlName="address4"
+                  pInputText>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Notes</div>
+          <div class="ui-grid-col-4">
+              <!-- <input class="mr-5" type="text" size="60" formControlName="notes" placeholder="Notes" pInputText> -->
+              <textarea [rows]="5" [cols]="60" formControlName="notes" pInputTextarea></textarea>
+
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.notes.errors">
+                  <div *ngIf="editClient.controls.notes.errors.required">
+                      Notes is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Bucket</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Bucket" formControlName="bucket"></p-dropdown>
+              <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.bucket.errors">
+                  <div *ngIf="editClient.controls.bucket.errors.required">
+                      Bucket is required</div>
+              </div>
+          </div>
+      </div>
+  </form>
+  <p-footer>
+      <button pButton label="Submit" type="button" (click)="saveClient(editClient)"></button>
+  </p-footer>
+</p-dialog>
+
+
+<!-- Sub-Division Dialog -->
+
+<p-dialog [(visible)]="showSubDivisionDetails" [modal]="true" [style]="{width: '1000px', height: '500px'}">
+  <p-header>
+      Sub-Division Details
+  </p-header>
+  <p-table #sd [columns]="subDivisionDetailsColumns" [value]="subDivisionDetailsRows">
+      <ng-template pTemplate="header" let-columns>
+          <tr>
+              <th>Sr.No.</th>
+              <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                  {{col.header}}
+                  <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+                      ariaLabelDesc="Activate to sort in descending order"
+                      ariaLabelAsc="Activate to sort in ascending order">
+                  </p-sortIcon>
+              </th>
+              <th></th>
+          </tr>
+          <tr>
+              <th></th>
+              <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                  <p-multiSelect *ngSwitchCase="'SubDivision'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="subDivisionFilters.SubDivision" defaultLabel="Sub-Division"
+                      (onChange)="sd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="subDivisionFilters.LastUpdated" defaultLabel="LastUpdated"
+                      (onChange)="sd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="subDivisionFilters.LastUpdatedBy" defaultLabel="LastUpdatedBy"
+                      (onChange)="sd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+              </th>
+              <th></th>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+          <tr>
+              <td>{{ rowIndex+1 }}</td>
+              <td *ngFor="let col of columns">
+                  <ng-container *ngIf="col.field != ''">
+                      {{rowData[col.field]}}
+                  </ng-container>
+              </td>
+              <td>
+                  <p-menu #menu [popup]="true" appendTo="body" [model]="items1" styleClass="borderMenu"></p-menu>
+                  <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                      (click)="menu.toggle($event);subDivisionMenu(rowdata)"></i>
+              </td>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage" let-columns>
+          <tr>
+              <td [attr.colspan]="columns.length">
+                  No Data found
+              </td>
+          </tr>
+      </ng-template>
+  </p-table>
+
+  <div style="text-align: center;margin-top:10px;">
+      <p-button icon="pi pi-plus-circle" label="Add New Sub-Division" (click)="showAddSubDivision()"></p-button>
+  </div>
+</p-dialog>
+
+<p-dialog [(visible)]="showaddSubDivision" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
+  <p-header>
+      Add SubDivision
+  </p-header>
+  <form [formGroup]='subdivision_form'>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Sub-Division</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="subDivision_Name"
+                  placeholder="Sub-Division Name" pInputText>
+              <div class="error"
+                  *ngIf="cmObject.isSubDivisionFormSubmit && subdivision_form.controls.subDivision_Name.errors">
+                  <div *ngIf="subdivision_form.controls.subDivision_Name.errors.required">
+                      Sub-Division Name is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Distribution List</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="distributionList"
+                  placeholder="Distribution List" pInputText>
+              <div class="error"
+                  *ngIf="cmObject.isSubDivisionFormSubmit && subdivision_form.controls.distributionList.errors">
+                  <div *ngIf="subdivision_form.controls.distributionList.errors.required">
+                      Distribution List is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Delivery Level 1</div>
+          <div class="ui-grid-col-4">
+              <p-multiSelect [style]="{'width':'100%'}" [options]="options" defaultLabel="Select Delivery Level 1"
+                  formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
+                  resetFilterOnHide="true"></p-multiSelect>
+              <div class="error"
+                  *ngIf="cmObject.isSubDivisionFormSubmit && subdivision_form.controls.deliveryLevel1.errors">
+                  <div *ngIf="subdivision_form.controls.deliveryLevel1.errors.required">
+                      Delivery Level 1 is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">CM Level 1</div>
+          <div class="ui-grid-col-4">
+              <p-multiSelect [style]="{'width':'100%'}" [options]="options" defaultLabel="Select CM Level 1"
+                  formControlName="cmLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
+                  resetFilterOnHide="true"></p-multiSelect>
+              <div class="error"
+                  *ngIf="cmObject.isSubDivisionFormSubmit && subdivision_form.controls.cmLevel1.errors">
+                  <div *ngIf="subdivision_form.controls.cmLevel1.errors.required">
+                      CM Level 1 is required</div>
+              </div>
+          </div>
+      </div>
+  </form>
+  <p-footer>
+      <button pButton label="Submit" type="button" (click)="saveSubdivision(subdivision_form)"></button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog [(visible)]="showeditSubDivision" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
+  <p-header>
+      Edit SubDivision
+  </p-header>
+  <form [formGroup]='editSubdivision_form'>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Sub-Division</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="subDivision_Name"
+                  placeholder="Sub-Division Name" pInputText>
+              <div class="error"
+                  *ngIf="cmObject.editSubdivision_form && editSubdivision_form.controls.subDivision_Name.errors">
+                  <div *ngIf="editSubdivision_form.controls.subDivision_Name.errors.required">
+                      Sub-Division Name is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Distribution List</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="distributionList"
+                  placeholder="Distribution List" pInputText>
+              <div class="error"
+                  *ngIf="cmObject.editSubdivision_form && editSubdivision_form.controls.distributionList.errors">
+                  <div *ngIf="editSubdivision_form.controls.distributionList.errors.required">
+                      Distribution List is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Delivery Level 1</div>
+          <div class="ui-grid-col-4">
+              <p-multiSelect [style]="{'width':'100%'}" [options]="options" defaultLabel="Select Delivery Level 1"
+                  formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
+                  resetFilterOnHide="true"></p-multiSelect>
+              <div class="error"
+                  *ngIf="cmObject.editSubdivision_form && editSubdivision_form.controls.deliveryLevel1.errors">
+                  <div *ngIf="editSubdivision_form.controls.deliveryLevel1.errors.required">
+                      Delivery Level 1 is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">CM Level 1</div>
+          <div class="ui-grid-col-4">
+              <p-multiSelect [style]="{'width':'100%'}" [options]="options" defaultLabel="Select CM Level 1"
+                  formControlName="cmLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
+                  resetFilterOnHide="true"></p-multiSelect>
+              <div class="error"
+                  *ngIf="cmObject.editSubdivision_form && editSubdivision_form.controls.cmLevel1.errors">
+                  <div *ngIf="editSubdivision_form.controls.cmLevel1.errors.required">
+                      CM Level 1 is required</div>
+              </div>
+          </div>
+      </div>
+  </form>
+  <p-footer>
+      <button pButton label="Submit" type="button" (click)="saveSubdivision(editSubdivision_form)"></button>
+  </p-footer>
+</p-dialog>
+
+
+<!-- POC Dialog -->
+
+<p-dialog [(visible)]="showPointofContact" [modal]="true" [style]="{width: '1000px', height: '500px'}">
+  <p-header>
+      Point of Contact
+  </p-header>
+  <p-table #poc [columns]="POCColumns" [value]="POCRows">
+      <ng-template pTemplate="header" let-columns>
+          <tr>
+              <th>Sr.No.</th>
+              <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                  {{col.header}}
+                  <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+                      ariaLabelDesc="Activate to sort in descending order"
+                      ariaLabelAsc="Activate to sort in ascending order">
+                  </p-sortIcon>
+              </th>
+              <th></th>
+          </tr>
+          <tr>
+              <th></th>
+              <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                  <p-multiSelect *ngSwitchCase="'POC'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="POCFilters.POC" defaultLabel="POC"
+                      (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="POCFilters.LastUpdated" defaultLabel="LastUpdated"
+                      (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="POCFilters.LastUpdatedBy" defaultLabel="LastUpdatedBy"
+                      (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+              </th>
+              <th></th>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+          <tr>
+              <td>{{ rowIndex+1 }}</td>
+              <td *ngFor="let col of columns">
+                  <ng-container *ngIf="col.field != ''">
+                      {{rowData[col.field]}}
+                  </ng-container>
+              </td>
+              <td>
+                  <p-menu #menu [popup]="true" appendTo="body" [model]="items1" styleClass="borderMenu"></p-menu>
+                  <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                      (click)="menu.toggle($event);pocMenu(rowData)"></i>
+              </td>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage" let-columns>
+          <tr>
+              <td [attr.colspan]="columns.length">
+                  No Data found
+              </td>
+          </tr>
+      </ng-template>
+  </p-table>
+
+  <div style="text-align: center;margin-top:10px;">
+      <p-button icon="pi pi-plus-circle" label="Add New POC" (click)="showAddPOC()"></p-button>
+  </div>
+</p-dialog>
+
+<p-dialog [(visible)]="showaddPOC" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
+  <p-header>
+      Add Point Of Contact
+  </p-header>
+  <form [formGroup]='poc_form'>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">First Name</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="fname" placeholder="First Name" pInputText>
+              <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.fname.errors">
+                  <div *ngIf="poc_form.controls.fname.errors.required">
+                      First Name is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Last Name</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="lname" placeholder="Last Name" pInputText>
+              <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.lname.errors">
+                  <div *ngIf="poc_form.controls.lname.errors.required">
+                      Last Name is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Designation</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="designation" placeholder="Designation"
+                  pInputText>
+              <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.designation.errors">
+                  <div *ngIf="poc_form.controls.designation.errors.required">
+                      Designation is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Email</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="email" placeholder="Email" pInputText>
+              <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.email.errors">
+                  <div *ngIf="poc_form.controls.email.errors.required">
+                      Email is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Phone No.</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="phone" placeholder="Phone No" pInputText>
+              <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.phone.errors">
+                  <div *ngIf="poc_form.controls.phone.errors.required">
+                      Phone number is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Address</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="address1" placeholder="Address" pInputText>
+              <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.address1.errors">
+                  <div *ngIf="poc_form.controls.address1.errors.required">
+                      Address is required</div>
+              </div>
+              <input class="mr-5" style="margin-top: 10px;" type="text" size="60" formControlName="address2" placeholder="Address" pInputText>
+              <input class="mr-5" style="margin-top: 10px;" type="text" size="60" formControlName="address3" placeholder="Address" pInputText>
+              <input class="mr-5" style="margin-top: 10px;" type="text" size="60" formControlName="address4" placeholder="Address" pInputText>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Department</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="department" placeholder="Department"
+                  pInputText>
+              <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.department.errors">
+                  <div *ngIf="poc_form.controls.department.errors.required">
+                      Department is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Referral Source</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Referral Source" formControlName="referralSource">
+              </p-dropdown>
+              <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.referralSource.errors">
+                  <div *ngIf="poc_form.controls.referralSource.errors.required">
+                      Referral Source is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Status</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Status" formControlName="status"></p-dropdown>
+              <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.status.errors">
+                  <div *ngIf="poc_form.controls.status.errors.required">
+                      Status is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Relationship Strength</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="relationshipStrength"
+                  placeholder="Relationship Strength" pInputText>
+              <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.relationshipStrength.errors">
+                  <div *ngIf="poc_form.controls.relationshipStrength.errors.required">
+                      Relationship Strength is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Engagement Plan</div>
+          <div class="ui-grid-col-4">
+              <textarea [rows]="5" [cols]="60" formControlName="engagementPlan" placeholder="Engagement Plan" pInputTextarea></textarea>
+              <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.engagementPlan.errors">
+                  <div *ngIf="poc_form.controls.engagementPlan.errors.required">
+                      Engagement Plan is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Comments</div>
+          <div class="ui-grid-col-4">
+              <textarea [rows]="5" [cols]="60" formControlName="comments" placeholder="Comments" pInputTextarea></textarea>
+              <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.comments.errors">
+                  <div *ngIf="poc_form.controls.comments.errors.required">
+                      Comments is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Project Contacts Type</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Project Contacts Type"
+                  formControlName="contactsType"></p-dropdown>
+              <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.contactsType.errors">
+                  <div *ngIf="poc_form.controls.contactsType.errors.required">
+                      Project Contacts Type is required</div>
+              </div>
+          </div>
+      </div>
+  </form>
+  <p-footer>
+      <button pButton label="Submit" type="button" (click)="savePOC(poc_form)"></button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog [(visible)]="showeditPOC" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
+  <p-header>
+      Edit Point Of Contact
+  </p-header>
+  <form [formGroup]='editPoc_form'>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">First Name</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="fname" placeholder="First Name" pInputText>
+              <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.fname.errors">
+                  <div *ngIf="editPoc_form.controls.fname.errors.required">
+                      First Name is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Last Name</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="lname" placeholder="Last Name" pInputText>
+              <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.lname.errors">
+                  <div *ngIf="editPoc_form.controls.lname.errors.required">
+                      Last Name is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Designation</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="designation" placeholder="Designation"
+                  pInputText>
+              <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.designation.errors">
+                  <div *ngIf="editPoc_form.controls.designation.errors.required">
+                      Designation is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Email</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="email" placeholder="Email" pInputText>
+              <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.email.errors">
+                  <div *ngIf="editPoc_form.controls.email.errors.required">
+                      Email is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Phone No.</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="phone" placeholder="Phone No" pInputText>
+              <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.phone.errors">
+                  <div *ngIf="editPoc_form.controls.phone.errors.required">
+                      Phone number is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Address</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60"   formControlName="address1" placeholder="Address" pInputText>
+              <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.address1.errors">
+                  <div *ngIf="poc_form.controls.address1.errors.required">
+                      Address is required</div>
+              </div>
+              <input class="mr-5" style="margin-top: 10px;" type="text" size="60"  formControlName="address2" placeholder="Address" pInputText>
+              <input class="mr-5" style="margin-top: 10px;" type="text" size="60"  formControlName="address3" placeholder="Address" pInputText>
+              <input class="mr-5" style="margin-top: 10px;" type="text" size="60"  formControlName="address4" placeholder="Address" pInputText>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Department</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="department" placeholder="Department"
+                  pInputText>
+              <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.department.errors">
+                  <div *ngIf="editPoc_form.controls.department.errors.required">
+                      Department is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Referral Source</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Referral Source" formControlName="referralSource">
+              </p-dropdown>
+              <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.referralSource.errors">
+                  <div *ngIf="editPoc_form.controls.referralSource.errors.required">
+                      Referral Source is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Status</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Status" formControlName="status"></p-dropdown>
+              <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.status.errors">
+                  <div *ngIf="editPoc_form.controls.status.errors.required">
+                      Status is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Relationship Strength</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="60" formControlName="relationshipStrength"
+                  placeholder="Relationship Strength" pInputText>
+              <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.relationshipStrength.errors">
+                  <div *ngIf="editPoc_form.controls.relationshipStrength.errors.required">
+                      Relationship Strength is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Engagement Plan</div>
+          <div class="ui-grid-col-4">
+              <textarea [rows]="5" [cols]="60" formControlName="engagementPlan" placeholder="Engagement Plan" pInputTextarea></textarea>
+              <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.engagementPlan.errors">
+                  <div *ngIf="editPoc_form.controls.engagementPlan.errors.required">
+                      Engagement Plan is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Comments</div>
+          <div class="ui-grid-col-4">
+              <textarea [rows]="5" [cols]="60" formControlName="comments" placeholder="Comments" pInputTextarea></textarea>
+              <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.comments.errors">
+                  <div *ngIf="editPoc_form.controls.comments.errors.required">
+                      Comments is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 mr-10">Project Contacts Type</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Project Contacts Type"
+                  formControlName="contactsType"></p-dropdown>
+              <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.contactsType.errors">
+                  <div *ngIf="editPoc_form.controls.contactsType.errors.required">
+                      Project Contacts Type is required</div>
+              </div>
+          </div>
+      </div>
+  </form>
+  <p-footer>
+      <button pButton label="Submit" type="button" (click)="savePOC(editPoc_form)"></button>
+  </p-footer>
+</p-dialog>
+
+
+<!-- PO Dialog -->
+
+<p-dialog [(visible)]="showPurchaseOrder" [modal]="true" [style]="{width: '1000px', height: '500px'}">
+  <p-header>
+      Purchase Order
+  </p-header>
+  <p-table #po [columns]="POColumns" [value]="PORows">
+      <ng-template pTemplate="header" let-columns>
+          <tr>
+              <th>Sr.No.</th>
+              <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                  {{col.header}}
+                  <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+                      ariaLabelDesc="Activate to sort in descending order"
+                      ariaLabelAsc="Activate to sort in ascending order">
+                  </p-sortIcon>
+              </th>
+              <th></th>
+          </tr>
+          <tr>
+              <th></th>
+              <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                  <p-multiSelect *ngSwitchCase="'PO'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="POFilters.PO" defaultLabel="PO" (onChange)="po.filter($event.value, col.field, 'in')"
+                      (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                  </p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'PoValues'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="POFilters.PoValues" defaultLabel="PO Values"
+                      (onChange)="po.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="POFilters.LastUpdated" defaultLabel="LastUpdated"
+                      (onChange)="po.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="POFilters.LastUpdatedBy" defaultLabel="LastUpdatedBy"
+                      (onChange)="po.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+              </th>
+              <th></th>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+          <tr>
+              <td>{{ rowIndex+1 }}</td>
+              <td *ngFor="let col of columns">
+                  <ng-container *ngIf="col.field != ''">
+                      {{rowData[col.field]}}
+                  </ng-container>
+              </td>
+              <td>
+                  <p-menu #menu [popup]="true" appendTo="body" [model]="items1" styleClass="borderMenu"></p-menu>
+                  <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                      (click)="menu.toggle($event);poMenu(rowData)"></i>
+              </td>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage" let-columns>
+          <tr>
+              <td [attr.colspan]="columns.length">
+                  No Data found
+              </td>
+          </tr>
+      </ng-template>
+  </p-table>
+
+  <div style="text-align: center;margin-top:10px;">
+      <p-button icon="pi pi-plus-circle" label="Add New Purchase Order" (click)="showAddPO()"></p-button>
+  </div>
+</p-dialog>
+
+<p-dialog [(visible)]="showaddBudget" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
+  <p-header>
+      Add Budget
+  </p-header>
+
+  <p-dropdown [options]="budgetType" placeholder="Select Value" [(ngModel)]="selectedValue">
+  </p-dropdown>
+
+  <form [formGroup]='addBudgetForm'>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Total Amount</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="number" size="30" formControlName="total" placeholder="Total Amount"
+                  pInputText>
+              <div class="error" *ngIf="cmObject.isBudgetFormSubmit && addBudgetForm.controls.total.errors">
+                  <div *ngIf="addBudgetForm.controls.total.errors.required">Total Amount is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Revenue</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="number" size="30" formControlName="revenue" placeholder="Revenue"
+                  (input)="onChange()" pInputText>
+              <div class="error" *ngIf="cmObject.isBudgetFormSubmit && addBudgetForm.controls.revenue.errors">
+                  <div *ngIf="addBudgetForm.controls.revenue.errors.required">Revenue is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">OOP</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="number" size="30" formControlName="oop" placeholder="OOP" (input)="onChange()"
+                  pInputText>
+              <div class="error" *ngIf="cmObject.isBudgetFormSubmit && addBudgetForm.controls.oop.errors">
+                  <div *ngIf="addBudgetForm.controls.oop.errors.required">OOP is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Tax</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="number" size="30" formControlName="tax" placeholder="Tax" (input)="onChange()"
+                  pInputText>
+              <div class="error" *ngIf="cmObject.isBudgetFormSubmit && addBudgetForm.controls.tax.errors">
+                  <div *ngIf="addBudgetForm.controls.tax.errors.required">Tax is required</div>
+              </div>
+          </div>
+      </div>
+  </form>
+  <p-footer>
+      <button pButton label="Submit" type="button" (click)="saveBudget(addBudgetForm)"></button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog [(visible)]="showaddPO" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
+  <p-header>
+      Add Purchase Order
+  </p-header>
+  <form [formGroup]='PoForm'>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Po Number</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="poNumber" placeholder="Po Number" pInputText>
+              <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poNumber.errors">
+                  <div *ngIf="PoForm.controls.poNumber.errors.required">
+                      Po Number is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">PO Name</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="poName" placeholder="PO Name" pInputText>
+              <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poName.errors">
+                  <div *ngIf="PoForm.controls.poName.errors.required">
+                      PO Name is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Currency</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Currency" formControlName="currency"></p-dropdown>
+              <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.currency.errors">
+                  <div *ngIf="PoForm.controls.currency.errors.required">
+                      Currency is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">PO Expiry Date</div>
+          <div class="ui-grid-col-4">
+              <p-calendar formControlName="poExpiryDate"></p-calendar>
+              <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poExpiryDate.errors">
+                  <div *ngIf="PoForm.controls.poExpiryDate.errors.required">
+                      PO Expiry Date is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Point of Contact</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Point of Contact" formControlName="poc">
+              </p-dropdown>
+              <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poc.errors">
+                  <div *ngIf="PoForm.controls.poc.errors.required">
+                      Point of Contact is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">PO File</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="file" size="60" formControlName="poFile" pInputText>
+              <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poFile.errors">
+                  <div *ngIf="PoForm.controls.poFile.errors.required">
+                      PO File is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">TA</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select TA" formControlName="ta">
+              </p-dropdown>
+              <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.ta.errors">
+                  <div *ngIf="PoForm.controls.ta.errors.required">
+                      TA is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">Molecule</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Molecule" formControlName="molecule">
+              </p-dropdown>
+              <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.molecule.errors">
+                  <div *ngIf="PoForm.controls.molecule.errors.required">
+                      Molecule is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">CM Level 2</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select CM Level 2" formControlName="cmLevel2">
+              </p-dropdown>
+              <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.cmLevel2.errors">
+                  <div *ngIf="PoForm.controls.cmLevel2.errors.required">
+                      CM Level 2 is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">PO Buying Entity</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select PO Buying Entity" formControlName="poBuyingEntity">
+              </p-dropdown>
+              <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poBuyingEntity.errors">
+                  <div *ngIf="PoForm.controls.poBuyingEntity.errors.required">
+                      PO Buying Entity is required</div>
+              </div>
+          </div>
+      </div>
+  </form>
+  <p-footer>
+      <button pButton label="Submit" type="button" (click)="savePO(PoForm)"></button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog [(visible)]="showeditPO" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
+  <p-header>
+      Edit Purchase Order
+  </p-header>
+  <form [formGroup]='editPoForm'>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Po Number</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="poNumber" placeholder="Po Number" pInputText>
+              <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.poNumber.errors">
+                  <div *ngIf="editPoForm.controls.poNumber.errors.required">
+                      Po Number is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">PO Name</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="text" size="30" formControlName="poName" placeholder="PO Name" pInputText>
+              <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.poName.errors">
+                  <div *ngIf="editPoForm.controls.poName.errors.required">
+                      PO Name is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Currency</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Currency" formControlName="currency"></p-dropdown>
+              <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.currency.errors">
+                  <div *ngIf="editPoForm.controls.currency.errors.required">
+                      Currency is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">PO Expiry Date</div>
+          <div class="ui-grid-col-4">
+              <p-calendar formControlName="poExpiryDate"></p-calendar>
+              <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.poExpiryDate.errors">
+                  <div *ngIf="editPoForm.controls.poExpiryDate.errors.required">
+                      PO Expiry Date is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">Point of Contact</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Point of Contact" formControlName="poc">
+              </p-dropdown>
+              <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.poc.errors">
+                  <div *ngIf="editPoForm.controls.poc.errors.required">
+                      Point of Contact is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">PO File</div>
+          <div class="ui-grid-col-4">
+              <input class="mr-5" type="file" size="60" formControlName="poFile" pInputText>
+              <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.poFile.errors">
+                  <div *ngIf="editPoForm.controls.poFile.errors.required">
+                      PO File is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">TA</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select TA" formControlName="ta">
+              </p-dropdown>
+              <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.ta.errors">
+                  <div *ngIf="editPoForm.controls.ta.errors.required">
+                      TA is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">Molecule</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select Molecule" formControlName="molecule">
+              </p-dropdown>
+              <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.molecule.errors">
+                  <div *ngIf="editPoForm.controls.molecule.errors.required">
+                      Molecule is required</div>
+              </div>
+          </div>
+      </div>
+      <div class="ui-grid-row mt-20">
+          <div class="ui-grid-col-2 ">CM Level 2</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select CM Level 2" formControlName="cmLevel2">
+              </p-dropdown>
+              <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.cmLevel2.errors">
+                  <div *ngIf="editPoForm.controls.cmLevel2.errors.required">
+                      CM Level 2 is required</div>
+              </div>
+          </div>
+          <div class="ui-grid-col-2 ">PO Buying Entity</div>
+          <div class="ui-grid-col-4">
+              <p-dropdown [options]="options" placeholder="Select PO Buying Entity" formControlName="poBuyingEntity">
+              </p-dropdown>
+              <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.poBuyingEntity.errors">
+                  <div *ngIf="editPoForm.controls.poBuyingEntity.errors.required">
+                      PO Buying Entity is required</div>
+              </div>
+          </div>
+      </div>
+  </form>
+  <p-footer>
+      <button pButton label="Submit" type="button" (click)="savePO(editPoForm)"></button>
+  </p-footer>
+</p-dialog>
+
+<p-toast [style]="{marginTop: '80px'}"></p-toast>

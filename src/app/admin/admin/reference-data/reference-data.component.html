@@ -1,3 +1,920 @@
-<p>
-  reference-data works!
-</p>
+<div class="filter1">
+  <span style="padding-right: 10px;">Reference Data Type:</span>
+  <p-dropdown [options]="reference" filter="true" resetFilterOnHide="true" placeholder='Select Reference Data Type'
+    (onChange)='filterBy($event.value)' [(ngModel)]="selectedValue"></p-dropdown>
+</div>
+
+<div *ngIf="isVendorDetailsVisible">
+<h4 style="text-align: center;">Vendor Details</h4>
+
+<p-table #vd [columns]="vendorDetailsColumns" [value]="vendorDetailsRows" exportFilename="Rules">
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th>Sr.No.</th>
+      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+        {{col.header}}
+        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+          ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
+        </p-sortIcon>
+      </th>
+      <th></th>
+    </tr>
+    <tr>
+      <th></th>
+      <th *ngFor="let col of columns" [ngSwitch]="col.field">
+        <p-multiSelect *ngSwitchCase="'VendorName'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="vendorDetailsColArray.VendorName" defaultLabel="Vendor Name"
+          (onChange)="vd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="vendorDetailsColArray.LastUpdated" defaultLabel="LastUpdated"
+          (onChange)="vd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="vendorDetailsColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
+          (onChange)="vd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+      </th>
+      <th></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+    <tr>
+      <td>{{ rowIndex+1 }}</td>
+      <td *ngFor="let col of columns">
+        <ng-container *ngIf="col.field != ''">
+          {{rowData[col.field]}}
+        </ng-container>
+      </td>
+      <td>
+        <p-menu #menu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
+        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+          (click)="menu.toggle($event);"></i>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+    <tr>
+      <td [attr.colspan]="columns.length">
+        No Data found
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<div style="text-align: center;margin-top:10px;">
+  <p-button icon="pi pi-plus-circle" label="Add New Vendor" (click)="showAddVendor()"></p-button>
+</div>
+
+<!-- <div style="margin-top: 10px;">
+  <h3 style="text-align: center">Audit History (On Page Open)</h3>
+</div>
+
+<p-table #ah [columns]="auditHistoryColumns" [value]="auditHistoryRows" exportFilename="Audit History">
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th>Sr.No.</th>
+      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+        {{col.header}}
+        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+          ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
+        </p-sortIcon>
+      </th>
+    </tr>
+    <tr>
+      <th></th>
+      <th *ngFor="let col of columns" [ngSwitch]="col.field">
+        <p-multiSelect *ngSwitchCase="'Action'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryArray.Action" defaultLabel="Action"
+          (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryArray.ActionBy" defaultLabel="ActionBy"
+          (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryArray.Date" defaultLabel="Date" (onChange)="ah.filter($event.value, col.field, 'in')"
+          (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'Details'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryArray.Details" defaultLabel="Details"
+          (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+    <tr>
+      <td>{{ rowIndex+1 }}</td>
+      <td *ngFor="let col of columns">
+        <ng-container *ngIf="col.field != ''">
+          {{rowData[col.field]}}
+        </ng-container>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+    <tr>
+      <td [attr.colspan]="columns.length">
+        No Data found
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<div style="margin-top: 10px;">
+  <h3 style="text-align: center">Audit History (On Line Item Selection)</h3>
+</div>
+
+<p-table #ahs [columns]="auditHistorySelectedColumns" [value]="auditHistorySelectedRows" exportFilename="Audit History">
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th>Sr.No.</th>
+      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+        {{col.header}}
+        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+          ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
+        </p-sortIcon>
+      </th>
+    </tr>
+    <tr>
+      <th></th>
+      <th *ngFor="let col of columns" [ngSwitch]="col.field">
+        <p-multiSelect *ngSwitchCase="'VendorName'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistorySelectedArray.VendorName" defaultLabel="Vendor Name"
+          (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistorySelectedArray.ActionBy" defaultLabel="ActionBy"
+          (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistorySelectedArray.Date" defaultLabel="Date"
+          (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'Details'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistorySelectedArray.Details" defaultLabel="Details"
+          (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+    <tr>
+      <td>{{ rowIndex+1 }}</td>
+      <td *ngFor="let col of columns">
+        <ng-container *ngIf="col.field != ''">
+          {{rowData[col.field]}}
+        </ng-container>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+    <tr>
+      <td [attr.colspan]="columns.length">
+        No Data found
+      </td>
+    </tr>
+  </ng-template>
+</p-table> -->
+
+</div>
+
+<div *ngIf="isQmsTemplateVisible">
+<h4 style="text-align: center;">QMS Template</h4>
+
+<p-table #qms [columns]="qmsTemplateColumns" [value]="qmsTemplateRows" exportFilename="Rules">
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th>Sr.No.</th>
+      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+        {{col.header}}
+        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+          ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
+        </p-sortIcon>
+      </th>
+      <th></th>
+    </tr>
+    <tr>
+      <th></th>
+      <th *ngFor="let col of columns" [ngSwitch]="col.field">
+        <p-multiSelect *ngSwitchCase="'QmsTemplate'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="qmsTemplateColArray.QmsTemplate" defaultLabel="QMS Template"
+          (onChange)="qms.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="qmsTemplateColArray.LastUpdated" defaultLabel="LastUpdated"
+          (onChange)="qms.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="qmsTemplateColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
+          (onChange)="qms.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+      </th>
+      <th></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+    <tr>
+      <td>{{ rowIndex+1 }}</td>
+      <td *ngFor="let col of columns">
+        <ng-container *ngIf="col.field != ''">
+          {{rowData[col.field]}}
+        </ng-container>
+      </td>
+      <td>
+        <p-menu #menu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
+        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+          (click)="menu.toggle($event);"></i>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+    <tr>
+      <td [attr.colspan]="columns.length">
+        No Data found
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<div style="text-align: center;margin-top:10px;">
+  <p-button icon="pi pi-plus-circle" label="Add New QmsTemplate" (click)="showAddQmsTemplate()"></p-button>
+</div>
+
+<!-- <div style="margin-top: 10px;">
+  <h3 style="text-align: center">Audit History (On Page Open)</h3>
+</div>
+
+<p-table #qmsah [columns]="auditHistoryColumns" [value]="auditHistoryRows" exportFilename="Audit History">
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th>Sr.No.</th>
+      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+        {{col.header}}
+        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+          ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
+        </p-sortIcon>
+      </th>
+    </tr>
+    <tr>
+      <th></th>
+      <th *ngFor="let col of columns" [ngSwitch]="col.field">
+        <p-multiSelect *ngSwitchCase="'Action'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryArray.Action" defaultLabel="Action"
+          (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryArray.ActionBy" defaultLabel="ActionBy"
+          (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryArray.Date" defaultLabel="Date" (onChange)="ah.filter($event.value, col.field, 'in')"
+          (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'Details'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryArray.Details" defaultLabel="Details"
+          (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+    <tr>
+      <td>{{ rowIndex+1 }}</td>
+      <td *ngFor="let col of columns">
+        <ng-container *ngIf="col.field != ''">
+          {{rowData[col.field]}}
+        </ng-container>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+    <tr>
+      <td [attr.colspan]="columns.length">
+        No Data found
+      </td>
+    </tr>
+  </ng-template>
+</p-table> -->
+
+<!-- <div style="margin-top: 10px;">
+  <h3 style="text-align: center">Audit History (On Line Item Selection)</h3>
+</div> -->
+
+<!-- <p-table [columns]="auditHistoryQmsSelectedColumns" [value]="auditHistoryQmsSelectedRows" exportFilename="Audit History">
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th>Sr.No.</th>
+      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+        {{col.header}}
+        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+          ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
+        </p-sortIcon>
+      </th>
+    </tr>
+    <tr>
+      <th></th>
+      <th *ngFor="let col of columns" [ngSwitch]="col.field">
+        <p-multiSelect *ngSwitchCase="'QmsTemplate'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryQmsSelectedArray.QmsTemplate" defaultLabel="QMS Template"
+          (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryQmsSelectedArray.ActionBy" defaultLabel="ActionBy"
+          (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryQmsSelectedArray.Date" defaultLabel="Date"
+          (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'Details'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryQmsSelectedArray.Details" defaultLabel="Details"
+          (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+    <tr>
+      <td>{{ rowIndex+1 }}</td>
+      <td *ngFor="let col of columns">
+        <ng-container *ngIf="col.field != ''">
+          {{rowData[col.field]}}
+        </ng-container>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+    <tr>
+      <td [attr.colspan]="columns.length">
+        No Data found
+      </td>
+    </tr>
+  </ng-template>
+</p-table> -->
+</div>
+
+<div *ngIf="isStandardTemplateVisible">
+<h4 style="text-align: center;">Standard Template</h4>
+
+<p-table #st [columns]="standardTemplateColumns" [value]="standardTemplateRows" exportFilename="Rules">
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th>Sr.No.</th>
+      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+        {{col.header}}
+        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+          ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
+        </p-sortIcon>
+      </th>
+      <th></th>
+    </tr>
+    <tr>
+      <th></th>
+      <th *ngFor="let col of columns" [ngSwitch]="col.field">
+        <p-multiSelect *ngSwitchCase="'StandardTemplate'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="standardTemplateColArray.StandardTemplate" defaultLabel="Standard Template"
+          (onChange)="st.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="qmsTemplateColArray.LastUpdated" defaultLabel="LastUpdated"
+          (onChange)="st.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="qmsTemplateColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
+          (onChange)="st.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+      </th>
+      <th></th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+    <tr>
+      <td>{{ rowIndex+1 }}</td>
+      <td *ngFor="let col of columns">
+        <ng-container *ngIf="col.field != ''">
+          {{rowData[col.field]}}
+        </ng-container>
+      </td>
+      <td>
+        <p-menu #menu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
+        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+          (click)="menu.toggle($event);"></i>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+    <tr>
+      <td [attr.colspan]="columns.length">
+        No Data found
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<div style="text-align: center;margin-top:10px;">
+  <p-button icon="pi pi-plus-circle" label="Add New Standard Template" (click)="showAddStandardTemplate()"></p-button>
+</div>
+
+<!-- <div style="margin-top: 10px;">
+  <h3 style="text-align: center">Audit History (On Page Open)</h3>
+</div>
+
+<p-table #sta [columns]="auditHistoryColumns" [value]="auditHistoryRows" exportFilename="Audit History">
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th>Sr.No.</th>
+      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+        {{col.header}}
+        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+          ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
+        </p-sortIcon>
+      </th>
+    </tr>
+    <tr>
+      <th></th>
+      <th *ngFor="let col of columns" [ngSwitch]="col.field">
+        <p-multiSelect *ngSwitchCase="'Action'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryArray.Action" defaultLabel="Action"
+          (onChange)="sta.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryArray.ActionBy" defaultLabel="ActionBy"
+          (onChange)="sta.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryArray.Date" defaultLabel="Date" (onChange)="sta.filter($event.value, col.field, 'in')"
+          (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'Details'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryArray.Details" defaultLabel="Details"
+          (onChange)="sta.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+    <tr>
+      <td>{{ rowIndex+1 }}</td>
+      <td *ngFor="let col of columns">
+        <ng-container *ngIf="col.field != ''">
+          {{rowData[col.field]}}
+        </ng-container>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+    <tr>
+      <td [attr.colspan]="columns.length">
+        No Data found
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<div style="margin-top: 10px;">
+  <h3 style="text-align: center">Audit History (On Line Item Selection)</h3>
+</div> -->
+
+<!-- <p-table [columns]="auditHistoryStandardSelectedColumns" [value]="auditHistoryStandardSelectedRows" exportFilename="Audit History">
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th>Sr.No.</th>
+      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+        {{col.header}}
+        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+          ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
+        </p-sortIcon>
+      </th>
+    </tr>
+    <tr>
+      <th></th>
+      <th *ngFor="let col of columns" [ngSwitch]="col.field">
+        <p-multiSelect *ngSwitchCase="'StandardTemplate'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryStandardSelectedArray.StandardTemplate" defaultLabel="Standard Template"
+          (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryStandardSelectedArray.ActionBy" defaultLabel="ActionBy"
+          (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryStandardSelectedArray.Date" defaultLabel="Date"
+          (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+        <p-multiSelect *ngSwitchCase="'Details'" [style]="{'width':'100%'}" appendTo="body"
+          [options]="auditHistoryStandardSelectedArray.Details" defaultLabel="Details"
+          (onChange)="ahs.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true"
+          resetFilterOnHide="true"></p-multiSelect>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+    <tr>
+      <td>{{ rowIndex+1 }}</td>
+      <td *ngFor="let col of columns">
+        <ng-container *ngIf="col.field != ''">
+          {{rowData[col.field]}}
+        </ng-container>
+      </td>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+    <tr>
+      <td [attr.colspan]="columns.length">
+        No Data found
+      </td>
+    </tr>
+  </ng-template>
+</p-table> -->
+
+</div>
+
+<p-dialog [(visible)]="showAddVendorModal" [modal]="true" [style]="{width: '1100px', height: '500px'}">
+  <p-header>
+    Add Vendor
+  </p-header>
+  <form [formGroup]='addVendor'>
+    <!-- <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Vendor Name</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="vendorName" placeholder="Vendor Name" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && !addVendor.controls['vendorName'].valid">
+          Vendor Name is required</div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Reason for Engagement</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="reasonforEngagement" placeholder="Reason for Engagement" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && !addVendor.controls['reasonforEngagement'].valid">
+          Reason for Engagement is required</div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Sp Project Code</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="projectCode" placeholder="Sp Project Code" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && !addVendor.controls['projectCode'].valid">
+          Sp Project Code is required</div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Project Type</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="projectType" placeholder="Project Type"
+          pInputText>
+        <div class="error"
+          *ngIf="referenceDataObject.isVendorFormSubmit && !addVendor.controls['projectType'].valid">
+          Project Type is required</div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Scope</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="scope" placeholder="Scope" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && !addVendor.controls['scope'].valid">
+          Scope is required</div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Cost Details</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="costDetails" placeholder="Cost Details" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && !addVendor.controls['costDetails'].valid">
+          Cost Details is required</div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Contract</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="contract" placeholder="Contract" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && !addVendor.controls['contract'].valid">
+          Contract is required</div>
+      </div>
+    </div> -->
+    
+    <div class="p-grid">
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              Name
+          </div>
+      </div>
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              <input type="text" pInputText formControlName="Title" style="width: 100%;" maxlength="100" />
+              <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && addVendor.controls.Title.errors">
+                <div *ngIf="addVendor.controls.Title.errors.required">
+                Please provide Name.</div>
+              </div>
+          </div>
+      </div>
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">Phone No</div>
+      </div>
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              <input type="text" pInputText formControlName="PhoneNo" placeholder="" style="width: 100%;" (keypress)="onlyNumberKey($event)" maxlength="30" />
+              <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && addVendor.controls.PhoneNo.errors">
+                  <div *ngIf="addVendor.controls.PhoneNo.errors.required">
+                Please provide Phone NO .</div>
+              </div>
+          </div>
+      </div>
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              Email
+          </div>
+      </div>
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              <input type="text" pInputText formControlName="Email" placeholder="a@a.com" maxlength="50" style="width: 100%;" />
+              <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && addVendor.controls.Email.errors">
+                  <div *ngIf="addVendor.controls.Email.errors.required">
+                Please provide Email.</div>
+              </div>
+          </div>
+      </div>
+
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              Type
+          </div>
+      </div>
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              <p-dropdown resetFilterOnHide="true" [options]="recordTypes" virtualScroll="true" itemSize="30" [showClear]="false" placeholder="Select a type" [style]="{'width':'100%'}" formControlName="RecordType" optionLabel="label">
+              </p-dropdown>
+              <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && addVendor.controls.RecordType.errors">
+                  <div *ngIf="addVendor.controls.RecordType.errors.required">
+                Please provide Type.</div>
+              </div>
+          </div>
+      </div>
+
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              Billed To
+          </div>
+      </div>
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              <p-dropdown resetFilterOnHide="true" [options]="billingEntityData" virtualScroll="true" itemSize="30" [showClear]="false" placeholder="Select a Billing Entity" [style]="{'width':'100%'}" formControlName="BilledTo" optionLabel="Title">
+              </p-dropdown>
+              <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && addVendor.controls.BilledTo.errors">
+                  <div *ngIf="addVendor.controls.BilledTo.errors.required">
+                Please provide Billing Name.</div>
+              </div>
+          </div>
+      </div>
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              Credit Period
+          </div>
+      </div>
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              <input id="input" type="text" pInputText formControlName="CreditPeriod" placeholder="xx days" />
+              <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && addVendor.controls.CreditPeriod.errors">
+                  <div *ngIf="addVendor.controls.CreditPeriod.errors.required">
+                Please provide CreditPeriod.</div>
+              </div>
+          </div>
+      </div>
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">Contract Start Date</div>
+      </div>
+
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="M dd, yy" yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="ContractStartDate">
+              </p-calendar>
+              <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && addVendor.controls.ContractStartDate.errors">
+                  <div *ngIf="addVendor.controls.ContractStartDate.errors.required">
+                Please provide Start Date.</div>
+              </div>
+          </div>
+      </div>
+
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">Contract End Date</div>
+      </div>
+
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="M dd, yy" yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="ContractEndDate">
+              </p-calendar>
+              <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && addVendor.controls.ContractEndDate.errors">
+                  <div *ngIf="addVendor.controls.ContractEndDate.errors.required">
+                Please provide End Date.</div>
+              </div>
+          </div>
+      </div>
+
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              White Label Agreement needed
+          </div>
+      </div>
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              <p-radioButton name="groupB" value="Yes" label="Yes" inputId="b1" formControlName="WLA">
+              </p-radioButton>&nbsp;
+              <p-radioButton name="groupB" value="No" label="No" inputId="b2" formControlName="WLA">
+              </p-radioButton>
+              <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && addVendor.controls.WLA.errors">
+                  <div *ngIf="addVendor.controls.WLA.errors.required">
+                WLA is required.</div>
+              </div>
+          </div>
+      </div>
+
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">Address</div>
+      </div>
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              <textarea rows="5" cols="30" pInputTextarea formControlName="Address" maxlength="100"></textarea>
+              <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && addVendor.controls.Address.errors">
+                  <div *ngIf="addVendor.controls.Address.errors.required">
+                Address is required.</div>
+              </div>
+          </div>
+      </div>
+
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              Billing terms
+          </div>
+      </div>
+      <div class="p-col-12 p-md-6 p-lg-3">
+          <div class="box">
+              <textarea rows="5" cols="30" pInputTextarea formControlName="BillingTerms" maxlength="100"></textarea>
+              <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && addVendor.controls.BillingTerms.errors">
+                  <div *ngIf="addVendor.controls.BillingTerms.errors.required">
+                Billing terms is required.</div>
+              </div>
+          </div>
+      </div>
+    </div>
+  </form>
+  <p-footer>
+    <p-button label="Submit" type="submit" (click)="saveVendor(addVendor)"></p-button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog [(visible)]="showAddQmsTemplateModal" [modal]="true" [style]="{width: '900px', height: '500px'}">
+  <p-header>
+    Add QMS Template
+  </p-header>
+  <form [formGroup]='addQmsTemplate'>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Template Name</div>
+      <div class="ui-grid-col-2">
+        <input class="mr-5" type="text" size="30" formControlName="templateName" placeholder="Template Name" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.templateName.errors">
+                <div *ngIf="addQmsTemplate.controls.templateName.errors.required">
+          Template Name is required</div>
+        </div>
+      </div>
+      <!-- <div class="ui-grid-col-2 mr-10">Tooltip</div>
+      <div class="ui-grid-col-2">
+        <input class="mr-5" type="text" size="30" formControlName="tooltip" placeholder="Tooltip" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && !addQmsTemplate.controls['tooltip'].valid">
+          Tooltip is required</div>
+      </div> -->
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Parameter 1</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="parameter1" placeholder="Parameter 1" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter1.errors">
+            <div *ngIf="addQmsTemplate.controls.parameter1.errors.required">
+          Parameter 1 is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Parameter 2</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="parameter2" placeholder="Parameter 2" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter2.errors">
+            <div *ngIf="addQmsTemplate.controls.parameter2.errors.required">
+          Parameter 2 is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Parameter 3</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="parameter3" placeholder="Parameter 3" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter3.errors">
+            <div *ngIf="addQmsTemplate.controls.parameter3.errors.required">
+          Parameter 3 is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Parameter 4</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="parameter4" placeholder="Parameter 4" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter4.errors">
+            <div *ngIf="addQmsTemplate.controls.parameter4.errors.required">
+          Parameter 4 is required</div>
+      </div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Parameter 5</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="parameter5" placeholder="Parameter 5" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter5.errors">
+            <div *ngIf="addQmsTemplate.controls.parameter5.errors.required">
+          Parameter 5 is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Parameter 6</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="parameter6" placeholder="Parameter 6" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter6.errors">
+            <div *ngIf="addQmsTemplate.controls.parameter6.errors.required">
+          Parameter 6 is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Parameter 7</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="parameter7" placeholder="Parameter 7" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter7.errors">
+            <div *ngIf="addQmsTemplate.controls.parameter7.errors.required">
+          Parameter 7 is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Parameter 8</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="parameter8" placeholder="Parameter 8" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter8.errors">
+            <div *ngIf="addQmsTemplate.controls.parameter8.errors.required">
+          Parameter 8 is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Parameter 9</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="parameter9" placeholder="Parameter 9" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter9.errors">
+            <div *ngIf="addQmsTemplate.controls.parameter9.errors.required">
+          Parameter 9 is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Parameter 10</div>
+      <div class="ui-grid-col-4">
+        <input class="mr-5" type="text" size="60" formControlName="parameter10" placeholder="Parameter 10" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter10.errors">
+            <div *ngIf="addQmsTemplate.controls.parameter10.errors.required">
+          Parameter 10 is required</div>
+        </div>
+      </div>
+    </div> -->
+  </form>
+  <p-footer>
+    <p-button label="Submit" type="submit" (click)="saveQmsTemplate(addQmsTemplate)"></p-button>
+  </p-footer>
+</p-dialog>
+
+<p-dialog [(visible)]="showAddStandardTemplateModal" [modal]="true" [style]="{width: '900px', height: '500px'}">
+  <p-header>
+    Add Standard Template
+  </p-header>
+  <form [formGroup]='addStandardTemplate'>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Vendor Name</div>
+      <div class="ui-grid-col-2">
+        <input class="mr-5" type="text" size="30" formControlName="vendorName" placeholder="Vendor Name" pInputText>
+        <div class="error" *ngIf="referenceDataObject.isStandardTemplateFormSubmit && addStandardTemplate.controls.vendorName.errors">
+                <div *ngIf="addStandardTemplate.controls.vendorName.errors.required">
+          Vendor Name is required</div>
+        </div>
+      </div>
+    </div>
+    <div class="ui-grid-row mt-20">
+      <div class="ui-grid-col-2 mr-10">Plan</div>
+      <div class="ui-grid-col-4">
+        <textarea rows="5" cols="60" formControlName="plan" pInputTextarea></textarea>
+        <div class="error" *ngIf="referenceDataObject.isStandardTemplateFormSubmit && addStandardTemplate.controls.plan.errors">
+            <div *ngIf="addStandardTemplate.controls.plan.errors.required">
+          Plan is required</div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <p-footer>
+    <p-button label="Submit" type="submit" (click)="saveStandardTemplate(addStandardTemplate)"></p-button>
+  </p-footer>
+</p-dialog>

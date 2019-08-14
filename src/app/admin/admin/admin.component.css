@@ -19,3 +19,26 @@
     overflow: scroll;
     height: 500px;
 }
+
+.addNew{
+    width:30%;
+    margin: 15px auto;
+}
+
+.userRole{
+    display: inline-flex;
+    margin-left: 20px;
+}
+
+.filter1{
+    display: inline-block;
+    margin-left: 20px;
+}
+
+form{
+    margin: 0;
+    width: auto;
+}
+
+.download-worksheet{color: #B71C1C;font-size: 16px;float: right}
+.td-none{text-decoration: none}

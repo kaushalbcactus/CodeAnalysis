@@ -14,6 +14,9 @@ import { RoleUserMappingComponent } from './admin/entitlement/role-user-mapping/
 import { ClientMasterdataComponent } from './admin/client-masterdata/client-masterdata.component';
 import { RulesComponent } from './admin/rules/rules.component';
 import { ReferenceDataComponent } from './admin/reference-data/reference-data.component';
+import { CopyPermissionComponent } from './admin/entitlement/copy-permission/copy-permission.component';
+import { AddUserToProjectsComponent } from './admin/entitlement/add-user-to-projects/add-user-to-projects.component';
+import { AddUserToSowComponent } from './admin/entitlement/add-user-to-sow/add-user-to-sow.component';
 
 const routes: Routes = [
   {
@@ -40,7 +43,10 @@ const routes: Routes = [
         children: [
           { path: '', redirectTo: 'userRoleMapping', pathMatch: 'prefix' },
           { path: 'userRoleMapping', component: UserRoleMappingComponent, runGuardsAndResolvers: 'always' },
-          { path: 'roleUserMapping', component: RoleUserMappingComponent, runGuardsAndResolvers: 'always' }
+          { path: 'roleUserMapping', component: RoleUserMappingComponent, runGuardsAndResolvers: 'always' },
+          { path: 'copyPermission', component: CopyPermissionComponent, runGuardsAndResolvers: 'always' },
+          { path: 'addUserToSow', component: AddUserToSowComponent, runGuardsAndResolvers: 'always' },
+          { path: 'addUserToProjects', component: AddUserToProjectsComponent, runGuardsAndResolvers: 'always' }
         ]
       },
       { path: 'clientMasterData', component: ClientMasterdataComponent, runGuardsAndResolvers: 'always' },

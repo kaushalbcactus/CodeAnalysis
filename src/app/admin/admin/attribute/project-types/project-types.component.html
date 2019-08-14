@@ -1,3 +1,105 @@
-<p>
-  project-types works!
-</p>
+<div>
+  <a (click)="downloadExcel(pt)" class="download-worksheet td-none"><i class="fa fa-download" aria-hidden="true"></i> Download worksheet</a>
+</div>
+<p-table #pt [columns]="projectTypeColumns" [value]="projectTypeRows" exportFilename="Project Type">
+  <ng-template pTemplate="header" let-columns>
+      <tr>
+          <th>Sr.No.</th>
+          <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+              {{col.header}}
+              <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+          </th>
+          <th></th>
+      </tr>
+      <tr>
+          <th></th>
+          <th *ngFor="let col of columns" [ngSwitch]="col.field">
+              <p-multiSelect *ngSwitchCase="'ProjectType'" [style]="{'width':'100%'}" appendTo="body" [options]="projectTypeColArray.ProjectType" defaultLabel="Project Type" (onChange)="pa.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body" [options]="projectTypeColArray.LastUpdated" defaultLabel="LastUpdated" (onChange)="pa.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body" [options]="projectTypeColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy" (onChange)="pa.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+          </th>
+          <th></th>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+      <tr>
+          <td>{{ rowIndex+1 }}</td>
+          <td *ngFor="let col of columns">
+              <ng-container *ngIf="col.field != ''">
+                  {{rowData[col.field]}}
+              </ng-container>
+         </td>
+         <td>
+            <p-menu #menu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
+            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+          (click)="menu.toggle($event);"></i>
+         </td>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+      <tr>
+          <td [attr.colspan]="columns.length">
+              No Data found
+          </td>
+      </tr>
+  </ng-template>
+</p-table>
+
+<!-- <div style="text-align: center;">
+  <h4>Add Project Type</h4>
+  <input type="text" pInputText/>
+  <p-button label="Add"></p-button>
+</div> -->
+
+<div>
+  <div class="ui-grid-row addNew">
+      <div class="ui-grid-col-4">
+          <h5>Add Project Type</h5>
+      </div>
+      <div class="ui-grid-col-6">
+          <input type="text" [(ngModel)]="projectType" pInputText/>
+          <p-button label="Add" (click)="addProjectType(projectType)"></p-button>
+      </div>
+  </div>
+</div>
+
+<!-- <h3 style="text-align: center;">Audit History</h3>
+<p-table #ah [columns]="auditHistoryColumns" [value]="auditHistoryRows" exportFilename="Audit History">
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th>Sr.No.</th>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                {{col.header}}
+                <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+            </th>
+        </tr>
+        <tr>
+            <th></th>
+            <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                <p-multiSelect *ngSwitchCase="'Action'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.Action" defaultLabel="Action" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'SubAction'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.SubAction" defaultLabel="SubAction" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>                                  
+                <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.ActionBy" defaultLabel="ActionBy" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.Date" defaultLabel="Date" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr>
+            <td>{{ rowIndex+1 }}</td>
+            <td *ngFor="let col of columns">
+                <ng-container *ngIf="col.field != ''">
+                    {{rowData[col.field]}}
+                </ng-container>
+           </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns>
+        <tr>
+            <td [attr.colspan]="columns.length">
+                No Data found
+            </td>
+        </tr>
+    </ng-template>
+  </p-table> -->
+
+  <p-toast [style]="{marginTop: '80px'}"></p-toast>
