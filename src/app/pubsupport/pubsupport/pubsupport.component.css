@@ -679,3 +679,25 @@ body .ui-button {
 .ui-dialog .ui-dialog-titlebar {
     text-align: center !important;
 }
+
+tr td:last-child .ui-menu {
+    top:0px;
+}
+
+.pubsuppotTable .custom-pdatatable .ui-datatable-tablewrapper> table> tbody.ui-datatable-data>tr>td:last-child {
+    overflow: visible;
+}
+
+ .pubsuppotTable .custom-pdatatable .ui-datatable-tablewrapper> table> tbody.ui-datatable-data>tr>td:last-child>span>div {
+    position: relative;
+}
+
+ .pubsuppotTable .custom-pdatatable .ui-datatable-tablewrapper> table> tbody.ui-datatable-data>tr>td:last-child>span>div>i {
+    top: 0px !important;
+}
+
+ .pubsuppotTable .custom-pdatatable .ui-datatable-tablewrapper> table> tbody.ui-datatable-data>tr>td:last-child>span>div div.ui-menu {
+    top: 0px !important;
+    left: inherit !important;
+    right: 40px !important;
+} 

@@ -10,10 +10,18 @@
     width: auto !important;
 } */
 
+::ng-deep .ui-dynamicdialog {
+    top:50% !important;
+}
+
 ::ng-deep .ui-datepicker-calendar>tbody>tr>td{
     border: none !important
 }
 
 ::ng-deep .padding15{
     padding: 15px 0px 0px 0px;
+}
+
+::ng-deep input[type=text], select {
+    width: 85%;
 }

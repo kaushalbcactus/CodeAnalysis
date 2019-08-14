@@ -3,8 +3,8 @@
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 
-<p-dialog header="Add Author" [(visible)]="addAuthorModal" [modal]="true" [draggable]="true" [style]="{'width': '70%'}"
-    [maximizable]="false" [baseZIndex]="10000" [contentStyle]="{'max-height':'350px'}"
+<p-dialog header="Add Author" [(visible)]="addAuthorModal" [modal]="true" [draggable]="false" [style]="{'width': '70%'}"
+    [maximizable]="false" [contentStyle]="{'max-height':'350px'}"
     (onHide)="cancelFormSub('addAuthor')">
     <form [formGroup]="add_author_form">
         <div class="ui-g">

@@ -531,7 +531,7 @@ export class PubsupportComponent implements OnInit {
             }
         }
         if (this.items.length === 0) {
-
+            popUpData.popup = false;
             popUpData.visible = false;
         } else if (this.selectedProject.PubSupportStatus !== 'Published') {
 
@@ -598,11 +598,10 @@ export class PubsupportComponent implements OnInit {
     @HostListener('click', ['$event'])
     clickEvent(event) {
         if ((event.target.innerText === 'Cancel' || event.target.className === 'pi pi-times') && this.ref) {
-            console.log('this.ref ', this.ref);
             this.ref.destroy();
+            this.ref = '';
         }
     }
-
 
     formatMilestone(milestones) {
         this.milestoneListArray = [];
@@ -613,6 +612,14 @@ export class PubsupportComponent implements OnInit {
                 value: element
             });
         }
+
+        // for (const element of milestones) {
+        //     console.log(element);
+        //     this.milestoneListArray.push({
+        //         label: element,
+        //         value: element
+        //     });
+        // }
     }
 
     jcDetailsForm() {
@@ -683,7 +690,7 @@ export class PubsupportComponent implements OnInit {
             Name: ['', Validators.required],
             Milestone: ['', Validators.required],
             Comments: ['', [Validators.required]]
-        })
+        });
     }
 
     async getJC_JCSubID() {

@@ -17,3 +17,7 @@
 ::ng-deep .padding15{
     padding: 15px 0px 0px 0px;
 }
+
+::ng-deep .ui-dynamicdialog {
+    top:50% !important;
+}

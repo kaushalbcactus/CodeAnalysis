@@ -32,7 +32,7 @@
             </div>
         </div>
         <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-            <p-calendar [showIcon]="true" [style]="{'width':'100%', 'width': 'auto'}" placeholder="Select Date" [readonlyInput]="true"
+            <p-calendar [showIcon]="true" [style]="{'width':'100%'}" placeholder="Select Date" [readonlyInput]="true"
                 formControlName="ConferenceDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}"
                 appendTo="body" [monthNavigator]="true" [yearNavigator]="true"></p-calendar>
             <div *ngIf="formSubmit.isSubmit && isValidAddConferenceDetailsForm.ConferenceDate.errors">
