@@ -157,7 +157,12 @@ export class SPOperationService {
 
   // READ entire list - needs $http factory and SharePoint list name
 
-
+  getChoiceFieldUrl(listName: string, options?: any) {
+    const choiceUrl = this.baseUrl + '/_api/web/lists/GetByTitle(\'{listName}\')/fields';
+    let url = choiceUrl.replace('{listName}', listName);
+    url = this.readBuilder(url, options);
+    return url;
+  }
   getReadURL(listName: string, options?: any) {
     let url = this.apiUrl.replace('{0}', listName);
     url = this.readBuilder(url, options);
@@ -240,7 +245,15 @@ export class SPOperationService {
     });
     return this.parseRetMultiple(res);
   }
-
+  async getChoiceFieldItems(listName: string, options?: any) {
+    const url = this.getChoiceFieldUrl(listName, options);
+    let res;
+    res = await this.httpClient.get(url, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+      const error = err.error;
+      return error;
+    });
+    return this.parseRetMultiple(res);
+  }
   async readItems(listName: string, options?: any) {
     const url = this.getReadURL(listName, options);
     let res;

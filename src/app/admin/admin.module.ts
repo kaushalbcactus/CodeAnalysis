@@ -16,12 +16,33 @@ import { RoleUserMappingComponent } from './admin/entitlement/role-user-mapping/
 import { UserRoleMappingComponent } from './admin/entitlement/user-role-mapping/user-role-mapping.component';
 import { ReferenceDataComponent } from './admin/reference-data/reference-data.component';
 import { RulesComponent } from './admin/rules/rules.component';
+import { PrimengModule } from '../primeng/primeng.module';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
-  declarations: [AdminComponent, UserProfileComponent, AttributeComponent, BucketMasterdataComponent, DeliverableTypesComponent, PracticeAreasComponent, ProjectTypesComponent, TherapeuticAreasComponent, ClientMasterdataComponent, EntitlementComponent, RoleUserMappingComponent, UserRoleMappingComponent, ReferenceDataComponent, RulesComponent],
+  declarations: [
+    AdminComponent,
+    UserProfileComponent,
+    AttributeComponent,
+    BucketMasterdataComponent,
+    DeliverableTypesComponent,
+    PracticeAreasComponent,
+    ProjectTypesComponent,
+    TherapeuticAreasComponent,
+    ClientMasterdataComponent,
+    EntitlementComponent,
+    RoleUserMappingComponent,
+    UserRoleMappingComponent,
+    ReferenceDataComponent,
+    RulesComponent],
   imports: [
     CommonModule,
-    AdminRoutingModule
+    AdminRoutingModule,
+    PrimengModule,
+    FormsModule,
+    ReactiveFormsModule,
+    NgbModule,
   ]
 })
 export class AdminModule { }

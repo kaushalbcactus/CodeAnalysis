@@ -1,11 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
-  styleUrls: ['./admin.component.css']
+  styleUrls: ['./admin.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class AdminComponent implements OnInit {
+  /**
+   * @description
+   * Entry point for all admin module.
+   */
   public navLinks = [
     { routerLink: ['/admin/attribute'], label: 'Attribute Management', value: 'AttributeManagement' },
     { routerLink: ['/admin/userProfile'], label: 'User Profile Management', value: 'UserProfileManagement' },
@@ -15,7 +20,6 @@ export class AdminComponent implements OnInit {
     { routerLink: ['/admin/referenceData'], label: 'Reference Data', value: 'ReferenceData' }
   ];
   constructor() { }
-
   ngOnInit() {
   }
 

@@ -72,93 +72,93 @@ export class SpOperationsService {
     }
   }
 
-    // Send email
-    // async sendMail(to: string, ffrom: string, subj: string, body: string) {
-    //     const data = this.getEmailData(to, ffrom, subj, body);
-    //     const url = this.getEmailURL();
+  // Send email
+  // async sendMail(to: string, ffrom: string, subj: string, body: string) {
+  //     const data = this.getEmailData(to, ffrom, subj, body);
+  //     const url = this.getEmailURL();
 
-    //     var res = await this.httpClient.post(url, data, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
-    //         var error = err.error;
-    //         return error;
-    //     });
-    //     return this.parseRetSingle(res);
-    // }
+  //     var res = await this.httpClient.post(url, data, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+  //         var error = err.error;
+  //         return error;
+  //     });
+  //     return this.parseRetSingle(res);
+  // }
 
-    getEmailData(to: string, ffrom: string, subj: string, body: string, cc?: string) {
-        const tos: string[] = to.split(',');
-        const recip: string[] = (tos instanceof Array) ? tos : [tos];
-        const message = {
-          // tslint:disable
-          'properties': {
-            '__metadata': {
-              'type': 'SP.Utilities.EmailProperties'
-            },
-            'To': {
-              'results': recip
-            },
-            'From': ffrom,
-            'Subject': subj,
-            'Body': body,
-            'CC': {
-              results: []
-            }
-          }
-          // tslint:enable
-        };
-        if (cc) {
-          const ccs: string[] = cc.split(',');
-          const recipcc: string[] = (ccs instanceof Array) ? ccs : [ccs];
-          message.properties.CC = {
-            results: recipcc
-          };
+  getEmailData(to: string, ffrom: string, subj: string, body: string, cc?: string) {
+    const tos: string[] = to.split(',');
+    const recip: string[] = (tos instanceof Array) ? tos : [tos];
+    const message = {
+      // tslint:disable
+      'properties': {
+        '__metadata': {
+          'type': 'SP.Utilities.EmailProperties'
+        },
+        'To': {
+          'results': recip
+        },
+        'From': ffrom,
+        'Subject': subj,
+        'Body': body,
+        'CC': {
+          results: []
         }
-        const data = JSON.stringify(message);
-        return data;
       }
-    // Send email
-      async sendMail(to: string, ffrom: string, subj: string, body: string, cc?) {
-        const data = this.getEmailData(to, ffrom, subj, body, cc);
-        const url = this.getEmailURL();
-    
-        const res = await this.httpClient.post(url, data, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
-          const error = err.error;
-          return error;
-        });
-        return this.parseRetSingle(res);
-      }
-    
+      // tslint:enable
+    };
+    if (cc) {
+      const ccs: string[] = cc.split(',');
+      const recipcc: string[] = (ccs instanceof Array) ? ccs : [ccs];
+      message.properties.CC = {
+        results: recipcc
+      };
+    }
+    const data = JSON.stringify(message);
+    return data;
+  }
+  // Send email
+  async sendMail(to: string, ffrom: string, subj: string, body: string, cc?) {
+    const data = this.getEmailData(to, ffrom, subj, body, cc);
+    const url = this.getEmailURL();
+
+    const res = await this.httpClient.post(url, data, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+      const error = err.error;
+      return error;
+    });
+    return this.parseRetSingle(res);
+  }
+
 
   // ----------SHAREPOINT USER PROFILES----------
 
-    // Lookup any SharePoint UserInfo
-    async getUserInfo(id: string) {
-        const url = this.getUserURL(id);
-        var res = await this.httpClient.get(url, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
-            var error = err.error;
-            return error;
-        });
-        return this.parseRetSingle(res);
-    }
+  // Lookup any SharePoint UserInfo
+  async getUserInfo(id: string) {
+    const url = this.getUserURL(id);
+    var res = await this.httpClient.get(url, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+      var error = err.error;
+      return error;
+    });
+    return this.parseRetSingle(res);
+  }
 
-    // Group Info
-    async getGroupInfo(groupName: string) {
-        const url = this.getGroupURL(groupName);
-        var res = await this.httpClient.get(url, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
-            var error = err.error;
-            return error;
-        });
-        return this.parseRetSingle(res);
-    }
+  // Group Info
+  async getGroupInfo(groupName: string) {
+    const url = this.getGroupURL(groupName);
+    var res = await this.httpClient.get(url, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+      var error = err.error;
+      return error;
+    });
+    return this.parseRetSingle(res);
+  }
 
-    // Invoice Team
-    async getITGroupInfo(groupName: string) {
-        const url = this.getGroupURL(groupName);
-        var res = await this.httpClient.get(url, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
-            var error = err.error;
-            return error;
-        });
-        return this.parseRetSingle(res);
-    }
+  // Invoice Team
+  async getITGroupInfo(groupName: string) {
+    const url = this.getGroupURL(groupName);
+    var res = await this.httpClient.get(url, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+      var error = err.error;
+      return error;
+    });
+    return this.parseRetSingle(res);
+  }
 
   // ----------SHAREPOINT FILES AND FOLDERS----------
   // Create folder
@@ -180,32 +180,32 @@ export class SpOperationsService {
     return this.parseRetSingle(res);
   }
 
-    async executePost(url, data) {
-        var res = await this.httpClient.post(url, data, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
-            var error = err.error;
-            return error;
-        });
-        return this.parseRetSingle(res);
-    }
+  async executePost(url, data) {
+    var res = await this.httpClient.post(url, data, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+      var error = err.error;
+      return error;
+    });
+    return this.parseRetSingle(res);
+  }
 
-    async executeJS(url, data) {
-        $.ajax({
-            headers: {
-                "accept": "application/json;odata=verbose",
-            },
-            contentType: "application/json;charset=utf-8",
-            url: url,
-            type: "POST",
-            data: JSON.stringify(data),
-            async: false,
-            success: function (data) {
-                console.log(data);
-            },
-            error: function (error) {
-                console.log(error);
-            }
-        });
-    }
+  async executeJS(url, data) {
+    $.ajax({
+      headers: {
+        "accept": "application/json;odata=verbose",
+      },
+      contentType: "application/json;charset=utf-8",
+      url: url,
+      type: "POST",
+      data: JSON.stringify(data),
+      async: false,
+      success: function (data) {
+        console.log(data);
+      },
+      error: function (error) {
+        console.log(error);
+      }
+    });
+  }
 
   async copyFiles(sourceUrlArr: Array<string>, destinationUrlArr: Array<string>) {
     for (var index in sourceUrlArr) {
@@ -243,7 +243,12 @@ export class SpOperationsService {
 
   // READ entire list - needs $http factory and SharePoint list name
 
-
+  getChoiceFieldUrl(listName: string, options?: any) {
+    const choiceUrl = this.baseUrl + '_api/web/lists/GetByTitle(\'{{listName}}\')/fields';
+    let url = choiceUrl.replace('{0}', listName);
+    url = this.readBuilder(url, options);
+    return url;
+  }
   getReadURL(listName: string, options?: any) {
     let url = this.apiUrl.replace('{0}', listName);
     url = this.readBuilder(url, options);
@@ -270,13 +275,13 @@ export class SpOperationsService {
     return this.baseUrl + '/_api/contextinfo';
   }
 
-    getUserURL(id: any) {
-        return this.baseUrl + '/_api/web/getUserById(' + id + ')?$expand=Groups';
-    }
+  getUserURL(id: any) {
+    return this.baseUrl + '/_api/web/getUserById(' + id + ')?$expand=Groups';
+  }
 
-    getGroupURL(groupName: any) {
-        return this.baseUrl + '/_api/web/sitegroups/getByName(\'' + groupName + '\')/Users';
-    }
+  getGroupURL(groupName: any) {
+    return this.baseUrl + '/_api/web/sitegroups/getByName(\'' + groupName + '\')/Users';
+  }
 
   getItemURL(listName: string, id: any, options?: any) {
     let url = this.apiUrl.replace('{0}', listName) + '(' + id + ')';
@@ -317,10 +322,19 @@ export class SpOperationsService {
     });
     return this.parseRetMultiple(res);
   }
+  async getChoiceFieldItems(listName: string, options?: any) {
+    const url = this.getChoiceFieldUrl(listName, options);
+    let res;
+    res = await this.httpClient.get(url, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+      const error = err.error;
+      return error;
+    });
+    return this.parseRetMultiple(res);
+  }
   // READ single item - SharePoint list name, and item ID number
   async readItem(listName: string, id: any, options?: any) {
     let url = this.getItemURL(listName, id, options);
-    let res; 
+    let res;
     res = await this.httpClient.get(url, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
       var error = err.error;
       return error;
@@ -383,49 +397,49 @@ export class SpOperationsService {
 
   parseRetSingle(res) {
     if (res) {
-      if(res.hasOwnProperty('d')) {
+      if (res.hasOwnProperty('d')) {
         return res.d;
       }
-      else if(res.hasOwnProperty('error')) {
-        var obj : any = res.error;
+      else if (res.hasOwnProperty('error')) {
+        var obj: any = res.error;
         obj.hasError = true;
         return obj;
       }
       else {
         return {
-          hasError : true,
+          hasError: true,
           comments: res
         }
       }
     }
     else {
       return {
-        hasError : true,
+        hasError: true,
         comments: 'Check the response in network trace'
       }
     }
   }
 
   parseRetMultiple(res) {
-    if (res)  { 
-      if(res.hasOwnProperty('d') && res.d.hasOwnProperty('results')) {
+    if (res) {
+      if (res.hasOwnProperty('d') && res.d.hasOwnProperty('results')) {
         return res.d.results;
       }
-      else if(res.hasOwnProperty('error')) {
-        var obj : any = res.error;
+      else if (res.hasOwnProperty('error')) {
+        var obj: any = res.error;
         obj.hasError = true;
         return obj;
       }
       else {
-        return  {
-          hasError : true,
+        return {
+          hasError: true,
           comments: res
         };
       }
     }
     else {
-      return  {
-        hasError : true,
+      return {
+        hasError: true,
         comments: 'Check the response in network trace'
       };
     }
@@ -438,22 +452,22 @@ export class SpOperationsService {
       for (let currentLine = 0; currentLine < responseInLines.length; currentLine++) {
         try {
           const tryParseJson = JSON.parse(responseInLines[currentLine]);
-          let retVal : any;
-          if(tryParseJson.hasOwnProperty('d')) {
-            if(tryParseJson.d.hasOwnProperty('results')) {
+          let retVal: any;
+          if (tryParseJson.hasOwnProperty('d')) {
+            if (tryParseJson.d.hasOwnProperty('results')) {
               retVal = tryParseJson.d.results;
             }
             else {
               retVal = tryParseJson.d;
             }
           }
-          else if(tryParseJson.hasOwnProperty('error')) {
+          else if (tryParseJson.hasOwnProperty('error')) {
             retVal = tryParseJson.error;
             retVal.hasError = true;
           }
           else {
             retVal = {
-              hasError : true,
+              hasError: true,
               comments: 'Check the response in network trace'
             }
           }
@@ -605,25 +619,25 @@ export class SpOperationsService {
     return batchContents;
   }
 
-    // getEmailData(to: string, ffrom: string, subj: string, body: string) {
-    //     const tos: string[] = to.split(',');
-    //     const recip: string[] = (tos instanceof Array) ? tos : [tos];
-    //     const message = {
-    //         'properties': {
-    //             '__metadata': {
-    //                 'type': 'SP.Utilities.EmailProperties'
-    //             },
-    //             'To': {
-    //                 'results': recip
-    //             },
-    //             'From': ffrom,
-    //             'Subject': subj,
-    //             'Body': body
-    //         }
-    //     };
-    //     const data = JSON.stringify(message);
-    //     return data;
-    // }
+  // getEmailData(to: string, ffrom: string, subj: string, body: string) {
+  //     const tos: string[] = to.split(',');
+  //     const recip: string[] = (tos instanceof Array) ? tos : [tos];
+  //     const message = {
+  //         'properties': {
+  //             '__metadata': {
+  //                 'type': 'SP.Utilities.EmailProperties'
+  //             },
+  //             'To': {
+  //                 'results': recip
+  //             },
+  //             'From': ffrom,
+  //             'Subject': subj,
+  //             'Body': body
+  //         }
+  //     };
+  //     const data = JSON.stringify(message);
+  //     return data;
+  // }
 
   getFolderCreationData(folderUrl: string) {
     const data = {

@@ -29,6 +29,7 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { SidebarModule } from 'primeng/sidebar';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { FullCalendarModule } from 'primeng/fullcalendar';
+import {AutoCompleteModule} from 'primeng/autocomplete';
 @NgModule({
   declarations: [],
   imports: [
@@ -69,7 +70,8 @@ import { FullCalendarModule } from 'primeng/fullcalendar';
     MenubarModule,
     OverlayPanelModule,
     InputTextareaModule,
-    InputTextModule
+    InputTextModule,
+    AutoCompleteModule
   ],
   providers: [ConfirmationService, DialogService, MessageService]
 })
