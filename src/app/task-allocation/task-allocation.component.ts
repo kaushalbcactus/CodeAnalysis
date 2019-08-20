@@ -5,10 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { GlobalService } from '../Services/global.service';
 import { ConstantsService } from '../Services/constants.service';
 import { SharepointoperationService } from '../Services/sharepoint-operation.service';
-import { trigger, transition, animate, style, state } from '@angular/animations'
+import { trigger, transition, animate, style, state } from '@angular/animations';
 import { TaskAllocationConstantsService } from './services/task-allocation-constants.service';
 import { TimelineComponent } from './timeline/timeline.component';
 import { CommonService } from '../Services/common.service';
+import { SPOperationService } from '../Services/spoperation.service';
 
 @Component({
   selector: 'app-taskallocation',
@@ -38,15 +39,15 @@ import { CommonService } from '../Services/common.service';
 })
 export class TaskAllocationComponent implements OnInit {
 
-  @ViewChild(TimelineComponent, {static:true}) timelineChild: TimelineComponent;
-  customCollapsedHeight: string = '30px';
-  Searchenable: boolean = false;
-  SearchView: boolean = true;
-  loaderenable: boolean = false;
-  isUserManager: boolean = false;
-  timelineView: boolean = false;
+  @ViewChild(TimelineComponent, { static: true }) timelineChild: TimelineComponent;
+  customCollapsedHeight = '30px';
+  Searchenable = false;
+  SearchView = true;
+  loaderenable = false;
+  isUserManager = false;
+  timelineView = false;
   projectCode;
-  errormessage = "";
+  errormessage = '';
   response;
   batchContents = new Array();
 
@@ -56,24 +57,21 @@ export class TaskAllocationComponent implements OnInit {
   ]);
   public sharedTaskAllocateObj = this.globalObject.oTaskAllocation;
   public resources = [];
-  public webImageURL = "/sites/medcomcdn/PublishingImages";
-  constructor(private route: ActivatedRoute,
+  public webImageURL = '/sites/medcomcdn/PublishingImages';
+  constructor(
+    private route: ActivatedRoute,
     private router: Router, public spServices: SharepointoperationService,
+    private sPOperationService: SPOperationService,
     public constants: ConstantsService,
     public globalObject: GlobalService,
     public taskAllocatinoService: TaskAllocationConstantsService,
     private commonService: CommonService,
     public taskAllocationService: TaskAllocationConstantsService) { }
 
-  ngOnInit() {
-    this.currentUserGroup();
-
-    this.route.snapshot.queryParams['ProjectCode'];
-    
-    // this.route.queryParams.subscribe(params => {
-
-    //   this.projectCode = params['ProjectCode'];
-    // })
+  async ngOnInit() {
+    await this.currentUserGroup();
+    // tslint:disable-next-line: no-string-literal
+    this.projectCode = this.route.snapshot.queryParams['ProjectCode'];
     if (this.projectCode !== undefined) {
       this.SearchView = false;
       this.getProjectDetails();
@@ -82,23 +80,27 @@ export class TaskAllocationComponent implements OnInit {
   }
 
   /*****************************************************************
- 
+
    Enable Search button & call api on enter click.
   *******************************************************************/
 
 
   async currentUserGroup() {
+    const currentUser = await this.sPOperationService.getUserInfo(this.globalObject.sharePointPageObject.userId);
+    this.globalObject.currentUser.id = currentUser.Id;
+    this.globalObject.currentUser.email = currentUser.Email;
+    this.globalObject.currentUser.title = currentUser.Title;
 
-    let curruentUsrInfo = await this.spServices.getCurrentUser();
-    this.globalObject.currentUser.loggedInUserInfo = curruentUsrInfo.d.Groups.results;
+    // const curruentUsrInfo = await this.spServices.getCurrentUser();
+    this.globalObject.currentUser.loggedInUserInfo = currentUser.Groups.results;
 
     this.globalObject.currentUser.loggedInUserInfo.forEach(element => {
       if (element) {
         this.globalObject.currentUser.loggedInUserGroup.push(element.LoginName);
       }
     });
-
   }
+
   SearchProject(event: any) {
     this.errormessage = '';
     this.projectCode = undefined;
@@ -106,7 +108,7 @@ export class TaskAllocationComponent implements OnInit {
     this.Searchenable = this.searchFormControl.value !== '' ? true : false;
   }
   /*****************************************************************
- 
+
    Call Api to Get Project Details
   *******************************************************************/
 
@@ -114,7 +116,9 @@ export class TaskAllocationComponent implements OnInit {
     this.errormessage = '';
     this.loaderenable = true;
     this.SearchView = false;
-    this.isUserManager = this.globalObject.currentUser.loggedInUserGroup.findIndex(c => (c === "Managers" || c === 'Project-FullAccess')) !== -1 ? true : false;
+
+    this.isUserManager = this.globalObject.currentUser.loggedInUserGroup.
+      findIndex(c => (c === 'Managers' || c === 'Project-FullAccess')) !== -1 ? true : false;
 
     const code = this.projectCode;
     const val = this.searchFormControl.value.trim();
@@ -122,9 +126,9 @@ export class TaskAllocationComponent implements OnInit {
     if (code || textCode) {
       const projCode = code !== undefined ? code : textCode;
       this.projectCode = projCode;
-      let project = await this.commonService.getProjectResources(this.projectCode, true, false);
+      const project = await this.commonService.getProjectResources(this.projectCode, true, false);
       if (project.length <= 0) {
-        this.errormessage = "Project code doesn't exist. Please verify if it is correct.";
+        this.errormessage = 'Project code doesn\'t exist. Please verify if it is correct.';
         this.loaderenable = false;
         this.SearchView = true;
         return false;
@@ -157,7 +161,7 @@ export class TaskAllocationComponent implements OnInit {
     } else {
       this.loaderenable = false;
       this.SearchView = true;
-      this.errormessage = "Please Enter Project Code."
+      this.errormessage = 'Please Enter Project Code.';
 
     }
   }
@@ -168,7 +172,7 @@ export class TaskAllocationComponent implements OnInit {
   public async checkIfAccessAllowedToUser(code) {
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
-    let checkAccessCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.checkAccess);
+    const checkAccessCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.checkAccess);
     checkAccessCall.filter = checkAccessCall.filter.replace(/{{code}}/gi, code);
     const checkAccessUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', checkAccessCall);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, checkAccessUrl);
@@ -178,7 +182,9 @@ export class TaskAllocationComponent implements OnInit {
 
     if (project.length > 0) {
       arrayOperationResources = project[0][0].AllOperationresources.results != null ? project[0][0].AllOperationresources.results : '';
-      const operationalResouce = arrayOperationResources.length > 0 ? (arrayOperationResources.find(c => c.ID === this.globalObject.sharePointPageObject.userId) !== undefined ? arrayOperationResources.find(c => c.ID === this.globalObject.sharePointPageObject.userId) : '') : '';
+      const operationalResouce = arrayOperationResources.length > 0 ? (arrayOperationResources.find
+        (c => c.ID === this.globalObject.sharePointPageObject.userId) !== undefined ?
+        arrayOperationResources.find(c => c.ID === this.globalObject.sharePointPageObject.userId) : '') : '';
       if (operationalResouce.length > 0) {
         return true;
       } else {

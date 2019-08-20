@@ -1536,7 +1536,7 @@ export class AllProjectsComponent implements OnInit {
   }
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/Pages/TaskAllocation.aspx?ProjectCode=' + task.ProjectCode, '_blank');
+      '/allocation#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
   async manageFinances(selectedProjectObj) {
     const projObj: any = selectedProjectObj;

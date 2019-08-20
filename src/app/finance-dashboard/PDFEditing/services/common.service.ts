@@ -26,7 +26,7 @@ export class CommonService {
       // 'Content-Type' : 'multipart/form-data' // ; boundary=--------------------------cef5a1b691b954b0',
       // Expect : '100-continue'
     });
-    // debugger;
+  
     return this.http.post(this.url, fd, {
       headers: httpHeaders,
     });

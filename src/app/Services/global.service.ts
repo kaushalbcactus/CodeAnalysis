@@ -128,7 +128,7 @@ export class GlobalService {
 
   /* To be removed */
 
-  public resSectionShow: boolean = true;
+  public resSectionShow = true;
   public DashboardData = {
     ProjectContacts: [],
     ResourceCategorization: [],
@@ -139,7 +139,7 @@ export class GlobalService {
     {
       ID: null,
       Id: null,
-      IsPubSupport: "",
+      IsPubSupport: '',
       Milestone: null,
       Milestones: null,
       ProjectCode: null,
@@ -147,7 +147,7 @@ export class GlobalService {
       Title: null,
       WBJID: null,
     }
-  }
+  };
 
   public currentUser = {
     id: -1,
@@ -268,7 +268,7 @@ export class GlobalService {
       CentralAllocationDone: 'No',
       IsCentrallyAllocated: 'No',
       ShowSkillCategory: 'No',
-      color: "#000000"
+      color: '#000000',
     },
     oMilestoneObject: {
       Actual_x0020_End_x0020_Date: null,
@@ -307,7 +307,7 @@ export class GlobalService {
       nSwimlanes: 1,
       swimlaneCount: 1,
       editMilestone: true,
-      color: "#000000"
+      color: '#000000',
     },
     arrRestructureMilestone: [],
     arrMilestones: [],

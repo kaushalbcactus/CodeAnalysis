@@ -11,6 +11,7 @@ import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { Router } from '@angular/router';
 
 declare var $;
 @Component({
@@ -108,6 +109,7 @@ export class SendToClientComponent implements OnInit {
     private pmConstant: PmconstantService,
     public pmCommonService: PMCommonService,
     public spOperations: SPOperationService,
+    public router: Router
   ) {
   }
   public changeSuccessMessage(message) {
@@ -138,12 +140,12 @@ export class SendToClientComponent implements OnInit {
   }
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/Pages/TaskAllocation.aspx?ProjectCode=' + task.ProjectCode, '_blank');
+      '/allocation#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
 
   goToProjectManagement(task) {
-    window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/Pages/ProjectManagement.aspx?ProjectCode=' + task.ProjectCode, '_blank');
+    this.pmObject.columnFilter.ProjectCode = [task.ProjectCode];
+    this.router.navigate(['/projectMgmt/allProjects']);
   }
   closeTask(task) {
     if (task.PreviousTaskStatus === 'Auto Closed' || task.PreviousTaskStatus === 'Completed') {
@@ -254,14 +256,14 @@ export class SendToClientComponent implements OnInit {
     const endDateString = new Date(this.commonService.formatDate(endDate) + ' 23:59:00').toISOString();
     const currentFilter = 'AssignedTo eq ' + this.globalObject.sharePointPageObject.userId + ' and ' +
       '(Status eq \'Not Started\') and (Task eq \'Send to client\') and ' +
-      '((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString + '\') and ' +
+      '((StartDate ge \'' + startDateString + '\' and StartDate le \'' + endDateString + '\') and ' +
       ' (DueDate ge \'' + startDateString + '\' and DueDate le \'' + endDateString + '\'))';
     this.getSendToClient(currentFilter);
   }
 
   async getSendToClient(currentFilter) {
     const queryOptions = {
-      select: 'ID,Title,ProjectCode,StartDate,DueDate,PreviousTaskClosureDate,Milestone,PrevTasks,NextTasks',
+      select: 'ID,Title,ProjectCode,StartDate,DueDate,PreviousTaskClosureDate,Milestone,PrevTasks,SubMilestones, NextTasks',
       filter: currentFilter,
       top: 4200
     };
@@ -290,6 +292,7 @@ export class SendToClientComponent implements OnInit {
       const tempSendToClientArray = [];
       const batchContents = new Array();
       const batchGuid = this.spServices.generateUUID();
+ 
       for (const task of this.scArrays.taskItems) {
         const scObj: any = $.extend(true, {}, this.pmObject.sendToClient);
         scObj.ID = task.ID;
@@ -316,7 +319,8 @@ export class SendToClientComponent implements OnInit {
         }
         scObj.DueDate = task.DueDate;
         scObj.DueDateFormat = this.datePipe.transform(new Date(scObj.DueDate), 'MMM dd yyyy hh:mm:ss aa');
-        scObj.Milestone = task.Milestone;
+        scObj.Milestone = task.SubMilestones ?
+        task.Milestone + ' - ' + task.SubMilestones  : task.Milestone;
         if (new Date(new Date(scObj.DueDate).setHours(0, 0, 0, 0)).getTime() === new Date(new Date().setHours(0, 0, 0, 0)).getTime()) {
           scObj.isBlueIndicator = true;
           scObj.SLA = this.pmConstant.ColorIndicator.BLUE;

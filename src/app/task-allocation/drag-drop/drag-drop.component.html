@@ -1,401 +1,319 @@
 <div class="storagebutton" fxLayout="row" fxLayoutAlign="end center">
 
-  <button type="button" pButton icon="pi pi-check" style="margin-right: 5px;" (click)="SaveGraph()"
-    label="Save"></button>
-  <button type="button" pButton icon="pi pi-times" (click)="cancelGraph();" label="Cancel" class="ui-button-secondary"
-    style="background-color:ghostwhite;"></button>
+    <button type="button" pButton class="SaveButton" icon="pi pi-check" style="margin-right: 5px;" (click)="SaveGraph()" label="Save"></button>
+    <button type="button" pButton icon="pi pi-times" (click)="cancelGraph();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
 
 </div>
 <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
 
 
-<div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" [hidden]="!mainloaderenable">
+<!-- <div fxLayout="column" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" [hidden]="!mainloaderenable">
   <div id="scInnerLoader"></div>
   <div id="scInnerLoaderText">Loading...</div>
-</div>
+</div> -->
 
 <div fxLayout="column" fxLayoutGap="5px">
 
-  <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
-    position="bottom-center">
-  </p-toast>
+    <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'" position="bottom-center">
+    </p-toast>
 
 
-  <mat-accordion fxLayout="column" fxLayoutGap="5px" fxLayoutAlign="space-around center">
+    <mat-accordion fxLayout="column" fxLayoutGap="5px" fxLayoutAlign="space-around center">
 
-    <!--***************************************************************************************************************************************
+        <!--***************************************************************************************************************************************
                                                    Milestones  panel      
 ****************************************************************************************************************************************-->
 
-    <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" style=" border: 1px solid #db1721;
+        <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" style=" border: 1px solid #db1721;
  border-radius: 0px;width:100%;" [hidden]="mainloaderenable">
-      <mat-expansion-panel-header style=" background: #db1721;" [collapsedHeight]="customCollapsedHeight"
-        [expandedHeight]="customCollapsedHeight">
-        <mat-panel-title>
-          <h3 style="width: 250px; text-align: left;"> Milestones </h3>
-          <h4 style="width: 350px; text-align: left;"> {{selectedMilestone}} </h4>
-        </mat-panel-title>
-        <mat-panel-description>
+            <mat-expansion-panel-header style=" background: #db1721;" [collapsedHeight]="customCollapsedHeight" [expandedHeight]="customCollapsedHeight">
+                <mat-panel-title>
+                    <h3 style="width: 250px; text-align: left;"> Milestones </h3>
+                    <h4 style="width: 350px; text-align: left;"> {{selectedMilestone}} </h4>
+                </mat-panel-title>
+                <mat-panel-description>
 
-        </mat-panel-description>
+                </mat-panel-description>
 
-      </mat-expansion-panel-header>
+            </mat-expansion-panel-header>
 
-      <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="center start" style="margin-top: 1vh;">
+            <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="center start" style="margin-top: 1vh;">
 
-        <div class="milestones dndList" dndEffectAllowed="move" fxLayoutAlign.xs="space-around center"
-          fxLayoutAlign="start start" style="width: 100%; max-height:350px">
+                <div class="milestones dndList" dndEffectAllowed="move" fxLayoutAlign.xs="space-around center" fxLayoutAlign="start start" style="width: 100%; max-height:350px">
 
-          <div dndPlaceholderRef class="dndPlaceholder"></div>
+                    <div dndPlaceholderRef class="dndPlaceholder"></div>
 
-          <div *ngFor="let milestone of sharedObject.oTaskAllocation.arrMilestones" fxLayout="row" fxLayout.xs="column"
-            fxLayoutGap.xs="0" [dndDraggable]="milestone" dndEffectAllowed="move" [dndType]="milestone">
-            <div class="milestones-item" fxLayout><span> {{milestone}}</span></div>
-          </div>
-        </div>
+                    <div *ngFor="let milestone of sharedObject.oTaskAllocation.arrMilestones" fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0" [dndDraggable]="milestone" dndEffectAllowed="move" [dndType]="milestone">
+                        <div class="milestones-item" fxLayout><span> {{milestone}}</span></div>
+                    </div>
+                </div>
 
-        <div class="milestones-drop milestonesDropArea" id="dropZone" (dndDrop)="onDrop($event,'milestone')" [dndDropzone]="milestones"
-          fxLayoutAlign="start" dndEffectAllowed="move" fxLayout="column" fxLayout.xs="column" fxLayoutGap.xs="0"
-          style="width:100%;" >
+                <div class="milestones-drop milestonesDropArea" id="dropZone" (dndDrop)="onDrop($event,'milestone',false)" [dndDropzone]="milestones" fxLayoutAlign="start" dndEffectAllowed="move" fxLayout="column" fxLayout.xs="column" fxLayoutGap.xs="0" style="width:100%;">
 
-          <!-- <div id="milestonetext" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="center" style="padding: 2vh"
+                    <!-- <div id="milestonetext" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="center" style="padding: 2vh"
             fxLayoutGap.xs="0">
             Drop Milestones here
           </div> -->
-          <div id="milestonetext" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" style="padding: 2vh"
-            fxLayoutGap.xs="0">
-            <div></div>
-            <div>Drop Milestones here</div>
-            <div>
-              <!-- <button type="button" 
+                    <div id="milestonetext" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" style="padding: 2vh" fxLayoutGap.xs="0">
+                        <div></div>
+                        <div>Drop Milestones here</div>
+                        <div>
+                            <!-- <button type="button" 
                 style="line-height: 0px;height: 0px;" mat-icon-button title="Cancel">
                 <mat-icon> cancel</mat-icon>
               </button> -->
-              <button type="button" 
-                style="line-height: 0px;height: 0px;" mat-icon-button title="Refresh graph" (click)="ReloadGraph('milestone')" >
+                            <button type="button" style="line-height: 0px;height: 0px;" mat-icon-button title="Refresh graph" (click)="ReloadGraph('milestone')">
                 <mat-icon>refresh</mat-icon>
               </button>
+                        </div>
+
+                    </div>
+                    <ngx-graph [view]="[width,height]" class="chart-container" id="MilestoneChart" [links]="milestonesGraph.links" [nodes]="milestonesGraph.nodes" [legend]="false" [curve]="curve" [enableZoom]="false" [panningEnabled]="false" [draggingEnabled]="false" [style.overflow-x]="width > minWidth ? 'scroll' : ''"
+                        [autoCenter]="true">
+
+                        <ng-template #defsTemplate>
+                            <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
+                                <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
+                            </svg:marker>
+                        </ng-template>
+
+                        <ng-template #nodeTemplate let-node>
+                            <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (mouseup)="onMilestoneUp($event, node)" (mousedown)="onMilestoneDown($event, node)" (click)="SelectMilestone(node,'milestone')" (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved') ?  RemoveNode($event,node,'milestone'): ErrorMessage($event,'Milestone')">
+
+                                <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
+                                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}
+                                </svg:text>
+                            </svg:g>
+                        </ng-template>
+                        <ng-template #linkTemplate let-link>
+                            <svg:g class="edge">
+                                <svg:path class="line" stroke-width="3" marker-end="url(#arrow)">
+
+                                </svg:path>
+                            </svg:g>
+                        </ng-template>
+
+                    </ngx-graph>
+                </div>
+
             </div>
-            
-          </div>
-          <ngx-graph [view]="[width,height]" class="chart-container" id="MilestoneChart" [links]="milestonesGraph.links"
-            [nodes]="milestonesGraph.nodes" [legend]="false" [curve]="curve" [enableZoom]="false"
-            [panningEnabled]="false" [draggingEnabled]="false" [style.overflow-x]="width > minWidth ? 'scroll' : ''" [autoCenter]="true">
-
-            <ng-template #defsTemplate>
-              <svg:marker id="arrow" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4"
-                orient="auto">
-                <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
-              </svg:marker>
-            </ng-template>
-
-            <ng-template #nodeTemplate let-node>
-              <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'"
-                [tooltipTitle]="node.label" (mouseup)="onMilestoneUp($event, node)"
-                (mousedown)="onMilestoneDown($event, node)" (click)="SelectMilestone(node,'milestone')"
-                (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved') ?  RemoveNode($event,node,'milestone'): ErrorMessage($event,'Milestone')">
-
-                <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height"
-                  [attr.fill]="node.color || node.options.color" />
-                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}
-                </svg:text>
-              </svg:g>
-            </ng-template>
-            <ng-template #linkTemplate let-link>
-              <svg:g class="edge">
-                <svg:path class="line" stroke-width="3" marker-end="url(#arrow)">
-
-                </svg:path>
-              </svg:g>
-            </ng-template>
-
-          </ngx-graph>
-        </div>
-
-      </div>
 
 
-    </mat-expansion-panel>
-    <!--***************************************************************************************************************************************
+        </mat-expansion-panel>
+        <!-- *******************************************************************************************
                                                    Sub Milestones  panel      
-****************************************************************************************************************************************-->
+        ********************************************************************************************-->
 
-    <mat-expansion-panel *ngIf="milestoneIndex > -1" [expanded]="step === 1" (opened)="setStep(1)"
-      style="border: 1px solid #db1721;border-radius: 0px;width: 100%;">
-      <mat-expansion-panel-header style=" background: #db1721;" [collapsedHeight]="customCollapsedHeight"
-        [expandedHeight]="customCollapsedHeight">
-        <mat-panel-title>
-          <h3 style="width: 250px; text-align: left;">Sub Milestones </h3>
-          <h4 style="width: 350px; text-align: left;"> {{selectedSubMilestone}} </h4>
-        </mat-panel-title>
-        <mat-panel-description>
+        <mat-expansion-panel *ngIf="milestoneIndex > -1" [expanded]="step === 1" (opened)="setStep(1)" style="border: 1px solid #db1721;border-radius: 0px;width: 100%;">
+            <mat-expansion-panel-header style=" background: #db1721;" [collapsedHeight]="customCollapsedHeight" [expandedHeight]="customCollapsedHeight">
+                <mat-panel-title>
+                    <h3 style="width: 250px; text-align: left;">Sub Milestones </h3>
+                    <h4 style="width: 350px; text-align: left;"> {{selectedSubMilestone}} </h4>
+                </mat-panel-title>
+                <mat-panel-description>
 
-        </mat-panel-description>
+                </mat-panel-description>
 
-      </mat-expansion-panel-header>
+            </mat-expansion-panel-header>
 
-      <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="center start" style="margin-top: 1vh;">
+            <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="center start" style="margin-top: 1vh;">
 
-        <div class="milestones dndList" style="width:100%;" dndEffectAllowed="move"
-          fxLayoutAlign.xs="space-around center" fxLayoutAlign="start start">
-          <div dndPlaceholderRef class="dndPlaceholder"></div>
+                <div class="milestones dndList" style="width:100%;" dndEffectAllowed="move" fxLayoutAlign.xs="space-around center" fxLayoutAlign="start start">
+                    <div dndPlaceholderRef class="dndPlaceholder"></div>
 
-          <div *ngFor="let submilestone of sharedObject.oTaskAllocation.arrSubMilestones" fxLayout="row"
-            fxLayout.xs="column" fxLayoutGap.xs="0" [dndDraggable]="submilestone" dndEffectAllowed="move"
-            [dndType]="submilestone">
-            <div class="submilestones-item" fxLayout><span> {{submilestone}}</span></div>
-          </div>
-        </div>
+                    <div *ngFor="let submilestone of sharedObject.oTaskAllocation.arrSubMilestones" fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0" [dndDraggable]="submilestone" dndEffectAllowed="move" [dndType]="submilestone">
+                        <div class="submilestones-item" fxLayout><span> {{submilestone}}</span></div>
+                    </div>
+                </div>
 
-        <div class="milestones-drop submilestonesDropArea"   id="dropZone" (dndDrop)="onDrop($event,'submilestone')"
-          [dndDropzone]="submilestones" fxLayoutAlign="start" dndEffectAllowed="move" fxLayout="column"
-          fxLayout.xs="column" fxLayoutGap.xs="0" style="width:100%; max-height:300px">
+                <div class="milestones-drop submilestonesDropArea" id="dropZone" (dndDrop)="onDrop($event,'submilestone',false)" [dndDropzone]="submilestones" fxLayoutAlign="start" dndEffectAllowed="move" fxLayout="column" fxLayout.xs="column" fxLayoutGap.xs="0" style="width:100%; max-height:300px">
 
-          <!-- <div id="milestonetext" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="center" style="padding: 2vh"
+                    <!-- <div id="milestonetext" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="center" style="padding: 2vh"
             fxLayoutGap.xs="0">
             Drop Sub Milestones here
           </div> -->
-          <div id="milestonetext" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" style="padding: 2vh"
-            fxLayoutGap.xs="0">
-            <div></div>
-            <div>Drop Sub Milestones here</div>
-            <div>
-              <button type="button" 
-                style="line-height: 0px;height: 0px;" mat-icon-button title="Change Orientation" (click)="ChangeOrientation('submilestone')">
+                    <div id="milestonetext" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" style="padding: 2vh" fxLayoutGap.xs="0">
+                        <div></div>
+                        <div>Drop Sub Milestones here</div>
+                        <div>
+                            <button type="button" style="line-height: 0px;height: 0px;" mat-icon-button title="Change Orientation" (click)="ChangeOrientation('submilestone')">
                 <mat-icon> autorenew</mat-icon>
               </button>
-              <button type="button" 
-                style="line-height: 0px;height: 0px;" mat-icon-button title="Refresh graph" (click)="ReloadGraph('submilestone')">
+                            <button type="button" style="line-height: 0px;height: 0px;" mat-icon-button title="Refresh graph" (click)="ReloadGraph('submilestone')">
                 <mat-icon> refresh</mat-icon>
               </button>
+                        </div>
+
+                    </div>
+                    <!-- <div > -->
+                    <ngx-graph *ngIf="subMilestoneHoritontal" [view]="[subMilestoneWidth, subMilestoneHeight]" class="chart-container" id="SubMilestoneChart" [links]="milestonesGraph.nodes[milestoneIndex].submilestone.links" [nodes]="milestonesGraph.nodes[milestoneIndex].submilestone.nodes"
+                        [legend]="false" [curve]="curve" [enableZoom]="false" [draggingEnabled]="false" [panningEnabled]="false" [autoCenter]="true" [style.overflow-x]="subMilestoneWidth > minWidth ? 'scroll' : ''" [style.overflow-y]="subMilestoneHeight > subMilestoneMaxHeight ? 'scroll' : ''">
+
+                        <ng-template #defsTemplate>
+                            <svg:marker id="arrow1" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
+                                <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
+                            </svg:marker>
+                        </ng-template>
+
+                        <ng-template #nodeTemplate let-node>
+                            <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (mouseup)="onMilestoneUp($event, node)" (mousedown)="onMilestoneDown($event, node)" (click)="SelectMilestone(node,'submilestone')" (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'submilestone'): ErrorMessage($event,'Submilestone')"
+                                *ngIf=" (milestonesGraph.nodes[milestoneIndex].submilestone.nodes.length > 1 && node.label !== 'Default') || milestonesGraph.nodes[milestoneIndex].submilestone.nodes.length === 1 ">
+
+                                <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
+                                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}
+                                </svg:text>
+                            </svg:g>
+                        </ng-template>
+                        <ng-template #linkTemplate let-link>
+                            <svg:g class="edge">
+                                <svg:path class="line submilestoneLine" stroke-width="5" marker-end="url(#arrow1)" (click)="RemoveMilestoneLink(link,'submilestone')">
+
+                                </svg:path>
+                            </svg:g>
+                        </ng-template>
+
+                    </ngx-graph>
+                    <!-- </div> -->
+                    <!-- <div > -->
+                    <ngx-graph *ngIf="!subMilestoneHoritontal" [view]="[subMilestoneWidth, subMilestoneHeight]" class="chart-container" id="SubMilestoneChart" [links]="milestonesGraph.nodes[milestoneIndex].submilestone.links" [nodes]="milestonesGraph.nodes[milestoneIndex].submilestone.nodes"
+                        [legend]="false" [curve]="curve" [enableZoom]="false" [draggingEnabled]="false" [panningEnabled]="false" [autoCenter]="true" [style.overflow-x]="subMilestoneWidth > minWidth ? 'scroll' : ''" [orientation]="TB" [style.overflow-y]="subMilestoneHeight > subMilestoneMaxHeight ? 'scroll' : ''">
+
+                        <ng-template #defsTemplate>
+                            <svg:marker id="arrow1" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
+                                <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
+                            </svg:marker>
+                        </ng-template>
+
+                        <ng-template #nodeTemplate let-node>
+                            <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (mouseup)="onMilestoneUp($event, node)" (mousedown)="onMilestoneDown($event, node)" (click)="SelectMilestone(node,'submilestone')" (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'submilestone'): ErrorMessage($event,'Submilestone')"
+                                *ngIf="(milestonesGraph.nodes[milestoneIndex].submilestone.nodes.length > 1 && node.label !=='Default') || milestonesGraph.nodes[milestoneIndex].submilestone.nodes.length === 1 ">
+
+                                <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
+                                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}
+                                </svg:text>
+                            </svg:g>
+                        </ng-template>
+                        <ng-template #linkTemplate let-link>
+                            <svg:g class="edge">
+                                <svg:path class="line submilestoneLine" stroke-width="5" marker-end="url(#arrow1)" (click)="RemoveMilestoneLink(link,'submilestone')">
+
+                                </svg:path>
+                            </svg:g>
+                        </ng-template>
+
+                    </ngx-graph>
+                    <!-- </div> -->
+
+                </div>
+
             </div>
-            
-          </div>
-          <!-- <div > -->
-            <ngx-graph *ngIf="subMilestoneHoritontal"
-            [view]="[subMilestoneWidth, subMilestoneHeight]"
-            class="chart-container" id="SubMilestoneChart"
-            [links]="milestonesGraph.nodes[milestoneIndex].submilestone.links"
-            [nodes]="milestonesGraph.nodes[milestoneIndex].submilestone.nodes" [legend]="false" [curve]="curve"
-            [enableZoom]="false" [draggingEnabled]="false" [panningEnabled]="false" [autoCenter]="true"
-            [style.overflow-x]="subMilestoneWidth > minWidth ? 'scroll' : ''"
-            [style.overflow-y]="subMilestoneHeight > subMilestoneMaxHeight ? 'scroll' : ''"
-            >
-
-            <ng-template #defsTemplate>
-              <svg:marker id="arrow1" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4"
-                orient="auto">
-                <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
-              </svg:marker>
-            </ng-template>
-
-            <ng-template #nodeTemplate let-node>
-              <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'"
-                [tooltipTitle]="node.label" (mouseup)="onMilestoneUp($event, node)"
-                (mousedown)="onMilestoneDown($event, node)" (click)="SelectMilestone(node,'submilestone')"
-                (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'submilestone'): ErrorMessage($event,'Submilestone')">
-
-                <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height"
-                  [attr.fill]="node.color || node.options.color" />
-                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}
-                </svg:text>
-              </svg:g>
-            </ng-template>
-            <ng-template #linkTemplate let-link>
-              <svg:g class="edge">
-                <svg:path class="line submilestoneLine" stroke-width="5" marker-end="url(#arrow1)"
-                  (click)="RemoveMilestoneLink(link,'submilestone')">
-
-                </svg:path>
-              </svg:g>
-            </ng-template>
-
-          </ngx-graph>
-          <!-- </div> -->
-          <!-- <div > -->
-            <ngx-graph *ngIf="!subMilestoneHoritontal"
-            [view]="[subMilestoneWidth, subMilestoneHeight]"
-            class="chart-container" id="SubMilestoneChart"
-            [links]="milestonesGraph.nodes[milestoneIndex].submilestone.links"
-            [nodes]="milestonesGraph.nodes[milestoneIndex].submilestone.nodes" [legend]="false" [curve]="curve"
-            [enableZoom]="false" [draggingEnabled]="false" [panningEnabled]="false" [autoCenter]="true"
-            [style.overflow-x]="subMilestoneWidth > minWidth ? 'scroll' : ''"  [orientation]="TB"
-            [style.overflow-y]="subMilestoneHeight > subMilestoneMaxHeight ? 'scroll' : ''"
-            >
-
-            <ng-template #defsTemplate>
-              <svg:marker id="arrow1" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4"
-                orient="auto">
-                <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
-              </svg:marker>
-            </ng-template>
-
-            <ng-template #nodeTemplate let-node>
-              <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'"
-                [tooltipTitle]="node.label" (mouseup)="onMilestoneUp($event, node)"
-                (mousedown)="onMilestoneDown($event, node)" (click)="SelectMilestone(node,'submilestone')"
-                (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'submilestone'): ErrorMessage($event,'Submilestone')">
-
-                <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height"
-                  [attr.fill]="node.color || node.options.color" />
-                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}
-                </svg:text>
-              </svg:g>
-            </ng-template>
-            <ng-template #linkTemplate let-link>
-              <svg:g class="edge">
-                <svg:path class="line submilestoneLine" stroke-width="5" marker-end="url(#arrow1)"
-                  (click)="RemoveMilestoneLink(link,'submilestone')">
-
-                </svg:path>
-              </svg:g>
-            </ng-template>
-
-          </ngx-graph>
-          <!-- </div> -->
-
-        </div>
-
-      </div>
-    </mat-expansion-panel>
+        </mat-expansion-panel>
 
 
-    <!--***************************************************************************************************************************************
+        <!--********************************************************************************************
                                                   Task  panel      
-****************************************************************************************************************************************-->
+         ******************************************************************************************-->
 
-    <mat-expansion-panel *ngIf="submilestoneIndex > -1  " [expanded]="step === 2" (opened)="setStep(2)"
-      style="border: 1px solid #db1721;border-radius: 0px;width: 100%;">
-      <mat-expansion-panel-header style=" background: #db1721;" [collapsedHeight]="customCollapsedHeight"
-        [expandedHeight]="customCollapsedHeight">
-        <mat-panel-title>
-          <h3 style="width: 250px; text-align: left;">Tasks </h3>
-          <h4 style="width: 350px; text-align: left;">  </h4>
-        </mat-panel-title>
-        <mat-panel-description>
-        </mat-panel-description>
-      </mat-expansion-panel-header>
+        <mat-expansion-panel *ngIf="submilestoneIndex > -1  " [expanded]="step === 2" (opened)="setStep(2)" style="border: 1px solid #db1721;border-radius: 0px;width: 100%;">
+            <mat-expansion-panel-header style=" background: #db1721;" [collapsedHeight]="customCollapsedHeight" [expandedHeight]="customCollapsedHeight">
+                <mat-panel-title>
+                    <h3 style="width: 250px; text-align: left;">Tasks </h3>
+                    <h4 style="width: 350px; text-align: left;"> </h4>
+                </mat-panel-title>
+                <mat-panel-description>
+                </mat-panel-description>
+            </mat-expansion-panel-header>
 
-      <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="center start" style="margin-top: 1vh;">
-        <div class="milestones dndList" style="width:100%;" dndEffectAllowed="move"
-          fxLayoutAlign.xs="space-around center" fxLayoutAlign="start start">
+            <div fxLayout="column" fxLayoutGap="10px" fxLayoutAlign="center start" style="margin-top: 1vh;">
+                <div class="milestones dndList" style="width:100%;" dndEffectAllowed="move" fxLayoutAlign.xs="space-around center" fxLayoutAlign="start start">
 
-          <div *ngFor="let task of sharedObject.oTaskAllocation.arrTasks" fxLayout="row" fxLayout.xs="column"
-            fxLayoutGap.xs="0" [dndDraggable]="task" dndEffectAllowed="move" [dndType]="task"  (dndStart)="onDragged($event)">
-            <div class="task-item" fxLayout><span> {{task}}</span></div>
-          </div>
-        </div>
+                    <div *ngFor="let task of sharedObject.oTaskAllocation.arrTasks" fxLayout="row" fxLayout.xs="column" fxLayoutGap.xs="0" [dndDraggable]="task" dndEffectAllowed="move" [dndType]="task" (dndStart)="onDragged($event)">
+                        <div class="task-item" fxLayout><span> {{task}}</span></div>
+                    </div>
+                </div>
 
-        <div class="task-drop taskDropArea" id="dropZone" (dndDrop)="onTaskDrop($event)" [dndDropzone]="tasks" fxLayoutAlign="start"
-          dndEffectAllowed="move" fxLayout="column" fxLayout.xs="column" fxLayoutGap.xs="0" style="width:100%;">
+                <div class="task-drop taskDropArea" id="dropZone" (dndDrop)="onTaskDrop($event)" [dndDropzone]="tasks" fxLayoutAlign="start" dndEffectAllowed="move" fxLayout="column" fxLayout.xs="column" fxLayoutGap.xs="0" style="width:100%;">
 
-          <div id="milestonetext" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" style="padding: 2vh"
-            fxLayoutGap.xs="0">
-            <div></div>
-            <div>Drop Tasks here</div>
-            <div>
-              <button type="button" 
-                style="line-height: 0px;height: 0px;" mat-icon-button title="Change Orientation" (click)="ChangeOrientation('task')">
+                    <div id="milestonetext" fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" style="padding: 2vh" fxLayoutGap.xs="0">
+                        <div></div>
+                        <div>Drop Tasks here</div>
+                        <div>
+                            <button type="button" style="line-height: 0px;height: 0px;" mat-icon-button title="Change Orientation" (click)="ChangeOrientation('task')">
                 <mat-icon>autorenew</mat-icon>
               </button>
-              <button type="button" 
-                style="line-height: 0px;height: 0px;" mat-icon-button title="Refresh graph" (click)="ReloadGraph('task')">
+                            <button type="button" style="line-height: 0px;height: 0px;" mat-icon-button title="Refresh graph" (click)="ReloadGraph('task')">
                 <mat-icon>refresh</mat-icon>
               </button>
+                        </div>
+                    </div>
+
+                    <!-- <div > -->
+                    <ngx-graph *ngIf="tasksHoritontal" [view]="[taskWidth,taskHeight]" class="chart-container" id="taskChart" [links]="milestonesGraph.nodes[milestoneIndex].submilestone.nodes[submilestoneIndex].task.links" [nodes]="milestonesGraph.nodes[milestoneIndex].submilestone.nodes[submilestoneIndex].task.nodes"
+                        [legend]="false" [curve]="curve" [enableZoom]="false" [draggingEnabled]="false" [panningEnabled]="false" [autoCenter]="true" [style.overflow-x]="taskWidth > minWidth ? 'scroll' : ''" [style.overflow-y]="taskHeight > taskMaxHeight ? 'scroll' : ''">
+
+                        <ng-template #defsTemplate>
+                            <svg:marker id="arrow2" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
+                                <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
+                            </svg:marker>
+                        </ng-template>
+
+                        <ng-template #nodeTemplate let-node>
+                            <svg:g class="node" *ngIf="node.taskType !== 'Adhoc' && node.taskType !== 'TB' " ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (click)="ontaskClick(node)" (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'task'): ErrorMessage($event,'Task')">
+                                <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
+                                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}
+                                </svg:text>
+                            </svg:g>
+                        </ng-template>
+                        <ng-template #linkTemplate let-link>
+                            <svg:g class="edge">
+                                <svg:path class="line taskLine" stroke-width="5" marker-end="url(#arrow2)" (click)="RemoveMilestoneLink(link,'task')">
+
+                                </svg:path>
+                            </svg:g>
+                        </ng-template>
+
+                    </ngx-graph>
+                    <!-- </div> -->
+                    <!-- <div > -->
+                    <ngx-graph *ngIf="!tasksHoritontal" [view]="[taskWidth,taskHeight]" class="chart-container" id="taskChart" [links]="milestonesGraph.nodes[milestoneIndex].submilestone.nodes[submilestoneIndex].task.links" [nodes]="milestonesGraph.nodes[milestoneIndex].submilestone.nodes[submilestoneIndex].task.nodes"
+                        [legend]="false" [curve]="curve" [enableZoom]="false" [draggingEnabled]="false" [panningEnabled]="false" [autoCenter]="true" [orientation]="TB" [style.overflow-x]="taskWidth > minWidth ? 'scroll' : ''" [style.overflow-y]="taskHeight > taskMaxHeight ? 'scroll' : ''">
+
+                        <ng-template #defsTemplate>
+                            <svg:marker id="arrow2" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
+                                <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
+                            </svg:marker>
+                        </ng-template>
+
+                        <ng-template #nodeTemplate let-node>
+
+                            <svg:g class="node" *ngIf="node.type !== 'Adhoc' && node.type !== 'TB' " ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (click)="ontaskClick(node)" (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'task'): ErrorMessage($event,'Task')">
+                                <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
+                                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}
+                                </svg:text>
+                            </svg:g>
+
+                        </ng-template>
+                        <ng-template #linkTemplate let-link>
+                            <svg:g class="edge">
+                                <svg:path class="line taskLine" stroke-width="5" marker-end="url(#arrow2)" (click)="RemoveMilestoneLink(link,'task')">
+
+                                </svg:path>
+                            </svg:g>
+                        </ng-template>
+
+                    </ngx-graph>
+                    <!-- </div> -->
+                </div>
+
             </div>
-          </div>
+        </mat-expansion-panel>
 
-          <!-- <div > -->
-            <ngx-graph *ngIf="tasksHoritontal"
-            [view]="[taskWidth,taskHeight]"
-            class="chart-container" id="taskChart"
-            [links]="milestonesGraph.nodes[milestoneIndex].submilestone.nodes[submilestoneIndex].task.links"
-            [nodes]="milestonesGraph.nodes[milestoneIndex].submilestone.nodes[submilestoneIndex].task.nodes"
-            [legend]="false" [curve]="curve" [enableZoom]="false" [draggingEnabled]="false"
-            [panningEnabled]="false" [autoCenter]="true"
-            [style.overflow-x]="taskWidth > minWidth ? 'scroll' : ''"
-            [style.overflow-y]="taskHeight > taskMaxHeight ? 'scroll' : ''"
-            >
+    </mat-accordion>
 
-            <ng-template #defsTemplate>
-              <svg:marker id="arrow2" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4"
-                orient="auto">
-                <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
-              </svg:marker>
-            </ng-template>
-
-            <ng-template #nodeTemplate let-node>
-              <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'"
-                [tooltipTitle]="node.label" (click)="ontaskClick(node)"
-                (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'task'): ErrorMessage($event,'Task')">
-                <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height"
-                  [attr.fill]="node.color || node.options.color" />
-                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}
-                </svg:text>
-              </svg:g>
-            </ng-template>
-            <ng-template #linkTemplate let-link>
-              <svg:g class="edge">
-                <svg:path class="line taskLine" stroke-width="5" marker-end="url(#arrow2)"
-                  (click)="RemoveMilestoneLink(link,'task')">
-
-                </svg:path>
-              </svg:g>
-            </ng-template>
-
-          </ngx-graph>
-          <!-- </div> -->
-          <!-- <div > -->
-            <ngx-graph *ngIf="!tasksHoritontal"
-            [view]="[taskWidth,taskHeight]"
-            class="chart-container" id="taskChart"
-            [links]="milestonesGraph.nodes[milestoneIndex].submilestone.nodes[submilestoneIndex].task.links"
-            [nodes]="milestonesGraph.nodes[milestoneIndex].submilestone.nodes[submilestoneIndex].task.nodes"
-            [legend]="false" [curve]="curve" [enableZoom]="false" [draggingEnabled]="false"
-            [panningEnabled]="false" [autoCenter]="true" [orientation]="TB"
-            [style.overflow-x]="taskWidth > minWidth ? 'scroll' : ''"
-            [style.overflow-y]="taskHeight > taskMaxHeight ? 'scroll' : ''"
-            >
-
-            <ng-template #defsTemplate>
-              <svg:marker id="arrow2" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4"
-                orient="auto">
-                <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
-              </svg:marker>
-            </ng-template>
-
-            <ng-template #nodeTemplate let-node>
-              <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'"
-                [tooltipTitle]="node.label" (click)="ontaskClick(node)"
-                (contextmenu)="(node.status ==='Not Confirmed' || node.status ==='Not Saved' || node.status ==='Not Started') ?  RemoveNode($event,node,'task'): ErrorMessage($event,'Task')">
-                <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height"
-                  [attr.fill]="node.color || node.options.color" />
-                <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">{{node.label}}
-                </svg:text>
-              </svg:g>
-            </ng-template>
-            <ng-template #linkTemplate let-link>
-              <svg:g class="edge">
-                <svg:path class="line taskLine" stroke-width="5" marker-end="url(#arrow2)"
-                  (click)="RemoveMilestoneLink(link,'task')">
-
-                </svg:path>
-              </svg:g>
-            </ng-template>
-
-          </ngx-graph>
-          <!-- </div> -->
-        </div>
-
-      </div>
-    </mat-expansion-panel>
-
-  </mat-accordion>
-
-  <div fxLayout="column" class="refreshGraph" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center"  *ngIf="grapLoading" >
-    <div id="graphInnerLoader"></div>
-    <div id="graphInnerLoaderText">Refresh Graph...</div>
-  </div>
+    <div fxLayout="column" class="refreshGraph" style="padding: 10vw;width: 100%;" fxLayoutAlign="center center" *ngIf="grapLoading">
+        <div id="graphInnerLoader"></div>
+        <div id="graphInnerLoaderText">Refresh Graph...</div>
+    </div>
 
 
 </div>

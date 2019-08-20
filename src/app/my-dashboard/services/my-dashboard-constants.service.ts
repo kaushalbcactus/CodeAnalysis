@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ConstantsService } from "../../Services/constants.service";
+import { ConstantsService } from '../../Services/constants.service';
 import { GlobalService } from '../../Services/global.service';
 import { DatePipe } from '@angular/common';
 import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
@@ -30,8 +30,9 @@ export class MyDashboardConstantsService {
   mydashboardComponent = {
 
     MyTasks: {
-      select: "ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones",
-      orderby: "DueDate asc",
+
+      select: 'ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones',
+      orderby: 'DueDate asc',
       filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and (Task ne 'Time Booking') and",
       filterStatus: "(Status ne 'Completed') and (Status ne 'Auto Closed')  and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
       // filterNotCompleted: "(Status ne 'Completed') and (Status ne 'Not Confirmed') and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
@@ -151,13 +152,13 @@ export class MyDashboardConstantsService {
     },
     AllMilestones:
     {
-      select: 'ID,Title',
-      filter: "ProjectCode eq '{{projectCode}}' and ContentType eq 'Summary Task' and (Status eq 'In Progress' or (Status eq 'Completed' and Actual_x0020_End_x0020_Date ge '{{DateString}}')) ",
+      select: 'ID,Title,SubMilestones',
+      filter: "ProjectCode eq '{{projectCode}}' and ContentType eq 'Summary Task' and (Status eq 'In Progress' or (Status eq 'Completed' and Actual_x0020_End_x0020_Date ge '{{DateString}}'))",
       top: 4500
     },
-    
+
     MyTimelineForBooking: {
-      select: "ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,TimeSpentPerDay",
+      select: "ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,TimeSpentPerDay,SubMilestones",
       orderby: "DueDate asc",
       filter: "AssignedTo eq  {{userId}} and ",
       filterNotCompleted: "(Status ne 'Not Confirmed') and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
@@ -420,35 +421,34 @@ export class MyDashboardConstantsService {
     }
     this.response = await this.spServices.getDataByApi(batchGuid, batchContents);
 
-    this.jcSubId=undefined;
-    this.jcId=undefined;
+    this.jcSubId = undefined;
+    this.jcId = undefined;
     if (this.response.length > 0) {
 
       switch (task.Task) {
         case 'Submission Pkg':
-            this.jcSubId = this.response[0].length > 0 ? this.response[0][0].ID : 0;
-           
+          this.jcSubId = this.response[0].length > 0 ? this.response[0][0].ID : 0;
+
           break;
         case 'Galley':
-            this.jcSubId = this.response[0].length > 0 ? this.response[0][0].ID : 0;
-            this.jcId = this.response.length > 1 ? this.response[1].length > 0 ? this.response[1][0].ID : 0 : 0;
+          this.jcSubId = this.response[0].length > 0 ? this.response[0][0].ID : 0;
+          this.jcId = this.response.length > 1 ? this.response[1].length > 0 ? this.response[1][0].ID : 0 : 0;
           break;
         case 'Submit':
-            this.jcSubId = this.response[0].length > 0 ? this.response[0][0].ID : 0;
-            this.jcId = this.response.length > 1 ? this.response[1].length > 0 ? this.response[1][0].ID : 0 : 0;
+          this.jcSubId = this.response[0].length > 0 ? this.response[0][0].ID : 0;
+          this.jcId = this.response.length > 1 ? this.response[1].length > 0 ? this.response[1][0].ID : 0 : 0;
           break;
         case 'Journal Requirement':
-            this.jcId = this.response[0].length > 0 ? this.response[0][0].ID : 0;
+          this.jcId = this.response[0].length > 0 ? this.response[0][0].ID : 0;
           break;
       }
 
-      if(this.jcSubId || this.jcId)
-      {
+      if (this.jcSubId || this.jcId) {
         isJcIdFound = true;
       }
 
-     
-     
+
+
     }
     return isJcIdFound;
   }
@@ -459,7 +459,7 @@ export class MyDashboardConstantsService {
   // **************************************************************************************************************************************
 
   async saveTask(task, isJcIdFound) {
- 
+
 
     const batchGuid = this.spServices.generateUUID();
     var batchContents = new Array();
@@ -614,7 +614,7 @@ export class MyDashboardConstantsService {
       });
       objEmailBody.push({
         "key": "@@Val2@@",
-        "value": element.SubMilestones ? element.SubMilestones !=="Default" ? element.Title + " - " + element.SubMilestones : element.Title : element.Title
+        "value": element.SubMilestones ? element.SubMilestones !== "Default" ? element.Title + " - " + element.SubMilestones : element.Title : element.Title
       });
       objEmailBody.push({
         "key": "@@Val3@@",
@@ -783,7 +783,7 @@ export class MyDashboardConstantsService {
       return {
         label: label1,
         value: array.find(s => s.label === label1).value,
-      
+
       }
     });
   }

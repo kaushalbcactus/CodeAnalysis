@@ -1,16 +1,23 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DashboardRoutingModule } from "./dashboard-routing.module";
+import { DashboardRoutingModule } from './dashboard-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { PrimengModule } from "../primeng/primeng.module";
 import { ListComponent } from './list/list.component';
+// import { PeoplePickerComponent } from './people-picker/people-picker.component';
+import { PrimengModule } from '../primeng/primeng.module';
+import { FormsModule } from '@angular/forms';
+// import { SPService } from './services/sp.service';
+
 @NgModule({
-  declarations: [DashboardComponent, ListComponent],
+  declarations: [DashboardComponent, ListComponent ],
+    //  ListComponent, PeoplePickerComponent],
   imports: [
     CommonModule,
     DashboardRoutingModule,
-    PrimengModule
+    PrimengModule,
+    FormsModule
   ],
-  providers:[]
+  // providers:[SPService]
+  providers: []
 })
 export class DashboardModule { }

@@ -113,8 +113,10 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   }
 
 
+  // *************************************************************************************************************************************
+  // hide popup menu on production 
+  // *************************************************************************************************************************************
 
-  
   @HostListener('document:click', ['$event'])
   clickout(event) {
     if (event.target.className === "pi pi-ellipsis-v") {
@@ -140,6 +142,11 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   }
 
 
+
+   // *************************************************************************************************************************************
+  //  pop up menu options 
+  // *************************************************************************************************************************************
+
   openPopup(data) {
     this.projectMenu = [
       { label: 'View Details', command: (e) => this.getProjectDetails(data) },
@@ -147,11 +154,19 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     ];
   }
 
+   // *************************************************************************************************************************************
+  //  destroy load components 
+  // *************************************************************************************************************************************
+
   onCancel() {
     this.projectDraftsComponent.ngOnDestroy();
     this.viewUploadDocumentDialogComponent.ngOnDestroy();
     this.timelineComponent.ngOnDestroy();
   }
+
+    // *************************************************************************************************************************************
+  //   create column heading multiselect options
+  // *************************************************************************************************************************************
 
   createColFieldValues() {
 
@@ -192,6 +207,10 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
       this.SearchProject();
     }
   }
+
+    // *************************************************************************************************************************************
+  //   Search projects
+  // *************************************************************************************************************************************
 
   async SearchProject() {
 
@@ -257,7 +276,9 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.ProjectTitle = event === 'ProjectCode' ? '' : this.ProjectTitle;
     this.ProjectCode = event === 'ProjectTitle' ? '' : this.ProjectCode;
   }
-
+  // *************************************************************************************************************************************
+  //  get project details by search
+  // *************************************************************************************************************************************
 
   getProjectDetails(project) {
 
@@ -347,6 +368,8 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     }
   }
 }
+
+
 
 interface DateObj {
   label: string;
