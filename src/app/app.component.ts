@@ -17,11 +17,13 @@ export class AppComponent {
   constructor(
     public globalObject: GlobalService,
     private router: Router,
+    // tslint:disable-next-line: variable-name
     private _ngZone: NgZone,
   ) { }
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
-    if (environment.production) { if (window) { window.console.log = function () { }; } }
+    // tslint:disable-next-line: only-arrow-functions
+    if (environment.production) { if (window) { window.console.log = function() { }; } }
     this.globalObject.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
     this.globalObject.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
@@ -37,8 +39,15 @@ export class AppComponent {
     window['angularComponentReference'] = { component: this, zone: this._ngZone, loadPubSupport: () => this.goToPubSupport(), };
     // tslint:disable-next-line:no-string-literal
     window['fdComponentReference'] = { component: this, zone: this._ngZone, loadFD: () => this.goToFD(), };
+     // tslint:disable-next-line: no-string-literal
     window['pmComponentReference'] = { component: this, zone: this._ngZone, loadPM: () => this.goToPM(), };
+     // tslint:disable-next-line: no-string-literal
     window['myDashboardComponentReference'] = { component: this, zone: this._ngZone, loadMyDashboard: () => this.goToMyDashboard(), };
+    // tslint:disable-next-line: no-string-literal
+    window['taskAllocationComponentReference'] = { component: this, zone: this._ngZone,
+      loadTaskAllocation: () => this.goToTaskAllocation(), };
+
+
   }
 
   goToPubSupport() {
@@ -63,12 +72,23 @@ export class AppComponent {
     }
   }
 
+  goToTaskAllocation() {
+    if (!window.location.href.includes('taskAllocation')) {
+      this.router.navigate(['/taskAllocation']);
+    }
+  }
+
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnDestroy() {
     // tslint:disable-next-line:no-string-literal
     window['angularComponentReference'] = null;
+     // tslint:disable-next-line: no-string-literal
     window['fdComponentReference'] = null;
+     // tslint:disable-next-line: no-string-literal
     window['pmComponentReference'] = null;
+     // tslint:disable-next-line: no-string-literal
     window['myDashboardComponentReference'] = null;
+     // tslint:disable-next-line: no-string-literal
+    window['taskAllocationComponentReference'] = null;
   }
 }

@@ -11,6 +11,7 @@ import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { Router } from '@angular/router';
 
 declare var $;
 @Component({
@@ -108,6 +109,7 @@ export class SendToClientComponent implements OnInit {
     private pmConstant: PmconstantService,
     public pmCommonService: PMCommonService,
     public spOperations: SPOperationService,
+    public router: Router
   ) {
   }
   public changeSuccessMessage(message) {
@@ -138,12 +140,12 @@ export class SendToClientComponent implements OnInit {
   }
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/Pages/TaskAllocation.aspx?ProjectCode=' + task.ProjectCode, '_blank');
+      '/allocation#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
 
   goToProjectManagement(task) {
-    window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/Pages/ProjectManagement.aspx?ProjectCode=' + task.ProjectCode, '_blank');
+    this.pmObject.columnFilter.ProjectCode = [task.ProjectCode];
+    this.router.navigate(['/projectMgmt/allProjects']);
   }
   closeTask(task) {
     if (task.PreviousTaskStatus === 'Auto Closed' || task.PreviousTaskStatus === 'Completed') {

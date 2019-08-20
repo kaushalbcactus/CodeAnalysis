@@ -12,7 +12,7 @@ import { UserCapacityComponent } from '../user-capacity/user-capacity.component'
 import { DragDropComponent } from '../drag-drop/drag-drop.component';
 import { TaskDetailsDialogComponent } from '../task-details-dialog/task-details-dialog.component';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
-import { ENTER_SELECTOR, eraseStyles } from '@angular/animations/browser/src/util';
+
 
 
 @Component({
@@ -176,23 +176,11 @@ export class TimelineComponent implements OnInit, OnDestroy {
       vShowEndDate: parseInt('1', 10),
       vFormatArr: ['Day', 'Week', 'Month', 'Quarter'],
       vAdditionalHeaders: null,
-
     };
-
-    // this.contextMenuOptions = [
-    //   { label: 'Re-Order', icon: 'pi pi-replay' },
-    //   { label: 'Confirm', icon: 'pi pi-check' },
-    //   { label: 'Scope', icon: 'pi pi-comment', command: (event) => this.openComment(this.selectedNode) },
-    //   { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(this.selectedNode) },
-    //   { label: 'User Capacity', icon: 'pi pi-camera', command: (event) => this.getUserCapacity(event, this.selectedNode) },
-    // ];
-
-
   }
 
   ngOnDestroy() {
   }
-
 
   async onPopupload() {
     await this.callReloadRes();
@@ -201,7 +189,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   public async callReloadRes() {
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
-    // this.reloadResources.next('callRes');
   }
 
 
@@ -224,8 +211,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
   // tslint:disable
   public async getMilestones(bFirstLoad) {
-
-
 
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
@@ -1641,7 +1626,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               mileexpand = mileexpand == false ? (element.data.status === 'Not Saved' ? true : false) : true;
             });
             if (milestoneedit === true) {
-              this.tempGanttchartData.find(c => c.pID === milestone.dbId) !== undefined ? this.tempGanttchartData.find(c => c.pID === milestone.dbId).edited === true : milestoneObj.edited === true;
+              this.tempGanttchartData.find(c => c.pID === milestone.dbId) !== undefined ? this.tempGanttchartData.find(c => c.pID === milestone.dbId).edited = true : milestoneObj.edited = true;
             }
             let oExistingMil = this.tempGanttchartData.find(c => c.pID === milestone.dbId);
 
@@ -1666,8 +1651,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
         })
 
+        const updatedtempmilestoneData = this.updateMilestoneSubMilestonesDate(tempmilestoneData);
+
         this.milestoneData = [];
-        this.milestoneData.push.apply(this.milestoneData, tempmilestoneData);
+        this.milestoneData.push.apply(this.milestoneData, updatedtempmilestoneData);
 
         this.assignUsers(allReturnedTasks);
         this.loaderenable = false;
@@ -1695,6 +1682,32 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
     });
+  }
+
+
+  updateMilestoneSubMilestonesDate(milestones) {
+    const updatedMilestones = milestones;
+    updatedMilestones.forEach(milestone => {
+      if (milestone.children) {
+        milestone.children.forEach(submilestone => {
+          if (submilestone.children) {
+            submilestone.data.pStart = submilestone.children[0].data.pStart;
+            submilestone.data.pUserStart = submilestone.children[0].pUserStart;
+            submilestone.data.pUserStartDatePart = submilestone.children[0].data.pUserStartDatePart;
+            submilestone.data.pEnd = submilestone.children[submilestone.children.length - 1].data.pEnd;
+            submilestone.data.pUserEnd = submilestone.children[submilestone.children.length - 1].data.pUserEnd;
+            submilestone.data.pUserEndDatePart = submilestone.children[submilestone.children.length - 1].data.pUserEndDatePart;
+          }
+        });
+        milestone.data.pStart = milestone.children[0].data.pStart;
+        milestone.data.pUserStart = milestone.children[0].data.pUserStart;
+        milestone.data.pUserStartDatePart = milestone.children[0].data.pUserStartDatePart;
+        milestone.data.pEnd = milestone.children[milestone.children.length - 1].data.pEnd;
+        milestone.data.pUserEnd = milestone.children[milestone.children.length - 1].data.pUserEnd;
+        milestone.data.pUserEndDatePart = milestone.children[milestone.children.length - 1].data.pUserEndDatePart;
+      }
+    });
+    return updatedMilestones;
   }
   // tslint:enable
   // *************************************************************************************************************************************
@@ -1892,6 +1905,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       }
       if (milestone.children !== undefined) {
         milestone.children.forEach(submilestone => {
+
           if (submilestone.data.type === 'task') {
             if (Node === submilestone.data) {
               this.changeDateOfEditedTask(submilestone.data, type);
@@ -1988,6 +2002,25 @@ export class TimelineComponent implements OnInit, OnDestroy {
           nextNode.push(this.milestoneData[selectedMil + 1]);
         }
 
+        // if(this.milestoneData[selectedMil].children){
+        //   const retNodes = this.milestoneData[selectedMil].children.filter(c => parseInt(c.data.position) == (subMilestonePosition + 1));
+
+        //   if (retNodes.length) {
+        //     retNodes.forEach(element => {
+        //       nextNode.push(element);
+        //     });
+        //   }
+        // }
+        // else {
+        //   sentPrevNode = this.milestoneData[selectedMil];
+        //   this.setStartAndEnd(sentPrevNode);
+        //   this.milestoneData[selectedMil] = sentPrevNode;
+        //   //sentPrevNode = previousNode;
+        //   if (this.milestoneData.length > (selectedMil + 1)) {
+        //     nextNode.push(this.milestoneData[selectedMil + 1]);
+        //   }
+        // }
+
       }
     }
 
@@ -2007,6 +2040,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (nodeData.type === 'task' && nodeData.itemType !== 'Client Review') {
       if (new Date(prevNodeData.pEnd) > new Date(nodeData.pStart) && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
         //alert('next task');
+        this.cascadeNode(previousNode, nodeData);
+        this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
+      }
+      else if (new Date(prevNodeData.pEnd).getTime() === new Date(nodeData.pStart).getTime() && prevNodeData.itemType === 'Client Review' && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
         this.cascadeNode(previousNode, nodeData);
         this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
       }
@@ -2036,15 +2073,19 @@ export class TimelineComponent implements OnInit, OnDestroy {
       if (new Date(prevNodeData.pEnd) >= new Date(nodeData.pStart)) {
         const firstTask = nextNode.children[0].data;
         const allTasks = this.getTasksFromMilestones(nextNode, false);
-        let allParallelTasks
+        let allParallelTasks = [];
         if (firstTask.type === 'task') {
           allParallelTasks = allTasks.filter(dataEl => {
             return !dataEl.previousTask
           });
         }
         else {
-          allParallelTasks = allTasks.filter(dataEl => {
-            return (!dataEl.previousTask && dataEl.submilestone === firstTask.pName)
+          nextNode.children.forEach(element => {
+     
+            const tempData = allTasks.filter(dataEl => {
+              return (!dataEl.previousTask && (parseInt(firstTask.position) === parseInt(element.data.position)));
+            });
+            allParallelTasks.push.apply(allParallelTasks, tempData);
           });
         }
         allParallelTasks.forEach(element => {
@@ -2613,47 +2654,17 @@ export class TimelineComponent implements OnInit, OnDestroy {
     return responseInLines;
   }
 
+  // *************************************************************************************************
+  //  Send Email On Task
+  // **************************************************************************************************
 
   sendMail(projectDetails, milestoneTask, callDetail) {
     if (milestoneTask.AssignedTo && milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID !== -1) {
       const fromUser = this.sharedObject.currentUser;
       const user = milestoneTask.AssignedTo;
       const mailSubject = projectDetails.projectCode + '(' + projectDetails.wbjid + ')' + ': Task created';
-      const objEmailBody = [];
-      objEmailBody.push({
-        'key': '@@Val3@@',
-        'value': user.Title
-      });
-      objEmailBody.push({
-        'key': '@@Val1@@', // Project Code
-        'value': projectDetails.projectCode
-      });
-      objEmailBody.push({
-        'key': '@@Val2@@', // Task Name
-        'value': milestoneTask.submilestone && milestoneTask.submilestone !== 'Default' ? projectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.pName + ' - ' + milestoneTask.submilestone : projectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.pName
-      });
-      objEmailBody.push({
-        'key': '@@Val4@@', // Task Type
-        'value': milestoneTask.itemType
-      });
-      objEmailBody.push({
-        'key': '@@Val5@@', // Milestone
-        'value': milestoneTask.milestone
-      });
-      objEmailBody.push({
-        'key': '@@Val6@@', // Start Date
-        'value': this.datepipe.transform(milestoneTask.pStart, 'MMM dd yyyy hh:mm:ss a') // Yes
-      });
-      objEmailBody.push({
-        'key': '@@Val7@@', // End Date
-        'value': this.datepipe.transform(milestoneTask.pEnd, 'MMM dd yyyy hh:mm:ss a') // Yes
-      });
-      objEmailBody.push({
-        'key': '@@Val9@@', // Scope
-        'value': milestoneTask.scope ? milestoneTask.scope : ''
-      });
+      const objEmailBody = this.getsendEmailObjBody(milestoneTask, projectDetails, 'Email');
       const arrayTo = [];
-
       const errorDetail = callDetail;
       if (user !== 'SelectOne' && user !== '' && user != null) {
         const userEmail = user.UserName ? user.UserName.EMail : user.EMail;
@@ -2661,20 +2672,35 @@ export class TimelineComponent implements OnInit, OnDestroy {
       }
       this.spServices.triggerMail(fromUser.email, 'TaskCreation', objEmailBody, mailSubject, arrayTo, errorDetail);
     }
-
   }
 
-  sendCentralTaskMail(projectDetails, milestoneTask, callDetail, subjectLine) {
-    // if(milestoneTask.AssignedTo && milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID !== -1)
-    // {
+  // *************************************************************************************************
+  //  Send Email On Central Task
+  // **************************************************************************************************
 
+  sendCentralTaskMail(projectDetails, milestoneTask, callDetail, subjectLine) {
 
     const fromUser = this.sharedObject.currentUser;
     const mailSubject = projectDetails.projectCode + '(' + projectDetails.wbjid + ')' + ': ' + subjectLine;
+    const objEmailBody = this.getsendEmailObjBody(milestoneTask, projectDetails, 'CentralTaskMail');
+    const arrayTo = [];
+    const users = this.sharedObject.oTaskAllocation.oCentralGroup;
+    for (const user of users) {
+      arrayTo.push(user.Email);
+    }
+    this.spServices.triggerMail(fromUser.email, 'CentralTaskCreation', objEmailBody, mailSubject, arrayTo, callDetail);
+
+  }
+
+  // *************************************************************************************************
+  //  Get Email Body
+  // **************************************************************************************************
+
+  getsendEmailObjBody(milestoneTask, projectDetails, EmailType) {
     const objEmailBody = [];
     objEmailBody.push({
       'key': '@@Val3@@',
-      'value': "Team"
+      'value': EmailType === 'Email' ? milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title : undefined : 'Team'
     });
     objEmailBody.push({
       'key': '@@Val1@@', // Project Code
@@ -2704,17 +2730,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
       'key': '@@Val9@@', // Scope
       'value': milestoneTask.scope ? milestoneTask.scope : ''
     });
-    const arrayTo = [];
-    const users = this.sharedObject.oTaskAllocation.oCentralGroup;
-    for (const user of users) {
-      //if (tempArray.length>0 && tempArray[i].Email != undefined && tempArray[i].Email != "") {
-      arrayTo.push(user.Email);
-      //}
-    }
-    const errorDetail = callDetail;
 
-    this.spServices.triggerMail(fromUser.email, 'CentralTaskCreation', objEmailBody, mailSubject, arrayTo, errorDetail);
-    //}
+    return objEmailBody;
   }
 
   public generateSaveTasks() {
@@ -3246,7 +3263,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
     let previousNode;
     for (const milestone of milestonesData) {
 
-      debugger;
       if (milestone.data.status !== 'Completed') {
         const AllTasks = this.getTasksFromMilestones(milestone, false);
 

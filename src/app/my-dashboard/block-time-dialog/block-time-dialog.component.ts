@@ -117,8 +117,9 @@ export class BlockTimeDialogComponent implements OnInit {
 
 
   SetTime(time) {
-    const timespent = (time.split(':')[0] % 12) > 12 ?
-      time.split(':')[0] % 12 + ':' + time.split(':')[1] : time.split(':')[0] + ':' + time.split(':')[1];
+    // const timespent = (time.split(':')[0] % 12) > 12 ?
+    //   time.split(':')[0] % 12 + ':' + time.split(':')[1] : time.split(':')[0] + ':' + time.split(':')[1];
+    const timespent = time.split(':')[0] % 12 + ':' + time.split(':')[1];
     this.starttime = timespent;
   }
 

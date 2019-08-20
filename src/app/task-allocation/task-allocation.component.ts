@@ -68,14 +68,10 @@ export class TaskAllocationComponent implements OnInit {
     private commonService: CommonService,
     public taskAllocationService: TaskAllocationConstantsService) { }
 
-  ngOnInit() {
-    this.currentUserGroup();
-
-    // this.route.snapshot.queryParams['ProjectCode'];
-    // this.route.queryParams.subscribe(params => {
-
-    //   this.projectCode = params['ProjectCode'];
-    // })
+  async ngOnInit() {
+    await this.currentUserGroup();
+    // tslint:disable-next-line: no-string-literal
+    this.projectCode = this.route.snapshot.queryParams['ProjectCode'];
     if (this.projectCode !== undefined) {
       this.SearchView = false;
       this.getProjectDetails();

@@ -281,7 +281,8 @@ export class TimeBookingDialogComponent implements OnInit {
       ProjectCode: o.ProjectCode === 'Adhoc' ? '-' : o.ProjectCode,
       Milestone: o.Milestone === 'Select one' ? o.Comments : o.Milestone,
       SubMilestone: o.SubMilestones,
-      displayName: o.Milestone === 'Select one' ? o.Comments : o.SubMilestones ? o.Milestone + ' - ' + o.SubMilestones : o.Milestone,
+      displayName: o.Milestone === 'Select one' ? o.Comments : o.SubMilestones &&
+      o.SubMilestones !== 'Default' ? o.Milestone + ' - ' + o.SubMilestones : o.Milestone,
       type: o.Entity === null ? 'task' : 'Adhoc',
       TimeSpents: this.weekDays.map(c => new Object({
         date: c, MileHrs: '00:00', minHrs: '00: 00',
@@ -305,7 +306,7 @@ export class TimeBookingDialogComponent implements OnInit {
     this.UserMilestones.push.apply(this.UserMilestones, uniqueAdhoc);
 
     this.allTasks.forEach(task => {
-
+      
       if (task.TimeSpentPerDay !== null) {
         const timeSpentForTask = task.TimeSpentPerDay.split(/\n/);
 
@@ -313,7 +314,8 @@ export class TimeBookingDialogComponent implements OnInit {
           timeSpentForTask.splice(timeSpentForTask.indexOf(''), 1);
         }
         // tslint:disable-next-line: no-shadowed-variable
-        const milestone = this.UserMilestones.find(c => c.Milestone === task.Milestone && c.ProjectCode === task.ProjectCode);
+        const milestone = this.UserMilestones.find(c => c.Milestone === task.Milestone &&
+           c.ProjectCode === task.ProjectCode && c.SubMilestone === task.SubMilestones);
         if (milestone !== undefined) {
           timeSpentForTask.forEach(element => {
             // tslint:disable-next-line: no-shadowed-variable
@@ -499,7 +501,7 @@ export class TimeBookingDialogComponent implements OnInit {
       const totalTimeSpent = timeSpentMin < 10 ? timeSpentHours1 + '.' + '0' + timeSpentMin : timeSpentHours1 + '.' + timeSpentMin;
 
       const existingObjItem = this.allTasks.filter(c => c.ProjectCode === dbTasks[i].ProjectCode &&
-        c.Milestone === dbTasks[i].Milestone && c.SubMilestone === dbTasks[i].SubMilestone && c.Task === 'Time Booking');
+        c.Milestone === dbTasks[i].Milestone && c.SubMilestone === dbTasks[i].SubMilestones && c.Task === 'Time Booking');
 
       if (existingObjItem.length) {
         const existingObj = existingObjItem[0];
@@ -567,9 +569,8 @@ export class TimeBookingDialogComponent implements OnInit {
   }
 
   checkMilestone(event, rowData) {
-
-    rowData.Milestone = event.split('-')[0].trim();
-    rowData.SubMilestone = event.split('-').length > 0 ? event.split('-')[1].trim() : null;
+    rowData.Milestone = event.lastIndexOf(' - ') > -1 ? event.substr(0, event.lastIndexOf(' - ')) : event;
+    rowData.SubMilestone = event.lastIndexOf(' - ') > -1 ? event.substr(event.lastIndexOf(' - ') + 3) : null;
 
     if (this.UserMilestones.filter(c => c.Entity === rowData.Entity && c.ProjectCode ===
       rowData.ProjectCode && c.displayName === event).length > 1) {

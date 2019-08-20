@@ -30,7 +30,7 @@ export class MyDashboardConstantsService {
   mydashboardComponent = {
 
     MyTasks: {
-     
+
       select: 'ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones',
       orderby: 'DueDate asc',
       filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and (Task ne 'Time Booking') and",
@@ -153,7 +153,7 @@ export class MyDashboardConstantsService {
     AllMilestones:
     {
       select: 'ID,Title,SubMilestones',
-      filter: "ProjectCode eq '{{projectCode}}' and ContentType eq 'Summary Task' and (Status eq 'In Progress' or Status eq 'Completed') and Actual_x0020_End_x0020_Date ge '{{DateString}}' ",
+      filter: "ProjectCode eq '{{projectCode}}' and ContentType eq 'Summary Task' and (Status eq 'In Progress' or (Status eq 'Completed' and Actual_x0020_End_x0020_Date ge '{{DateString}}'))",
       top: 4500
     },
 
