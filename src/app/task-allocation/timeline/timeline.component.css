@@ -206,6 +206,23 @@ tr.ui-contextmenu-selected {
     }
 }
 
+@media screen and (max-width: 540px) {
+    .VisualRepresentation,
+    .VisualRepresentationpopup .gstartdate div,
+    .gcharttableh {
+        width: 100%;
+    }
+    .VisualRepresentation>ng-gantt>div>.gchartcontainer>.gmainright {
+        width: 650px !important;
+    }
+    .VisualRepresentationpopup>ng-gantt>div>.gchartcontainer>.gmainright {
+        width: 1090px !important;
+    }
+    .gmainleft {
+        width: 750px !important;
+    }
+}
+
 @media (min-width: 1025px) and (max-width: 1400px) {
     .gtaskname div,
     .gtaskname,

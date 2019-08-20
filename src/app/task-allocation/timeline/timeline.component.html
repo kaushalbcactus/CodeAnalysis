@@ -177,14 +177,14 @@
 
                             <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType ==='Client Review' ">
                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart" [disabledDays]="[0,6]"
-                  [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}" appendTo="body"
+                  [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}"
                   hideOnDateTimeSelect="true" [stepMinute]="15" [showIcon]="true" [showOnFocus]="false"
                   [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')"
                   [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
               </span>
                             <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Client Review' ">
                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart" [disabledDays]="[0,6]"
-                  [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}" appendTo="body"
+                  [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}" 
                   hideOnDateTimeSelect="true" [stepMinute]="15" [showIcon]="true" [showOnFocus]="false"
                   [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')"
                   [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
@@ -203,19 +203,20 @@
 
                             <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType ==='Client Review' ">
                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart" [disabledDays]="[0,6]"
-                  [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}" appendTo="body"
+                  [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}"
                   hideOnDateTimeSelect="true" [stepMinute]="15" [showIcon]="true" [showOnFocus]="false"
                   [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'end')"
                   [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
 
               </span>
-                            <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Client Review' ">
+                            <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Client Review' "> 
+                               
                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart" [disabledDays]="[0,6]"
-                  [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}" appendTo="body"
+                  [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}"  
                   hideOnDateTimeSelect="true" [stepMinute]="15" [showIcon]="true" [showOnFocus]="false"
                   [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'end')"
                   [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
-                <input [disabled]="rowData.tat" readonly [ngxTimepicker]="picker" [min]="rowData.pUserStartTimePart" [(ngModel)]="rowData.pUserEndTimePart"
+                <input [disabled]="rowData.tat" readonly [ngxTimepicker]="picker" [min]="rowData.pUserStartDatePart ===rowData.pUserEndDatePart ? rowData.pUserStartTimePart :'12:00 am'" [(ngModel)]="rowData.pUserEndTimePart"
                   class="timePicker">
                   <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
                 <ngx-material-timepicker [preventOverlayClick]="true" (closed)="DateChangePart(rowData,'start')" #picker [ngxMaterialTimepickerTheme]="darkTheme"
@@ -293,7 +294,7 @@
                                                          gantt chart Data
            ********************************************************************************************************** -->
         <div fxLayout="row" fxLayoutAlign=" start center" [ngClass]="projectDetails  ? 'VisualRepresentationpopup':'VisualRepresentation'" [hidden]="visualgraph === false">
-            <ng-gantt style="width:100%;" [options]="editorOptions" [data]="GanttchartData" #gantteditor></ng-gantt>
+            <ng-gantt style="width:100%;" *ngIf='visualgraph' [options]="editorOptions" [data]="GanttchartData" #gantteditor></ng-gantt>
         </div>
 
     </div>

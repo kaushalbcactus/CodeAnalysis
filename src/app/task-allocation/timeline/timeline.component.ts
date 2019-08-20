@@ -205,7 +205,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const newDate = new Date(date);
     return new Date(this.datepipe.transform(newDate, 'MMM d, y'));
   }
-  getTimePart(date) {
+  getTimePart(date) {   
     const newDate = new Date(date);
     return this.datepipe.transform(newDate, 'hh:mm a');
   }
@@ -2081,7 +2081,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
         else {
           nextNode.children.forEach(element => {
-     
+
             const tempData = allTasks.filter(dataEl => {
               return (!dataEl.previousTask && (parseInt(firstTask.position) === parseInt(element.data.position)));
             });
