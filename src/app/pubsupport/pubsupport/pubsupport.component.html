@@ -76,8 +76,7 @@
             <ng-template pTemplate let-i="rowIndex" let-node="rowData">
                 <!-- <p-menu #popupMenu [popup]="true" [model]="items" [style]="{'width':'20em'}" class='menuPopup'></p-menu> -->
                 <div>
-                    <p-menu #popupMenu [appendTo]="body" style="top: 0px;"
-                        [style]="{'width': '20em'}" [popup]="true"
+                    <p-menu #popupMenu [appendTo]="body" style="top: 0px;" [style]="{'width': '20em'}" [popup]="true"
                         [model]="items"></p-menu>
                     <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                         (click)="openPopup(node, popupMenu);popupMenu.show($event);"></i>
@@ -1250,7 +1249,7 @@
             <div class="ui-g-12 ui-md-6 ui-lg-2">
                 Type
             </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-3">
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
                 <p-dropdown resetFilterOnHide="true" [options]="documentTypes" placeholder="Select document type"
                     [style]="{'width':'100%'}" formControlName="EntryType"
                     (onChange)="onChangeSelectedType($event.value)">
@@ -1260,7 +1259,7 @@
                         Please select one of type & try again.</div>
                 </div>
             </div>
-            <div class="ui-g-12 ui-md-6 ui-lg-2" style="text-align: right;">
+            <div class="ui-g-12 ui-md-6 ui-lg-1">
                 List
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
@@ -1310,10 +1309,10 @@
                     </div>
                 </div>
 
-                <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
+                <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
                     <div class="box">Password</div>
                 </div>
-                <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
+                <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <input type="text" pInputText maxlength="30" formControlName="Password" style="width: 100%;"
                         placeholder="Password" />
                     <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Password.errors">
