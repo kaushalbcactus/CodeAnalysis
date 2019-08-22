@@ -134,6 +134,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
   tempClick: any;
   selectedSubMilestone: any;
   changeInRestructure = false;
+  errorMessageCount: number;
+  taskerrorMessage: string;
 
   constructor(
     private constants: ConstantsService,
@@ -205,7 +207,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const newDate = new Date(date);
     return new Date(this.datepipe.transform(newDate, 'MMM d, y'));
   }
-  getTimePart(date) {   
+  getTimePart(date) {
     const newDate = new Date(date);
     return this.datepipe.transform(newDate, 'hh:mm a');
   }
@@ -246,312 +248,551 @@ export class TimelineComponent implements OnInit, OnDestroy {
         for (const milestone of milestones) {
 
 
-          const milestoneHoursSpent = [];
-          milestoneSubmilestones = milestone.SubMilestones !== null ? milestone.SubMilestones.replace(/#/gi, "").split(';') : [];
+          if (milestone.Status !== 'Deleted') {
+            const milestoneHoursSpent = [];
+            let taskName;
+            milestoneSubmilestones = milestone.SubMilestones !== null ? milestone.SubMilestones.replace(/#/gi, "").split(';') : [];
 
-          var dbSubMilestones: Array<any> = milestoneSubmilestones.length > 0 ? milestoneSubmilestones.map(o => new Object({ subMile: o.split(':')[0], position: o.split(':')[1], status: o.split(':')[2] })) : [];
+            var dbSubMilestones: Array<any> = milestoneSubmilestones.length > 0 ? milestoneSubmilestones.map(o => new Object({ subMile: o.split(':')[0], position: o.split(':')[1], status: o.split(':')[2] })) : [];
 
-          var NextSubMilestone = dbSubMilestones.length > 0 ? dbSubMilestones.find(c => c.status === 'Not Confirmed') !== undefined ? dbSubMilestones.find(c => c.status === 'Not Confirmed') : new Object({ subMile: '', position: '', status: '' }) : new Object({ subMile: '', position: '', status: '' });
+            var NextSubMilestone = dbSubMilestones.length > 0 ? dbSubMilestones.find(c => c.status === 'Not Confirmed') !== undefined ? dbSubMilestones.find(c => c.status === 'Not Confirmed') : new Object({ subMile: '', position: '', status: '' }) : new Object({ subMile: '', position: '', status: '' });
 
-          milestone.startDate = milestone.Actual_x0020_Start_x0020_Date ?
-            {
-              date: {
-                'year': new Date(milestone.Actual_x0020_Start_x0020_Date).getFullYear(),
-                'month': new Date(milestone.Actual_x0020_Start_x0020_Date).getMonth() + 1,
-                'day': new Date(milestone.Actual_x0020_Start_x0020_Date).getDate()
-              }
-            } : '';
-
-          milestone.endDate = milestone.Actual_x0020_End_x0020_Date ?
-            {
-              date: {
-                'year': new Date(milestone.Actual_x0020_End_x0020_Date).getFullYear(),
-                'month': new Date(milestone.Actual_x0020_End_x0020_Date).getMonth() + 1,
-                'day': new Date(milestone.Actual_x0020_End_x0020_Date).getDate()
-              }
-            } : '';
-
-          let color = this.colors.filter(c => c.key == milestone.Status)
-          if (color.length) {
-            milestone.color = color[0].value;
-          }
-
-          // Gantt Chart Object
-
-          let GanttObj = {
-            //'pID': milestoneObj.Id.toString(),
-            'pID': milestone.Id,
-            'pName': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? milestone.Title + " (Current)" : milestone.Title,
-            // 'pName': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? milestone.Title + " (Current)" : (this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title && this.oProjectDetails.status !== 'In Discussion' || this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title && milestone.Status !== 'Completed' || this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title && milestone.ID !== -1) ? milestone.Title + "<img id=imgCurrentMilestone' class='currentMilestone'  [src]='webImageURL' " + "'/Images/confirm.png' (click)='setAsNextMilestoneCall()' />" : milestone.Title,
-            'pStart': milestone.startDate !== "" ? milestone.startDate.date.year + "/" + (milestone.startDate.date.month < 10 ? "0" + milestone.startDate.date.month : milestone.startDate.date.month) + "/" + (milestone.startDate.date.day < 10 ? "0" + milestone.startDate.date.day : milestone.startDate.date.day) : '',
-            'pEnd': milestone.endDate !== "" ? milestone.endDate.date.year + "/" + (milestone.endDate.date.month < 10 ? "0" + milestone.endDate.date.month : milestone.endDate.date.month) + "/" + (milestone.endDate.date.day < 10 ? "0" + milestone.endDate.date.day : milestone.endDate.date.day) : '',
-            'pUserStart': milestone.startDate !== "" ? milestone.startDate.date.year + "/" + (milestone.startDate.date.month < 10 ? "0" + milestone.startDate.date.month : milestone.startDate.date.month) + "/" + (milestone.startDate.date.day < 10 ? "0" + milestone.startDate.date.day : milestone.startDate.date.day) : '',
-            'pUserEnd': milestone.endDate !== "" ? milestone.endDate.date.year + "/" + (milestone.endDate.date.month < 10 ? "0" + milestone.endDate.date.month : milestone.endDate.date.month) + "/" + (milestone.endDate.date.day < 10 ? "0" + milestone.endDate.date.day : milestone.endDate.date.day) : '',
-            'pUserStartDatePart': this.getDate(milestone.startDate),
-            'pUserStartTimePart': '',
-            'pUserEndDatePart': this.getDate(milestone.endDate),
-            'pUserEndTimePart': '',
-            'pClass': milestone.Status === 'Completed' ? 'gtaskblue' : milestone.Status === "In Progress" ? 'gtaskgreen' : milestone.Status === "Not Confirmed" ? 'gtaskyellow' : 'ggroupblack',
-            'pLink': '',
-            'pMile': 0,
-            'pRes': '',
-            'pComp': milestone.Status === 'Completed' ? 100 : (milestoneTasks.filter(c => c.Status == "Completed").length > 0) ? Math.round((milestoneTasks.filter(c => c.Status == "Completed").length / milestoneTasks.length) * 100) : 0,
-            'pGroup': 1,
-            'pParent': 0,
-            'pOpen': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? 1 : 0,
-            'pDepend': i === -1 ? '' : i,
-            'pCaption': '',
-            'status': milestone.Status,
-            'tat': true,
-            'tatVal': this.commonService.calcBusinessDays(new Date(milestone.Actual_x0020_Start_x0020_Date), new Date(milestone.Actual_x0020_End_x0020_Date)),
-            'budgetHours': milestone.ExpectedTime ? milestone.ExpectedTime.toString() : '0',
-            'spentTime': '0:0',
-            'pNotes': milestone.Status,
-            'type': 'milestone',
-            'milestoneStatus': '',
-            'editMode': false,
-            'scope': null,
-            'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-            'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
-              > -1 ? true : false : false,
-            'isNext': this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone === milestone.Title ? true : false,
-            'userCapacityEnable': false,
-            'color': milestone.color,
-            'itemType': 'milestone',
-            'edited': false,
-            'added': false,
-            'subMilestonePresent': dbSubMilestones.length > 0 ? true : false
-          };
-
-          i = milestone.Id;
-          if (GanttObj.status !== 'Deleted') {
-            this.GanttchartData.push(GanttObj);
-          }
-
-          if (dbSubMilestones.length > 0) {
-            let submile = [];
-            let index = 0;
-            for (const element of dbSubMilestones) {
-              index++;
-              let color = this.colors.filter(c => c.key == element.status)
-              if (color.length) {
-                element.color = color[0].value;
-              }
-
-              let tempSubmilestones = [];
-              let GanttTaskObj = {
-                'pID': parseInt("1200000" + milestone.Id + index),
-                'pName': element.subMile,
-                'pStart': null,
-                'pEnd': null,
-                'pUserStart': null,
-                'pUserEnd': null,
-                'pUserStartDatePart': '',
-                'pUserStartTimePart': '',
-                'pUserEndDatePart': '',
-                'pUserEndTimePart': '',
-                'pClass': element.status === 'Completed' ? 'gtaskblue' : element.status === "In Progress" ? 'gtaskgreen' : element.status === "Not Confirmed" ? 'gtaskyellow' : element.status === "Auto Closed" ? 'gtaskred' : 'ggroupblack',
-                'pLink': '',
-                'pMile': 0,
-                'pRes': ' -- ',
-                'pComp': 0,
-                'pGroup': 1,
-                'pParent': milestone.Id,
-                'pOpen': 1,
-                'pDepend': '',
-                'pCaption': '',
-                'pNotes': element.status,
-                'status': element.status,
-                'budgetHours': 0,
-                'spentTime': '0:0',
-                'allowStart': false,
-                'tat': false,
-                'tatVal': 0,
-                'milestoneStatus': milestone.Status,
-                'type': 'submilestone',
-                'editMode': false,
-                'scope': null,
-                'isCurrent': GanttObj.isCurrent && NextSubMilestone.position === element.position && NextSubMilestone.status === element.status ? true : false,
-                'isNext': GanttObj.isNext && NextSubMilestone.position === element.position && NextSubMilestone.status === element.status ? true : false,
-                'isFuture': false,
-                'assignedUsers': null,
-                'AssignedTo': {},
-                'userCapacityEnable': false,
-                'position': element.position,
-                'color': element.color,
-                'itemType': 'submilestone',
-                'edited': false,
-                'added': false
-
-              };
-              // taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
-              if (GanttTaskObj.status !== 'Deleted') {
-                this.GanttchartData.push(GanttTaskObj);
-              }
-
-              milestoneTasks = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && c.SubMilestones === element.subMile);
-
-              for (const milestoneTask of milestoneTasks) {
-
-                var taskName = '';
-                //this.resources = await this.commonService.getResourceByMatrix(milestoneTask, this.allTasks);
-
-                let color = this.colors.filter(c => c.key == milestoneTask.Status)
-                if (color.length) {
-                  milestoneTask.color = color[0].value;
+            milestone.startDate = milestone.Actual_x0020_Start_x0020_Date ?
+              {
+                date: {
+                  'year': new Date(milestone.Actual_x0020_Start_x0020_Date).getFullYear(),
+                  'month': new Date(milestone.Actual_x0020_Start_x0020_Date).getMonth() + 1,
+                  'day': new Date(milestone.Actual_x0020_Start_x0020_Date).getDate()
                 }
+              } : '';
 
-                milestoneTask.assignedUsers = [{ Title: '', userType: '' }]; //this.resources.length > 0 ? this.resources : [{ Title: '', userType: '' }];
-
-                const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter(function (objt) {
-                  return milestoneTask.AssignedTo.ID === objt.UserName.ID;
-                });
-                milestoneTask.assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
-                  ? AssignedUserTimeZone[0].TimeZone.Title ?
-                    AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
-
-                const convertedStartDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.StartDate),
-                  this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
-
-                milestoneTask.jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(convertedStartDate,
-                  milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-
-                const convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.DueDate),
-                  this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
-
-                milestoneTask.jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(convertedEndDate,
-                  milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-
-                const hrsMinObject = {
-                  timeHrs: milestoneTask.TimeSpent != null ? milestoneTask.TimeSpent.indexOf('.') > -1 ?
-                    milestoneTask.TimeSpent.split('.')[0] : milestoneTask.TimeSpent : '00',
-                  timeMins: milestoneTask.TimeSpent != null ?
-                    milestoneTask.TimeSpent.indexOf('.') > -1 ? milestoneTask.TimeSpent.split('.')[1] : '00' : 0
-                };
-
-                if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
-                  milestoneHoursSpent.push(hrsMinObject);
-                  projectHoursSpent.push(hrsMinObject);
-                  projectHoursAllocated.push(+milestoneTask.ExpectedTime);
+            milestone.endDate = milestone.Actual_x0020_End_x0020_Date ?
+              {
+                date: {
+                  'year': new Date(milestone.Actual_x0020_End_x0020_Date).getFullYear(),
+                  'month': new Date(milestone.Actual_x0020_End_x0020_Date).getMonth() + 1,
+                  'day': new Date(milestone.Actual_x0020_End_x0020_Date).getDate()
                 }
-                if (milestoneTask.Status === 'Completed' || milestoneTask.Status === 'Auto Closed') {
-                  if (milestoneTask.TimeSpent == null) {
-                    projectAvailableHours.push(+milestoneTask.ExpectedTime);
-                  } else {
-                    const mHoursSpentTask = this.commonService.ajax_addHrsMins([hrsMinObject]);
-                    const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
-                    const convertedHoursMins = this.commonService.convertFromHrsMins(+taskTotalMins);
-                    projectAvailableHours.push(+convertedHoursMins);
-                  }
-                } else if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
-                  projectAvailableHours.push(+milestoneTask.ExpectedTime);
-                }
+              } : '';
 
-
-                // Gantt Chart Sub Object 
-                if (milestone.Title === milestoneTask.Milestone) {
-                  if (milestoneTask.Status !== 'Deleted') {
-
-                    let GanttTaskObj = {
-                      'pID': milestoneTask.Id,
-                      'pName': milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', ''),
-                      'pStart': milestoneTask.jsLocalStartDate,
-                      'pEnd': milestoneTask.jsLocalEndDate,
-                      'pUserStart': convertedStartDate,
-                      'pUserEnd': convertedEndDate,
-                      'pUserStartDatePart': this.getDatePart(convertedStartDate),
-                      'pUserStartTimePart': this.getTimePart(convertedStartDate),
-                      'pUserEndDatePart': this.getDatePart(convertedEndDate),
-                      'pUserEndTimePart': this.getTimePart(convertedEndDate),
-                      'pClass': milestoneTask.Status === 'Completed' ? 'gtaskblue' : milestoneTask.Status === 'In Progress' ? 'gtaskgreen' : milestoneTask.Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
-                      'pLink': '',
-                      'pMile': 0,
-                      'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title !== undefined ? milestoneTask.AssignedTo.Title : '--' : ' -- ',
-                      'pComp': milestoneTask.Status === 'Not Confirmed' ? 0 : (milestoneTask.Status === 'Completed' ? 100 : milestoneTask.Status === 'In Progress' ? 50 : 0),
-                      'pGroup': 0,
-                      'pParent': parseInt("1200000" + milestone.Id + index),
-                      'pOpen': 1,
-                      'pDepend': '',
-                      'pCaption': '',
-                      'pNotes': milestoneTask.Status,
-                      'status': milestoneTask.Status,
-                      'budgetHours': milestoneTask.ExpectedTime,
-                      'spentTime': this.commonService.ajax_addHrsMins([hrsMinObject]),
-                      'allowStart': milestoneTask.AllowCompletion === true || milestoneTask.AllowCompletion === 'Yes' ? true : false,
-                      'tat': milestoneTask.TATStatus === true || milestoneTask.TATStatus === 'Yes' ? true : false,
-                      'tatVal': this.commonService.calcBusinessDays(new Date(milestoneTask.jsLocalStartDate), new Date(milestoneTask.jsLocalEndDate)),
-                      'milestoneStatus': milestone.Status,
-                      'type': 'task',
-                      'editMode': false,
-                      'scope': milestoneTask.Comments,
-                      'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-                      'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
-                        > -1 ? true : false : false,
-                      'assignedUsers': milestoneTask.assignedUsers,
-                      'AssignedTo': milestoneTask.AssignedTo,
-                      'userCapacityEnable': false,
-                      'color': milestoneTask.color,
-                      'itemType': milestoneTask.Task,
-                      'nextTask': milestoneTask.NextTasks !== null ? milestoneTask.NextTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(milestoneTask.Milestone + ' ', 'g'), "").replace(/#/gi, '') : null,  //.replace(/ /g,'')
-                      'previousTask': milestoneTask.PrevTasks !== null ? milestoneTask.PrevTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(milestoneTask.Milestone + ' ', 'g'), "").replace(/#/gi, '') : null,  //.replace(/ /g,'')
-                      'edited': false,
-                      'IsCentrallyAllocated': milestoneTask.IsCentrallyAllocated,
-                      'added': false,
-                      'submilestone': milestoneTask.SubMilestones,
-                      'milestone': milestoneTask.Milestone,
-                      'skillLevel': milestoneTask.SkillLevel,
-                      'CentralAllocationDone': milestoneTask.CentralAllocationDone,
-                      'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
-                      'deallocateCentral': false
-                    };
-
-                    taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
-
-                    //if(GanttTaskObj.status !== 'Deleted') {
-                    this.GanttchartData.push(GanttTaskObj);
-                    allRetrievedTasks.push(GanttTaskObj);
-                    //}
-                    if (GanttTaskObj.itemType !== 'Client Review') {
-                      const tempObj = { 'data': GanttTaskObj };
-                      tempSubmilestones.push(tempObj);
-                    }
-
-                  }
-                }
-
-                // Close  Gantt Chart Object
-              }
-
-
-              if (tempSubmilestones.length > 0) {
-
-                const tempSubmilestonesWOAT = tempSubmilestones.filter(c => c.data.itemType !== 'Time Booking');
-                const subMilData = this.GanttchartData.find(c => c.pName === element.subMile && c.pParent === milestone.Id);
-                subMilData.pStart = tempSubmilestonesWOAT[0].data.pStart;
-                subMilData.pEnd = tempSubmilestonesWOAT[tempSubmilestonesWOAT.length - 1].data.pEnd;
-                subMilData.pUserStart = tempSubmilestonesWOAT[0].data.pStart;
-                subMilData.pUserEnd = tempSubmilestonesWOAT[tempSubmilestonesWOAT.length - 1].data.pEnd;
-                subMilData.pUserStartDatePart = this.getDatePart(subMilData.pUserStart);
-                subMilData.pUserStartTimePart = this.getTimePart(subMilData.pUserStart);
-                subMilData.pUserEndDatePart = this.getDatePart(subMilData.pUserEnd);
-                subMilData.pUserEndTimePart = this.getTimePart(subMilData.pUserEnd);
-                subMilData.tatVal = this.commonService.calcBusinessDays(new Date(subMilData.pStart), new Date(subMilData.pEnd));
-              }
-              const temptasks = {
-                'data': this.GanttchartData.find(c => c.pName === element.subMile && c.pParent === milestone.Id),
-                'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-                'children': tempSubmilestones
-              }
-
-              submile.push(temptasks);
+            let color = this.colors.filter(c => c.key == milestone.Status)
+            if (color.length) {
+              milestone.color = color[0].value;
             }
 
-            const DefaultTasks = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && (c.SubMilestones === null || c.SubMilestones === 'Default') && c.Task !== 'Client Review' && c.Status !== 'Deleted');
+            // Gantt Chart Object
 
-            if (DefaultTasks !== undefined) {
-              for (const milestoneTask of DefaultTasks) {
+            let GanttObj = {
 
-                var taskName = '';
+              'pID': milestone.Id,
+              'pName': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? milestone.Title + " (Current)" : milestone.Title,
+              'pStart': milestone.startDate !== "" ? milestone.startDate.date.year + "/" + (milestone.startDate.date.month < 10 ? "0" + milestone.startDate.date.month : milestone.startDate.date.month) + "/" + (milestone.startDate.date.day < 10 ? "0" + milestone.startDate.date.day : milestone.startDate.date.day) : '',
+              'pEnd': milestone.endDate !== "" ? milestone.endDate.date.year + "/" + (milestone.endDate.date.month < 10 ? "0" + milestone.endDate.date.month : milestone.endDate.date.month) + "/" + (milestone.endDate.date.day < 10 ? "0" + milestone.endDate.date.day : milestone.endDate.date.day) : '',
+              'pUserStart': milestone.startDate !== "" ? milestone.startDate.date.year + "/" + (milestone.startDate.date.month < 10 ? "0" + milestone.startDate.date.month : milestone.startDate.date.month) + "/" + (milestone.startDate.date.day < 10 ? "0" + milestone.startDate.date.day : milestone.startDate.date.day) : '',
+              'pUserEnd': milestone.endDate !== "" ? milestone.endDate.date.year + "/" + (milestone.endDate.date.month < 10 ? "0" + milestone.endDate.date.month : milestone.endDate.date.month) + "/" + (milestone.endDate.date.day < 10 ? "0" + milestone.endDate.date.day : milestone.endDate.date.day) : '',
+              'pUserStartDatePart': this.getDate(milestone.startDate),
+              'pUserStartTimePart': '',
+              'pUserEndDatePart': this.getDate(milestone.endDate),
+              'pUserEndTimePart': '',
+              'pClass': milestone.Status === 'Completed' ? 'gtaskblue' : milestone.Status === "In Progress" ? 'gtaskgreen' : milestone.Status === "Not Confirmed" ? 'gtaskyellow' : 'ggroupblack',
+              'pLink': '',
+              'pMile': 0,
+              'pRes': '',
+              'pComp': milestone.Status === 'Completed' ? 100 : (milestoneTasks.filter(c => c.Status == "Completed").length > 0) ? Math.round((milestoneTasks.filter(c => c.Status == "Completed").length / milestoneTasks.length) * 100) : 0,
+              'pGroup': 1,
+              'pParent': 0,
+              'pOpen': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? 1 : 0,
+              'pDepend': i === -1 ? '' : i,
+              'pCaption': '',
+              'status': milestone.Status,
+              'tat': true,
+              'tatVal': this.commonService.calcBusinessDays(new Date(milestone.Actual_x0020_Start_x0020_Date), new Date(milestone.Actual_x0020_End_x0020_Date)),
+              'budgetHours': milestone.ExpectedTime ? milestone.ExpectedTime.toString() : '0',
+              'spentTime': '0:0',
+              'pNotes': milestone.Status,
+              'type': 'milestone',
+              'milestoneStatus': '',
+              'editMode': false,
+              'scope': null,
+              'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
+              'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
+                > -1 ? true : false : false,
+              'isNext': this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone === milestone.Title ? true : false,
+              'userCapacityEnable': false,
+              'color': milestone.color,
+              'itemType': 'milestone',
+              'edited': false,
+              'added': false,
+              'subMilestonePresent': dbSubMilestones.length > 0 ? true : false
+            };
+
+            i = milestone.Id;
+            if (GanttObj.status !== 'Deleted') {
+              this.GanttchartData.push(GanttObj);
+            }
+
+            if (dbSubMilestones.length > 0) {
+              let submile = [];
+              let index = 0;
+              for (const element of dbSubMilestones) {
+                index++;
+                let color = this.colors.filter(c => c.key == element.status)
+                if (color.length) {
+                  element.color = color[0].value;
+                }
+
+                let tempSubmilestones = [];
+                let GanttTaskObj = {
+                  'pID': parseInt("1200000" + milestone.Id + index),
+                  'pName': element.subMile,
+                  'pStart': null,
+                  'pEnd': null,
+                  'pUserStart': null,
+                  'pUserEnd': null,
+                  'pUserStartDatePart': '',
+                  'pUserStartTimePart': '',
+                  'pUserEndDatePart': '',
+                  'pUserEndTimePart': '',
+                  'pClass': element.status === 'Completed' ? 'gtaskblue' : element.status === "In Progress" ? 'gtaskgreen' : element.status === "Not Confirmed" ? 'gtaskyellow' : element.status === "Auto Closed" ? 'gtaskred' : 'ggroupblack',
+                  'pLink': '',
+                  'pMile': 0,
+                  'pRes': ' -- ',
+                  'pComp': 0,
+                  'pGroup': 1,
+                  'pParent': milestone.Id,
+                  'pOpen': 1,
+                  'pDepend': '',
+                  'pCaption': '',
+                  'pNotes': element.status,
+                  'status': element.status,
+                  'budgetHours': 0,
+                  'spentTime': '0:0',
+                  'allowStart': false,
+                  'tat': false,
+                  'tatVal': 0,
+                  'milestoneStatus': milestone.Status,
+                  'type': 'submilestone',
+                  'editMode': false,
+                  'scope': null,
+                  'isCurrent': GanttObj.isCurrent && NextSubMilestone.position === element.position && NextSubMilestone.status === element.status ? true : false,
+                  'isNext': GanttObj.isNext && NextSubMilestone.position === element.position && NextSubMilestone.status === element.status ? true : false,
+                  'isFuture': false,
+                  'assignedUsers': null,
+                  'AssignedTo': {},
+                  'userCapacityEnable': false,
+                  'position': element.position,
+                  'color': element.color,
+                  'itemType': 'submilestone',
+                  'edited': false,
+                  'added': false
+
+                };
+                // taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
+                if (GanttTaskObj.status !== 'Deleted') {
+                  this.GanttchartData.push(GanttTaskObj);
+                }
+
+                milestoneTasks = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && c.SubMilestones === element.subMile);
+
+                for (const milestoneTask of milestoneTasks) {
+
+               
+
+                  taskName = '';
+                  //this.resources = await this.commonService.getResourceByMatrix(milestoneTask, this.allTasks);
+
+                  let color = this.colors.filter(c => c.key == milestoneTask.Status)
+                  if (color.length) {
+                    milestoneTask.color = color[0].value;
+                  }
+
+                  milestoneTask.assignedUsers = [{ Title: '', userType: '' }]; //this.resources.length > 0 ? this.resources : [{ Title: '', userType: '' }];
+
+                  const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter(function (objt) {
+                    return milestoneTask.AssignedTo.ID === objt.UserName.ID;
+                  });
+                  milestoneTask.assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
+                    ? AssignedUserTimeZone[0].TimeZone.Title ?
+                      AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
+
+                  const convertedStartDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.StartDate),
+                    this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
+
+                  milestoneTask.jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(convertedStartDate,
+                    milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+
+                  const convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.DueDate),
+                    this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
+
+                  milestoneTask.jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(convertedEndDate,
+                    milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+
+                  const hrsMinObject = {
+                    timeHrs: milestoneTask.TimeSpent != null ? milestoneTask.TimeSpent.indexOf('.') > -1 ?
+                      milestoneTask.TimeSpent.split('.')[0] : milestoneTask.TimeSpent : '00',
+                    timeMins: milestoneTask.TimeSpent != null ?
+                      milestoneTask.TimeSpent.indexOf('.') > -1 ? milestoneTask.TimeSpent.split('.')[1] : '00' : 0
+                  };
+
+                  if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
+                    milestoneHoursSpent.push(hrsMinObject);
+                    projectHoursSpent.push(hrsMinObject);
+                    projectHoursAllocated.push(+milestoneTask.ExpectedTime);
+                  }
+                  if (milestoneTask.Status === 'Completed' || milestoneTask.Status === 'Auto Closed') {
+                    if (milestoneTask.TimeSpent == null) {
+                      projectAvailableHours.push(+milestoneTask.ExpectedTime);
+                    } else {
+                      const mHoursSpentTask = this.commonService.ajax_addHrsMins([hrsMinObject]);
+                      const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
+                      const convertedHoursMins = this.commonService.convertFromHrsMins(+taskTotalMins);
+                      projectAvailableHours.push(+convertedHoursMins);
+                    }
+                  } else if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
+                    projectAvailableHours.push(+milestoneTask.ExpectedTime);
+                  }
+
+
+                  // Gantt Chart Sub Object 
+                  if (milestone.Title === milestoneTask.Milestone) {
+                    if (milestoneTask.Status !== 'Deleted') {
+
+                      let GanttTaskObj = {
+                        'pID': milestoneTask.Id,
+                        'pName': milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', ''),
+                        'pStart': milestoneTask.jsLocalStartDate,
+                        'pEnd': milestoneTask.jsLocalEndDate,
+                        'pUserStart': convertedStartDate,
+                        'pUserEnd': convertedEndDate,
+                        'pUserStartDatePart': this.getDatePart(convertedStartDate),
+                        'pUserStartTimePart': this.getTimePart(convertedStartDate),
+                        'pUserEndDatePart': this.getDatePart(convertedEndDate),
+                        'pUserEndTimePart': this.getTimePart(convertedEndDate),
+                        'pClass': milestoneTask.Status === 'Completed' ? 'gtaskblue' : milestoneTask.Status === 'In Progress' ? 'gtaskgreen' : milestoneTask.Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
+                        'pLink': '',
+                        'pMile': 0,
+                        'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title !== undefined ? milestoneTask.AssignedTo.Title : '--' : ' -- ',
+                        'pComp': milestoneTask.Status === 'Not Confirmed' ? 0 : (milestoneTask.Status === 'Completed' ? 100 : milestoneTask.Status === 'In Progress' ? 50 : 0),
+                        'pGroup': 0,
+                        'pParent': parseInt("1200000" + milestone.Id + index),
+                        'pOpen': 1,
+                        'pDepend': '',
+                        'pCaption': '',
+                        'pNotes': milestoneTask.Status,
+                        'status': milestoneTask.Status,
+                        'budgetHours': milestoneTask.ExpectedTime,
+                        'spentTime': this.commonService.ajax_addHrsMins([hrsMinObject]),
+                        'allowStart': milestoneTask.AllowCompletion === true || milestoneTask.AllowCompletion === 'Yes' ? true : false,
+                        'tat': milestoneTask.TATStatus === true || milestoneTask.TATStatus === 'Yes' ? true : false,
+                        'tatVal': this.commonService.calcBusinessDays(new Date(milestoneTask.jsLocalStartDate), new Date(milestoneTask.jsLocalEndDate)),
+                        'milestoneStatus': milestone.Status,
+                        'type': 'task',
+                        'editMode': false,
+                        'scope': milestoneTask.Comments,
+                        'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
+                        'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
+                          > -1 ? true : false : false,
+                        'assignedUsers': milestoneTask.assignedUsers,
+                        'AssignedTo': milestoneTask.AssignedTo,
+                        'userCapacityEnable': false,
+                        'color': milestoneTask.color,
+                        'itemType': milestoneTask.Task,
+                        'nextTask': milestoneTask.NextTasks !== null ? milestoneTask.NextTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(milestoneTask.Milestone + ' ', 'g'), "").replace(/#/gi, '') : null,  //.replace(/ /g,'')
+                        'previousTask': milestoneTask.PrevTasks !== null ? milestoneTask.PrevTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(milestoneTask.Milestone + ' ', 'g'), "").replace(/#/gi, '') : null,  //.replace(/ /g,'')
+                        'edited': false,
+                        'IsCentrallyAllocated': milestoneTask.IsCentrallyAllocated,
+                        'added': false,
+                        'submilestone': milestoneTask.SubMilestones,
+                        'milestone': milestoneTask.Milestone,
+                        'skillLevel': milestoneTask.SkillLevel,
+                        'CentralAllocationDone': milestoneTask.CentralAllocationDone,
+                        'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
+                        'deallocateCentral': false
+                      };
+
+                      taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
+
+                      //if(GanttTaskObj.status !== 'Deleted') {
+                      this.GanttchartData.push(GanttTaskObj);
+                      allRetrievedTasks.push(GanttTaskObj);
+                      //}
+                      if (GanttTaskObj.itemType !== 'Client Review') {
+                        const tempObj = { 'data': GanttTaskObj };
+                        tempSubmilestones.push(tempObj);
+                      }
+
+                    }
+                  }
+
+                  // Close  Gantt Chart Object
+                }
+
+
+                if (tempSubmilestones.length > 0) {
+
+                  const tempSubmilestonesWOAT = tempSubmilestones.filter(c => c.data.itemType !== 'Time Booking');
+                  const subMilData = this.GanttchartData.find(c => c.pName === element.subMile && c.pParent === milestone.Id);
+                  subMilData.pStart = tempSubmilestonesWOAT[0].data.pStart;
+                  subMilData.pEnd = tempSubmilestonesWOAT[tempSubmilestonesWOAT.length - 1].data.pEnd;
+                  subMilData.pUserStart = tempSubmilestonesWOAT[0].data.pStart;
+                  subMilData.pUserEnd = tempSubmilestonesWOAT[tempSubmilestonesWOAT.length - 1].data.pEnd;
+                  subMilData.pUserStartDatePart = this.getDatePart(subMilData.pUserStart);
+                  subMilData.pUserStartTimePart = this.getTimePart(subMilData.pUserStart);
+                  subMilData.pUserEndDatePart = this.getDatePart(subMilData.pUserEnd);
+                  subMilData.pUserEndTimePart = this.getTimePart(subMilData.pUserEnd);
+                  subMilData.tatVal = this.commonService.calcBusinessDays(new Date(subMilData.pStart), new Date(subMilData.pEnd));
+                }
+                const temptasks = {
+                  'data': this.GanttchartData.find(c => c.pName === element.subMile && c.pParent === milestone.Id),
+                  'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
+                  'children': tempSubmilestones
+                }
+
+                submile.push(temptasks);
+              }
+
+              const DefaultTasks = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && (c.SubMilestones === null || c.SubMilestones === 'Default') && c.Task !== 'Client Review' && c.Status !== 'Deleted');
+
+              if (DefaultTasks !== undefined) {
+                for (const milestoneTask of DefaultTasks) {
+
+                  taskName = '';
+                  //this.resources = await this.commonService.getResourceByMatrix(milestoneTask, this.allTasks);
+
+                  let color = this.colors.filter(c => c.key == milestoneTask.Status)
+                  if (color.length) {
+                    milestoneTask.color = color[0].value;
+                  }
+                  milestoneTask.assignedUsers = [{ Title: '', userType: '' }]; //this.resources.length > 0 ? this.resources : [{ Title: '', userType: '' }];
+                  const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter(function (objt) {
+                    return milestoneTask.AssignedTo.ID === objt.UserName.ID;
+                  });
+                  milestoneTask.assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
+                    ? AssignedUserTimeZone[0].TimeZone.Title ?
+                      AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
+
+                  const convertedStartDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.StartDate),
+                    this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
+
+                  milestoneTask.jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(convertedStartDate,
+                    milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+
+                  const convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.DueDate),
+                    this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
+
+                  milestoneTask.jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(convertedEndDate,
+                    milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+
+                  const hrsMinObject = {
+                    timeHrs: milestoneTask.TimeSpent != null ? milestoneTask.TimeSpent.indexOf('.') > -1 ?
+                      milestoneTask.TimeSpent.split('.')[0] : milestoneTask.TimeSpent : '00',
+                    timeMins: milestoneTask.TimeSpent != null ?
+                      milestoneTask.TimeSpent.indexOf('.') > -1 ? milestoneTask.TimeSpent.split('.')[1] : '00' : 0
+                  };
+
+                  if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
+                    milestoneHoursSpent.push(hrsMinObject);
+                    projectHoursSpent.push(hrsMinObject);
+                    projectHoursAllocated.push(+milestoneTask.ExpectedTime);
+                  }
+                  if (milestoneTask.Status === 'Completed' || milestoneTask.Status === 'Auto Closed') {
+                    if (milestoneTask.TimeSpent == null) {
+                      projectAvailableHours.push(+milestoneTask.ExpectedTime);
+                    } else {
+                      const mHoursSpentTask = this.commonService.ajax_addHrsMins([hrsMinObject]);
+                      const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
+                      const convertedHoursMins = this.commonService.convertFromHrsMins(+taskTotalMins);
+                      projectAvailableHours.push(+convertedHoursMins);
+                    }
+                  } else if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
+                    projectAvailableHours.push(+milestoneTask.ExpectedTime);
+                  }
+
+                  // Gantt Chart Sub Object 
+
+                  if (milestone.Title === milestoneTask.Milestone) {
+                    if (milestoneTask.Status !== 'Deleted') {
+                      let GanttTaskObj = {
+                        'pID': milestoneTask.Id,
+                        'pName': milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', ''),
+                        'pStart': milestoneTask.jsLocalStartDate,
+                        'pEnd': milestoneTask.jsLocalEndDate,
+                        'pUserStart': convertedStartDate,
+                        'pUserEnd': convertedEndDate,
+                        'pUserStartDatePart': this.getDatePart(convertedStartDate),
+                        'pUserStartTimePart': this.getTimePart(convertedStartDate),
+                        'pUserEndDatePart': this.getDatePart(convertedEndDate),
+                        'pUserEndTimePart': this.getTimePart(convertedEndDate),
+                        'pClass': milestoneTask.Status === 'Completed' ? 'gtaskblue' : milestoneTask.Status === 'In Progress' ? 'gtaskgreen' : milestoneTask.Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
+                        'pLink': '',
+                        'pMile': 0,
+                        'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title : ' -- ',
+                        'pComp': milestoneTask.Status === 'Not Confirmed' ? 0 : (milestoneTask.Status === 'Completed' ? 100 : milestoneTask.Status === 'In Progress' ? 50 : 0),
+                        'pGroup': 0,
+                        'pParent': milestoneTask.Task === 'Client Review' ? 0 : milestone.Id,
+                        'pOpen': 1,
+                        'pDepend': '',
+                        'pCaption': '',
+                        'pNotes': milestoneTask.Status,
+                        'status': milestoneTask.Status,
+                        'budgetHours': milestoneTask.ExpectedTime,
+                        'spentTime': this.commonService.ajax_addHrsMins([hrsMinObject]),
+                        'allowStart': milestoneTask.AllowCompletion === true || milestoneTask.AllowCompletion === 'Yes' ? true : false,
+                        'tat': milestoneTask.TATStatus === true || milestoneTask.TATStatus === 'Yes' ? true : false,
+                        'tatVal': this.commonService.calcBusinessDays(milestoneTask.jsLocalStartDate, milestoneTask.jsLocalEndDate),
+                        'milestoneStatus': milestone.Status,
+                        'type': 'task',
+                        'editMode': false,
+                        'scope': milestoneTask.Comments,
+                        'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
+                        'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ?
+                          this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
+                            > -1 ? true : false : false,
+                        'assignedUsers': milestoneTask.assignedUsers,
+                        'AssignedTo': milestoneTask.AssignedTo,
+                        'userCapacityEnable': false,
+                        'color': milestoneTask.color,
+                        'itemType': milestoneTask.Task,
+                        'nextTask': milestoneTask.NextTasks !== null ? milestoneTask.NextTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(milestoneTask.Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
+                        'previousTask': milestoneTask.PrevTasks !== null ? milestoneTask.PrevTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(milestoneTask.Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
+                        'edited': false,
+                        'IsCentrallyAllocated': milestoneTask.IsCentrallyAllocated,
+                        'added': false,
+                        'submilestone': milestoneTask.SubMilestones,
+                        'milestone': milestoneTask.Milestone,
+                        'skillLevel': milestoneTask.SkillLevel,
+                        'CentralAllocationDone': milestoneTask.CentralAllocationDone,
+                        'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
+                        'deallocateCentral': false
+                      };
+                      taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
+                      //if(GanttTaskObj.status !== 'Deleted') {
+                      this.GanttchartData.push(GanttTaskObj);
+                      allRetrievedTasks.push(GanttTaskObj);
+                      //}
+
+                      if (GanttTaskObj.itemType !== 'Client Review') {
+                        const tempObj = { 'data': GanttTaskObj };
+                        submile.push(tempObj);
+                      }
+                    }
+                  }
+                }
+              }
+
+
+              var milestoneTemp = this.GanttchartData.find(c => c.pID === milestone.Id);
+              if (milestoneTemp) {
+                milestoneTemp.spentTime = milestoneHoursSpent.length > 0 ? this.commonService.ajax_addHrsMins(milestoneHoursSpent) : '0:0';
+                const tempmilestone = {
+                  'data': milestoneTemp,
+                  // 'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ?   true:false,
+                  'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
+                  'children': submile
+                }
+
+                this.milestoneData.push(tempmilestone);
+              }
+
+              const clientReviewObj = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && (c.SubMilestones === null || c.SubMilestones === 'Default') && c.Task === 'Client Review' && c.Status !== 'Deleted');
+
+              if (clientReviewObj.length > 0) {
+                clientReviewObj[0].assignedUsers = [{ Title: '', userType: '' }]; //this.resources.length > 0 ? this.resources : ;
+                const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter(function (objt) {
+                  return clientReviewObj[0].AssignedTo.ID === objt.UserName.ID;
+                });
+                clientReviewObj[0].assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
+                  ? AssignedUserTimeZone[0].TimeZone.Title ?
+                    AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
+
+                const convertedStartDate = this.commonService.calcTimeForDifferentTimeZone(new Date(clientReviewObj[0].StartDate),
+                  this.sharedObject.currentUser.timeZone, clientReviewObj[0].assignedUserTimeZone);
+
+                clientReviewObj[0].jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(convertedStartDate,
+                  clientReviewObj[0].assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+
+                const convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(clientReviewObj[0].DueDate),
+                  this.sharedObject.currentUser.timeZone, clientReviewObj[0].assignedUserTimeZone);
+
+                clientReviewObj[0].jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(convertedEndDate,
+                  clientReviewObj[0].assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+
+                let color = this.colors.filter(c => c.key == clientReviewObj[0].Status)
+                if (color.length) {
+                  clientReviewObj[0].color = color[0].value;
+                }
+
+                let GanttTaskObj = {
+                  'pID': clientReviewObj[0].Id,
+                  'pName': clientReviewObj[0].Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + clientReviewObj[0].Milestone + ' ', ''),
+                  'pStart': clientReviewObj[0].jsLocalStartDate,
+                  'pEnd': clientReviewObj[0].jsLocalEndDate,
+                  'pUserStart': convertedStartDate,
+                  'pUserEnd': convertedEndDate,
+                  'pUserStartDatePart': this.getDatePart(convertedStartDate),
+                  'pUserStartTimePart': this.getTimePart(convertedStartDate),
+                  'pUserEndDatePart': this.getDatePart(convertedEndDate),
+                  'pUserEndTimePart': this.getTimePart(convertedEndDate),
+                  'pClass': clientReviewObj[0].Status === 'Completed' ? 'gtaskblue' : clientReviewObj[0].Status === 'In Progress' ? 'gtaskgreen' : clientReviewObj[0].Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
+                  'pLink': '',
+                  'pMile': 0,
+                  'pRes': clientReviewObj[0].AssignedTo ? clientReviewObj[0].AssignedTo.Title : ' -- ',
+                  'pComp': clientReviewObj[0].Status === 'Not Confirmed' ? 0 : (clientReviewObj[0].Status === 'Completed' ? 100 : clientReviewObj[0].Status === 'In Progress' ? 50 : 0),
+                  'pGroup': 0,
+                  'pParent': clientReviewObj[0].Task === 'Client Review' ? 0 : milestone.Id,
+                  'pOpen': 1,
+                  'pDepend': i,
+                  'pCaption': '',
+                  'pNotes': clientReviewObj[0].Status,
+                  'status': clientReviewObj[0].Status,
+                  'budgetHours': clientReviewObj[0].ExpectedTime,
+                  'allowStart': clientReviewObj[0].AllowCompletion === true || clientReviewObj[0].AllowCompletion === 'Yes' ? true : false,
+                  'tat': clientReviewObj[0].TATStatus === true || clientReviewObj[0].TATStatus === 'Yes' ? true : false,
+                  'tatVal': this.commonService.calcBusinessDays(new Date(clientReviewObj[0].jsLocalStartDate), new Date(clientReviewObj[0].jsLocalEndDate)),
+                  'milestoneStatus': milestone.Status,
+                  'type': 'task',
+                  'editMode': false,
+                  'scope': clientReviewObj[0].Comments,
+                  'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
+                  'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ?
+                    this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
+                      > -1 ? true : false : false,
+                  'assignedUsers': clientReviewObj[0].assignedUsers,
+                  'AssignedTo': clientReviewObj[0].AssignedTo,
+                  'userCapacityEnable': false,
+                  'color': clientReviewObj[0].color,
+                  'itemType': clientReviewObj[0].Task,
+                  'nextTask': clientReviewObj[0].NextTasks !== null ? clientReviewObj[0].NextTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(clientReviewObj[0].Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
+                  'previousTask': clientReviewObj[0].PrevTasks !== null ? clientReviewObj[0].PrevTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(clientReviewObj[0].Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
+                  'edited': false,
+                  'IsCentrallyAllocated': 'No',
+                  'added': false,
+                  'submilestone': clientReviewObj[0].SubMilestones,
+                  'milestone': clientReviewObj[0].Milestone,
+                  'skillLevel': clientReviewObj[0].SkillLevel,
+                  'CentralAllocationDone': clientReviewObj[0].CentralAllocationDone,
+                  'assignedUserTimeZone': clientReviewObj[0].assignedUserTimeZone,
+                  'deallocateCentral': false
+                };
+                i = clientReviewObj[0].Id;
+                //if(GanttTaskObj.status !== 'Deleted') {
+                this.GanttchartData.push(GanttTaskObj);
+                //}
+
+                const tempmilestone = { 'data': GanttTaskObj, 'children': [] }
+                this.milestoneData.push(tempmilestone);
+
+              }
+            }
+            else {
+              milestoneTasks = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title);
+
+              let tempSubmilestones = [];
+              let GanttTaskObj;
+              let CRObj;
+              for (const milestoneTask of milestoneTasks) {
+
+                taskName = '';
                 //this.resources = await this.commonService.getResourceByMatrix(milestoneTask, this.allTasks);
 
                 let color = this.colors.filter(c => c.key == milestoneTask.Status)
@@ -607,7 +848,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
                 if (milestone.Title === milestoneTask.Milestone) {
                   if (milestoneTask.Status !== 'Deleted') {
-                    let GanttTaskObj = {
+                    GanttTaskObj = {
                       'pID': milestoneTask.Id,
                       'pName': milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', ''),
                       'pStart': milestoneTask.jsLocalStartDate,
@@ -626,7 +867,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                       'pGroup': 0,
                       'pParent': milestoneTask.Task === 'Client Review' ? 0 : milestone.Id,
                       'pOpen': 1,
-                      'pDepend': '',
+                      'pDepend': milestoneTask.Task === 'Client Review' ? i : '',
                       'pCaption': '',
                       'pNotes': milestoneTask.Status,
                       'status': milestoneTask.Status,
@@ -640,9 +881,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
                       'editMode': false,
                       'scope': milestoneTask.Comments,
                       'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-                      'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ?
-                        this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
-                          > -1 ? true : false : false,
+                      'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
+                        > -1 ? true : false : false,
                       'assignedUsers': milestoneTask.assignedUsers,
                       'AssignedTo': milestoneTask.AssignedTo,
                       'userCapacityEnable': false,
@@ -660,6 +900,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
                       'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
                       'deallocateCentral': false
                     };
+
+                    if (milestoneTask.Task === 'Client Review') {
+                      i = milestoneTask.Id;
+                      CRObj = { 'data': GanttTaskObj };
+
+                    }
                     taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
                     //if(GanttTaskObj.status !== 'Deleted') {
                     this.GanttchartData.push(GanttTaskObj);
@@ -668,274 +914,34 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
                     if (GanttTaskObj.itemType !== 'Client Review') {
                       const tempObj = { 'data': GanttTaskObj };
-                      submile.push(tempObj);
+                      tempSubmilestones.push(tempObj);
                     }
                   }
                 }
+
+                // Close  Gantt Chart Object
               }
-            }
+              var milestoneTemp = this.GanttchartData.find(c => c.pID === milestone.Id);
+              if (milestoneTemp) {
+                milestoneTemp.spentTime = milestoneHoursSpent.length > 0 ? this.commonService.ajax_addHrsMins(milestoneHoursSpent) : '0:0';
 
-
-            var milestoneTemp = this.GanttchartData.find(c => c.pID === milestone.Id);
-            if (milestoneTemp) {
-              milestoneTemp.spentTime = milestoneHoursSpent.length > 0 ? this.commonService.ajax_addHrsMins(milestoneHoursSpent) : '0:0';
-              const tempmilestone = {
-                'data': milestoneTemp,
-                // 'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ?   true:false,
-                'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-                'children': submile
-              }
-
-              this.milestoneData.push(tempmilestone);
-            }
-
-            const clientReviewObj = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && (c.SubMilestones === null || c.SubMilestones === 'Default') && c.Task === 'Client Review' && c.Status !== 'Deleted');
-
-            if (clientReviewObj.length > 0) {
-              clientReviewObj[0].assignedUsers = [{ Title: '', userType: '' }]; //this.resources.length > 0 ? this.resources : ;
-              const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter(function (objt) {
-                return clientReviewObj[0].AssignedTo.ID === objt.UserName.ID;
-              });
-              clientReviewObj[0].assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
-                ? AssignedUserTimeZone[0].TimeZone.Title ?
-                  AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
-
-              const convertedStartDate = this.commonService.calcTimeForDifferentTimeZone(new Date(clientReviewObj[0].StartDate),
-                this.sharedObject.currentUser.timeZone, clientReviewObj[0].assignedUserTimeZone);
-
-              clientReviewObj[0].jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(convertedStartDate,
-                clientReviewObj[0].assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-
-              const convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(clientReviewObj[0].DueDate),
-                this.sharedObject.currentUser.timeZone, clientReviewObj[0].assignedUserTimeZone);
-
-              clientReviewObj[0].jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(convertedEndDate,
-                clientReviewObj[0].assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-
-              let color = this.colors.filter(c => c.key == clientReviewObj[0].Status)
-              if (color.length) {
-                clientReviewObj[0].color = color[0].value;
-              }
-
-              let GanttTaskObj = {
-                'pID': clientReviewObj[0].Id,
-                'pName': clientReviewObj[0].Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + clientReviewObj[0].Milestone + ' ', ''),
-                'pStart': clientReviewObj[0].jsLocalStartDate,
-                'pEnd': clientReviewObj[0].jsLocalEndDate,
-                'pUserStart': convertedStartDate,
-                'pUserEnd': convertedEndDate,
-                'pUserStartDatePart': this.getDatePart(convertedStartDate),
-                'pUserStartTimePart': this.getTimePart(convertedStartDate),
-                'pUserEndDatePart': this.getDatePart(convertedEndDate),
-                'pUserEndTimePart': this.getTimePart(convertedEndDate),
-                'pClass': clientReviewObj[0].Status === 'Completed' ? 'gtaskblue' : clientReviewObj[0].Status === 'In Progress' ? 'gtaskgreen' : clientReviewObj[0].Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
-                'pLink': '',
-                'pMile': 0,
-                'pRes': clientReviewObj[0].AssignedTo ? clientReviewObj[0].AssignedTo.Title : ' -- ',
-                'pComp': clientReviewObj[0].Status === 'Not Confirmed' ? 0 : (clientReviewObj[0].Status === 'Completed' ? 100 : clientReviewObj[0].Status === 'In Progress' ? 50 : 0),
-                'pGroup': 0,
-                'pParent': clientReviewObj[0].Task === 'Client Review' ? 0 : milestone.Id,
-                'pOpen': 1,
-                'pDepend': i,
-                'pCaption': '',
-                'pNotes': clientReviewObj[0].Status,
-                'status': clientReviewObj[0].Status,
-                'budgetHours': clientReviewObj[0].ExpectedTime,
-                'allowStart': clientReviewObj[0].AllowCompletion === true || clientReviewObj[0].AllowCompletion === 'Yes' ? true : false,
-                'tat': clientReviewObj[0].TATStatus === true || clientReviewObj[0].TATStatus === 'Yes' ? true : false,
-                'tatVal': this.commonService.calcBusinessDays(new Date(clientReviewObj[0].jsLocalStartDate), new Date(clientReviewObj[0].jsLocalEndDate)),
-                'milestoneStatus': milestone.Status,
-                'type': 'task',
-                'editMode': false,
-                'scope': clientReviewObj[0].Comments,
-                'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-                'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ?
-                  this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
-                    > -1 ? true : false : false,
-                'assignedUsers': clientReviewObj[0].assignedUsers,
-                'AssignedTo': clientReviewObj[0].AssignedTo,
-                'userCapacityEnable': false,
-                'color': clientReviewObj[0].color,
-                'itemType': clientReviewObj[0].Task,
-                'nextTask': clientReviewObj[0].NextTasks !== null ? clientReviewObj[0].NextTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(clientReviewObj[0].Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
-                'previousTask': clientReviewObj[0].PrevTasks !== null ? clientReviewObj[0].PrevTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(clientReviewObj[0].Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
-                'edited': false,
-                'IsCentrallyAllocated': 'No',
-                'added': false,
-                'submilestone': clientReviewObj[0].SubMilestones,
-                'milestone': clientReviewObj[0].Milestone,
-                'skillLevel': clientReviewObj[0].SkillLevel,
-                'CentralAllocationDone': clientReviewObj[0].CentralAllocationDone,
-                'assignedUserTimeZone': clientReviewObj[0].assignedUserTimeZone,
-                'deallocateCentral': false
-              };
-              i = clientReviewObj[0].Id;
-              //if(GanttTaskObj.status !== 'Deleted') {
-              this.GanttchartData.push(GanttTaskObj);
-              //}
-
-              const tempmilestone = { 'data': GanttTaskObj, 'children': [] }
-              this.milestoneData.push(tempmilestone);
-
-            }
-          }
-          else {
-            milestoneTasks = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title);
-
-            let tempSubmilestones = [];
-            let GanttTaskObj;
-            let CRObj;
-            for (const milestoneTask of milestoneTasks) {
-
-              var taskName = '';
-              //this.resources = await this.commonService.getResourceByMatrix(milestoneTask, this.allTasks);
-
-              let color = this.colors.filter(c => c.key == milestoneTask.Status)
-              if (color.length) {
-                milestoneTask.color = color[0].value;
-              }
-              milestoneTask.assignedUsers = [{ Title: '', userType: '' }]; //this.resources.length > 0 ? this.resources : [{ Title: '', userType: '' }];
-              const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter(function (objt) {
-                return milestoneTask.AssignedTo.ID === objt.UserName.ID;
-              });
-              milestoneTask.assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
-                ? AssignedUserTimeZone[0].TimeZone.Title ?
-                  AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
-
-              const convertedStartDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.StartDate),
-                this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
-
-              milestoneTask.jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(convertedStartDate,
-                milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-
-              const convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.DueDate),
-                this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
-
-              milestoneTask.jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(convertedEndDate,
-                milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-
-              const hrsMinObject = {
-                timeHrs: milestoneTask.TimeSpent != null ? milestoneTask.TimeSpent.indexOf('.') > -1 ?
-                  milestoneTask.TimeSpent.split('.')[0] : milestoneTask.TimeSpent : '00',
-                timeMins: milestoneTask.TimeSpent != null ?
-                  milestoneTask.TimeSpent.indexOf('.') > -1 ? milestoneTask.TimeSpent.split('.')[1] : '00' : 0
-              };
-
-              if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
-                milestoneHoursSpent.push(hrsMinObject);
-                projectHoursSpent.push(hrsMinObject);
-                projectHoursAllocated.push(+milestoneTask.ExpectedTime);
-              }
-              if (milestoneTask.Status === 'Completed' || milestoneTask.Status === 'Auto Closed') {
-                if (milestoneTask.TimeSpent == null) {
-                  projectAvailableHours.push(+milestoneTask.ExpectedTime);
-                } else {
-                  const mHoursSpentTask = this.commonService.ajax_addHrsMins([hrsMinObject]);
-                  const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
-                  const convertedHoursMins = this.commonService.convertFromHrsMins(+taskTotalMins);
-                  projectAvailableHours.push(+convertedHoursMins);
+                const tempmilestone = {
+                  'data': milestoneTemp,
+                  // 'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ?   true:false,
+                  'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
+                  'children': tempSubmilestones
                 }
-              } else if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
-                projectAvailableHours.push(+milestoneTask.ExpectedTime);
+
+                this.milestoneData.push(tempmilestone);
               }
 
-              // Gantt Chart Sub Object 
-
-              if (milestone.Title === milestoneTask.Milestone) {
-                if (milestoneTask.Status !== 'Deleted') {
-                  GanttTaskObj = {
-                    'pID': milestoneTask.Id,
-                    'pName': milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', ''),
-                    'pStart': milestoneTask.jsLocalStartDate,
-                    'pEnd': milestoneTask.jsLocalEndDate,
-                    'pUserStart': convertedStartDate,
-                    'pUserEnd': convertedEndDate,
-                    'pUserStartDatePart': this.getDatePart(convertedStartDate),
-                    'pUserStartTimePart': this.getTimePart(convertedStartDate),
-                    'pUserEndDatePart': this.getDatePart(convertedEndDate),
-                    'pUserEndTimePart': this.getTimePart(convertedEndDate),
-                    'pClass': milestoneTask.Status === 'Completed' ? 'gtaskblue' : milestoneTask.Status === 'In Progress' ? 'gtaskgreen' : milestoneTask.Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
-                    'pLink': '',
-                    'pMile': 0,
-                    'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title : ' -- ',
-                    'pComp': milestoneTask.Status === 'Not Confirmed' ? 0 : (milestoneTask.Status === 'Completed' ? 100 : milestoneTask.Status === 'In Progress' ? 50 : 0),
-                    'pGroup': 0,
-                    'pParent': milestoneTask.Task === 'Client Review' ? 0 : milestone.Id,
-                    'pOpen': 1,
-                    'pDepend': milestoneTask.Task === 'Client Review' ? i : '',
-                    'pCaption': '',
-                    'pNotes': milestoneTask.Status,
-                    'status': milestoneTask.Status,
-                    'budgetHours': milestoneTask.ExpectedTime,
-                    'spentTime': this.commonService.ajax_addHrsMins([hrsMinObject]),
-                    'allowStart': milestoneTask.AllowCompletion === true || milestoneTask.AllowCompletion === 'Yes' ? true : false,
-                    'tat': milestoneTask.TATStatus === true || milestoneTask.TATStatus === 'Yes' ? true : false,
-                    'tatVal': this.commonService.calcBusinessDays(milestoneTask.jsLocalStartDate, milestoneTask.jsLocalEndDate),
-                    'milestoneStatus': milestone.Status,
-                    'type': 'task',
-                    'editMode': false,
-                    'scope': milestoneTask.Comments,
-                    'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-                    'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
-                      > -1 ? true : false : false,
-                    'assignedUsers': milestoneTask.assignedUsers,
-                    'AssignedTo': milestoneTask.AssignedTo,
-                    'userCapacityEnable': false,
-                    'color': milestoneTask.color,
-                    'itemType': milestoneTask.Task,
-                    'nextTask': milestoneTask.NextTasks !== null ? milestoneTask.NextTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(milestoneTask.Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
-                    'previousTask': milestoneTask.PrevTasks !== null ? milestoneTask.PrevTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(milestoneTask.Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
-                    'edited': false,
-                    'IsCentrallyAllocated': milestoneTask.IsCentrallyAllocated,
-                    'added': false,
-                    'submilestone': milestoneTask.SubMilestones,
-                    'milestone': milestoneTask.Milestone,
-                    'skillLevel': milestoneTask.SkillLevel,
-                    'CentralAllocationDone': milestoneTask.CentralAllocationDone,
-                    'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
-                    'deallocateCentral': false
-                  };
-
-                  if (milestoneTask.Task === 'Client Review') {
-                    i = milestoneTask.Id;
-                    CRObj = { 'data': GanttTaskObj };
-
-                  }
-                  taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
-                  //if(GanttTaskObj.status !== 'Deleted') {
-                  this.GanttchartData.push(GanttTaskObj);
-                  allRetrievedTasks.push(GanttTaskObj);
-                  //}
-
-                  if (GanttTaskObj.itemType !== 'Client Review') {
-                    const tempObj = { 'data': GanttTaskObj };
-                    tempSubmilestones.push(tempObj);
-                  }
-                }
+              if (!CRObj && taskName && taskName.replace(/[0-9]/g, '').trim() === 'Client Review') {
+                const tempmilestone = { 'data': GanttTaskObj, 'children': [] }
+                this.milestoneData.push(tempmilestone);
               }
-
-              // Close  Gantt Chart Object
-            }
-            var milestoneTemp = this.GanttchartData.find(c => c.pID === milestone.Id);
-            if (milestoneTemp) {
-              milestoneTemp.spentTime = milestoneHoursSpent.length > 0 ? this.commonService.ajax_addHrsMins(milestoneHoursSpent) : '0:0';
-
-              const tempmilestone = {
-                'data': milestoneTemp,
-                // 'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ?   true:false,
-                'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-                'children': tempSubmilestones
+              else if (CRObj) {
+                this.milestoneData.push(CRObj);
               }
-
-              this.milestoneData.push(tempmilestone);
-            }
-
-            if (!CRObj && taskName && taskName.replace(/[0-9]/g, '').trim() === 'Client Review') {
-              const tempmilestone = { 'data': GanttTaskObj, 'children': [] }
-              this.milestoneData.push(tempmilestone);
-            }
-            else if (CRObj) {
-              this.milestoneData.push(CRObj);
             }
           }
         }
@@ -1024,8 +1030,11 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   CancelChanges(milestone, type) {
 
+
+
     if (type === "discardAll") {
       this.loaderenable = false;
+      this.changeInRestructure = false;
       this.milestoneData = JSON.parse(JSON.stringify(this.tempmilestoneData));
       this.convertDateString();
     }
@@ -1892,7 +1901,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
   // tslint:disable
   DateChange(Node, type) {
+
+    debugger;
     let previousNode = undefined;
+    let CheckDateTasks;
     let milestonePosition = -1;
     let selectedMil = -1;
     let subMilestonePosition = 0;
@@ -1911,6 +1923,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               this.changeDateOfEditedTask(submilestone.data, type);
               selectedMil = milestonePosition;
               previousNode = submilestone.data;
+              CheckDateTasks = milestone.children.map(c => c.data);
             }
           }
           if (submilestone.children !== undefined) {
@@ -1920,6 +1933,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                 this.changeDateOfEditedTask(task.data, type);
                 selectedMil = milestonePosition;
                 previousNode = task.data;
+                CheckDateTasks = submilestone.children.map(c => c.data);
               }
             });
           }
@@ -1927,7 +1941,37 @@ export class TimelineComponent implements OnInit, OnDestroy {
       }
     });
     this.cascadeNextNodes(previousNode, subMilestonePosition, selectedMil);
+    if (CheckDateTasks) {
+      this.validateTaskDates(CheckDateTasks);
+    }
+
     this.ResetStartAndEnd();
+  }
+
+
+  validateTaskDates(AllTasks) {
+
+    debugger;
+    this.errorMessageCount = 0;
+    AllTasks.forEach(task => {
+
+
+      if (task.nextTask) {
+        const nextTasks = task.nextTask.split(';');
+        const AllNextTasks = AllTasks.filter(c => (nextTasks.indexOf(c.pName) > -1));
+
+        const SDTask = AllNextTasks.find(c => c.pStart < task.pEnd);
+        if (SDTask) {
+          this.errorMessageCount++;
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            detail: 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName
+          });
+
+          this.taskerrorMessage = 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName;
+        }
+      }
+    });
   }
 
   cascadeNextNodes(previousNode, subMilestonePosition, selectedMil) {
@@ -2187,8 +2231,19 @@ export class TimelineComponent implements OnInit, OnDestroy {
   saveTasks() {
     this.disableSave = true;
     if (this.milestoneData.length > 0) {
+      debugger
       const isValid = this.validate();
-      if (isValid) {
+
+      debugger;
+      if (this.errorMessageCount > 0) {
+        this.messageService.add({
+          key: 'custom', severity: 'warn', summary: 'Warning Message',
+          detail: this.taskerrorMessage
+        });
+      }
+
+
+      if (isValid && this.errorMessageCount === 0) {
         this.loaderenable = true;
         this.sharedObject.resSectionShow = false;
         setTimeout(() => {
@@ -2735,6 +2790,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   public generateSaveTasks() {
+
+    debugger;
     var listOfMilestones = [];
     var addedTasks = [], updatedTasks = [], addedMilestones = [], updatedMilestones = []
     for (var nCount = 0; nCount < this.milestoneData.length; nCount = nCount + 1) {
@@ -2763,6 +2820,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
             if (submilestone.data.edited === true) {
               if (submilestone.data.type === 'task') {
                 if (submilestone.data.added == true) {
+
+                  submilestone.data.status = milestone.data.status === 'In Progress' ? 'Not Started' : submilestone.data.status;
                   addedTasks.push(submilestone.data);
                 }
                 else {
@@ -2774,6 +2833,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   var task = submilestone.children[nCountTask];
                   //  if(task.data.edited === true) {
                   if (task.data.added == true) {
+
+                    task.data.status = submilestone.data.status === 'In Progress' ? 'Not Started' : task.data.status;
+
                     addedTasks.push(task.data);
                   }
                   else {

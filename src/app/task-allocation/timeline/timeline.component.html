@@ -180,6 +180,7 @@
                   [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}"
                   hideOnDateTimeSelect="true" [stepMinute]="15" [showIcon]="true" [showOnFocus]="false"
                   [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')"
+                  appendTo="body"
                   [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
               </span>
                             <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Client Review' ">
@@ -187,6 +188,7 @@
                   [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}" 
                   hideOnDateTimeSelect="true" [stepMinute]="15" [showIcon]="true" [showOnFocus]="false"
                   [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')"
+                  appendTo="body"
                   [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
                 <input [disabled]="rowData.tat" readonly [ngxTimepicker]="picker"
                   [(ngModel)]="rowData.pUserStartTimePart"   class="timePicker">
@@ -206,6 +208,7 @@
                   [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}"
                   hideOnDateTimeSelect="true" [stepMinute]="15" [showIcon]="true" [showOnFocus]="false"
                   [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'end')"
+                  appendTo="body"
                   [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
 
               </span>
@@ -215,8 +218,9 @@
                   [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}"  
                   hideOnDateTimeSelect="true" [stepMinute]="15" [showIcon]="true" [showOnFocus]="false"
                   [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'end')"
+                  appendTo="body" 
                   [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
-                <input [disabled]="rowData.tat" readonly [ngxTimepicker]="picker" [min]="rowData.pUserStartDatePart ===rowData.pUserEndDatePart ? rowData.pUserStartTimePart :'12:00 am'" [(ngModel)]="rowData.pUserEndTimePart"
+                <input #inputDate [disabled]="rowData.tat" readonly [ngxTimepicker]="picker" [min]="rowData.pUserStartDatePart === rowData.pUserEndDatePart ? rowData.pUserStartTimePart :'12:00 am'" [(ngModel)]="rowData.pUserEndTimePart"
                   class="timePicker">
                   <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
                 <ngx-material-timepicker [preventOverlayClick]="true" (closed)="DateChangePart(rowData,'start')" #picker [ngxMaterialTimepickerTheme]="darkTheme"
