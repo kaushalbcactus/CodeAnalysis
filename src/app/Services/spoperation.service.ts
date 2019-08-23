@@ -3,6 +3,14 @@ import { GlobalService } from './global.service';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import * as JSZip from 'jszip';
 import * as FileSaver from 'file-saver';
+import { Observable } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
+import { PeoplePickerQuery } from '../models/people-picker.query';
+import { FormDigestResponse } from '../models/people-picker.response';
+
+const PEOPLE_PICKER_URL =
+  '_api/SP.UI.ApplicationPages.ClientPeoplePickerWebServiceInterface.ClientPeoplePickerSearchUser';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -597,10 +605,30 @@ export class SPOperationService {
       const b: any = new Blob([fileData], { type: '' + fileData.type + '' });
       zip.file(element.substring(element.lastIndexOf('/') + 1), b);
     }
-    zip.generateAsync({ type: 'blob' }).then( (content) => {
+    zip.generateAsync({ type: 'blob' }).then((content) => {
       if (content) {
         FileSaver.saveAs(content, name);
       }
     });
+  }
+
+  getUserSuggestions(query: PeoplePickerQuery): Observable<any> {
+    return this.httpClient.post(this.globalService.sharePointPageObject.webRelativeUrl + '/_api/contextinfo', '').pipe(
+      mergeMap((xRequest: FormDigestResponse) => {
+        const digest = xRequest.FormDigestValue;
+        const headers = new HttpHeaders({
+          accept: 'application/json;odata=verbose',
+          'X-RequestDigest': digest
+        });
+        const httpOptions = {
+          headers
+        };
+        return this.httpClient.post(
+          this.globalService.sharePointPageObject.webRelativeUrl + '/' + `${PEOPLE_PICKER_URL}`,
+          query,
+          httpOptions
+        );
+      })
+    );
   }
 }

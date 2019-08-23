@@ -134,7 +134,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   tempClick: any;
   selectedSubMilestone: any;
   changeInRestructure = false;
-  errorMessageCount: number;
+  errorMessageCount  = 0;
   taskerrorMessage: string;
 
   constructor(
@@ -243,7 +243,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
           const dueDate = new Date(b.Actual_x0020_Start_x0020_Date);
           return startDate > dueDate ? 1 : -1;
         });
-
         var i = -1;
         for (const milestone of milestones) {
 
