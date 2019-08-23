@@ -51,6 +51,7 @@ export class EditorComponent implements OnInit {
     indiaHtmlObject: any = {};
     USHtmlObject: any = {};
     showAppendix = false;
+    serviceDetailHeader = '';
     private subscription: Subscription = new Subscription();
     constructor(
         private common: CommonService,
@@ -1889,7 +1890,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         USObject.header = USObject.header.replace('[[CurrencyName]]', invoiceData.usCurrencyName);
         USObject.header = USObject.header.replace('[[CurrencySymbol]]', invoiceData.usCurrencySymbol);
         USObject.header = USObject.header.replace('[[Invoice]]', invoiceData.invoice);
-        USObject.serviceDetailHeader = (invoiceData.invoice + ' DETAILS').toUpperCase();
+        //USObject.serviceDetailHeader = (invoiceData.invoice + ' DETAILS').toUpperCase();
         USObject.contactDetails = USObject.contactDetails.replace('[[Company]]', invoiceData.company);
         USObject.contactDetails = USObject.contactDetails.replace('[[ClientContact1]]', invoiceData.clientcontact1);
         USObject.clientcontact2 = USObject.clientcontact2.replace('[[ClientContact2]]', invoiceData.clientcontact2);
@@ -2062,7 +2063,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         JapanObject.header = JapanObject.header.replace('[[Invoice]]', invoiceData.invoice);
         JapanObject.header = JapanObject.header.replace('[[CurrencyName]]', invoiceData.JpnCurrencyName);
         JapanObject.header = JapanObject.header.replace('[[CurrencySymbol]]', invoiceData.JpnCurrencySymbol);
-        JapanObject.serviceDetailHeader = (invoiceData.invoice + ' DETAILS').toUpperCase();
+        //JapanObject.serviceDetailHeader = (invoiceData.invoice + ' DETAILS').toUpperCase();
         JapanObject.contactDetails = JapanObject.contactDetails.replace('[[Company]]', invoiceData.company);
         JapanObject.contactDetails = JapanObject.contactDetails.replace('[[ClientContact1]]',
             invoiceData.clientcontact1);
@@ -2224,7 +2225,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         IndiaObject.header = IndiaObject.header.replace('[[InvoiceDate]]', invoiceData.invoice_date);
         IndiaObject.header = IndiaObject.header.replace('[[CurrencyName]]', invoiceData.IndCurrencyName);
         IndiaObject.header = IndiaObject.header.replace('[[CurrencySymbol]]', invoiceData.IndCurrencySymbol);
-        IndiaObject.serviceDetailHeader = (invoiceData.invoice + ' DETAILS').toUpperCase();
+        //IndiaObject.serviceDetailHeader = (invoiceData.invoice + ' DETAILS').toUpperCase();
         IndiaObject.purchaseOrder = IndiaObject.purchaseOrder.replace('[[PurchaseOrderNumber]]',
             invoiceData.purchaseOrderNumber);
 
@@ -2409,7 +2410,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             this.USHtmlObject.invoiceDetail = document.getElementById('invoiceDetails').innerHTML;
             this.USHtmlObject.paymentInstructions = document.getElementById('paymentInstructions').innerHTML;
             this.USHtmlObject.paymentDetails = document.getElementById('paymentDetails').innerHTML;
-            this.USHtmlObject.serviceDetailHeader = document.getElementById('serviceDetailHeader').innerHTML;
+            //this.USHtmlObject.serviceDetailHeader = document.getElementById('serviceDetailHeader').innerHTML;
             if (this.showAppendix) {
                 this.USHtmlObject.appendix = document.getElementById('appendix').innerHTML;
             }
@@ -2422,7 +2423,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             this.japanHtmlObject.invoiceDetail = document.getElementById('invoiceDetails').innerHTML;
             this.japanHtmlObject.paymentInstructions = document.getElementById('paymentInstructions1').innerHTML;
             this.japanHtmlObject.paymentDetails = document.getElementById('paymentInstructions2').innerHTML;
-            this.japanHtmlObject.serviceDetailHeader = document.getElementById('serviceDetailHeader').innerHTML;
+            //this.japanHtmlObject.serviceDetailHeader = document.getElementById('serviceDetailHeader').innerHTML;
             if (this.showAppendix) {
                 this.japanHtmlObject.appendix = document.getElementById('appendix').innerHTML;
             }
@@ -2437,7 +2438,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             this.indiaHtmlObject.invoiceDetail = document.getElementById('invoiceDetails').innerHTML;
             this.indiaHtmlObject.paymentInstructions = document.getElementById('paymentInstructions').innerHTML;
             this.indiaHtmlObject.paymentDetails = document.getElementById('paymentInstructions2').innerHTML;
-            this.indiaHtmlObject.serviceDetailHeader = document.getElementById('serviceDetailHeader').innerHTML;
+            //this.indiaHtmlObject.serviceDetailHeader = document.getElementById('serviceDetailHeader').innerHTML;
             if (this.showAppendix) {
                 this.indiaHtmlObject.appendix = document.getElementById('appendix').innerHTML;
             }
