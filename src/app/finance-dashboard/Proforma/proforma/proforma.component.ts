@@ -603,6 +603,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.fdConstantsService.fdComponent.selectedEditObject.ID = data.Id;
                 this.fdConstantsService.fdComponent.selectedEditObject.Type = 'Proforma';
                 this.fdConstantsService.fdComponent.selectedComp = this;
+                proformaObj.saveObj.serviceDetailHeader = 'PROFORMA DETAILS';
                 switch (data.Template) {
                     case 'US':
                         this.editorRef.JapanTemplateCopy = {};

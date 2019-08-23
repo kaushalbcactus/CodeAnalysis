@@ -2431,7 +2431,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             this.indiaHtmlObject.header = document.getElementById('header').innerHTML;
             this.indiaHtmlObject.footer = document.getElementById('footer').innerHTML;
             this.indiaHtmlObject.contactDetails1 = document.getElementById('contact_details').innerHTML;
-            this.indiaHtmlObject.contactDetails2 = document.getElementById('contactDetails2').innerHTML;
+            // this.indiaHtmlObject.contactDetails2 = document.getElementById('contactDetails2').innerHTML;
             // this.indiaHtmlObject.address = document.getElementById('address').innerHTML;
             this.indiaHtmlObject.purchaseOrder = document.getElementById('purchaseOrderDetails').innerHTML;
             this.indiaHtmlObject.invoiceDetail = document.getElementById('invoiceDetails').innerHTML;
