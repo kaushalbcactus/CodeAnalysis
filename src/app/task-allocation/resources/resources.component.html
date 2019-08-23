@@ -1,3 +1,104 @@
-<p>
-  resources works!
-</p>
+<div fxLayout="row" fxLayoutAlign="space-between start" fxLayoutGap="20px" style="width:100%;padding: 10px 0px 30px 0px;">
+
+    <div class="ui-fluid" fxLayout="column" fxFlex="15">
+        <span class="header">Primary Resources</span>
+        <p-autoComplete [(ngModel)]="spusers" [suggestions]="multipleUsers" (completeMethod)="filterUsers($event,'multiple')" [minLength]="1" placeholder="Select Resources" field="DisplayText" [multiple]="true" scrollHeight="150px" [dropdown]="true">
+            <ng-template let-spuser pTemplate="item">
+                <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                    <div class="user-name">
+                        {{spuser.DisplayText}}
+                    </div>
+                </div>
+            </ng-template>
+        </p-autoComplete>
+    </div>
+
+    <div class="ui-fluid" fxLayout="column" fxFlex="10">
+        <span class="header">Writer</span>
+        <p-autoComplete [(ngModel)]="writerusers" [readonly]="true" placeholder="Writers" field="DisplayText" [multiple]="true" [scrollHeight]="100">
+            <ng-template let-writerusers pTemplate="item">
+                <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+
+                    <div class="user-name">
+                        {{writerusers.DisplayText}}
+                    </div>
+
+                </div>
+            </ng-template>
+        </p-autoComplete>
+    </div>
+    <div class="ui-fluid" fxLayout="column" fxFlex="10">
+        <span class="header">Reviewer</span>
+        <p-autoComplete [(ngModel)]="reviewerusers" [readonly]="true" placeholder="Reviewer" field="DisplayText" [multiple]="true">
+            <ng-template let-reviewerusers pTemplate="item">
+                <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+
+                    <div class="user-name">
+                        {{reviewerusers.DisplayText}}
+                    </div>
+
+                </div>
+            </ng-template>
+        </p-autoComplete>
+    </div>
+    <div class="ui-fluid" fxLayout="column" fxFlex="10">
+        <span class="header">Quality Checker</span>
+        <p-autoComplete [(ngModel)]="qualityusers" [readonly]="true" placeholder="Quality Checker" field="DisplayText" [multiple]="true">
+            <ng-template let-qualityusers pTemplate="item">
+                <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+
+                    <div class="user-name">
+                        {{qualityusers.DisplayText}}
+                    </div>
+
+                </div>
+            </ng-template>
+        </p-autoComplete>
+    </div>
+    <div class="ui-fluid" fxLayout="column" fxFlex="10">
+        <span class="header">Editor</span>
+        <p-autoComplete [(ngModel)]="editorusers" [readonly]="true" placeholder="Editor" field="DisplayText" [multiple]="true">
+            <ng-template let-editorusers pTemplate="item">
+                <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+
+                    <div class="user-name">
+                        {{editorusers.DisplayText}}
+                    </div>
+
+                </div>
+            </ng-template>
+        </p-autoComplete>
+    </div>
+    <div class="ui-fluid" fxLayout="column" fxFlex="10">
+        <span class="header">Graphics</span>
+        <p-autoComplete [(ngModel)]="graphicsusers" [readonly]="true" placeholder="Graphics" field="DisplayText" [multiple]="true">
+            <ng-template let-graphicsusers pTemplate="item">
+                <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+
+                    <div class="user-name">
+                        {{graphicsusers.DisplayText}}
+                    </div>
+
+                </div>
+            </ng-template>
+        </p-autoComplete>
+    </div>
+    <div class="ui-fluid" fxLayout="column" fxFlex="10">
+        <span class="header">Publication Support</span>
+        <p-autoComplete [(ngModel)]="pudsupportusers" [readonly]="true" placeholder="Publication Support" field="DisplayText" [multiple]="true">
+            <ng-template let-pudsupportusers pTemplate="item">
+                <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+
+                    <div class="user-name">
+                        {{pudsupportusers.DisplayText}}
+                    </div>
+
+                </div>
+            </ng-template>
+        </p-autoComplete>
+    </div>
+    <div class="ui-fluid" fxLayout="column" fxFlex="10" style="align-items: flex-end;">
+        <button style="margin: 18px 0px 0px 0px;" mat-raised-button type="button" [disabled]="disableSave" (click)="saveResources()">
+            <mat-icon>save</mat-icon> Save Resources
+          </button>
+    </div>
