@@ -76,7 +76,7 @@
             <ng-template pTemplate let-i="rowIndex" let-node="rowData">
                 <!-- <p-menu #popupMenu [popup]="true" [model]="items" [style]="{'width':'20em'}" class='menuPopup'></p-menu> -->
                 <div>
-                    <p-menu #popupMenu [appendTo]="body" style="top: 0px;" [style]="{'width': '20em'}" [popup]="true"
+                    <p-menu #popupMenu [style]="{'width': '20em'}" [popup]="true"
                         [model]="items"></p-menu>
                     <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                         (click)="openPopup(node, popupMenu);popupMenu.show($event);"></i>
@@ -1369,7 +1369,7 @@
                 </div>
 
                 <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
-                    <div class="box">Rejection Ration</div>
+                    <div class="box">Rejection Ratio</div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
