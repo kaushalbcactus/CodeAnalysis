@@ -76,8 +76,8 @@
             <ng-template pTemplate let-i="rowIndex" let-node="rowData">
                 <!-- <p-menu #popupMenu [popup]="true" [model]="items" [style]="{'width':'20em'}" class='menuPopup'></p-menu> -->
                 <div>
-                    <p-menu #popupMenu [style]="{'width': '20em'}" [popup]="true"
-                        [model]="items"></p-menu>
+                    <p-menu #popupMenu [style]="{'width': '20em'}" [popup]="true" [model]="items">
+                    </p-menu>
                     <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
                         (click)="openPopup(node, popupMenu);popupMenu.show($event);"></i>
                 </div>

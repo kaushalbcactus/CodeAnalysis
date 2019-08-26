@@ -454,7 +454,6 @@ export class PubsupportComponent implements OnInit {
 
     // Open popup
     openPopup(data, popUpData) {
-
         this.submitBtn.isSubmit = false;
         this.formSubmit.isSubmit = false;
         this.submitBtn.isClicked = false;
@@ -533,6 +532,7 @@ export class PubsupportComponent implements OnInit {
         if (this.items.length === 0) {
             popUpData.popup = false;
             popUpData.visible = false;
+            popUpData.style.width = '0em';
         } else if (this.selectedProject.PubSupportStatus !== 'Published') {
 
             // GET JC & JCSubmission top
@@ -1034,6 +1034,9 @@ export class PubsupportComponent implements OnInit {
         } else if (formType === 'updatePublicatoinModal') {
             this.updatePublicatoinModal = false;
             this.update_publication_form.reset();
+        } else if (formType === 'overrideGalleyModal') {
+            this.overrideGalleyModal = false;
+            this.galley_form.reset();
         }
         this.formSubmit.isSubmit = false;
         this.submitBtn.isClicked = false;
@@ -1218,7 +1221,7 @@ export class PubsupportComponent implements OnInit {
             } else if (type === 'updateJCRequirementModal') {
                 this.messageService.add({
                     key: 'myKey1', severity: 'success', summary: 'Success message',
-                    detail: 'Updated Journal Requirement document.', life: 4000
+                    detail: 'Journal requirement response document updated.', life: 4000
                 });
                 this.updateJCRequirementModal = false;
                 this.reload();
