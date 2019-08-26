@@ -472,7 +472,7 @@ export class PubsupportComponent implements OnInit {
                     { label: 'Add Journal conference', command: (e) => this.openMenuContent(e, data) },
                     { label: 'Add Authors', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Author forms & emails', command: e => this.openMenuContent(e, data) },
-                    { label: 'Update Journal Requirement', command: e => this.openMenuContent(e, data) }
+                    // { label: 'Update Journal Requirement', command: e => this.openMenuContent(e, data) }
                 ];
                 break;
             }

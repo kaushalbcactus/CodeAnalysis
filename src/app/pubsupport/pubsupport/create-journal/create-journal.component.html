@@ -1,100 +1,105 @@
-<form [formGroup]="createJournal_form">
-    <div class='blockBookingButton'>
-        <button type="button" pButton icon="pi pi-save" id="saveBooking"
-            [ngStyle]="{'margin-right':'5px','cursor':'pointer' }" [disabled]="submitBtn.isClicked" (click)="onSubmit('createJournal')"
-            label="Create"></button>
+<div>
+    <form [formGroup]="createJournal_form">
+        <div class='blockBookingButton'>
+            <button type="button" pButton icon="pi pi-save" id="saveBooking"
+                [ngStyle]="{'margin-right':'5px','cursor':'pointer' }" [disabled]="submitBtn.isClicked"
+                (click)="onSubmit('createJournal')" label="Create"></button>
 
-        <button type="button" pButton icon="pi pi-times" (click)="cancelFormSub();" label="Cancel"
-            class="ui-button-secondary" style="background-color:ghostwhite;"></button>
-    </div>
-
-    <div class="ui-g">
-        <div class="p-col-12 p-md-6 p-lg-2">
-            Name
+            <button type="button" pButton icon="pi pi-times" (click)="cancelFormSub();" label="Cancel"
+                class="ui-button-secondary" style="background-color:ghostwhite;"></button>
         </div>
-        <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-            <!-- <input type="text" pInputText maxlength="30" formControlName="JournalName" style="width: 100%;" placeholder="Name" /> -->
-            <textarea rows="5" cols="30" pInputTextarea formControlName="JournalName" maxlength="200"
-            (keyup)="onKey($event.value)" (blur)="checkUniqueName()"></textarea>
-            <span *ngIf="uniqueJName" style="color:red;">Please provide unique name.</span>
-            <span *ngIf="createJournal_form.value.JournalName" style="float: right;">{{createJournal_form.value.JournalName.length}}/200</span>
-            <span *ngIf="createJournal_form.value.JournalName.length >= '200'" style="color:red;float: right;">You have enter maximum length of Journal Name</span>
-            <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.JournalName.errors">
-                <div *ngIf="isValidCreateJournalForm.JournalName.errors.required" style="color:red;">
-                    Please provide Name.</div>
+
+        <div class="ui-g">
+            <div class="p-col-12 p-md-6 p-lg-2">
+                Name
             </div>
-        </div>
+            <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                <!-- <input type="text" pInputText maxlength="30" formControlName="JournalName" style="width: 100%;" placeholder="Name" /> -->
+                <textarea rows="5" cols="30" pInputTextarea formControlName="JournalName" maxlength="200"
+                    (keyup)="onKey($event.value)" (blur)="checkUniqueName()"></textarea>
+                <span *ngIf="uniqueJName" style="color:red;">Please provide unique name.</span>
+                <span *ngIf="createJournal_form.value.JournalName"
+                    style="float: right;">{{createJournal_form.value.JournalName.length}}/200</span>
+                <span *ngIf="createJournal_form.value.JournalName.length >= '200'" style="color:red;float: right;">You
+                    have enter maximum length of Journal Name</span>
+                <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.JournalName.errors">
+                    <div *ngIf="isValidCreateJournalForm.JournalName.errors.required" style="color:red;">
+                        Please provide Name.</div>
+                </div>
+            </div>
 
-        <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
-            <div class="box">Expected Review Period</div>
-        </div>
-        <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
-            <div class="box">
-                <input type="text" pInputText maxlength="25" formControlName="ExpectedReviewPeriod"
-                    placeholder="12 Months">
-                <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.ExpectedReviewPeriod.errors">
-                    <div *ngIf="isValidCreateJournalForm.ExpectedReviewPeriod.errors.required" style="color:red;">
-                        Expected Review is required.
+            <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
+                <div class="box">Expected Review Period</div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
+                <div class="box">
+                    <input type="text" pInputText maxlength="25" formControlName="ExpectedReviewPeriod"
+                        placeholder="12 Months">
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.ExpectedReviewPeriod.errors">
+                        <div *ngIf="isValidCreateJournalForm.ExpectedReviewPeriod.errors.required" style="color:red;">
+                            Expected Review is required.
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="ui-g">
-        <div class="p-col-12 p-md-6 p-lg-2">
-            Impact factor
-        </div>
-        <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-            <input type="text" maxlength="10" id="factor" name="name" placeholder="50%" formControlName="ImpactFactor">
-            <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.ImpactFactor.errors">
-                <div *ngIf="isValidCreateJournalForm.ImpactFactor.errors.required" style="color:red;">Impact factor
-                    is required.
+        <div class="ui-g">
+            <div class="p-col-12 p-md-6 p-lg-2">
+                Impact factor
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                <input type="text" maxlength="10" id="factor" name="name" placeholder="50%"
+                    formControlName="ImpactFactor">
+                <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.ImpactFactor.errors">
+                    <div *ngIf="isValidCreateJournalForm.ImpactFactor.errors.required" style="color:red;">Impact factor
+                        is required.
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
-            <div class="box">Rejection Ration</div>
-        </div>
-        <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
-            <div class="box">
-                <input type="text" maxlength="10" placeholder="20%" formControlName="RejectionRate">
-                <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.RejectionRate.errors">
-                    <div *ngIf="isValidCreateJournalForm.RejectionRate.errors.required" style="color:red;">Rejection
-                        Rate is required.</div>
-                </div>
+            <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
+                <div class="box">Rejection Ration</div>
             </div>
-        </div>
-    </div>
-
-    <div class="ui-g">
-        <div class="p-col-12 p-md-6 p-lg-2">
-            Comments
-        </div>
-        <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-            <div class="box">
-                <textarea rows="5" cols="30" pInputTextarea formControlName="Comments" maxlength="100"></textarea>
-                <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.Comments.errors">
-                    <div *ngIf="isValidCreateJournalForm.Comments.errors.required" style="color:red;">
-                        Please provide Comments.</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
-            <div class="box">Journal Editor Info</div>
-        </div>
-        <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
-            <div class="box">
-                <textarea rows="5" cols="30" pInputTextarea formControlName="JournalEditorInfo"
-                    maxlength="100"></textarea>
-                <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.JournalEditorInfo.errors">
-                    <div *ngIf="isValidCreateJournalForm.JournalEditorInfo.errors.required" style="color:red;">
-                        Journal Editor Info is required.
+            <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
+                <div class="box">
+                    <input type="text" maxlength="10" placeholder="20%" formControlName="RejectionRate">
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.RejectionRate.errors">
+                        <div *ngIf="isValidCreateJournalForm.RejectionRate.errors.required" style="color:red;">Rejection
+                            Rate is required.</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</form>
+
+        <div class="ui-g">
+            <div class="p-col-12 p-md-6 p-lg-2">
+                Comments
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                <div class="box">
+                    <textarea rows="5" cols="30" pInputTextarea formControlName="Comments" maxlength="100"></textarea>
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.Comments.errors">
+                        <div *ngIf="isValidCreateJournalForm.Comments.errors.required" style="color:red;">
+                            Please provide Comments.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
+                <div class="box">Journal Editor Info</div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
+                <div class="box">
+                    <textarea rows="5" cols="30" pInputTextarea formControlName="JournalEditorInfo"
+                        maxlength="100"></textarea>
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.JournalEditorInfo.errors">
+                        <div *ngIf="isValidCreateJournalForm.JournalEditorInfo.errors.required" style="color:red;">
+                            Journal Editor Info is required.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

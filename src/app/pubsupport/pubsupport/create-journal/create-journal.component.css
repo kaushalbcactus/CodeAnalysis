@@ -18,6 +18,6 @@
     padding: 15px 0px 0px 0px;
 }
 
-::ng-deep .ui-dynamicdialog {
+/* ::ng-deep .ui-dynamicdialog {
     top:50% !important;
-}
+} */
