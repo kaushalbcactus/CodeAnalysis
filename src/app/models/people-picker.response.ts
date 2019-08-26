@@ -7,15 +7,8 @@ interface PeoplePickerData {
 }
 
 export interface PeoplePickerUser {
-  Key: string;
-  Description: string;
-  DisplayText: string;
-  EntityType: string;
-  ProviderDisplayName: string;
-  ProviderName: string;
-  IsResolved: boolean;
-  EntityData: PeoplePickerUserEntityData;
-  MultipleMatches: any[];
+  Id: number;
+  UserName: string;
 }
 
 export interface PeoplePickerUserEntityData {

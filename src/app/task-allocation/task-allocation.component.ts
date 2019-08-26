@@ -10,6 +10,7 @@ import { TaskAllocationConstantsService } from './services/task-allocation-const
 import { TimelineComponent } from './timeline/timeline.component';
 import { CommonService } from '../Services/common.service';
 import { SPOperationService } from '../Services/spoperation.service';
+import { ResourcesComponent } from './resources/resources.component';
 
 @Component({
   selector: 'app-taskallocation',
@@ -40,6 +41,7 @@ import { SPOperationService } from '../Services/spoperation.service';
 export class TaskAllocationComponent implements OnInit {
 
   @ViewChild(TimelineComponent, { static: true }) timelineChild: TimelineComponent;
+  @ViewChild(ResourcesComponent, { static: true }) resourcesComponentChild: ResourcesComponent;
   customCollapsedHeight = '30px';
   Searchenable = false;
   SearchView = true;
@@ -211,5 +213,11 @@ export class TaskAllocationComponent implements OnInit {
       Validators.required,
 
     ]);
+  }
+
+
+  reloadResourceArray() {
+
+    this.resourcesComponentChild.loadResources();
   }
 }

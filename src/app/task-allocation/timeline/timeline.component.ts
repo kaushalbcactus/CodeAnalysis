@@ -134,7 +134,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   tempClick: any;
   selectedSubMilestone: any;
   changeInRestructure = false;
-  errorMessageCount  = 0;
+  errorMessageCount = 0;
   taskerrorMessage: string;
 
   constructor(
@@ -395,7 +395,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
                 for (const milestoneTask of milestoneTasks) {
 
-               
+
 
                   taskName = '';
                   //this.resources = await this.commonService.getResourceByMatrix(milestoneTask, this.allTasks);
@@ -2230,10 +2230,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
   saveTasks() {
     this.disableSave = true;
     if (this.milestoneData.length > 0) {
-      debugger
-      const isValid = this.validate();
 
-      debugger;
+      const isValid = this.validate();
       if (this.errorMessageCount > 0) {
         this.messageService.add({
           key: 'custom', severity: 'warn', summary: 'Warning Message',
@@ -2495,6 +2493,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
     // this.callReloadRes();
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
     this.getMilestones(false);
+
+    this.reloadResources.emit();
 
 
     //}

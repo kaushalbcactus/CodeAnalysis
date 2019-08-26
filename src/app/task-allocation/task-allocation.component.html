@@ -44,7 +44,7 @@
                     <mat-icon style="vertical-align: middle;">person</mat-icon> Resources
                 </h4>
             </mat-expansion-panel-header>
-            <app-resources (reloadResources)="reloadResourceArray($event)" fxLayout="row" style="width:100%;" fxLayoutAlign="start start"></app-resources>
+            <app-resources fxLayout="column" #loadResources style="width:100%;" fxLayoutAlign="start start"></app-resources>
         </mat-expansion-panel>
         <!--********************************************************************************************
                                              TimeLine  panel      
@@ -56,7 +56,7 @@
                     <mat-icon style="vertical-align: middle;">timeline</mat-icon> TimeLine
                 </h4>
             </mat-expansion-panel-header>
-            <app-timeline (reloadResources)="reloadResourceArray($event)" fxLayout="row" style="width:100%;padding-bottom: 100px;" fxLayoutAlign="center center"></app-timeline>
+            <app-timeline fxLayout="row" (reloadResources)="reloadResourceArray($event)" style="width:100%;padding-bottom: 100px;" fxLayoutAlign="center center"></app-timeline>
         </mat-expansion-panel>
     </mat-accordion>
 </div>
