@@ -157,6 +157,12 @@ export class SPOperationService {
 
   // READ entire list - needs $http factory and SharePoint list name
 
+  getGroupUrl(groupName: any, options?: any) {
+    const groupURl = this.baseUrl + '/_api/web/sitegroups/getbyname(\'{groupName}\')/users';
+    let url = groupURl.replace('{groupName}', groupName);
+    url = this.readBuilder(url, options);
+    return url;
+  }
   getChoiceFieldUrl(listName: string, options?: any) {
     const choiceUrl = this.baseUrl + '/_api/web/lists/GetByTitle(\'{listName}\')/fields';
     let url = choiceUrl.replace('{listName}', listName);
@@ -198,7 +204,6 @@ export class SPOperationService {
     url = this.readBuilder(url, options);
     return url;
   }
-
   getItemVersionsURL(listName: string, id: any, options?: any) {
     let url = this.apiUrl.replace('{0}', listName) + '(' + id + ')';
     url = url + '/Versions';
@@ -289,7 +294,23 @@ export class SPOperationService {
     });
     return this.parseRetSingle(res);
   }
-
+  // Add User to group using login name
+  async addUserToGroupByLoginName(groupName: any, jsonBody: any) {
+    const url = this.getGroupUrl(groupName, null);
+    // append metadata
+    if (!jsonBody.__metadata) {
+      jsonBody.__metadata = {
+        // tslint:disable-next-line:object-literal-key-quotes
+        'type': 'SP.User'
+      };
+    }
+    const data = JSON.stringify(jsonBody);
+    const res = await this.httpClient.post(url, data, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+      const error = err.error;
+      return error;
+    });
+    return this.parseRetSingle(res);
+  }
   /// UPDATE item - SharePoint list name, item ID number, and JS object to stringify for save
   async updateItem(listName: string, id: any, jsonBody: any, type: string) {
     // Append HTTP header MERGE for UPDATE scenario
@@ -610,7 +631,7 @@ export class SPOperationService {
       const b: any = new Blob([fileData], { type: '' + fileData.type + '' });
       zip.file(element.substring(element.lastIndexOf('/') + 1), b);
     }
-    zip.generateAsync({ type: 'blob' }).then( (content) => {
+    zip.generateAsync({ type: 'blob' }).then((content) => {
       if (content) {
         FileSaver.saveAs(content, name);
       }
