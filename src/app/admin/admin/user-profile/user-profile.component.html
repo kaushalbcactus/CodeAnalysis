@@ -1,13 +1,16 @@
 <div>
   <a (click)="downloadExcel(up)" class="download-worksheet td-none"><i class="fa fa-download" aria-hidden="true"></i>
     Download worksheet</a>
+  <a (click)="loadUserTable()" class="download-worksheet td-none mr-10"><i class="pi pi-refresh" aria-hidden="true"></i>
+    Refresh</a>
 </div>
 
-<p-table #up [columns]="userProfileColumns" [value]="userProfileRows" exportFilename="User Profile">
+<p-table #up [columns]="userProfileColumns" [value]="userProfileData" exportFilename="User Profile" [paginator]="true"
+  [rows]="10">
   <ng-template pTemplate="header" let-columns>
     <tr>
       <th>Sr.No.</th>
-      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+      <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
         {{col.header}}
         <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
           ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
@@ -17,7 +20,7 @@
     </tr>
     <tr>
       <th></th>
-      <th *ngFor="let col of columns" [ngSwitch]="col.field">
+      <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility">
         <p-multiSelect *ngSwitchCase="'User'" [style]="{'width':'100%'}" appendTo="body"
           [options]="userProfileColArray.User" defaultLabel="User" (onChange)="up.filter($event.value, col.field, 'in')"
           (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
@@ -33,18 +36,16 @@
       <th></th>
     </tr>
   </ng-template>
-  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+  <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
     <tr>
       <td>{{ rowIndex+1 }}</td>
-      <td *ngFor="let col of columns">
-        <ng-container *ngIf="col.field != ''">
-          {{rowData[col.field]}}
-        </ng-container>
-      </td>
+      <td>{{rowData.User}}</td>
+      <td>{{rowData.LastUpdated | date:'MMM dd, yyyy'}}</td>
+      <td>{{rowData.LastUpdatedBy}}</td>
       <td>
-        <p-menu #menu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
+        <p-menu #menu [popup]="true" appendTo="body" [model]="pMenuItems" styleClass="borderMenu"></p-menu>
         <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-          (click)="menu.toggle($event);"></i>
+          (click)="storeRowData(rowData); menu.toggle($event);"></i>
       </td>
     </tr>
   </ng-template>
@@ -58,7 +59,7 @@
 </p-table>
 
 <div style="text-align: center;margin-top:10px;">
-  <p-button icon="pi pi-plus-circle" label="Add New User" (click)="showAddUserModal()"></p-button>
+  <p-button icon="pi pi-plus-circle" label="Add New User" type="button" (click)="showAddUserModal()"></p-button>
 </div>
 
 <!-- <div style="margin-top: 10px;">
@@ -145,36 +146,37 @@
       </ng-template>
   </p-table> -->
 
-<p-dialog header="Add New User" [(visible)]="showModal" [modal]="true"
-  [contentStyle]="{'max-height':'500px', 'top':'0px'}" [style]="{width: '60%'}">
-  <p-header>
+<p-dialog [(visible)]="showModal" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
+  [style]="{width: '60%'}">
+  <p-header *ngIf="!showeditUser">
     Add New User
   </p-header>
-  <!-- <p-autoComplete [(ngModel)]="spuser" [suggestions]="users" (completeMethod)="filterSPUserSingle($event)"
-    field="DisplayText" [size]="30" placeholder="Find user" [minLength]="3">
-    <ng-template let-spuser pTemplate="item" styleClass="wid100">
-      <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
-        <img class="user-img" src="{{BASE_PHOTO_URL+ spuser.EntityData.Email}}" />
-        <div class="user-name">
-          {{spuser.DisplayText}}
-        </div>
-        <div class="user-properties">
-          {{spuser.EntityData.Title}}
-        </div>
-      </div>
-    </ng-template>
-  </p-autoComplete> -->
+  <p-header *ngIf="showeditUser">
+    Edit User
+  </p-header>
   <form [formGroup]='addUser'>
     <div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">User Name</div>
-        <div class="ui-grid-col-4">
-          <!-- <input class="mr-5" type="text" size="30" formControlName="username" placeholder="User Name" pInputText>
+      <div class="p-grid mt-20">
+        <div class="p-col-2"><span class="compulsory">*</span>User Name</div>
+        <div class="p-col-4">
+          <p-autoComplete formControlName="username" [suggestions]="users" (completeMethod)="filterSPUserSingle($event)"
+            field="DisplayText" [size]="30" placeholder="User Name" [minLength]="3">
+            <ng-template let-spuser pTemplate="item" styleClass="wid100">
+              <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
+                <div class="user-name">
+                  {{spuser.DisplayText}}
+                </div>
+              </div>
+            </ng-template>
+          </p-autoComplete>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.username.errors">
             <div *ngIf="addUser.controls.username.errors.required">User Name is required</div>
-          </div> -->
-          <p-autoComplete formControlName="username" [suggestions]="users" (completeMethod)="filterSPUserSingle($event)"
-            field="DisplayText" [size]="30" placeholder="User Name" [minLength]="3">
+          </div>
+        </div>
+        <div class="p-col-2"><span class="compulsory">*</span>Manager</div>
+        <div class="p-col-4">
+          <p-autoComplete formControlName="manager" [suggestions]="users" (completeMethod)="filterSPUserSingle($event)"
+            field="DisplayText" [size]="30" placeholder="Manager" [minLength]="3" (onSelect)="onManagerChange()">
             <ng-template let-spuser pTemplate="item" styleClass="wid100">
               <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
                 <div class="user-name">
@@ -183,81 +185,99 @@
               </div>
             </ng-template>
           </p-autoComplete>
-        </div>
-        <div class="ui-grid-col-2 ">Manager</div>
-        <div class="ui-grid-col-4">
-          <!-- <input class="mr-5" type="text" size="30" formControlName="manager" placeholder="Manager" pInputText>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.manager.errors">
             <div *ngIf="addUser.controls.manager.errors.required"> Manager is required</div>
-          </div> -->
-          <p-autoComplete formControlName="username" [suggestions]="users" (completeMethod)="filterSPUserSingle($event)"
-            field="DisplayText" [size]="30" placeholder="User Name" [minLength]="3">
-            <ng-template let-spuser pTemplate="item" styleClass="wid100">
-              <div class="ui-helper-clearfix" style="border-bottom:1px solid #D5D5D5">
-                <div class="user-name">
-                  {{spuser.DisplayText}}
-                </div>
-              </div>
-            </ng-template>
-          </p-autoComplete>
+          </div>
         </div>
       </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">Bucket</div>
-        <div class="ui-grid-col-4">
+      <div class="p-grid mt-20" *ngIf="date.isManagerEffectiveDateActive">
+        <div class="p-col-2 p-offset-6"><span class="compulsory">*</span>Manager Effective Date</div>
+        <div class="p-col-4">
+          <p-calendar formControlName="managerEffectiveDate" placeholder="Manager Date"></p-calendar>
+        </div>
+        <div class="error p-offset-6" *ngIf="upObject.isFormSubmit && addUser.controls.managerEffectiveDate.errors">
+          <div *ngIf="addUser.controls.managerEffectiveDate.errors.required">Manager Effective Date is
+            required</div>
+        </div>
+      </div>
+      <div class="p-grid mt-20">
+        <div class="p-col-2"><span class="compulsory">*</span>Bucket</div>
+        <div class="p-col-4">
           <p-dropdown placeholder="Select Bucket" [options]="adminDropDown.bucketArray" formControlName="bucket">
           </p-dropdown>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.bucket.errors">
             <div *ngIf="addUser.controls.bucket.errors.required">Bucket is required</div>
           </div>
         </div>
-        <div class="ui-grid-col-2 ">Practice Area</div>
-        <div class="ui-grid-col-4">
+        <div class="p-col-2"><span class="compulsory">*</span>Practice Area</div>
+        <div class="p-col-4">
           <p-dropdown placeholder="Select Practice Area" [options]="adminDropDown.practiceAreaArray"
-            formControlName="practiceArea">
+            formControlName="practiceArea" [ngClass]="{'form-submitted': upObject.isFormSubmit}"
+            (onChange)="onPracticeAreaChange()">
           </p-dropdown>
-
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.practiceArea.errors">
             <div *ngIf="addUser.controls.practiceArea.errors.required">Practice Area is required</div>
           </div>
         </div>
       </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">Time Zone</div>
-        <div class="ui-grid-col-4">
-          <p-dropdown placeholder="Select Time Zone" [options]="adminDropDown.timeZoneArray" formControlName="timeZone">
+      <div class="p-grid mt-20" *ngIf="date.isPracticeEffectiveDateActive">
+        <div class="p-col-2 p-offset-6"><span class="compulsory">*</span>Practice Area Effective Date</div>
+        <div class="p-col-4">
+          <p-calendar formControlName="practiceAreaEffectiveDate" placeholder="Practice Area Date"></p-calendar>
+        </div>
+        <div class="error p-offset-6"
+          *ngIf="upObject.isFormSubmit && addUser.controls.practiceAreaEffectiveDate.errors">
+          <div *ngIf="addUser.controls.practiceAreaEffectiveDate.errors.required">Practice Area Effective Date is
+            required</div>
+        </div>
+      </div>
+      <div class="p-grid mt-20">
+        <div class="p-col-2"><span class="compulsory">*</span>Time Zone</div>
+        <div class="p-col-4">
+          <p-dropdown placeholder="Select Time Zone" [options]="adminDropDown.timeZoneArray" formControlName="timeZone"
+            (onChange)="onTimezoneChange()">
           </p-dropdown>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.timeZone.errors">
             <div *ngIf="addUser.controls.timeZone.errors.required">Time Zone is required</div>
           </div>
         </div>
-        <div class="ui-grid-col-2 ">Date of Joining</div>
-        <div class="ui-grid-col-4">
+        <div class="p-col-2"><span class="compulsory">*</span>Date of Joining</div>
+        <div class="p-col-4">
           <p-calendar formControlName="dateofjoin" placeholder="Date of Joining"></p-calendar>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.dateofjoin.errors">
             <div *ngIf="addUser.controls.dateofjoin.errors.required"> Date of Joining is required</div>
           </div>
         </div>
       </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">Go Live Date</div>
-        <div class="ui-grid-col-4">
+      <div class="p-grid mt-20" *ngIf="date.isTimeZoneEffectiveDateActive">
+        <div class="p-col-2"><span class="compulsory">*</span>Time Zone Effective Date</div>
+        <div class="p-col-4">
+          <p-calendar formControlName="timeZoneEffectiveDate" placeholder="Time Zone Date"></p-calendar>
+        </div>
+        <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.timeZoneEffectiveDate.errors">
+          <div *ngIf="addUser.controls.timeZoneEffectiveDate.errors.required">TimeZone Effective Date is
+            required</div>
+        </div>
+      </div>
+      <div class="p-grid mt-20">
+        <div class="p-col-2"><span class="compulsory">*</span>Go Live Date</div>
+        <div class="p-col-4">
           <p-calendar formControlName="liveDate" placeholder="Go Live Date"></p-calendar>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.liveDate.errors">
             <div *ngIf="addUser.controls.liveDate.errors.required">Go Live Date is required</div>
           </div>
         </div>
-        <div class="ui-grid-col-2 ">Designation</div>
-        <div class="ui-grid-col-4">
+        <div class="p-col-2"><span class="compulsory">*</span>Designation</div>
+        <div class="p-col-4">
           <input class="mr-5" type="text" size="30" formControlName="designation" placeholder="Designation" pInputText>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.designation.errors">
             <div *ngIf="addUser.controls.designation.errors.required">Designation is required</div>
           </div>
         </div>
       </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">InCapacity</div>
-        <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+        <div class="p-col-2"><span class="compulsory">*</span>InCapacity</div>
+        <div class="p-col-4">
           <p-dropdown placeholder="Select InCapacity" [options]="adminDropDown.inCapacityArray"
             formControlName="inCapacity">
           </p-dropdown>
@@ -265,8 +285,8 @@
             <div *ngIf="addUser.controls.inCapacity.errors.required">InCapacity is required</div>
           </div>
         </div>
-        <div class="ui-grid-col-2 ">Pooled</div>
-        <div class="ui-grid-col-4">
+        <div class="p-col-2"><span class="compulsory">*</span>Pooled</div>
+        <div class="p-col-4">
           <p-dropdown placeholder="Select Pooled" [options]="adminDropDown.pooledArray" formControlName="pooled">
           </p-dropdown>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.pooled.errors">
@@ -274,45 +294,69 @@
           </div>
         </div>
       </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">MaxHrs</div>
-        <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+        <div class="p-col-2"><span class="compulsory">*</span>MaxHrs</div>
+        <div class="p-col-4">
           <input class="mr-5" type="text" size="30" formControlName="maxHrs" placeholder="MaxHrs" pInputText>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.maxHrs.errors">
             <div *ngIf="addUser.controls.maxHrs.errors.required">MaxHrs is required</div>
           </div>
+          <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.maxHrs.errors">
+            <div *ngIf="addUser.controls.maxHrs.errors.pattern">Positive Number is required</div>
+          </div>
         </div>
-        <div class="ui-grid-col-2 ">Primary Skill</div>
-        <div class="ui-grid-col-4">
+        <div class="p-col-2"><span class="compulsory">*</span>Primary Skill</div>
+        <div class="p-col-4">
           <p-dropdown placeholder="Select Primary Skill" [options]="adminDropDown.primarySkillArray"
-            formControlName="primarySkill">
+            formControlName="primarySkill" (onChange)="onPrimarySkillChange()">
           </p-dropdown>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.primarySkill.errors">
             <div *ngIf="addUser.controls.primarySkill.errors.required"> Primary Skill is required</div>
           </div>
         </div>
       </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">Skill Level</div>
-        <div class="ui-grid-col-4">
+      <div class="p-grid mt-20" *ngIf="date.isPrimarySkillEffectiveDateActive">
+        <div class="p-col-2 p-offset-6"><span class="compulsory">*</span>Primary Skill Effective Date</div>
+        <div class="p-col-4">
+          <p-calendar formControlName="primarySkillEffectiveDate" placeholder="Primary Skill Date"></p-calendar>
+        </div>
+        <div class="error p-offset-6"
+          *ngIf="upObject.isFormSubmit && addUser.controls.primarySkillEffectiveDate.errors">
+          <div *ngIf="addUser.controls.primarySkillEffectiveDate.errors.required">Primary Skill Effective Date is
+            required</div>
+        </div>
+      </div>
+      <div class="p-grid mt-20">
+        <div class="p-col-2"><span class="compulsory">*</span>Skill Level</div>
+        <div class="p-col-4">
           <p-dropdown placeholder="Select Skill Level" [options]="adminDropDown.skillLevelArray"
-            formControlName="skillLevel">
+            formControlName="skillLevel" (onChange)="onSkillLevelChange()">
           </p-dropdown>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.skillLevel.errors">
             <div *ngIf="addUser.controls.skillLevel.errors.required">Skill Level is required</div>
           </div>
         </div>
-        <div class="ui-grid-col-2 ">Role</div>
-        <div class="ui-grid-col-4">
+        <div class="p-col-2"><span class="compulsory">*</span>Role</div>
+        <div class="p-col-4">
           <p-dropdown placeholder="Select Role" [options]="adminDropDown.roleArray" formControlName="role"></p-dropdown>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.role.errors">
             <div *ngIf="addUser.controls.role.errors.required">Role is required</div>
           </div>
         </div>
       </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">Ready To</div>
-        <div class="ui-grid-col-4">
+      <div class="p-grid mt-20" *ngIf="date.isSkillLevelEffectiveDateActive">
+        <div class="p-col-2"><span class="compulsory">*</span>Skill Level Effective Date</div>
+        <div class="p-col-4">
+          <p-calendar formControlName="skillLevelEffectiveDate" placeholder="Skill Level Date"></p-calendar>
+          <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.skillLevelEffectiveDate.errors">
+            <div *ngIf="addUser.controls.skillLevelEffectiveDate.errors.required">Skill Level Effective Date is
+              required</div>
+          </div>
+        </div>
+      </div>
+      <div class="p-grid mt-20">
+        <div class="p-col-2"><span class="compulsory">*</span>Ready To</div>
+        <div class="p-col-4">
           <textarea [rows]="5" [cols]="60" formControlName="readyTo" pInputTextarea></textarea>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.readyTo.errors">
             <div *ngIf="addUser.controls.readyTo.errors.required">
@@ -320,22 +364,20 @@
           </div>
         </div>
       </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">Task</div>
-        <div class="ui-grid-col-4">
-          <p-multiSelect [options]="adminDropDown.taskArray" defaultLabel="Select Task"
-          formControlName="task" (keydown.enter)="$event.preventDefault()" filter="true"
-          resetFilterOnHide="true">
-        </p-multiSelect>
+      <div class="p-grid mt-20">
+        <div class="p-col-2"><span class="compulsory">*</span>Task</div>
+        <div class="p-col-4">
+          <p-multiSelect [options]="adminDropDown.taskArray" defaultLabel="Select Task" formControlName="task"
+            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+          </p-multiSelect>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.task.errors">
             <div *ngIf="addUser.controls.task.errors.required">Task is required</div>
           </div>
         </div>
-        <div class="ui-grid-col-2 ">Account</div>
-        <div class="ui-grid-col-4">
-            <p-multiSelect [options]="adminDropDown.accountArray" defaultLabel="Select Account"
-            formControlName="account" (keydown.enter)="$event.preventDefault()" filter="true"
-            resetFilterOnHide="true">
+        <div class="p-col-2"><span class="compulsory">*</span>Account</div>
+        <div class="p-col-4">
+          <p-multiSelect [options]="adminDropDown.accountArray" defaultLabel="Select Account" formControlName="account"
+            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
           </p-multiSelect>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.account.errors">
             <div *ngIf="addUser.controls.account.errors.required">
@@ -344,9 +386,9 @@
         </div>
 
       </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">Deliverable</div>
-        <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+        <div class="p-col-2"><span class="compulsory">*</span>Deliverable</div>
+        <div class="p-col-4">
           <p-multiSelect [options]="adminDropDown.deliverableArray" defaultLabel="Select Deliverable"
             formControlName="deliverable" (keydown.enter)="$event.preventDefault()" filter="true"
             resetFilterOnHide="true">
@@ -356,8 +398,8 @@
               Deliverable is required</div>
           </div>
         </div>
-        <div class="ui-grid-col-2 ">Deliverable Exclusion</div>
-        <div class="ui-grid-col-4">
+        <div class="p-col-2"><span class="compulsory">*</span>Deliverable Exclusion</div>
+        <div class="p-col-4">
           <p-multiSelect [options]="adminDropDown.deliverableExclusionArray" defaultLabel="Select Deliverable Exclusion"
             formControlName="deliverableExclusion" (keydown.enter)="$event.preventDefault()" filter="true"
             resetFilterOnHide="true">
@@ -369,9 +411,9 @@
         </div>
 
       </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">TA</div>
-        <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+        <div class="p-col-2"><span class="compulsory">*</span>TA</div>
+        <div class="p-col-4">
           <p-multiSelect [options]="adminDropDown.taArray" defaultLabel="Select TA" formControlName="ta"
             (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
           </p-multiSelect>
@@ -379,8 +421,8 @@
             <div *ngIf="addUser.controls.ta.errors.required">TA is required</div>
           </div>
         </div>
-        <div class="ui-grid-col-2 ">TA Exclusion</div>
-        <div class="ui-grid-col-4">
+        <div class="p-col-2"><span class="compulsory">*</span>TA Exclusion</div>
+        <div class="p-col-4">
           <p-multiSelect [options]="adminDropDown.taExclusionArray" defaultLabel="Select TA Exclusion"
             formControlName="taExclusion" (keydown.enter)="$event.preventDefault()" filter="true"
             resetFilterOnHide="true">
@@ -391,252 +433,24 @@
           </div>
         </div>
       </div>
-      <div *ngIf="showeditUser" class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">IsActive</div>
-        <div class="ui-grid-col-4">
-          <p-dropdown placeholder="Select IsActive" [options]="options" formControlName="isActive">
+      <div class="p-grid mt-20" *ngIf="showeditUser">
+        <div class="p-col-2"><span class="compulsory">*</span>IsActive</div>
+        <div class="p-col-4">
+          <p-dropdown placeholder="Select IsActive" [options]="adminDropDown.isActiveArray"
+            (onChange)="onIsActiveChange()" formControlName="isActive">
           </p-dropdown>
-          <!-- <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.isActive.errors">
-            <div *ngIf="addUser.controls.isActive.errors.required">
-              IsActive is required</div>
-          </div> -->
         </div>
-        <div class="ui-grid-col-2 ">Date of Exit</div>
-        <div class="ui-grid-col-4">
+        <div class="p-col-2"><span class="compulsory">*</span>Date of Exit</div>
+        <div class="p-col-4">
           <p-calendar formControlName="dateofexit" placeholder="Date of Exit"></p-calendar>
-          <!-- <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.dateofexit.errors">
-            <div *ngIf="addUser.controls.dateofexit.errors.required">
-              Date of Exit is required</div>
-          </div> -->
+          <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.dateofexit.errors">
+            <div *ngIf="addUser.controls.dateofexit.errors.required">Date of Exit is required</div>
+          </div>
         </div>
       </div>
     </div>
   </form>
   <p-footer>
-    <button pButton label="Submit" type="submit" (click)="saveUser(addUser)"></button>
+    <button pButton label="{{customLabel}}" type="button" (click)="saveUser(addUser)"></button>
   </p-footer>
 </p-dialog>
-
-<!-- <p-dialog header="Edit New User" [(visible)]="showeditUser" [modal]="true" [style]="{width: '60%'}">
-  <form [formGroup]='editUser'>
-    <div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">User Name</div>
-        <div class="ui-grid-col-4">
-          <input class="mr-5" type="text" size="30" formControlName="username" placeholder="User Name" pInputText>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.username.errors">
-            <div *ngIf="editUser.controls.username.errors.required">User Name is required</div>
-          </div>
-        </div>
-        <div class="ui-grid-col-2 ">Manager</div>
-        <div class="ui-grid-col-4">
-          <input class="mr-5" type="text" size="30" formControlName="manager" placeholder="Manager" pInputText>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.manager.errors">
-            <div *ngIf="editUser.controls.manager.errors.required"> Manager is required</div>
-          </div>
-        </div>
-      </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">Bucket</div>
-        <div class="ui-grid-col-4">
-          <p-multiSelect [options]="options" defaultLabel="Select Bucket" formControlName="bucket"
-            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
-          </p-multiSelect>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.bucket.errors">
-            <div *ngIf="editUser.controls.bucket.errors.required">Bucket is required</div>
-          </div>
-        </div>
-        <div class="ui-grid-col-2 ">Practice Area</div>
-        <div class="ui-grid-col-4">
-          <p-dropdown placeholder="Select Practice Area" [options]="options" formControlName="practiceArea">
-          </p-dropdown>
-
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.practiceArea.errors">
-            <div *ngIf="editUser.controls.practiceArea.errors.required">Practice Area is required</div>
-          </div>
-        </div>
-      </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">Time Zone</div>
-        <div class="ui-grid-col-4">
-          <p-dropdown placeholder="Select Time Zone" [options]="options" formControlName="timeZone">
-          </p-dropdown>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.timeZone.errors">
-            <div *ngIf="editUser.controls.timeZone.errors.required">Time Zone is required</div>
-          </div>
-        </div>
-        <div class="ui-grid-col-2 ">Date of Joining</div>
-        <div class="ui-grid-col-4">
-          <p-calendar formControlName="dateofjoin" placeholder="Date of Joining"></p-calendar>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.dateofjoin.errors">
-            <div *ngIf="editUser.controls.dateofjoin.errors.required"> Date of Joining is required</div>
-          </div>
-        </div>
-      </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">Go Live Date</div>
-        <div class="ui-grid-col-4">
-          <p-calendar formControlName="liveDate" placeholder="Go Live Date"></p-calendar>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.liveDate.errors">
-            <div *ngIf="editUser.controls.liveDate.errors.required">Go Live Date is required</div>
-          </div>
-        </div>
-        <div class="ui-grid-col-2 ">Designation</div>
-        <div class="ui-grid-col-4">
-          <input class="mr-5" type="text" size="30" formControlName="designation" placeholder="Designation" pInputText>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.designation.errors">
-            <div *ngIf="editUser.controls.designation.errors.required">Designation is required</div>
-          </div>
-        </div>
-      </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">InCapacity</div>
-        <div class="ui-grid-col-4">
-          <p-dropdown placeholder="Select InCapacity" [options]="options" formControlName="inCapacity">
-          </p-dropdown>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.inCapacity.errors">
-            <div *ngIf="editUser.controls.inCapacity.errors.required">InCapacity is required</div>
-          </div>
-        </div>
-        <div class="ui-grid-col-2 ">Pooled</div>
-        <div class="ui-grid-col-4">
-          <p-dropdown placeholder="Select Pooled" [options]="options" formControlName="pooled"></p-dropdown>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.pooled.errors">
-            <div *ngIf="editUser.controls.pooled.errors.required">Pooled is required</div>
-          </div>
-        </div>
-      </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">MaxHrs</div>
-        <div class="ui-grid-col-4">
-          <input class="mr-5" type="text" size="30" formControlName="maxHrs" placeholder="MaxHrs" pInputText>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.maxHrs.errors">
-            <div *ngIf="editUser.controls.maxHrs.errors.required">MaxHrs is required</div>
-          </div>
-        </div>
-        <div class="ui-grid-col-2 ">Primary Skill</div>
-        <div class="ui-grid-col-4">
-          <p-dropdown placeholder="Select Primary Skill" [options]="options" formControlName="primarySkill">
-          </p-dropdown>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.primarySkill.errors">
-            <div *ngIf="editUser.controls.primarySkill.errors.required"> Primary Skill is required</div>
-          </div>
-        </div>
-      </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">Skill Level</div>
-        <div class="ui-grid-col-4">
-          <p-dropdown placeholder="Select Skill Level" [options]="options" formControlName="skillLevel">
-          </p-dropdown>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.skillLevel.errors">
-            <div *ngIf="editUser.controls.skillLevel.errors.required">Skill Level is required</div>
-          </div>
-        </div>
-        <div class="ui-grid-col-2 ">Role</div>
-        <div class="ui-grid-col-4">
-          <p-dropdown placeholder="Select Role" [options]="options" formControlName="role"></p-dropdown>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.role.errors">
-            <div *ngIf="editUser.controls.role.errors.required">Role is required</div>
-          </div>
-        </div>
-      </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">Ready To</div>
-        <div class="ui-grid-col-4">
-          <textarea [rows]="5" [cols]="60" formControlName="readyTo" pInputTextarea></textarea>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.readyTo.errors">
-            <div *ngIf="editUser.controls.readyTo.errors.required">
-              Ready To is required</div>
-          </div>
-        </div>
-      </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">Task</div>
-        <div class="ui-grid-col-4">
-          <p-dropdown placeholder="Select Task" [options]="options" formControlName="task"></p-dropdown>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.task.errors">
-            <div *ngIf="editUser.controls.task.errors.required">Task is required</div>
-          </div>
-        </div>
-        <div class="ui-grid-col-2 ">Account</div>
-        <div class="ui-grid-col-4">
-          <p-dropdown placeholder="Select Account" [options]="options" placeholder="Select Account"
-            formControlName="account"></p-dropdown>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.account.errors">
-            <div *ngIf="editUser.controls.account.errors.required">
-              Account is required</div>
-          </div>
-        </div>
-
-      </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">Deliverable</div>
-        <div class="ui-grid-col-4">
-          <p-multiSelect [options]="options" defaultLabel="Select Deliverable" formControlName="deliverable"
-            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
-          </p-multiSelect>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.deliverable.errors">
-            <div *ngIf="editUser.controls.deliverable.errors.required">
-              Deliverable is required</div>
-          </div>
-        </div>
-        <div class="ui-grid-col-2 ">Deliverable Exclusion</div>
-        <div class="ui-grid-col-4">
-          <p-multiSelect [options]="options" defaultLabel="Select Deliverable Exclusion"
-            formControlName="deliverableExclusion" (keydown.enter)="$event.preventDefault()" filter="true"
-            resetFilterOnHide="true">
-          </p-multiSelect>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.deliverableExclusion.errors">
-            <div *ngIf="editUser.controls.deliverableExclusion.errors.required">
-              Deliverable Exclusion is required</div>
-          </div>
-        </div>
-
-      </div>
-      <div class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">TA</div>
-        <div class="ui-grid-col-4">
-          <p-multiSelect [options]="options" defaultLabel="Select TA" formControlName="ta"
-            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
-          </p-multiSelect>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.ta.errors">
-            <div *ngIf="editUser.controls.ta.errors.required">TA is required</div>
-          </div>
-        </div>
-        <div class="ui-grid-col-2 ">TA Exclusion</div>
-        <div class="ui-grid-col-4">
-          <p-multiSelect [options]="options" defaultLabel="Select TA Exclusion" formControlName="taExclusion"
-            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
-          </p-multiSelect>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.taExclusion.errors">
-            <div *ngIf="editUser.controls.taExclusion.errors.required">
-              TA Exclusione is required</div>
-          </div>
-        </div>
-      </div>
-      <div *ngIf="showeditUser" class="ui-grid-row mt-20">
-        <div class="ui-grid-col-2 ">IsActive</div>
-        <div class="ui-grid-col-4">
-          <p-dropdown placeholder="Select IsActive" [options]="options" formControlName="isActive">
-          </p-dropdown>
-
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.isActive.errors">
-            <div *ngIf="editUser.controls.isActive.errors.required">
-              IsActive is required</div>
-          </div>
-        </div>
-        <div class="ui-grid-col-2 ">Date of Exit</div>
-        <div class="ui-grid-col-4">
-          <p-calendar formControlName="dateofexit" placeholder="Date of Exit"></p-calendar>
-          <div class="error" *ngIf="upObject.isEditFormSubmit && editUser.controls.dateofexit.errors">
-            <div *ngIf="editUser.controls.dateofexit.errors.required">
-              Date of Exit is required</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </form>
-  <p-footer>
-    <button pButton label="Submit" type="submit" (click)="saveUser(editUser)"></button>
-  </p-footer>
-</p-dialog> -->

@@ -34,4 +34,19 @@ export class AdminCommonService {
       })
     );
   }
+  /**
+   * /**
+   * Construct a method to get the Id's from array.
+   *
+   * @param array Pass the array as paramater for getting Lookup Id's.
+   *
+   * @return It will return an array of lookup Id's.
+   */
+  getIds(array) {
+    const tempArray = [];
+    array.forEach(element => {
+      tempArray.push(element.ID);
+    });
+    return tempArray;
+  }
 }

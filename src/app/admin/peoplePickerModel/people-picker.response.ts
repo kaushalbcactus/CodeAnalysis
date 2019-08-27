@@ -16,7 +16,7 @@ export interface PeoplePickerUser {
     IsResolved: boolean;
     EntityData: PeoplePickerUserEntityData;
     MultipleMatches: any[];
-    SPUserID: number;
+    UserName: string;
 }
 
 export interface PeoplePickerUserEntityData {
@@ -26,7 +26,8 @@ export interface PeoplePickerUserEntityData {
     MobilePhone: string;
     ObjectId: string;
     Department: string;
-    SPUserID: string;
+    SPGroupID: string;
+    UserName: string;
 }
 
 export interface FormDigestResponse {

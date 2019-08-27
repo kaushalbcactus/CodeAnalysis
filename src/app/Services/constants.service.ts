@@ -284,6 +284,9 @@ export class ConstantsService {
       name: 'TimeZones',
       type: 'SP.Data.TimeZonesListItem'
     },
+    UserInformationList: {
+      name: 'User Information List'
+    }
   };
 
   public projectStatus = {
@@ -315,22 +318,7 @@ export class ConstantsService {
     PROJECT_FULL_ACCESS: 'Project-FullAccess',
     SOW_FULL_ACCESS: 'SOW-Full Access',
     SOW_CREATION_MANAGERS: 'SOW Creation Managers',
-  };
-
-  public cdStatus = {
-    Created: 'Created',
-    Deleted: 'Deleted',
-    ValidationPending: 'Validation Pending',
-    Closed: 'Closed',
-    Rejected: 'Rejected',
-    Valid: 'Valid',
-    InValid: 'InValid'
-  };
-
-  public pfStatus = {
-    Pending: 'Pending',
-    Accepted: 'Accepted',
-    Rejected: 'Rejected'
+    SYNC_USER_TO_USER_INFORMATION_LIST: 'SyncUserToUserInformationList'
   };
 
   public FeedbackType = {

@@ -52,6 +52,35 @@ export class AdminConstantService {
       filter: 'Active eq \'{{isActive}}\'',
       orderby: 'Title',
       top: 4900
+    },
+    GET_USER_INFORMATION: {
+      filter: 'EMail eq \'{{emailId}}\''
+    },
+    GET_RESOURCE_CATEGERIZATION: {
+      select: 'ID,Title,Account/ID,Account/Title,Bucket,Categories,Created,DateofExit,DateOfJoining,DeliverableExclusion/ID,'
+        + 'DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,Designation,GoLiveDate,InCapacity,'
+        + 'IsActive,IsLeader,Manager/ID,Manager/Title,Manager/EMail,ManagerEffectiveDate,MaxHrs,Modified,Pooled,Practice_x0020_Area,'
+        + 'PracticeAreaEffectiveDate,PrimarySkill,PrimarySkillEffectiveDate,Ready_x0020_To,Role,SkillLevel/ID,SkillLevel/Title,'
+        + 'SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title,'
+        + 'TimeZoneEffectiveDate,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,Editor/ID,Editor/Title',
+      expand: 'Account/ID,Account/Title,DeliverableExclusion/ID,DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,'
+        + 'Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,'
+        + 'Tasks/Title,TimeZone/ID,TimeZone/Title,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,Editor/ID,Editor/Title',
+      filter: 'IsActive eq \'{{isActive}}\'',
+      top: 4900,
+      orderby: 'Modified desc'
+    },
+    GET_RESOURCE_CATEGERIZATION_BY_ID: {
+      select: 'ID,Title,Account/ID,Account/Title,Bucket,Categories,Created,DateofExit,DateOfJoining,DeliverableExclusion/ID,'
+        + 'DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,Designation,GoLiveDate,InCapacity,'
+        + 'IsActive,IsLeader,Manager/ID,Manager/Title,Manager/EMail,ManagerEffectiveDate,MaxHrs,Modified,Pooled,Practice_x0020_Area,'
+        + 'PracticeAreaEffectiveDate,PrimarySkill,PrimarySkillEffectiveDate,Ready_x0020_To,Role,SkillLevel/ID,SkillLevel/Title,'
+        + 'SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title,'
+        + 'TimeZoneEffectiveDate,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,Editor/ID,Editor/Title',
+      expand: 'Account/ID,Account/Title,DeliverableExclusion/ID,DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,'
+        + 'Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,'
+        + 'Tasks/Title,TimeZone/ID,TimeZone/Title,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,Editor/ID,Editor/Title',
+      filter: 'IsActive eq \'{{isActive}}\' and ID eq \'{{Id}}\'',
     }
   };
   public LOGICAL_FIELD = {

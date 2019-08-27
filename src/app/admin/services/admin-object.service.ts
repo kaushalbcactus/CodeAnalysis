@@ -22,6 +22,7 @@ export class AdminObjectService {
     MaxHrs: 0,
     PrimarySkill: '',
     SkillLevel: '',
+    Role: '',
     ReadyTo: '',
     Task: [],
     Account: [],
@@ -34,6 +35,17 @@ export class AdminObjectService {
     ManagerEffectiveDate: new Date(),
     PrimarySkillEffectiveDate: new Date(),
     SkillLevelEffectiveDate: new Date(),
-    IsAddUser: true
+    IsAddUser: true,
+    ID: 0,
+    Title: '',
+    User: '',
+    LastUpdated: new Date(),
+    LastUpdatedFormat: '',
+    LastUpdatedBy: '',
+    Manager: '',
+    IsActive: 'Yes',
+    DisplayText: '',
+    DateofExit: new Date()
   };
+  public isMainLoaderHidden = true;
 }
