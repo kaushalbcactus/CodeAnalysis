@@ -341,13 +341,14 @@ export class PubsupportComponent implements OnInit {
         let projectInfoEndpoint = '';
         if (isClosed) {
             const setProjectCode = this.providedProjectCode.trim();
+            const obj = Object.assign({}, this.pubsupportService.pubsupportComponent.projectInfoClosed);
+            obj.filter = obj.filter.replace('{{ProjectCode}}', setProjectCode);
+            // this.pubsupportService.pubsupportComponent.projectInfoClosed.filter = this.pubsupportService.pubsupportComponent.projectInfoClosed.filter.replace('{{ProjectCode}}', setProjectCode);
 
-            this.pubsupportService.pubsupportComponent.projectInfoClosed.filter = this.pubsupportService.pubsupportComponent.projectInfoClosed.filter.replace('{{ProjectCode}}', setProjectCode);
-
-            projectInfoEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.pubsupportService.pubsupportComponent.projectInfoClosed);
+            projectInfoEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', obj);
             arrEndPoints.push(projectInfoEndpoint);
             // this.spServices.getBatchBodyGet(batchContents, batchGuid, projectInfoEndpoint);
-            projectInfoEndpoint = this.spOperationsService.getReadURLArchive('' + this.constantService.listNames.ProjectInformation.name + '', this.pubsupportService.pubsupportComponent.projectInfoClosed);
+            // projectInfoEndpoint = this.spOperationsService.getReadURLArchive('' + this.constantService.listNames.ProjectInformation.name + '', obj);
             // arrEndPointsArchive.push(projectInfoEndpoint);
             // this.spServices.getBatchBodyGet(batchContents, batchGuid, projectInfoEndpoint);
         } else {
@@ -727,8 +728,8 @@ export class PubsupportComponent implements OnInit {
             listName: this.constantService.listNames.ProjectInformation.name
         }];
         const res = await this.spOperationsService.executeBatch(obj1);
-        console.log(res);
         this.projectCodeRes = res[0].retItems;
+        console.log(this.projectCodeRes);
     }
 
     async updateAuthorFormsFiles(data) {
@@ -741,14 +742,14 @@ export class PubsupportComponent implements OnInit {
         this.batchContents = [];
         if (data) {
             const projectCodeData: any = data;
-            const fileEndPoint = this.globalObject.sharePointPageObject.webAbsoluteUrl + '/' + projectCodeData.ClientLegalEntity + '/' + projectCodeData.ProjectCode + '/Publication Support/Forms/';
+            const fileEndPoint = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + projectCodeData.ClientLegalEntity + '/' + projectCodeData.ProjectCode + '/Publication Support/Forms/';
             this.filesToCopy = await this.spOperationsService.readFiles(fileEndPoint);
             if (this.filesToCopy.length) {
                 this.noFileMsg = '';
                 this.update_author_form.removeControl('file');
                 this.filesToCopy.forEach(element => {
                     this.fileSourcePath.push(element.ServerRelativeUrl);
-                    this.fileDestinationPath.push(this.globalObject.sharePointPageObject.webAbsoluteUrl + '/' + this.selectedProject.ClientLegalEntity + '/' + this.selectedProject.ProjectCode + '/Publication Support/Forms/' + element.Name);
+                    this.fileDestinationPath.push(this.globalObject.sharePointPageObject.webRelativeUrl + '/' + this.selectedProject.ClientLegalEntity + '/' + this.selectedProject.ProjectCode + '/Publication Support/Forms/' + element.Name);
                 });
             } else {
                 this.noFileMsg = 'There is no file to copy from selected project.';
@@ -865,6 +866,7 @@ export class PubsupportComponent implements OnInit {
     }
     async getJCList(type: string) {
         if (!type) {
+            this.jcListArray = [];
             return false;
         }
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
@@ -897,7 +899,41 @@ export class PubsupportComponent implements OnInit {
             this.jcListArray = res[0].retItems;
             console.log('this.jcListArray ', this.jcListArray);
         }
+
+        if (type === 'journal') {
+            this.jcListArray = this.sortJournalData(res[0].retItems);
+        } else if (type === 'conference') {
+            this.jcListArray = this.sortConferenceData(res[0].retItems);
+        }
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+    }
+
+    sortJournalData(array: any) {
+        return array.sort((a, b) => {
+            if (a.JournalName && a.JournalName !== null && b.JournalName && b.JournalName !== null) {
+                if (a.JournalName.toLowerCase() < b.JournalName.toLowerCase()) {
+                    return -1;
+                }
+                if (a.JournalName.toLowerCase() > b.JournalName.toLowerCase()) {
+                    return 1;
+                }
+            }
+            return 0;
+        })
+    }
+
+    sortConferenceData(array: any) {
+        return array.sort((a, b) => {
+            if (a.ConferenceName && a.ConferenceName !== null && b.ConferenceName && b.ConferenceName !== null) {
+                if (a.ConferenceName.toLowerCase() < b.ConferenceName.toLowerCase()) {
+                    return -1;
+                }
+                if (a.ConferenceName.toLowerCase() > b.ConferenceName.toLowerCase()) {
+                    return 1;
+                }
+            }
+            return 0;
+        })
     }
 
     onChangeSelectedJCItem(item: any, type: string) {
@@ -1027,6 +1063,7 @@ export class PubsupportComponent implements OnInit {
             // this.update_author_form.controls.hasOwnProperty('existingAuthorList')) {
             //     this.update_author_form.reset();
             // }
+            this.noFileMsg = '';
             this.updateAuthorModal_1 = false;
         } else if (formType === 'updateDecisionModal') {
             this.updateDecisionModal = false;
@@ -1127,7 +1164,8 @@ export class PubsupportComponent implements OnInit {
                     key: 'myKey1', severity: 'success', summary: 'Success message',
                     detail: 'Author details updated.', life: 4000
                 });
-                // document.getElementById('closeModalButton').click();
+                this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+                this.updateAuthorModal_1 = false;
                 this.reload();
             } else {
                 this.uploadFileData('updateAuthors');
@@ -1611,7 +1649,7 @@ export class PubsupportComponent implements OnInit {
 
     // On Click of Project code
     goToProjectDetails(data: any, index: number) {
-        window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' +
+        window.open(this.globalObject.sharePointPageObject.webRelativeUrl + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' +
             data.ProjectCode);
     }
 
@@ -1648,7 +1686,7 @@ export class PubsupportComponent implements OnInit {
                     // this.update_author_form.value.
                     this.update_author_form.removeControl('existingAuthorList');
                 }
-                this.filePathUrl = this.globalObject.sharePointPageObject.webAbsoluteUrl +
+                this.filePathUrl = this.globalObject.sharePointPageObject.webRelativeUrl +
                     '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + this.selectedProject.ProjectFolder + '' +
                     folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' +
                     '&@TargetFileName=\'' + this.selectedFile.name + '\'';

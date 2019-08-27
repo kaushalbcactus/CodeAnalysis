@@ -50,7 +50,8 @@
                 <!-- <p-progressBar [ngClass]="{'lightgreen': projectCode[col.field] =='In Progress' }" [value]="projectCode[col.field]" [unit]="''"></p-progressBar> -->
                 <!-- <p-progressBar [ngClass]="backgroundColor" [value]="value"></p-progressBar> -->
                 <div [ngClass]="{'lightgreen': projectCode[col.field] =='In Progress', 'lightblue': projectCode[col.field] =='Unallocated',  'lightcoral': projectCode[col.field] =='In Discussion'}"
-                    style="height: 35px;padding: 7px 0px 0px 2px;">
+                    style="height: 45px;padding: 7px 0px 0px 2px;"
+                    [ngStyle]="{'height':projectCode[col.field].length > 15 ? '55px': projectCode[col.field].length > 25 ? '75px':'45px'}">
                     {{projectCode[col.field] }}
                 </div>
                 <!-- {{projectCode[col.field] }} -->
@@ -404,7 +405,7 @@
 
 <!-- Update author forms & emails -->
 <p-dialog header="Update Author forms & emails" [(visible)]="updateAuthorModal_1" [modal]="true" [draggable]="false"
-    [style]="{'width': '50%'}" [maximizable]="false" [contentStyle]="{'height': '150px'}"
+    [style]="{'width': '50%'}" [maximizable]="false" [contentStyle]="{'height': '250px'}"
     (onHide)="cancelFormSub('updateAuthorModal')">
     <form [formGroup]="update_author_form">
         <div class="ui-g" *ngIf="!selectedType">
@@ -435,6 +436,36 @@
                         </option>
                     </ng-container>
                 </select>
+
+                <!-- <p-dropdown resetFilterOnHide="true" [options]="projectCodeRes" formControlName="existingAuthorList"
+                    placeholder="Select" [filter]="true" optionLabel="ProjectCode"
+                    (onChange)="updateAuthorFormsFiles($event.value, $event)" [style]="{width: '215px'}">
+
+                    <ng-template let-item pTemplate="item">
+                        <ng-container *ngIf="item.label != selectedProject.ProjectCode">
+                            <div *ngIf="item.label != selectedProject.ProjectCode" class="ui-helper-clearfix">
+                                <div style="font-size:14px;float:left;margin-top:4px">{{item.label }}</div>
+                            </div>
+                        </ng-container>
+                    </ng-template>
+                </p-dropdown> -->
+
+                <!-- <p-dropdown resetFilterOnHide="true" [options]="projectCodeRes" placeholder="Select"
+                    [style]="{'width':'100%'}" formControlName="existingAuthorList" [filter]="true"
+                    [virtualScroll]="true" (onChange)="updateAuthorFormsFiles($event.value, $event)">
+                    {{projectCodeRes | json}}
+                    <ng-template let-item pTemplate="selectedItem">
+                        <span>{{item | json}}</span>
+                    </ng-template>
+                    optionLabel="ProjectCode" 
+                    <ng-template let-car pTemplate="item">
+                        <div class="ui-helper-clearfix" style="position: relative;height:25px;">
+                            <div style="font-size:14px;float:right;margin-top:4px">{{car.ProjectCode}}</div>
+                        </div>
+                    </ng-template>
+
+                </p-dropdown> -->
+
                 <div *ngIf="formSubmit.isSubmit && isValidUpdateAuthorForm.existingAuthorList.errors">
                     <div *ngIf="isValidUpdateAuthorForm.existingAuthorList.errors.required" style="color: red;">Existing
                         author is required.</div>
@@ -1265,7 +1296,7 @@
             <div class="ui-g-12 ui-md-6 ui-lg-4">
                 <p-dropdown resetFilterOnHide="true" filter="true" [options]="jcListArray"
                     placeholder="Select document type" [style]="{'width':'100%'}" formControlName="jcLineItem"
-                    optionLabel="{{optionLabel.title}}" emptyFilterMessage="No results found"
+                    optionLabel="{{optionLabel.title}}" emptyFilterMessage="No results found" resetFilterOnHide="true"
                     (onChange)="onChangeSelectedJCItem($event,journal_Conference_Detail_form.value.EntryType)">
                 </p-dropdown>
                 <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.jcLineItem.errors">
