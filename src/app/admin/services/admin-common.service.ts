@@ -49,4 +49,23 @@ export class AdminCommonService {
     });
     return tempArray;
   }
+
+  /**
+   * This function is used to extract the FUll name from Id.
+   * @param array Pass the array as paramter for getting full name or title.
+   * @param arrayOfIds array of Id's
+   *
+   * @return It will return an array of Full name or Title.
+   */
+  extractNamefromId(array, ids, prop) {
+    const tempArray = [];
+    array.forEach((element) => {
+      ids.forEach(tempOjb => {
+        if (element.ID === tempOjb) {
+          tempArray.push(element[prop]);
+        }
+      });
+    });
+    return tempArray;
+  }
 }

@@ -57,7 +57,180 @@
     </tr>
   </ng-template>
 </p-table>
-
+<div *ngIf="isUserProfileRightSideVisible" class="ng-right-side-overlay">
+  <p-sidebar [(visible)]="isUserProfileRightSideVisible" position="right" styleClass="ui-sidebar-md">
+    <p-table [value]="userProfileViewDataArray">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Name</th>
+          <th>Value</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-task style="overflow: auto">
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">ID</td>
+          <td>{{task.ID}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">User Name</td>
+          <td>{{task.User}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Manager</td>
+          <td>{{task.Manager}}</td>
+        </tr>
+        <tr *ngIf="task.ManagerEffectiveDate">
+          <td [ngStyle]="{'color':'#d7181f'}">Manager Effective Date</td>
+          <td>{{task.ManagerEffectiveDate | date:'MMM dd yyyy'}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Bucket</td>
+          <td>{{task.Bucket}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Practice Area</td>
+          <td>{{task.PracticeArea}}</td>
+        </tr>
+        <tr *ngIf="task.PracticeAreaEffectiveDate">
+          <td [ngStyle]="{'color':'#d7181f'}">Practice Area Effective Date</td>
+          <td>{{task.PracticeAreaEffectiveDate | date:'MMM dd yyyy'}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Time Zone</td>
+          <td>{{task.TimeZone.TimeZoneName}}</td>
+        </tr>
+        <tr *ngIf="task.TimeZoneEffectiveDate">
+          <td [ngStyle]="{'color':'#d7181f'}">Time Zone Effective Date</td>
+          <td>{{task.TimeZoneEffectiveDate | date:'MMM dd yyyy'}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Date of Joining</td>
+          <td>{{task.DateOfJoining | date:'MMM dd yyyy'}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Go Live Date</td>
+          <td>{{task.GoLiveDate | date:'MMM dd yyyy'}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Designation</td>
+          <td>{{task.Designation}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">InCapacity</td>
+          <td>{{task.InCapacity}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Pooled</td>
+          <td>{{task.Pooled}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">MaxHrs</td>
+          <td>{{task.MaxHrs}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Primary Skill</td>
+          <td>{{task.PrimarySkill}}</td>
+        </tr>
+        <tr *ngIf="task.PrimarySkillEffectiveDate">
+          <td [ngStyle]="{'color':'#d7181f'}">Primary Skill Effective Date</td>
+          <td>{{task.PrimarySkillEffectiveDate | date:'MMM dd yyyy'}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Skill Level</td>
+          <td>{{task.SkillLevel.Title}}</td>
+        </tr>
+        <tr *ngIf="task.SkillLevelEffectiveDate">
+          <td [ngStyle]="{'color':'#d7181f'}">Skill Level Effective Date</td>
+          <td>{{task.SkillLevelEffectiveDate | date:'MMM dd yyyy'}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Role</td>
+          <td>{{task.Role}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Ready To</td>
+          <td>{{task.ReadyTo}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Tasks</td>
+          <td>{{task.TaskText}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Accounts</td>
+          <td>{{task.AccountText}}</td>
+        </tr>
+        <!-- <tr>
+                  <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
+              </tr>
+              <tr *ngIf="task.Timeline.Standard.IsStandard">
+                  <td colspan="2" [ngStyle]="{'color':'#d7181f'}" align="center">Standard Project</td>
+              </tr>
+              <tr *ngIf="task.Timeline.Standard.IsStandard">
+                  <td [ngStyle]="{'color':'#d7181f'}">Service</td>
+                  <td>{{task.Timeline.Standard.Service}}</td>
+              </tr>
+              <tr *ngIf="task.Timeline.Standard.IsStandard">
+                  <td [ngStyle]="{'color':'#d7181f'}">Proposed Start Date</td>
+                  <td>{{task.Timeline.Standard.ProposedStartDate | date:'MMM dd yyyy'}}</td>
+              </tr>
+              <tr *ngIf="task.Timeline.Standard.IsStandard">
+                  <td [ngStyle]="{'color':'#d7181f'}">Proposed End Date</td>
+                  <td>{{task.Timeline.Standard.ProposedEndDate | date:'MMM dd yyyy'}}</td>
+              </tr>
+              <tr *ngIf="task.Timeline.NonStandard.IsStandard">
+                  <td colspan="2" [ngStyle]="{'color':'#d7181f'}" align="center">Non Standard Project</td>
+              </tr>
+              <tr *ngIf="task.Timeline.NonStandard.IsStandard">
+                  <td [ngStyle]="{'color':'#d7181f'}">Deliverable Type</td>
+                  <td>{{task.Timeline.NonStandard.DeliverableType}}</td>
+              </tr>
+              <tr *ngIf="task.Timeline.NonStandard.IsStandard">
+                  <td [ngStyle]="{'color':'#d7181f'}">Sub Type</td>
+                  <td>{{task.Timeline.NonStandard.SubDeliverable}}</td>
+              </tr>
+              <tr *ngIf="task.Timeline.NonStandard.IsStandard">
+                  <td [ngStyle]="{'color':'#d7181f'}">Service</td>
+                  <td>{{task.Timeline.NonStandard.Service}}</td>
+              </tr>
+              <tr *ngIf="task.Timeline.NonStandard.IsStandard">
+                  <td [ngStyle]="{'color':'#d7181f'}">Proposed Start Date</td>
+                  <td>{{task.Timeline.NonStandard.ProposedStartDate | date:'MMM dd yyyy'}}</td>
+              </tr>
+              <tr *ngIf="task.Timeline.NonStandard.IsStandard">
+                  <td [ngStyle]="{'color':'#d7181f'}">Proposed End Date</td>
+                  <td>{{task.Timeline.NonStandard.ProposedEndDate | date:'MMM dd yyyy'}}</td>
+              </tr>
+              <tr>
+                  <td colspan="2" [ngStyle]="{'color':'#d7181f'}"></td>
+              </tr> -->
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Deliverable</td>
+          <td>{{task.DeliverableText}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Deliverable Exclusion</td>
+          <td>{{task.DeliverableExclusionText}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">TA</td>
+          <td>{{task.TAText}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">TA Exclusion</td>
+          <td>{{task.TAExclusionText}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Is Active</td>
+          <td>{{task.IsActive}}</td>
+        </tr>
+        <tr>
+          <td [ngStyle]="{'color':'#d7181f'}">Date of Exit</td>
+          <td>{{task.DateofExit | date:'MMM dd yyyy'}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-sidebar>
+</div>
 <div style="text-align: center;margin-top:10px;">
   <p-button icon="pi pi-plus-circle" label="Add New User" type="button" (click)="showAddUserModal()"></p-button>
 </div>

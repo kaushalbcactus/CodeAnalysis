@@ -205,7 +205,10 @@ export class SPOperationService {
   }
 
   // READ entire list - needs $http factory and SharePoint list name
-
+  getAllGroupUrl() {
+    const url = this.baseUrl + '/_api/web/sitegroups';
+    return url;
+  }
   getGroupUrl(groupName: any, options?: any) {
     const groupURl = this.baseUrl + '/_api/web/sitegroups/getbyname(\'{groupName}\')/users';
     let url = groupURl.replace('{groupName}', groupName);

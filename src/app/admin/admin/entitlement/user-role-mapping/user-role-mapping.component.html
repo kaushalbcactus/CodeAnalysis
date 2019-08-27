@@ -5,23 +5,21 @@
             placeholder='Select User' [(ngModel)]="selectedUser">
         </p-dropdown>
     </div>
-
-
     <div class="userRole">
-        <span style="padding-right: 10px;display: inline-block">Roles:</span>
+        <span style="padding-right: 10px;display: inline-block">Groups:</span>
         <div class="ui-g" style="width:250px;margin-bottom:10px;display:inline-grid">
-            <div class="ui-g-12">
-                <p-checkbox name="group1" value="Role 1" label="Role 1" [(ngModel)]="selectedRoles" inputId="r1">
+            <div class="ui-g-12" *ngFor="let group of groups">
+                <p-checkbox name="{{group.Title}}" value="{{group.Id}}" label="{{group.Title}}" [(ngModel)]="selectedRoles" inputId="r1">
                 </p-checkbox>
             </div>
-            <div class="ui-g-12">
+            <!-- <div class="ui-g-12">
                 <p-checkbox name="group1" value="Role 2" label="Role 2" [(ngModel)]="selectedRoles" inputId="r2">
                 </p-checkbox>
             </div>
             <div class="ui-g-12">
                 <p-checkbox name="group1" value="Role 3" label="Role 3" [(ngModel)]="selectedRoles" inputId="r3">
                 </p-checkbox>
-            </div>
+            </div> -->
         </div>
     </div>
 
@@ -71,3 +69,8 @@
         </tr>
     </ng-template>
   </p-table> -->
+
+
+
+
+

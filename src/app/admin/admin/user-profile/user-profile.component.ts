@@ -18,20 +18,27 @@ import { AdminObjectService } from '../../services/admin-object.service';
 /**
  * A class that uses ngPrime to display the data in table.
  * It also have feature like paging, sorting and naviagation to different component.
+ *
+ * @description
+ *
+ * This class is used to add/update user into a `Resource Categorization` list.
  */
 export class UserProfileComponent implements OnInit {
   userProfileColumns = [];
   userProfileData = [];
   auditHistoryColumns = [];
   auditHistoryRows = [];
+  userProfileViewDataArray = [];
   showModal = false;
   showeditUser = false;
+  isUserProfileRightSideVisible = false;
   customLabel = '';
   /**
    * This pMenuItems will be displayed as menu, while clicking on 3(...) dots in each rows.
    */
   pMenuItems = [
-    { label: 'Edit', command: (e) => this.showEditUserModal() }
+    { label: 'Edit', command: (e) => this.showEditUserModal() },
+    { label: 'view', command: (e) => this.showRightViewUserModal() }
   ];
   upObject = {
     isFormSubmit: false,
@@ -269,8 +276,8 @@ export class UserProfileComponent implements OnInit {
         userObj.DeliverableExclusion = item.DeliverableExclusion;
         userObj.TA = item.TA;
         userObj.TAExclusion = item.TAExclusion;
-        userObj.PracticeAreaEffectiveDate = item.PracticeAreaEffectiveDate,
-          userObj.TimeZoneEffectiveDate = item.TimeZoneEffectiveDate;
+        userObj.PracticeAreaEffectiveDate = item.PracticeAreaEffectiveDate;
+        userObj.TimeZoneEffectiveDate = item.TimeZoneEffectiveDate;
         userObj.ManagerEffectiveDate = item.ManagerEffectiveDate;
         userObj.PrimarySkillEffectiveDate = item.PrimarySkillEffectiveDate;
         userObj.SkillLevelEffectiveDate = item.SkillLevelEffectiveDate;
@@ -283,6 +290,60 @@ export class UserProfileComponent implements OnInit {
         userObj.IsActive = item.IsActive;
         userObj.DisplayText = item.Manager.Title;
         userObj.DateofExit = item.DateofExit;
+        // Add the text of below item.
+        if (userObj.Task) {
+          const tasks: any = userObj.Task;
+          if (tasks.results && tasks.results.length) {
+            userObj.TaskText = tasks.results.map(x => x.Title).join(', ');
+          }
+        }
+        // Add the text of below item.
+        if (userObj.Account) {
+          const account: any = userObj.Account;
+          if (account.results && account.results.length) {
+            userObj.AccountText = account.results.map(x => x.Title).join(', ');
+          }
+        }
+        // Add the text of below item.
+        if (userObj.Deliverable) {
+          const deliverable: any = userObj.Deliverable;
+          if (deliverable.results && deliverable.results.length) {
+            userObj.DeliverableText = deliverable.results.map(x => x.Title).join(', ');
+          }
+        }
+        // Add the text of below item.
+        if (userObj.DeliverableExclusion) {
+          const deliverableEx: any = userObj.DeliverableExclusion;
+          if (deliverableEx.results && deliverableEx.results.length) {
+            userObj.DeliverableExclusionText = deliverableEx.results.map(x => x.Title).join(', ');
+          }
+        }
+        // Add the text of below item.
+        if (userObj.TA) {
+          const ta: any = userObj.TA;
+          if (ta.results && ta.results.length) {
+            userObj.TAText = ta.results.map(x => x.Title).join(', ');
+          }
+        }
+        // Add the text of below item.
+        if (userObj.TAExclusion) {
+          const taExclusion: any = userObj.TAExclusion;
+          if (taExclusion.results && taExclusion.results.length) {
+            userObj.TAExclusionText = taExclusion.results.map(x => x.Title).join(', ');
+          }
+        }
+        // Add the text of below item.
+        if (userObj.Task) {
+          const tasks: any = userObj.Task;
+          if (tasks.results && tasks.results.length) {
+            userObj.TaskText = tasks.results.map(x => x.Title).join(', ');
+          }
+        }
+        userObj.PracticeAreaEffectiveDate = item.PracticeAreaEffectiveDate;
+        userObj.TimeZoneEffectiveDate = item.TimeZoneEffectiveDate;
+        userObj.ManagerEffectiveDate = item.ManagerEffectiveDate;
+        userObj.PrimarySkillEffectiveDate = item.PrimarySkillEffectiveDate;
+        userObj.SkillLevelEffectiveDate = item.SkillLevelEffectiveDate;
         tempResult.push(userObj);
       }
     }
@@ -1392,6 +1453,17 @@ export class UserProfileComponent implements OnInit {
       this.date.isDateExit = true;
       this.addUser.get('dateofexit').setValue(new Date(userObj.DateofExit));
     }
+  }
+  /**
+   * Construct a method to show the user details in righ overlay panel.
+   */
+  showRightViewUserModal() {
+    this.userProfileViewDataArray = [];
+    this.addUser.reset();
+    const userObj = this.currUserObj;
+    console.log(userObj);
+    this.userProfileViewDataArray.push(userObj);
+    this.isUserProfileRightSideVisible = true;
   }
   validateAllFormFields(formGroup: FormGroup) {
     Object.keys(formGroup.controls).forEach(field => {
