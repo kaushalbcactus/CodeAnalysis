@@ -337,6 +337,17 @@ footer table:first-child tr td {
     font-size: 14px;
     text-align: center;
 }
+
+footer {
+    height:175px;
+    background-color:#c5d3e5
+}
+footer table:last-child {
+    margin-top: 8px !important;
+} 
+footer table:last-child tr td {
+    padding: 5px;
+}
 /*Footer End */
 
 /*Content*/
@@ -638,27 +649,36 @@ figure {
 }
 
 #appendix.col4 table tr th:first-child,
-#appendix.col4 table tr td:first-child {
+#appendix.col4 table tr td:first-child,
+.col4 #appendix table tr th:first-child,
+.col4 #appendix table tr td:first-child  {
     width: 18%;
 }
 
 #appendix.col4 table tr th:nth-child(2),
-#appendix.col4 table tr td:nth-child(2) {
+#appendix.col4 table tr td:nth-child(2),
+.col4 #appendix table tr th:nth-child(2),
+.col4 #appendix table tr td:nth-child(2) {
     width: 17%;
 }
-
 #appendix.col4 table tr th:last-child,
-#appendix.col4 table tr td:last-child {
+#appendix.col4 table tr td:last-child,
+.col4 #appendix table tr th:last-child,
+.col4 #appendix table tr td:last-child {
     width: 17%;
 }
 
 #appendix.col3 table tr th:first-child,
-#appendix.col3 table tr td:first-child {
+#appendix.col3 table tr td:first-child,
+.col3 #appendix table tr th:first-child,
+.col3 #appendix table tr td:first-child {
     width: 17%;
 }
 
 #appendix.col3 table tr th:last-child,
-#appendix.col3 table tr td:last-child {
+#appendix.col3 table tr td:last-child,
+.col3 #appendix table tr th:last-child,
+.col3 #appendix table tr td:last-child {
     width: 17%;
 }
 

@@ -323,6 +323,7 @@ export class EditorComponent implements OnInit {
         </tbody>
         </table>
         <div class="invoice-table">
+        <div class="col4">
         <div id="appendix">
         <figure>
         <table>
@@ -355,6 +356,7 @@ export class EditorComponent implements OnInit {
             </tbody>
         </table>
         </figure>
+        </div>
         </div>
         </div>`,
             header: `<div>
@@ -768,7 +770,8 @@ export class EditorComponent implements OnInit {
         </tbody>
     </table>
     <div class="invoice-table">
-        <div id="appendix" class="col3">
+        <div class="col3">
+        <div id="appendix" >
         <figure>
         <table>
         <thead>
@@ -789,6 +792,7 @@ export class EditorComponent implements OnInit {
         </tbody>
         </table>
         </figure>
+        </div>
         </div>
     </div>`,
             header: `<div>
@@ -1067,6 +1071,16 @@ export class EditorComponent implements OnInit {
                     font-size: 14px;
                     text-align: center;
                 }
+                footer {
+                    height:175px;
+                    background-color:#c5d3e5
+                }
+                footer table:last-child {
+                    margin-top: 8px !important;
+                } 
+                footer table:last-child tr td {
+                    padding: 5px;
+                }
             </style>
     </head>
     <body>
@@ -1313,6 +1327,7 @@ export class EditorComponent implements OnInit {
                     #contact_details strong {
                         display: inline-block;
                         width: 150px;
+                        font-size: 16px;
                     }
                     
                     #contact_details table tbody tr td p+p {
@@ -1375,30 +1390,38 @@ export class EditorComponent implements OnInit {
                     }
                     
                     #appendix.col4 table tr th:first-child,
-                    #appendix.col4 table tr td:first-child {
+                    #appendix.col4 table tr td:first-child,
+                    .col4 #appendix table tr th:first-child,
+                    .col4 #appendix table tr td:first-child  {
                         width: 18%;
                     }
                     
                     #appendix.col4 table tr th:nth-child(2),
-                    #appendix.col4 table tr td:nth-child(2) {
+                    #appendix.col4 table tr td:nth-child(2),
+                    .col4 #appendix table tr th:nth-child(2),
+                    .col4 #appendix table tr td:nth-child(2) {
                         width: 17%;
                     }
-                    
                     #appendix.col4 table tr th:last-child,
-                    #appendix.col4 table tr td:last-child {
+                    #appendix.col4 table tr td:last-child,
+                    .col4 #appendix table tr th:last-child,
+                    .col4 #appendix table tr td:last-child {
                         width: 17%;
                     }
                     
                     #appendix.col3 table tr th:first-child,
-                    #appendix.col3 table tr td:first-child {
+                    #appendix.col3 table tr td:first-child,
+                    .col3 #appendix table tr th:first-child,
+                    .col3 #appendix table tr td:first-child {
                         width: 17%;
                     }
                     
                     #appendix.col3 table tr th:last-child,
-                    #appendix.col3 table tr td:last-child {
+                    #appendix.col3 table tr td:last-child,
+                    .col3 #appendix table tr th:last-child,
+                    .col3 #appendix table tr td:last-child {
                         width: 17%;
                     }
-
                     
                     #appendix figure img {
                         width: 100%;
@@ -1695,6 +1718,7 @@ export class EditorComponent implements OnInit {
         </table>
     
         <div class="invoice-table appendix">
+            <div class="col4">
             <div id="appendix"> <figure>
             <table>
         <thead>
@@ -1705,7 +1729,7 @@ export class EditorComponent implements OnInit {
                 <th>
                     Project Code
                 </th>
-                <th style="width: 50%;">
+                <th>
                     Title
                 </th>
                 <th>
@@ -1717,6 +1741,7 @@ export class EditorComponent implements OnInit {
             [[Appendix]]
         </tbody>
         </table></figure>
+            </div>
             </div>
         </div>`,
             header: `<div id=header>
@@ -2600,7 +2625,7 @@ export class EditorComponent implements OnInit {
         console.log(data.htmldata);
         if (this.elementId === 'appendix') {
             document.getElementById(this.elementId).innerHTML = data.htmldata;
-            document.getElementById('appendix').className = data.class;
+            document.getElementById('appendix').parentElement.className = data.class;
         } else if (getLi === null || getLi === undefined) {
             document.getElementById(this.elementId).innerHTML = data.htmldata;
         } else {
@@ -2631,7 +2656,7 @@ export class EditorComponent implements OnInit {
 
     setColumnClass(sClassName) {
         setTimeout(() => {
-            const appendix: any = document.querySelector('#appendix');
+            const appendix: any = document.querySelector('#appendix').parentElement;
             appendix.className = sClassName;
         }, 1000);
     }

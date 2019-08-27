@@ -77,7 +77,8 @@
                     <table id="invoiceDetails" cellspacing="0" cellpadding="0"
                         [innerHTML]='USTemplateCopy.invoiceDetail'>
                     </table>
-                    <p *ngIf="showAppendix" style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
+                    <p *ngIf="showAppendix" style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for
+                        additional details</p>
                 </div>
             </div>
 
@@ -123,7 +124,9 @@
                 <p class="invButton" style="float: right">
                     <p-button type="button" class="editBtn" (click)="editable('appendix')" label="edit"></p-button>
                 </p>
-                <div id="appendix" [innerHTML]="USTemplateCopy.appendix">
+                <div>
+                    <div id="appendix" [innerHTML]="USTemplateCopy.appendix">
+                    </div>
                 </div>
             </div>
         </div>
@@ -198,7 +201,8 @@
                     <table cellspacing="0" cellpadding="0" id="invoiceDetails"
                         [innerHTML]='JapanTemplateCopy.invoiceDetail'>
                     </table>
-                    <p *ngIf="showAppendix" style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
+                    <p *ngIf="showAppendix" style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for
+                        additional details</p>
                 </div>
             </div>
 
@@ -218,7 +222,7 @@
                         <div class="paymentInstructions" id="paymentInstructions1"
                             [innerHTML]='JapanTemplateCopy.paymentInstructions'>
                         </div>
-                        <ul  id="paymentInstructions2" [innerHTML]='JapanTemplateCopy.paymentDetails'>
+                        <ul id="paymentInstructions2" [innerHTML]='JapanTemplateCopy.paymentDetails'>
                         </ul>
 
                     </td>
@@ -270,10 +274,12 @@
             </table>
 
             <div class="invoice-table">
-                <p class="invButton"  style="float: right">
+                <p class="invButton" style="float: right">
                     <p-button type="button" class="editBtn" (click)="editable('appendix')" label="edit"></p-button>
                 </p>
-                <div id="appendix" class="col3" [innerHTML]="JapanTemplateCopy.appendix">
+                <div>
+                    <div id="appendix" [innerHTML]="JapanTemplateCopy.appendix">
+                    </div>
                 </div>
             </div>
         </div>
@@ -308,7 +314,7 @@
             </p>
 
             <div class="contact_details-table">
-                <div id="contact_details"  [innerHTML]='IndiaTemplateCopy.contactDetails1'>
+                <div id="contact_details" [innerHTML]='IndiaTemplateCopy.contactDetails1'>
                     <!-- <table id="contactDetails1" style="width:54%;" [innerHTML]='IndiaTemplateCopy.contactDetails1'>
                     </table>
                     <table id="contactDetails2" style="width:40%;" [innerHTML]='IndiaTemplateCopy.contactDetails2'>
@@ -351,7 +357,8 @@
                     <table cellspacing="0" cellpadding="0" id="invoiceDetails"
                         [innerHTML]='IndiaTemplateCopy.invoiceDetail'>
                     </table>
-                    <p *ngIf="showAppendix" style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for additional details</p>
+                    <p *ngIf="showAppendix" style="font-size: 15px;font-weight: 600;">* Please refer to Appendix 1 for
+                        additional details</p>
                 </div>
             </div>
 
@@ -373,9 +380,7 @@
             <tbody>
                 <tr>
                     <td style="font-size:14px">
-                        <div id="paymentInstructions" 
-                        
-                            [innerHTML]='IndiaTemplateCopy.paymentInstructions'>
+                        <div id="paymentInstructions" [innerHTML]='IndiaTemplateCopy.paymentInstructions'>
                         </div>
                         <div class="paymentDetails">
                             <ul id="paymentInstructions2" [innerHTML]='IndiaTemplateCopy.paymentDetails'>
@@ -396,11 +401,13 @@
                 </tbody>
             </table>
 
-            <div  class="invoice-table appendix">
+            <div class="invoice-table appendix">
                 <p class="invButton" style="float: right">
                     <p-button type="button" class="editBtn" (click)="editable('appendix')" label="edit"></p-button>
                 </p>
-                <div id="appendix" class="col4" [innerHTML]="IndiaTemplateCopy.appendix">
+                <div>
+                    <div id="appendix" [innerHTML]="IndiaTemplateCopy.appendix">
+                    </div>
                 </div>
             </div>
         </div>
