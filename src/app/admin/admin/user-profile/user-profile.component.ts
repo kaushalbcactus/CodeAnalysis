@@ -339,11 +339,6 @@ export class UserProfileComponent implements OnInit {
             userObj.TaskText = tasks.results.map(x => x.Title).join(', ');
           }
         }
-        userObj.PracticeAreaEffectiveDate = item.PracticeAreaEffectiveDate;
-        userObj.TimeZoneEffectiveDate = item.TimeZoneEffectiveDate;
-        userObj.ManagerEffectiveDate = item.ManagerEffectiveDate;
-        userObj.PrimarySkillEffectiveDate = item.PrimarySkillEffectiveDate;
-        userObj.SkillLevelEffectiveDate = item.SkillLevelEffectiveDate;
         tempResult.push(userObj);
       }
     }
