@@ -21,8 +21,12 @@
     }
 }
 
-::ng-deep #table1 .ck-content.ck-editor__editable {
+::ng-deep #ckeditorSection .ck-content.ck-editor__editable {
     max-height: 300px;
+}
+
+::ng-deep #ckeditorSection .ck-content.ck-editor__editable table {
+    width: 100%
 }
 
 

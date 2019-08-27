@@ -43,32 +43,27 @@ export class SectionEditorComponent implements OnInit {
   save() {
     this.customClass = ' ';
     let count = 0;
-    // document.getElementById('table1').rows[0].cells.length;
-    if (document.getElementById('table1').childNodes[0].lastChild.childNodes[0] !== undefined &&
-      document.getElementById('table1').childNodes[0].lastChild.childNodes[0].firstChild !== null) {
-      const d1 = document.getElementById('table1').childNodes[0].lastChild.childNodes[0].firstChild.childNodes;
-      for (let i = 1; i <= d1.length; i++) {
-        count = i;
-      }
+    // if (document.getElementById('ckeditorSection').childNodes[0].lastChild.childNodes[0] !== undefined &&
+    //   document.getElementById('ckeditorSection').childNodes[0].lastChild.childNodes[0].firstChild !== null) {
+    //   const d1 = document.getElementById('ckeditorSection').childNodes[0].lastChild.childNodes[0].firstChild.childNodes;
+    //   for (let i = 1; i <= d1.length; i++) {
+    //     count = i;
+    //   }
+    // }
+    const table = document.getElementById('ckeditorSection').querySelector('table');
+    if(table) {
+      count = table.rows[0].cells.length;
     }
-    // console.log(d1);
-    // tslint:disable-next-line: prefer-for-of
-    // console.log(count);
     if (count === 3) {
       this.customClass = 'col3';
-      // document.getElementById('table1').innerHTML.replace(/&nbsp;/g, '');
     }
     if (count === 4) {
       this.customClass = 'col4';
-      // document.getElementById('table1').innerHTML.replace(/&nbsp;/g, '');
     }
-    if (count === 6) {
-      this.customClass = 'col6';
-      // document.getElementById('table1').innerHTML.replace(/&nbsp;/g, '');
+    if (count === 5) {
+      this.customClass = 'col5';
     }
-    if (count === 10) {
-      this.customClass = 'col10';
-    }
+    
     this.htmldata = this.editor.getData();
     this.obj = {
       htmldata: this.htmldata,

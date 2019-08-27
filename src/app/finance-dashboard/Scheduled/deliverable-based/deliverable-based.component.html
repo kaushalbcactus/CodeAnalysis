@@ -9,7 +9,6 @@
     <div class="ui-g-3"></div>
     <div class="ui-g-3 f-right">
         <div class="box" style="display: -webkit-inline-box;">
-            <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(db)"></button> -->
             <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(db)"
                     title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
         </div>
@@ -70,7 +69,6 @@
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
-        <!-- [pSelectableRow]="rowData" -->
         <tr>
             <td>
                 {{rowIndex +1}}
@@ -83,11 +81,10 @@
                     {{rowData[col.field]}}
                 </ng-container>
                 <ng-container *ngIf="col.field == 'ScheduledDate'">
-                    <p>{{rowData[col.field] | date:'MMM dd, yyyy' }}</p>
+                    {{rowData[col.field] | date:'MMM dd, yyyy' }}
                 </ng-container>
                 <ng-container *ngIf="col.field == ''">
                     <div>
-                        <!-- <div *ngIf="rowData.showMenu === true"> -->
                         <p-menu #popupMenu [popup]="true"  [model]="items" styleClass="borderMenu">
                         </p-menu>
                         <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"

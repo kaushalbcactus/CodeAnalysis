@@ -3,6 +3,7 @@
     /* border:1px solid #c53e3e !important; */
 }
 
+
 .pDialog {
     top: 50px !important;
 }
@@ -193,47 +194,6 @@ body .ui-datepicker table td>a.ui-state-active:hover {
 }
 
 
-/* .ui-table-scrollable-wrapper .ui-table-scrollable-header tr th:first-child
-{width: 1%;}
-.ui-table-scrollable-wrapper .ui-table-scrollable-header th:nth-child(2){
-  width: 12%;
-}
-.ui-table-scrollable-wrapper .ui-table-scrollable-header th:nth-child(3),
-.ui-table-scrollable-wrapper .ui-table-scrollable-header th:nth-child(4),
-.ui-table-scrollable-wrapper .ui-table-scrollable-header th:nth-child(5)
-{
-  width: 15.8%;
-}
-.ui-table-scrollable-wrapper .ui-table-scrollable-header th:nth-child(6){
-  width: 25%;
-}
-.ui-table-scrollable-wrapper .ui-table-scrollable-header th:nth-child(7){
-  width: 10%;
-}
-.ui-table-scrollable-wrapper .ui-table-scrollable-body tr td:first-child{
-  width: 4.5%;
-  position: static;
-}
-.ui-table-scrollable-wrapper .ui-table-scrollable-body tr td:nth-child(2){
-  width: 12.2%;
-  position: static;
-}
-.ui-table-scrollable-wrapper .ui-table-scrollable-body tr td:nth-child(3),
-.ui-table-scrollable-wrapper .ui-table-scrollable-body tr td:nth-child(4),
-.ui-table-scrollable-wrapper .ui-table-scrollable-body tr td:nth-child(5)
-{
-  width: 16%;
-  position: static;
-}
-.ui-table-scrollable-wrapper .ui-table-scrollable-body tr td:nth-child(6){
-  width: 25.3%;
-  position: static;
-}
-.ui-table-scrollable-wrapper .ui-table-scrollable-body tr td:nth-child(7){
-   width: 10%;
-} */
-
-
 /* new changes in css 17-6-2019 end */
 
 
@@ -257,27 +217,23 @@ body .ui-datepicker table td>a.ui-state-active:hover {
 
 
 /*Header */
-body .ui-widget {
+#header {
     font-family: Verdana !important;
 }
 
-body .ui-widget-content p {
-    font-size: 16px;
-}
-
-body p {
+#header p {
     margin: 0;
     line-height: 1.5;
 }
 
-table {
+#header table {
     border-collapse: collapse;
     background: #fff;
     width: 100%;
     margin: 0px;
 }
 
-.logo-img {
+#header .logo-img {
     width: 200px; 
     height: auto; 
     margin: auto
@@ -319,7 +275,7 @@ table {
     font-weight: 500;
 }
 
-header div table tbody tr {
+#header div table tbody tr {
     background: #c5d3e5
 }
 
@@ -335,33 +291,28 @@ header div table tbody tr {
 #header .header-left.indHeader span {
     width: 145px !important;
 }
-
+/*Header End */
 
 /*Footer */
 
-body {
+#footer {
     font-size: 16px;
     color: #333;
     background-color: #fff;
     font-family: Verdana !important;
 }
 
-body .ui-widget {
+#footer {
     font-family: Verdana !important;
 }
 
-body .ui-widget-content p {
-    font-size: 16px;
-}
-
-body p {
+#footer p {
     margin: 0;
     line-height: 1.5;
 }
 
-table {
+#footer table {
     border-collapse: collapse;
-    background: #fff;
     width: 100%;
     margin: 0px;
 }
@@ -386,25 +337,25 @@ footer table:first-child tr td {
     font-size: 14px;
     text-align: center;
 }
-
+/*Footer End */
 
 /*Content*/
 
-body {
+#main_content {
     font-size: 16px;
     color: #333;
     background-color: #fff;
     font-family: Verdana !important;
 }
 
-table {
+#main_content table {
     border-collapse: collapse;
     background: #fff;
     width: 100%;
     margin: 0px;
 }
 
-body p {
+#main_content p {
     margin: 0;
     line-height: 1.5;
 }
@@ -418,9 +369,6 @@ body p {
     color: #000;
     padding: 10px;
 }
-
-
-/* .contact_details_japan{height:60px;} */
 
 .contact_details p,
 .contact_details_japan p {
@@ -461,7 +409,7 @@ figure {
     padding: 5px;
 }
 
-p span {
+#main_content p span {
     display: inline-flex;
 }
 
@@ -508,7 +456,7 @@ p span {
     font-size: 16px;
 }
 
-ul {
+#main_content ul {
     line-height: 26px;
     padding-left: 20px;
     list-style: unset;
@@ -518,9 +466,6 @@ ul {
 .column-flex {
     display: inline-flex;
 }
-
-
-/* .paymentDetails ul{padding-left: 10px;} */
 
 .invoice-table {
     border-collapse: collapse;
@@ -571,13 +516,13 @@ ul {
 
 .invoice-table table tbody tr td:last-child {
     font-weight: bold;
-    width: 14%;
+    width: 17%;
     text-align: right;
 }
 
 .invoice-table table tbody tr td:first-child {
     text-align: left;
-    width: 14%
+    width: 15%
 }
 
 .appendix table tbody tr:last-child td {
@@ -609,75 +554,6 @@ ul {
     margin-top: 20px;
 }
 
-.col3 table tr:first-child td:first-child {
-    width: 10%;
-}
-
-.col3 table tr:first-child td:nth-child(2) {
-    width: 34%;
-}
-
-.col4 table tr:first-child td:first-child {
-    width: 16%;
-}
-
-.col10 figure table tr:first-child td {
-    font-weight: bold;
-}
-
-/* .col10 figure table tr:first-child td:first-child {
-    width: 5%;
-}
-
-.col10 figure table tr:first-child td:nth-child(2) {
-    width: 13%;
-}
-
-.col10 figure table tr:first-child td:nth-child(3) {
-    width: 8%;
-}
-
-.col10 figure table tr:first-child td:nth-child(4) {
-    width: 10%;
-}
-
-.col10 figure table tr:first-child td:nth-child(5) {
-    width: 12%;
-}
-
-.col10 figure table tr:first-child td:nth-child(6) {
-    width: 10%;
-}
-
-.col10 figure table tr:first-child td:nth-child(7) {
-    width: 9%;
-}
-
-.col10 figure table tr:first-child td:nth-child(8) {
-    width: 11%;
-}
-
-.col10 figure table tr:first-child td:nth-child(9) {
-    width: 9%;
-}
-
-.col10 figure table tr:first-child td:nth-child(10) {
-    width: 13%;
-} */
-
-
-.col10 figure table tr:first-child td:first-child{width:10%;}
-.col10 figure table tr:first-child td:nth-child(2){width:6%;}
-.col10 figure table tr:first-child td:nth-child(3){width:8%;}
-.col10 figure table tr:first-child td:nth-child(4){width:10%;}
-.col10 figure table tr:first-child td:nth-child(5){width:12%;}
-.col10 figure table tr:first-child td:nth-child(6){width:10%;}
-.col10 figure table tr:first-child td:nth-child(7){width:9%;}
-.col10 figure table tr:first-child td:nth-child(8){width:10%;}
-.col10 figure table tr:first-child td:nth-child(9){width:10%;}
-.col10 figure table tr:first-child td:nth-child(10){width:15%;}
-
-
 .proformaDetail table tbody tr td {
     text-align: left;
     padding: 16px 10px;
@@ -699,6 +575,7 @@ ul {
 #contact_details strong {
     display: inline-block;
     width: 150px;
+    font-size: 16px;
 }
 
 #contact_details table tbody tr td p+p {
@@ -759,6 +636,39 @@ ul {
     width: 100% !important;
     margin: 0px !important;
 }
+
+#appendix.col4 table tr th:first-child,
+#appendix.col4 table tr td:first-child {
+    width: 18%;
+}
+
+#appendix.col4 table tr th:nth-child(2),
+#appendix.col4 table tr td:nth-child(2) {
+    width: 17%;
+}
+
+#appendix.col4 table tr th:last-child,
+#appendix.col4 table tr td:last-child {
+    width: 17%;
+}
+
+#appendix.col3 table tr th:first-child,
+#appendix.col3 table tr td:first-child {
+    width: 17%;
+}
+
+#appendix.col3 table tr th:last-child,
+#appendix.col3 table tr td:last-child {
+    width: 17%;
+}
+
+#appendix figure img {
+    width: 100%;
+}
+
+
+/*Content End*/
+
 
 .ck-reset_all.ck-body.ck-rounded-corners+.ui-dialog-resizable,
 .ck-reset_all.ck-body.ck-rounded-corners~.ui-widget-overlay~.ui-dialog-resizable,
@@ -899,9 +809,13 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
     right: 40px !important;
 }
 
-table>tbody>tr>td,
-table>thead>tr>th,
+.financeTable table>tbody>tr>td,
+.financeTable table>thead>tr>th,
 .ui-multiselect-label,
 .ui-multiselect-item {
     font-size: 12px !important;
 }
+/* 
+body {
+    font-size: 13px !important;
+} */

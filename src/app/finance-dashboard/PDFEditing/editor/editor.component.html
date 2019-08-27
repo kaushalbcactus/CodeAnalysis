@@ -50,10 +50,6 @@
                 </tbody>
             </table>
 
-            <!-- <p style="float: right">
-                <p-button type="button" (click)="editable('purchaseOrder')" label="edit"></p-button>
-            </p> -->
-
             <p id="purchaseOrder" class="purchaseOrder">
                 <tr>
                     <td>
@@ -76,9 +72,6 @@
             </table>
 
             <div class="invoice-table proformaDetail">
-                <!-- <p style="float: right">
-                <p-button type="button" (click)="editable('invoiceDetail')" label="edit"></p-button>
-            </p> -->
 
                 <div id="invoiceDetail" style="margin-bottom: 20px;">
                     <table id="invoiceDetails" cellspacing="0" cellpadding="0"
@@ -130,7 +123,7 @@
                 <p class="invButton" style="float: right">
                     <p-button type="button" class="editBtn" (click)="editable('appendix')" label="edit"></p-button>
                 </p>
-                <div id="appendix" class="col4" [innerHTML]="USTemplateCopy.appendix">
+                <div id="appendix" [innerHTML]="USTemplateCopy.appendix">
                 </div>
             </div>
         </div>
@@ -179,10 +172,6 @@
                 </tbody>
             </table>
 
-            <!-- <p style="float: right">
-            <p-button type="button" (click)="editable('purchaseOrder')" label="edit"></p-button>
-        </p> -->
-
             <p id="purchaseOrder" class="purchaseOrder">
                 <tr>
                     <td>
@@ -205,10 +194,6 @@
             </table>
 
             <div class="invoice-table proformaDetail">
-                <!-- <p style="float: right">
-                <p-button type="button" (click)="editable('invoiceDetail')" label="edit"></p-button>
-            </p> -->
-
                 <div id="invoiceDetail" style="margin-bottom: 10px;">
                     <table cellspacing="0" cellpadding="0" id="invoiceDetails"
                         [innerHTML]='JapanTemplateCopy.invoiceDetail'>
@@ -226,11 +211,6 @@
                     </td>
                 </tr>
             </tbody>
-
-            <!-- <p class="invButton" style="float: right">
-                <p-button type="button" class="editBtn" (click)="editable('paymentInstructions')" label="edit">
-                </p-button>
-            </p> -->
 
             <tbody class="paymentDetails">
                 <tr>
@@ -345,10 +325,6 @@
                     </tr>
                 </tbody>
             </table>
-
-            <!-- <p style="float: right">
-                <p-button type="button" (click)="editable('referenceDetail')" label="edit"></p-button>
-            </p> -->
 
             <div id="referenceDetail" class="referenceDetail">
                 <table>

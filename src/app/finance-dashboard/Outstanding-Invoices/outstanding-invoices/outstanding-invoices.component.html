@@ -11,7 +11,6 @@
     <div class="ui-g-3"></div>
     <div class="ui-g-3 f-right">
         <div class="box">
-            <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(outi)"></button> -->
             <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(outi)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
         </div>
     </div>
@@ -56,11 +55,7 @@
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ModifiedBy'" [options]="outInvoiceColArray.ModifiedBy" defaultLabel="All" (onChange)="outi.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <!-- <p-dropdown resetFilterOnHide="true"[options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">
-              <ng-template let-item pTemplate="item">
-                <span>{{item.value}}</span>
-              </ng-template>
-            </p-dropdown> -->
+                        
                     </ng-container>
                 </th>
             </tr>
@@ -78,7 +73,7 @@
                         {{rowData[col.field]}}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'InvoiceDate'">
-                        <p>{{rowData[col.field] | date:'MMM dd, yyyy' }}</p>
+                        {{rowData[col.field] | date:'MMM dd, yyyy' }}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'InvoiceNumber'">
                         <a *ngIf="rowData['FileURL']" [href]="rowData['FileURL']" target="_blank">
@@ -88,7 +83,6 @@
 
                     <ng-container *ngIf="col.field == ''">
                         <div>
-                            <!-- <div *ngIf="rowData.showMenu === true"> -->
                             <p-menu #popupMenu [popup]="true" [model]="items" styleClass="borderMenu">
                             </p-menu>
                             <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;" 

@@ -20,25 +20,7 @@
     </div>
     <div style="clear: both;"></div>
 </div>
-<!-- <div class="p-grid">
-    <div class="p-col-12 p-md-3 p-lg-6 f-right">
-        <div style="display: -webkit-inline-box;">
-            <div class="box">
-                <button type="button" pButton label="Export"
-                    (click)="fdDataShareServie.convertToExcelFile(anb)"></button>
-            </div>
-        </div>
-    </div>
-    <div class="p-col-12 p-md-6 p-lg-6 f-right">
-        <div style="display: -webkit-inline-box;">
-            <div class="box">
-                <button pButton type="button" type="button" label="Mark As Payment" class="ui-button-raised"
-                    (click)="openPopup('markAsPaymentModal')" style="float:left"></button>
-            </div>
-        </div>
-    </div>
-    <div style="clear: both;"></div>
-</div> -->
+
 <div class="financeTable">
     <p-table #anb [columns]="approvedNonBillableCols" [value]="approvedNonBillableRes" [paginator]="true" [rows]="10"
          (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
@@ -119,7 +101,7 @@
                         {{rowData[col.field]}}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'Modified'">
-                        <p>{{rowData[col.field] | date:'MMM dd, yyyy' }}</p>
+                        {{rowData[col.field] | date:'MMM dd, yyyy' }}
                     </ng-container>
                     <ng-container *ngIf="col.field == ''">
                         <div>
