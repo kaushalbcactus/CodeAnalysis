@@ -93,7 +93,7 @@ export class FDDataShareService {
     ) { }
 
     async getCurrentUserInfo() {
-        return await this.spServices.getUserInfo1(this.globalObject.sharePointPageObject.userId.toString());
+        return await this.spServices.getUserInfo(this.globalObject.sharePointPageObject.userId);
     }
 
     async getGroupInfo() {
@@ -242,7 +242,7 @@ export class FDDataShareService {
     async getRequiredData(): Promise<any> {
         if (!this.requiredData.length) {
 
-            this.globalObject.userInfo = await this.spServices.getUserInfo1(this.globalObject.sharePointPageObject.userId.toString());
+            this.globalObject.userInfo = await this.spServices.getUserInfo(this.globalObject.sharePointPageObject.userId);
             // Default Tabs & sub Menus
             this.fdConstantsService.fdComponent.tabs.topMenu = [
                 { label: 'Expenditure', routerLink: ['expenditure'] },
