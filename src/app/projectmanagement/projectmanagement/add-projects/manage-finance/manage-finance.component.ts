@@ -9,7 +9,6 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { GlobalService } from 'src/app/Services/global.service';
-import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 
 declare var $;
 @Component({
@@ -166,7 +165,6 @@ export class ManageFinanceComponent implements OnInit {
     private pmCommonService: PMCommonService,
     private commonService: CommonService,
     private global: GlobalService,
-    private spOperations: SpOperationsService
   ) {
     this.addPOForm = frmbuilder.group({
       poDate: ['', Validators.required],
@@ -1470,9 +1468,9 @@ export class ManageFinanceComponent implements OnInit {
     });
   }
   async commitInvoiceItem(rowData) {
-    const groupInfo = await this.spOperations.getGroupInfo('Invoice_Team');
-    const approvers = groupInfo.results;
-    const arrayTo = [];
+    const groupInfo = await this.spServices.getGroupInfo('Invoice_Team');
+    var approvers = groupInfo.results;
+    var arrayTo = [];
     if (approvers.length) {
       for (const i in approvers) {
         if (approvers[i].Email !== undefined && approvers[i].Email !== '') {

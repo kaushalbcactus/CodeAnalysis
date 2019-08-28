@@ -194,7 +194,7 @@ export class ConstantsService {
       type: 'SP.Data.ScorecardRatingListItem'
     },
     QualityComplaints: {
-      name: 'QualityComplaints',
+      name: 'Quality Complaints',
       type: 'SP.Data.Quality_x0020_ComplaintsListItem'
     },
     PositiveFeedbacks: {
@@ -288,11 +288,31 @@ export class ConstantsService {
   };
 
   public Groups = {
-    qmsAdmin: 'QMS_Admin',
+    QMSViewScorecard: 'QMS_ViewScorecard',
+    QMSAdmin: 'QMS_Admin',
+    QMSLeaders: 'QMS_Leaders',
+    CDAdmin: 'CD_Admin',
+    PFAdmin: 'PF_Admin',
     MANAGERS: 'Managers',
     PROJECT_FULL_ACCESS: 'Project-FullAccess',
     SOW_FULL_ACCESS: 'SOW-Full Access',
-    SOW_CREATION_MANAGERS: 'SOW Creation Managers'
+    SOW_CREATION_MANAGERS: 'SOW Creation Managers',
+  };
+
+  public cdStatus = {
+    Created: 'Created',
+    Deleted: 'Deleted',
+    ValidationPending: 'Validation Pending',
+    Closed: 'Closed',
+    Rejected: 'Rejected',
+    Valid: 'Valid',
+    InValid: 'InValid'
+  };
+
+  public pfStatus = {
+    Pending: 'Pending',
+    Accepted: 'Accepted',
+    Rejected: 'Rejected'
   };
 
   public FeedbackType = {
@@ -557,26 +577,5 @@ export class ConstantsService {
     AwaitingClosedDebitNote: 'Awaiting Closed Debit Note',
     ClosedWithDebitNote: 'Closed with Debit Note',
   };
-
-  public feedbackPopupComponent = {
-    getTemplates: this.currentWebUrl +
-      "/_api/web/lists/getbytitle('" + this.listNames.ScorecardTemplate.name + "')/items?" +
-      "$select=ID,Title,Tooltip" +
-      "&$filter= IsActive eq 1&$top={{TopCount}}",
-    getTemplateMatrix: this.currentWebUrl +
-      "/_api/web/lists/getbytitle('" + this.listNames.ScorecardMatrix.name + "')/items?" +
-      "$select=ID,Title, ScorecardTemplate/Title, Tooltip&$expand=ScorecardTemplate/Title" +
-      "&$filter= IsActive eq 1 and ScorecardTemplate/Title eq '{{selectedTemplate}}'&$top={{TopCount}}",
-    addScorecardItem: this.currentWebUrl + "/_api/web/lists/getbytitle('" + this.listNames.Scorecard.name + "')/items",
-    moveFileUrl: this.currentWebUrl + "/_api/web/getfilebyserverrelativeurl('{{FileUrl}}')/moveto(newurl='{{NewFileUrl}}',flags=1)",
-    addScorecardRatingItem: this.currentWebUrl + "/_api/web/lists/getbytitle('" + this.listNames.ScorecardRatings.name + "')/items",
-    updateScorecardRatingItem: this.currentWebUrl + "/_api/web/lists/getbytitle('" + this.listNames.ScorecardRatings.name + "')/items({{ID}})",
-    updateSchedulesListItem: this.currentWebUrl + "/_api/web/lists/getbytitle('" + this.listNames.Schedules.name + "')/items({{ID}})",
-    notRatedPrevTasks: this.currentWebUrl +
-      "/_api/web/lists/getbytitle('" + this.listNames.Schedules.name + "')/items?" +
-      "$select=ID, Title, ProjectCode, Status, Milestone, AssignedTo/ID, AssignedTo/Title, Actual_x0020_End_x0020_Date, PrevTasks, NextTasks" +
-      "&$expand=AssignedTo/ID, AssignedTo/Title" +
-      "&$filter= Title eq '{{PrevTaskTitle}}' and Rated eq 0&$top=1",
-  }
 
 }

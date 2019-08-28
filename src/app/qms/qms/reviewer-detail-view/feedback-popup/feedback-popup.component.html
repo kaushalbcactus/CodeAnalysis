@@ -1,0 +1,95 @@
+<!-- Modal Dialog for Rating Feedback-->
+
+<p-dialog popupContent [(visible)]="display" [modal]="true" [responsive]="true" [closable]="false" [style]="{width: '800px',heigth: '1000px'}" positionTop="10">
+  <p-header>
+      <div class="ratework-popup" [hidden] = 'hidePopupTable'>
+          <div class="modal-title popup-header">Rate Work</div>
+          <div class="customer-detail">
+            Average rating:
+            <div class="cd-rating ">
+            <span id="#">{{global.templateMatrix.averageRating}}</span>
+            <div class="star-white fa-star fa"></div>
+          </div>
+        </div>
+      </div>
+  </p-header>
+  <div class="ratework-popup" [hidden] = 'hidePopupTable'>
+      <table class="table popup-rating-row" id="templates">
+        <tbody>
+          <tr>
+            <td>Template</td>
+            <td>
+              <p-dropdown [options]="global.templateMatrix.templates"
+                filter="true" 
+                resetFilterOnHide="true"
+                class="filterBy"
+                optionLabel='Title'
+                placeholder="Select Template"
+                (onChange)='getTemplateMatrix()'
+                [(ngModel)]="global.templateMatrix.selectedTemplate"
+         
+                appendTo="body">
+                
+                <ng-template let-items pTemplate="selectedItem">  
+                    <span style="vertical-align:middle">{{items.value.Title}}</span>
+                </ng-template> 
+                <ng-template let-item pTemplate="item"> 
+                  <div class="ui-helper-clearfix" style="position: relative;height:25px;"> 
+                    <div title="{{item.value.Tooltip}}" style="font-size:14px;margin-top:4px">{{item.value.Title}}</div> 
+                  </div>
+                </ng-template>
+              </p-dropdown>
+            </td>
+          </tr>
+          <tr>
+            <td >Task</td>
+            <td>
+              {{global.templateMatrix.task}}
+            </td>
+          </tr>
+          <tr>
+            <td>Resource</td>
+            <td>
+              {{global.templateMatrix.assignedTo}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="table popup-rating-row scrollTable" id="templateMatrix">
+        <tbody>
+          <tr *ngFor="let element of global.templateMatrix.selectedTemplateDetails">
+            <ng-container *ngIf="element.question !== ''">
+              <td [title]="element.tooltip">
+                {{element.question}}
+              </td>
+              <td class="stars">
+                <ngb-rating [(rate)]="element.rating" min="0" max="5" (rateChange)="updateRating(element, $event)">
+                  <ng-template let-fill="fill" let-index="index">
+                    <span class="star" [class.filled]="fill === 100">&#9733;</span>
+                  </ng-template>
+                </ngb-rating>
+              </td>
+            </ng-container>
+          </tr>
+        </tbody>
+      </table>
+      <mat-form-field class="example-full-width" >
+        <textarea #popupComments maxlength="1000" matInput placeholder="Comments" class="example-full-width" [(ngModel)]="global.templateMatrix.feedback"></textarea>
+        <mat-hint align="start"><strong>Please share your feedback</strong> </mat-hint>
+        <mat-hint align="end">{{popupComments.value.length}} / 1000</mat-hint>
+      </mat-form-field>
+    </div>
+    <div class="tableLoader" [hidden] = 'hidePopupLoader'>
+        <div id="popupLoader"></div>
+        <div id="popupLoaderText">Loading...</div>
+    </div>
+  <p-footer>
+      <div  [hidden] = 'hidePopupTable'>
+          <button type="button" class="btn btn-light button cancel-rating" (click)="closeFeedback()">Cancel</button>
+          <button type="button" class="btn btn-light button save-rating" [disabled]="global.templateMatrix.selectedTemplate.Title !== '' && global.templateMatrix.averageRating >= 1? false : true"
+          (click)="saveRatingFeedback()">Submit</button>
+      </div>
+  </p-footer>
+</p-dialog>
+
+

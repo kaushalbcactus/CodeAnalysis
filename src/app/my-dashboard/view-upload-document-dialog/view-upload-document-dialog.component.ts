@@ -4,9 +4,8 @@ import { DatePipe } from '@angular/common';
 import { NodeService } from 'src/app/node.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
-import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 
 
 @Component({
@@ -38,11 +37,11 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
-    private spServices: SharepointoperationService,
+    private spServices: SPOperationService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
     private nodeService: NodeService,
-    private spOperations: SpOperationsService) { }
+    private spOperations: SPOperationService) { }
 
   items: MenuItem[];
   activeItem: MenuItem;
@@ -387,7 +386,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         this.selectedTask.FinalDocSubmit = true;
         batchContents.push('--changeset_' + changeSetId + '--');
         const batchBody = batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
+        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
         batchBodyContent.push('--batch_' + batchGuid + '--');
         const batchBodyContents = batchBodyContent.join('\r\n');
 
@@ -550,7 +549,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     batchContents.push('--changeset_' + changeSetId + '--');
     //this.response = await this.spServices.getDataByApi(batchGuid, batchContents);
     const batchBody = batchContents.join('\r\n');
-    const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
+    const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
     batchBodyContent.push('--batch_' + batchGuid + '--');
     const batchBodyContents = batchBodyContent.join('\r\n');
     const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);

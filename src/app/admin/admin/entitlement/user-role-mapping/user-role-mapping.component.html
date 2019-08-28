@@ -1,0 +1,57 @@
+<div>
+  <span style="padding-right: 10px;">User:</span>
+<p-dropdown [options]="users"
+    filter="true" 
+    optionLabel="label"
+    resetFilterOnHide="true"
+    placeholder='Select User'
+    [(ngModel)]="selectedUser">
+</p-dropdown>
+</div>
+
+
+<div>
+    <span style="padding-right: 10px;">Roles:</span>
+    <div class="ui-g" style="width:250px;margin-bottom:10px">
+        <div class="ui-g-12"><p-checkbox name="group1" value="Role 1" label="Role 1" [(ngModel)]="selectedRoles" inputId="r1"></p-checkbox></div>
+        <div class="ui-g-12"><p-checkbox name="group1" value="Role 2" label="Role 2" [(ngModel)]="selectedRoles" inputId="r2"></p-checkbox></div>
+        <div class="ui-g-12"><p-checkbox name="group1" value="Role 3" label="Role 3" [(ngModel)]="selectedRoles" inputId="r3"></p-checkbox></div>
+    </div>
+</div>
+
+
+<p-table #ur [columns]="userRoleColumns" [value]="userRoleRows" exportFilename="User-Role Mapping">
+  <ng-template pTemplate="header" let-columns>
+      <tr>
+          <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+              {{col.header}}
+              <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+          </th>
+      </tr>
+      <tr>
+          <th *ngFor="let col of columns" [ngSwitch]="col.field">
+              <p-multiSelect *ngSwitchCase="'User'" [style]="{'width':'100%'}" appendTo="body" [options]="userRoleColArray.User" defaultLabel="User" (onChange)="sc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'Role'" [style]="{'width':'100%'}" appendTo="body" [options]="userRoleColArray.Role" defaultLabel="Role" (onChange)="sc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'Action'" [style]="{'width':'100%'}" appendTo="body" [options]="userRoleColArray.Action" defaultLabel="Action" (onChange)="sc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'By'" [style]="{'width':'100%'}" appendTo="body" [options]="userRoleColArray.By" defaultLabel="By" (onChange)="sc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" appendTo="body" [options]="userRoleColArray.Date" defaultLabel="Date" (onChange)="sc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+          </th>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
+      <tr>
+          <td *ngFor="let col of columns">
+              <ng-container *ngIf="col.field != ''">
+                  {{rowData[col.field]}}
+              </ng-container>
+         </td>
+      </tr>
+  </ng-template>
+  <ng-template pTemplate="emptymessage" let-columns>
+      <tr>
+          <td [attr.colspan]="columns.length">
+              No Data found
+          </td>
+      </tr>
+  </ng-template>
+</p-table>

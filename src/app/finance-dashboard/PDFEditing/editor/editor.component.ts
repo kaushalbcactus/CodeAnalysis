@@ -5,11 +5,10 @@ import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { MessageService } from 'primeng/api';
 import { GlobalService } from 'src/app/Services/global.service';
-import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
-import { DatePipe } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
+
 
 declare var $: any;
 @Component({
@@ -59,10 +58,8 @@ export class EditorComponent implements OnInit {
         private fdShareDataService: FDDataShareService,
         private messageService: MessageService,
         private globalObject: GlobalService,
-        private spOperationsServices: SpOperationsService,
+        private spOperationsServices: SPOperationService,
         private constantsService: ConstantsService,
-        private spServices: SharepointoperationService,
-        private datePipe: DatePipe,
     ) { }
 
     ngOnInit() {
@@ -2829,19 +2826,19 @@ export class EditorComponent implements OnInit {
         this.projectContacts();
         const id = "2393";
         const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
+        const batchGuid = this.spOperationsServices.generateUUID();
         let invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.Proforma.name + '', this.fdConstantsService.fdComponent.proformaForUser);
         invoicesQuery = invoicesQuery.replace('{{ItemID}}', id);
         let endPoints = [invoicesQuery];
         let userBatchBody = '';
         for (let i = 0; i < endPoints.length; i++) {
             const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+            this.spOperationsServices.getBatchBodyGet(batchContents, batchGuid, element);
         }
         batchContents.push('--batch_' + batchGuid + '--');
         userBatchBody = batchContents.join('\r\n');
         let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        const res = await this.spOperationsServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
         //console.log('REs in Confirmed Invoice ', res);
         arrResults = res;
         if (arrResults.length) {
@@ -2901,7 +2898,7 @@ export class EditorComponent implements OnInit {
     async getILIByPID(id) {
 
         const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
+        const batchGuid = this.spOperationsServices.generateUUID();
         let invoicesQuery = '';
         let obj = {
             filter: this.fdConstantsService.fdComponent.invoiceLineItem.filter.replace("{{ProformaLookup}}", id),
@@ -2909,19 +2906,19 @@ export class EditorComponent implements OnInit {
             top: this.fdConstantsService.fdComponent.invoiceLineItem.top,
             // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
         }
-        invoicesQuery = this.spServices.getReadURL('' + this.constantsService.listNames.InvoiceLineItems.name + '', obj);
+        invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.InvoiceLineItems.name + '', obj);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
         let endPoints = [invoicesQuery];
         let userBatchBody = '';
         for (let i = 0; i < endPoints.length; i++) {
             const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+            this.spOperationsServices.getBatchBodyGet(batchContents, batchGuid, element);
         }
         batchContents.push('--batch_' + batchGuid + '--');
         userBatchBody = batchContents.join('\r\n');
         let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody);// .subscribe(res => {
+        const res = await this.spOperationsServices.getFDData(batchGuid, userBatchBody);// .subscribe(res => {
         arrResults = res;
         if (arrResults.length) {
             console.log(arrResults[0]);

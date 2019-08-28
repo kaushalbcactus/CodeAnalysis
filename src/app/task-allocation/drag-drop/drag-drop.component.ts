@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DynamicDialogRef, DynamicDialogConfig, MessageService, ConfirmationService } from 'primeng/api';
 import { GlobalService } from 'src/app/Services/global.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { TaskAllocationConstantsService } from '../services/task-allocation-constants.service';
 import * as shape from 'd3-shape';
@@ -65,7 +65,7 @@ export class DragDropComponent implements OnInit {
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
     public sharedObject: GlobalService,
-    private spServices: SharepointoperationService,
+    private spServices: SPOperationService,
     private constants: ConstantsService,
     private taskAllocationService: TaskAllocationConstantsService,
     private messageService: MessageService) { }

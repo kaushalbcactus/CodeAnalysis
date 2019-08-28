@@ -5,13 +5,12 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { formatDate, DatePipe } from '@angular/common';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { GlobalService } from 'src/app/Services/global.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
-import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 
 @Component({
     selector: 'app-oop',
@@ -65,14 +64,14 @@ export class OopComponent implements OnInit, OnDestroy {
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
         private globalService: GlobalService,
-        private spServices: SharepointoperationService,
+        private spServices: SPOperationService,
         private constantService: ConstantsService,
         private fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
-        private spOperationsService: SpOperationsService,
+        private spOperationsService: SPOperationService,
     ) {
         this.subscription.add(this.fdDataShareServie.getScheduleDateRange().subscribe(date => {
             this.DateRange = date;
@@ -677,7 +676,7 @@ export class OopComponent implements OnInit, OnDestroy {
 
         this.batchContents.push('--changeset_' + changeSetId + '--');
         const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
+        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
         batchBodyContent.push('--batch_' + batchGuid + '--');
         const sBatchData = batchBodyContent.join('\r\n');
         const res = this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {

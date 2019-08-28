@@ -2,9 +2,8 @@ import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
 import DecoupledEditor from '../../../../node_modules/@ckeditor/ckeditor5-build-decoupled-document';
 import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng/api';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
-import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 @Component({
   selector: 'app-add-edit-comment-dialog',
   templateUrl: './add-edit-comment-dialog.component.html',
@@ -31,8 +30,7 @@ export class AddEditCommentComponent implements OnInit {
     public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
-    private spServices: SharepointoperationService,
-    public spOperations: SPOperationService) { }
+    private spServices: SPOperationService) { }
 
   ngOnInit() {
 
@@ -170,7 +168,7 @@ export class AddEditCommentComponent implements OnInit {
             TaskComments: commentObj.comment
           }
           this.editor.setData('');
-          await this.spOperations.updateItem(this.constants.listNames.Schedules.name, this.data.ID, data, "SP.Data.SchedulesListItem");
+          await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.data.ID, data, "SP.Data.SchedulesListItem");
           this.messageService.add({ key: 'custom-comment', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
 
           this.getComments(this.data, false);
@@ -211,5 +209,5 @@ export class AddEditCommentComponent implements OnInit {
     }
 
   };
-
+  
 }

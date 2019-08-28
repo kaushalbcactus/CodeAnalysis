@@ -2,7 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { DynamicDialogRef, MessageService, DynamicDialogConfig } from 'primeng/api';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
-import { SpOperationsService } from '../../../Services/sp-operations.service';
+import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';
 import { GlobalService } from '../../../Services/global.service';
 import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
@@ -33,7 +33,7 @@ export class CreateConferenceComponent implements OnInit {
         private fb: FormBuilder,
         public ref: DynamicDialogRef,
         public psConstantService: PubsuportConstantsService,
-        private spOperationsService: SpOperationsService,
+        private spOperationsService: SPOperationService,
         private constantService: ConstantsService,
         private messageService: MessageService,
         public config: DynamicDialogConfig,

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { SharepointoperationService } from '../../../Services/sharepoint-operation.service';
+import {SPOperationService } from '../../../Services/spoperation.service';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ConstantsService } from '../../../Services/constants.service';
 import { GlobalService } from '../../../Services/global.service';
@@ -9,7 +9,6 @@ import { CommonService } from '../../../Services/common.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { DatePipe } from '@angular/common';
 import { NodeService } from '../../../node.service';
-import { SpOperationsService } from '../../../Services/sp-operations.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -59,16 +58,14 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     constructor(
         private messageService: MessageService,
         private fb: FormBuilder,
-        private spServices: SharepointoperationService,
+        private spServices: SPOperationService,
         private constantService: ConstantsService,
         private globalService: GlobalService,
         private fdConstantsService: FdConstantsService,
         private commonService: CommonService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private nodeService: NodeService,
-        private spOperationsService: SpOperationsService
-    ) {
+        private nodeService: NodeService ) {
         this.subscription.add(this.fdDataShareServie.getDateRange().subscribe(date => {
             this.DateRange = date;
             console.log('this.DateRange ', this.DateRange);
@@ -1043,7 +1040,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         // const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
         // batchBodyContent.push('--batch_' + batchGuid + '--');
         // const sBatchData = batchBodyContent.join('\r\n');
-        var res = await this.spOperationsService.executeBatch(dataEndpointArray);
+        var res = await this.spServices.executeBatch(dataEndpointArray);
         // await this.spServices.getData(batchGuid, sBatchData).subscribe(res => {
 
 

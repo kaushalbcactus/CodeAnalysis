@@ -1,0 +1,41 @@
+.filter-wrapper .resource {
+    border-right: 1px solid #E0E0E0;
+    border-left: none;
+  }
+  .searchText{
+    padding-left: 13px;
+    display: inline-block;
+  }
+  .resourceSelect{
+    width: 200px;
+  }
+  
+  div.filter-wrapper {
+    margin-top:10px;
+    color: #787878;
+    height: 50px;
+  }
+  div.filter-wrapper .ng-select {
+    display: inline-block;
+  }
+  
+  
+  div.filter-wrapper > div {
+    float: left;
+    font-size: 14px;
+    padding-right: 13px;
+    padding-left: 10px;
+  }
+  
+  
+   div.filter-wrapper .daterange {
+    height: 55px;
+  }
+  
+   div.filter-wrapper .daterange .dateRangePicker  {
+      display: inline-block;
+  }
+  
+  .taskStatus {
+    width: 275px;
+  }

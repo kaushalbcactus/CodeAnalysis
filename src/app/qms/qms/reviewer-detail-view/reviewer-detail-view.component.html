@@ -1,0 +1,59 @@
+
+<div id="reviewerContent">
+
+  <p-toast position="top-right"></p-toast>
+  <p-table #rd id="reviewerTable" [columns]="ReviewerDetailColumns" [value]="ReviewerDetail" [hidden]="hideTable">
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                {{col.header}}
+                <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+            </th>
+            <th>Actions</th>
+        </tr>
+        <tr>
+            <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                <p-multiSelect *ngSwitchCase="'resource'" [style]="{'width':'100%'}" [options]="RDColArray.Resource" defaultLabel="Resource" (onChange)="rd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'taskTitle'" [style]="{'width':'100%'}"  [options]="RDColArray.TaskTitle" defaultLabel="Task Title" (onChange)="rd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'taskCompletionDate'" [style]="{'width':'100%'}" [options]="RDColArray.TaskCompletionDate" defaultLabel="Task Completion Date" (onChange)="rd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+            </th>
+           <th></th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr>
+            <td *ngFor="let col of columns">
+                <ng-container *ngIf="col.field !== 'docUrlHtmlTag' && col.field !== 'docReviewUrlHtmlTag' &&  col.field !== '' && col.field !== 'taskTitle'">
+                    {{rowData[col.field]}}
+                </ng-container>
+                <ng-container *ngIf="col.field === 'taskTitle'">
+                   {{rowData[col.field]}} - {{rowData['subMilestones']}}
+                </ng-container>
+                <ng-container *ngIf="col.field === 'docUrlHtmlTag'">
+                  <div [innerHTML]="rowData[col.field]"></div>
+                </ng-container>
+                <ng-container *ngIf="col.field === 'docReviewUrlHtmlTag'">
+                    <div [innerHTML]="rowData[col.field]"></div>
+                </ng-container>
+           </td>
+           <td>
+             <a mat-button class="download-worksheet" [hidden]="rowData['docUrlHtmlTag'] ? false : true" (click)="feedbackPopup.openPopup(rowData)"><i class="fa fa-edit" aria-hidden="true"></i>Provide Rating</a>
+          </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns>
+      <tr>
+          <td [attr.colspan]="columns.length + 1">
+              No Data found
+          </td>
+      </tr>
+  </ng-template>
+</p-table>
+
+  <app-feedback-popup #feedbackPopup (setSuccessMessage)="callParentSuccessMsg($event)"  (bindTableEvent)="bindReviewerTable($event)"></app-feedback-popup>
+</div>
+
+<div class="tableLoader" [hidden] = 'hideLoader'>
+  <div id="mainLoader"></div>
+  <div id="mainLoaderText">Loading...</div>
+</div>

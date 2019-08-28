@@ -1,0 +1,49 @@
+.rca-upload > input , .close-upload > input{
+    width:0;
+    height:0
+  }
+  .rca-upload , .close-upload {
+    display: inline;
+    cursor: pointer;
+  }
+  .mat-button{
+    font-size: 20px;
+    min-width: 47px;
+  }
+  .view-Files{
+    display: inline-block;
+  }
+  .iconbtn{
+    min-width: 30px!important;
+    width: 10px;
+    padding: 0px 0px!important;
+  }
+  .hidden-column{
+    display:none;
+  }
+  
+  ::ng-deep .cd-rating{background: #4faf54;color: #fff;padding: 0px 8px;border-radius: 3px;display: inline-block;margin-right: 3px}
+  ::ng-deep .commentsText {
+    width: 100%;
+  }
+  ::ng-deep .cdTable div.ui-table-wrapper {
+    overflow: visible!important;
+  }
+  
+  ::ng-deep .cdTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
+      overflow: visible;
+  }
+  
+  ::ng-deep .cdTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
+      position: relative;
+  }
+  
+  ::ng-deep .cdTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div>i {
+      top: 0px !important;
+  }
+  
+  ::ng-deep .cdTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+      top: 0px !important;
+      left: inherit !important;
+      right: 40px !important;
+  }

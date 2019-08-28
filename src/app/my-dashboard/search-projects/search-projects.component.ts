@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/
 import { MessageService, MenuItem } from 'primeng/api';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ProjectDraftsComponent } from './project-drafts/project-drafts.component';
 import { TimelineComponent } from 'src/app/task-allocation/timeline/timeline.component';
@@ -82,7 +82,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   constructor(public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
-    private spServices: SharepointoperationService,
+    private spServices: SPOperationService,
     private commonService: CommonService,
     private datePipe: DatePipe,
     public sharedObject: GlobalService, public router: Router) { }

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef, HostListener} from '@angular/
 import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { CommonService } from 'src/app/Services/common.service';
@@ -10,7 +10,6 @@ import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
-import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router } from '@angular/router';
 
 declare var $;
@@ -100,7 +99,7 @@ export class SendToClientComponent implements OnInit {
     }, this.pmConstant.TIME_OUT);
   }
   constructor(
-    private spServices: SharepointoperationService,
+    private spServices: SPOperationService,
     private Constant: ConstantsService,
     public globalObject: GlobalService,
     private commonService: CommonService,

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { SharepointoperationService } from '../../../Services/sharepoint-operation.service';
+import { SPOperationService } from '../../../Services/spoperation.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ConstantsService } from '../../../Services/constants.service';
 import { GlobalService } from '../../../Services/global.service';
@@ -54,7 +54,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     constructor(
         private messageService: MessageService,
         private fb: FormBuilder,
-        private spServices: SharepointoperationService,
+        private spServices: SPOperationService,
         private constantService: ConstantsService,
         private globalService: GlobalService,
         private fdConstantsService: FdConstantsService,
@@ -559,7 +559,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
 
         this.batchContents.push('--changeset_' + changeSetId + '--');
         const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
+        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
         batchBodyContent.push('--batch_' + batchGuid + '--');
         const sBatchData = batchBodyContent.join('\r\n');
         const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {

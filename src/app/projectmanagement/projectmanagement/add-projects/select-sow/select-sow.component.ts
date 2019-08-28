@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
-import { SpOperationsService } from 'src/app/Services/sp-operations.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { DataService } from 'src/app/Services/data.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
@@ -39,7 +39,7 @@ export class SelectSOWComponent implements OnInit {
     public pmObject: PMObjectService,
     private commonService: CommonService,
     private pmConstant: PmconstantService,
-    private spServices: SpOperationsService,
+    private spServices: SPOperationService,
     private constants: ConstantsService,
     private dataService: DataService,
     private pmCommonService: PMCommonService) { }

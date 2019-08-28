@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
@@ -31,7 +31,7 @@ export class UsercapacityComponent implements OnInit {
   constructor(
     public datepipe: DatePipe,
     private modalService: NgbModal, 
-    private spService: SharepointoperationService, 
+    private spService: SPOperationService, 
     private pmObject: PMObjectService,
     private constants: ConstantsService,
     private pmCommonService: PMCommonService,

@@ -3,7 +3,7 @@ import { Message, ConfirmationService, MessageService, SelectItem } from 'primen
 import { Calendar } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
@@ -11,7 +11,6 @@ import { formatDate, DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
-import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
@@ -73,14 +72,13 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
         private globalService: GlobalService,
-        private spServices: SharepointoperationService,
+        private spServices: SPOperationService,
         private constantService: ConstantsService,
         private fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
-        private spOperationsService: SpOperationsService,
         private router: Router
     ) { }
 
@@ -881,11 +879,11 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         let pfobj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
         pfobj.filter = pfobj.filter.replace('{{ProjectCode}}', this.selectedRowItem.ProjectCode);
         let obj = [{
-            url: this.spOperationsService.getReadURL(this.constantService.listNames.ProjectFinances.name, pfobj),
+            url: this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name, pfobj),
             type: 'GET',
             listName: this.constantService.listNames.ProjectFinances
         }]
-        const res = await this.spOperationsService.executeBatch(obj);
+        const res = await this.spServices.executeBatch(obj);
         return res[0].retItems[0];
     }
 
@@ -1016,7 +1014,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
         this.batchContents.push('--changeset_' + changeSetId + '--');
         const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
+        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
         batchBodyContent.push('--batch_' + batchGuid + '--');
         const sBatchData = batchBodyContent.join('\r\n');
 
@@ -1051,7 +1049,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
             this.batchContents.push('--changeset_' + changeSetId + '--');
             const batchBody = this.batchContents.join('\r\n');
-            const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuidNew, changeSetId);
+            const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuidNew, changeSetId);
             batchBodyContent.push('--batch_' + batchGuidNew + '--');
             const sBatchDataNew = batchBodyContent.join('\r\n');
             await this.spServices.getFDData(batchGuidNew, sBatchDataNew);
@@ -1112,17 +1110,18 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
             callProjects.forEach(element => {
                 var getPIData = Object.assign({}, options);
-                getPIData.url = this.spOperationsService.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfoCode);
+                getPIData.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfoCode);
                 getPIData.url = getPIData.url.replace("{{ProjectCode}}", element);
                 getPIData.listName = this.constantService.listNames.ProjectInformation.name;
                 getPIData.type = "GET";
                 batchURL.push(getPIData);
 
             });
-
-            retProjects = await this.spOperationsService.executeBatch(batchURL);
+           
+            retProjects = await this.spServices.executeBatch(batchURL);
             const mappedProjects = retProjects.map( obj => obj.retItems.length ? obj.retItems[0] : []);
             projects = [...projects, ...mappedProjects];
+            projects = [...projects, ...retProjects];
         }
         const appendixObj = { dvcode: '', cactusSpCode: '', title: '', amount: '' };
         selectedProjects.forEach(element => {

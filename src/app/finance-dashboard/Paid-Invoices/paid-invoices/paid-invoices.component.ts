@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, OnDestroy, HostListener } from '@angular/
 import { Message, ConfirmationService, MessageService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
@@ -76,7 +76,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
         private globalService: GlobalService,
-        private spServices: SharepointoperationService,
+        private spServices: SPOperationService,
         private constantService: ConstantsService,
         private fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,

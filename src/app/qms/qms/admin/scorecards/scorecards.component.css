@@ -1,0 +1,43 @@
+.filter-wrapper .resource {
+    border-right: 1px solid #E0E0E0;
+    border-left: none;
+  }
+
+  div.filter-wrapper {
+    margin-top:10px;
+    color: #787878;
+    /* display: inline-block; */
+  }
+  div.filter-wrapper .p-dropdown {
+    display: inline-block;
+  }
+  
+  
+  div.filter-wrapper > div {
+    float: left;
+    font-size: 14px;
+    padding-right: 13px;
+    padding-left: 10px;
+  }
+
+  .filterBy {
+    width: 155px;
+  }
+  
+   div.filter-wrapper .daterange {
+    height: 55px;
+  }
+  
+   div.filter-wrapper .daterange>span {
+      position: absolute;
+      top: 17px;
+  }
+  
+   div.filter-wrapper .daterange .dateRangePicker  {
+      display: inline-block;
+      margin-top: 9px;
+      padding-left: 75px;
+  }
+  ::ng-deep .ui-table {
+    position: inherit!important;
+  }

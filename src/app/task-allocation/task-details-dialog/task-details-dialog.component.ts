@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng/api';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { DatePipe } from '@angular/common';
 import { NodeService } from 'src/app/node.service';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -32,7 +32,7 @@ export class TaskDetailsDialogComponent implements OnInit {
     public ref: DynamicDialogRef,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
-    private spServices: SharepointoperationService,
+    private spServices: SPOperationService,
     private datePipe: DatePipe,
     public sharedObject: GlobalService,
     public messageService: MessageService,

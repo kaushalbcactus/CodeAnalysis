@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, AfterViewInit, ViewChildren, QueryList, } from '@angular/core';
 import { MenuItem, DialogService, MessageService } from 'primeng/api';
-import { SharepointoperationService } from '../Services/sharepoint-operation.service';
+import { SPOperationService } from '../Services/spoperation.service';
 import { GlobalService } from '../Services/global.service';
 import { ConstantsService } from '../Services/constants.service';
 import { MyDashboardConstantsService } from './services/my-dashboard-constants.service';
@@ -29,7 +29,7 @@ export class MyDashboardComponent implements OnInit {
 
   constructor(private constants: ConstantsService,
     public sharedObject: GlobalService,
-    private spServices: SharepointoperationService,
+    private spServices: SPOperationService,
     private myDashboardConstantsService: MyDashboardConstantsService,
     private router: Router,
     public dialogService: DialogService,
@@ -63,7 +63,10 @@ export class MyDashboardComponent implements OnInit {
   }
 
   async GetCurrentUser() {
-    const currentUser = await this.spServices.getUserInfo(this.sharedObject.sharePointPageObject.userId.toString());
+    var currentUser = await this.spServices.getUserInfo1(this.sharedObject.sharePointPageObject.userId.toString());
+
+
+    //currentUser = JSON.parse(currentUser);
     this.sharedObject.currentUser.id = currentUser.Id;
     this.sharedObject.currentUser.email = currentUser.Email;
     this.sharedObject.currentUser.title = currentUser.Title;

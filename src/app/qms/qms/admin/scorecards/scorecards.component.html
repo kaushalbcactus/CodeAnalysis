@@ -1,0 +1,74 @@
+<div class="filter-wrapper">
+    <div>
+        <div class="taskType">
+            <span>Task type </span>
+            <p-dropdown #taskTypeFilter [options]="filterObj.taskType" class="filterBy" filter="true"
+                resetFilterOnHide="true" optionLabel='type' placeholder='Select Task Type'
+                (onChange)='filterResource()' [(ngModel)]="filterObj.selectedTaskType">
+            </p-dropdown>
+        </div>
+    </div>
+    <div class="resource">
+        <div>
+            <p-multiSelect #resourcesFilter [style]="{'width':'100%'}" [options]="filterObj.filteredResources"
+                defaultLabel="Resources" [(ngModel)]="filterObj.selectedResource" (onClearClick)="getDetail(filterObj)" (onChange)='getDetail(filterObj)'
+                optionLabel='UserName.Title' (keydown.enter)="$event.preventDefault()" filter="true"
+                resetFilterOnHide="true"></p-multiSelect>
+        </div>
+    </div>
+    <div *ngIf="filterObj.selectedResource && filterObj.selectedResource.length > 0">
+        <div class="daterange">
+            <p-calendar [(ngModel)]="value" placeholder="Filter by date range" selectionMode="range"
+                [readonlyInput]="true" dateFormat="M d, yy" showIcon='true' showButtonBar="true"
+                (onClose)="filterByDateRange($event)"></p-calendar>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+
+
+<p-treeTable [value]="resourceRows" [columns]="resourceColumns">
+    <ng-template pTemplate="header" let-columns>
+        <tr [ttRow]="rowNode">
+            <th *ngFor="let col of columns" [hidden]="!col.visibility">
+                {{col.header}}
+            </th>
+            <th>Average Rating</th>
+            <th></th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+        <tr>
+            <td *ngFor="let col of columns; let i = index" [hidden]="!col.visibility"
+                (click)="getResourceDetail(rowData, rowNode)">
+                <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
+                {{rowData[col.field]}}
+            </td>
+            <td class="hoverClick" title="View internal feedback"
+                (click)="getResourceScorecard(userFeedbackRef, rowData)">
+                <div class="cd-rating">
+                    <span id="ratenow1">{{rowData['averageRating']}}</span>
+                    <div class="star-white fa-star fa"></div>
+                </div>
+                <small>based on {{rowData['ratingCount']}} ratings</small>
+            </td>
+            <td class="commentsTextArea">
+             
+            </td>
+        </tr>
+        <tr [hidden]="rowData['hideInnerTable']">
+            <td colspan=3>
+                <div id="feedbackTable">
+                <app-feedback-byme #userFeedbackRef (feedbackData)="getFeedbackData($event,rowData)"></app-feedback-byme>
+                </div>
+            </td>
+    </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns="columns">
+        <tr>
+            <td [attr.colspan]="3">
+                Please select Task Type and Resource
+            </td>
+        </tr>
+      </ng-template>
+</p-treeTable>

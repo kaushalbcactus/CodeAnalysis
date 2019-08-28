@@ -4,13 +4,12 @@ import { debounceTime } from 'rxjs/operators';
 import { GlobalService } from 'src/app/Services/global.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { DatePipe } from '@angular/common';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
-import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router } from '@angular/router';
 
 declare var $;
@@ -74,7 +73,7 @@ export class ClientReviewComponent implements OnInit {
     public globalObject: GlobalService,
     private commonService: CommonService,
     private Constant: ConstantsService,
-    private spServices: SharepointoperationService,
+    private spServices: SPOperationService,
     private datePipe: DatePipe,
     public pmObject: PMObjectService,
     private pmConstant: PmconstantService,

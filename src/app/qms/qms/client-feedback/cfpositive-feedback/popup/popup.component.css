@@ -1,0 +1,34 @@
+::ng-deep .tagPopup {
+  float: left;
+}
+::ng-deep .tagPopup {
+  width: 100%
+}
+::ng-deep .ellipsis {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+::ng-deep .savebtn{background-color: #B71C1C!important;padding: 6px 30px!important;color: #fff!important;border-radius: 4px!important;border: none!important;font-size: 16px!important;margin: 0px 6px!important;cursor: pointer!important}
+::ng-deep .savebtn:hover{background-color: #D92121!important;transition: 0.3s ease-in!important}
+::ng-deep .cancelbtn{background-color: #FAFAFA!important;padding: 6px 30px!important;color: #222222!important;border-radius: 4px!important;border: none!important;font-size: 16px!important;margin: 0px 6px!important;cursor: pointer!important}
+::ng-deep .cancelbtn:hover{background-color: #D7D7D7;transition: 0.3s ease-in}
+::ng-deep .full-width {
+  width:100%;
+}
+
+::ng-deep .tagPopup .ui-dropdown {
+  width: 40%;
+  float: left;
+  min-width: 10em!important;
+}
+::ng-deep .tagPopup .mandatory{
+  padding-left: 2%;
+  color: red;
+}
+
+::ng-deep .tagGroup{
+  padding-bottom: 20px;
+}

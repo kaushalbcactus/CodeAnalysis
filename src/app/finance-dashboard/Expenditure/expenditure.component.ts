@@ -1,7 +1,7 @@
 import { Component, OnInit, ComponentFactoryResolver, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { SharepointoperationService } from '../../Services/sharepoint-operation.service';
+import { SPOperationService } from '../../Services/spoperation.service';
 import { ConstantsService } from '../../Services/constants.service';
 import { GlobalService } from '../../Services/global.service';
 import { FdConstantsService } from '../fdServices/fd-constants.service';
@@ -10,7 +10,6 @@ import { FDDataShareService } from '../fdServices/fd-shareData.service';
 import { NodeService } from 'src/app/node.service';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { Subject, Observable, timer, Subscription } from 'rxjs';
 
@@ -67,7 +66,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     constructor(
         private messageService: MessageService,
         private fb: FormBuilder,
-        private spServices: SharepointoperationService,
+        private spServices: SPOperationService,
         private constantService: ConstantsService,
         private globalService: GlobalService,
         public fdConstantsService: FdConstantsService,
@@ -76,7 +75,6 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         private nodeService: NodeService,
         private datePipe: DatePipe,
         private router: Router,
-        private spOperationsService: SpOperationsService,
         private commonService: CommonService,
     ) { }
 
@@ -426,11 +424,11 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         }
 
         let obj = [{
-            url: this.spOperationsService.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
+            url: this.spServices.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
             type: 'GET',
             listName: this.constantService.listNames.MailContent.name
         }]
-        const res = await this.spOperationsService.executeBatch(obj);
+        const res = await this.spServices.executeBatch(obj);
         this.mailContentRes = res;
         console.log('Mail Content res ', this.mailContentRes);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
@@ -822,7 +820,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     }
 
     async uploadFileData() {
-        const res = await this.spOperationsService.uploadFile(this.filePathUrl, this.fileReader.result);
+        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
         console.log('selected File uploaded .', res.ServerRelativeUrl);
         this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
         console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
@@ -858,7 +856,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     }
 
     async uploadCAFileData() {
-        const res = await this.spOperationsService.uploadFile(this.cafilePathUrl, this.cafileReader.result);
+        const res = await this.spServices.uploadFile(this.cafilePathUrl, this.cafileReader.result);
         console.log('selected File uploaded .', res.ServerRelativeUrl);
         this.caFileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
         console.log('this.caFileUploadedUrl ', this.caFileUploadedUrl);
@@ -888,7 +886,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
         this.batchContents.push('--changeset_' + changeSetId + '--');
         const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
+        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
         batchBodyContent.push('--batch_' + batchGuid + '--');
         const sBatchData = batchBodyContent.join('\r\n');
         const res = await this.spServices.getFDData(batchGuid, sBatchData);
@@ -1026,7 +1024,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         var ccUser = [];
         ccUser.push(this.currentUserInfoData.Email);
         let tos = this.getTosList();
-        this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
+        this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.reFetchData();
     }
 

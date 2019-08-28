@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
 // import {Subject} from 'rxjs';
 // import {debounceTime} from 'rxjs/operators';
@@ -24,7 +24,7 @@ export class ResourceSectionComponent implements OnInit {
   private projectInformationList = this.constants.listNames.ProjectInformation.name;
   public sharedTaskAllocateObj = this.sharedObject.oTaskAllocation;
   constructor(
-    private spService: SharepointoperationService,
+    private spService: SPOperationService,
     private commonService: CommonService,
     private peoplePickerService: SpPeoplePickerService,
     private constants: ConstantsService,

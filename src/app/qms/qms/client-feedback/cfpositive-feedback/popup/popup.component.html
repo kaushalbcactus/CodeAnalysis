@@ -1,0 +1,65 @@
+<!-- Modal Dialog for Positive feedback-->
+
+<p-dialog #pfPopupContent [modal]="true" [(visible)]="display" [closable]="false" [style]="{width: '664px',heigth: '800px'}" positionTop="35">
+    <p-header>
+        <h4>{{pf.actionClickedTitle}}</h4>
+    </p-header>
+        <div class="popupLoader" [hidden]="hidePopupLoader">
+            <div id="mainLoader"></div>
+            <div id="mainLoaderText">PLEASE WAIT...UPDATING PF</div>
+        </div>
+        <div class="tablePopupLoader" [hidden]='hidePopupTable'>
+           <!--Tag CD to Client / Project popup-->
+           <table class="tagPopup full-width" [hidden]="pf.actionClicked !=='tag'">
+              <tr>
+                <td class="tagGroup">
+                  <p-dropdown [options]="pf.tagGroups"
+                    placeholder="Select Project / Client"
+                    filter="true" 
+                    resetFilterOnHide="true"
+                    (onChange)="getSelectedGroupItems()"
+                    [(ngModel)]="pf.selectedGroup"
+                    appendTo="body">
+                  </p-dropdown> <span class="mandatory" >*</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <p-dropdown [options]="pf.tagGroupItems"
+                    placeholder="Select Group Items"
+                    filter="true" 
+                    resetFilterOnHide="true"
+                    optionLabel="Title"
+                    [(ngModel)]="pf.selectedTaggedItem"
+                    appendTo="body">
+                  </p-dropdown><span class="mandatory" >*</span>
+                </td>
+              </tr>
+              <tr>
+          </table>
+          <!--Confirmation popup-->
+          <table class="confirmPopup full-width" *ngIf="pf.actionClicked ==='accept' || pf.actionClicked ==='reject'">
+            <tr>
+              <td *ngIf="pf.actionClicked ==='accept'">
+                  <p>Are you sure you want to accept positive feedback ?</p>
+              </td>
+              <td *ngIf="pf.actionClicked ==='reject'">
+                  <p>Are you sure you want to reject positive feedback ?</p>
+              </td>
+            </tr>
+        </table>
+        </div>
+    <p-footer>
+        <div [hidden]='hidePopupTable'>
+          <button type="button" class="btn btn-light button cancelbtn" (click)="close()">Cancel</button>
+    
+          <button type="button" id='tagBtn' class="btn btn-light button savebtn" (click)="tag()"
+              [disabled]="!pf.selectedTaggedItem" [hidden]= "pf.actionClicked !== 'tag'"> Submit </button>
+  
+            <button type="button" id='confirm' class="btn btn-light button savebtn" (click)="updatePF()" 
+              [hidden]= "pf.actionClicked !== 'accept' && pf.actionClicked !== 'reject'">Confirm</button>
+        </div>
+    </p-footer>
+</p-dialog>
+
+  

@@ -48,6 +48,6 @@ Thumbs.db
 New folder/package.json
 New folder/package-lock.json
 
-
-# ignore the file literally named foo[01].txt
-# /src/app/app.component.ts
+#App ignore
+# git rm --cached  src/app/app.component.ts
+/src/app/app.component.ts

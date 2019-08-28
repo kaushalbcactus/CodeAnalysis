@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng/api';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { DatePipe } from '@angular/common';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -54,7 +54,7 @@ export class BlockTimeDialogComponent implements OnInit {
     public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
-    private spServices: SharepointoperationService,
+    private spServices: SPOperationService,
     private datePipe: DatePipe,
     public sharedObject: GlobalService) { }
 

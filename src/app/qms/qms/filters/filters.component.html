@@ -1,0 +1,48 @@
+<div class="filter-wrapper">
+  <div>
+      <div class="quater">
+          <span>Filter By </span>
+          <p-dropdown #filterby [options]="filterObj.filterBy"
+            class="filterBy"
+            filter="true" 
+            [resetFilterOnHide]="true"
+            optionLabel='type'
+            placeholder='Select filter'
+            (onChange)='filterByDrafts($event.value, filterYears, filterQuarters)'
+            [(ngModel)]="filterObj.filterSelectedValue">
+        </p-dropdown>
+      </div>
+  </div>
+  <div [hidden]="filterObj.hideYears">
+      <div class="filter-year" >
+         <span>Year </span>
+           <p-dropdown #filterYears [options]="filterObj.years"
+            filter="true" 
+            [resetFilterOnHide]="true"
+            optionLabel='value'
+            placeholder='Select Year'
+            (onChange)='filterByYear($event, filterQuarters)'
+            [(ngModel)]="filterObj.yearSelected">
+        </p-dropdown>
+       </div>
+  </div>
+  <div [hidden]="filterObj.hideQuarters">
+      <div class="quaterwrap" >
+          <span> Quarter </span>
+           <p-dropdown #filterQuarters [options]="filterObj.quarters"
+            filter="true" 
+            [resetFilterOnHide]="true"
+            placeholder='Select Quarter'
+            (onChange)='filterByQuarter($event.value)'
+            [(ngModel)]="filterObj.quarterSelected">
+        </p-dropdown>
+       </div>
+  </div>
+  <div [hidden]="filterObj.hideDateRange">
+      <div class="daterange" >
+          <!-- <span>Date range</span> -->
+           <p-calendar [(ngModel)]="value" placeholder="Filter by date range" selectionMode="range" [readonlyInput]="true" dateFormat="M d, yy" showIcon='true' showButtonBar="true" (onClose)="filterByDateRange($event)"></p-calendar>
+       </div>
+  </div>
+</div>
+

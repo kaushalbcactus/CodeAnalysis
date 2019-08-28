@@ -1,3 +1,4 @@
+
 import { NgModule } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -31,7 +32,9 @@ import { TreeTableModule, RatingModule } from 'primeng/primeng';
 import { NgGanttEditorModule } from 'ng-gantt';
 import { ProjectmanagementModule } from '../projectmanagement/projectmanagement.module';
 import { TaskAllocationModule } from '../task-allocation/task-allocation.module';
-import { FeedbackPopupComponent } from './feedback-popup/feedback-popup.component';
+import { QmsModule } from './../qms/qms.module';
+// import { FeedbackPopupComponent } from '../qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
+// import {QmsModule} from '../qms/qms.module';
 import { MyprojectsComponent } from './myprojects/myprojects.component';
 import { DisplayProjectsComponent } from './myprojects/display-projects/display-projects.component';
 import { TimelineModule } from '../timeline/timeline.module';
@@ -55,7 +58,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     BlockTimeDialogComponent,
     TimeBookingDialogComponent,
     ProjectDraftsComponent,
-    FeedbackPopupComponent,
     MyprojectsComponent,
     DisplayProjectsComponent],
   imports: [
@@ -77,10 +79,11 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NgxChartsModule,
     ProjectmanagementModule,
     TaskAllocationModule,
-    TimelineModule
+    TimelineModule,
+    QmsModule
   ],
 
-  providers: [ConfirmationService, DatePipe, DialogService, DynamicDialogConfig, DynamicDialogRef, FeedbackPopupComponent,  {
+  providers: [ConfirmationService, DatePipe, DialogService, DynamicDialogConfig, DynamicDialogRef,  {
     provide: PERFECT_SCROLLBAR_CONFIG,
     useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG
   }],
@@ -92,6 +95,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     PreviosNextTasksDialogComponent,
     BlockTimeDialogComponent,
     ProjectDraftsComponent,
-    FeedbackPopupComponent]
+    ]
 })
 export class MyDashboardModule { }

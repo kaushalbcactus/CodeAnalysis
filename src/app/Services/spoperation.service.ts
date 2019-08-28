@@ -3,21 +3,30 @@ import { GlobalService } from './global.service';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import * as JSZip from 'jszip';
 import * as FileSaver from 'file-saver';
+
+//For getDataByApi
+import { Http, Response, Headers, RequestOptions, ResponseContentType } from '@angular/http';
+import { throwError, Observable } from 'rxjs';
+import { ConstantsService } from './constants.service';
+import { map, catchError } from 'rxjs/operators';
+declare const $: any;
+
 @Injectable({
   providedIn: 'root'
 })
 export class SPOperationService {
   jsonHeader = 'application/json; odata=verbose';
+  headersOld = new Headers({ 'Content-Type': this.jsonHeader, Accept: this.jsonHeader });
   headers = { 'Content-Type': this.jsonHeader, Accept: this.jsonHeader };
+  options = new RequestOptions({ headers: this.headersOld });
   baseUrl: string;
   baseArchiveUrl: string;
   apiUrl: string;
   apiArchiveUrl: string;
   currentUser: string;
   login: string;
-  constructor(
-    private globalService: GlobalService,
-    private httpClient: HttpClient) { this.setBaseUrl(null); }
+  constructor(private http: Http, private globalService: GlobalService,
+              private httpClient: HttpClient, private constants: ConstantsService) { this.setBaseUrl(null); }
 
   setBaseUrl(webUrl?: string) {
     if (webUrl) {
@@ -68,7 +77,7 @@ export class SPOperationService {
   }
 
   // Send email
-  async sendMail(to: string, ffrom: string, subj: string, body: string, cc?) {
+  async sendMail(to: string, ffrom: string, subj: string, body: string, cc?: string) {
     const data = this.getEmailData(to, ffrom, subj, body, cc);
     const url = this.getEmailURL();
 
@@ -86,6 +95,26 @@ export class SPOperationService {
     const url = this.getUserURL(id);
     const res = await this.httpClient.get(url, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
       const error = err.error;
+      return error;
+    });
+    return this.parseRetSingle(res);
+  }
+
+
+  async getGroupInfo(groupName: string) {
+    const url = this.getGroupURL(groupName);
+    var res = await this.httpClient.get(url, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+      var error = err.error;
+      return error;
+    });
+    return this.parseRetSingle(res);
+  }
+
+  // Invoice Team
+  async getITGroupInfo(groupName: string) {
+    const url = this.getGroupURL(groupName);
+    var res = await this.httpClient.get(url, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+      var error = err.error;
       return error;
     });
     return this.parseRetSingle(res);
@@ -117,6 +146,25 @@ export class SPOperationService {
       return error;
     });
     return this.parseRetSingle(res);
+  }
+
+  async executeJS(url, data) {
+    $.ajax({
+      headers: {
+        "accept": "application/json;odata=verbose",
+      },
+      contentType: "application/json;charset=utf-8",
+      url: url,
+      type: "POST",
+      data: JSON.stringify(data),
+      async: false,
+      success: function (data) {
+        console.log(data);
+      },
+      error: function (error) {
+        console.log(error);
+      }
+    });
   }
 
   async copyFiles(sourceUrlArr: Array<string>, destinationUrlArr: Array<string>) {
@@ -186,6 +234,10 @@ export class SPOperationService {
 
   getUserURL(id: any) {
     return this.baseUrl + '/_api/web/getUserById(' + id + ')?$expand=Groups';
+  }
+
+  getGroupURL(groupName: any) {
+    return this.baseUrl + '/_api/web/sitegroups/getByName(\'' + groupName + '\')/Users';
   }
 
   getItemURL(listName: string, id: any, options?: any) {
@@ -278,7 +330,7 @@ export class SPOperationService {
   }
 
   /// UPDATE item - SharePoint list name, item ID number, and JS object to stringify for save
-  async updateItem(listName: string, id: any, jsonBody: any, type: string) {
+  async updateItem(listName: string, id: any, jsonBody: any, type?: string) {
     // Append HTTP header MERGE for UPDATE scenario
     const localOptions = this.getHeaders(true, false);
     localOptions['X-HTTP-Method'] = 'MERGE';
@@ -597,10 +649,697 @@ export class SPOperationService {
       const b: any = new Blob([fileData], { type: '' + fileData.type + '' });
       zip.file(element.substring(element.lastIndexOf('/') + 1), b);
     }
-    zip.generateAsync({ type: 'blob' }).then( (content) => {
+    zip.generateAsync({ type: 'blob' }).then((content) => {
       if (content) {
         FileSaver.saveAs(content, name);
       }
     });
+  }
+
+
+  // added function From old sharepoint service
+
+  fetchTaskDocumentsByRestAPI(url, prevTask) {
+    let arrPrevTasks = [];
+    if (prevTask === null || prevTask === undefined) //changed on 9.8.17
+      arrPrevTasks = [];
+    else {
+      if (prevTask.indexOf(";#") > -1) {
+        arrPrevTasks = prevTask.split(";#");
+      } else {
+        arrPrevTasks.push(prevTask)
+      }
+    }
+    let tempObject: any = {};
+    let tempArray = [];
+    let arrUsers = [];
+    $.ajax({
+      url: this.globalService.sharePointPageObject.webAbsoluteUrl + url,
+      type: "GET",
+      async: false,
+      headers: {
+        "Accept": "application/json;odata=verbose",
+      },
+      success: function (data) {
+        if (data.d.results.length > 0) {
+          for (var index in data.d.results) {
+            tempObject = data.d.results[index];
+            // var user;
+            // var arrUser = arrUsers.filter(function (obj) {
+            //     return obj.Id === tempObject.ListItemAllFields.EditorId;
+            // });
+            // if(arrUser.length){
+            //     user = arrUser[0];
+            // }
+            // else{
+            //     user = this.getUser(tempObject.ListItemAllFields.EditorId);
+            //     arrUsers.push(user);
+            // }                           
+            tempObject.fileUrl = tempObject.ServerRelativeUrl;
+            tempObject.status = tempObject.ListItemAllFields.Status != null ? tempObject.ListItemAllFields.Status : "";
+            tempObject.taskName = tempObject.ListItemAllFields.TaskName != null ? tempObject.ListItemAllFields.TaskName : "";
+            if ((tempObject.status.split(" ").splice(-1)[0] == "Complete" || tempObject.status.split(" ").splice(-1)[0] == "Completed") && arrPrevTasks.indexOf(tempObject.taskName) > -1)
+              tempObject.visiblePrevTaskDoc = true;
+            else
+              tempObject.visiblePrevTaskDoc = false;
+            tempObject.modified = tempObject.ListItemAllFields.Modified;
+            tempObject.isFileMarkedAsFinal = tempObject.status.split(" ").splice(-1)[0] === "Complete" ? true : false; //changed on 8.8.17
+            //tempObject.modifiedUserName = user.name!=null?user.name:"";
+            tempObject.modifiedUserID = tempObject.ListItemAllFields.EditorId;
+            tempObject.fileName = tempObject.Name;
+            tempArray.push(tempObject);
+          }
+        }
+      },
+      error: function (error) {
+
+      }
+    });
+    if (tempArray.length > 0)
+      tempArray = tempArray.sort(function (a, b) {
+        return a.modified < b.modified ? -1 : 1;
+      });
+    return tempArray;
+  }
+
+  async getDataByApi(batchGuid, batchBody) {
+
+
+    batchBody.push('--batch_' + batchGuid + '--');
+    const userBatchBody = batchBody.join('\r\n');
+    const arrResults = [];
+
+
+    let headers = new Headers();
+    headers.append('Content-Type', 'multipart/mixed; boundary="batch_' + batchGuid + '"');
+    headers.append('X-RequestDigest', $('#__REQUESTDIGEST').val());
+    let options = new RequestOptions({ headers: headers });
+
+    let apiURL = this.globalService.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
+    const res = await this.http.post(apiURL, userBatchBody, options).toPromise();
+
+
+    if (res["_body"]) {
+      const responseInLines = res["_body"].split('\r\n');
+      //   console.log(responseInLines);
+      for (let currentLine = 0; currentLine < responseInLines.length; currentLine++) {
+        try {
+          const tryParseJson = JSON.parse(responseInLines[currentLine]);
+          arrResults.push(tryParseJson.d.hasOwnProperty('results') ? tryParseJson.d.results : tryParseJson.d);
+        } catch (e) {
+        }
+      }
+
+    }
+    return arrResults;
+  }
+
+  executeBatchRequest1(batchGuid, sBatchData) {
+    const arrResults = [];
+    const response = this.executeBatchPostRequestByRestAPI(batchGuid, sBatchData);
+    const responseInLines = response.split('\n');
+    for (let currentLine = 0; currentLine < responseInLines.length; currentLine++) {
+      try {
+        const tryParseJson = JSON.parse(responseInLines[currentLine]);
+        arrResults.push(tryParseJson.d.results ? tryParseJson.d.results : tryParseJson.d);
+      } catch (e) {
+      }
+    }
+    return arrResults;
+  }
+
+  fetchListItemsByRestAPI(url?: string, objectArray?: [{ key: string, value: string }]) {
+    let tempObject = {};
+    const tempArray = [];
+    try {
+      $.ajax({
+        url: this.globalService.sharePointPageObject.webAbsoluteUrl + url,
+        type: 'GET',
+        async: false,
+        headers: {
+          'Accept': 'application/json;odata=verbose',
+        },
+        success: function (data) {
+          if (data.d && !data.d.results) {
+            tempArray.push(true);
+          } else if (data.d.results.length > 0) {
+            for (const index in data.d.results) {
+              if (data.d.results.hasOwnProperty(index)) {
+                tempObject = data.d.results[index];
+                for (const obj in objectArray) {
+                  if (objectArray.hasOwnProperty(obj)) {
+                    tempObject[objectArray[obj].key] = objectArray[obj].value != null ? objectArray[obj].value : '';
+                  }
+                }
+                tempArray.push(tempObject);
+              }
+            }
+          }
+        },
+        error: function (error) {
+          return false;
+        }
+      });
+    } catch (Ex) {
+    }
+    return tempArray;
+  }
+
+  executeBatchPostRequestByRestAPI(batchGuid, batchBody) {
+    // this.getData(batchGuid, batchBody);
+    let resp = '';
+    // create the request endpoint
+    const endpoint = this.globalService.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
+
+    // batches need a specific header
+    const batchRequestHeader = {
+      'X-RequestDigest': $('#__REQUESTDIGEST').val(),
+      'Content-Type': 'multipart/mixed; boundary="batch_' + batchGuid + '"'
+    };
+
+    // create request
+    $.ajax({
+      url: endpoint,
+      type: 'POST',
+      async: false,
+      headers: batchRequestHeader,
+      data: batchBody,
+      // tslint:disable
+      success: function (response) {
+        resp = response;
+      },
+      fail: function (error) {
+      }
+      // tslint:enable
+    });
+    return resp;
+  }
+
+  async getFDData(batchGuid, batchBody): Promise<any> {
+    // const arrResults = [];
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'multipart/mixed; boundary="batch_' + batchGuid + '"',
+        "Accept": "application/json; odata=verbose",
+        'X-RequestDigest': $("#__REQUESTDIGEST").val() ? $("#__REQUESTDIGEST").val() : ''
+      })
+    };
+
+    // create the request endpoint
+    const endpoint = this.globalService.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
+    const res = await this.httpClient.post(endpoint, batchBody, { ...httpOptions, responseType: 'text' })
+      .toPromise().catch((err: HttpErrorResponse) => {
+        var error = err.error;
+        return error;
+      });
+
+    const arrResults = this.parseBatchRet(res);
+    return arrResults;
+  }
+
+  getChangeSetBody1(changeSetId, endPoint, data, isPostMethod) {
+    const batchContents = new Array();
+    batchContents.push('--changeset_' + changeSetId);
+    batchContents.push('Content-Type: application/http');
+    batchContents.push('Content-Transfer-Encoding: binary');
+    batchContents.push('');
+    batchContents.push(isPostMethod ? 'POST ' + endPoint + ' HTTP/1.1' : 'PATCH ' + endPoint + ' HTTP/1.1');
+    batchContents.push('Content-Type: application/json;odata=verbose');
+    batchContents.push('Accept: application/json;odata=verbose');
+    if (data !== '{}') {
+      batchContents.push('If-Match: *');
+      batchContents.push('');
+      batchContents.push(data);
+    }
+    batchContents.push('');
+    return batchContents;
+  }
+
+  getCurrentUser(): Promise<any> {
+    const url = this.baseUrl + '/_api/web/currentuser?$expand=Groups';
+    // tslint:disable-next-line:only-arrow-functions
+    return this.http.get(url, this.options).toPromise().then((res: Response) => {
+      return res.json();
+    }).catch(this.handleError);
+  }
+
+  private handleError(error: Response | any) {
+    // Generic from https://angular.io/docs/ts/latest/guide/server-communication.html
+    let errMsg: string;
+    if (error instanceof Response) {
+      const body = error.json() || '';
+      const err = body.error || JSON.stringify(body);
+      errMsg = `${error.status || ''} - ${error.statusText || ''} ${err}`;
+    } else {
+      errMsg = error.message ? error.message : error.toString();
+    }
+    console.error(errMsg);
+    return throwError(errMsg);
+  }
+
+  getUserInfo1(id: string): Promise<any> {
+    const url = this.baseUrl + '/_api/web/getUserById(' + id + ')';
+    // tslint:disable-next-line:only-arrow-functions
+    return this.http.get(url).toPromise().then((res: Response) => {
+      return res.json();
+    }).catch(this.handleError);
+  }
+
+  update(listName: string, id: string, jsonBody: any, type: string): Promise<any> {
+    // Append HTTP header MERGE for UPDATE scenario
+    const localOptions: RequestOptions = this.options;
+    const isHeaderPresent = localOptions.headers.has('X-HTTP-Method');
+    if (!isHeaderPresent) {
+      localOptions.headers.append('X-HTTP-Method', 'MERGE');
+      localOptions.headers.append('If-Match', '*');
+      localOptions.headers.append('X-RequestDigest', $('#__REQUESTDIGEST').val());
+    }
+    // Append metadata
+    if (!jsonBody.__metadata) {
+      jsonBody.__metadata = {
+        type: type
+      };
+    }
+    const data = JSON.stringify(jsonBody);
+    const url = this.apiUrl.replace('{0}', listName) + '(' + id + ')';
+    return this.http.post(url, data, localOptions).toPromise().then(function (res: Response) {
+      return res.json();
+    }).catch(this.handleError);
+  }
+
+  executePostPatchRequest(arrayOfData) {
+    const batchGuid = this.generateUUID();
+    const batchContents = new Array();
+    const changeSetId = this.generateUUID();
+    arrayOfData.forEach(element => {
+      this.getChangeSetBodySC(batchContents, changeSetId, element.endPoint, JSON.stringify(element.data), element.isPostMethod);
+    });
+    batchContents.push('--changeset_' + changeSetId + '--');
+    const batchBody = batchContents.join('\r\n');
+    const batchBodyContent = this.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+    batchBodyContent.push('--batch_' + batchGuid + '--');
+    const sBatchData = batchBodyContent.join('\r\n');
+    const arrResults = this.executeBatchRequest1(batchGuid, sBatchData);
+    return arrResults;
+  }
+
+  // moveListItem(item, listName) {
+  //   const currentYear = new Date().getFullYear();
+  //   const currentMonth = this.getMonthName(new Date());
+  //   const fileUrl =  this.globalService.currentUser.serverRelativeUrl + '/Lists/' + listName + '/' + item.ID + '_.000';
+  //   const moveFileUrl =  this.globalService.currentUser.serverRelativeUrl + '/Lists/' + listName + '/' + currentYear + '/' +
+  //                      currentMonth + '/' + item.ID + '_.000';
+  //   const moveItemEndpoint = this.constants.feedbackPopupComponent.moveFileUrl.replace('{{FileUrl}}', fileUrl)
+  //                                                                            .replace('{{NewFileUrl}}', moveFileUrl);
+  //   return ({'endPoint': moveItemEndpoint, 'data': {}, 'isPostMethod': true});
+  // }
+
+  getChangeSetBodySC(batchContents, changeSetId, endPoint, data, createFolder) {
+    batchContents.push('--changeset_' + changeSetId);
+    batchContents.push('Content-Type: application/http');
+    batchContents.push('Content-Transfer-Encoding: binary');
+    batchContents.push('');
+    batchContents.push(createFolder ? 'POST ' + endPoint + ' HTTP/1.1' : 'PATCH ' + endPoint + ' HTTP/1.1');
+    batchContents.push('Content-Type: application/json;odata=verbose');
+    batchContents.push('Accept: application/json;odata=verbose');
+    batchContents.push('If-Match: *');
+    batchContents.push('');
+    batchContents.push(data);
+    batchContents.push('');
+  }
+
+  getMonthName(date: Date): string {
+    const d = new Date(date);
+    const month = new Array();
+    month[0] = 'January';
+    month[1] = 'February';
+    month[2] = 'March';
+    month[3] = 'April';
+    month[4] = 'May';
+    month[5] = 'June';
+    month[6] = 'July';
+    month[7] = 'August';
+    month[8] = 'September';
+    month[9] = 'October';
+    month[10] = 'November';
+    month[11] = 'December';
+    return month[d.getMonth()];
+  }
+
+  async create(listName: string, jsonBody: any, type: string): Promise<any> {
+    const url = this.apiUrl.replace('{0}', listName);
+    // append metadata 
+    if (!jsonBody.__metadata) {
+      jsonBody.__metadata = {
+        type: type
+      };
+    }
+    const data = JSON.stringify(jsonBody);
+    let headers = new Headers();
+    headers.append('Content-Type', this.jsonHeader);
+    headers.append('Accept', this.jsonHeader);
+    if ($('#__REQUESTDIGEST').val()) {
+      headers.append('X-RequestDigest', $('#__REQUESTDIGEST').val());
+    }
+    const options = new RequestOptions({ headers: headers });
+    return await this.http.post(url, data, options).toPromise().then(function (res: Response) {
+      return res.json();
+    }).catch(this.handleError);
+  }
+
+  async createAndMove(listName: string, jsonBody: any, folderUrl): Promise<any> {
+    const url = this.apiUrl.replace('{0}', listName);
+    // append metadata
+    debugger;
+    const data = JSON.stringify(jsonBody);
+    let headers = new Headers();
+    headers.append('Content-Type', this.jsonHeader);
+    headers.append('Accept', this.jsonHeader);
+    if ($('#__REQUESTDIGEST').val()) {
+      headers.append('X-RequestDigest', $('#__REQUESTDIGEST').val());
+    }
+
+    const options = new RequestOptions({ headers: headers });
+    var response = await this.http.post(url, data, options).toPromise().then(function (res: Response) {
+      return res.json();
+    }).catch(this.handleError);
+
+    if (response) {
+      const urlobj = {
+        select: 'FileDirRef,FileRef'
+      }
+
+      var urlRef = this.getReadURLWithId(this.constants.listNames.Schedules.name, response.d.ID, urlobj);
+      var currentRef: any = await this.http.get(urlRef, options).toPromise().then(function (res: Response) {
+        return res.json();
+      }).catch(this.handleError);
+      if (currentRef) {
+        var fileUrl = currentRef.d.FileRef;
+        var fileDirRef = currentRef.d.FileDirRef;
+        var moveFileUrl = fileUrl.replace(fileDirRef, folderUrl);
+        var urlMove = this.baseUrl + "/_api/web/getfilebyserverrelativeurl('" + fileUrl + "')/moveto(newurl='" + moveFileUrl + "',flags=1)";
+        await this.http.post(urlMove, null, options).toPromise().then(function (res: Response) {
+          return res.json();
+        }).catch(this.handleError);
+      }
+    }
+  }
+
+  getReadURLWithId(listName: string, id: string, options?: any) {
+    let url = this.apiUrl.replace('{0}', listName) + '(' + id + ')';
+    url = this.readBuilder(url, options);
+    return url;
+  }
+
+  read(listName: string, options?: any): Promise<any> {
+    // Build URL syntax
+    // https://msdn.microsoft.com/en-us/library/office/fp142385.aspx#bk_support
+    let url = this.apiUrl.replace('{0}', listName);
+    url = this.readBuilder(url, options);
+    /*return this.http.get(url, this.options).toPromise().then(function (resp: Response) {
+      return resp.json();
+    });*/
+    /*return this.http.get(url,options).pipe(
+     map(
+       (resp:Response)=>{
+         return resp.json();
+       }
+     )
+   )*/
+    return this.http.get(url, this.options).toPromise().then(function (resp: Response) {
+      return resp.json().d.results;
+    });
+  }
+
+  executeGetBatchRequest(batchGuid, sBatchData) {
+    const arrResults = [];
+    const response = this.executeBatchPostRequestByRestAPI(batchGuid, sBatchData);
+    const responseInLines = response.split('\n');
+    // tslint:disable-next-line:prefer-for-of
+    for (let currentLine = 0; currentLine < responseInLines.length; currentLine++) {
+      try {
+        const tryParseJson = JSON.parse(responseInLines[currentLine]);
+        arrResults.push(tryParseJson.d.results);
+      } catch (e) {
+      }
+    }
+    return arrResults;
+  }
+
+  downloadMultipleFiles(fileArray, zipName) {
+    const zip = new JSZip();
+    let count = 0;
+    const name = zipName + ".zip";
+    fileArray.forEach(element => {
+      this.getFile1(element.url)
+        .subscribe(fileData => {
+          let b: any = new Blob([fileData], { type: '' + fileData.type + '' });
+          zip.file(element.fileName, b);
+          count++;
+          if (count == fileArray.length) {
+            zip.generateAsync({ type: 'blob' }).then(function (content) {
+              FileSaver.saveAs(content, name);
+            });
+          }
+        })
+    });
+  }
+
+  public getFile1(path: string): Observable<any> {
+    let options = new RequestOptions({ responseType: ResponseContentType.Blob });
+    return this.http.get(path, options).pipe(
+      map(
+        (resp: Response) => {
+          return resp.json();
+        }
+      )
+    )
+  }
+
+  copyFiless(sourceUrlArr: Array<string>, destinationUrlArr: Array<string>) {
+    for (var index in sourceUrlArr) {
+      const sourceUrl = sourceUrlArr[index];
+      const destinationUrl = destinationUrlArr[index];
+      var oUrl = this.globalService.sharePointPageObject.webAbsoluteUrl + '/_api/web/getfilebyserverrelativeurl(\'' + sourceUrl + '\')/copyto(strnewurl=\'' + destinationUrl + '\',boverwrite=true)';
+      $.ajax({
+        url: oUrl,
+        async: false,
+        type: 'POST',
+        headers: {
+          // tslint:disable-next-line:quotemark
+          'Accept': "application/json; odata=verbose",
+          "X-RequestDigest": $("#__REQUESTDIGEST").val()
+        },
+        success: function (data) {
+          console.log(data);
+        },
+        error: function (data) {
+          console.log(data);
+        }
+      });
+    }
+  }
+
+  apiReqRes: any = [];
+  getData(batchGuid, batchBody) {
+    const arrResults = [];
+
+    // batches need a specific header
+    // let headers = new Headers();
+    // headers.append('Content-Type', 'multipart/mixed; boundary="batch_' + batchGuid + '"');
+    // headers.append('X-RequestDigest', $('#__REQUESTDIGEST').val());
+    // let options = new RequestOptions({ headers: headers });
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'multipart/mixed; boundary="batch_' + batchGuid + '"',
+        "Accept": "application/json; odata=verbose",
+        'X-RequestDigest': $("#__REQUESTDIGEST").val() ? $("#__REQUESTDIGEST").val() : ''
+      })
+    };
+
+    // create the request endpoint
+
+    const endpoint = this.globalService.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
+    return this.httpClient.post(endpoint, batchBody, { ...httpOptions, responseType: 'text' }).
+      pipe(
+        map((res) => {
+          if (res) {
+            this.apiReqRes = res;
+            // const arrResults = [];
+            const responseInLines = this.apiReqRes.split('\n');
+            for (let currentLine = 0; currentLine < responseInLines.length; currentLine++) {
+              if (this.IsJsonString(responseInLines[currentLine])) {
+                const tryParseJson = JSON.parse(responseInLines[currentLine]);
+                arrResults.push(tryParseJson.d.results);
+              }
+            }
+            return arrResults;
+          }
+        }),
+        catchError((err, caught) => {
+          console.log('Error ', err)
+          return err;
+        })
+      );
+  }
+
+  IsJsonString(str) {
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
+  updateListItemRestApi(sListName, arrProperties, sID, sType, bAsync, onSuccess, oError) {
+    const oBj = {
+      __metadata: {
+        type: sType
+      }
+    };
+    for (const index in arrProperties) {
+      if (arrProperties.hasOwnProperty(index)) {
+        const oVal = arrProperties[index]['value'];
+        if ($.isArray(oVal)) {
+          oBj[arrProperties[index]['key']] = { results: oVal };
+        } else {
+          oBj[arrProperties[index]['key']] = oVal;
+        }
+      }
+    }
+    $.ajax({
+      // tslint:disable
+      url: this.baseUrl + "/_api/web/lists/GetByTitle('" + sListName + "')/items(" + sID + ")", // list item ID
+      // tslint:enable
+      type: 'POST',
+      data: JSON.stringify(oBj),
+      async: bAsync ? true : false,
+      headers: {
+        'Accept': 'application/json;odata=verbose',
+        'Content-Type': 'application/json;odata=verbose',
+        'X-RequestDigest': $('#__REQUESTDIGEST').val(),
+        'IF-MATCH': '*',
+        'X-HTTP-Method': 'MERGE'
+      },
+      success: function (data, status, xhr) {
+        onSuccess();
+      },
+      error: function (xhr, status, error) {
+        oError();
+      }
+    });
+  }
+
+  getChangeSetBodyMove(batchContents, changeSetId, endPoint) {
+    batchContents.push('--changeset_' + changeSetId);
+    batchContents.push('Content-Type: application/http');
+    batchContents.push('Content-Transfer-Encoding: binary');
+    batchContents.push('');
+    batchContents.push('POST ' + endPoint + ' HTTP/1.1');
+    batchContents.push('Content-Type: application/json;odata=verbose');
+    batchContents.push('Accept: application/json;odata=verbose');
+    batchContents.push('');
+  }
+
+  triggerMail(fromEmail, templateName, objEmailBody, mailSubject, arrayTo, errorDetail) {
+    const mailContent = this.constants.listNames.MailContent.name;
+    //tslint:disable
+    const url = "/_api/web/lists/GetByTitle('" + mailContent + "')/items?$select=Content&$filter=Title eq '" + templateName + "'";
+    // tslint:enable
+    const body = this.fetchListItemsByRestAPI(url);
+    let mailBody = body[0].Content;
+    for (const data of objEmailBody) {
+      mailBody = mailBody.replace(RegExp(data.key, 'gi'), data.value);
+    }
+    const cc = [];
+    //  cc = [fromEmail];
+    this.sendEmail(fromEmail, arrayTo, mailBody, mailSubject, errorDetail, cc);
+  }
+
+  
+  getBatchBodyPost1(batchBody, batchGuid, changeSetId) {
+    const batchContents = new Array();
+    batchContents.push('--batch_' + batchGuid);
+    batchContents.push('Content-Type: multipart/mixed; boundary="changeset_' + changeSetId + '"');
+    batchContents.push('Content-Length: ' + batchBody.length);
+    batchContents.push('Content-Transfer-Encoding: binary');
+    batchContents.push('');
+    batchContents.push(batchBody);
+    batchContents.push('');
+    return batchContents;
+  }
+
+  sendEmail(from, to, body, subject, errorDetail, cc) {
+    // Get the relative url of the site
+    //   const listName = this.constants.listNames.EmailDetails;
+    //   const updateInformationEmail = [];
+    //   updateInformationEmail.push({'key': 'Title', 'value': 'Entered send mail function'});
+    //   updateInformationEmail.push({'key': 'MoreDetails', 'value': 'Subject:' + subject + '\nFrom:' + from + '\nTo:' + to});
+    //   updateInformationEmail.push({'key': 'FileName', 'value': errorDetail});
+    //   try {
+    //       this.addListItem(listName, updateInformationEmail);
+    //   } catch (e) {
+    //   }
+    const siteurl = this.globalService.sharePointPageObject.serverRelativeUrl;
+    const urlTemplate = siteurl + '/_api/SP.Utilities.Utility.SendEmail';
+    const ccUser = cc != null || cc !== undefined ? cc : [];
+    if (ccUser.length > 0 && cc.indexOf(from) === -1) {
+      ccUser.push(from);
+    }
+    $.ajax({
+      contentType: 'application/json',
+      url: urlTemplate,
+      type: 'POST',
+      data: JSON.stringify({
+        'properties': {
+          '__metadata': {
+            'type': 'SP.Utilities.EmailProperties'
+          },
+          'From': from,
+          'To': {
+            'results': to
+          },
+          'CC': {
+            'results': ccUser
+          },
+          'Body': body,
+          'Subject': subject
+        }
+      }),
+      headers: {
+        'Accept': 'application/json;odata=verbose',
+        'content-type': 'application/json;odata=verbose',
+        'X-RequestDigest': $('#__REQUESTDIGEST').val()
+      },
+      success: function (data) {
+      },
+      error: function (err) {
+        const errorListName = 'ErrorLog';
+        const updateInformation = [];
+        updateInformation.push({ 'key': 'Title', 'value': 'Error While Sending Mail' });
+        updateInformation.push({ 'key': 'Description', 'value': JSON.stringify(err) });
+        updateInformation.push({
+          'key': 'MoreDetails', 'value': 'Subject:' + subject +
+            '\nFrom:' + from + '\nTo:' + to + '\nCC:' + ccUser
+        });
+        updateInformation.push({ 'key': 'FileName', 'value': errorDetail });
+        this.addListItem(errorListName, updateInformation);
+      }
+    });
+  }
+
+  triggerMail1(fromEmail, templateName, objEmailBody, mailSubject, arrayTo, errorDetail, cc) {
+    const mailContent = this.constants.listNames.MailContent.name;
+    //tslint:disable
+    const url = "/_api/web/lists/GetByTitle('" + mailContent + "')/items?$select=Content&$filter=Title eq '" + templateName + "'";
+    // tslint:enable
+    const body = this.fetchListItemsByRestAPI(url);
+    let mailBody = body[0].Content;
+    for (const data of objEmailBody) {
+      mailBody = mailBody.replace(RegExp(data.key, 'gi'), data.value);
+    }
+    // cc = [fromEmail];
+    this.sendEmail(fromEmail, arrayTo, mailBody, mailSubject, errorDetail, cc);
   }
 }

@@ -1,0 +1,9 @@
+<p-tabMenu [model]="navLinks">
+  <ng-template pTemplate="link" let-link let-i="index">
+      <div class="ui-menuitem-text">
+        {{link.label}}
+      </div>
+  </ng-template>
+</p-tabMenu>
+<router-outlet>
+</router-outlet>

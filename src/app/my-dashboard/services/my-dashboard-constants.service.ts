@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ConstantsService } from '../../Services/constants.service';
 import { GlobalService } from '../../Services/global.service';
 import { DatePipe } from '@angular/common';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { MessageService } from 'primeng/api';
 
 @Injectable({
@@ -24,7 +24,7 @@ export class MyDashboardConstantsService {
     private constants: ConstantsService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
-    private spServices: SharepointoperationService,
+    private spServices: SPOperationService,
     public messageService: MessageService, ) { }
 
   mydashboardComponent = {
@@ -674,7 +674,7 @@ export class MyDashboardConstantsService {
 
     batchContents.push('--changeset_' + changeSetId + '--');
     const batchBody = batchContents.join('\r\n');
-    const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
+    const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
     batchBodyContent.push('--batch_' + batchGuid + '--');
     const batchBodyContents = batchBodyContent.join('\r\n');
     const response = await this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
@@ -832,29 +832,29 @@ export class MyDashboardConstantsService {
     var documents = this.getTaskDocument(folderUrl, documentsUrl, currentTaskElement.PrevTasks);
     for (var document in documents) {
       if (documents[document].visiblePrevTaskDoc === true) {
-        var docObj = {
-          url: '',
-          fileName: ''
-        }
-        docObj.url = documents[document].fileUrl;
-        docObj.fileName = documents[document].fileName;
-        tempArray.push(docObj);
+        // var docObj = {
+        //   url: '',
+        //   fileName: ''
+        // }
+        // docObj.url = documents[document].fileUrl;
+        // docObj.fileName = documents[document].fileName;
+        tempArray.push(documents[document].fileUrl);
       }
     }
     var reviewDocuments = this.getTaskDocument(folderUrl, documentsUrl, '');
     for (var document in reviewDocuments) {
       if (reviewDocuments[document].taskName === currentTaskElement.TaskName && reviewDocuments[document].status.indexOf('Complete') > -1) {
-        var docObj = {
-          url: '',
-          fileName: ''
-        }
-        docObj.url = reviewDocuments[document].fileUrl;
-        docObj.fileName = reviewDocuments[document].fileName;
-        reviewDocArray.push(docObj);
+        // var docObj = {
+        //   url: '',
+        //   fileName: ''
+        // }
+        // docObj.url = reviewDocuments[document].fileUrl;
+        // docObj.fileName = reviewDocuments[document].fileName;
+        reviewDocArray.push(reviewDocuments[document].fileUrl);
       }
     }
     if (newValue.length == 1 && tempArray.length) {
-      var queryUrl = "/_api/web/lists/GetByTitle('Schedules')/items?$select=ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,Actual_x0020_End_x0020_Date,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail&$expand=AssignedTo/Title&$filter=" + previousTaskFilter;
+      var queryUrl = "/_api/web/lists/GetByTitle('Schedules')/items?$select=ID,Title,StartDate,DueDate, SubMilestones, Status,Task,NextTasks,PrevTasks,Milestone,Actual_x0020_End_x0020_Date,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail&$expand=AssignedTo/Title&$filter=" + previousTaskFilter;
       var previousItems = this.spServices.fetchListItemsByRestAPI(queryUrl);
       var obj = {
         documentURL: [],
@@ -869,10 +869,12 @@ export class MyDashboardConstantsService {
         },
         reviewTaskDocUrl: [],
         taskTitle: '',
-        taskID: 0
+        taskID: 0,
+        subMilestones : ''
       }
       obj.documentURL = tempArray;
       obj.resourceID = previousItems[0].AssignedTo.Id;
+      obj.subMilestones = previousItems[0].SubMilestones;
       obj.resource = previousItems[0].AssignedTo.Title;
       obj.taskCompletionDate = previousItems[0].Actual_x0020_End_x0020_Date;
       obj.reviewTask.ID = currentTaskElement.ID;

@@ -30,6 +30,7 @@ export class GlobalService {
   };
   public templateMatrix = {
     task: '',
+    submilestones: '',
     taskID: 0,
     assignedToID: '',
     assignedTo: '',
@@ -114,6 +115,7 @@ export class GlobalService {
   };
   public viewTabsPermission = {
     hideAdmin: false,
+    hideAdminScorecard: false
   };
   public sharePointPageObject = {
     webAbsoluteUrl: '',
@@ -159,6 +161,9 @@ export class GlobalService {
     serverRelativeUrl: '',
     loggedInUserInfo: [],
     loggedInUserGroup: [],
+    isPFAdmin: false,
+    isCDAdmin: false,
+    groups: []
   };
 
   /*****************************************************************
@@ -317,4 +322,9 @@ export class GlobalService {
       totalUnallocated: 0
     }
   };
+
+  public allResources = [];
+  public pfAdmins = [];
+  public cdAdmins = [];
+
 }

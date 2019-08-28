@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { DynamicDialogConfig, MessageService, MenuItem } from 'primeng/api';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../../services/my-dashboard-constants.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { DatePipe } from '@angular/common';
 import { NodeService } from 'src/app/node.service';
@@ -39,7 +39,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
     public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
-    private spServices: SharepointoperationService,
+    private spServices: SPOperationService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
     private nodeService: NodeService) { }

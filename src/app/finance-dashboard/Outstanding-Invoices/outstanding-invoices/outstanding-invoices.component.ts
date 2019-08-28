@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListene
 import { Message, ConfirmationService, MessageService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
@@ -10,7 +10,6 @@ import { DatePipe } from '@angular/common';
 import { NodeService } from 'src/app/node.service';
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
-import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
 
@@ -70,14 +69,13 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
         private globalService: GlobalService,
-        private spServices: SharepointoperationService,
+        private spServices: SPOperationService,
         private constantService: ConstantsService,
         private fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
         private messageService: MessageService,
         private nodeService: NodeService,
-        private spOperations: SpOperationsService,
         private commonService: CommonService,
     ) { }
 
@@ -680,14 +678,14 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 console.log('this.fileReader  ', this.fileReader.result);
                 let folderPath: string = '/Finance/Invoice/Client/';
                 let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity);
-                this.filePathUrl = this.spOperations.getFileUploadUrl(this.globalService.sharePointPageObject.webRelativeUrl + '/' + cleListName + folderPath, this.selectedFile.name, true);
+                this.filePathUrl = this.spServices.getFileUploadUrl(this.globalService.sharePointPageObject.webRelativeUrl + '/' + cleListName + folderPath, this.selectedFile.name, true);
             };
 
         }
     }
 
     async uploadFileData() {
-        const res = await this.spOperations.uploadFile(this.filePathUrl, this.fileReader.result)
+        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result)
         console.log('selectedFile uploaded .', res.ServerRelativeUrl);
         if (res.ServerRelativeUrl) {
             let fileUrl = res.ServerRelativeUrl;
@@ -712,7 +710,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     }
 
     async uploadPaymentFileData(type: string) {
-        const res = await this.spOperations.uploadFile(this.filePathUrl, this.fileReader.result)
+        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result)
         console.log('selectedFile uploaded .', res.ServerRelativeUrl);
         if (res.ServerRelativeUrl) {
             console.log('selectedFile uploaded .', res.ServerRelativeUrl);
@@ -899,7 +897,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
         this.batchContents.push('--changeset_' + changeSetId + '--');
         const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
+        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
         batchBodyContent.push('--batch_' + batchGuid + '--');
         const sBatchData = batchBodyContent.join('\r\n');
         const res = await this.spServices.getFDData(batchGuid, sBatchData);//.subscribe(res => {

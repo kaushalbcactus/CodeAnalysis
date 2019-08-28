@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { CommonService } from 'src/app/Services/common.service';
@@ -29,11 +29,10 @@ export class UserCapacityComponent implements OnInit {
   verticalAlign: string;
   loaderenable = false;
 
-  constructor(
-    public datepipe: DatePipe,
-    private spService: SharepointoperationService,
-    private sharedObject: GlobalService,
-    private constants: ConstantsService,
+
+  constructor(public datepipe: DatePipe, 
+    private spService: SPOperationService,
+    private sharedObject: GlobalService, private constants: ConstantsService,
     private commonService: CommonService,
     private taskAllocationService: TaskAllocationConstantsService,
     public config: DynamicDialogConfig) { }

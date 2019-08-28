@@ -7,7 +7,6 @@
 @import '@fullcalendar/list/main.css';
 
 @import '@fullcalendar/bootstrap/main.css';
-
 @font-face {
     font-family: 'Helvetica';
     url:('/fonts/HelveticaNeue.ttf')  format('truetype'), /* Safari, Android, iOS */
@@ -69,3 +68,11 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
     margin-top: 20px;
 }
 
+/* You can add global styles to this file, and also import other style files */
+.floatLeft{
+    float:left;
+}
+
+.floatRight {
+    float: right;
+}

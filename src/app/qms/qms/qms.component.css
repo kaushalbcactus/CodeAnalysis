@@ -1,0 +1,119 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~@ng-select/ng-select/themes/default.theme.css";
+::ng-deep .hide {
+  display:none;
+}
+::ng-deep .show {
+  display:block;
+}
+
+::ng-deep .inline {
+  display:inline-block;
+}
+
+/** Loader **/
+::ng-deep #mainLoader{
+  border: 10px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 10px solid red;
+  border-bottom: 10px solid red;
+  width: 100px;
+  height: 100px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-top: 1%;
+}
+
+::ng-deep #mainLoaderText{
+  -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+  -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+  -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+  animation: loading-text-opacity 2s linear 0s infinite normal;
+  color: black;
+  font-family: "Helvetica Neue, "Helvetica", ""arial";
+  font-size: 10px;
+  font-weight: bold;
+  opacity: 0.5;
+  text-align: center;
+  text-transform: uppercase;
+  top: 0;
+  margin-bottom: 1%;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/** CSS Fix by Ashish **/
+
+::ng-deep app-qms a {
+  color:#B13E3E;
+}
+
+::ng-deep app-qms button{
+  min-width: 0em;
+}
+
+::ng-deep .table th, .table td {
+  padding: 0.25rem!important;
+  vertical-align: middle!important;
+  border-top: none!important;
+}
+
+::ng-deep app-qms .btn:disabled {
+  cursor: not-allowed!important;
+}
+
+::ng-deep app-qms input:not([type]) {
+  border:0px;
+}
+
+::ng-deep .cdFilters .mat-form-field-infix {
+  border-top: .24271em solid transparent;
+}
+
+::ng-deep .hoverClick {
+  cursor: pointer;
+}
+
+::ng-deep app-qms body{margin-top:0px;font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;line-height:1.6}
+
+::ng-deep .clear{clear: both;margin-bottom: 20px}
+::ng-deep .customer-detail{color: #777777;display: inline-block}
+::ng-deep .download-worksheet{color: #B71C1C!important;font-size: 16px;float: right; cursor: pointer;}
+::ng-deep .td-none{text-decoration: none}
+::ng-deep .star-white{color: #fff;margin-left: 2px;font-size: 14px !important}
+::ng-deep body .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active {
+  background-color: #C53E3E !important;
+  border: 1px solid #C53E3E !important;
+}
+::ng-deep .ui-menuitem-text{
+  color: #ffffff;
+}
+
+::ng-deep body .ui-datepicker-trigger {
+  background-color: #C53E3E!important;
+  border-color: #C53E3E!important;
+}
+::ng-deep .daterange .ui-inputtext {
+  width:200px;
+}
+::ng-deep .commentsTextArea{
+  padding-top: 20px!important;
+}
+body .ui-button:enabled:hover {
+  background-color:#C53E3E;
+  border-color: #C53E3E;
+}
+
+::ng-deep .cd-rating{background: #4faf54;color: #fff;padding: 0px 8px;border-radius: 3px;display: inline-block;margin-right: 3px}

@@ -1,0 +1,65 @@
+.filter-wrapper .resource {
+  border-right: 1px solid #E0E0E0;
+  border-left: none;
+}
+.searchText{
+  padding-left: 13px;
+  display: inline-block;
+}
+.resourceSelect{
+  width: 200px;
+}
+
+div.filter-wrapper {
+  margin-top:10px;
+  color: #787878;
+}
+div.filter-wrapper .ng-select {
+  display: inline-block;
+}
+
+
+div.filter-wrapper > div {
+  float: left;
+  font-size: 14px;
+  padding-right: 13px;
+  padding-left: 10px;
+}
+
+
+.filterBy {
+  width: 155px;
+}
+
+ div.filter-wrapper .daterange {
+  height: 55px;
+}
+
+ div.filter-wrapper .daterange>span {
+    position: absolute;
+    top: 17px;
+}
+
+ div.filter-wrapper .daterange .dateRangePicker  {
+    display: inline-block;
+    margin-top: 9px;
+    padding-left: 75px;
+}
+
+
+a {
+  color:#B13E3E;
+}
+a:visited, a:hover{
+  color:rgba(0, 0, 0, 0.87)!important;
+  text-decoration: none;
+}
+button{
+  min-width: 0em;
+}
+::ng-deep #adminContent .ellipsis {
+  width: 249px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -2,11 +2,11 @@ import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ViewCon
 import { MessageService, DialogService, ConfirmationService } from 'primeng/api';
 import { MenuItem } from 'primeng/components/common/menuitem';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { SPOperationService } from '../../Services/spoperation.service';
 import { ConstantsService } from '../../Services/constants.service';
 import { PubsuportConstantsService } from '../Services/pubsuport-constants.service';
 import { GlobalService } from '../../Services/global.service';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { CreateConferenceComponent } from './create-conference/create-conference.component';
 import { CreateJournalComponent } from './create-journal/create-journal.component';
 import { DatePipe } from '@angular/common';
@@ -25,7 +25,7 @@ export class PubsupportComponent implements OnInit {
 
     constructor(
         private formBuilder: FormBuilder,
-        private spOperationsService: SpOperationsService,
+        public spServices: SPOperationService,
         public constantService: ConstantsService,
         public globalObject: GlobalService,
         public pubsupportService: PubsuportConstantsService,
@@ -385,10 +385,10 @@ export class PubsupportComponent implements OnInit {
             listName: this.constantService.listNames.ProjectInformation.name
         }];
 
-        arrResults = await this.spOperationsService.executeBatch(pipcObj);
+        arrResults = await this.spServices.executeBatch(pipcObj);
         if (arrEndPointsArchive.length) {
             // arrResultsArchive = await this.spServices.getDataByApi(this.globalObject.sharePointPageObject.webAbsoluteArchiveUrl, arrEndPointsArchive);
-            arrResultsArchive = await this.spOperationsService.executeBatch(piObj);
+            arrResultsArchive = await this.spServices.executeBatch(piObj);
             if (arrResultsArchive.length && arrResultsArchive[0].length) {
                 arrProjects = arrResultsArchive[0];
             } else {
@@ -1224,7 +1224,7 @@ export class PubsupportComponent implements OnInit {
             } else if (type === 'addJCDetailsModal') {
                 console.log('res ', res);
                 this.updateProjectSts_JCSubmissionDetails(res, type);
-
+              
             } else if (type === 'updateDecision') {
                 this.update_decision_details.reset();
                 this.messageService.add({

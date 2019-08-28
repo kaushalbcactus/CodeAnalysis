@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GlobalService } from './global.service';
 import { TaskAllocationConstantsService } from '../task-allocation/services/task-allocation-constants.service';
-import { SharepointoperationService } from './sharepoint-operation.service';
+import { SPOperationService } from './spoperation.service';
 import { ConstantsService } from './constants.service';
 import { PmconstantService } from '../projectmanagement/services/pmconstant.service';
 import { PMObjectService } from '../projectmanagement/services/pmobject.service';
@@ -17,7 +17,7 @@ export class CommonService {
     batchContents = new Array();
     public sharedTaskAllocateObj = this.sharedObject.oTaskAllocation;
     constructor(private pmObject: PMObjectService,
-        private spServices: SharepointoperationService,
+        private spServices: SPOperationService,
         private constants: ConstantsService,
         private pmConstant: PmconstantService, public sharedObject: GlobalService,
         public taskAllocationService: TaskAllocationConstantsService,
@@ -71,8 +71,8 @@ export class CommonService {
 
     getQuarterDates(yearSelected, quarter) {
         const year = yearSelected;
-        const monthStart = (quarter.value - 1) * 3;
-        const monthEnd = (quarter.value * 3);
+        const monthStart = (quarter - 1) * 3;
+        const monthEnd = (quarter * 3);
         const fromDate = new Date(new Date(year, monthStart, 1).setHours(0, 0, 0, 1));
         const toDate = new Date(new Date(year, monthEnd, 0).setHours(23, 59, 59, 0));
         return ({ fromDate: fromDate, toDate: toDate });
@@ -94,26 +94,6 @@ export class CommonService {
         const fromDate = new Date(new Date(year.value ? year.value : year, 0, 1).setHours(0, 0, 0, 1));
         const toDate = new Date(new Date(year.value ? year.value : year, 12, 0).setHours(23, 59, 59, 0));
         return ({ fromDate: fromDate, toDate: toDate });
-    }
-
-    /**
-    * Generates anchor tag of document url
-    *
-    * @param {*} array
-    * @returns [] of document urls
-    * @memberof ReviewerDetailViewComponent
-    */
-    getDocumentUrl(array) {
-        const document = {
-            documentUrl: [],
-            documentUrlHtmlTag: ''
-        };
-        array.forEach(element => {
-            document.documentUrl.push(element.ServerRelativeUrl);
-            document.documentUrlHtmlTag = document.documentUrlHtmlTag + '<div class="ellipsis"><a href="'
-                + element.ServerRelativeUrl + '" download>' + element.Name + '</a></div>';
-        });
-        return document;
     }
 
     getLastWorkingDay(days, date) {

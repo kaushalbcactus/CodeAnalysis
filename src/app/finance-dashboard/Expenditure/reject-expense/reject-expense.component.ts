@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, OnDestroy, HostListener } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { FormBuilder } from '@angular/forms';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
@@ -42,7 +42,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
     constructor(
         private messageService: MessageService,
         private fb: FormBuilder,
-        private spServices: SharepointoperationService,
+        private spServices: SPOperationService,
         private constantService: ConstantsService,
         private globalService: GlobalService,
         private fdConstantsService: FdConstantsService,

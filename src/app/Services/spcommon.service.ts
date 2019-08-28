@@ -1,16 +1,23 @@
 import { DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { SharepointoperationService } from './sharepoint-operation.service';
+import { SPOperationService } from './spoperation.service';
 import { CommonService } from './common.service';
+import { ConstantsService } from './constants.service';
+
 
 @Injectable({
   providedIn: 'root'
 })
 //tslint:disable
 export class SPCommonService {
-
-  constructor(private spService: SharepointoperationService, private datePipe: DatePipe,
-    private common: CommonService) { }
+  public options = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
+  constructor(private spService: SPOperationService, private datePipe: DatePipe,
+    private common: CommonService,private constant:ConstantsService) { }
 
    /**
    * Fetch all resources when clicked on Admin view
@@ -25,7 +32,7 @@ export class SPCommonService {
     this.spService.getBatchBodyGet(batchContents, batchGuid, url);
     batchContents.push('--batch_' + batchGuid + '--');
     const sCUserBatchData = batchContents.join('\r\n');
-    let resources = this.spService.executeBatchRequest(batchGuid, sCUserBatchData);
+    let resources = this.spService.executeBatchRequest1(batchGuid, sCUserBatchData);
     resources = resources.length > 0 ? resources[0] : [];
     return resources;
   }
@@ -43,63 +50,9 @@ export class SPCommonService {
       return newfileName;
   }
 
-  /**
-   * Fetch tasks documents
-   *
-   * @param {*} arrTasks
-   * @param {*} arrProjects
-   * @returns
-   * @memberof AdminViewComponent
-   */
-  getAllTaskDocuments(arrTasks, arrProjects, taskUrl) {
-    const batchTaskDocGuid = this.spService.generateUUID();
-    let batchTaskDocContents = new Array();
-    let tasksDoc = [];
-    let sBatchData = '';
-    let i = 0;
-    const arrProjectFolderUrl = [];
-    arrTasks.forEach(task => {
-      const project = arrProjects.filter(p => p.ProjectCode === task.ProjectCode);
-      const projectFolderUrl = project.length > 0 ? project[0].ProjectFolder : [];
-      const milestoneUrl =  projectFolderUrl + '/Drafts/Internal/' + task.Milestone;
-      if (arrProjectFolderUrl.indexOf(milestoneUrl) < 0) {
-        // const taskUrl = this.constant.AdminViewComponent.fetchDocuments.replace('{{documentLibrary}}', milestoneUrl);
-        const updatedtaskUrl = taskUrl.replace('{{documentLibrary}}', milestoneUrl);
-        arrProjectFolderUrl.push(milestoneUrl);
-        batchTaskDocContents = this.spService.getBatchBodyGet(batchTaskDocContents, batchTaskDocGuid, updatedtaskUrl);
-        i++;
-        // Eg: - 132 requests
-        // Loop 100 document fetch request for each batch
-        if (i % 100 === 0) {
-          batchTaskDocContents.push('--batch_' + batchTaskDocGuid + '--');
-          sBatchData = batchTaskDocContents.join('\r\n');
-          const bresult = this.spService.executeBatchRequest(batchTaskDocGuid, sBatchData);
-          tasksDoc = [...tasksDoc , ...bresult];
-          sBatchData = '';
-          batchTaskDocContents = [];
-        }
-      }
-    });
-    // Execute remaining 32 requests less than multiplle of 100
-    batchTaskDocContents.push('--batch_' + batchTaskDocGuid + '--');
-    sBatchData = batchTaskDocContents.join('\r\n');
-    const result = this.spService.executeBatchRequest(batchTaskDocGuid, sBatchData);
-    tasksDoc = [].concat(...tasksDoc , ...result);
-    return tasksDoc;
-  }
+ 
 
-   /**
-   * filter task marked as final documents
-   * @param documents - all tasks documents
-   * @param taskName  - filter title
-   * @return documents
-   */
-  getTaskDocuments(documents, taskName) {
-    const reviewTaskDocuments = documents.filter(d => d && d.ListItemAllFields.TaskName === taskName
-      && d.ListItemAllFields.Status.indexOf('Complete') > -1);
-    const reviewTaskDoc = this.common.getDocumentUrl(reviewTaskDocuments);
-    return reviewTaskDoc;
-  }
+   
   findVersionDifference(items, properties?: any, lastElementBuffer?: boolean) {
     const arrVersions = [];
     const length = items.length;
@@ -185,4 +138,12 @@ export class SPCommonService {
     return filtered;
   }
 
+
+  //from Qms old services
+  // getGroupResources(batchGuid, batchContents, groupName) {
+  //   // tslint:disable-next-line)
+  //   const getUsers =  this.qmsConstant.getUsersInGroup.replace('{{GroupName}}', groupName);
+  //   this.spService.getBatchBodyGet(batchContents, batchGuid, getUsers);
+  //   return batchContents;
+  // }
 }

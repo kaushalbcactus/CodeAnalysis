@@ -4,7 +4,6 @@ import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/fo
 import { ActivatedRoute, Router } from '@angular/router';
 import { GlobalService } from '../Services/global.service';
 import { ConstantsService } from '../Services/constants.service';
-import { SharepointoperationService } from '../Services/sharepoint-operation.service';
 import { trigger, transition, animate, style, state } from '@angular/animations';
 import { TaskAllocationConstantsService } from './services/task-allocation-constants.service';
 import { TimelineComponent } from './timeline/timeline.component';
@@ -60,7 +59,7 @@ export class TaskAllocationComponent implements OnInit {
   public webImageURL = '/sites/medcomcdn/PublishingImages';
   constructor(
     private route: ActivatedRoute,
-    private router: Router, public spServices: SharepointoperationService,
+    private router: Router, public spServices: SPOperationService,
     private sPOperationService: SPOperationService,
     public constants: ConstantsService,
     public globalObject: GlobalService,

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { SelectItem, MessageService } from 'primeng/api';
-import { SharepointoperationService } from '../../../Services/sharepoint-operation.service';
+import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';
 import { GlobalService } from '../../../Services/global.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
@@ -10,7 +10,6 @@ import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { DatePipe } from '@angular/common';
 import { NodeService } from '../../../node.service';
 import { ActivatedRoute } from '@angular/router';
-import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -81,7 +80,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     constructor(
         private messageService: MessageService,
         private fb: FormBuilder,
-        private spServices: SharepointoperationService,
+        private spServices: SPOperationService,
         private constantService: ConstantsService,
         private globalService: GlobalService,
         private fdConstantsService: FdConstantsService,
@@ -90,7 +89,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private nodeService: NodeService,
         private route: ActivatedRoute,
-        private spOperationsService: SpOperationsService,
     ) {
         this.subscription.add(this.fdDataShareServie.getAddExpenseSuccess().subscribe(date => {
             console.log('I called when expense created success...... ');
@@ -830,7 +828,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
         this.batchContents.push('--changeset_' + changeSetId + '--');
         const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
+        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
         batchBodyContent.push('--batch_' + batchGuid + '--');
         const sBatchData = batchBodyContent.join('\r\n');
         const res = await this.spServices.getFDData(batchGuid, sBatchData);
@@ -876,11 +874,11 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         }
 
         let obj = [{
-            url: this.spOperationsService.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
+            url: this.spServices.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
             type: 'GET',
             listName: this.constantService.listNames.MailContent.name
         }]
-        const res = await this.spOperationsService.executeBatch(obj);
+        const res = await this.spServices.executeBatch(obj);
         this.mailContentRes = res;
         console.log('Approve Mail Content res ', this.mailContentRes);
     }
@@ -1024,7 +1022,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         var ccUser = [];
         ccUser.push(this.currentUserInfoData.Email);
         let tos = this.getTosList();
-        this.spOperationsService.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
+        this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.isPSInnerLoaderHidden = false;
         this.reFetchData();
     }

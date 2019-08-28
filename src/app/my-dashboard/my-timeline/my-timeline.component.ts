@@ -5,14 +5,14 @@ import bootstrapPlugin from '@fullcalendar/bootstrap';
 import interactionPlugin from '@fullcalendar/interaction';
 import { MenuItem, MessageService, DialogService, SelectItem, ConfirmationService } from 'primeng/api';
 import { MenuModule, Button } from 'primeng/primeng';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { BlockTimeDialogComponent } from '../block-time-dialog/block-time-dialog.component';
 import { DatePipe } from '@angular/common';
-import { FeedbackPopupComponent } from '../feedback-popup/feedback-popup.component';
-import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { FeedbackPopupComponent } from '../../qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
+
 declare var Tooltip: any;
 
 @Component({
@@ -24,7 +24,7 @@ declare var Tooltip: any;
 export class MyTimelineComponent implements OnInit {
   @ViewChild('menuPopup', { static: true }) plusmenu: MenuModule;
   @ViewChild('calendar', { static: true }) fullCalendar: any;
-  @ViewChild('feedbackPopup', { static: true }) feedbackPopupComponent: FeedbackPopupComponent
+  @ViewChild('feedbackPopup', { static: true }) feedbackPopupComponent: FeedbackPopupComponent;
   response: any[];
   display: boolean;
   tasks: any;
@@ -54,7 +54,7 @@ export class MyTimelineComponent implements OnInit {
   constructor(private myDashboardConstantsService: MyDashboardConstantsService,
     private constants: ConstantsService,
     public sharedObject: GlobalService,
-    private spServices: SharepointoperationService,
+    private spServices: SPOperationService,
     public messageService: MessageService,
     public dialogService: DialogService,
     private confirmationService: ConfirmationService,

@@ -1,6 +1,6 @@
 import { Component, OnInit, NgZone, ViewEncapsulation } from '@angular/core';
 import { TreeNode, SelectItemGroup, MessageService } from 'primeng/api';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { UsercapacityComponent } from '../usercapacity/usercapacity.component';
@@ -9,7 +9,6 @@ import { DatePipe } from '@angular/common';
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
-import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 declare var $;

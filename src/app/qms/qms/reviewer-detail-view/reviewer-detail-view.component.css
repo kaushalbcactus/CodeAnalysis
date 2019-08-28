@@ -1,0 +1,34 @@
+
+table {
+  width: 100%;
+}
+.mat-flat-button{
+  background-color : grey !important;
+}
+th.mat-sort-header-sorted {
+  color: black;
+}
+
+.exportExcel{
+  display: inline-block;
+}
+
+.truncate {
+  width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body{
+  font-size: 0.9rem;
+}
+#reviewerTable {
+  margin-top: 0px;
+}
+::ng-deep #reviewerContent .ellipsis {
+  width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

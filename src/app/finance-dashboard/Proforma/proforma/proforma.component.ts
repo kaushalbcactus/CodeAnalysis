@@ -3,7 +3,7 @@ import { Message, ConfirmationService, MessageService, SelectItem } from 'primen
 import { Calendar } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
@@ -11,7 +11,6 @@ import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
-import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { Subscription } from 'rxjs';
 
 
@@ -75,14 +74,13 @@ export class ProformaComponent implements OnInit, OnDestroy {
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
         private globalService: GlobalService,
-        private spServices: SharepointoperationService,
+        private spServices: SPOperationService,
         private constantService: ConstantsService,
         private fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
-        private spOperations: SpOperationsService
     ) { }
 
     async ngOnInit() {
@@ -1152,7 +1150,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 console.log('this.fileReader  ', this.fileReader.result);
                 let folderPath: string = '/Finance/Proforma/';
                 let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity);
-                this.filePathUrl = this.spOperations.getFileUploadUrl(this.globalService.sharePointPageObject.webRelativeUrl + '/' + cleListName + folderPath, this.selectedFile.name, true);
+                this.filePathUrl = this.spServices.getFileUploadUrl(this.globalService.sharePointPageObject.webRelativeUrl + '/' + cleListName + folderPath, this.selectedFile.name, true);
                 // this.filePathUrl = this.globalService.sharePointPageObject.webAbsoluteUrl + "/_api/web/GetFolderByServerRelativeUrl(" + "'" + cleListName + '' + folderPath + "'" + ")/Files/add(url=@TargetFileName,overwrite='true')?" +
                 // "&@TargetFileName='" + this.selectedFile.name + "'";
                 // this.uploadFileData('');
@@ -1174,7 +1172,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
 
     async uploadFileData() {
-        const res = await this.spOperations.uploadFile(this.filePathUrl, this.fileReader.result)
+        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result)
         console.log('selectedFile uploaded .', res.ServerRelativeUrl);
         if (res.ServerRelativeUrl) {
             let fileUrl = res.ServerRelativeUrl;
@@ -1453,7 +1451,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
         this.batchContents.push('--changeset_' + changeSetId + '--');
         const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
+        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
         batchBodyContent.push('--batch_' + batchGuid + '--');
         const sBatchData = batchBodyContent.join('\r\n');
         return await this.spServices.getFDData(batchGuid, sBatchData);
@@ -1529,7 +1527,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 pdfCall.ListName = oCLE.ListName;
                 pdfCall.HtmlContent = proformHtml;
                 const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
-                await this.spOperations.executeJS(pdfService, pdfCall);
+                await this.spServices.executeJS(pdfService, pdfCall);
             }
             this.generateInvoiceModal = false;
             this.messageService.add({ key: 'custom', sticky: true, severity: 'success', summary: 'Invoice Generated', detail: 'Invoice Number: ' + oInv.InvoiceNumber });

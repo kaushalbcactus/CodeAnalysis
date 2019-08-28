@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { GlobalService } from 'src/app/Services/global.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
@@ -70,7 +70,7 @@ export class InactiveComponent implements OnInit {
     public pmObject: PMObjectService,
     private commonService: CommonService,
     private Constant: ConstantsService,
-    private spServices: SharepointoperationService,
+    private spServices: SPOperationService,
     private pmConstant: PmconstantService,
     public pmCommonService: PMCommonService,
     public router: Router,

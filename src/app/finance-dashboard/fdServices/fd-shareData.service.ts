@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from "rxjs/internal/BehaviorSubject";
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { FdConstantsService } from './fd-constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
-import { SpOperationsService } from '../../Services/sp-operations.service';
 import { DatePipe } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 
@@ -86,24 +85,23 @@ export class FDDataShareService {
     defaultBRMData = this.budgetRateData.asObservable();
 
     constructor(
-        private spServices: SharepointoperationService,
+        private spServices: SPOperationService,
         private constantService: ConstantsService,
         private fdConstantsService: FdConstantsService,
         private globalObject: GlobalService,
-        private spOperationsServices: SpOperationsService,
         private datePipe: DatePipe,
     ) { }
 
     async getCurrentUserInfo() {
-        return await this.spOperationsServices.getUserInfo(this.globalObject.sharePointPageObject.userId.toString());
+        return await this.spServices.getUserInfo1(this.globalObject.sharePointPageObject.userId.toString());
     }
 
     async getGroupInfo() {
-        return await this.spOperationsServices.getGroupInfo('ExpenseApprovers');
+        return await this.spServices.getGroupInfo('ExpenseApprovers');
     }
 
     async getITInfo() {
-        return await this.spOperationsServices.getITGroupInfo('Invoice_Team');
+        return await this.spServices.getITGroupInfo('Invoice_Team');
     }
 
     // Export to Excel
@@ -192,11 +190,11 @@ export class FDDataShareService {
             return this.sowListRes;
         } else {
             let obj = [{
-                url: this.spOperationsServices.getReadURL(this.constantService.listNames.SOW.name, this.fdConstantsService.fdComponent.sowList),
+                url: this.spServices.getReadURL(this.constantService.listNames.SOW.name, this.fdConstantsService.fdComponent.sowList),
                 type: 'GET',
                 listName: this.constantService.listNames.ProjectFinances
             }]
-            const res = await this.spOperationsServices.executeBatch(obj);
+            const res = await this.spServices.executeBatch(obj);
             let arrResults: any = [];
             arrResults = res;
             if (arrResults.length) {
@@ -244,7 +242,7 @@ export class FDDataShareService {
     async getRequiredData(): Promise<any> {
         if (!this.requiredData.length) {
 
-            this.globalObject.userInfo = await this.spOperationsServices.getUserInfo(this.globalObject.sharePointPageObject.userId.toString());
+            this.globalObject.userInfo = await this.spServices.getUserInfo1(this.globalObject.sharePointPageObject.userId.toString());
             // Default Tabs & sub Menus
             this.fdConstantsService.fdComponent.tabs.topMenu = [
                 { label: 'Expenditure', routerLink: ['expenditure'] },
@@ -331,11 +329,11 @@ export class FDDataShareService {
             return this.projectInfoData.next(this.projectsInfo);
         } else {
             let obj = [{
-                url: this.spOperationsServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfo),
+                url: this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfo),
                 type: 'GET',
                 listName: this.constantService.listNames.ProjectFinances
             }]
-            const res = await this.spOperationsServices.executeBatch(obj);
+            const res = await this.spServices.executeBatch(obj);
             if (res.length) {
                 console.log('this.projectsInfo ', res[0]);
                 this.projectsInfo = res[0].retItems;
@@ -427,7 +425,7 @@ export class FDDataShareService {
 
             ///// Call service 
             const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
-            await this.spOperationsServices.executeJS(pdfService, pdfContent);
+            await this.spServices.executeJS(pdfService, pdfContent);
         }
     }
 
@@ -443,7 +441,7 @@ export class FDDataShareService {
 
         ///// Call service 
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
-        await this.spOperationsServices.executeJS(pdfService, pdfContent);
+        await this.spServices.executeJS(pdfService, pdfContent);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.selectedComp.reFetchData(refetchType);
     }

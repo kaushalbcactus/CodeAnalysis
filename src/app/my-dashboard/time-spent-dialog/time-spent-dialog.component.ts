@@ -3,10 +3,9 @@ import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng/a
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { DatePipe } from '@angular/common';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { SPOperationService } from 'src/app/Services/spoperation.service';
 
 @Component({
   selector: 'app-time-spent-dialog',
@@ -45,9 +44,8 @@ export class TimeSpentDialogComponent implements OnInit {
     private constants: ConstantsService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
-    private spServices: SharepointoperationService, 
+    private spServices: SPOperationService, 
     public messageService: MessageService,
-    public spOperations: SPOperationService,
   ) { }
 
   ngOnInit() {
@@ -310,7 +308,7 @@ export class TimeSpentDialogComponent implements OnInit {
       TimeSpentPerDay: timeSpentString,
       Status: task.Status === "Not Started" ? "In Progress" : task.Status
     };
-    await this.spOperations.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, "SP.Data.SchedulesListItem");
+    await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, "SP.Data.SchedulesListItem");
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task Time updated successfully.' });
 
   };

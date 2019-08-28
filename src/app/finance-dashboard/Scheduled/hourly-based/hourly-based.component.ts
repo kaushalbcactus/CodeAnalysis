@@ -3,14 +3,13 @@ import { Message, ConfirmationService, MessageService } from 'primeng/api';
 import { Calendar } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { formatDate, DatePipe } from '@angular/common';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { TimelineHistoryComponent } from './../../../timeline/timeline-history/timeline-history.component';
-import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -61,14 +60,13 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
         private globalService: GlobalService,
-        private spServices: SharepointoperationService,
+        private spServices: SPOperationService,
         private constantService: ConstantsService,
         private fdConstantsService: FdConstantsService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
-        private spOperationsService: SpOperationsService,
     ) { }
 
     async ngOnInit() {
@@ -892,7 +890,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
         this.batchContents.push('--changeset_' + changeSetId + '--');
         const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
+        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
         batchBodyContent.push('--batch_' + batchGuid + '--');
         const sBatchData = batchBodyContent.join('\r\n');
         const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
@@ -931,16 +929,16 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         }
 
         let obj = [{
-            url: this.spOperationsService.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
+            url: this.spServices.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
             type: 'GET',
             listName: this.constantService.listNames.MailContent.name
         },
         {
-            url: this.spOperationsService.getReadURL(this.constantService.listNames.MailContent.name, ProposeCMailContentEndpoint),
+            url: this.spServices.getReadURL(this.constantService.listNames.MailContent.name, ProposeCMailContentEndpoint),
             type: 'GET',
             listName: this.constantService.listNames.MailContent.name
         }]
-        const res = await this.spOperationsService.executeBatch(obj);
+        const res = await this.spServices.executeBatch(obj);
         this.mailContentRes = res;
         console.log('Approve Mail Content res ', this.mailContentRes);
     }
@@ -1056,8 +1054,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         var ccUser = [];
         ccUser.push(this.currentUserInfoData.Email);
         // let tos = this.getTosList();
-        this.spOperationsService.sendMail(this.getTosList('i').join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
-        this.spOperationsService.sendMail(this.getTosList('pc').join(','), this.currentUserInfoData.Email, pcmailSubject, pcmailContent, ccUser.join(','));
+        this.spServices.sendMail(this.getTosList('i').join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
+        this.spServices.sendMail(this.getTosList('pc').join(','), this.currentUserInfoData.Email, pcmailSubject, pcmailContent, ccUser.join(','));
         this.confirmationModal = false;
         this.reFetchData('confirm');
     }

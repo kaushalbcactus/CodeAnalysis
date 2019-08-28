@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
@@ -18,7 +18,7 @@ declare var $;
 export class NonStandardprojectComponent implements OnInit {
 
   constructor(
-    private spService: SharepointoperationService,
+    private spService: SPOperationService,
     public pmObject: PMObjectService,
     private pmConstant: PmconstantService,
     private pmCommonService: PMCommonService,

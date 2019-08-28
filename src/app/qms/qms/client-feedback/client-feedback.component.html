@@ -1,0 +1,12 @@
+<div class="clientFeedbackContent" id="clientFeedBackContent">
+  <p-tabMenu [model]="navLinks" class="innerTab personalTabs">
+    <ng-template pTemplate="link" let-link let-i="index">
+        <div class="ui-menuitem-text">
+          {{link.label}}
+        </div>
+    </ng-template>
+  </p-tabMenu>
+  <div class="clear"></div>
+  <router-outlet></router-outlet>
+  </div>
+  

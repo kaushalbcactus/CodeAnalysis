@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewEncapsulation, TemplateRef, ViewChild
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { SelectItem, MenuItem, DialogService } from 'primeng/api';
 import { DatePipe } from '@angular/common';
@@ -13,14 +13,13 @@ import { AddEditCommentComponent } from '../add-edit-comment-dialog/add-edit-com
 import { ViewUploadDocumentDialogComponent } from '../view-upload-document-dialog/view-upload-document-dialog.component';
 import { PreviosNextTasksDialogComponent } from '../previos-next-tasks-dialog/previos-next-tasks-dialog.component';
 import { Table } from 'primeng/table';
-import { FeedbackPopupComponent } from '../feedback-popup/feedback-popup.component';
+import { FeedbackPopupComponent } from '../../qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
 
-import { SPOperationService } from 'src/app/Services/spoperation.service';
 @Component({
   selector: 'app-my-current-completed-tasks',
   templateUrl: './my-current-completed-tasks.component.html',
   styleUrls: ['./my-current-completed-tasks.component.css'],
-  providers: [DatePipe, MessageService],
+  providers: [DatePipe, MessageService, FeedbackPopupComponent],
 
 })
 export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
@@ -77,7 +76,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     private constants: ConstantsService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
-    private spServices: SharepointoperationService,
+    private spServices: SPOperationService,
     private commonService: CommonService,
     public messageService: MessageService,
     private route: ActivatedRoute,

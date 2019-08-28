@@ -2,12 +2,11 @@ import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { DynamicDialogRef, DynamicDialogConfig, SelectItem, MessageService } from 'primeng/api';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { DatePipe } from '@angular/common';
 import { GlobalService } from 'src/app/Services/global.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { Table } from 'primeng/table';
-import { SPOperationService } from 'src/app/Services/spoperation.service';
 
 @Component({
   selector: 'app-time-booking-dialog',
@@ -67,7 +66,7 @@ export class TimeBookingDialogComponent implements OnInit {
     public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
-    private spServices: SharepointoperationService,
+    private spServices: SPOperationService,
     private datePipe: DatePipe,
     public sharedObject: GlobalService,
     public spOperations: SPOperationService,

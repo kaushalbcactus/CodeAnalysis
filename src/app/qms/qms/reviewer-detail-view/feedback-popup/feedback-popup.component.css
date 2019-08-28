@@ -1,0 +1,80 @@
+::ng-deep .star {
+  font-size: 1.5rem;
+  color: #9E9E9E;
+}
+::ng-deep .filled {
+  color: #4CAF50;
+}
+:host ::ng-deep .ui-dialog-titlebar {
+  display: block;
+  text-align: center;
+}
+::ng-deep .example-full-width {
+  width: 100%;
+}
+::ng-deep .scrollTable {
+  display: block;
+  max-height: 200px;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+::ng-deep textarea{font-family: inherit}
+::ng-deep .save-rating{background-color: #B71C1C!important;padding: 12px 50px!important;color: #fff!important;border-radius: 4px!important;border: none!important;font-size: 16px!important;margin: 0px 6px!important;cursor: pointer!important}
+::ng-deep .save-rating:hover{background-color: #D92121!important;transition: 0.3s ease-in!important}
+::ng-deep .cancel-rating{background-color: #FAFAFA!important;padding: 12px 50px!important;color: #222222!important;border-radius: 4px!important;border: none!important;font-size: 16px!important;margin: 0px 6px!important;cursor: pointer!important}
+::ng-deep .cancel-rating:hover{background-color: #D7D7D7;transition: 0.3s ease-in}
+::ng-deep .ratework-popup{width: 100%;background: #fff;}
+::ng-deep .ratework-popup .popup-header{font-size: 34px;line-height: 42px;text-align: center;margin: 10px auto}
+
+::ng-deep .popup-con{padding: 30px}
+::ng-deep .grey-default-c{color: #787878;margin: 0px auto 10px;text-align: left}
+::ng-deep table.popup-rating-row tr td{border-collapse: collapse;padding: 5px 5px;text-align: left;border-top: none;}
+::ng-deep body .ui-dialog .ui-dialog-titlebar {     background-color: #ffffff!important; }
+::ng-deep .ui-dialog-title {
+  color: #333333 !important;
+  font-weight: 1em !important;
+}
+::ng-deep .cd-rating{background: #4faf54;color: #fff;padding: 0px 8px;border-radius: 3px;display: inline-block;margin-right: 3px}
+::ng-deep .customer-detail{color: #777777;display: inline-block}
+::ng-deep .star-white{color: #fff;margin-left: 2px;font-size: 14px !important}
+::ng-deep #popupLoader{
+  border: 10px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 10px solid red;
+  border-bottom: 10px solid red;
+  width: 100px;
+  height: 100px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-top: 1%;
+}
+
+::ng-deep #popupLoaderText{
+  -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+  -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+  -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+  animation: loading-text-opacity 2s linear 0s infinite normal;
+  color: black;
+  font-family: "Helvetica Neue, "Helvetica", ""arial";
+  font-size: 10px;
+  font-weight: bold;
+  opacity: 0.5;
+  text-align: center;
+  text-transform: uppercase;
+  top: 0;
+  margin-bottom: 1%;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
