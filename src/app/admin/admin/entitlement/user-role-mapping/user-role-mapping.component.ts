@@ -25,6 +25,7 @@ export class UserRoleMappingComponent implements OnInit {
   groups = [];
   selectedUser: any;
   selectedRoles: string[] = [];
+  userExistGroupArray: string[] = [];
   userRoleColArray = {
     User: [],
     Role: [],
@@ -138,16 +139,18 @@ export class UserRoleMappingComponent implements OnInit {
    *
    */
   async onUserChange() {
+    this.adminObject.isMainLoaderHidden = false;
     const currentUserId = this.selectedUser.value.ID;
     this.userInfo = await this.spServices.getUserInfo(currentUserId);
     console.log(this.userInfo);
-    let groupArray = [];
+    this.userExistGroupArray = [];
     if (this.userInfo && this.userInfo.hasOwnProperty('Groups')) {
       if (this.userInfo.Groups && this.userInfo.Groups.results && this.userInfo.Groups.results.length) {
-        groupArray = this.userInfo.Groups.results.map(x => x.Title);
+        this.userExistGroupArray = this.userInfo.Groups.results.map(x => x.Title);
       }
     }
-    this.selectedRoles = groupArray;
+    this.selectedRoles = this.userExistGroupArray;
+    this.adminObject.isMainLoaderHidden = true;
   }
   colFilters(colData) {
     this.userRoleColArray.User = this.uniqueArrayObj(colData.map(a => { const b = { label: a.User, value: a.User }; return b; }));
@@ -173,10 +176,56 @@ export class UserRoleMappingComponent implements OnInit {
       };
     });
   }
-
-  save() {
-    console.log(this.selectedUser);
+  /**
+   * construct a method to add/remove the user from the selected/unselected group.
+   *
+   * @description
+   * This method will get all the information about user.
+   * It will highlight the group in which user is already presents.
+   *
+   */
+  async save() {
     console.log(this.selectedRoles);
+    console.log(this.userExistGroupArray);
+    const removeGroups = this.userExistGroupArray.filter(x => !this.selectedRoles.includes(x));
+    console.log(removeGroups);
+    const groups = this.selectedRoles;
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    groups.forEach(element => {
+      const userData = {
+        __metadata: { type: 'SP.User' },
+        LoginName: this.userInfo.LoginName
+      };
+      const userCreate = Object.assign({}, options);
+      userCreate.url = this.spServices.getGroupUrl(element, null);
+      userCreate.data = userData;
+      userCreate.type = 'POST';
+      userCreate.listName = element;
+      batchURL.push(userCreate);
+    });
+    removeGroups.forEach(element => {
+      const userData = {
+        loginName: this.userInfo.LoginName
+      };
+      const userRemove = Object.assign({}, options);
+      userRemove.url = this.spServices.removeUserFromGroupByLoginName(element);
+      userRemove.data = userData;
+      userRemove.type = 'POST';
+      userRemove.listName = element;
+      batchURL.push(userRemove);
+    });
+    if (batchURL.length) {
+      const sResult = await this.spServices.executeBatch(batchURL);
+      if (sResult && sResult.length) {
+        console.log(sResult);
+      }
+    }
   }
 
   downloadExcel(ur) {
