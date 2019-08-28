@@ -23,6 +23,9 @@ import { AddUserToProjectsComponent } from './admin/entitlement/add-user-to-proj
 import { ReferenceDataComponent } from './admin/reference-data/reference-data.component';
 import { RulesComponent } from './admin/rules/rules.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { CopyPermissionComponent } from './admin/entitlement/copy-permission/copy-permission.component';
+import { AddUserToSowComponent } from './admin/entitlement/add-user-to-sow/add-user-to-sow.component';
+import { AddUserToProjectsComponent } from './admin/entitlement/add-user-to-projects/add-user-to-projects.component';
 
 @NgModule({
   declarations: [

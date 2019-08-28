@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { AdminObjectService } from '../services/admin-object.service';
 
 @Component({
   selector: 'app-admin',
@@ -19,7 +20,9 @@ export class AdminComponent implements OnInit {
     { routerLink: ['/admin/rules'], label: 'Rules', value: 'Rules' },
     { routerLink: ['/admin/referenceData'], label: 'Reference Data', value: 'ReferenceData' }
   ];
-  constructor() { }
+  constructor(
+    public adminObject: AdminObjectService
+  ) { }
   ngOnInit() {
   }
 

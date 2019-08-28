@@ -274,6 +274,9 @@ export class ConstantsService {
       name: 'TimeZones',
       type: 'SP.Data.TimeZonesListItem'
     },
+    UserInformationList: {
+      name: 'User Information List'
+    }
   };
 
   public projectStatus = {
@@ -300,7 +303,8 @@ export class ConstantsService {
     MANAGERS: 'Managers',
     PROJECT_FULL_ACCESS: 'Project-FullAccess',
     SOW_FULL_ACCESS: 'SOW-Full Access',
-    SOW_CREATION_MANAGERS: 'SOW Creation Managers'
+    SOW_CREATION_MANAGERS: 'SOW Creation Managers',
+    SYNC_USER_TO_USER_INFORMATION_LIST: 'SyncUserToUserInformationList'
   };
 
   public FeedbackType = {
