@@ -6,9 +6,9 @@
   <ng-template pTemplate="header" let-columns>
       <tr>
           <th>Sr.No.</th>
-          <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+          <th *ngFor="let col of columns" [hidden]="!col.visibility" [pSortableColumn]="col.field">
               {{col.header}}
-              <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+              <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort"
                   ariaLabelDesc="Activate to sort in descending order"
                   ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
           </th>
@@ -16,7 +16,7 @@
       </tr>
       <tr>
           <th></th>
-          <th *ngFor="let col of columns" [ngSwitch]="col.field">
+          <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
               <p-multiSelect *ngSwitchCase="'TherapeuticArea'" [style]="{'width':'100%'}" appendTo="body"
                   [options]="therapeuticAreaColArray.TherapeuticArea" defaultLabel="Therapeutic Area"
                   (onChange)="ta.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
@@ -36,7 +36,7 @@
   <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
       <tr>
           <td>{{ rowIndex+1 }}</td>
-          <td *ngFor="let col of columns">
+          <td *ngFor="let col of columns" [hidden]="!col.visibility">
               <ng-container *ngIf="col.field != ''">
                   {{rowData[col.field]}}
               </ng-container>
@@ -64,11 +64,11 @@
 </div> -->
 
 <div>
-  <div class="ui-grid-row addNew">
-      <div class="ui-grid-col-4">
+  <div class="p-grid addNew">
+      <div class="p-col-4">
           <h5>Add Therapeutic Area</h5>
       </div>
-      <div class="ui-grid-col-6">
+      <div class="p-col">
           <input type="text" [(ngModel)]="therapeuticArea" pInputText/>
           <p-button label="Add" (click)="addTherapeuticArea(therapeuticArea)"></p-button>
       </div>

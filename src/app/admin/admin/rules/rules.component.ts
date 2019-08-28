@@ -25,9 +25,9 @@ export class RulesComponent implements OnInit {
 
   ngOnInit() {
     this.ruleColumns = [
-      { field: 'Form', header: 'Form' },
-      { field: 'LastUpdated', header: 'Last Updated' },
-      { field: 'LastUpdatedBy', header: 'Last Updated By' },
+      { field: 'Form', header: 'Form' , visibility: true},
+      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
+      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
     ];
 
     this.ruleRows = [

@@ -2,29 +2,40 @@
   <div class="userRole">
     <span style="padding-right: 10px;">User:</span>
     <p-dropdown [options]="Users" filter="true" optionLabel="label" resetFilterOnHide="true" placeholder='Select User'
-      [(ngModel)]="selectedUsers" (onChange)="userChange()">
+      [(ngModel)]="selectedUsers" (onChange)="userChange($event.value)">
     </p-dropdown>
+    <!-- <p-dropdown [options]="Users" [(ngModel)]="selectedUsers" filter="true" optionLabel="label"  resetFilterOnHide="true" placeholder='Select User' (onChange)="userChange($event.value)">
+      <ng-template let-item pTemplate="selectedUser" >
+          <span>{{item.label}}</span>
+      </ng-template>
+      <ng-template let-user pTemplate="item">
+          <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+              <div>{{user.label}}</div>
+          </div>
+      </ng-template>
+  </p-dropdown> -->
   </div>
 
-  <div class="userRole">
-    <textarea pInputTextarea [(ngModel)]="permissions1"></textarea>
-  </div>
-</div>
-
-<div>
   <div class="userRole">
     <span style="padding-right: 10px;">User:</span>
-    <p-dropdown [options]="Users" filter="true" optionLabel="label" resetFilterOnHide="true" placeholder='Select User'
-      [(ngModel)]="selectedCopyUsers" (onChange)="userCopyChange()">
-    </p-dropdown>
+    <!-- <p-dropdown [options]="Users" filter="true" optionLabel="label" resetFilterOnHide="true" placeholder='Select User' [disabled]="selectedUsers?.disabled"
+      [(ngModel)]="selectedCopyUsers" (onChange)="userCopyChange(Users)">
+    </p-dropdown> -->
+    <p-dropdown [options]="Users" [(ngModel)]="selectedCopyUsers" filter="true" optionLabel="label"  resetFilterOnHide="true" placeholder='Select User' (onChange)="userCopyChange(Users)">
+      <ng-template let-user pTemplate="item">
+          <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+              <div>{{user.label}}</div>
+          </div>
+      </ng-template>
+  </p-dropdown>
   </div>
 
-  <div class="userRole">
-    <textarea pInputTextarea [(ngModel)]="permissions2"></textarea>
+  <div class="userRole savebtn">
+    <p-button label="Save" (onClick)="save()"></p-button>
   </div>
-
 </div>
 
-<div class="userRole">
-  <p-button label="Save" (onClick)="save()"></p-button>
+<div class="p-grid mt-20">
+  <span class="p-col-2" style="margin-left: 70px;">{{permissions1}}</span>
+  <span class="p-col-2">{{permissions2}}</span>
 </div>

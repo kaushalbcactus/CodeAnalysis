@@ -21,10 +21,13 @@ import { AdminCommonService } from 'src/app/admin/services/admin-common.service'
 export class UserRoleMappingComponent implements OnInit {
   userRoleColumns = [];
   userRoleRows = [];
-  users = [];
-  groups = [];
+  users = [{label: 'User 1' , value: 'User 1'},
+  {label: 'User 2' , value: 'User 2'},
+  {label: 'User 3' , value: 'User 3'},
+  {label: 'User 4' , value: 'User 4'},
+  {label: 'User 5' , value: 'User 5'}];
   selectedUser: any;
-  selectedRoles: string[] = [];
+  selectedRoles: any;
   userRoleColArray = {
     User: [],
     Role: [],
@@ -32,15 +35,15 @@ export class UserRoleMappingComponent implements OnInit {
     By: [],
     Date: []
   };
+  roles = [{ label: 'Role 1', value: 'Role 1' },
+  { label: 'Role 2', value: 'Role 2' },
+  { label: 'Role 3', value: 'Role 3' },
+  { label: 'Role 4', value: 'Role 4' },
+  { label: 'Role 5', value: 'Role 5' }];
 
-  constructor(
-    private datepipe: DatePipe,
-    private spServices: SPOperationService,
-    private constants: ConstantsService,
-    private adminConstants: AdminConstantService,
-    private adminObject: AdminObjectService,
-    private adminService: AdminCommonService
-  ) { }
+  constructor(private datepipe: DatePipe) { }
+
+
   ngOnInit() {
     this.userRoleColumns = [
       { field: 'User', header: 'User' },
@@ -154,14 +157,14 @@ export class UserRoleMappingComponent implements OnInit {
     });
   }
 
+  userChange() {
+    this.selectedRoles = ['Role 1',
+      'Role 2'];
+  }
+
   save() {
     console.log(this.selectedUser);
     console.log(this.selectedRoles);
   }
-
-  downloadExcel(ur) {
-    ur.exportCSV();
-  }
-
 }
 

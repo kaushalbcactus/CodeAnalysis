@@ -533,33 +533,33 @@
     Add Vendor
   </p-header>
   <form [formGroup]='addVendor'>
-    <!-- <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Vendor Name</div>
-      <div class="ui-grid-col-4">
+    <!-- <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Vendor Name</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="vendorName" placeholder="Vendor Name" pInputText>
         <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && !addVendor.controls['vendorName'].valid">
           Vendor Name is required</div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Reason for Engagement</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Reason for Engagement</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="reasonforEngagement" placeholder="Reason for Engagement" pInputText>
         <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && !addVendor.controls['reasonforEngagement'].valid">
           Reason for Engagement is required</div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Sp Project Code</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Sp Project Code</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="projectCode" placeholder="Sp Project Code" pInputText>
         <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && !addVendor.controls['projectCode'].valid">
           Sp Project Code is required</div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Project Type</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Project Type</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="projectType" placeholder="Project Type"
           pInputText>
         <div class="error"
@@ -567,25 +567,25 @@
           Project Type is required</div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Scope</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Scope</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="scope" placeholder="Scope" pInputText>
         <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && !addVendor.controls['scope'].valid">
           Scope is required</div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Cost Details</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Cost Details</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="costDetails" placeholder="Cost Details" pInputText>
         <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && !addVendor.controls['costDetails'].valid">
           Cost Details is required</div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Contract</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Contract</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="contract" placeholder="Contract" pInputText>
         <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && !addVendor.controls['contract'].valid">
           Contract is required</div>
@@ -757,7 +757,7 @@
     </div>
   </form>
   <p-footer>
-    <p-button label="Submit" type="submit" (click)="saveVendor(addVendor)"></p-button>
+    <p-button label="Submit" type="button" (click)="saveVendor(addVendor)"></p-button>
   </p-footer>
 </p-dialog>
 
@@ -766,25 +766,25 @@
     Add QMS Template
   </p-header>
   <form [formGroup]='addQmsTemplate'>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Template Name</div>
-      <div class="ui-grid-col-2">
+    <div class="p-grid mt-20">
+      <div class="p-col-2">Template Name</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="30" formControlName="templateName" placeholder="Template Name" pInputText>
         <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.templateName.errors">
                 <div *ngIf="addQmsTemplate.controls.templateName.errors.required">
           Template Name is required</div>
         </div>
       </div>
-      <!-- <div class="ui-grid-col-2 mr-10">Tooltip</div>
-      <div class="ui-grid-col-2">
+      <div class="p-col-2">Tooltip</div>
+      <div class="p-col-2">
         <input class="mr-5" type="text" size="30" formControlName="tooltip" placeholder="Tooltip" pInputText>
         <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && !addQmsTemplate.controls['tooltip'].valid">
           Tooltip is required</div>
-      </div> -->
+      </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Parameter 1</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Parameter 1</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="parameter1" placeholder="Parameter 1" pInputText>
         <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter1.errors">
             <div *ngIf="addQmsTemplate.controls.parameter1.errors.required">
@@ -792,9 +792,9 @@
         </div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Parameter 2</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Parameter 2</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="parameter2" placeholder="Parameter 2" pInputText>
         <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter2.errors">
             <div *ngIf="addQmsTemplate.controls.parameter2.errors.required">
@@ -802,9 +802,9 @@
         </div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Parameter 3</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Parameter 3</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="parameter3" placeholder="Parameter 3" pInputText>
         <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter3.errors">
             <div *ngIf="addQmsTemplate.controls.parameter3.errors.required">
@@ -812,9 +812,9 @@
         </div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Parameter 4</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Parameter 4</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="parameter4" placeholder="Parameter 4" pInputText>
         <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter4.errors">
             <div *ngIf="addQmsTemplate.controls.parameter4.errors.required">
@@ -822,9 +822,9 @@
       </div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Parameter 5</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Parameter 5</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="parameter5" placeholder="Parameter 5" pInputText>
         <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter5.errors">
             <div *ngIf="addQmsTemplate.controls.parameter5.errors.required">
@@ -832,9 +832,9 @@
         </div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Parameter 6</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Parameter 6</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="parameter6" placeholder="Parameter 6" pInputText>
         <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter6.errors">
             <div *ngIf="addQmsTemplate.controls.parameter6.errors.required">
@@ -842,9 +842,9 @@
         </div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Parameter 7</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Parameter 7</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="parameter7" placeholder="Parameter 7" pInputText>
         <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter7.errors">
             <div *ngIf="addQmsTemplate.controls.parameter7.errors.required">
@@ -852,9 +852,9 @@
         </div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Parameter 8</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Parameter 8</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="parameter8" placeholder="Parameter 8" pInputText>
         <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter8.errors">
             <div *ngIf="addQmsTemplate.controls.parameter8.errors.required">
@@ -862,9 +862,9 @@
         </div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Parameter 9</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Parameter 9</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="parameter9" placeholder="Parameter 9" pInputText>
         <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter9.errors">
             <div *ngIf="addQmsTemplate.controls.parameter9.errors.required">
@@ -872,19 +872,19 @@
         </div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Parameter 10</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Parameter 10</div>
+      <div class="p-col-4">
         <input class="mr-5" type="text" size="60" formControlName="parameter10" placeholder="Parameter 10" pInputText>
         <div class="error" *ngIf="referenceDataObject.isQmsTemplateFormSubmit && addQmsTemplate.controls.parameter10.errors">
             <div *ngIf="addQmsTemplate.controls.parameter10.errors.required">
           Parameter 10 is required</div>
         </div>
       </div>
-    </div> -->
+    </div>
   </form>
   <p-footer>
-    <p-button label="Submit" type="submit" (click)="saveQmsTemplate(addQmsTemplate)"></p-button>
+    <p-button label="Submit" type="button" (click)="saveQmsTemplate(addQmsTemplate)"></p-button>
   </p-footer>
 </p-dialog>
 
@@ -893,9 +893,9 @@
     Add Standard Template
   </p-header>
   <form [formGroup]='addStandardTemplate'>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Vendor Name</div>
-      <div class="ui-grid-col-2">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Vendor Name</div>
+      <div class="p-col-2">
         <input class="mr-5" type="text" size="30" formControlName="vendorName" placeholder="Vendor Name" pInputText>
         <div class="error" *ngIf="referenceDataObject.isStandardTemplateFormSubmit && addStandardTemplate.controls.vendorName.errors">
                 <div *ngIf="addStandardTemplate.controls.vendorName.errors.required">
@@ -903,9 +903,9 @@
         </div>
       </div>
     </div>
-    <div class="ui-grid-row mt-20">
-      <div class="ui-grid-col-2 mr-10">Plan</div>
-      <div class="ui-grid-col-4">
+    <div class="p-grid mt-20">
+      <div class="p-col-2 mr-10">Plan</div>
+      <div class="p-col-4">
         <textarea rows="5" cols="60" formControlName="plan" pInputTextarea></textarea>
         <div class="error" *ngIf="referenceDataObject.isStandardTemplateFormSubmit && addStandardTemplate.controls.plan.errors">
             <div *ngIf="addStandardTemplate.controls.plan.errors.required">
@@ -915,6 +915,6 @@
     </div>
   </form>
   <p-footer>
-    <p-button label="Submit" type="submit" (click)="saveStandardTemplate(addStandardTemplate)"></p-button>
+    <p-button label="Submit" type="button" (click)="saveStandardTemplate(addStandardTemplate)"></p-button>
   </p-footer>
 </p-dialog>

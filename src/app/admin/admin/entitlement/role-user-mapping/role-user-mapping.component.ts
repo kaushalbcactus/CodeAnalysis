@@ -12,18 +12,18 @@ export class RoleUserMappingComponent implements OnInit {
   roleUserColumns = [];
   roleUserRows = [];
 
-  groups = [{ label: 'Group 1', value: 'Group 1' },
-  { label: 'Group 2', value: 'Group 2' },
-  { label: 'Group 3', value: 'Group 3' },
-  { label: 'Group 4', value: 'Group 4' },
-  { label: 'Group 5', value: 'Group 5' }];
+  roles = [{ label: 'Role 1', value: 'Role 1' },
+  { label: 'Role 2', value: 'Role 2' },
+  { label: 'Role 3', value: 'Role 3' },
+  { label: 'Role 4', value: 'Role 4' },
+  { label: 'Role 5', value: 'Role 5' }];
 
   Users = [{ label: 'User 1', value: 'User 1' },
   { label: 'User 2', value: 'User 2' },
   { label: 'User 3', value: 'User 3' },
   { label: 'User 4', value: 'User 4' },
   { label: 'User 5', value: 'User 5' }];
-  selectedGroup: any;
+  selectedRole: any;
   selectedUsers: any;
 
   roleUserColArray = {
@@ -64,7 +64,6 @@ export class RoleUserMappingComponent implements OnInit {
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
-          // tslint:disable-next-line: align
           value: this.datepipe.transform(a.Date, 'MMM d, yyyy')
         };
         return b;
@@ -81,7 +80,7 @@ export class RoleUserMappingComponent implements OnInit {
     });
   }
 
-  groupChange() {
+  roleChange() {
     this.selectedUsers = ['User 1',
       'User 2',
       'User 4'];
@@ -92,12 +91,8 @@ export class RoleUserMappingComponent implements OnInit {
   }
 
   save() {
-    console.log(this.selectedGroup);
+    console.log(this.selectedRole);
     console.log(this.selectedUsers);
-  }
-
-  downloadExcel(ru) {
-    ru.exportCSV();
   }
 
 }

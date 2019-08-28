@@ -33,9 +33,9 @@ export class DeliverableTypesComponent implements OnInit {
   ngOnInit() {
     this.deliverableTypesColumns = [
       // { field: 'Sr', header: 'Sr.No.' },
-      { field: 'DeliverableType', header: 'Deliverable Type' },
-      { field: 'LastUpdated', header: 'Last Updated' },
-      { field: 'LastUpdatedBy', header: 'Last Updated By' },
+      { field: 'DeliverableType', header: 'Deliverable Type' , visibility: true},
+      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
+      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
     ];
 
     this.deliverableTypesRows = [
