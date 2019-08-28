@@ -60,12 +60,6 @@
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Status'" [options]="proformaColArray.Status" defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-
-                        <!-- <p-dropdown resetFilterOnHide="true"[options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">
-                <ng-template let-item pTemplate="item">
-                  <span>{{item.value}}</span>
-                </ng-template>
-              </p-dropdown> -->
                     </ng-container>
                 </th>
             </tr>
@@ -83,7 +77,7 @@
                         {{rowData[col.field]}}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'ProformaDate'">
-                        <p>{{rowData[col.field] | date:'MMM dd, yyyy' }}</p>
+                        {{rowData[col.field] | date:'MMM dd, yyyy' }}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'ProformaNumber'">
                         <a *ngIf="rowData['FileURL']" [href]="rowData['FileURL']" target="_blank">

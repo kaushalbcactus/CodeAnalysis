@@ -60,72 +60,6 @@
     </div>
 </div>
 
-
-<!-- <div class="p-grid">
-    <div class="p-col-12 p-md-12 p-lg-12">
-        <div class="inner-detail">
-            <div class="p-col-8 p-md-8 p-lg-8 p-0">
-                <div class="inner-box">
-                    <div class="box">
-                        Select PO &nbsp;
-                        <p-dropdown resetFilterOnHide="true" [options]="purchaseOrders"
-                            [(ngModel)]="selectedPurchaseNumber" filter="true" placeholder="Select PO"
-                            optionLabel="Number" [showClear]="true" (onChange)="onChange($event)">
-                            <ng-template let-item pTemplate="selectedItem">
-                                <span style="vertical-align:middle">{{item.label}}
-                                    {{item.value.Name ? ' -- '+ item.value.Name:'' }}
-                                </span>
-                            </ng-template>
-                            <ng-template let-item pTemplate="item">
-                                <div class="ui-helper-clearfix" style="position: relative;">
-                                    <div
-                                        style="font-size:14px;float: left;margin-top:4px;width: 300px;line-height: 20px;">
-                                        {{item.label}} {{item.value.Name ? ' -- '+ item.value.Name:'' }}
-                                    </div>
-                                </div>
-                            </ng-template>
-                        </p-dropdown>
-                    </div>
-                </div>
-                <div class="inner-box" style="margin-top: 27px;">
-                    <div class="box">
-                        Revenue Balance : &nbsp;
-                        <label style="margin: 0 8px;">{{po.revenuBalance}}</label>
-                    </div>
-                </div>
-                <div class="inner-box" style="margin-top: 27px;">
-                    <div class="box">
-                        OOP Balance : &nbsp;
-                        <label style="margin: 0 8px;">{{po.oopBalance}}</label>
-                    </div>
-                </div>
-                <div class="inner-box" style="margin-top: 27px;">
-                    <div class="box">
-                        # Item : &nbsp;
-                        <label *ngIf="selectedAllRowData"
-                            style="color:red;margin: 0 8px;">{{selectedAllRowData.length}}</label>
-                        Total Amount : &nbsp;
-                        <label *ngIf="selectedAllRowData" style="color:red;margin: 0 8px;">{{selectedTotalAmt}}</label>
-                    </div>
-                </div>
-            </div>
-            <div class="p-col-4 p-md-4 p-lg-4 f-right" style="padding: 0 !important">
-                <div class="inner-box" style="display: inline-flex">
-                    <div class="box">
-                        <button type="button" pButton icon="fa fa-plus-circle" iconPos="left" label="Add to Proforma"
-                            (click)="addProforma()"></button>
-                    </div>
-                    <div class="box">
-                        <i style="font-size: 1.8em;cursor: pointer;"
-                            (click)=" fdDataShareServie.convertToExcelFile(cnf)" title="Export To Excel"
-                            class="fa fa-fw fa-file-excel-o"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> -->
-<!-- <button (click)="checkSelectedRowData()">Check Data</button> -->
 <div class="financeTable">
     <p-table #cnf [columns]="confirmCols" [value]="confirmedRes" [paginator]="false" 
         (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)" [(selection)]="selectedAllRowData"
@@ -223,7 +157,7 @@
                         {{rowData[col.field]}}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'ScheduledDate'">
-                        <p>{{rowData[col.field] | date:'MMM dd, yyyy' }}</p>
+                        {{rowData[col.field] | date:'MMM dd, yyyy' }}
                     </ng-container>
                     <ng-container *ngIf="col.field == ''">
                         <div>

@@ -603,6 +603,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.fdConstantsService.fdComponent.selectedEditObject.ID = data.Id;
                 this.fdConstantsService.fdComponent.selectedEditObject.Type = 'Proforma';
                 this.fdConstantsService.fdComponent.selectedComp = this;
+                //proformaObj.saveObj.serviceDetailHeader = 'PROFORMA DETAILS';
+                this.editorRef.serviceDetailHeader = 'PROFORMA DETAILS';
                 switch (data.Template) {
                     case 'US':
                         this.editorRef.JapanTemplateCopy = {};
@@ -610,6 +612,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                         this.editorRef.USTemplateCopy = proformaObj.saveObj;
                         if (this.editorRef.USTemplateCopy.appendix) {
                             this.editorRef.showAppendix = true;
+                            this.setAppendixCol(this.editorRef.USTemplateCopy.appendix);
                         } else {
                             this.editorRef.showAppendix = false;
                         }
@@ -624,6 +627,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                         this.editorRef.JapanTemplateCopy = proformaObj.saveObj;
                         if (this.editorRef.JapanTemplateCopy.appendix) {
                             this.editorRef.showAppendix = true;
+                            this.setAppendixCol(this.editorRef.JapanTemplateCopy.appendix);
                         } else {
                             this.editorRef.showAppendix = false;
                         }
@@ -639,6 +643,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                         this.editorRef.IndiaTemplateCopy = proformaObj.saveObj;
                         if (this.editorRef.IndiaTemplateCopy.appendix) {
                             this.editorRef.showAppendix = true;
+                            this.setAppendixCol(this.editorRef.IndiaTemplateCopy.appendix);
                         } else {
                             this.editorRef.showAppendix = false;
                         }
@@ -653,6 +658,33 @@ export class ProformaComponent implements OnInit, OnDestroy {
         } else if (event.item.label === 'Details') {
             this.rightSideBar = !this.rightSideBar;
             return;
+        }
+    }
+
+    setAppendixCol(sContent) {
+        var oDiv = document.createElement('div');
+        oDiv.innerHTML = sContent;
+        var oTable = oDiv.querySelector('table');
+        if (oTable) {
+            let colNumber = '';
+            const count = oTable.rows[0].cells.length;
+            switch (count) {
+                case 3:
+                    colNumber = 'col3';
+                    break;
+                case 4:
+                    colNumber = 'col4';
+                    break;
+                case 5:
+                    colNumber = 'col5';
+                    break;
+                default:
+                    break;
+            }
+            this.editorRef.setColumnClass(colNumber);
+        }
+        else {
+            this.editorRef.setColumnClass('');
         }
     }
 
@@ -824,7 +856,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         let sNum = '000' + invCounter;
         let sFinalNum = sNum.substr(sNum.length - 4);
         this.invoiceNumber = cleItem.Acronym + '-' + mmyy + '-' + sFinalNum;
-        if(this.selectedRowItem.ProformaType === 'oop') {
+        if (this.selectedRowItem.ProformaType === 'oop') {
             this.invoiceNumber = this.invoiceNumber + '-OOP';
         }
         console.log('this.invoiceNumber ', this.invoiceNumber);
@@ -1219,8 +1251,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
             const date = this.createProforma_form.value.ProformaDate ? new Date(this.createProforma_form.value.ProformaDate) : new Date();
             proformaDate = this.datePipe.transform(date, 'MM') + this.datePipe.transform(date, 'yy');
             // console.log('proformaDate,', proformaDate);
-            let finalVal = isOOP ? (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum + '-OOP') : 
-                                   (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum);
+            let finalVal = isOOP ? (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum + '-OOP') :
+                (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum);
             this.createProforma_form.get('ProformaNumber').setValue(finalVal);
         }
     }

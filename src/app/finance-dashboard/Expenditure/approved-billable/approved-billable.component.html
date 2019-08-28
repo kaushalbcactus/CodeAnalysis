@@ -17,8 +17,6 @@
                     (click)="openPopup('markAsPaymentModal')" style="float:left"></button>
             </div>
             <div class="box">
-                <!-- <button pButton type="button" label="Export" class="ui-button-raised"
-                    (click)="fdDataShareServie.convertToExcelFile(ab)"></button> -->
                 <i style="font-size: 1.8em;cursor: pointer;" (click)=" fdDataShareServie.convertToExcelFile(ab)"
                     title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
             </div>
@@ -112,10 +110,6 @@
 
             <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility">
                 {{rowData[col.field]}}
-                <!-- <ng-container *ngIf="col.field == '' ">
-              <p-checkbox selectionMode="multiple" binary="{{selectedAllRows}}"
-                (onChange)="selectOneByOne(rowData, $event)"></p-checkbox>
-            </ng-container> -->
                 <ng-container *ngIf="col.field == ''">
                         <div>
                             <p-menu #popupMenu [popup]="true"  [model]="items" styleClass="borderMenu"></p-menu>

@@ -51,6 +51,7 @@ export class EditorComponent implements OnInit {
     indiaHtmlObject: any = {};
     USHtmlObject: any = {};
     showAppendix = false;
+    serviceDetailHeader = '';
     private subscription: Subscription = new Subscription();
     constructor(
         private common: CommonService,
@@ -322,6 +323,7 @@ export class EditorComponent implements OnInit {
         </tbody>
         </table>
         <div class="invoice-table">
+        <div class="col4">
         <div id="appendix">
         <figure>
         <table>
@@ -354,6 +356,7 @@ export class EditorComponent implements OnInit {
             </tbody>
         </table>
         </figure>
+        </div>
         </div>
         </div>`,
             header: `<div>
@@ -436,14 +439,7 @@ export class EditorComponent implements OnInit {
             </td>
         </tr>
         </tbody> </table> </figure>`,
-            //     contactDetails2: `<tbody>
-            // <tr>
-            //     <td>
-            //         <p><strong>Address : </strong>[[Address1]]</p>
-            //         [[AddressMulti]]
-            //     </td>
-            // </tr>
-            // </tbody>`,
+            
             address2: `<p>[[Address2]]</p>`,
             address3: `<p>[[Address3]]</p>`,
             address4: `<p>[[Address4]]</p>`,
@@ -636,7 +632,7 @@ export class EditorComponent implements OnInit {
             <tbody>
                 <tr>
                     <td class="table-heading">
-                        Proforma DETAIL
+                    PROFORMA DETAIL
                     </td>
                 </tr>
             </tbody>
@@ -774,7 +770,8 @@ export class EditorComponent implements OnInit {
         </tbody>
     </table>
     <div class="invoice-table">
-        <div id="appendix" class="col3">
+        <div class="col3">
+        <div id="appendix" >
         <figure>
         <table>
         <thead>
@@ -795,6 +792,7 @@ export class EditorComponent implements OnInit {
         </tbody>
         </table>
         </figure>
+        </div>
         </div>
     </div>`,
             header: `<div>
@@ -944,24 +942,77 @@ export class EditorComponent implements OnInit {
                 <title></title>
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
                 <style>
-                    body {font-family: Verdana !important;}    
-                    body .ui-widget {font-family: Verdana !important;}
-                    body .ui-widget-content p {font-size: 16px;}
-                    body p {margin:0;line-height:1.5;}
-                    table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
-                    .logo-img{width: 200px; height: auto; margin: auto}
-                    .header-left{width: 50%;padding-left: 40px;font-size: 15px;line-height: 2;font-weight: 500;margin: 0;text-align: left;}
-                    .header-left label{font-size: 26px; font-weight: 500}
-                    .header-right{width:10%; text-align:right; display:table-cell;}
-                    .header-right-label {margin-right: 40px;float: right;}
-                    .header-right p, .header-right-label p{font-weight: bold;}
-                    .header-center {font-size: 22px;font-weight: 500;}
-                    header div table tbody tr{background: #c5d3e5}
-                    #header label {text-transform: uppercase;}
+                    #header {
+                        font-family: Verdana !important;
+                    }
+                    
+                    #header p {
+                        margin: 0;
+                        line-height: 1.5;
+                    }
+                    
+                    #header table {
+                        border-collapse: collapse;
+                        background: #fff;
+                        width: 100%;
+                        margin: 0px;
+                    }
+                    
+                    #header .logo-img {
+                        width: 200px; 
+                        height: auto; 
+                        margin: auto
+                    }
+                    
+                    .header-left {
+                        width: 50%;
+                        padding-left: 40px;
+                        font-size: 15px;
+                        line-height: 2;
+                        font-weight: 500;
+                        margin: 0;
+                        text-align: left;
+                    }
+                    
+                    .header-left label {
+                        font-size: 26px;
+                        font-weight: 500
+                    }
+                    
+                    .header-right {
+                        width: 10%;
+                        text-align: right;
+                        display: table-cell;
+                    }
+                    
+                    .header-right-label {
+                        margin-right: 40px;
+                        float: right;
+                    }
+                    
+                    .header-right p,
+                    .header-right-label p {
+                        font-weight: bold;
+                    }
+                    
+                    .header-center {
+                        font-size: 22px;
+                        font-weight: 500;
+                    }
+                    
+                    #header div table tbody tr {
+                        background: #c5d3e5
+                    }
+                    
+                    #header label {
+                        text-transform: uppercase;
+                    }
+                    
                     #header .header-left span {
                         width: 115px !important;
-                        display: inline-block; 
+                        display: inline-block;
                     }
+                    
                     #header .header-left.indHeader span {
                         width: 145px !important;
                     }
@@ -978,18 +1029,58 @@ export class EditorComponent implements OnInit {
             <title></title>
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
             <style>
-                body {font-size: 16px; color: #333;background-color: #fff;font-family: Verdana !important;}
-                body .ui-widget {font-family: Verdana !important;}
-                body .ui-widget-content p {font-size: 16px;}
-                body p {margin:0;line-height:1.5;}
-                table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
-                .footer-table{background: #c5d3e5;text-align: center;font-size: 15px;line-height: 24px;}
-                .footer-table a{text-decoration: none;color: blue;}
-                footer table:first-child{margin-top:10px}
-                footer table:first-child tr td{font-size: 14px;text-align: center;}
-                footer {height:175px;background-color:#c5d3e5}
-                footer table:last-child {margin-top: 8px;}
-                footer table:last-child tr td {padding: 4px;}
+                #footer {
+                    font-size: 16px;
+                    color: #333;
+                    background-color: #fff;
+                    font-family: Verdana !important;
+                }
+                
+                #footer {
+                    font-family: Verdana !important;
+                }
+                
+                #footer p {
+                    margin: 0;
+                    line-height: 1.5;
+                }
+                
+                #footer table {
+                    border-collapse: collapse;
+                    width: 100%;
+                    margin: 0px;
+                }
+                
+                .footer-table {
+                    background: #c5d3e5;
+                    text-align: center;
+                    font-size: 15px;
+                    line-height: 24px;
+                }
+                
+                .footer-table a {
+                    text-decoration: none;
+                    color: blue;
+                }
+                
+                footer table:first-child {
+                    margin-top: 10px
+                }
+                
+                footer table:first-child tr td {
+                    font-size: 14px;
+                    text-align: center;
+                }
+                footer {
+                    height:175px;
+                    background-color:#c5d3e5
+                }
+                footer table:last-child {
+                    margin-top: 8px !important;
+                } 
+                footer table:last-child tr td {
+                    padding: 5px;
+                }
             </style>
     </head>
     <body>
@@ -1002,123 +1093,339 @@ export class EditorComponent implements OnInit {
                 <title></title>
                 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
                 <style>
-                body {font-size: 16px; color: #333;background-color: #fff;font-family: Verdana !important;}
-table{border-collapse: collapse;background: #fff; width:100%; margin: 0px;}
-body p {margin:0;line-height:1.5;}
-.table-heading{width: 100%;  text-align: center;font-weight: bold;background: #d8d8d8; font-size: 16px;
-color: #000; padding: 10px;}
-.contact_details p,.contact_details_japan p{padding-top: 3px;padding-bottom: 3px;}
-.contact_details-table figure:first-child{width: 47%;margin: 0px !important; display: inline-block;vertical-align: top;};
-.contact_details-table figure:nth-child(3) table{width: 100%;}
-.referenceDetail figure,.appendix figure,.contact_details-table figure,figure{display: contents;}
-.contact_details-table table:first-child p{margin: 0;line-height: 24px;font-size: 16px;}
-.contact_details-table table:first-child tr td{margin: 0;line-height: 24px;font-size: 16px;
-  border: none !important;
-  padding: 5px;}
-p span{display: inline-flex;}
-.contact-detail-table-left {width: 50%;float: left;margin-bottom: 20px;}
-.contact-detail-table-left p,
-.contact-detail-table-right p {margin: 0;line-height: 24px;font-size: 15px;}
-.contact-detail-table-right {float: right;text-align: left;width: 50%;}
-.purchaseOrder p{height:25px;font-size: 16px;}
-.referenceDetail {height: 50px; font-size: 16px;}
-.referenceDetail table {width: 94%;}
-.contact-detail-table{padding-left: 30px;}
-.contact-detail-table p{margin: 0;line-height: 24px;font-size: 16px;}
-ul{line-height: 26px;padding-left:20px;list-style: unset;}
-.paymentDetails,.column-flex{display: inline-flex;}
-.invoice-table{border-collapse: collapse;width: 100%;}
-.invoice-table td{border:1px solid #000 !important;padding: 0; vertical-align: middle;}
-.invoice-table th{border:1px solid #000 !important;padding: 0; vertical-align: middle;}
-.invoice-table table thead tr{text-align: center; font-size: 16px; font-weight: bold;}
-.invoice-table table thead tr th{padding: 10px 12px; text-align: center}
-.invoice-table table tbody tr td{text-align: left;font-size: 16px;padding: 16px 10px;border:1px solid #000 !important; vertical-align: middle;}
-.invoice-table table tfoot tr td{text-align: center;font-size: 16px;padding: 16px 10px;font-weight: bold;}
-.invoice-table table tbody tr:last-child td:last-child{font-weight: bold;}
-.invoice-table table tbody tr td:last-child{font-weight: bold;width: 14%;text-align: right;}
-.invoice-table table tbody tr td:first-child{text-align: left; width: 14%}
-.appendix table tbody tr:last-child td{font-weight: normal;}
-.appendix table tbody tr td:last-child{font-weight: bold;}
-.signature-table{float: right;text-align: right;margin-right: 10px;
-background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M5U1nFCgVaguRgo4S0B3-L67nYrXIgtxcYoJEba9w);
- background-repeat: no-repeat;background-position: right;}
-.signature-table p{margin:0;line-height: 24px;}
-.paymentInstructions label {font-size: 16px;font-weight: bold;display: table;margin-top: 20px;}
-.col3 table tr:first-child td:first-child{width:10%;}
-.col3 table tr:first-child td:nth-child(2){width:34%;}
-.col4 table tr:first-child td:first-child{width:16%;}
-.col10 figure table tr:first-child td{font-weight: bold;}
-.col10 figure table tr:first-child td:first-child{width:10%;}
-.col10 figure table tr:first-child td:nth-child(2){width:6%;}
-.col10 figure table tr:first-child td:nth-child(3){width:8%;}
-.col10 figure table tr:first-child td:nth-child(4){width:10%;}
-.col10 figure table tr:first-child td:nth-child(5){width:12%;}
-.col10 figure table tr:first-child td:nth-child(6){width:10%;}
-.col10 figure table tr:first-child td:nth-child(7){width:9%;}
-.col10 figure table tr:first-child td:nth-child(8){width:10%;}
-.col10 figure table tr:first-child td:nth-child(9){width:10%;}
-.col10 figure table tr:first-child td:nth-child(10){width:15%;}
-.proformaDetail table tbody tr td{text-align: left;padding: 16px 10px;}
-.proformaDetail table tbody tr:last-child td:nth-child(2){text-align: center; font-weight: bold;}
-.indiaPurchase td:first-child p strong {
-  width: 235px;
-  display: inline-block;
-}
-#contact_details table tbody tr td p strong, #contact_details p strong,
-#contact_details table tbody tr td strong, #contact_details strong
- {
-  display:inline-block;
-  width: 150px;
-}
-#contact_details table tbody tr td p + p {
-  padding-left: 150px;
-}
-.indContact #contact_details figure:first-child table tbody tr td p strong,
-.indContact #contact_details figure:last-child table tbody tr td p strong,
-.indContact #contact_details figure:first-child table tbody tr td strong,
-.indContact #contact_details figure:last-child table tbody tr td strong {
-  width: 160px;
-}
-.indContact #contact_details figure:nth-child(2) table tbody tr td p strong,
-.indContact #contact_details figure:nth-child(2) table tbody tr td strong {
-  width: 125px;
-}
-.indContact #contact_details figure:nth-child(2) table tbody tr td a {
-  margin-left: -5px;
-}
-.indContact #contact_details figure:last-child {
- margin-left: 3px !important;
-}
-.indContact #contact_details figure:last-child table tbody tr td p + p {
-  padding-left: 160px;
-}
-
-.indContact figure {
-  margin: 0px !important;
-  vertical-align: top;
-  display: inline-block;
-}
-
-.usContact figure:last-child {
-  width: 44% !important;
-  display: inline-block;
-  margin: 0px;
-  vertical-align: top;
-}
-
-.indContact figure:first-child {
-  width: 50% !important;
-}
-
-.indContact figure:nth-child(2) {
-  width: 44% !important;
-}
-
-.indContact figure:last-child {
-  width: 100% !important;
-}
-
-.invoice-table table, #appendix figure {width: 100% !important; margin: 0px !important;};
+                    #main_content {
+                        font-size: 16px;
+                        color: #333;
+                        background-color: #fff;
+                        font-family: Verdana !important;
+                    }
+                    
+                    #main_content table {
+                        border-collapse: collapse;
+                        background: #fff;
+                        width: 100%;
+                        margin: 0px;
+                    }
+                    
+                    #main_content p {
+                        margin: 0;
+                        line-height: 1.5;
+                    }
+                    
+                    .table-heading {
+                        width: 100%;
+                        text-align: center;
+                        font-weight: bold;
+                        background: #d8d8d8;
+                        font-size: 16px;
+                        color: #000;
+                        padding: 10px;
+                    }
+                    
+                    .contact_details p,
+                    .contact_details_japan p {
+                        padding-top: 3px;
+                        padding-bottom: 3px;
+                    }
+                    
+                    .contact_details-table figure:first-child {
+                        width: 47%;
+                        margin: 0px !important;
+                        display: inline-block;
+                        vertical-align: top;
+                    }
+                    
+                    ;
+                    .contact_details-table figure:nth-child(3) table {
+                        width: 100%;
+                    }
+                    
+                    .referenceDetail figure,
+                    .appendix figure,
+                    .contact_details-table figure,
+                    figure {
+                        display: contents;
+                    }
+                    
+                    .contact_details-table table:first-child p {
+                        margin: 0;
+                        line-height: 24px;
+                        font-size: 16px;
+                    }
+                    
+                    .contact_details-table table:first-child tr td {
+                        margin: 0;
+                        line-height: 24px;
+                        font-size: 16px;
+                        border: none !important;
+                        padding: 5px;
+                    }
+                    
+                    #main_content p span {
+                        display: inline-flex;
+                    }
+                    
+                    .contact-detail-table-left {
+                        width: 50%;
+                        float: left;
+                        margin-bottom: 20px;
+                    }
+                    
+                    .contact-detail-table-left p,
+                    .contact-detail-table-right p {
+                        margin: 0;
+                        line-height: 24px;
+                        font-size: 15px;
+                    }
+                    
+                    .contact-detail-table-right {
+                        float: right;
+                        text-align: left;
+                        width: 50%;
+                    }
+                    
+                    .purchaseOrder p {
+                        height: 25px;
+                        font-size: 16px;
+                    }
+                    
+                    .referenceDetail {
+                        height: 50px;
+                        font-size: 16px;
+                    }
+                    
+                    .referenceDetail table {
+                        width: 94%;
+                    }
+                    
+                    .contact-detail-table {
+                        padding-left: 30px;
+                    }
+                    
+                    .contact-detail-table p {
+                        margin: 0;
+                        line-height: 24px;
+                        font-size: 16px;
+                    }
+                    
+                    #main_content ul {
+                        line-height: 26px;
+                        padding-left: 20px;
+                        list-style: unset;
+                    }
+                    
+                    .paymentDetails,
+                    .column-flex {
+                        display: inline-flex;
+                    }
+                    
+                    .invoice-table {
+                        border-collapse: collapse;
+                        width: 100%;
+                    }
+                    
+                    .invoice-table td {
+                        border: 1px solid #000 !important;
+                        padding: 0;
+                        vertical-align: middle;
+                    }
+                    
+                    .invoice-table th {
+                        border: 1px solid #000 !important;
+                        padding: 0;
+                        vertical-align: middle;
+                    }
+                    
+                    .invoice-table table thead tr {
+                        text-align: center;
+                        font-size: 16px;
+                        font-weight: bold;
+                    }
+                    
+                    .invoice-table table thead tr th {
+                        padding: 10px 12px;
+                        text-align: center
+                    }
+                    
+                    .invoice-table table tbody tr td {
+                        text-align: left;
+                        font-size: 16px;
+                        padding: 16px 10px;
+                        border: 1px solid #000 !important;
+                        vertical-align: middle;
+                    }
+                    
+                    .invoice-table table tfoot tr td {
+                        text-align: center;
+                        font-size: 16px;
+                        padding: 16px 10px;
+                        font-weight: bold;
+                    }
+                    
+                    .invoice-table table tbody tr:last-child td:last-child {
+                        font-weight: bold;
+                    }
+                    
+                    .invoice-table table tbody tr td:last-child {
+                        font-weight: bold;
+                        width: 17%;
+                        text-align: right;
+                    }
+                    
+                    .invoice-table table tbody tr td:first-child {
+                        text-align: left;
+                        width: 15%
+                    }
+                    
+                    .appendix table tbody tr:last-child td {
+                        font-weight: normal;
+                    }
+                    
+                    .appendix table tbody tr td:last-child {
+                        font-weight: bold;
+                    }
+                    
+                    .signature-table {
+                        float: right;
+                        text-align: right;
+                        margin-right: 10px;
+                        background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M5U1nFCgVaguRgo4S0B3-L67nYrXIgtxcYoJEba9w);
+                        background-repeat: no-repeat;
+                        background-position: right;
+                    }
+                    
+                    .signature-table p {
+                        margin: 0;
+                        line-height: 24px;
+                    }
+                    
+                    .paymentInstructions label {
+                        font-size: 16px;
+                        font-weight: bold;
+                        display: table;
+                        margin-top: 20px;
+                    }
+                    
+                    .proformaDetail table tbody tr td {
+                        text-align: left;
+                        padding: 16px 10px;
+                    }
+                    
+                    .proformaDetail table tbody tr:last-child td:nth-child(2) {
+                        text-align: center;
+                        font-weight: bold;
+                    }
+                    
+                    .indiaPurchase td:first-child p strong {
+                        width: 235px;
+                        display: inline-block;
+                    }
+                    
+                    #contact_details table tbody tr td p strong,
+                    #contact_details p strong,
+                    #contact_details table tbody tr td strong,
+                    #contact_details strong {
+                        display: inline-block;
+                        width: 150px;
+                        font-size: 16px;
+                    }
+                    
+                    #contact_details table tbody tr td p+p {
+                        padding-left: 150px;
+                    }
+                    
+                    .indContact #contact_details figure:first-child table tbody tr td p strong,
+                    .indContact #contact_details figure:last-child table tbody tr td p strong,
+                    .indContact #contact_details figure:first-child table tbody tr td strong,
+                    .indContact #contact_details figure:last-child table tbody tr td strong {
+                        width: 160px;
+                    }
+                    
+                    .indContact #contact_details figure:nth-child(2) table tbody tr td p strong,
+                    .indContact #contact_details figure:nth-child(2) table tbody tr td strong {
+                        width: 125px;
+                    }
+                    
+                    .indContact #contact_details figure:nth-child(2) table tbody tr td a {
+                        margin-left: -5px;
+                    }
+                    
+                    .indContact #contact_details figure:last-child {
+                        margin-left: 3px !important;
+                    }
+                    
+                    .indContact #contact_details figure:last-child table tbody tr td p+p {
+                        padding-left: 160px;
+                    }
+                    
+                    .indContact figure {
+                        margin: 0px !important;
+                        vertical-align: top;
+                        display: inline-block;
+                    }
+                    
+                    .usContact figure:last-child {
+                        width: 44% !important;
+                        display: inline-block;
+                        margin: 0px;
+                        vertical-align: top;
+                    }
+                    
+                    .indContact figure:first-child {
+                        width: 50% !important;
+                    }
+                    
+                    .indContact figure:nth-child(2) {
+                        width: 44% !important;
+                    }
+                    
+                    .indContact figure:last-child {
+                        width: 100% !important;
+                    }
+                    
+                    .invoice-table table,
+                    #appendix figure {
+                        width: 100% !important;
+                        margin: 0px !important;
+                    }
+                    
+                    #appendix.col4 table tr th:first-child,
+                    #appendix.col4 table tr td:first-child,
+                    .col4 #appendix table tr th:first-child,
+                    .col4 #appendix table tr td:first-child  {
+                        width: 18%;
+                    }
+                    
+                    #appendix.col4 table tr th:nth-child(2),
+                    #appendix.col4 table tr td:nth-child(2),
+                    .col4 #appendix table tr th:nth-child(2),
+                    .col4 #appendix table tr td:nth-child(2) {
+                        width: 17%;
+                    }
+                    #appendix.col4 table tr th:last-child,
+                    #appendix.col4 table tr td:last-child,
+                    .col4 #appendix table tr th:last-child,
+                    .col4 #appendix table tr td:last-child {
+                        width: 17%;
+                    }
+                    
+                    #appendix.col3 table tr th:first-child,
+                    #appendix.col3 table tr td:first-child,
+                    .col3 #appendix table tr th:first-child,
+                    .col3 #appendix table tr td:first-child {
+                        width: 17%;
+                    }
+                    
+                    #appendix.col3 table tr th:last-child,
+                    #appendix.col3 table tr td:last-child,
+                    .col3 #appendix table tr th:last-child,
+                    .col3 #appendix table tr td:last-child {
+                        width: 17%;
+                    }
+                    
+                    #appendix figure img {
+                        width: 100%;
+                    }
                 </style>
             </head>
         <body>
@@ -1293,7 +1600,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             <tbody>
                 <tr>
                     <td class="table-heading">
-                    Proforma DETAIL
+                    PROFORMA DETAIL
                     </td>
                 </tr>
             </tbody>
@@ -1411,6 +1718,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         </table>
     
         <div class="invoice-table appendix">
+            <div class="col4">
             <div id="appendix"> <figure>
             <table>
         <thead>
@@ -1421,7 +1729,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
                 <th>
                     Project Code
                 </th>
-                <th style="width: 50%;">
+                <th>
                     Title
                 </th>
                 <th>
@@ -1433,6 +1741,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             [[Appendix]]
         </tbody>
         </table></figure>
+            </div>
             </div>
         </div>`,
             header: `<div id=header>
@@ -1889,6 +2198,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         USObject.header = USObject.header.replace('[[CurrencyName]]', invoiceData.usCurrencyName);
         USObject.header = USObject.header.replace('[[CurrencySymbol]]', invoiceData.usCurrencySymbol);
         USObject.header = USObject.header.replace('[[Invoice]]', invoiceData.invoice);
+        //USObject.serviceDetailHeader = (invoiceData.invoice + ' DETAILS').toUpperCase();
         USObject.contactDetails = USObject.contactDetails.replace('[[Company]]', invoiceData.company);
         USObject.contactDetails = USObject.contactDetails.replace('[[ClientContact1]]', invoiceData.clientcontact1);
         USObject.clientcontact2 = USObject.clientcontact2.replace('[[ClientContact2]]', invoiceData.clientcontact2);
@@ -2061,6 +2371,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         JapanObject.header = JapanObject.header.replace('[[Invoice]]', invoiceData.invoice);
         JapanObject.header = JapanObject.header.replace('[[CurrencyName]]', invoiceData.JpnCurrencyName);
         JapanObject.header = JapanObject.header.replace('[[CurrencySymbol]]', invoiceData.JpnCurrencySymbol);
+        //JapanObject.serviceDetailHeader = (invoiceData.invoice + ' DETAILS').toUpperCase();
         JapanObject.contactDetails = JapanObject.contactDetails.replace('[[Company]]', invoiceData.company);
         JapanObject.contactDetails = JapanObject.contactDetails.replace('[[ClientContact1]]',
             invoiceData.clientcontact1);
@@ -2222,7 +2533,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         IndiaObject.header = IndiaObject.header.replace('[[InvoiceDate]]', invoiceData.invoice_date);
         IndiaObject.header = IndiaObject.header.replace('[[CurrencyName]]', invoiceData.IndCurrencyName);
         IndiaObject.header = IndiaObject.header.replace('[[CurrencySymbol]]', invoiceData.IndCurrencySymbol);
-
+        //IndiaObject.serviceDetailHeader = (invoiceData.invoice + ' DETAILS').toUpperCase();
         IndiaObject.purchaseOrder = IndiaObject.purchaseOrder.replace('[[PurchaseOrderNumber]]',
             invoiceData.purchaseOrderNumber);
 
@@ -2313,13 +2624,13 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
         const getLi = mainUl.getElementsByTagName('li')[1];
         console.log(data.htmldata);
         if (this.elementId === 'appendix') {
-            document.getElementById(this.elementId).innerHTML = data.htmldata.replace(/&nbsp;/g, '');
+            document.getElementById(this.elementId).innerHTML = data.htmldata;
+            document.getElementById('appendix').parentElement.className = data.class;
         } else if (getLi === null || getLi === undefined) {
             document.getElementById(this.elementId).innerHTML = data.htmldata;
         } else {
             getLi.firstElementChild.innerHTML = data.htmldata;
         }
-        document.getElementById('appendix').className = data.class;
     }
 
     disableButton() {
@@ -2342,6 +2653,14 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             }
         }, 1000);
     }
+
+    setColumnClass(sClassName) {
+        setTimeout(() => {
+            const appendix: any = document.querySelector('#appendix').parentElement;
+            appendix.className = sClassName;
+        }, 1000);
+    }
+
     remove_last_occurrence(str, searchstr)       {
         var index = str.lastIndexOf(searchstr);
         if (index === -1) {
@@ -2354,10 +2673,6 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
     confirm() {
         this.disableButton();
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-        if (document.querySelector('.col10') !== null) {
-            const el = document.querySelector('.col10');
-            el.innerHTML = el.innerHTML.replace(/&nbsp;/g, '');
-        }
 
         const header = document.getElementById('header');
         let headerObj: any = this.headerstyle;
@@ -2403,11 +2718,11 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             this.USHtmlObject.header = document.getElementById('header').innerHTML;
             this.USHtmlObject.footer = document.getElementById('footer').innerHTML;
             this.USHtmlObject.contactDetails = document.getElementById('contact_details').innerHTML;
-            //this.USHtmlObject.contactDetails2 = document.getElementById('contactDetails2').innerHTML;
             this.USHtmlObject.purchaseOrder = document.getElementById('purchaseOrderDetails').innerHTML;
             this.USHtmlObject.invoiceDetail = document.getElementById('invoiceDetails').innerHTML;
             this.USHtmlObject.paymentInstructions = document.getElementById('paymentInstructions').innerHTML;
             this.USHtmlObject.paymentDetails = document.getElementById('paymentDetails').innerHTML;
+            //this.USHtmlObject.serviceDetailHeader = document.getElementById('serviceDetailHeader').innerHTML;
             if (this.showAppendix) {
                 this.USHtmlObject.appendix = document.getElementById('appendix').innerHTML;
             }
@@ -2420,6 +2735,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             this.japanHtmlObject.invoiceDetail = document.getElementById('invoiceDetails').innerHTML;
             this.japanHtmlObject.paymentInstructions = document.getElementById('paymentInstructions1').innerHTML;
             this.japanHtmlObject.paymentDetails = document.getElementById('paymentInstructions2').innerHTML;
+            //this.japanHtmlObject.serviceDetailHeader = document.getElementById('serviceDetailHeader').innerHTML;
             if (this.showAppendix) {
                 this.japanHtmlObject.appendix = document.getElementById('appendix').innerHTML;
             }
@@ -2434,6 +2750,7 @@ background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M
             this.indiaHtmlObject.invoiceDetail = document.getElementById('invoiceDetails').innerHTML;
             this.indiaHtmlObject.paymentInstructions = document.getElementById('paymentInstructions').innerHTML;
             this.indiaHtmlObject.paymentDetails = document.getElementById('paymentInstructions2').innerHTML;
+            //this.indiaHtmlObject.serviceDetailHeader = document.getElementById('serviceDetailHeader').innerHTML;
             if (this.showAppendix) {
                 this.indiaHtmlObject.appendix = document.getElementById('appendix').innerHTML;
             }
