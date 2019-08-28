@@ -460,6 +460,18 @@ input[type=submit]:hover {
     background: green;
   }
 
+  .lightgreen{
+    background: lightgreen;
+  }
+  
+  .lightblue{
+    background: lightblue;
+  }
+  
+  .lightcoral{
+    background: lightcoral;
+  }
+
   /* Loadder ICON  */
 
   @-webkit-keyframes spin {
@@ -654,3 +666,38 @@ input[type=submit]:hover {
     position: relative;
     margin-bottom: 1%;
 }
+
+::ng-deep .calendarWidth {
+    width: auto !important;
+}
+
+body .ui-button {
+    background-color: #d7181f !important;
+    border: 1px solid #d7181f !important;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+    text-align: center !important;
+}
+
+tr td:last-child .ui-menu {
+    top:0px;
+}
+
+.pubsuppotTable .custom-pdatatable .ui-datatable-tablewrapper> table> tbody.ui-datatable-data>tr>td:last-child {
+    overflow: visible;
+}
+
+ .pubsuppotTable .custom-pdatatable .ui-datatable-tablewrapper> table> tbody.ui-datatable-data>tr>td:last-child>span>div {
+    position: relative;
+}
+
+ .pubsuppotTable .custom-pdatatable .ui-datatable-tablewrapper> table> tbody.ui-datatable-data>tr>td:last-child>span>div>i {
+    top: 0px !important;
+}
+
+ .pubsuppotTable .custom-pdatatable .ui-datatable-tablewrapper> table> tbody.ui-datatable-data>tr>td:last-child>span>div div.ui-menu {
+    top: 0px !important;
+    left: inherit !important;
+    right: 40px !important;
+} 

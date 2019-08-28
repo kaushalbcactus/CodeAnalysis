@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { DynamicDialogRef, MessageService } from 'primeng/api';
+import { DynamicDialogRef, MessageService, DynamicDialogConfig } from 'primeng/api';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
 import { SpOperationsService } from '../../../Services/sp-operations.service';
 import { ConstantsService } from '../../../Services/constants.service';
 import { GlobalService } from '../../../Services/global.service';
+import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
 
 @Component({
     selector: 'app-create-conference',
@@ -15,7 +16,9 @@ import { GlobalService } from '../../../Services/global.service';
 export class CreateConferenceComponent implements OnInit {
 
     createConference_form: FormGroup;
-
+    conferenceListArray: any = [];
+    batchContents: any = [];
+    uniqueJName: boolean;
     submitBtn: any = {
         isClicked: false
     };
@@ -32,22 +35,61 @@ export class CreateConferenceComponent implements OnInit {
         public psConstantService: PubsuportConstantsService,
         private spOperationsService: SpOperationsService,
         private constantService: ConstantsService,
-        private GlobalService: GlobalService,
         private messageService: MessageService,
+        public config: DynamicDialogConfig,
+
     ) { }
 
-    ngOnInit() {
+    async ngOnInit() {
         this.createConferenceFormField();
+        this.conferenceListArray = this.config.data;
+        if (!this.conferenceListArray.length) {
+            await this.getConferenceList();
+        }
     }
 
     // Create Conference Form Field 
     createConferenceFormField() {
         this.createConference_form = this.fb.group({
             ConferenceDate: ['', Validators.required],
-            submissionDeadline: ['', Validators.required],
+            SubmissionDeadline: ['', Validators.required],
             ConferenceName: ['', Validators.required],
             Comments: ['', Validators.required],
         })
+    }
+
+    async getConferenceList() {
+        this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = false;
+        const data = [{
+            // tslint:disable-next-line: max-line-length
+            url: this.spOperationsService.getReadURL(this.constantService.listNames.Journal.name, this.psConstantService.pubsupportComponent.journal),
+            type: 'GET',
+            listName: this.constantService.listNames.Journal.name
+        }];
+
+        const result = await this.spOperationsService.executeBatch(data);
+        const res = result[0].retItems;
+        if (res.hasError) {
+            this.messageService.add({ key: 'myKey1', severity: 'error', summary: 'Error', detail: res.message.value, life: 4000 });
+        } else {
+            this.conferenceListArray = res;
+            console.log('conferenceListArray ', this.conferenceListArray);
+        }
+        this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = true;
+    }
+
+    onKey(val: string) {
+        this.uniqueJName = this.uniqueJName ? this.uniqueJName = false : false;
+    }
+
+    checkUniqueName() {
+        const found = this.conferenceListArray.find(item => {
+            if (item.ConferenceName.toLowerCase().replace(/\s/g, '') === this.createConference_form.value.ConferenceName.toLowerCase().replace(/\s/g, '')) {
+                this.uniqueJName = true;
+                return item;
+            }
+        })
+        return found ? found : '';
     }
 
     get isValidAddConferenceDetailsForm() {
@@ -70,33 +112,27 @@ export class CreateConferenceComponent implements OnInit {
                 return;
             }
             this.submitBtn.isClicked = true;
+            this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = false;
             console.log('createConference_form ', this.createConference_form.value);
             let obj = this.createConference_form.value;
-            obj['__metadata'] = { type: this.constantService.listNames.Conference.type }
-            const endpoint = this.constantService.listNames.Conference.name
-            let data = [
-                {
-                    objData: obj,
-                    endpoint: endpoint,
-                    requestPost: true
-                }
-            ];
-            this.submitForm();
+            obj['__metadata'] = { type: this.constantService.listNames.Conference.type };
+            const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.Conference.name);
+            const data = [{
+                data: obj,
+                url: endpoint,
+                type: 'POST',
+                listName: this.constantService.listNames.Conference.name
+            }];
+            this.submitForm(data);
         }
     }
 
-    async submitForm() {
-        this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = false;
-        let obj = [{
-            url: this.spOperationsService.getReadURL(this.constantService.listNames.Conference.name, this.createConference_form.value),
-            type: 'POST',
-            listName: this.constantService.listNames.ProjectFinances
-        }]
-        const res = await this.spOperationsService.executeBatch(obj);
+    async submitForm(data) {
+        const res = await this.spOperationsService.executeBatch(data);
         if (res) {
-            this.messageService.add({ key: 'myKey1', severity: 'info', summary: 'Success.', detail: '', life: 4000 });
+            this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = true;
+            this.ref.close(res);
         }
-        this.ref.close();
     }
 
 }

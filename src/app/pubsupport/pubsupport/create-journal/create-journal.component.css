@@ -5,13 +5,9 @@
   margin: -50px !important;
   text-align: right;
 }
-
-/* ::ng-deep .ui-datepicker-title >select, ::ng-deep input[type=text] {
+/* , ::ng-deep input[type=text] */
+::ng-deep .ui-datepicker-title >select {
     width: auto !important;
-} */
-
-::ng-deep .ui-dynamicdialog {
-    top:50% !important;
 }
 
 ::ng-deep .ui-datepicker-calendar>tbody>tr>td{
@@ -22,6 +18,6 @@
     padding: 15px 0px 0px 0px;
 }
 
-::ng-deep input[type=text], select {
-    width: 85%;
-}
+/* ::ng-deep .ui-dynamicdialog {
+    top:50% !important;
+} */
