@@ -16,6 +16,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 })
 export class TimeBookingDialogComponent implements OnInit {
 
+  // tslint:disable-next-line: variable-name
   @ViewChild('scrollDown', { static: true }) _el: ElementRef;
 
   thenBlock: Table;
@@ -23,22 +24,22 @@ export class TimeBookingDialogComponent implements OnInit {
   tableId: Table;
 
 
-  modalloaderenable: boolean = true;
+  modalloaderenable = true;
   dbClientLegalEntities: any = [{ label: 'Select Client', value: null }];
-  timeSpentObject = { taskDay: null, taskHrs: null }
+  timeSpentObject = { taskDay: null, taskHrs: null };
   dateObject = { date: null, time: null };
   AllTaskTimeSpent: any[] = [];
   clonedMilestones: { [s: number]: milestoneData; } = {};
-  milestoneData: milestoneData
-  tempId: string = '00000';
-  count: number = 0;
+  milestoneData: milestoneData;
+  tempId = '00000';
+  count = 0;
   UserMilestones: any = [];
   batchContents: any[];
   response: any[];
   weekDays: any[];
   dayscount: any = 0;
-  prevArrow: boolean = true;
-  nextArrow: boolean = true;
+  prevArrow = true;
+  nextArrow = true;
   projetInformations: any;
   allTasks: any;
   milestonesTimeSpent: any = [];
@@ -59,8 +60,9 @@ export class TimeBookingDialogComponent implements OnInit {
   };
   MainminDate: any;
   TotalOfTotal: any = [];
-
-  constructor(public config: DynamicDialogConfig,
+  FinalTotal = '00:00';
+  constructor(
+    public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
     public messageService: MessageService,
     private constants: ConstantsService,
@@ -85,9 +87,9 @@ export class TimeBookingDialogComponent implements OnInit {
     this.ref.close();
   }
 
-  //*************************************************************************************************
+  // *************************************************************************************************
   //  Get all clients name
-  //*************************************************************************************************
+  // *************************************************************************************************
 
 
   async getAllClients() {
@@ -97,74 +99,109 @@ export class TimeBookingDialogComponent implements OnInit {
 
 
   AddNewRow() {
-    
     const newMilestone = {
-      ID: -1, Entity: '', ProjectCode: '', Milestone: '', type: "task", dbClientLegalEntities: this.dbClientLegalEntities, dbProjects: [{ label: 'Select Project', value: null }], dbMilestones: [{ label: 'Select Milestone', value: null }], isEditable: true, TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: new Date(this.datePipe.transform(this.MainminDate, 'yyyy-MM-dd')).getTime() <= new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() &&  new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() <= new Date().getTime() ? true : false }))
-    }
+      ID: -1, Entity: '', ProjectCode: '', Milestone: '', SubMilestone: '', displayName: '', type: 'task',
+      dbClientLegalEntities: this.dbClientLegalEntities, dbProjects: [{
+        label: 'Select Project',
+        value: null
+      }], dbMilestones: [{ label: 'Select Milestone', value: null }], isEditable: true,
+      TimeSpents: this.weekDays.map(c => new Object({
+        date: c, MileHrs: '00:00', minHrs: '00:00',
+        editable: new Date(this.datePipe.transform(this.MainminDate, 'yyyy-MM-dd')).getTime() <=
+          new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime()
+          && new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() <= new Date().getTime() ? true : false
+      }))
+    };
+
 
     this.UserMilestones.push(newMilestone);
     this.UserMilestones = [...this.UserMilestones];
-
-    // setTimeout(() => {
-    //   this.onRowEditInit(newMilestone);
-    //   alert();
-    // }, 3000);
-
-
   }
 
-  //*************************************************************************************************
-  //  Get all projects based on client select 
-  //*************************************************************************************************
+  // *************************************************************************************************
+  //  Get all projects based on client select
+  // *************************************************************************************************
 
 
   async getAllProjects(client, rowData) {
     rowData.dbProjects = [{ label: 'Select Project', value: null }];
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
-    let ProjectInformations = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
+    const ProjectInformations = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
+    // tslint:disable-next-line: quotemark
     ProjectInformations.filter += " and (ClientLegalEntity eq '" + client + "')";
-    const ProjectInformationsUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', ProjectInformations);
+    const ProjectInformationsUrl = this.spServices.getReadURL('' +
+      this.constants.listNames.ProjectInformation.name + '', ProjectInformations);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectInformationsUrl);
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    var dbProjectInformations = this.response[0].length > 0 ? this.response[0].map(o => new Object({ label: o.ProjectCode + " (" + o.WBJID + ")", value: o.ProjectCode })) : [];
+    const dbProjectInformations = this.response[0].length > 0 ?
+      this.response[0].map(o => new Object({ label: o.ProjectCode + ' (' + o.WBJID + ')', value: o.ProjectCode })) : [];
 
     rowData.dbProjects.push.apply(rowData.dbProjects, dbProjectInformations);
-    //this.dbProjects.push.apply( this.dbProjects,dbProjectInformations); 
   }
 
 
-  //*************************************************************************************************
+  // *************************************************************************************************
   //  Get all milestones based on project selection
-  //*************************************************************************************************
+  // *************************************************************************************************
 
 
   async getAllMilestones(projectCode, rowData) {
-    
-    rowData.dbMilestones = [{ label: 'Select Milestone', value: null }]
+
+    rowData.dbMilestones = [{ label: 'Select Milestone', value: null }];
     rowData.ProjectCode = projectCode;
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
-    let AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.AllMilestones);
+    const AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.AllMilestones);
 
-    var month = this.MainminDate.getMonth() + 1;
-
-    var EndDate = this.MainminDate.getFullYear() + "-" + (month < 10 ? "0" + month : month) + "-" + (this.MainminDate.getDate() < 10 ? "0" + this.MainminDate.getDate() : this.MainminDate.getDate()) + "T23:59:00.000Z";
+    const month = this.MainminDate.getMonth() + 1;
+    const EndDate = this.MainminDate.getFullYear() + '-' + (month < 10 ? '0' + month : month) + '-' +
+      (this.MainminDate.getDate() < 10 ? '0' + this.MainminDate.getDate() : this.MainminDate.getDate()) + 'T23:59:00.000Z';
 
     AllMilestones.filter = AllMilestones.filter.replace(/{{projectCode}}/gi, projectCode).replace(/{{DateString}}/gi, EndDate);
     const AllMilestonesUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', AllMilestones);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, AllMilestonesUrl);
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-    debugger;
-    var dbAllMilestones = this.response.length > 0 ? this.response[0].map(o => new Object({ label: o.Title, value: o.Title })) : [];
+    const dbAllMilestones = this.response.length > 0 ? await this.getSubMilestoneMilestones(this.response[0]) : [];
     rowData.dbMilestones.push.apply(rowData.dbMilestones, dbAllMilestones);
+
+  }
+
+  async getSubMilestoneMilestones(Milestones) {
+    // this.response[0].map(o => new Object({ label: o.Title, value: o.Title }))
+    const subMileArray = [];
+    Milestones.forEach(element => {
+
+      if (element.SubMilestones) {
+        const SubMilestone = element.SubMilestones.split(';#');
+        SubMilestone.forEach((value, i) => {
+
+          const tempValue = value.split(':');
+          if (tempValue[2] !== 'Not Confirmed') {
+            subMileArray.push(new Object({
+              label: element.Title + ' - ' + value.substr(0,
+                value.indexOf(':')), value: element.Title + ' - ' + value.substr(0, value.indexOf(':'))
+            }));
+          }
+
+        });
+
+
+      } else {
+        subMileArray.push(new Object({ label: element.Title, value: element.Title }));
+      }
+
+    });
+
+
+    return subMileArray;
+
 
   }
 
 
 
-  //*************************************************************************************************
+  // *************************************************************************************************
   //  Get week days   //*************************************************************************************************
 
 
@@ -173,26 +210,24 @@ export class TimeBookingDialogComponent implements OnInit {
     this.modalloaderenable = true;
     this.dayscount = status === null ? 0 : status === 'increase' ? this.dayscount - 7 : this.dayscount + 7;
     this.weekDays = [];
-    var WeekDate = new Date(new Date().getTime() - 60 * 60 * 24 * this.dayscount * 1000)
-      , day = WeekDate.getDay()
-      , diffToMonday = WeekDate.getDate() - day + (day === 0 ? -6 : 1)
-    
-    var tempdate = new Date(this.datePipe.transform(new Date(WeekDate.setDate(diffToMonday - 1)), 'yyyy-MM-dd'));
-    for (var i = 0; i <= 6; i++) {
+    const WeekDate = new Date(new Date().getTime() - 60 * 60 * 24 * this.dayscount * 1000);
+    const day = WeekDate.getDay();
+    const diffToMonday = WeekDate.getDate() - day + (day === 0 ? -6 : 1);
+
+    let tempdate = new Date(this.datePipe.transform(new Date(WeekDate.setDate(diffToMonday - 1)), 'yyyy-MM-dd'));
+    for (let i = 0; i <= 6; i++) {
       const dateonly = tempdate.getDate();
-     this.weekDays.push(new Date(this.datePipe.transform(new Date(tempdate.setDate(dateonly + 1)), 'yyyy-MM-dd')));
+      this.weekDays.push(new Date(this.datePipe.transform(new Date(tempdate.setDate(dateonly + 1)), 'yyyy-MM-dd')));
       tempdate = new Date(this.datePipe.transform(new Date(tempdate), 'yyyy-MM-dd'));
     }
 
     if (this.dayscount <= -21) {
       this.nextArrow = false;
       this.prevArrow = true;
-    }
-    else if (this.dayscount >= 14) {
+    } else if (this.dayscount >= 14) {
       this.prevArrow = false;
       this.nextArrow = true;
-    }
-    else {
+    } else {
       this.prevArrow = true;
       this.nextArrow = true;
     }
@@ -202,20 +237,19 @@ export class TimeBookingDialogComponent implements OnInit {
 
 
 
-  SetTime(time,dayhoursObj)
-  {
-    
-    var  timespent =  time.split(':')[0] % 12 + ":" + time.split(':')[1] ;
+  SetTime(time, dayhoursObj) {
+
+    const timespent = time.split(':')[0] % 12 + ':' + time.split(':')[1];
     dayhoursObj.MileHrs = timespent;
   }
 
-  //*************************************************************************************************
+  // *************************************************************************************************
   //  Get  milestone time booking based on week dates
-  //*************************************************************************************************
+  // *************************************************************************************************
 
   unique(arr, keyProps) {
     const kvArray = arr.map(entry => {
-      const key = keyProps.map(k => entry[k]).join('|');
+      const key = keyProps.map(k => entry[k] ? entry[k] : '').join('|');
       return [key, entry];
     });
     const map = new Map(kvArray);
@@ -225,13 +259,12 @@ export class TimeBookingDialogComponent implements OnInit {
 
   async getTimeBookingData() {
 
-    var startDate = new Date(this.datePipe.transform(this.weekDays[0], "yyyy-MM-dd") + " 00:00:00").toISOString();
-    var endDate = new Date(this.datePipe.transform(this.weekDays[this.weekDays.length - 1], "yyyy-MM-dd") + " 23:59:00").toISOString();
-    
+    const startDate = new Date(this.datePipe.transform(this.weekDays[0], 'yyyy-MM-dd') + ' 00:00:00').toISOString();
+    const endDate = new Date(this.datePipe.transform(this.weekDays[this.weekDays.length - 1], 'yyyy-MM-dd') + ' 23:59:00').toISOString();
     this.batchContents = new Array();
     const batchGuid = this.spServices.generateUUID();
-    let AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimelineForBooking);
-    var minDate = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 4);
+    const AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimelineForBooking);
+    const minDate = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 4);
     AllMilestones.filter = AllMilestones.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
     AllMilestones.filter += AllMilestones.filterNotCompleted;
 
@@ -243,52 +276,86 @@ export class TimeBookingDialogComponent implements OnInit {
 
     this.allTasks = this.response[0];
 
-    var tempMilestones = this.allTasks.map(o => new Object({ ID: o.ID, Entity: o.Entity, ProjectCode: o.ProjectCode === "Adhoc" ? '-' : o.ProjectCode, 
-    Milestone: (!o.Milestone || (o.Milestone && o.Milestone === 'Select one')) ? o.Comments : o.Milestone, 
-    type: o.Entity === null ? 'task' : 'Adhoc', TimeSpents: this.weekDays.map(c => new Object({ date: c, MileHrs: "00:00", minHrs: "00:00", editable: (new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() > new Date(this.datePipe.transform(minDate, 'yyyy-MM-dd')).getTime()) &&  (new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() <= new Date(this.datePipe.transform(new Date(), 'yyyy-MM-dd')).getTime())  ? true : false })) }));
+    const tempMilestones = this.allTasks.map(o => new Object({
+      ID: o.ID, Entity: o.Entity,
+      ProjectCode: o.ProjectCode === 'Adhoc' ? '-' : o.ProjectCode,
+      Milestone: o.Milestone === 'Select one' ? o.Comments : o.Milestone,
+      SubMilestone: o.SubMilestones,
+      displayName: o.Milestone === 'Select one' ? o.Comments : o.SubMilestones &&
+      o.SubMilestones !== 'Default' ? o.Milestone + ' - ' + o.SubMilestones : o.Milestone,
+      type: o.Entity === null ? 'task' : 'Adhoc',
+      TimeSpents: this.weekDays.map(c => new Object({
+        date: c, MileHrs: '00:00', minHrs: '00: 00',
+        editable: (new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() >
+          new Date(this.datePipe.transform(minDate, 'yyyy-MM-dd')).getTime()) &&
+          (new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() <= new Date
+            (this.datePipe.transform(new Date(), 'yyyy-MM-dd')).getTime()) ? true : false
+      }))
+    }));
 
-    var dbActualMilestone = tempMilestones.length > 0 ? tempMilestones.filter(c => c.ProjectCode !== '-') : [];
+    const dbActualMilestone = tempMilestones.length > 0 ? tempMilestones.filter(c => c.ProjectCode !== '-') : [];
 
-    var dbActualAdhoc = tempMilestones.length > 0 ? tempMilestones.filter(c => c.ProjectCode === '-') : [];
+    const dbActualAdhoc = tempMilestones.length > 0 ? tempMilestones.filter(c => c.ProjectCode === '-') : [];
 
-    var uniquedbTasks = dbActualMilestone.length > 0 ? this.unique(dbActualMilestone, ['ProjectCode', 'Milestone']) : [];
-    var uniqueAdhoc = dbActualAdhoc.length > 0 ? this.unique(dbActualAdhoc, ['Entity', 'Milestone']) : [];
+    const uniquedbTasks = dbActualMilestone.length > 0 ?
+      this.unique(dbActualMilestone, ['ProjectCode', 'Milestone', 'SubMilestone']) : [];
+    const uniqueAdhoc = dbActualAdhoc.length > 0 ? this.unique(dbActualAdhoc, ['Entity', 'Milestone']) : [];
 
     this.UserMilestones = [];
     this.UserMilestones.push.apply(this.UserMilestones, uniquedbTasks);
     this.UserMilestones.push.apply(this.UserMilestones, uniqueAdhoc);
-   debugger;
+
     this.allTasks.forEach(task => {
-
+      
       if (task.TimeSpentPerDay !== null) {
-        var timeSpentForTask = task.TimeSpentPerDay.split(/\n/);
+        const timeSpentForTask = task.TimeSpentPerDay.split(/\n/);
 
-        if (timeSpentForTask.indexOf("") > -1) {
-          timeSpentForTask.splice(timeSpentForTask.indexOf(""), 1);
+        if (timeSpentForTask.indexOf('') > -1) {
+          timeSpentForTask.splice(timeSpentForTask.indexOf(''), 1);
         }
-        var milestone = this.UserMilestones.find(c => c.Milestone === task.Milestone && c.ProjectCode === task.ProjectCode);
+        // tslint:disable-next-line: no-shadowed-variable
+        const milestone = this.UserMilestones.find(c => c.Milestone === task.Milestone &&
+           c.ProjectCode === task.ProjectCode && c.SubMilestone === task.SubMilestones);
         if (milestone !== undefined) {
           timeSpentForTask.forEach(element => {
-            var hoursArray = [];
-            var taskDay = element.split(':')[0] == element ? element.split('#')[0] : element.split(':')[0].replace(/,/g, ", ");
-            var taskHrs = element.split(':')[0] == element ? element.substring(element.indexOf('#') + 1, element.indexOf(".")) : element.split(':')[1] + ":" + element.split(':')[2];
+            // tslint:disable-next-line: no-shadowed-variable
+            const hoursArray = [];
+            const taskDay = element.split(':')[0] === element ? element.split('#')[0] : element.split(':')[0].replace(/,/g, ', ');
+            const taskHrs = element.split(':')[0] === element ?
+              element.substring(element.indexOf('#') + 1,
+                element.indexOf('.')) : element.split(':')[1] + ':' + element.split(':')[2];
             hoursArray.push(taskHrs);
 
-            var currentMilestone = milestone.TimeSpents.find(c => new Date(this.datePipe.transform(c.date, 'yyyy-MM-dd')).getTime() === new Date(this.datePipe.transform(taskDay, 'yyyy-MM-dd')).getTime())
+            // tslint:disable-next-line: no-shadowed-variable
+            const currentMilestone = milestone.TimeSpents.find(c =>
+              new Date(this.datePipe.transform(c.date, 'yyyy-MM-dd')).getTime() ===
+              new Date(this.datePipe.transform(taskDay, 'yyyy-MM-dd')).getTime());
             if (currentMilestone !== undefined) {
               hoursArray.push(currentMilestone.MileHrs);
-              var timeSpentHours = hoursArray.map(c => c.split(":")).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
-              var timeSpentMin = hoursArray.map(c => c.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
-              var timeSpentHours1 = timeSpentHours < 10 ? "0" + timeSpentHours : timeSpentHours;
-              currentMilestone.MileHrs = timeSpentMin < 10 ? timeSpentHours1 + ':' + "0" + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
+              // tslint:disable-next-line: no-shadowed-variable
+              const timeSpentHours = hoursArray.map(c => c.split(':')).map(c => c[0]).map(Number).reduce
+                ((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(':')).map(c => c[1])
+                  .map(Number).reduce((sum, num) => sum + num, 0) / 60);
+              // tslint:disable-next-line: no-shadowed-variable
+              const timeSpentMin = hoursArray.map(c => c.split(':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
+              // tslint:disable-next-line: no-shadowed-variable
+              const timeSpentHours1 = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
+              currentMilestone.MileHrs = timeSpentMin < 10 ? timeSpentHours1 + ':' + '0' +
+                timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
 
 
-              if (task.Task !== "Time Booking") {
+              if (task.Task !== 'Time Booking') {
                 hoursArray[1] = currentMilestone.minHrs;
-                var timeSpentHours = hoursArray.map(c => c.split(":")).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
-                var timeSpentMin = hoursArray.map(c => c.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
-                var timeSpentHours1 = timeSpentHours < 10 ? "0" + timeSpentHours : timeSpentHours;
-                currentMilestone.minHrs = timeSpentMin < 10 ? timeSpentHours1 + ':' + "0" + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
+                // tslint:disable-next-line: no-shadowed-variable
+                const timeSpentHours = hoursArray.map(c => c.split(':')).map(c => c[0]).map(Number)
+                  .reduce((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(':'))
+                    .map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
+                // tslint:disable-next-line: no-shadowed-variable
+                const timeSpentMin = hoursArray.map(c => c.split(':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
+                // tslint:disable-next-line: no-shadowed-variable
+                const timeSpentHours1 = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
+                currentMilestone.minHrs = timeSpentMin < 10 ? timeSpentHours1 + ':' + '0' +
+                  timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
               }
 
 
@@ -296,39 +363,54 @@ export class TimeBookingDialogComponent implements OnInit {
           });
         }
 
-      }
-      else if (task.ProjectCode === 'Adhoc') {
-        var milestone = this.UserMilestones.find(c => c.Entity === task.Entity && c.Milestone === task.Comments);
+      } else if (task.ProjectCode === 'Adhoc') {
+        // tslint:disable-next-line: no-shadowed-variable
+        const milestone = this.UserMilestones.find(c => c.Entity === task.Entity && c.Milestone === task.Comments);
 
-        var hoursArray = [];
+        // tslint:disable-next-line: no-shadowed-variable
+        const hoursArray = [];
         hoursArray.push(task.TimeSpent);
 
         if (milestone !== undefined) {
-          var currentMilestone = milestone.TimeSpents.find(c => new Date(this.datePipe.transform(c.date, 'yyyy-MM-dd')).getTime() === new Date(this.datePipe.transform(task.Actual_x0020_Start_x0020_Date, 'yyyy-MM-dd')).getTime())
+          // tslint:disable-next-line: no-shadowed-variable
+          const currentMilestone = milestone.TimeSpents.find(c => new Date(this.datePipe.transform
+            (c.date, 'yyyy-MM-dd')).getTime() === new Date(this.datePipe.transform
+              (task.Actual_x0020_Start_x0020_Date, 'yyyy-MM-dd')).getTime());
           if (currentMilestone !== undefined) {
             hoursArray.push(currentMilestone.MileHrs);
-            var timeSpentHours = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? "." : ':')).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(c.indexOf('.') > -1 ? "." : ':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
-            var timeSpentMin = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? "." : ':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
-            var timeSpentHours1 = timeSpentHours < 10 ? "0" + timeSpentHours : timeSpentHours;
-            currentMilestone.MileHrs = timeSpentMin < 10 ? timeSpentHours1 + ':' + "0" + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
+            // tslint:disable-next-line: no-shadowed-variable
+            const timeSpentHours = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[0]).map(Number).reduce
+              ((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':'))
+                .map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
+            // tslint:disable-next-line: no-shadowed-variable
+            const timeSpentMin = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[1]).map(Number).reduce
+              ((sum, num) => sum + num, 0) % 60;
+            // tslint:disable-next-line: no-shadowed-variable
+            const timeSpentHours1 = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
+            currentMilestone.MileHrs = timeSpentMin < 10 ?
+              timeSpentHours1 + ':' + '0' + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
 
           }
         }
-      }
-      else if (task.Task === 'Adhoc') {
-        var milestone = this.UserMilestones.find(c => c.Entity === task.Entity && c.Milestone === task.Milestone);
+      } else if (task.Task === 'Adhoc') {
+        const milestone = this.UserMilestones.find(c => c.Entity === task.Entity && c.Milestone === task.Milestone);
 
-        var hoursArray = [];
+        const hoursArray = [];
         hoursArray.push(task.TimeSpent);
 
         if (milestone !== undefined) {
-          var currentMilestone = milestone.TimeSpents.find(c => new Date(this.datePipe.transform(c.date, 'yyyy-MM-dd')).getTime() === new Date(this.datePipe.transform(task.Actual_x0020_Start_x0020_Date, 'yyyy-MM-dd')).getTime())
+          const currentMilestone = milestone.TimeSpents.find(c => new Date(this.datePipe.transform(c.date, 'yyyy-MM-dd')).getTime() ===
+            new Date(this.datePipe.transform(task.Actual_x0020_Start_x0020_Date, 'yyyy-MM-dd')).getTime());
           if (currentMilestone !== undefined) {
             hoursArray.push(currentMilestone.MileHrs);
-            var timeSpentHours = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? "." : ':')).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(c.indexOf('.') > -1 ? "." : ':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
-            var timeSpentMin = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? "." : ':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
-            var timeSpentHours1 = timeSpentHours < 10 ? "0" + timeSpentHours : timeSpentHours;
-            currentMilestone.MileHrs = timeSpentMin < 10 ? timeSpentHours1 + ':' + "0" + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
+            const timeSpentHours = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[0]).map(Number)
+              .reduce((sum, num) => sum + num, 0) + Math.floor(hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[1])
+                .map(Number).reduce((sum, num) => sum + num, 0) / 60);
+            const timeSpentMin = hoursArray.map(c => c.split(c.indexOf('.') > -1 ? '.' : ':')).map(c => c[1]).map(Number)
+              .reduce((sum, num) => sum + num, 0) % 60;
+            const timeSpentHours1 = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
+            currentMilestone.MileHrs = timeSpentMin < 10 ?
+              timeSpentHours1 + ':' + '0' + timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
 
           }
         }
@@ -336,19 +418,20 @@ export class TimeBookingDialogComponent implements OnInit {
 
     });
 
-    var allProjectCodes = this.UserMilestones !== undefined ? this.UserMilestones.map(c => c.ProjectCode) : [];
+    const allProjectCodes = this.UserMilestones !== undefined ? this.UserMilestones.map(c => c.ProjectCode) : [];
 
     this.batchContents = new Array();
 
-    let ProjectInformation = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
-    var count = 0;
-    var ProjectInformationFilter = '';
+    const ProjectInformation = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
+    const count = 0;
+    let ProjectInformationFilter = '';
 
 
 
-    allProjectCodes.forEach(function (value, i) {
+    allProjectCodes.forEach((value, i) => {
+      // tslint:disable-next-line: quotemark
       ProjectInformationFilter += "ProjectCode eq '" + value + "'";
-      ProjectInformationFilter += i < allProjectCodes.length - 1 ? " or " : '';
+      ProjectInformationFilter += i < allProjectCodes.length - 1 ? ' or ' : '';
     });
 
     ProjectInformation.filter = ProjectInformationFilter;
@@ -358,26 +441,30 @@ export class TimeBookingDialogComponent implements OnInit {
     this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
     this.projetInformations = this.response[0];
- 
+
     if (this.UserMilestones !== undefined) {
       this.projetInformations.forEach(element => {
 
         this.UserMilestones.filter(c => c.ProjectCode === element.ProjectCode).map(c => c.Entity = element.ClientLegalEntity);
 
         this.UserMilestones.filter(c => c.ProjectCode === element.ProjectCode).map(c =>
-          c.ProjectCodeTitle = c.ProjectCode + " (" + element.WBJID + ")");
+          c.ProjectCodeTitle = c.ProjectCode + ' (' + element.WBJID + ')');
 
       });
 
 
-      this.UserMilestones.sort(function (a, b) {
-        var nameA = a.type.toLowerCase(), nameB = b.type.toLowerCase()
-        if (nameA < nameB) //sort string ascending
-          return -1
+      this.UserMilestones.sort((a, b) => {
+        const nameA = a.type.toLowerCase();
+        const nameB = b.type.toLowerCase();
+        // tslint:disable-next-line: curly
+        if (nameA < nameB) // sort string ascending
+          return -1;
+        // tslint:disable-next-line: curly
         if (nameA > nameB)
+          // tslint:disable-next-line: semicolon
           return 1
-        return 0 //default return value (no sorting)
-      })
+        return 0; // default return value (no sorting)
+      });
 
     }
 
@@ -388,27 +475,33 @@ export class TimeBookingDialogComponent implements OnInit {
 
   async SaveTimeBooking() {
 
-    var count = 0;
-    var dbTasks = this.UserMilestones.filter(c => c.type === 'task');
-    for (var i = 0; i < dbTasks.length; i++) {
+    let count = 0;
+    const dbTasks = this.UserMilestones.filter(c => c.type === 'task');
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < dbTasks.length; i++) {
 
-      var dateArray = [];
-      for (var j = 0; j < dbTasks[i].TimeSpents.length; j++) {
+      const dateArray = [];
+      // tslint:disable-next-line: prefer-for-of
+      for (let j = 0; j < dbTasks[i].TimeSpents.length; j++) {
         const dateObject = {
           date: this.datePipe.transform(dbTasks[i].TimeSpents[j].date, 'EE, MMM d, y'),
           time: await this.DifferenceHours(dbTasks[i].TimeSpents[j].minHrs, dbTasks[i].TimeSpents[j].MileHrs)
-        }
+        };
         dateArray.push(dateObject);
       }
 
-      var timeSpentString = dateArray.map(c => (c.date + ":" + c.time.replace('.',':')).replace(/ /g, '')).join('\n');
-      var timeSpentHours = dateArray.map(c => c.time.split(c.time.indexOf('.') > -1 ? "." : ':')).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(dateArray.map(c => c.time.split(c.time.indexOf('.') > -1 ? "." : ':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
-      var timeSpentMin = dateArray.map(c => c.time.split(c.time.indexOf('.') > -1 ? "." : ':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
+      const timeSpentString = dateArray.map(c => (c.date + ':' + c.time.replace('.', ':')).replace(/ /g, '')).join('\n');
+      const timeSpentHours = dateArray.map(c => c.time.split(c.time.indexOf('.') > -1 ? '.' : ':')).map(c => c[0]).map(Number).
+        reduce((sum, num) => sum + num, 0) + Math.floor(dateArray.map(c => c.time.split(c.time.indexOf('.') > -1 ? '.' : ':'))
+          .map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
+      const timeSpentMin = dateArray.map(c => c.time.split(c.time.indexOf('.') > -1 ? '.' : ':')).map(c => c[1]).map(Number)
+        .reduce((sum, num) => sum + num, 0) % 60;
 
-      var timeSpentHours1 = timeSpentHours < 10 ? "0" + timeSpentHours : timeSpentHours;
-      var totalTimeSpent = timeSpentMin < 10 ? timeSpentHours1 + '.' + "0" + timeSpentMin : timeSpentHours1 + '.' + timeSpentMin;
+      const timeSpentHours1 = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
+      const totalTimeSpent = timeSpentMin < 10 ? timeSpentHours1 + '.' + '0' + timeSpentMin : timeSpentHours1 + '.' + timeSpentMin;
 
-      var existingObjItem = this.allTasks.filter(c => c.ProjectCode === dbTasks[i].ProjectCode && c.Milestone === dbTasks[i].Milestone && c.Task === "Time Booking")
+      const existingObjItem = this.allTasks.filter(c => c.ProjectCode === dbTasks[i].ProjectCode &&
+        c.Milestone === dbTasks[i].Milestone && c.SubMilestone === dbTasks[i].SubMilestones && c.Task === 'Time Booking');
 
       if (existingObjItem.length) {
         const existingObj = existingObjItem[0];
@@ -416,43 +509,52 @@ export class TimeBookingDialogComponent implements OnInit {
           existingObj.TimeSpent = totalTimeSpent;
           existingObj.TimeSpentPerDay = timeSpentString;
           count++;
-          await this.spOperations.updateItem(this.constants.listNames.Schedules.name, existingObj.ID, existingObj, "SP.Data.SchedulesListItem");
+          await
+            this.spOperations.updateItem(this.constants.listNames.Schedules.name, existingObj.ID, existingObj, 'SP.Data.SchedulesListItem');
         }
       } else {
         if (dbTasks[i].Entity) {
 
           if (!dbTasks[i].ProjectCode) {
-            this.messageService.add({ key: 'custom-booking', severity: 'warn', summary: 'Warning Message', detail: "Please Select Project / To remove unwanted line, please unselect Client" });
+            this.messageService.add({
+              key: 'custom-booking', severity: 'warn', summary: 'Warnin Message',
+              detail: 'Please Select Project / To remove unwanted line, please unselect Client'
+            });
 
             return false;
-          }
-          else if (!dbTasks[i].Milestone) {
-            this.messageService.add({ key: 'custom-booking', severity: 'warn', summary: 'Warning Message', detail: "Please Select Milestone / To remove unwanted line, please unselect Client" });
+          } else if (!dbTasks[i].Milestone) {
+            this.messageService.add({
+              key: 'custom-booking', severity: 'warn', summary: 'Warning Message',
+              detail: 'Please Select Milestone / To remove unwanted line, please unselect Client'
+            });
             return false;
-          }
-          else if (totalTimeSpent !== "00.00") {
+          } else if (totalTimeSpent !== '00.00') {
             this.modalloaderenable = true;
             if (dbTasks[i].Milestone && dbTasks[i].ProjectCode && dbTasks[i].Entity) {
               const obj = {
                 __metadata: {
+                  // tslint:disable-next-line: object-literal-key-quotes
                   'type': 'SP.Data.SchedulesListItem'
                 },
-                Actual_x0020_End_x0020_Date: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[6].date, 'yyyy-MM-dd') + "T09:00:00.000"),
-                Actual_x0020_Start_x0020_Date: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[0].date, 'yyyy-MM-dd') + "T09:00:00.000"),
-                DueDate: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[6].date, 'yyyy-MM-dd') + "T09:00:00.000"),
-                ExpectedTime: "0",
+                Actual_x0020_End_x0020_Date: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[6]
+                  .date, 'yyyy-MM-dd') + 'T09:00:00.000'),
+                Actual_x0020_Start_x0020_Date: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[0]
+                  .date, 'yyyy-MM-dd') + 'T09:00:00.000'),
+                DueDate: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[6].date, 'yyyy-MM-dd') + 'T09:00:00.000'),
+                ExpectedTime: '0',
                 Milestone: dbTasks[i].Milestone,
+                SubMilestones: dbTasks[i].SubMilestone,
                 ProjectCode: dbTasks[i].ProjectCode,
-                StartDate: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[0].date, 'yyyy-MM-dd') + "T09:00:00.000"),
-                Status: "Completed",
-                Task: "Time Booking",
+                StartDate: new Date(this.datePipe.transform(dbTasks[i].TimeSpents[0].date, 'yyyy-MM-dd') + 'T09:00:00.000'),
+                Status: 'Completed',
+                Task: 'Time Booking',
                 TimeSpent: totalTimeSpent,
                 TimeSpentPerDay: timeSpentString,
-                Title: dbTasks[i].ProjectCode + " " + dbTasks[i].Milestone + " TB " + this.sharedObject.currentUser.title,
+                Title: dbTasks[i].ProjectCode + ' ' + dbTasks[i].Milestone + ' TB ' + this.sharedObject.currentUser.title,
                 AssignedToId: this.sharedObject.currentUser.id,
-              }
+              };
               count++;
-              const folderUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/Lists/Schedules/" + dbTasks[i].ProjectCode;
+              const folderUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/Lists/Schedules/' + dbTasks[i].ProjectCode;
               await this.spServices.createAndMove(this.constants.listNames.Schedules.name, obj, folderUrl);
             }
           }
@@ -467,72 +569,89 @@ export class TimeBookingDialogComponent implements OnInit {
   }
 
   checkMilestone(event, rowData) {
+    rowData.Milestone = event.lastIndexOf(' - ') > -1 ? event.substr(0, event.lastIndexOf(' - ')) : event;
+    rowData.SubMilestone = event.lastIndexOf(' - ') > -1 ? event.substr(event.lastIndexOf(' - ') + 3) : null;
 
-    if (this.UserMilestones.filter(c => c.Entity === rowData.Entity && c.ProjectCode === rowData.ProjectCode && c.Milestone === rowData.Milestone).length > 1) {
-      var index = this.UserMilestones.indexOf(rowData);
-      
+    if (this.UserMilestones.filter(c => c.Entity === rowData.Entity && c.ProjectCode ===
+      rowData.ProjectCode && c.displayName === event).length > 1) {
+      const index = this.UserMilestones.indexOf(rowData);
+
       if (index > -1) {
         this.UserMilestones.splice(index, 1);
       }
-      this.messageService.add({ key: 'custom-booking', severity: 'warn', summary: 'Warning Message', detail: "Selected combination already exist. Please check above" });
+      this.messageService.add({
+        key: 'custom-booking', severity: 'warn', summary: 'Warning Message',
+        detail: 'Selected combination already exist. Please check above'
+      });
     }
   }
 
 
   async DifferenceHours(startTime, EndTime) {
-    var TotalMinDiff = ((EndTime.split(':')[0] * 60) + parseInt(EndTime.split(':')[1])) - ((startTime.split(':')[0] * 60) + parseInt(startTime.split(':')[1]))
-    var hours = (TotalMinDiff / 60);
-    var rhours = Math.floor(hours);
-    var minutes = (hours - rhours) * 60;
-    var rminutes = Math.round(minutes);
-    var tempminutes = rminutes < 10 ? "0" + rminutes : rminutes;
-    var temphours = rhours < 10 ? "0" + rhours : rhours;
-    return temphours + "." + tempminutes;
+    // tslint:disable-next-line: radix
+    const TotalMinDiff = ((EndTime.split(':')[0] * 60) + parseInt(EndTime.split(':')[1])) -
+      // tslint:disable-next-line: radix
+      ((startTime.split(':')[0] * 60) + parseInt(startTime.split(':')[1]));
+    const hours = (TotalMinDiff / 60);
+    const rhours = Math.floor(hours);
+    const minutes = (hours - rhours) * 60;
+    const rminutes = Math.round(minutes);
+    const tempminutes = rminutes < 10 ? '0' + rminutes : rminutes;
+    const temphours = rhours < 10 ? '0' + rhours : rhours;
+    return temphours + '.' + tempminutes;
   }
 
 
   getTotalHoursRow(milestone) {
 
-    var hours = milestone.TimeSpents.map(c => c.MileHrs);
-    var timeSpentHours = hours.map(c => c.split(":")).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(hours.map(c => c.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
-    var timeSpentMin = hours.map(c => c.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
-    var tempminutes = timeSpentMin < 10 ? "0" + timeSpentMin : timeSpentMin;
-    var temphours = timeSpentHours < 10 ? "0" + timeSpentHours : timeSpentHours;
+    const hours = milestone.TimeSpents.map(c => c.MileHrs);
+    const timeSpentHours = hours.map(c => c.split(':')).map(c => c[0]).map(Number).reduce((sum, num) =>
+      sum + num, 0) + Math.floor(hours.map(c => c.split(':')).map(c => c[1]).map(Number)
+        .reduce((sum, num) => sum + num, 0) / 60);
+    const timeSpentMin = hours.map(c => c.split(':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
+    const tempminutes = timeSpentMin < 10 ? '0' + timeSpentMin : timeSpentMin;
+    const temphours = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
 
-    return temphours + ":" + tempminutes;
+    return temphours + ':' + tempminutes;
   }
 
   getTotalOfTotal() {
-    var TotalOfTotal = [];
-    for (var i = 0; i < 7; i++) {
+    const TotalOfTotal = [];
+    for (let i = 0; i < 7; i++) {
       TotalOfTotal.push(this.getTotalHoursColumn(i));
     }
 
-    var timeSpentHours = TotalOfTotal.map(c => c.split(":")).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(TotalOfTotal.map(c => c.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
-    var timeSpentMin = TotalOfTotal.map(c => c.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
-    var tempminutes = timeSpentMin < 10 ? "0" + timeSpentMin : timeSpentMin;
-    var temphours = timeSpentHours < 10 ? "0" + timeSpentHours : timeSpentHours;
-    return temphours + ":" + tempminutes;
+    const timeSpentHours = TotalOfTotal.map(c => c.split(':')).map(c => c[0]).map(Number).
+      reduce((sum, num) => sum + num, 0) + Math.floor(TotalOfTotal.map(c => c.split(':')).map(c => c[1])
+        .map(Number).reduce((sum, num) => sum + num, 0) / 60);
+    const timeSpentMin = TotalOfTotal.map(c => c.split(':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
+    const tempminutes = timeSpentMin < 10 ? '0' + timeSpentMin : timeSpentMin;
+    const temphours = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
+    return temphours + ':' + tempminutes;
   }
 
   getTotalHoursColumn(column) {
-    var timespanArray = [];
-    var tempcolumnValues = this.UserMilestones.map(c => c.TimeSpents);
-    for (var i = 0; i < tempcolumnValues.length; i++) {
+    const timespanArray = [];
+    const tempcolumnValues = this.UserMilestones.map(c => c.TimeSpents);
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < tempcolumnValues.length; i++) {
       timespanArray.push(tempcolumnValues[i].map(c => c.MileHrs)[column]);
     }
-    var timeSpentHours = timespanArray.map(c => c.split(":")).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(timespanArray.map(c => c.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
-    var timeSpentMin = timespanArray.map(c => c.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
-    var tempminutes = timeSpentMin < 10 ? "0" + timeSpentMin : timeSpentMin;
-    var temphours = timeSpentHours < 10 ? "0" + timeSpentHours : timeSpentHours;
-    return temphours + ":" + tempminutes;
+    const timeSpentHours = timespanArray.map(c => c.split(':')).map(c => c[0]).map(Number)
+      .reduce((sum, num) => sum + num, 0) + Math.floor(timespanArray.map(c => c.split(':')).map(c => c[1])
+        .map(Number).reduce((sum, num) => sum + num, 0) / 60);
+    const timeSpentMin = timespanArray.map(c => c.split(':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
+    const tempminutes = timeSpentMin < 10 ? '0' + timeSpentMin : timeSpentMin;
+    const temphours = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
+    return temphours + ':' + tempminutes;
   }
 
 }
+// tslint:disable-next-line: class-name
 export interface milestoneData {
-  ID,
-  Entity,
-  ProjectCode,
-  Milestone,
-  isEditable
+  ID;
+  Entity;
+  ProjectCode;
+  Milestone;
+  isEditable;
 }

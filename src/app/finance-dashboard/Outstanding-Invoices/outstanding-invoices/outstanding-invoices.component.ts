@@ -560,20 +560,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 this.fdConstantsService.fdComponent.selectedEditObject.ID = data.Id;
                 this.fdConstantsService.fdComponent.selectedEditObject.Type = 'Invoice';
                 this.fdConstantsService.fdComponent.selectedComp = this;
-                // switch (data.Template) {
-                //     case 'US':
-                //         this.editorRef.USTemplateCopy = invObj.saveObj;
-                //         this.editorRef.displayUS = true;
-                //         break;
-                //     case 'Japan':
-                //         this.editorRef.JapanTemplateCopy = invObj.saveObj;
-                //         this.editorRef.displayJapan = true;
-                //         break;
-                //     case 'India':
-                //         this.editorRef.IndiaTemplateCopy = invObj.saveObj;
-                //         this.editorRef.displayIndia = true;
-                //         break;
-                // }
+                //invObj.saveObj.serviceDetailHeader = 'INVOICE DETAILS';
+                this.editorRef.serviceDetailHeader = 'INVOICE DETAILS';
                 switch (data.Template) {
                     case 'US':
                         this.editorRef.JapanTemplateCopy = {};

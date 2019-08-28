@@ -8,7 +8,6 @@
     <div class="ui-g-3"></div>
     <div class="ui-g-3 f-right">
         <div class="box" style="display: -webkit-inline-box;">
-            <!-- <button type="button" pButton label="Export" (click)="fdDataShareServie.convertToExcelFile(rc)"></button> -->
             <i style="font-size: 1.8em;cursor: pointer;" (click)="fdDataShareServie.convertToExcelFile(rc)"
                 title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
         </div>
@@ -89,7 +88,7 @@
                         {{rowData[col.field]}}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'Modified'">
-                        <p>{{rowData[col.field] | date:'MMM dd, yyyy' }}</p>
+                        {{rowData[col.field] | date:'MMM dd, yyyy' }}
                     </ng-container>
 
                     <ng-container *ngIf="col.field == ''">

@@ -17,6 +17,58 @@
     transform: translateY(-50%);
 }
 
+p-calendar>span>.ui-button,
+.timePicker {
+    background-color: #ffffff !important;
+    border-color: #ffffff!important;
+}
+
+.timePicker {
+    width: 77% !important;
+    border: none !important;
+}
+
+.ngx-material-timepicker-toggle {
+    min-width: 3em !important;
+}
+
+.ngx-material-timepicker-toggle {
+    display: inline !important;
+}
+
+.ui-datepicker table td>a.ui-state-active,
+.ui-datepicker table td>span.ui-state-active {
+    background-color: #db1721 !important;
+}
+
+body .ui-chkbox .ui-chkbox-box.ui-state-active {
+    border-color: #db1721 !important;
+    background-color: #db1721 !important;
+}
+
+body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover {
+    border-color: #9c0b12 !important;
+    background-color: #9c0b12 !important;
+}
+
+.taskAllocationTimeline .ui-treetable-wrapper tbody.ui-treetable-tbody>tr>td:last-child {
+    overflow: visible;
+}
+
+.taskAllocationTimeline .ui-treetable-wrapper tbody.ui-treetable-tbody>tr>td:last-child>div {
+    position: relative;
+}
+
+.taskAllocationTimeline .ui-treetable-wrapper tbody.ui-treetable-tbody>tr>td:last-child>div>i {
+    top: 0px !important;
+}
+
+.taskAllocationTimeline .ui-treetable-wrapper tbody.ui-treetable-tbody>tr>td:last-child>div div.ui-menu {
+    top: 0px !important;
+    left: inherit !important;
+    right: 56px !important;
+}
+
 #scInnerLoaderText {
     -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
     -o-animation: loading-text-opacity 2s linear 0s infinite normal;
@@ -144,7 +196,7 @@ tr.ui-contextmenu-selected {
         width: 100%;
     }
     .VisualRepresentation>ng-gantt>div>.gchartcontainer>.gmainright {
-        width: 1050px !important;
+        width: 650px !important;
     }
     .VisualRepresentationpopup>ng-gantt>div>.gchartcontainer>.gmainright {
         width: 1090px !important;
@@ -183,7 +235,7 @@ tr.ui-contextmenu-selected {
         width: 100%;
     }
     .VisualRepresentation>ng-gantt>div>.gchartcontainer>.gmainright {
-        width: 700px !important;
+        width: 450px !important;
     }
     .VisualRepresentationpopup>ng-gantt>div>.gchartcontainer>.gmainright {
         width: 725px !important;
@@ -279,6 +331,15 @@ body .ui-treetable .ui-treetable-tbody>tr>td:last-child {
 .gtaskgreen {
     height: 14px !important;
     background: #6EDC6C !important;
+    margin-top: 0px !important;
+}
+
+
+/* AutoClosed */
+
+.gtaskred {
+    height: 14px !important;
+    background: #8183CC !important;
     margin-top: 0px !important;
 }
 

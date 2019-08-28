@@ -310,7 +310,7 @@ export class SharepointoperationService {
     async createAndMove(listName: string, jsonBody: any, folderUrl): Promise<any> {
         const url = this.apiUrl.replace('{0}', listName);
         // append metadata
-        debugger;
+   
         const data = JSON.stringify(jsonBody);
         let headers = new Headers();
         headers.append('Content-Type', this.jsonHeader);

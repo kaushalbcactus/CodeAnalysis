@@ -1,13 +1,11 @@
-.footer{
+.footer {
     position: absolute;
-right:  80px;
-bottom: 30px;
+    right: 80px;
+    bottom: 30px;
 }
 
-
-.milestones{
-
-    border:1px solid #cdcdcd;
+.milestones {
+    border: 1px solid #cdcdcd;
     border-radius: 4px;
     padding: 2vh;
     flex-wrap: wrap;
@@ -16,6 +14,7 @@ bottom: 30px;
 :host ::ng-deep button {
     margin-right: .25em;
 }
+
 
 /* :host ::ng-deep .custom-toast .ui-toast-message {
     color: #ffffff;
@@ -29,38 +28,35 @@ bottom: 30px;
     color: #ffffff;
 } */
 
-.mat-expansion-panel-header-title
-{
-  width:10%;
+.mat-expansion-panel-header-title {
+    width: 10%;
 }
 
-.mat-expansion-panel-header-title > h4
-{
- 
-  margin-top: 11px;
+.mat-expansion-panel-header-title>h4 {
+    margin-top: 11px;
 }
 
-.mat-expansion-panel-header-title > h3
-{
-  
-  margin-top: 8px;
+.mat-expansion-panel-header-title>h3 {
+    margin-top: 8px;
 }
 
 .mat-expansion-panel-spacing {
- margin: 0px;
+    margin: 0px;
 }
 
 .basic-container {
-  padding: 30px;
+    padding: 30px;
 }
 
 .version-info {
-  font-size: 8pt;
-  float: right;
+    font-size: 8pt;
+    float: right;
 }
-.milestones-item > span, .submilestones-item > span, .task-item > span
-{
-    padding:5px;
+
+.milestones-item>span,
+.submilestones-item>span,
+.task-item>span {
+    padding: 5px;
     background-color: #cdcdcd;
     font-size: 13px;
     margin: 5px;
@@ -70,40 +66,36 @@ bottom: 30px;
 }
 
 :root {
-  /* setting var for nav height, you can do this however you want */
-  --sticky-nav-height: 40px;
+    /* setting var for nav height, you can do this however you want */
+    --sticky-nav-height: 40px;
 }
- 
+
 .sticky-nav-wrapper {
-  /* set min height on wrapper so that the page
+    /* set min height on wrapper so that the page
      doesn't awkwardly snap and lose height */
-  min-height: var(--sticky-nav-height);
+    min-height: var(--sticky-nav-height);
 }
- 
+
 .sticky-nav {
-  height: var(--sticky-nav-height);
- 
-  /* other styles */
+    height: var(--sticky-nav-height);
+    /* other styles */
 }
 
-::ng-deep  .ui-dialog .ui-dialog-titlebar 
-{
-  padding-top: 5px;
-  padding-bottom: 5px;
+::ng-deep .ui-dialog .ui-dialog-titlebar {
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
-
 
 .btn-primary {
     color: #00A1FF;
-    border-color:#00A1FF;
-    background:white;
-  }
-  
+    border-color: #00A1FF;
+    background: white;
+}
+
 .btn-default {
     color: gray;
-    border-color:gray;
-  }
-
+    border-color: gray;
+}
 
 #dropZone {
     border: 2px dashed #bbb;
@@ -112,25 +104,23 @@ bottom: 30px;
     text-align: center;
     font: 14pt bold arial;
     color: #bbb;
-    
-  }
+}
 
-  .submilestoneLine, .taskLine
-  {
+.submilestoneLine,
+.taskLine {
     cursor: pointer;
-  }
+}
 
-  ::ng-deep #milestonetext
-  {
+ ::ng-deep #milestonetext {
     font: 21px bold arial;
-  }
+}
 
-  ::ng-deep .storagebutton {
+ ::ng-deep .storagebutton {
     top: 10px;
     right: 30px;
-  }
+}
 
-  #graphInnerLoader{
+#graphInnerLoader {
     border: 10px solid #f3f3f3;
     border-radius: 50%;
     border-top: 10px solid red;
@@ -143,10 +133,9 @@ bottom: 30px;
     position: relative;
     top: 50%;
     transform: translateY(-50%);
-   
-  }
-  
-  #graphInnerLoaderText{
+}
+
+#graphInnerLoaderText {
     -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
     -o-animation: loading-text-opacity 2s linear 0s infinite normal;
     -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
@@ -159,41 +148,43 @@ bottom: 30px;
     text-align: center;
     text-transform: uppercase;
     top: 0;
-   
-  }
+}
 
-  .refreshGraph {
+.refreshGraph {
     position: absolute;
     BACKGROUND: bottom;
-  }
+}
 
-  .taskDropArea {
+.taskDropArea {
     max-height: 300px;
-  }
+}
 
-  .submilestonesDropArea {
+.submilestonesDropArea {
     max-height: 350px;
-  }
+}
 
+.SaveButton {
+    background-color: #db1721;
+    border: 1px solid #db1721;
+}
 
-  @media (min-width: 1400px) {
-  
-    ::ng-deep .storagebutton
-    {
-      position: fixed;
-      width: 100%;
-      /* margin: -2.6vw; */
+.SaveButton:enabled:hover {
+    background-color: #b3171f;
+    border: 1px solid #b3171f;
+}
+
+@media (min-width: 1400px) {
+     ::ng-deep .storagebutton {
+        position: fixed;
+        width: 100%;
+        /* margin: -2.6vw; */
     }
-  
-  }
- 
-  
-  @media (min-width: 1025px) and (max-width: 1400px) {
-    
-    ::ng-deep .storagebutton
-    {
-      position: fixed;
-      width: 100%;
-      /* margin: -3.6vw; */
+}
+
+@media (min-width: 1025px) and (max-width: 1400px) {
+     ::ng-deep .storagebutton {
+        position: fixed;
+        width: 100%;
+        /* margin: -3.6vw; */
     }
-  }
+}

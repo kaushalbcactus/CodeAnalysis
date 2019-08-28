@@ -18,10 +18,11 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxGraphModule } from '@swimlane/ngx-graph';
 import { StickyModule } from 'ng2-sticky-kit';
 import { ResourceSectionComponent } from './resource-section/resource-section.component';
-import {NgxMaterialTimepickerModule} from 'ngx-material-timepicker';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { TaskDetailsDialogComponent } from './task-details-dialog/task-details-dialog.component';
 @NgModule({
-  declarations: [TaskAllocationComponent,TimelineComponent, UserCapacityComponent, DragDropComponent, ResourceSectionComponent, TaskDetailsDialogComponent],
+  declarations: [TaskAllocationComponent, TimelineComponent, UserCapacityComponent, DragDropComponent,
+    ResourceSectionComponent, TaskDetailsDialogComponent],
   imports: [
     CommonModule,
     TaskAllocationRoutingModule,
@@ -39,11 +40,11 @@ import { TaskDetailsDialogComponent } from './task-details-dialog/task-details-d
     StickyModule,
     NgxMaterialTimepickerModule
   ],
-  exports:[
+  exports: [
     TimelineComponent
   ],
-  providers: [DatePipe,ConfirmationService],
-  entryComponents: [ UserCapacityComponent, DragDropComponent,TaskDetailsDialogComponent ]
- // providers: [TaskAllocationAPI]
+  providers: [DatePipe, ConfirmationService],
+  entryComponents: [UserCapacityComponent, DragDropComponent, TaskDetailsDialogComponent]
+  // providers: [TaskAllocationAPI]
 })
 export class TaskAllocationModule { }

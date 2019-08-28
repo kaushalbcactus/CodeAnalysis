@@ -33,8 +33,8 @@
         <button pButton type="button" label="Past 7 Days" class="ui-button-raised ui-button-secondary currenttask" [ngClass]="selectedDate ==='Past7'  ? 'selectedDateButton':''" (click)="GetDatabyDateSelection('Past',7)"></button>
         <button pButton type="button" label="Past 14 Days" class="ui-button-raised ui-button-secondary currenttask" [ngClass]="selectedDate ==='Past14'  ? 'selectedDateButton':''" (click)="GetDatabyDateSelection('Past',14)"></button>
 
-        <p-calendar [(ngModel)]="rangeDates" selectionMode="range" (onClose)="GetDatabyDateSelection('Custom',0)" [style]="{'width':'130%'}" numberOfMonths='1' appendTo="body" dateFormat="M dd, yy" [showIcon]="true" [disabledDays]="[0,6]" [readonlyInput]="true"
-            placeholder="Select Custom Dates" [style]="{'cursor': 'pointer'}"></p-calendar>
+        <p-calendar [(ngModel)]="rangeDates" selectionMode="range" (onClose)="GetDatabyDateSelection('Custom',0)" [style]="{'width':'130%'}" numberOfMonths='1' dateFormat="M dd, yy" [showIcon]="true" [disabledDays]="[0,6]" [readonlyInput]="true" placeholder="Select Custom Dates"
+            [style]="{'cursor': 'pointer'}"></p-calendar>
 
 
 

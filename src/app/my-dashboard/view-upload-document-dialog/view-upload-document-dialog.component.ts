@@ -248,7 +248,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
   async loadDraftDocs(selectedTab) {
 
-    debugger;
+
     this.DocumentArray = [];
 
     var documentsUrl = '';
@@ -290,7 +290,15 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       this.DocumentArray = this.allDocuments.filter(c => (previouTasks.indexOf(c.ListItemAllFields.TaskName) > -1));
     }
     else {
-      this.DocumentArray = this.allDocuments;
+      if(this.allDocuments)
+      {
+        this.DocumentArray = this.allDocuments;
+      }
+      else
+      {
+        this.DocumentArray = [];
+      }
+      
     }
 
 

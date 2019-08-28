@@ -43,12 +43,6 @@
                 <th></th>
                 <th></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility" class="ui-fluid">
-                    <!-- <input pInputText type="text" style="width:100%;"
-                                        (input)="dt2.filter($event.target.value, col.field, col.filterMatchMode)"
-                                        [value]="dt2.filters[col.field]?.value"> -->
-                    <!-- <p-dropdown resetFilterOnHide="true"[options]="[{id:1,name:'Rahul'}]" [style]="{'width':'100%'}"
-                                        (onChange)="dt.filter($event.value, col.field, 'in')"></p-dropdown> -->
-                    <!-- {{col.field}} -->
                     <ng-container *ngIf="col.field">
                         <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'RequestType'"
                             [options]="pendinExpenseColArray.RequestType" defaultLabel="All"
@@ -110,11 +104,6 @@
                             [options]="pendinExpenseColArray.VendorName" defaultLabel="All"
                             (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <!-- <p-dropdown resetFilterOnHide="true"[options]="[{id:1,value:'Rahul'}]" [style]="{'width':'100%'}">
-                                            <ng-template let-item pTemplate="item">
-                                                <span>{{item.value}}</span>
-                                            </ng-template>
-                                        </p-dropdown> -->
                     </ng-container>
                 </th>
             </tr>
@@ -132,7 +121,7 @@
                         {{rowData[col.field]}}
                     </ng-container>
                     <ng-container *ngIf="col.field == 'Created' || col.field == 'Modified'">
-                        <p>{{rowData[col.field] | date:'MMM dd, yyyy' }}</p>
+                        {{rowData[col.field] | date:'MMM dd, yyyy' }}
                     </ng-container>
                     <ng-container *ngIf="col.field == ''">
                         <div>
