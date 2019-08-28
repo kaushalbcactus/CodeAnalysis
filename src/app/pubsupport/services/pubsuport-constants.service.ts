@@ -81,37 +81,6 @@ export class PubsuportConstantsService {
             select: "ID,ConferenceName,ConferenceDate,SubmissionDeadline,Comments",
             top: 4500,
             orderby: "Created desc"
-        },
-
-        // addJC: {
-        //     addJCDetails: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.JournalConf.name + "')/items",
-        //     updateJCDetails: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.JournalConf.name + "')/items({{Id}})",
-        // },
-        // addJCSubmission: {
-        //     add: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.JCSubmission.name + "')/items",
-        //     updateJCSubmssion: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.JCSubmission.name + "')/items({{Id}})",
-        // },
-        // addAuthor: {
-        //     addAuthorDetails: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.addAuthor.name + "')/items",
-        // },
-        // updateAuthor: {
-        //     updateAuthorDetails: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.updateAuthor.name + "')/items",
-        // },
-        // updateDecision: {
-        //     updateDecisionDetails: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.updateDecision.name + "')/items",
-        // },
-        // updateProjectInfo: {
-        //     updateProjInfo: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.projectInfo.name + "')/items({{projectId}})",
-        // },
-        // addJCGalley: {
-        //     addNewJCGalley: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.jcGalley.name + "')/items",
-        // },
-        // addUpdateJournal: {
-        //     add: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.Journal.name + "')/items",
-        // },
-        // addUpdateConference: {
-        //     add: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constantService.listNames.Conference.name + "')/items",
-        // }
-
+        }
     }
 }
