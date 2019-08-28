@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SelectItem } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+
 
 @Component({
   selector: 'app-copy-permission',
@@ -7,18 +9,18 @@ import { SelectItem } from 'primeng/api';
   styleUrls: ['./copy-permission.component.css']
 })
 export class CopyPermissionComponent implements OnInit {
-  Users = [{ label: 'User 1', value: 'User 1' , disabled: false},
-  { label: 'User 2', value: 'User 2' , disabled: false},
-  { label: 'User 3', value: 'User 3' , disabled: false},
-  { label: 'User 4', value: 'User 4' , disabled: false},
-  { label: 'User 5', value: 'User 5' , disabled: false}];
+  Users = [{ label: 'User 1', value: 'User 1', disabled: false },
+  { label: 'User 2', value: 'User 2', disabled: false },
+  { label: 'User 3', value: 'User 3', disabled: false },
+  { label: 'User 4', value: 'User 4', disabled: false },
+  { label: 'User 5', value: 'User 5', disabled: false }];
 
   permissions1: any;
   permissions2: any;
   selectedUsers: any;
   selectedCopyUsers: any;
 
-  constructor() { }
+  constructor(private messageService: MessageService) { }
 
   ngOnInit() {
   }
@@ -31,10 +33,11 @@ export class CopyPermissionComponent implements OnInit {
 
   userCopyChange(data) {
     console.log(data);
-    if (data.label !== this.selectedUsers.label) {
-      this.permissions2 = 'p1';
+    if (data.label === this.selectedUsers.label) {
+      this.permissions2 = ' ';
+      this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'please select another User' });
     } else {
-
+      this.permissions2 = 'p1';
     }
   }
 
