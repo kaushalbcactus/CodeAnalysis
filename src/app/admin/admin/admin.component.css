@@ -25,10 +25,6 @@
     margin: 15px auto;
 }
 
-.userRole{
-    display: inline-flex;
-    margin-left: 20px;
-}
 
 .filter1{
     display: inline-block;
@@ -40,7 +36,12 @@ form{
     width: auto;
 }
 
-.download-worksheet{color: #B71C1C;font-size: 16px;float: right;cursor:pointer}
+.download-worksheet {
+    color: #B71C1C !important;
+    font-size: 16px;
+    float: right;
+    cursor: pointer;
+}
 .td-none{text-decoration: none}
 .tableLoader{
     position: fixed; /* or absolute */
