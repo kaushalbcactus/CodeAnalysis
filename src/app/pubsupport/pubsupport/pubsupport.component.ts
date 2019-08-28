@@ -1267,74 +1267,6 @@ export class PubsupportComponent implements OnInit {
             this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
             return;
         }
-
-        // this.batchContents = [];
-
-        // const batchGuid = this.spServices.generateUUID();
-        // const changeSetId = this.spServices.generateUUID();
-        // dataEndpointArray.forEach(element => {
-        //     if (element) {
-
-        // tslint:disable-next-line: max-line-length
-        //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        //     }
-        // });
-        // this.batchContents.push('--changeset_' + changeSetId + '--');
-        // const batchBody = this.batchContents.join('\r\n');
-        // const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
-        // batchBodyContent.push('--batch_' + batchGuid + '--');
-        // const sBatchData = batchBodyContent.join('\r\n');
-
-        // this.spServices.getData(batchGuid, sBatchData).subscribe(res => {
-        //     this.projInfoResponse = res;
-        //     const arrResults = [];
-        //     const responseInLines = this.projInfoResponse._body.split('\n');
-        //     // tslint:disable-next-line:prefer-for-of
-        //     for (let currentLine = 0; currentLine < responseInLines.length; currentLine++) {
-        //         try {
-        //             const tryParseJson = JSON.parse(responseInLines[currentLine]);
-        //             arrResults.push(tryParseJson.d);
-        //         } catch (e) {
-        //         }
-        //     }
-        //     if (arrResults.length > 0 && type === 'addJournal') {
-        //         this.updateProjectSts_JCSubmissionDetails(arrResults, type);
-        //         // this.journal_Conf_form.reset();
-        //         let entryTypeJC = '';
-        //         if (this.journal_Conf_form.value.EntryType.toLowerCase() === 'journal') {
-        //             entryTypeJC = 'Journal Submitted.';
-        //         } else if (this.journal_Conf_form.value.EntryType.toLowerCase() === 'conference') {
-        //             entryTypeJC = 'Conference Submitted.';
-        //         }
-        //         this.messageService.add({ key: 'myKey1', severity: 'success', summary: entryTypeJC, detail: '', life: 4000 });
-        //         document.getElementById('closeModalButton').click();
-        //         this.reload();
-
-        //     } else if (arrResults.length > 0 && type === 'addAuthor') {
-        //         this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Author added.', detail: '', life: 4000 });
-        //         document.getElementById('closeModalButton').click();
-        //         this.add_author_form.reset();
-        //         this.reload();
-        //         // this.addAuthorFormField();
-        //     } else if (type === 'updateDecision') {
-        //         this.update_decision_details.reset();
-        //         this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Updated Decision.', detail: '', life: 4000 });
-        //         document.getElementById('closeModalButton').click();
-        //         this.reload();
-        //     } else if (type === 'galley') {
-        //         this.galley_form.reset();
-        //         this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Galley Overrided.', detail: '', life: 4000 });
-        //         document.getElementById('closeModalButton').click();
-        //         this.reload();
-        //     } else if (type === 'updatePublication') {
-        //         this.update_publication_form.reset();
-
-        //         this.messageService.add({ key: 'myKey1', severity: 'success',
-        // summary: 'Publication details Updated.', detail: '', life: 4000 });
-        //         document.getElementById('closeModalButton').click();
-        //         this.reload();
-        //     }
-        // });
     }
 
     async updateProjectSts_JCSubmissionDetails(res: any, type: string) {
@@ -1723,32 +1655,7 @@ export class PubsupportComponent implements OnInit {
         this.ref = componentRef;
         // componentRef.instance.formType = 'addAuthor';
         return;
-        // this.selectedProject = [];
-        // this.selectedProject = data;
-        // const obj = Object.assign({}, this.pubsupportService.pubsupportComponent.authors);
-        // obj.filter = obj.filter.replace('{{ProjectCode}}', data.ProjectCode);
-        // const authEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.addAuthor.name + '', obj);
-        // const authorsObj = [{
-        //     url: authEndpoint,
-        //     type: 'GET',
-        //     listName: this.constantService.listNames.addAuthor.name
-        // }];
-        // const res = await this.spOperationsService.executeBatch(authorsObj);
-        // this.authorsData = res[0].retItems;
-        // this.onTabChange();
     }
-    // async onTabChange() {
-    //     this.authorsFiles = [];
-    //     const fileEndPoint = this.selectedProject.ProjectFolder + '/Publication Support/Forms/';
-    //     const authorFilesGet = await this.spOperationsService.readFiles(fileEndPoint);
-    //     // tslint:disable-next-line:only-arrow-functions
-    //     authorFilesGet.sort((a, b) => {
-    //         a = new Date(a.TimeLastModified);
-    //         b = new Date(b.TimeLastModified);
-    //         return a < b ? -1 : a > b ? 1 : 0;
-    //     });
-    //     this.authorsFiles = authorFilesGet;
-    // }
 
     // tslint:disable-next-line:use-life-cycle-interface
     ngOnDestroy() {
