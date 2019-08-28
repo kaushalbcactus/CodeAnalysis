@@ -25,7 +25,7 @@ export class PubsupportComponent implements OnInit {
 
     constructor(
         private formBuilder: FormBuilder,
-        public spServices: SPOperationService,
+        public spOperationsService: SPOperationService,
         public constantService: ConstantsService,
         public globalObject: GlobalService,
         public pubsupportService: PubsuportConstantsService,
@@ -322,7 +322,7 @@ export class PubsupportComponent implements OnInit {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         this.loggedInUserInfo = [];
         this.loggedInUserGroup = [];
-        const curruentUsrInfo = await this.spOperationsService.getUserInfo(this.globalObject.sharePointPageObject.userId.toString());
+        const curruentUsrInfo = await this.spOperationsService.getUserInfo(this.globalObject.sharePointPageObject.userId);
         this.loggedInUserInfo = curruentUsrInfo.Groups.results;
         this.loggedInUserInfo.forEach(element => {
             if (element) {
@@ -385,10 +385,10 @@ export class PubsupportComponent implements OnInit {
             listName: this.constantService.listNames.ProjectInformation.name
         }];
 
-        arrResults = await this.spServices.executeBatch(pipcObj);
+        arrResults = await this.spOperationsService.executeBatch(pipcObj);
         if (arrEndPointsArchive.length) {
             // arrResultsArchive = await this.spServices.getDataByApi(this.globalObject.sharePointPageObject.webAbsoluteArchiveUrl, arrEndPointsArchive);
-            arrResultsArchive = await this.spServices.executeBatch(piObj);
+            arrResultsArchive = await this.spOperationsService.executeBatch(piObj);
             if (arrResultsArchive.length && arrResultsArchive[0].length) {
                 arrProjects = arrResultsArchive[0];
             } else {
@@ -1224,7 +1224,7 @@ export class PubsupportComponent implements OnInit {
             } else if (type === 'addJCDetailsModal') {
                 console.log('res ', res);
                 this.updateProjectSts_JCSubmissionDetails(res, type);
-              
+
             } else if (type === 'updateDecision') {
                 this.update_decision_details.reset();
                 this.messageService.add({

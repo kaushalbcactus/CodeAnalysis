@@ -4,8 +4,6 @@ import { DynamicDialogRef, MessageService, DynamicDialogConfig } from 'primeng/a
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';
-import { GlobalService } from '../../../Services/global.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
 
 @Component({
     selector: 'app-create-conference',

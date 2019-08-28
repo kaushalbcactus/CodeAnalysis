@@ -1,13 +1,12 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
 import { MessageService, DialogService, ConfirmationService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
-import { Observable } from 'rxjs';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 
 @Component({
     selector: 'app-add-author',
@@ -38,15 +37,12 @@ export class AddAuthorComponent implements OnInit {
 
     constructor(
         private fb: FormBuilder,
-        private spOperationsService: SpOperationsService,
+        private spOperationsService: SPOperationService,
         public constantService: ConstantsService,
         public globalObject: GlobalService,
         public pubsupportService: PubsuportConstantsService,
         private messageService: MessageService,
         private router: Router,
-        private dialogService: DialogService,
-        private datePipe: DatePipe,
-        private confirmationService: ConfirmationService,
     ) { }
 
     ngOnInit() {

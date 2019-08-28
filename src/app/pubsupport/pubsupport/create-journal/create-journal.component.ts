@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { SharepointoperationService } from 'src/app/Services/sharepoint-operation.service';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
 import { DynamicDialogRef, MessageService, DynamicDialogConfig } from 'primeng/api';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 // import { Journal } from "./journal-interface";
 
 @Component({
@@ -18,8 +17,7 @@ export class CreateJournalComponent implements OnInit {
         private fb: FormBuilder,
         public ref: DynamicDialogRef,
         public psConstantService: PubsuportConstantsService,
-        private spOperationsService: SpOperationsService,
-        private spServices: SharepointoperationService,
+        private spOperationsService: SPOperationService,
         private constantService: ConstantsService,
         private messageService: MessageService,
         public config: DynamicDialogConfig,

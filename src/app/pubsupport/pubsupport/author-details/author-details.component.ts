@@ -1,12 +1,8 @@
 import { Component, OnInit, Input, ComponentFactoryResolver } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { SpOperationsService } from 'src/app/Services/sp-operations.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
-import { DialogService, MessageService, ConfirmationService } from 'primeng/api';
-import { Router } from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
 
 @Component({
     selector: 'app-author-details',
@@ -20,15 +16,10 @@ export class AuthorDetailsComponent implements OnInit {
     authorsFiles: any = [];
     authorDetailModal: boolean;
     constructor(
-        private spOperationsService: SpOperationsService,
+        private spOperationsService: SPOperationService,
         public constantService: ConstantsService,
         public globalObject: GlobalService,
         public pubsupportService: PubsuportConstantsService,
-        private messageService: MessageService,
-        private router: Router,
-        private dialogService: DialogService,
-        private datePipe: DatePipe,
-        private confirmationService: ConfirmationService,
     ) { }
 
     async ngOnInit() {

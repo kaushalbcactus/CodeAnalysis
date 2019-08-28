@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
-import { ConstantsService } from "../../Services/constants.service";
-import { GlobalService } from '../../Services/global.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class PubsuportConstantsService {
 
-    constructor(private constantService: ConstantsService, private globalObject: GlobalService) { }
+    constructor() { }
 
     pubsupportComponent = {
         isPSInnerLoaderHidden: true,
