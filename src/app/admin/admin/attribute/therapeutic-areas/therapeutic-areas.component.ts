@@ -32,9 +32,9 @@ export class TherapeuticAreasComponent implements OnInit {
   ngOnInit() {
     this.therapeuticAreaColumns = [
       // { field: 'Sr', header: 'Sr.No.' },
-      { field: 'TherapeuticArea', header: 'TherapeuticArea' },
-      { field: 'LastUpdated', header: 'Last Updated' },
-      { field: 'LastUpdatedBy', header: 'Last Updated By' },
+      { field: 'TherapeuticArea', header: 'TherapeuticArea' , visibility: true},
+      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
+      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
     ];
 
     this.therapeuticAreaRows = [

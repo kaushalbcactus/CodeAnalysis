@@ -227,10 +227,5 @@ export class UserRoleMappingComponent implements OnInit {
       }
     }
   }
-
-  downloadExcel(ur) {
-    ur.exportCSV();
-  }
-
 }
 

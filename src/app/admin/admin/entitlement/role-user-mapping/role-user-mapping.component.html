@@ -1,30 +1,19 @@
 <div>
     <div class="userRole">
-        <span style="padding-right: 10px;">Group:</span>
-        <p-dropdown [options]="groups" filter="true" optionLabel="label" resetFilterOnHide="true"
-            placeholder='Select Group' [(ngModel)]="selectedGroup" (onChange)="groupChange()">
+        <span style="padding-right: 10px;">Role:</span>
+        <p-dropdown [options]="roles" filter="true" optionLabel="label" resetFilterOnHide="true"
+            placeholder='Select Role' [(ngModel)]="selectedRole" (onChange)="roleChange()">
         </p-dropdown>
     </div>
 
     <div class="userRole">
-        <span style="padding-right: 10px;">Group:</span>
+        <span style="padding-right: 10px;">User:</span>
         <p-multiSelect [options]="Users" [(ngModel)]="selectedUsers" (onChange)="userChange()"></p-multiSelect>
     </div>
 
-    <!-- <div class="userRole">
-        <span style="padding-right: 10px;display: inline-block">Users:</span>
-        <div class="ui-g" style="width:250px;margin-bottom:10px;display: inline-grid">
-            <div class="ui-g-12"><p-checkbox name="group1" value="User 1" label="User 1" [(ngModel)]="selectedUsers" inputId="u1"></p-checkbox></div>
-            <div class="ui-g-12"><p-checkbox name="group1" value="User 2" label="User 2" [(ngModel)]="selectedUsers" inputId="u2"></p-checkbox></div>
-            <div class="ui-g-12"><p-checkbox name="group1" value="User 3" label="User 3" [(ngModel)]="selectedUsers" inputId="u3"></p-checkbox></div>
-        </div>
-    </div> -->
-    <div class="userRole">
+    <div class="userRole savebtn">
         <p-button label="Save" (onClick)="save()"></p-button>
     </div>
-
-    <a (click)="downloadExcel(ru)" class="download-worksheet td-none"><i class="fa fa-download" aria-hidden="true"></i>
-        Download worksheet</a>
 </div>
 
 <!-- <h3 style="text-align: center">Audit History</h3>

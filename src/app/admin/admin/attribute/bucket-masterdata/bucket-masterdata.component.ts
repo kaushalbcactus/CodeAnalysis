@@ -35,10 +35,10 @@ export class BucketMasterdataComponent implements OnInit {
   ngOnInit() {
     this.bucketDataColumns = [
       // { field: 'Sr', header: 'Sr.No.' },
-      { field: 'Bucket', header: 'Bucket' },
-      { field: 'Client', header: 'Client' },
-      { field: 'LastUpdated', header: 'Last Updated' },
-      { field: 'LastUpdatedBy', header: 'Last Updated By' },
+      { field: 'Bucket', header: 'Bucket' , visibility: true},
+      { field: 'Client', header: 'Client' , visibility: true},
+      { field: 'LastUpdated', header: 'Last Updated' , visibility: true, exportable: false},
+      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
     ];
 
     this.bucketDataRows = [

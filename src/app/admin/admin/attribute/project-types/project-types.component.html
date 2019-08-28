@@ -5,15 +5,15 @@
   <ng-template pTemplate="header" let-columns>
       <tr>
           <th>Sr.No.</th>
-          <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+          <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
               {{col.header}}
-              <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
           </th>
           <th></th>
       </tr>
       <tr>
           <th></th>
-          <th *ngFor="let col of columns" [ngSwitch]="col.field">
+          <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
               <p-multiSelect *ngSwitchCase="'ProjectType'" [style]="{'width':'100%'}" appendTo="body" [options]="projectTypeColArray.ProjectType" defaultLabel="Project Type" (onChange)="pa.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
               <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body" [options]="projectTypeColArray.LastUpdated" defaultLabel="LastUpdated" (onChange)="pa.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
               <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body" [options]="projectTypeColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy" (onChange)="pa.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
@@ -24,7 +24,7 @@
   <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
       <tr>
           <td>{{ rowIndex+1 }}</td>
-          <td *ngFor="let col of columns">
+          <td *ngFor="let col of columns" [hidden]="!col.visibility">
               <ng-container *ngIf="col.field != ''">
                   {{rowData[col.field]}}
               </ng-container>
@@ -52,11 +52,11 @@
 </div> -->
 
 <div>
-  <div class="ui-grid-row addNew">
-      <div class="ui-grid-col-4">
+  <div class="p-grid addNew">
+      <div class="p-col-4">
           <h5>Add Project Type</h5>
       </div>
-      <div class="ui-grid-col-6">
+      <div class="p-col">
           <input type="text" [(ngModel)]="projectType" pInputText/>
           <p-button label="Add" (click)="addProjectType(projectType)"></p-button>
       </div>

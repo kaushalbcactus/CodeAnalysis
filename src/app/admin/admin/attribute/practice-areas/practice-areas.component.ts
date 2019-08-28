@@ -32,9 +32,9 @@ export class PracticeAreasComponent implements OnInit {
   ngOnInit() {
     this.practiceAreaColumns = [
       // { field: 'Sr', header: 'Sr.No.' },
-      { field: 'PracticeArea', header: 'Practice Area' },
-      { field: 'LastUpdated', header: 'Last Updated' },
-      { field: 'LastUpdatedBy', header: 'Last Updated By' },
+      { field: 'PracticeArea', header: 'Practice Area' , visibility: true},
+      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
+      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
     ];
 
     this.practiceAreaRows = [
