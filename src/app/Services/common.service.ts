@@ -569,6 +569,8 @@ export class CommonService {
     }
 
     getResourceByMatrix(task, allTasks) {
+
+        debugger;
         const resources = this.sharedObject.oTaskAllocation.oResources;
         const prjDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
         const cmL1 = prjDetails.cmLevel1.results ? prjDetails.cmLevel1.results : [];

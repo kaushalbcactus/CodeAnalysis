@@ -1,10 +1,9 @@
-import { Component, OnInit, Output, EventEmitter, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy, Input, HostListener } from '@angular/core';
 import { GlobalService } from 'src/app/Services/global.service';
-import { PeoplePickerQuery } from 'src/app/models/people-picker.query';
-import { PeoplePickerUser } from 'src/app/models/people-picker.response';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MessageService } from 'primeng/api';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-resources',
@@ -14,17 +13,7 @@ import { MessageService } from 'primeng/api';
 export class ResourcesComponent implements OnInit {
 
   @Input() reloadResourcesEnable: boolean;
-  peoplePickerQuery: PeoplePickerQuery = {
-    queryParams: {
-      QueryString: '',
-      MaximumEntitySuggestions: 10,
-      AllowEmailAddresses: true,
-      AllowOnlyEmailAddresses: false,
-      PrincipalSource: 1,
-      PrincipalType: 1,
-      SharePointGroupID: 0
-    }
-  };
+
   public allPrimaryResources: PeoplePickerUser[];
   primaryResoucesusers: PeoplePickerUser[] = [];
   writerusers: PeoplePickerUser[] = [];
@@ -38,17 +27,17 @@ export class ResourcesComponent implements OnInit {
   public sharedTaskAllocateObj = this.sharedObject.oTaskAllocation;
   resources: any;
   navigationSubscription: any;
+  tempClick: any;
   constructor(
     public sharedObject: GlobalService,
     private spService: SPOperationService,
     private constants: ConstantsService,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+    private commonService: CommonService) { }
   ngOnInit() {
     this.loadResources();
   }
-  ngOnDestroy() {
 
-  }
 
   // *************************************************************************************************
   // Filter Users for dropdown based on keyup
@@ -75,6 +64,8 @@ export class ResourcesComponent implements OnInit {
   //  **************************************************************************************************
 
   loadResources() {
+
+    this.loaderEnable = true;
     this.resources = this.sharedTaskAllocateObj.oResources;
     this.primaryResoucesusers = [];
     this.writerusers = [];
@@ -173,7 +164,52 @@ export class ResourcesComponent implements OnInit {
     await this.spService.updateItem(this.constants.listNames.ProjectInformation.name, project.projectID,
       oBj, 'SP.Data.ProjectInformationListItem');
 
+    await this.commonService.getProjectResources(project.projectCode, true, false);
+
     this.loaderEnable = false;
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Resources updated successfully.' });
+
+
   }
+
+
+  // *************************************************************************************************************************************
+  // hide dropdown option  on production
+  // *************************************************************************************************************************************
+
+  @HostListener('document:click', ['$event'])
+  clickout(event) {
+    if (event.target.className === 'ui-button-icon-left ui-clickable pi pi-caret-down') {
+      if (this.tempClick) {
+        this.tempClick.style.display = 'none';
+        if (this.tempClick !== event.target.parentElement.nextElementSibling) {
+          this.tempClick = event.target.parentElement.nextElementSibling;
+          this.tempClick.style.display = '';
+        } else {
+          this.tempClick = undefined;
+        }
+      } else {
+        this.tempClick = event.target.parentElement.nextElementSibling;
+        this.tempClick.style.display = '';
+      }
+
+    } else if (event.target.className === 'user-name') {
+      if (event.target.offsetParent) {
+        event.target.offsetParent.style.display = 'none';
+      }
+    } else {
+      if (this.tempClick) {
+        this.tempClick.style.display = 'none';
+        this.tempClick = undefined;
+      }
+    }
+  }
+
+}
+
+
+export class PeoplePickerUser {
+
+  Id: number;
+  UserName: string;
 }

@@ -2,6 +2,10 @@
     text-align: center;
 }
 
+div.ms-wikicontent.ms-rtestate-field {
+    padding-right: 0px !Important;
+}
+
 #scInnerLoader {
     border: 10px solid #f3f3f3;
     border-radius: 50%;
@@ -494,7 +498,7 @@ body .ui-treetable .ui-treetable-tbody>tr>td:last-child {
 }
 
 .mat-expansion-panel-body {
-    padding: 0 12px 16px !important;
+    padding: 0 6px 16px !important;
 }
 
 .timePicker {

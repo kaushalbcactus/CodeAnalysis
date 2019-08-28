@@ -18,9 +18,10 @@
 }
 
 ::ng-deep .ui-autocomplete-dropdown {
-    padding: 0.47em;
-    background-color: #db1721 !important;
-    border: 1px solid #db1721 !important;
+    padding: 2em !important;
+    background-color: #db1721!important;
+    font-size: 5px !important;
+    border: 1px solid #db1721!important;
 }
 
 ::ng-deep .ui-autocomplete-multiple-container {
@@ -28,4 +29,16 @@
     border-radius: 3px !important;
     overflow-y: auto !important;
     max-height: 150px !important;
+}
+
+::ng-deep .ui-autocomplete-dropdown {
+    font-size: 6px !important;
+}
+
+::ng-deep .ui-autocomplete-dropdown>.ui-button-icon-left {
+    font-size: 30px !important;
+}
+
+::ng-deep .primaryResource>span>.ui-autocomplete-multiple-container {
+    width: 80% !important;
 }

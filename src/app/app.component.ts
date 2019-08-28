@@ -28,10 +28,10 @@ export class AppComponent {
     this.globalObject.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
 
-    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 287 : _spPageContextInfo.userId;
-    this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
+    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 103 : _spPageContextInfo.userId;
+    this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
       : _spPageContextInfo.webAbsoluteUrl;
-    this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
+    this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
       : _spPageContextInfo.siteServerRelativeUrl;
     this.globalObject.sharePointPageObject.serverRelativeUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
     this.globalObject.sharePointPageObject.rootsite = window.origin;

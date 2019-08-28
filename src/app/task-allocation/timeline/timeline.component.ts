@@ -1900,8 +1900,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
   // tslint:disable
   DateChange(Node, type) {
-
-    debugger;
     let previousNode = undefined;
     let CheckDateTasks;
     let milestonePosition = -1;
@@ -1950,7 +1948,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   validateTaskDates(AllTasks) {
 
-    debugger;
     this.errorMessageCount = 0;
     AllTasks.forEach(task => {
 
@@ -2790,7 +2787,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   public generateSaveTasks() {
 
-    debugger;
     var listOfMilestones = [];
     var addedTasks = [], updatedTasks = [], addedMilestones = [], updatedMilestones = []
     for (var nCount = 0; nCount < this.milestoneData.length; nCount = nCount + 1) {
@@ -2984,7 +2980,36 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   // tslint:enable
 
-  validateNextMilestone() {
+  // validateNextMilestone() {
+  //   let validateNextMilestone = true;
+  //   const nextMilestoneText = this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone;
+  //   const newCurrentMilestone = this.milestoneData.filter((obj) => {
+  //     return obj.data.pName.split(' (')[0] === nextMilestoneText;
+  //   });
+  //   if (newCurrentMilestone.length > 0) {
+  //     let currMilTasks = this.getTasksFromMilestones(newCurrentMilestone[0], false);
+  //     currMilTasks = currMilTasks.filter((objt) => {
+  //       return objt.status !== 'Deleted' && objt.status !== 'Abandon';
+  //     });
+
+  //     currMilTasks.forEach(element => {
+  //       const title = element.AssignedTo.Title;
+  //       if (!title) {
+  //         validateNextMilestone = false;
+  //       }
+  //     });
+  //     if (!validateNextMilestone) {
+  //       this.messageService.add({
+  //         key: 'custom', severity: 'warn', summary: 'Warning Message',
+  //         detail: 'All tasks should be assigned to either a resource or skill before setting the milestone as current milestone.'
+  //       });
+  //     }
+  //   }
+
+  //   return validateNextMilestone;
+  // }
+
+  validateNextMilestone(subMile) {
     let validateNextMilestone = true;
     const nextMilestoneText = this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone;
     const newCurrentMilestone = this.milestoneData.filter((obj) => {
@@ -2995,9 +3020,24 @@ export class TimelineComponent implements OnInit, OnDestroy {
       currMilTasks = currMilTasks.filter((objt) => {
         return objt.status !== 'Deleted' && objt.status !== 'Abandon';
       });
+      if (subMile.itemType === 'submilestone') {
+        currMilTasks = currMilTasks.filter((objt) => {
+          return objt.pParent === subMile.pID;
+        });
+      } else {
+        // const checkMilestoneAllicatedTime = tempMilestones.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
+        // && e.status !== 'Not Confirmed');
+        if (subMile.budgetHours === '' || +subMile.budgetHours <= 0) {
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            detail: 'Budget hours for the milestone cannot be less than or equal to 0'
+          });
+          return false;
+        }
+      }
 
       currMilTasks.forEach(element => {
-        const title = element.AssignedTo.Title;
+        const title = element.AssignedTo ? element.AssignedTo.Title : null;
         if (!title) {
           validateNextMilestone = false;
         }
@@ -3005,8 +3045,36 @@ export class TimelineComponent implements OnInit, OnDestroy {
       if (!validateNextMilestone) {
         this.messageService.add({
           key: 'custom', severity: 'warn', summary: 'Warning Message',
-          detail: 'All tasks should be assigned to either a resource or skill before setting the milestone as current milestone.'
+          detail: 'All tasks should be assigned to either a resource or skill before setting the milestone / submilestone as current.'
         });
+
+        return false;
+      }
+
+      // tslint:disable
+      const checkTaskAllocatedTime = currMilTasks.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
+        && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed');
+      // tslint:enable
+      if (checkTaskAllocatedTime.length > 0) {
+        this.messageService.add({
+          key: 'custom', severity: 'warn', summary: 'Warning Message',
+          detail: 'Allocated time for task cannot be equal or less than 0 for ' + checkTaskAllocatedTime[0].pName
+        });
+
+        return false;
+      }
+
+      const compareDates = currMilTasks.filter(e => (e.pEnd <= e.pStart && e.tat === false
+        && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' &&
+        e.itemType !== 'Follow up' && e.status !== 'Completed'));
+      if (compareDates.length > 0) {
+
+        this.messageService.add({
+          key: 'custom', severity: 'warn', summary: 'Warning Message',
+          detail: 'End date should be greater than start date of ' + compareDates[0].pName
+        });
+
+        return false;
       }
     }
 
@@ -3022,7 +3090,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.selectedSubMilestone = rowData;
-        const validateNextMilestone = this.validateNextMilestone();
+        const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
         if (validateNextMilestone) {
           this.loaderenable = true;
           // const newCurrentMilestoneText = this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone;
@@ -3035,6 +3103,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       }
     });
   }
+
 
   async setAsNextMilestone(subMile) {
 
@@ -3297,12 +3366,100 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // Milestone Validation
   // **************************************************************************************************
 
-  validate() {
+  // validate() {
 
+
+  //   const projectBudgetHours = this.oProjectDetails.budgetHours;
+  //   const milestonesData = this.milestoneData;
+  //   const allMilestones = milestonesData.filter(c => c.data.type === 'milestone').map(c => c.data);
+  //   const milestoneBudgetHrs = allMilestones.reduce((a, b) => a + +b.budgetHours, 0);
+  //   if (projectBudgetHours < milestoneBudgetHrs) {
+
+  //     this.messageService.add({
+  //       key: 'custom', severity: 'warn', summary: 'Warning Message',
+  //       detail: 'Sum of milestone budget hours cannot be greater than project budget hours.'
+  //     });
+  //     return false;
+  //   }
+  //   const tempMilestones = allMilestones.filter(e => e.status !== 'Completed');
+  //   const checkMilestoneAllicatedTime = tempMilestones.filter(e => (e.budgetHours === '' || +e.budgetHours === 0));
+  //   if (checkMilestoneAllicatedTime.length > 0) {
+  //     this.messageService.add({
+  //       key: 'custom', severity: 'warn', summary: 'Warning Message',
+  //       detail: 'Budget hours for Milestone cannot be less than or equal to 0'
+  //     });
+  //     return false;
+  //   }
+  //   let previousNode;
+  //   for (const milestone of milestonesData) {
+
+  //     if (milestone.data.status !== 'Completed') {
+  //       const AllTasks = this.getTasksFromMilestones(milestone, false);
+
+  //       const milestoneTasks = AllTasks.filter(t => t.status !== 'Abandon' && t.itemType !== 'Adhoc');
+  //       // tslint:disable
+  //       const checkTaskAllocatedTime = milestoneTasks.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
+  //         && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed');
+  //       // tslint:enable
+  //       if (checkTaskAllocatedTime.length > 0) {
+  //         this.messageService.add({
+  //           key: 'custom', severity: 'warn', summary: 'Warning Message',
+  //           detail: 'Allocated time for task cannot be equal or less than 0.'
+  //         });
+
+  //         return false;
+  //       }
+  //       const checkDates = milestoneTasks.filter(e => (e.pUserStart === null || e.pUserEnd === null));
+  //       if (checkDates.length > 0) {
+  //         this.messageService.add({
+  //           key: 'custom', severity: 'warn', summary: 'Warning Message',
+  //           detail: 'Please select valid date for ' + milestone.data.pName + ' - ' + checkDates[0].pName
+  //         });
+
+  //         return false;
+  //       }
+  //       const compareDates = milestoneTasks.filter(e => (e.pEnd <= e.pStart && e.tat === false
+  //         && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' &&
+  //         e.itemType !== 'Follow up' && e.status !== 'Completed'));
+  //       if (compareDates.length > 0) {
+
+  //         this.messageService.add({
+  //           key: 'custom', severity: 'warn', summary: 'Warning Message',
+  //           detail: 'End date should be greater than start date of ' + milestone.data.pName + ' - ' + compareDates[0].pName
+  //         });
+
+  //         return false;
+  //       }
+
+  //       if (previousNode !== undefined && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart)) {
+  //         let errormessage = 'Previous Client Review';
+  //         if (previousNode.pName !== 'Client Review') {
+  //           errormessage = previousNode.pName;
+  //         }
+
+  //         this.messageService.add({
+  //           key: 'custom', severity: 'warn', summary: 'Warning Message',
+  //           detail: 'Start Date of ' + milestone.data.pName + '  should be greater than end date of ' + errormessage
+  //         });
+  //         return false;
+  //       }
+
+  //       if (milestoneTasks.length > 0) {
+
+  //         this.LinkScToClientReview(milestoneTasks);
+  //       }
+  //       previousNode = milestone.data;
+  //     }
+
+  //   }
+  //   return true;
+  // }
+
+  validate() {
 
     const projectBudgetHours = this.oProjectDetails.budgetHours;
     const milestonesData = this.milestoneData;
-    const allMilestones = milestonesData.filter(c => c.data.type === 'milestone').map(c => c.data);
+    const allMilestones = milestonesData.filter(c => c.data.type === 'milestone' && c.data.status !== 'Deleted').map(c => c.data);
     const milestoneBudgetHrs = allMilestones.reduce((a, b) => a + +b.budgetHours, 0);
     if (projectBudgetHours < milestoneBudgetHrs) {
 
@@ -3313,53 +3470,78 @@ export class TimelineComponent implements OnInit, OnDestroy {
       return false;
     }
     const tempMilestones = allMilestones.filter(e => e.status !== 'Completed');
-    const checkMilestoneAllicatedTime = tempMilestones.filter(e => (e.budgetHours === '' || +e.budgetHours === 0));
-    if (checkMilestoneAllicatedTime.length > 0) {
+    const checkMilestoneAllicatedTime = tempMilestones.filter(e => (e.budgetHours === '' || +e.budgetHours === 0) && e.status !== 'Not Confirmed');
+    if (checkMilestoneAllicatedTime.length > 0 && checkMilestoneAllicatedTime[0].status !== 'Not Saved') {
       this.messageService.add({
         key: 'custom', severity: 'warn', summary: 'Warning Message',
-        detail: 'Budget hours for Milestone cannot be less than or equal to 0'
+        detail: 'Budget hours for ' + checkMilestoneAllicatedTime[0].pName + ' milestone cannot be less than or equal to 0'
       });
       return false;
     }
     let previousNode;
     for (const milestone of milestonesData) {
 
-      if (milestone.data.status !== 'Completed') {
+      if (milestone.data.status !== 'Completed' && milestone.data.status !== 'Deleted') {
+        //if (milestone.data.status === 'In Progress' || milestone.data.status === 'Not Saved') {
+        let bSubMilPresent = false;
+        const zeroItem = milestone.children && milestone.children.length ? milestone.children[0].data : milestone.data;
         const AllTasks = this.getTasksFromMilestones(milestone, false);
+        const milestoneTasks = AllTasks.filter(t => t.status !== 'Abandon' && t.status !== 'Completed' && t.status !== 'Not Confirmed' && t.itemType !== 'Adhoc');
+        if (milestone.data.status === 'In Progress') {
+          if (zeroItem.itemType === 'submilestone') {
+            bSubMilPresent = true;
+          }
+          let checkTasks = [];
+          if (bSubMilPresent) {
+            milestone.children.forEach(element => {
+              if (element.data.status === 'In Progress' && element.data.itemType === 'submilestone') {
+                checkTasks = checkTasks.concat(this.getTasksFromMilestones(element, false));
+              }
+            });
+          } else {
+            checkTasks = milestoneTasks;
+          }
+          // tslint:disable
+          const checkTaskAllocatedTime = checkTasks.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
+            && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed');
+          // tslint:enable
+          if (checkTaskAllocatedTime.length > 0) {
+            this.messageService.add({
+              key: 'custom', severity: 'warn', summary: 'Warning Message',
+              detail: 'Allocated time for task cannot be equal or less than 0 for '
+                + milestone.data.pName + ' - ' + checkTaskAllocatedTime[0].pName
+            });
 
-        const milestoneTasks = AllTasks.filter(t => t.status !== 'Abandon' && t.itemType !== 'Adhoc');
-        // tslint:disable
-        const checkTaskAllocatedTime = milestoneTasks.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
-          && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed');
-        // tslint:enable
-        if (checkTaskAllocatedTime.length > 0) {
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Allocated time for task cannot be equal or less than 0.'
+            return false;
+          }
+          let validateAllocation = true;
+          checkTasks.forEach(element => {
+            const title = element.AssignedTo ? element.AssignedTo.Title : null;
+            if (!title) {
+              validateAllocation = false;
+            }
           });
+          if (!validateAllocation) {
+            this.messageService.add({
+              key: 'custom', severity: 'warn', summary: 'Warning Message',
+              detail: 'All tasks should be assigned to either a resource or skill for active milestone.'
+            });
 
-          return false;
-        }
-        const checkDates = milestoneTasks.filter(e => (e.pUserStart === null || e.pUserEnd === null));
-        if (checkDates.length > 0) {
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Please select valid date for ' + milestone.data.pName + ' - ' + checkDates[0].pName
-          });
+            return false;
+          }
 
-          return false;
-        }
-        const compareDates = milestoneTasks.filter(e => (e.pEnd <= e.pStart && e.tat === false
-          && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' &&
-          e.itemType !== 'Follow up' && e.status !== 'Completed'));
-        if (compareDates.length > 0) {
+          const compareDates = checkTasks.filter(e => (e.pEnd <= e.pStart && e.tat === false
+            && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' &&
+            e.itemType !== 'Follow up' && e.status !== 'Completed'));
+          if (compareDates.length > 0) {
 
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'End date should be greater than start date of ' + milestone.data.pName + ' - ' + compareDates[0].pName
-          });
+            this.messageService.add({
+              key: 'custom', severity: 'warn', summary: 'Warning Message',
+              detail: 'End date should be greater than start date of ' + milestone.data.pName + ' - ' + compareDates[0].pName
+            });
 
-          return false;
+            return false;
+          }
         }
 
         if (previousNode !== undefined && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart)) {
@@ -3370,22 +3552,21 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Start Date of ' + milestone.data.pName + '  should be greater than end date of ' + errormessage
+            detail: 'Start Date of ' + milestone.data.pName + ' should be greater than end date of ' + errormessage
           });
           return false;
         }
 
         if (milestoneTasks.length > 0) {
-
           this.LinkScToClientReview(milestoneTasks);
         }
-        previousNode = milestone.data;
+
       }
+      previousNode = milestone.data;
 
     }
     return true;
   }
-
 
 
   LinkScToClientReview(milestoneTasks) {

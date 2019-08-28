@@ -634,6 +634,7 @@ export class DragDropComponent implements OnInit {
     this.sharedObject.oTaskAllocation.arrMilestones = this.response[0].map(c => c.Title);
     this.sharedObject.oTaskAllocation.arrSubMilestones = this.response[1].map(c => c.Title);
     this.sharedObject.oTaskAllocation.arrTasks = this.response[2].map(c => c.Title);
+    this.sharedObject.oTaskAllocation.allTasks = this.response[2];
 
     this.mainloaderenable = false;
 
@@ -996,7 +997,7 @@ export class DragDropComponent implements OnInit {
       var count = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).length > 0 ?
         this.milestonesGraph.nodes[this.milestoneIndex].allTasks.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
           Math.max.apply(null, this.milestonesGraph.nodes[this.milestoneIndex].allTasks.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
-      const MilTask = this.sharedObject.oTaskAllocation.arrTasks.find(c => c.Title === originalType);
+      const MilTask = this.sharedObject.oTaskAllocation.allTasks.find(c => c.Title === originalType);
       const CentrallyAllocated = MilTask !== undefined ? MilTask.IsCentrallyAllocated !== null ? MilTask.IsCentrallyAllocated : 'No' : 'No';
       var node = null;
 
@@ -1011,7 +1012,7 @@ export class DragDropComponent implements OnInit {
           top: 0,
           left: 0,
           status: 'Not Saved',
-          IsCentrallyAllocated: this.sharedObject.oTaskAllocation.oLegalEntity.length > 0 ? this.sharedObject.oTaskAllocation.oLegalEntity[0].IsCentrallyAllocated === 'Yes' && CentrallyAllocated === 'Yes' ? 'Yes' : 'No' : 'No',
+          IsCentrallyAllocated: CentrallyAllocated === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : ''
         };
       }
@@ -1026,7 +1027,7 @@ export class DragDropComponent implements OnInit {
           top: 0,
           left: 0,
           status: 'Not Saved',
-          IsCentrallyAllocated: this.sharedObject.oTaskAllocation.oLegalEntity.length > 0 ? this.sharedObject.oTaskAllocation.oLegalEntity[0].IsCentrallyAllocated === 'Yes' && CentrallyAllocated === 'Yes' ? 'Yes' : 'No' : 'No',
+          IsCentrallyAllocated: CentrallyAllocated === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : ''
         };
       }
@@ -1531,7 +1532,7 @@ export class DragDropComponent implements OnInit {
       var count = this.milestonesGraph.nodes[milestoneIndex].allTasks.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).length > 0 ?
         this.milestonesGraph.nodes[milestoneIndex].allTasks.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
           Math.max.apply(null, this.milestonesGraph.nodes[milestoneIndex].allTasks.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
-      const MilTask = this.sharedObject.oTaskAllocation.arrTasks.find(c => c.Title === originalType);
+      const MilTask = this.sharedObject.oTaskAllocation.allTasks.find(c => c.Title === originalType);
       const CentrallyAllocated = MilTask !== undefined ? MilTask.IsCentrallyAllocated !== null ? MilTask.IsCentrallyAllocated : 'No' : 'No';
       var node = null;
 
@@ -1546,7 +1547,7 @@ export class DragDropComponent implements OnInit {
           top: 0,
           left: 0,
           status: 'Not Saved',
-          IsCentrallyAllocated: this.sharedObject.oTaskAllocation.oLegalEntity.length > 0 ? this.sharedObject.oTaskAllocation.oLegalEntity[0].IsCentrallyAllocated === 'Yes' && CentrallyAllocated === 'Yes' ? 'Yes' : 'No' : 'No',
+          IsCentrallyAllocated: CentrallyAllocated === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : ''
         };
       }
@@ -1561,7 +1562,7 @@ export class DragDropComponent implements OnInit {
           top: 0,
           left: 0,
           status: 'Not Saved',
-          IsCentrallyAllocated: this.sharedObject.oTaskAllocation.oLegalEntity.length > 0 ? this.sharedObject.oTaskAllocation.oLegalEntity[0].IsCentrallyAllocated === 'Yes' && CentrallyAllocated === 'Yes' ? 'Yes' : 'No' : 'No',
+          IsCentrallyAllocated: CentrallyAllocated === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : ''
         };
       }
