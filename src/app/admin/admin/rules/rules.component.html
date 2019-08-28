@@ -7,16 +7,16 @@
   <ng-template pTemplate="header" let-columns>
       <tr>
           <th>Sr.No.</th>
-          <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+          <th *ngFor="let col of columns" [hidden]="!col.visibility" [pSortableColumn]="col.field">
               {{col.header}}
-              <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+              <p-sortIcon [field]="col.field" [hidden]="!col.visibility" ariaLabel="Activate to sort"
                   ariaLabelDesc="Activate to sort in descending order"
                   ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
           </th>
       </tr>
       <tr>
           <th></th>
-          <th *ngFor="let col of columns" [ngSwitch]="col.field">
+          <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
               <p-multiSelect *ngSwitchCase="'Form'" [style]="{'width':'100%'}" appendTo="body"
                   [options]="ruleColArray.Form" defaultLabel="Form"
                   (onChange)="rule.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
@@ -35,7 +35,7 @@
   <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
       <tr>
           <td>{{ rowIndex+1 }}</td>
-          <td *ngFor="let col of columns">
+          <td *ngFor="let col of columns" [hidden]="!col.visibility">
               <ng-container *ngIf="col.field != ''">
                   {{rowData[col.field]}}
               </ng-container>

@@ -7,9 +7,9 @@
   <ng-template pTemplate="header" let-columns>
       <tr>
           <th>Sr.No.</th>
-          <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+          <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
               {{col.header}}
-              <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+              <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort"
                   ariaLabelDesc="Activate to sort in descending order"
                   ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
           </th>
@@ -17,7 +17,7 @@
       </tr>
       <tr>
           <th></th>
-          <th *ngFor="let col of columns" [ngSwitch]="col.field">
+          <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
               <p-multiSelect *ngSwitchCase="'ClientLegalEntry'" [style]="{'width':'100%'}" appendTo="body"
                   [options]="clientMasterDataColArray.ClientLegalEntry" defaultLabel="Client Legal Entry"
                   (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
@@ -37,7 +37,7 @@
   <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
       <tr>
           <td>{{ rowIndex+1 }}</td>
-          <td *ngFor="let col of columns">
+          <td *ngFor="let col of columns" [hidden]="!col.visibility">
               <ng-container *ngIf="col.field != ''">
                   {{rowData[col.field]}}
               </ng-container>
@@ -184,17 +184,17 @@
       Add Client Legal Entry
   </p-header>
   <form [formGroup]='addClient'>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2">Name</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2">Name</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="name" placeholder="Name" pInputText>
               <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.name.errors">
                   <div *ngIf="addClient.controls.name.errors.required">
                       Name is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2">Acronym</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2">Acronym</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="acronym" placeholder="Acronym" pInputText>
               <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.acronym.errors">
                   <div *ngIf="addClient.controls.acronym.errors.required">
@@ -202,17 +202,17 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2">Group</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2">Group</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Group" formControlName="group"></p-dropdown>
               <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.group.errors">
                   <div *ngIf="addClient.controls.group.errors.required">
                       Group is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2">Distribution List</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2">Distribution List</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="distributionList"
                   placeholder="Distribution List" pInputText>
               <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.distributionList.errors">
@@ -221,9 +221,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Invoice Name</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Invoice Name</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="invoiceName" placeholder="Invoice Name"
                   pInputText>
               <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.invoiceName.errors">
@@ -231,8 +231,8 @@
                       Invoice Name is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">Realization</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">Realization</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="realization" placeholder="Realization"
                   pInputText>
               <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.realization.errors">
@@ -241,9 +241,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Market</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Market</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Market" formControlName="market"></p-dropdown>
 
               <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.market.errors">
@@ -251,8 +251,8 @@
                       Market is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">Billing Entry</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">Billing Entry</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Billing Entry" formControlName="billingEntry">
               </p-dropdown>
 
@@ -262,9 +262,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">PO Required</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">PO Required</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Po Required" formControlName="poRequired">
               </p-dropdown>
 
@@ -273,8 +273,8 @@
                       PO Required is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">Time Zone</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">Time Zone</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Time Zone" formControlName="timeZone"></p-dropdown>
 
               <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.timeZone.errors">
@@ -283,9 +283,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">CM Level 1</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">CM Level 1</div>
+          <div class="p-col-4">
               <p-multiSelect [options]="options" defaultLabel="Select CM Level 1" formControlName="cmLevel1"
                   (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
               <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.cmLevel1.errors">
@@ -293,8 +293,8 @@
                       CM Level 1 is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">CM Level 2</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">CM Level 2</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select CM Level 2" formControlName="cmLevel2"></p-dropdown>
               <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.deliveryLevel1.errors">
                   <div *ngIf="addClient.controls.deliveryLevel1.errors.required">
@@ -302,9 +302,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Delivery Level 1</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Delivery Level 1</div>
+          <div class="p-col-4">
               <p-multiSelect [options]="options" defaultLabel="Select Delivery Level 1"
                   formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
                   resetFilterOnHide="true"></p-multiSelect>
@@ -313,8 +313,8 @@
                       Delivery Level 1 is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">Delivery Level 2</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">Delivery Level 2</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Delivery Level 2" formControlName="deliveryLevel2">
               </p-dropdown>
               <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.deliveryLevel2.errors">
@@ -323,17 +323,17 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Currency</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Currency</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Currency" formControlName="currency"></p-dropdown>
               <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.currency.errors">
                   <div *ngIf="addClient.controls.currency.errors.required">
                       Currency is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">AP Email</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">AP Email</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="APEmail" placeholder="AP Email" pInputText>
               <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.APEmail.errors">
                   <div *ngIf="addClient.controls.APEmail.errors.required">
@@ -341,22 +341,21 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Address</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Address</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="address1" pInputText>
-              <input class="mr-5" style="margin-top: 5px;" type="text" size="60" formControlName="address2"
+              <input class="mr-5 mt-5" type="text" size="60" formControlName="address2"
                   pInputText>
-              <input class="mr-5" style="margin-top: 5px;" type="text" size="60" formControlName="address3"
+              <input class="mr-5 mt-5" type="text" size="60" formControlName="address3"
                   pInputText>
-              <input class="mr-5" style="margin-top: 5px;" type="text" size="60" formControlName="address4"
+              <input class="mr-5 mt-5" type="text" size="60" formControlName="address4"
                   pInputText>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Notes</div>
-          <div class="ui-grid-col-4">
-              <!-- <input class="mr-5" type="text" size="60" formControlName="notes" placeholder="Notes" pInputText> -->
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Notes</div>
+          <div class="p-col-4">
               <textarea [rows]="5" [cols]="60" formControlName="notes" pInputTextarea></textarea>
 
               <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.notes.errors">
@@ -365,9 +364,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Bucket</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Bucket</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Bucket" formControlName="bucket"></p-dropdown>
               <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.bucket.errors">
                   <div *ngIf="addClient.controls.bucket.errors.required">
@@ -382,22 +381,22 @@
 </p-dialog>
 
 
-<p-dialog [(visible)]="editClientLegalEntry" [modal]="true" [style]="{width: '1000px', height: '500px'}">
+<!-- <p-dialog [(visible)]="editClientLegalEntry" [modal]="true" [style]="{width: '1000px', height: '500px'}">
   <p-header>
       Edit Client Legal Entry
   </p-header>
   <form [formGroup]='editClient'>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2">Name</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2">Name</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="name" placeholder="Name" pInputText>
               <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.name.errors">
                   <div *ngIf="editClient.controls.name.errors.required">
                       Name is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2">Acronym</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2">Acronym</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="acronym" placeholder="Acronym" pInputText>
               <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.acronym.errors">
                   <div *ngIf="editClient.controls.acronym.errors.required">
@@ -405,17 +404,17 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2">Group</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2">Group</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Group" formControlName="group"></p-dropdown>
               <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.group.errors">
                   <div *ngIf="editClient.controls.group.errors.required">
                       Group is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2">Distribution List</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2">Distribution List</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="distributionList"
                   placeholder="Distribution List" pInputText>
               <div class="error"
@@ -425,9 +424,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Invoice Name</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Invoice Name</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="invoiceName" placeholder="Invoice Name"
                   pInputText>
               <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.invoiceName.errors">
@@ -435,8 +434,8 @@
                       Invoice Name is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">Realization</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">Realization</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="realization" placeholder="Realization"
                   pInputText>
               <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.realization.errors">
@@ -445,9 +444,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Market</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Market</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Market" formControlName="market"></p-dropdown>
 
               <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.market.errors">
@@ -455,8 +454,8 @@
                       Market is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">Billing Entry</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">Billing Entry</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Billing Entry" formControlName="billingEntry">
               </p-dropdown>
 
@@ -466,9 +465,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">PO Required</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">PO Required</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Po Required" formControlName="poRequired">
               </p-dropdown>
 
@@ -477,8 +476,8 @@
                       PO Required is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">Time Zone</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">Time Zone</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Time Zone" formControlName="timeZone"></p-dropdown>
 
               <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.timeZone.errors">
@@ -487,9 +486,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">CM Level 1</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">CM Level 1</div>
+          <div class="p-col-4">
               <p-multiSelect [options]="options" defaultLabel="Select CM Level 1" formControlName="cmLevel1"
                   (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
               <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.cmLevel1.errors">
@@ -497,8 +496,8 @@
                       CM Level 1 is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">CM Level 2</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">CM Level 2</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select CM Level 2" formControlName="cmLevel2"></p-dropdown>
               <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.deliveryLevel1.errors">
                   <div *ngIf="editClient.controls.deliveryLevel1.errors.required">
@@ -506,9 +505,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Delivery Level 1</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Delivery Level 1</div>
+          <div class="p-col-4">
               <p-multiSelect [options]="options" defaultLabel="Select Delivery Level 1"
                   formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
                   resetFilterOnHide="true"></p-multiSelect>
@@ -517,8 +516,8 @@
                       Delivery Level 1 is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">Delivery Level 2</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">Delivery Level 2</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Delivery Level 2" formControlName="deliveryLevel2">
               </p-dropdown>
               <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.deliveryLevel2.errors">
@@ -527,17 +526,17 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Currency</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Currency</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Currency" formControlName="currency"></p-dropdown>
               <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.currency.errors">
                   <div *ngIf="editClient.controls.currency.errors.required">
                       Currency is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">AP Email</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">AP Email</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="APEmail" placeholder="AP Email" pInputText>
               <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.APEmail.errors">
                   <div *ngIf="editClient.controls.APEmail.errors.required">
@@ -545,9 +544,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Address</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Address</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="address1" pInputText>
               <input class="mr-5" style="margin-top: 5px;" type="text" size="60" formControlName="address2"
                   pInputText>
@@ -557,10 +556,9 @@
                   pInputText>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Notes</div>
-          <div class="ui-grid-col-4">
-              <!-- <input class="mr-5" type="text" size="60" formControlName="notes" placeholder="Notes" pInputText> -->
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Notes</div>
+          <div class="p-col-4">
               <textarea [rows]="5" [cols]="60" formControlName="notes" pInputTextarea></textarea>
 
               <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.notes.errors">
@@ -569,9 +567,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Bucket</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Bucket</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Bucket" formControlName="bucket"></p-dropdown>
               <div class="error" *ngIf="cmObject.isEditClientFormSubmit && editClient.controls.bucket.errors">
                   <div *ngIf="editClient.controls.bucket.errors.required">
@@ -583,7 +581,7 @@
   <p-footer>
       <button pButton label="Submit" type="button" (click)="saveClient(editClient)"></button>
   </p-footer>
-</p-dialog>
+</p-dialog> -->
 
 
 <!-- Sub-Division Dialog -->
@@ -596,9 +594,9 @@
       <ng-template pTemplate="header" let-columns>
           <tr>
               <th>Sr.No.</th>
-              <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+              <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
                   {{col.header}}
-                  <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+                  <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort"
                       ariaLabelDesc="Activate to sort in descending order"
                       ariaLabelAsc="Activate to sort in ascending order">
                   </p-sortIcon>
@@ -607,7 +605,7 @@
           </tr>
           <tr>
               <th></th>
-              <th *ngFor="let col of columns" [ngSwitch]="col.field">
+              <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility">
                   <p-multiSelect *ngSwitchCase="'SubDivision'" [style]="{'width':'100%'}" appendTo="body"
                       [options]="subDivisionFilters.SubDivision" defaultLabel="Sub-Division"
                       (onChange)="sd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
@@ -627,7 +625,7 @@
       <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
           <tr>
               <td>{{ rowIndex+1 }}</td>
-              <td *ngFor="let col of columns">
+              <td *ngFor="let col of columns" [hidden]="!col.visibility">
                   <ng-container *ngIf="col.field != ''">
                       {{rowData[col.field]}}
                   </ng-container>
@@ -658,9 +656,9 @@
       Add SubDivision
   </p-header>
   <form [formGroup]='subdivision_form'>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Sub-Division</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Sub-Division</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="subDivision_Name"
                   placeholder="Sub-Division Name" pInputText>
               <div class="error"
@@ -670,9 +668,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Distribution List</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Distribution List</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="distributionList"
                   placeholder="Distribution List" pInputText>
               <div class="error"
@@ -682,9 +680,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Delivery Level 1</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Delivery Level 1</div>
+          <div class="p-col-4">
               <p-multiSelect [style]="{'width':'100%'}" [options]="options" defaultLabel="Select Delivery Level 1"
                   formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
                   resetFilterOnHide="true"></p-multiSelect>
@@ -695,9 +693,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">CM Level 1</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">CM Level 1</div>
+          <div class="p-col-4">
               <p-multiSelect [style]="{'width':'100%'}" [options]="options" defaultLabel="Select CM Level 1"
                   formControlName="cmLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
                   resetFilterOnHide="true"></p-multiSelect>
@@ -714,14 +712,14 @@
   </p-footer>
 </p-dialog>
 
-<p-dialog [(visible)]="showeditSubDivision" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
+<!-- <p-dialog [(visible)]="showeditSubDivision" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
   <p-header>
       Edit SubDivision
   </p-header>
   <form [formGroup]='editSubdivision_form'>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Sub-Division</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Sub-Division</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="subDivision_Name"
                   placeholder="Sub-Division Name" pInputText>
               <div class="error"
@@ -731,9 +729,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Distribution List</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Distribution List</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="distributionList"
                   placeholder="Distribution List" pInputText>
               <div class="error"
@@ -743,9 +741,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Delivery Level 1</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Delivery Level 1</div>
+          <div class="p-col-4">
               <p-multiSelect [style]="{'width':'100%'}" [options]="options" defaultLabel="Select Delivery Level 1"
                   formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
                   resetFilterOnHide="true"></p-multiSelect>
@@ -756,9 +754,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">CM Level 1</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">CM Level 1</div>
+          <div class="p-col-4">
               <p-multiSelect [style]="{'width':'100%'}" [options]="options" defaultLabel="Select CM Level 1"
                   formControlName="cmLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
                   resetFilterOnHide="true"></p-multiSelect>
@@ -773,7 +771,7 @@
   <p-footer>
       <button pButton label="Submit" type="button" (click)="saveSubdivision(editSubdivision_form)"></button>
   </p-footer>
-</p-dialog>
+</p-dialog> -->
 
 
 <!-- POC Dialog -->
@@ -786,9 +784,9 @@
       <ng-template pTemplate="header" let-columns>
           <tr>
               <th>Sr.No.</th>
-              <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+              <th *ngFor="let col of columns" [hidden]="!col.visibility" [pSortableColumn]="col.field">
                   {{col.header}}
-                  <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+                  <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort"
                       ariaLabelDesc="Activate to sort in descending order"
                       ariaLabelAsc="Activate to sort in ascending order">
                   </p-sortIcon>
@@ -797,7 +795,7 @@
           </tr>
           <tr>
               <th></th>
-              <th *ngFor="let col of columns" [ngSwitch]="col.field">
+              <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
                   <p-multiSelect *ngSwitchCase="'POC'" [style]="{'width':'100%'}" appendTo="body"
                       [options]="POCFilters.POC" defaultLabel="POC"
                       (onChange)="poc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
@@ -817,7 +815,7 @@
       <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
           <tr>
               <td>{{ rowIndex+1 }}</td>
-              <td *ngFor="let col of columns">
+              <td *ngFor="let col of columns" [hidden]="!col.visibility">
                   <ng-container *ngIf="col.field != ''">
                       {{rowData[col.field]}}
                   </ng-container>
@@ -848,9 +846,9 @@
       Add Point Of Contact
   </p-header>
   <form [formGroup]='poc_form'>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">First Name</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">First Name</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="fname" placeholder="First Name" pInputText>
               <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.fname.errors">
                   <div *ngIf="poc_form.controls.fname.errors.required">
@@ -858,9 +856,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Last Name</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Last Name</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="lname" placeholder="Last Name" pInputText>
               <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.lname.errors">
                   <div *ngIf="poc_form.controls.lname.errors.required">
@@ -868,9 +866,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Designation</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Designation</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="designation" placeholder="Designation"
                   pInputText>
               <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.designation.errors">
@@ -879,9 +877,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Email</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Email</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="email" placeholder="Email" pInputText>
               <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.email.errors">
                   <div *ngIf="poc_form.controls.email.errors.required">
@@ -889,9 +887,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Phone No.</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Phone No.</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="phone" placeholder="Phone No" pInputText>
               <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.phone.errors">
                   <div *ngIf="poc_form.controls.phone.errors.required">
@@ -899,22 +897,22 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Address</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Address</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="address1" placeholder="Address" pInputText>
               <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.address1.errors">
                   <div *ngIf="poc_form.controls.address1.errors.required">
                       Address is required</div>
               </div>
-              <input class="mr-5" style="margin-top: 10px;" type="text" size="60" formControlName="address2" placeholder="Address" pInputText>
+              <input class="mr-5 mt-5" style="margin-top: 10px;" type="text" size="60" formControlName="address2" placeholder="Address" pInputText>
               <input class="mr-5" style="margin-top: 10px;" type="text" size="60" formControlName="address3" placeholder="Address" pInputText>
               <input class="mr-5" style="margin-top: 10px;" type="text" size="60" formControlName="address4" placeholder="Address" pInputText>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Department</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Department</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="department" placeholder="Department"
                   pInputText>
               <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.department.errors">
@@ -923,9 +921,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Referral Source</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Referral Source</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Referral Source" formControlName="referralSource">
               </p-dropdown>
               <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.referralSource.errors">
@@ -934,9 +932,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Status</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Status</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Status" formControlName="status"></p-dropdown>
               <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.status.errors">
                   <div *ngIf="poc_form.controls.status.errors.required">
@@ -944,9 +942,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Relationship Strength</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Relationship Strength</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="relationshipStrength"
                   placeholder="Relationship Strength" pInputText>
               <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.relationshipStrength.errors">
@@ -955,9 +953,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Engagement Plan</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Engagement Plan</div>
+          <div class="p-col-4">
               <textarea [rows]="5" [cols]="60" formControlName="engagementPlan" placeholder="Engagement Plan" pInputTextarea></textarea>
               <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.engagementPlan.errors">
                   <div *ngIf="poc_form.controls.engagementPlan.errors.required">
@@ -965,9 +963,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Comments</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Comments</div>
+          <div class="p-col-4">
               <textarea [rows]="5" [cols]="60" formControlName="comments" placeholder="Comments" pInputTextarea></textarea>
               <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.comments.errors">
                   <div *ngIf="poc_form.controls.comments.errors.required">
@@ -975,9 +973,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Project Contacts Type</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Project Contacts Type</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Project Contacts Type"
                   formControlName="contactsType"></p-dropdown>
               <div class="error" *ngIf="cmObject.isPOCFormSubmit && poc_form.controls.contactsType.errors">
@@ -992,14 +990,14 @@
   </p-footer>
 </p-dialog>
 
-<p-dialog [(visible)]="showeditPOC" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
+<!-- <p-dialog [(visible)]="showeditPOC" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
   <p-header>
       Edit Point Of Contact
   </p-header>
   <form [formGroup]='editPoc_form'>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">First Name</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">First Name</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="fname" placeholder="First Name" pInputText>
               <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.fname.errors">
                   <div *ngIf="editPoc_form.controls.fname.errors.required">
@@ -1007,9 +1005,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Last Name</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Last Name</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="lname" placeholder="Last Name" pInputText>
               <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.lname.errors">
                   <div *ngIf="editPoc_form.controls.lname.errors.required">
@@ -1017,9 +1015,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Designation</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Designation</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="designation" placeholder="Designation"
                   pInputText>
               <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.designation.errors">
@@ -1028,9 +1026,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Email</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Email</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="email" placeholder="Email" pInputText>
               <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.email.errors">
                   <div *ngIf="editPoc_form.controls.email.errors.required">
@@ -1038,9 +1036,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Phone No.</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Phone No.</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="phone" placeholder="Phone No" pInputText>
               <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.phone.errors">
                   <div *ngIf="editPoc_form.controls.phone.errors.required">
@@ -1048,9 +1046,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Address</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Address</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60"   formControlName="address1" placeholder="Address" pInputText>
               <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.address1.errors">
                   <div *ngIf="poc_form.controls.address1.errors.required">
@@ -1061,9 +1059,9 @@
               <input class="mr-5" style="margin-top: 10px;" type="text" size="60"  formControlName="address4" placeholder="Address" pInputText>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Department</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Department</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="department" placeholder="Department"
                   pInputText>
               <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.department.errors">
@@ -1072,9 +1070,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Referral Source</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Referral Source</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Referral Source" formControlName="referralSource">
               </p-dropdown>
               <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.referralSource.errors">
@@ -1083,9 +1081,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Status</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Status</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Status" formControlName="status"></p-dropdown>
               <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.status.errors">
                   <div *ngIf="editPoc_form.controls.status.errors.required">
@@ -1093,9 +1091,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Relationship Strength</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Relationship Strength</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="60" formControlName="relationshipStrength"
                   placeholder="Relationship Strength" pInputText>
               <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.relationshipStrength.errors">
@@ -1104,9 +1102,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Engagement Plan</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Engagement Plan</div>
+          <div class="p-col-4">
               <textarea [rows]="5" [cols]="60" formControlName="engagementPlan" placeholder="Engagement Plan" pInputTextarea></textarea>
               <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.engagementPlan.errors">
                   <div *ngIf="editPoc_form.controls.engagementPlan.errors.required">
@@ -1114,9 +1112,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Comments</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Comments</div>
+          <div class="p-col-4">
               <textarea [rows]="5" [cols]="60" formControlName="comments" placeholder="Comments" pInputTextarea></textarea>
               <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.comments.errors">
                   <div *ngIf="editPoc_form.controls.comments.errors.required">
@@ -1124,9 +1122,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 mr-10">Project Contacts Type</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 mr-10">Project Contacts Type</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Project Contacts Type"
                   formControlName="contactsType"></p-dropdown>
               <div class="error" *ngIf="cmObject.isEditPOCFormSubmit && editPoc_form.controls.contactsType.errors">
@@ -1139,7 +1137,7 @@
   <p-footer>
       <button pButton label="Submit" type="button" (click)="savePOC(editPoc_form)"></button>
   </p-footer>
-</p-dialog>
+</p-dialog> -->
 
 
 <!-- PO Dialog -->
@@ -1152,9 +1150,9 @@
       <ng-template pTemplate="header" let-columns>
           <tr>
               <th>Sr.No.</th>
-              <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+              <th *ngFor="let col of columns" [hidden]="!col.visibility" [pSortableColumn]="col.field">
                   {{col.header}}
-                  <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+                  <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort"
                       ariaLabelDesc="Activate to sort in descending order"
                       ariaLabelAsc="Activate to sort in ascending order">
                   </p-sortIcon>
@@ -1163,7 +1161,7 @@
           </tr>
           <tr>
               <th></th>
-              <th *ngFor="let col of columns" [ngSwitch]="col.field">
+              <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
                   <p-multiSelect *ngSwitchCase="'PO'" [style]="{'width':'100%'}" appendTo="body"
                       [options]="POFilters.PO" defaultLabel="PO" (onChange)="po.filter($event.value, col.field, 'in')"
                       (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
@@ -1187,7 +1185,7 @@
       <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
           <tr>
               <td>{{ rowIndex+1 }}</td>
-              <td *ngFor="let col of columns">
+              <td *ngFor="let col of columns" [hidden]="!col.visibility">
                   <ng-container *ngIf="col.field != ''">
                       {{rowData[col.field]}}
                   </ng-container>
@@ -1222,9 +1220,9 @@
   </p-dropdown>
 
   <form [formGroup]='addBudgetForm'>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Total Amount</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Total Amount</div>
+          <div class="p-col-4">
               <input class="mr-5" type="number" size="30" formControlName="total" placeholder="Total Amount"
                   pInputText>
               <div class="error" *ngIf="cmObject.isBudgetFormSubmit && addBudgetForm.controls.total.errors">
@@ -1232,9 +1230,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Revenue</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Revenue</div>
+          <div class="p-col-4">
               <input class="mr-5" type="number" size="30" formControlName="revenue" placeholder="Revenue"
                   (input)="onChange()" pInputText>
               <div class="error" *ngIf="cmObject.isBudgetFormSubmit && addBudgetForm.controls.revenue.errors">
@@ -1242,9 +1240,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">OOP</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">OOP</div>
+          <div class="p-col-4">
               <input class="mr-5" type="number" size="30" formControlName="oop" placeholder="OOP" (input)="onChange()"
                   pInputText>
               <div class="error" *ngIf="cmObject.isBudgetFormSubmit && addBudgetForm.controls.oop.errors">
@@ -1252,9 +1250,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Tax</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Tax</div>
+          <div class="p-col-4">
               <input class="mr-5" type="number" size="30" formControlName="tax" placeholder="Tax" (input)="onChange()"
                   pInputText>
               <div class="error" *ngIf="cmObject.isBudgetFormSubmit && addBudgetForm.controls.tax.errors">
@@ -1273,17 +1271,17 @@
       Add Purchase Order
   </p-header>
   <form [formGroup]='PoForm'>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Po Number</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Po Number</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="poNumber" placeholder="Po Number" pInputText>
               <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poNumber.errors">
                   <div *ngIf="PoForm.controls.poNumber.errors.required">
                       Po Number is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">PO Name</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">PO Name</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="poName" placeholder="PO Name" pInputText>
               <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poName.errors">
                   <div *ngIf="PoForm.controls.poName.errors.required">
@@ -1291,17 +1289,17 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Currency</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Currency</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Currency" formControlName="currency"></p-dropdown>
               <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.currency.errors">
                   <div *ngIf="PoForm.controls.currency.errors.required">
                       Currency is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">PO Expiry Date</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">PO Expiry Date</div>
+          <div class="p-col-4">
               <p-calendar formControlName="poExpiryDate"></p-calendar>
               <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poExpiryDate.errors">
                   <div *ngIf="PoForm.controls.poExpiryDate.errors.required">
@@ -1309,9 +1307,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Point of Contact</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Point of Contact</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Point of Contact" formControlName="poc">
               </p-dropdown>
               <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poc.errors">
@@ -1319,8 +1317,8 @@
                       Point of Contact is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">PO File</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">PO File</div>
+          <div class="p-col-4">
               <input class="mr-5" type="file" size="60" formControlName="poFile" pInputText>
               <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poFile.errors">
                   <div *ngIf="PoForm.controls.poFile.errors.required">
@@ -1328,9 +1326,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">TA</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">TA</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select TA" formControlName="ta">
               </p-dropdown>
               <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.ta.errors">
@@ -1338,8 +1336,8 @@
                       TA is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">Molecule</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">Molecule</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Molecule" formControlName="molecule">
               </p-dropdown>
               <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.molecule.errors">
@@ -1348,9 +1346,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">CM Level 2</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">CM Level 2</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select CM Level 2" formControlName="cmLevel2">
               </p-dropdown>
               <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.cmLevel2.errors">
@@ -1358,8 +1356,8 @@
                       CM Level 2 is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">PO Buying Entity</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">PO Buying Entity</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select PO Buying Entity" formControlName="poBuyingEntity">
               </p-dropdown>
               <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poBuyingEntity.errors">
@@ -1374,22 +1372,22 @@
   </p-footer>
 </p-dialog>
 
-<p-dialog [(visible)]="showeditPO" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
+<!-- <p-dialog [(visible)]="showeditPO" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
   <p-header>
       Edit Purchase Order
   </p-header>
   <form [formGroup]='editPoForm'>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Po Number</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Po Number</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="poNumber" placeholder="Po Number" pInputText>
               <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.poNumber.errors">
                   <div *ngIf="editPoForm.controls.poNumber.errors.required">
                       Po Number is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">PO Name</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">PO Name</div>
+          <div class="p-col-4">
               <input class="mr-5" type="text" size="30" formControlName="poName" placeholder="PO Name" pInputText>
               <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.poName.errors">
                   <div *ngIf="editPoForm.controls.poName.errors.required">
@@ -1397,17 +1395,17 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Currency</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Currency</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Currency" formControlName="currency"></p-dropdown>
               <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.currency.errors">
                   <div *ngIf="editPoForm.controls.currency.errors.required">
                       Currency is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">PO Expiry Date</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">PO Expiry Date</div>
+          <div class="p-col-4">
               <p-calendar formControlName="poExpiryDate"></p-calendar>
               <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.poExpiryDate.errors">
                   <div *ngIf="editPoForm.controls.poExpiryDate.errors.required">
@@ -1415,9 +1413,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">Point of Contact</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">Point of Contact</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Point of Contact" formControlName="poc">
               </p-dropdown>
               <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.poc.errors">
@@ -1425,8 +1423,8 @@
                       Point of Contact is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">PO File</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">PO File</div>
+          <div class="p-col-4">
               <input class="mr-5" type="file" size="60" formControlName="poFile" pInputText>
               <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.poFile.errors">
                   <div *ngIf="editPoForm.controls.poFile.errors.required">
@@ -1434,9 +1432,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">TA</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">TA</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select TA" formControlName="ta">
               </p-dropdown>
               <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.ta.errors">
@@ -1444,8 +1442,8 @@
                       TA is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">Molecule</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">Molecule</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select Molecule" formControlName="molecule">
               </p-dropdown>
               <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.molecule.errors">
@@ -1454,9 +1452,9 @@
               </div>
           </div>
       </div>
-      <div class="ui-grid-row mt-20">
-          <div class="ui-grid-col-2 ">CM Level 2</div>
-          <div class="ui-grid-col-4">
+      <div class="p-grid mt-20">
+          <div class="p-col-2 ">CM Level 2</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select CM Level 2" formControlName="cmLevel2">
               </p-dropdown>
               <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.cmLevel2.errors">
@@ -1464,8 +1462,8 @@
                       CM Level 2 is required</div>
               </div>
           </div>
-          <div class="ui-grid-col-2 ">PO Buying Entity</div>
-          <div class="ui-grid-col-4">
+          <div class="p-col-2 ">PO Buying Entity</div>
+          <div class="p-col-4">
               <p-dropdown [options]="options" placeholder="Select PO Buying Entity" formControlName="poBuyingEntity">
               </p-dropdown>
               <div class="error" *ngIf="cmObject.isEditPOFormSubmit && editPoForm.controls.poBuyingEntity.errors">
@@ -1478,6 +1476,6 @@
   <p-footer>
       <button pButton label="Submit" type="button" (click)="savePO(editPoForm)"></button>
   </p-footer>
-</p-dialog>
+</p-dialog> -->
 
 <p-toast [style]="{marginTop: '80px'}"></p-toast>

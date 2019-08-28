@@ -13,20 +13,27 @@
     </p-dropdown>
   </div>
 
-  <table>
-    <tr *ngFor="let sow of sowItems; let i= index;">
-      <td>
-        <p-checkbox id={{i}} name="group1" value={{sow.value}} label={{sow.label}} [(ngModel)]="selectedSOW[i]"></p-checkbox>
-      </td>
-      <td>
-        <p-dropdown [options]="accessType" filter="true" optionLabel="label" resetFilterOnHide="true"
-          placeholder='Select value' [(ngModel)]="selectedValue[i]" (onChange)="typeChange(i)">
-        </p-dropdown>
-      </td>
-    </tr>
-  </table>
-
   <div class="userRole">
+    <table>
+      <tr *ngFor="let sowData of sowList; let i= index;">
+        <td>
+          <p-checkbox name="group1" [disabled]="isTypeDisabled[i]"
+           [(ngModel)]="sowData.status" binary="true"
+            (click)="sowCheck(i,sowData)"></p-checkbox>
+        </td>
+        <td>
+          {{sowData.sow}}
+        </td>
+        <td>
+          <p-dropdown [disabled]="isTypeDisabled[i]" [options]="accessType" filter="true" optionLabel="label"
+            resetFilterOnHide="true" placeholder='Select value' [(ngModel)]='sowData.type' (onChange)="typeChange($event.value)">
+          </p-dropdown>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="userRole savebtn">
     <p-button label="Save" (onClick)="save()"></p-button>
   </div>
 </div>

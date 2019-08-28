@@ -6,58 +6,81 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./add-user-to-sow.component.css']
 })
 export class AddUserToSowComponent implements OnInit {
+  isTypeDisabled: any = [];
   users = [{ label: 'User 1', value: 'User 1' },
   { label: 'User 2', value: 'User 2' },
   { label: 'User 3', value: 'User 3' },
   { label: 'User 4', value: 'User 4' },
   { label: 'User 5', value: 'User 5' }];
 
-  clients = [{ label: 'Client 1', value: 'Client 1' },
-  { label: 'Client 2', value: 'Client 2' },
-  { label: 'Client 3', value: 'Client 3' },
-  { label: 'Client 4', value: 'Client 4' },
-  { label: 'Client 5', value: 'Client 5' }];
+  clients: any;
 
-  sowItems = [{ label: 'Sow 1', value: 'Sow 1' },
-  { label: 'Sow 2', value: 'Sow 2' },
-  { label: 'Sow 3', value: 'Sow 3' },
-  { label: 'Sow 4', value: 'Sow 4' },
-  { label: 'Sow 5', value: 'Sow 5' }];
+  accessType = [{ label: 'Accountable', type: 'Accountable' },
+  { label: 'Access', type: 'Access' }];
 
-  accessType = [{ label: 'Accountable', value: 'Accountable' },
-  { label: 'Access', value: 'Access' }];
+  sowList: any;
 
-  selectedUsers: any;
+  index = [];
+  selectedRowData = [];
+  selectedSow: any = [];
+  selectedUser: any;
   selectedClient: any;
-  selectedSOW: [] = [];
-  selectedValue: [] = [];
-  positions = [];
   constructor() { }
 
   ngOnInit() {
   }
 
   userChange() {
-    // console.log(index);
+    this.clients = [{ label: 'Client 1', value: 'Client 1' },
+    { label: 'Client 2', value: 'Client 2' },
+    { label: 'Client 3', value: 'Client 3' },
+    { label: 'Client 4', value: 'Client 4' },
+    { label: 'Client 5', value: 'Client 5' }];
   }
 
-  typeChange(val) {
-    // this.positions.push(val);
-    const index = this.positions.indexOf(val);
-    if (index === -1) {
-      // val not found, pushing onto array
-      this.positions.push(val);
+  typeChange(value) {
+    console.log(value);
+  }
+
+  sowCheck(i, rowData) {
+    if (rowData.status) {
+      if (rowData.type.type === 'Access') {
+        this.isTypeDisabled[i] = false;
+      }
+      this.index.push(i);
+      this.selectedRowData.push(rowData);
     } else {
-      // val is found, removing from array
-      this.positions.splice(index, 1);
+      const index = this.index.findIndex(x => x === i);
+      this.index.splice(index, 1);
+      const index1 = this.selectedRowData.findIndex(x => x === rowData);
+      this.selectedRowData.splice(index1, 1);
     }
   }
 
   clientChange() {
+    this.sowList = [{ sow: 'Sow 1', type: { label: 'Accountable', type: 'Accountable' }, status: true },
+    { sow: 'Sow 2', type: { label: 'Accountable', type: 'Accountable' }, status: true },
+    { sow: 'Sow 3', type: { label: 'Access', type: 'Access' }, status: false },
+    { sow: 'Sow 4', type: { label: 'Access', type: 'Access' }, status: true },
+    { sow: 'Sow 5', type: { label: 'Accountable', type: 'Accountable' }, status: false }];
+
+
+    this.sowList.forEach((e, i) => {
+      if (e.status) {
+        if (e.type.type === 'Accountable') {
+          this.isTypeDisabled[i] = true;
+        } else {
+          this.isTypeDisabled[i] = false;
+        }
+        this.selectedRowData.push(e);
+      }
+    });
   }
 
   save() {
-    console.log(this.selectedSOW);
+    console.log(this.selectedUser);
+    console.log(this.selectedClient);
+    console.log(this.selectedRowData);
   }
 
 }

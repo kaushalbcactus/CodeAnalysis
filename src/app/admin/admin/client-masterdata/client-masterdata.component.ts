@@ -252,9 +252,9 @@ export class ClientMasterdataComponent implements OnInit {
 
   ngOnInit() {
     this.clientMasterDataColumns = [
-      { field: 'ClientLegalEntry', header: 'Client Legal Entry' },
-      { field: 'LastUpdated', header: 'Last Updated' },
-      { field: 'LastUpdatedBy', header: 'Last Updated By' },
+      { field: 'ClientLegalEntry', header: 'Client Legal Entry' , visibility: true},
+      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
+      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
     ];
 
     this.clientMasterDataRows = [
@@ -302,9 +302,9 @@ export class ClientMasterdataComponent implements OnInit {
     ];
 
     this.subDivisionDetailsColumns = [
-      { field: 'SubDivision', header: 'Sub-Division' },
-      { field: 'LastUpdated', header: 'Last Updated' },
-      { field: 'LastUpdatedBy', header: 'Last Updated By' },
+      { field: 'SubDivision', header: 'Sub-Division' , visibility: true},
+      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
+      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
     ];
 
     this.subDivisionDetailsRows = [
@@ -315,9 +315,9 @@ export class ClientMasterdataComponent implements OnInit {
       }
     ];
     this.POCColumns = [
-      { field: 'POC', header: 'POC' },
-      { field: 'LastUpdated', header: 'Last Updated' },
-      { field: 'LastUpdatedBy', header: 'Last Updated By' },
+      { field: 'POC', header: 'POC' , visibility: true},
+      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
+      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
     ];
 
     this.POCRows = [
@@ -329,9 +329,9 @@ export class ClientMasterdataComponent implements OnInit {
     ];
     this.POColumns = [
       { field: 'PO', header: 'PO' },
-      { field: 'PoValues', header: 'PO Values' },
-      { field: 'LastUpdated', header: 'Last Updated' },
-      { field: 'LastUpdatedBy', header: 'Last Updated By' },
+      { field: 'PoValues', header: 'PO Values' , visibility: true},
+      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
+      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
     ];
 
     this.PORows = [

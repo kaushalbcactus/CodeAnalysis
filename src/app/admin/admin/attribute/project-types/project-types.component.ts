@@ -31,9 +31,9 @@ export class ProjectTypesComponent implements OnInit {
   ngOnInit() {
     this.projectTypeColumns = [
       // { field: 'Sr', header: 'Sr.No.' },
-      { field: 'ProjectType', header: 'Project Type' },
-      { field: 'LastUpdated', header: 'Last Updated' },
-      { field: 'LastUpdatedBy', header: 'Last Updated By' },
+      { field: 'ProjectType', header: 'Project Type' , visibility: true},
+      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
+      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
     ];
 
     this.projectTypeRows = [
@@ -94,8 +94,8 @@ export class ProjectTypesComponent implements OnInit {
         return {
             label: label1,
             value: array.find(s => s.label === label1).value
-        }
-    })
+        };
+    });
   }
 
   addProjectType(projectType) {

@@ -2,6 +2,10 @@
     margin-top: 20px;
 }
 
+.mt-5{
+    margin-top: 5px;
+}
+
 .mr-10 {
     margin-right: 10px;
 }
@@ -42,3 +46,7 @@ form{
 
 .download-worksheet{color: #B71C1C;font-size: 16px;float: right}
 .td-none{text-decoration: none}
+
+.savebtn{
+    margin-top: 10px;
+}

@@ -2,35 +2,18 @@
     <div class="userRole">
         <span style="padding-right: 10px;">User:</span>
         <p-dropdown [options]="users" filter="true" optionLabel="label" resetFilterOnHide="true"
-            placeholder='Select User' [(ngModel)]="selectedUser">
+            placeholder='Select User' [(ngModel)]="selectedUser" (onChange)="userChange()">
         </p-dropdown>
     </div>
 
-
     <div class="userRole">
-        <span style="padding-right: 10px;display: inline-block">Roles:</span>
-        <div class="ui-g" style="width:250px;margin-bottom:10px;display:inline-grid">
-            <div class="ui-g-12">
-                <p-checkbox name="group1" value="Role 1" label="Role 1" [(ngModel)]="selectedRoles" inputId="r1">
-                </p-checkbox>
-            </div>
-            <div class="ui-g-12">
-                <p-checkbox name="group1" value="Role 2" label="Role 2" [(ngModel)]="selectedRoles" inputId="r2">
-                </p-checkbox>
-            </div>
-            <div class="ui-g-12">
-                <p-checkbox name="group1" value="Role 3" label="Role 3" [(ngModel)]="selectedRoles" inputId="r3">
-                </p-checkbox>
-            </div>
-        </div>
+        <span style="padding-right: 10px;">Role:</span>
+        <p-multiSelect [style]="{width:'100%'}" [options]="roles" [(ngModel)]="selectedRoles" placeholder='Select Role'></p-multiSelect>
     </div>
 
-    <div class="userRole">
+    <div class="userRole savebtn">
         <p-button label="Save" (onClick)="save()"></p-button>
     </div>
-
-    <a (click)="downloadExcel(ur)" class="download-worksheet td-none"><i class="fa fa-download" aria-hidden="true"></i>
-        Download worksheet</a>
 
 </div>
 

@@ -17,6 +17,9 @@ import { ClientMasterdataComponent } from './admin/client-masterdata/client-mast
 import { EntitlementComponent } from './admin/entitlement/entitlement.component';
 import { RoleUserMappingComponent } from './admin/entitlement/role-user-mapping/role-user-mapping.component';
 import { UserRoleMappingComponent } from './admin/entitlement/user-role-mapping/user-role-mapping.component';
+import { CopyPermissionComponent } from './admin/entitlement/copy-permission/copy-permission.component';
+import { AddUserToSowComponent } from './admin/entitlement/add-user-to-sow/add-user-to-sow.component';
+import { AddUserToProjectsComponent } from './admin/entitlement/add-user-to-projects/add-user-to-projects.component';
 import { ReferenceDataComponent } from './admin/reference-data/reference-data.component';
 import { RulesComponent } from './admin/rules/rules.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -36,7 +39,10 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     RoleUserMappingComponent,
     UserRoleMappingComponent,
     ReferenceDataComponent,
-    RulesComponent],
+    RulesComponent,
+    CopyPermissionComponent,
+    AddUserToSowComponent,
+    AddUserToProjectsComponent],
   imports: [
     CommonModule,
     AdminRoutingModule,
