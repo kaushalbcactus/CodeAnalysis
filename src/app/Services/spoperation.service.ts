@@ -215,6 +215,11 @@ export class SPOperationService {
     url = this.readBuilder(url, options);
     return url;
   }
+  removeUserFromGroupByLoginName(groupName: any) {
+    const groupURl = this.baseUrl + '/_api/web/sitegroups/getbyname(\'{groupName}\')/users/removeByLoginName';
+    const url = groupURl.replace('{groupName}', groupName);
+    return url;
+  }
   getChoiceFieldUrl(listName: string, options?: any) {
     const choiceUrl = this.baseUrl + '/_api/web/lists/GetByTitle(\'{listName}\')/fields';
     let url = choiceUrl.replace('{listName}', listName);
