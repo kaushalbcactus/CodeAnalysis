@@ -35,15 +35,15 @@ export class UserRoleMappingComponent implements OnInit {
     By: [],
     Date: []
   };
-  roles = [{ label: 'Role 1', value: 'Role 1' },
-  { label: 'Role 2', value: 'Role 2' },
-  { label: 'Role 3', value: 'Role 3' },
-  { label: 'Role 4', value: 'Role 4' },
-  { label: 'Role 5', value: 'Role 5' }];
-
-  constructor(private datepipe: DatePipe) { }
-
-
+  userInfo;
+  constructor(
+    private datepipe: DatePipe,
+    private spServices: SPOperationService,
+    private constants: ConstantsService,
+    private adminConstants: AdminConstantService,
+    private adminObject: AdminObjectService,
+    private adminService: AdminCommonService
+  ) { }
   ngOnInit() {
     this.userRoleColumns = [
       { field: 'User', header: 'User' },
@@ -83,7 +83,7 @@ export class UserRoleMappingComponent implements OnInit {
       const userResults = results[0].retItems;
       if (userResults && userResults.length) {
         userResults.forEach(element => {
-          this.users.push({ label: element.UserName.Title, value: element.UserName.ID });
+          this.users.push({ label: element.UserName.Title, value: element.UserName });
         });
       }
       // load groups
@@ -131,6 +131,26 @@ export class UserRoleMappingComponent implements OnInit {
     const result = await this.spServices.executeBatch(batchURL);
     console.log(result);
     return result;
+  }
+  /**
+   * construct a method to get called whenever user dropdown values changes.
+   *
+   * @description
+   * This method will get all the information about user.
+   * It will highlight the group in which user is already presents.
+   *
+   */
+  async onUserChange() {
+    const currentUserId = this.selectedUser.value.ID;
+    this.userInfo = await this.spServices.getUserInfo(currentUserId);
+    console.log(this.userInfo);
+    let groupArray = [];
+    if (this.userInfo && this.userInfo.hasOwnProperty('Groups')) {
+      if (this.userInfo.Groups && this.userInfo.Groups.results && this.userInfo.Groups.results.length) {
+        groupArray = this.userInfo.Groups.results.map(x => x.Title);
+      }
+    }
+    this.selectedRoles = groupArray;
   }
   colFilters(colData) {
     this.userRoleColArray.User = this.uniqueArrayObj(colData.map(a => { const b = { label: a.User, value: a.User }; return b; }));
