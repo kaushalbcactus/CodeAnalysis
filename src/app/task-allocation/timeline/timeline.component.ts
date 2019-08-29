@@ -247,16 +247,16 @@ export class TimelineComponent implements OnInit, OnDestroy {
         var i = -1;
 
         this.dbRecords = [];
-       
+
         for (const milestone of milestones) {
 
 
-          const  tempmilestoneTask = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title);
+          const tempmilestoneTask = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title);
 
-          
+
           this.dbRecords.push({
             milestone: milestone,
-            tasks:tempmilestoneTask.map(c => c.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestone.Title + ' ', '')),
+            tasks: tempmilestoneTask.map(c => c.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestone.Title + ' ', '')),
           });
 
 
@@ -1415,10 +1415,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.loaderenable = true;
     const ref = this.dialogService.open(DragDropComponent, {
 
-      data:{
-        milestones :this.milestoneData,
-        dbmilestones:this.dbRecords
-      } ,
+      data: {
+        milestones: this.milestoneData,
+        dbmilestones: this.dbRecords
+      },
 
       header: 'Task Allocation ',
       width: '100vw',
@@ -2499,7 +2499,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
       batchContents.push('--changeset_' + changeSetId + '--');
       const batchBody = batchContents.join('\r\n');
-      const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
+      const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
       batchBodyContent.push('--batch_' + batchGuid + '--');
       const batchBodyContents = batchBodyContent.join('\r\n');
       const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
@@ -2714,7 +2714,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.spServices.getChangeSetBodySC(batchContents, changeSetId, projectInfoEndpoint, JSON.stringify(updateProjectRes), false);
     batchContents.push('--changeset_' + changeSetId + '--');
     const batchBody = batchContents.join('\r\n');
-    const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
+    const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
     batchBodyContent.push('--batch_' + batchGuid + '--');
     const batchBodyContents = batchBodyContent.join('\r\n');
     const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
@@ -2846,7 +2846,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   //  if(task.data.edited === true) {
                   if (task.data.added == true) {
 
-                    task.data.status = submilestone.data.status === 'In Progress' ? 'Not Started' : task.data.status;
+                    task.data.status = submilestone.data.status === 'In Progress' ? 'Not Started' : submilestone.data.status === 'Not Saved' ? 'Not Confirmed' : task.data.status;
 
                     addedTasks.push(task.data);
                   }
@@ -2954,7 +2954,11 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const milData = bOld ? this.milestoneDataCopy : this.milestoneData
     const clTask = milestone.data.type === 'milestone' || milestone.data.type === 'task' ? milData.filter(function (obj) {
       return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.data.pName.split(' (')[0]
-    }) : [];
+    }) : milestone.parent ? milData.filter(function (obj) {
+      return obj.data.type === 'task' && obj.data.itemType === 'Client Review' && obj.data.milestone === milestone.parent.data.pName.split(' (')[0]
+    }):[];
+ 
+    
 
     if (clTask.length)
       tasks.push(clTask[0].data);
@@ -3025,10 +3029,25 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // }
 
   validateNextMilestone(subMile) {
+
     let validateNextMilestone = true;
-    const nextMilestoneText = this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone;
+
+    const currentMilestone = this.milestoneData.filter((obj) => {
+      return obj.data.isCurrent === true;
+    });
+
+    let submilePresentInCurrent = false;
+    if (currentMilestone.length > 0) {
+      submilePresentInCurrent = currentMilestone[0].children.length > 0 ?
+        currentMilestone[0].children.find(c => c.data === subMile) !== undefined ?
+          true : false : currentMilestone[0].data === subMile ? true : false;
+    }
+    const newCurrentMilestoneText = submilePresentInCurrent ?
+      this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone :
+      this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone;
+
     const newCurrentMilestone = this.milestoneData.filter((obj) => {
-      return obj.data.pName.split(' (')[0] === nextMilestoneText;
+      return obj.data.pName.split(' (')[0] === newCurrentMilestoneText;
     });
     if (newCurrentMilestone.length > 0) {
       let currMilTasks = this.getTasksFromMilestones(newCurrentMilestone[0], false);
@@ -3336,7 +3355,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     // updated by Maxwell end
     batchContents.push('--changeset_' + changeSetId + '--');
     const batchBody = batchContents.join('\r\n');
-    const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
+    const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
     batchBodyContent.push('--batch_' + batchGuid + '--');
     const batchBodyContents = batchBodyContent.join('\r\n');
     const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);

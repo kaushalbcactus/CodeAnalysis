@@ -205,19 +205,21 @@ export class TimeBookingDialogComponent implements OnInit {
 
 
   getweekDates(status) {
-
     this.modalloaderenable = true;
     this.dayscount = status === null ? 0 : status === 'increase' ? this.dayscount - 7 : this.dayscount + 7;
     this.weekDays = [];
     const WeekDate = new Date(new Date().getTime() - 60 * 60 * 24 * this.dayscount * 1000);
     const day = WeekDate.getDay();
-    const diffToMonday = WeekDate.getDate() - day + (day === 0 ? -6 : 1);
+    const diffToMonday = (WeekDate.getDate() - day + (day === 0 ? -6 : 1)) - 1;
 
-    let tempdate = new Date(this.datePipe.transform(new Date(WeekDate.setDate(diffToMonday - 1)), 'yyyy-MM-dd'));
+    const tempdate = new Date(WeekDate.setDate(diffToMonday));
     for (let i = 0; i <= 6; i++) {
-      const dateonly = tempdate.getDate();
-      this.weekDays.push(new Date(this.datePipe.transform(new Date(tempdate.setDate(dateonly + 1)), 'yyyy-MM-dd')));
-      tempdate = new Date(this.datePipe.transform(new Date(tempdate), 'yyyy-MM-dd'));
+      // const dateonly = tempdate.getDate();
+      const newDate = new Date(tempdate.getTime());
+      newDate.setDate(newDate.getDate() + 1);
+      this.weekDays.push(newDate);
+      tempdate.setDate(tempdate.getDate() + 1);
+      // tempdate = new Date(this.datePipe.transform(new Date(tempdate), 'yyyy-MM-dd'));
     }
 
     if (this.dayscount <= -21) {
@@ -281,7 +283,7 @@ export class TimeBookingDialogComponent implements OnInit {
       Milestone: o.Milestone === 'Select one' ? o.Comments : o.Milestone,
       SubMilestone: o.SubMilestones,
       displayName: o.Milestone === 'Select one' ? o.Comments : o.SubMilestones &&
-      o.SubMilestones !== 'Default' ? o.Milestone + ' - ' + o.SubMilestones : o.Milestone,
+        o.SubMilestones !== 'Default' ? o.Milestone + ' - ' + o.SubMilestones : o.Milestone,
       type: o.Entity === null ? 'task' : 'Adhoc',
       TimeSpents: this.weekDays.map(c => new Object({
         date: c, MileHrs: '00:00', minHrs: '00: 00',
@@ -305,7 +307,7 @@ export class TimeBookingDialogComponent implements OnInit {
     this.UserMilestones.push.apply(this.UserMilestones, uniqueAdhoc);
 
     this.allTasks.forEach(task => {
-      
+
       if (task.TimeSpentPerDay !== null) {
         const timeSpentForTask = task.TimeSpentPerDay.split(/\n/);
 
@@ -314,7 +316,7 @@ export class TimeBookingDialogComponent implements OnInit {
         }
         // tslint:disable-next-line: no-shadowed-variable
         const milestone = this.UserMilestones.find(c => c.Milestone === task.Milestone &&
-           c.ProjectCode === task.ProjectCode && c.SubMilestone === task.SubMilestones);
+          c.ProjectCode === task.ProjectCode && c.SubMilestone === task.SubMilestones);
         if (milestone !== undefined) {
           timeSpentForTask.forEach(element => {
             // tslint:disable-next-line: no-shadowed-variable
