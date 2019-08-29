@@ -5,6 +5,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-user-role-mapping',
@@ -43,7 +44,8 @@ export class UserRoleMappingComponent implements OnInit {
     private constants: ConstantsService,
     private adminConstants: AdminConstantService,
     private adminObject: AdminObjectService,
-    private adminService: AdminCommonService
+    private adminService: AdminCommonService,
+    private messageService: MessageService
   ) { }
   ngOnInit() {
     this.userRoleColumns = [
@@ -144,7 +146,22 @@ export class UserRoleMappingComponent implements OnInit {
   async onUserChange() {
     this.adminObject.isMainLoaderHidden = false;
     const currentUserId = this.selectedUser.value.ID;
-    this.userInfo = await this.spServices.getUserInfo(currentUserId);
+    await this.highlightGroups(currentUserId);
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * construct a method to pre-select the checkbox based on userId.
+   *
+   * @description
+   * It will highlight the group in which user is already presents.
+   *
+   * @param userId Pass userId as parameter to get the information.
+   *
+   * @return It will return the group of array in which user is present.
+   *
+   */
+  async highlightGroups(userId) {
+    this.userInfo = await this.spServices.getUserInfo(userId);
     console.log(this.userInfo);
     this.userExistGroupArray = [];
     if (this.userInfo && this.userInfo.hasOwnProperty('Groups')) {
@@ -152,8 +169,7 @@ export class UserRoleMappingComponent implements OnInit {
         this.userExistGroupArray = this.userInfo.Groups.results.map(x => x.Title);
       }
     }
-    this.selectedRoles = this.userExistGroupArray;
-    this.adminObject.isMainLoaderHidden = true;
+    return this.selectedRoles = this.userExistGroupArray;
   }
   colFilters(colData) {
     this.userRoleColArray.User = this.uniqueArrayObj(colData.map(a => { const b = { label: a.User, value: a.User }; return b; }));
@@ -188,46 +204,64 @@ export class UserRoleMappingComponent implements OnInit {
    *
    */
   async save() {
-    console.log(this.selectedRoles);
-    console.log(this.userExistGroupArray);
-    const removeGroups = this.userExistGroupArray.filter(x => !this.selectedRoles.includes(x));
-    console.log(removeGroups);
-    const groups = this.selectedRoles;
-    const batchURL = [];
-    const options = {
-      data: null,
-      url: '',
-      type: '',
-      listName: ''
-    };
-    groups.forEach(element => {
-      const userData = {
-        __metadata: { type: 'SP.User' },
-        LoginName: this.userInfo.LoginName
+    if (!this.selectedUser) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error', sticky: true,
+        summary: 'Error Message', detail: 'Please select user.'
+      });
+      return false;
+    } else if (!this.selectedRoles.length) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error', sticky: true,
+        summary: 'Error Message', detail: 'Please select any one group.'
+      });
+      return false;
+    } else {
+      this.adminObject.isMainLoaderHidden = false;
+      const removeGroups = this.userExistGroupArray.filter(x => !this.selectedRoles.includes(x));
+      console.log(removeGroups);
+      const groups = this.selectedRoles;
+      const batchURL = [];
+      const options = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
       };
-      const userCreate = Object.assign({}, options);
-      userCreate.url = this.spServices.getGroupUrl(element, null);
-      userCreate.data = userData;
-      userCreate.type = 'POST';
-      userCreate.listName = element;
-      batchURL.push(userCreate);
-    });
-    removeGroups.forEach(element => {
-      const userData = {
-        loginName: this.userInfo.LoginName
-      };
-      const userRemove = Object.assign({}, options);
-      userRemove.url = this.spServices.removeUserFromGroupByLoginName(element);
-      userRemove.data = userData;
-      userRemove.type = 'POST';
-      userRemove.listName = element;
-      batchURL.push(userRemove);
-    });
-    if (batchURL.length) {
-      const sResult = await this.spServices.executeBatch(batchURL);
-      if (sResult && sResult.length) {
-        console.log(sResult);
+      groups.forEach(element => {
+        const userData = {
+          __metadata: { type: 'SP.User' },
+          LoginName: this.userInfo.LoginName
+        };
+        const userCreate = Object.assign({}, options);
+        userCreate.url = this.spServices.getGroupUrl(element, null);
+        userCreate.data = userData;
+        userCreate.type = 'POST';
+        userCreate.listName = element;
+        batchURL.push(userCreate);
+      });
+      removeGroups.forEach(element => {
+        const userData = {
+          loginName: this.userInfo.LoginName
+        };
+        const userRemove = Object.assign({}, options);
+        userRemove.url = this.spServices.removeUserFromGroupByLoginName(element);
+        userRemove.data = userData;
+        userRemove.type = 'POST';
+        userRemove.listName = element;
+        batchURL.push(userRemove);
+      });
+      if (batchURL.length) {
+        const sResult = await this.spServices.executeBatch(batchURL);
+        if (sResult && sResult.length) {
+          this.adminObject.isMainLoaderHidden = true;
+          this.messageService.add({
+            key: 'adminCustom', severity: 'success', sticky: true,
+            summary: 'Success Message', detail: 'User - ' + this.userInfo.Title + ' has been updated sucessfully'
+          });
+        }
       }
+      this.highlightGroups(this.userInfo.Id);
     }
   }
 }
