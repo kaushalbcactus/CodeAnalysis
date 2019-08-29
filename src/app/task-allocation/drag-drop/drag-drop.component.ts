@@ -82,7 +82,6 @@ export class DragDropComponent implements OnInit {
 
     this.alldbMilestones = this.config.data.dbmilestones ? this.config.data.dbmilestones.map(c => c.milestone.Title) : [];
     this.AlldbRecords = this.config.data.dbmilestones ? this.config.data.dbmilestones : [];
-    debugger
     let links = [];
     if (this.data.length > 0) {
       this.data.forEach(element => {
@@ -383,9 +382,6 @@ export class DragDropComponent implements OnInit {
     var count = 0;
 
     if (miletype === 'milestone') {
-
-      debugger;
-     // count = this.alldbMilestones
       count = this.alldbMilestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).length > 0 ? this.alldbMilestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c)).length > 0 ? Math.max.apply(null, this.alldbMilestones.filter(function (node) { return new RegExp(event.data, 'g').test(node) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => parseInt(c))) : 1 : 0;
     }
     else {
@@ -393,16 +389,13 @@ export class DragDropComponent implements OnInit {
     }
     let nodeLabel = count >= 1 ? (event.data === 'Draft' ? event.data + ' ' + (count + 1) : event.data + ' ' + (count + 1)) : event.data === 'Draft' ? event.data + ' ' + (count + 1) : event.data;
 
-    if(Restructureenable)
-    {
-      nodeLabel = count > 1 ? (event.data === 'Draft' ? event.data + ' ' + (count - 1) : event.data + ' ' + (count - 1)) : count === 1 ?  event.data === 'Draft' ? event.data + ' ' + (count) : event.data: event.data;
+    if (Restructureenable) {
+      nodeLabel = count > 1 ? (event.data === 'Draft' ? event.data + ' ' + (count - 1) : event.data + ' ' + (count - 1)) : count === 1 ? event.data === 'Draft' ? event.data + ' ' + (count) : event.data : event.data;
     }
-    
-    
 
     this.alldbMilestones.push(nodeLabel);
 
-    const milestoneTasks = this.AlldbRecords.find(c=>c.milestone.Title === nodeLabel) ? this.AlldbRecords.find(c=>c.milestone.Title === nodeLabel).tasks : []
+    const milestoneTasks = this.AlldbRecords.find(c => c.milestone.Title === nodeLabel) ? this.AlldbRecords.find(c => c.milestone.Title === nodeLabel).tasks : []
 
     if (miletype === 'milestone' ? this.milestonesGraph.nodes.length > 0 : this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length > 0) {
       var previousnode = null;
@@ -410,7 +403,7 @@ export class DragDropComponent implements OnInit {
         previousnode = miletype === 'milestone' ? this.milestonesGraph.nodes.map(c => c.id).filter(c => !this.milestonesGraph.links.map(c => c.source).includes(c)) : this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.map(c => c.id).filter(c => !this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.map(c => c.source).includes(c));
       }
 
-     
+
       var node = {
         id: previousnode === null ? '1' : (parseInt(previousnode[previousnode.length - 1]) + 1).toString(),
         dbId: event.id !== undefined ? event.id : 0,
@@ -432,7 +425,7 @@ export class DragDropComponent implements OnInit {
           }], links: [], nodeOrder: ['1'], taskWidth: 1200
         } : null,
         allsubmilestones: miletype === 'milestone' ? ['Default'] : null,
-        allTasks:  milestoneTasks
+        allTasks: milestoneTasks
       };
       const tempprvnode = this.tempSubmileArray.filter(function (node) {
         return node.data === event.data;

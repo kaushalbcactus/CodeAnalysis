@@ -3277,7 +3277,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
         newCurrentMilestone[0].children.find(c => c.data === subMile) !== undefined ?
           newCurrentMilestone[0].children.find(c => c.data === subMile) : newCurrentMilestone[0];
       subMilestone.data.status = 'In Progress';
-      debugger;
       setToTasks = this.getTasksFromMilestones(subMilestone, false);
     } else {
       setToTasks = this.getTasksFromMilestones(currentMilestone[0], false);
@@ -3511,7 +3510,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
           if (bSubMilPresent) {
             milestone.children.forEach(element => {
               if (element.data.status === 'In Progress' && element.data.itemType === 'submilestone') {
-                debugger;
                 checkTasks = checkTasks.concat(this.getTasksFromMilestones(element, false));
               }
             });
