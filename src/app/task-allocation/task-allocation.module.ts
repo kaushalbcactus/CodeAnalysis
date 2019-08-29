@@ -20,9 +20,10 @@ import { StickyModule } from 'ng2-sticky-kit';
 import { ResourceSectionComponent } from './resource-section/resource-section.component';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { TaskDetailsDialogComponent } from './task-details-dialog/task-details-dialog.component';
+import { ResourcesComponent } from './resources/resources.component';
 @NgModule({
   declarations: [TaskAllocationComponent, TimelineComponent, UserCapacityComponent, DragDropComponent,
-    ResourceSectionComponent, TaskDetailsDialogComponent],
+    ResourceSectionComponent, TaskDetailsDialogComponent, ResourcesComponent],
   imports: [
     CommonModule,
     TaskAllocationRoutingModule,

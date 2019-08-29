@@ -969,11 +969,11 @@ export class StandardprojectComponent implements OnInit {
                   }
                 });
               }
-            } else {
-              addedTaskArray = submilestoneObj.children.filter(function (obj) {
-                return obj.data.Task === taskObj.data.Task;
-              });
             }
+            const subAddedTaskArray = submilestoneObj.children.filter(function (obj) {
+              return obj.data.Task === taskObj.data.Task;
+            });
+            addedTaskArray = addedTaskArray.concat(subAddedTaskArray);
           } else {
             addedTaskArray = milestoneObj.children.filter(function (obj) {
               return obj.data.Task === taskObj.data.Task;
