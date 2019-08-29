@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, ElementRef, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, ElementRef, ViewEncapsulation, SimpleChange } from '@angular/core';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';
 import { CommonService } from '../../../Services/common.service';
@@ -71,7 +71,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
       { type: 'Last 30', value: 30 }
     ]
   };
-  private root: TreeNode;
+
   public sub; navigationSubscription;
   @ViewChild('popupContent', { static: true }) popupContent: ElementRef;
   public options = {
@@ -91,6 +91,9 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngOnChanges(changes: SimpleChange) {
+    console.log(changes);
+  }
 
   initialiseManagerView() {
     // Set default values and re-fetch any data you need.
@@ -189,37 +192,39 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
   async getResourceDetail(rowdata, rowNode) {
     this.showLoader();
     rowNode.node.children = [];
+    let resources = [];
     if (!rowNode.node.expanded) {
       const filterObject = Object.assign({}, this.filterObj);
-      const resources = await this.getManagerResources(rowdata.userId);
+      resources = await this.getManagerResources(rowdata.userId);
       if (resources.length) {
         const childrenObj = await this.applyFilters(filterObject, resources);
         rowNode.node.children = [...childrenObj];
       } else {
         this.showSuccessMsg();
       }
-      await this.expandCollapseTab(rowNode, resources);
     }
+    await this.expandCollapseTab(rowNode, resources);
   }
 
   async expandCollapseTab(rowNode, resources) {
     setTimeout(() => {
-      if (resources.length) {
-        rowNode.node.expanded = rowNode.node.expanded ? false : true;
-        const temp = [...this.feedbacksRows];
-        this.feedbacksRows = [];
-        this.feedbacksRows = [...temp];
-        this.feedbackTable = [];
-        this.feedbacksRows.forEach(row => {
-          this.feedbackTable.push(row.data);
-          row.children.forEach(item => {
-            this.feedbackTable.push(item.data);
+      rowNode.node.expanded = rowNode.node.expanded ? false : resources.length ? true : false;
+      const temp = [...this.feedbacksRows];
+      this.feedbacksRows = [];
+      this.feedbacksRows = [...temp];
+      this.feedbackTable = [];
+      this.feedbacksRows.forEach(row => {
+        this.feedbackTable.push(row.data);
+        row.children.forEach(item => {
+          item.children.forEach(subItem => {
+            this.feedbackTable.push(subItem.data);
           });
+          this.feedbackTable.push(item.data);
         });
-        this.feedbackTable.forEach(element => {
-          element.userFeedback = [];
-        });
-      }
+      });
+      this.feedbackTable.forEach(element => {
+        element.userFeedback = [];
+      });
       this.showTable();
     }, 200);
   }
