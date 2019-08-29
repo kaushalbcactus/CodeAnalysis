@@ -106,7 +106,8 @@ export class AdminConstantService {
   public LOGICAL_FIELD = {
     YES: 'Yes',
     NO: 'No',
-    ACTIVE: 'Active'
+    ACTIVE: 'Active',
+    INACTIVE: 'InActive'
   };
   public CHOICE_FIELD_NAME = {
     INCAPACITY: 'InCapacity',

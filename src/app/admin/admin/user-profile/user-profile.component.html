@@ -1,10 +1,17 @@
-<div>
+<div class="top-right-title">
   <a (click)="downloadExcel(up)" class="download-worksheet td-none"><i class="fa fa-download" aria-hidden="true"></i>
     Download worksheet</a>
   <a (click)="loadUserTable()" class="download-worksheet td-none mr-10"><i class="pi pi-refresh" aria-hidden="true"></i>
     Refresh</a>
 </div>
-
+<div [hidden]='false' class="top-right-title">
+  <input *ngIf="showUserInput" class="mr-5" type="text" (keydown.enter)="searchInactiveUser(); $event.preventDefault()"
+    (change)="searchInactiveUser()" id="userSelect" placeholder="User"
+    pInputText [(ngModel)]="providedUser" />
+  <p-dropdown [options]="userFilterOptions" [(ngModel)]="selectedOption" styleClass="custom-dropDown"
+    (onChange)="onChangeSelect()"></p-dropdown>
+</div>
+<div class="clearBoth"></div>
 <p-table #up [columns]="userProfileColumns" [value]="userProfileData" exportFilename="User Profile" [paginator]="true"
   [rows]="10">
   <ng-template pTemplate="header" let-columns>
@@ -361,16 +368,13 @@
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.manager.errors">
             <div *ngIf="addUser.controls.manager.errors.required"> Manager is required</div>
           </div>
-        </div>
-      </div>
-      <div class="p-grid mt-20" *ngIf="date.isManagerEffectiveDateActive">
-        <div class="p-col-2 p-offset-6"><span class="compulsory">*</span>Manager Effective Date</div>
-        <div class="p-col-4">
-          <p-calendar formControlName="managerEffectiveDate" placeholder="Manager Date"></p-calendar>
-        </div>
-        <div class="error p-offset-6" *ngIf="upObject.isFormSubmit && addUser.controls.managerEffectiveDate.errors">
-          <div *ngIf="addUser.controls.managerEffectiveDate.errors.required">Manager Effective Date is
-            required</div>
+          <div class="mt-5" *ngIf="date.isManagerEffectiveDateActive">
+            <p-calendar formControlName="managerEffectiveDate" placeholder="Manager Date"></p-calendar>
+            <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.managerEffectiveDate.errors">
+              <div *ngIf="addUser.controls.managerEffectiveDate.errors.required">Manager Effective Date is
+                required</div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="p-grid mt-20">
@@ -391,27 +395,30 @@
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.practiceArea.errors">
             <div *ngIf="addUser.controls.practiceArea.errors.required">Practice Area is required</div>
           </div>
-        </div>
-      </div>
-      <div class="p-grid mt-20" *ngIf="date.isPracticeEffectiveDateActive">
-        <div class="p-col-2 p-offset-6"><span class="compulsory">*</span>Practice Area Effective Date</div>
-        <div class="p-col-4">
-          <p-calendar formControlName="practiceAreaEffectiveDate" placeholder="Practice Area Date"></p-calendar>
-        </div>
-        <div class="error p-offset-6"
-          *ngIf="upObject.isFormSubmit && addUser.controls.practiceAreaEffectiveDate.errors">
-          <div *ngIf="addUser.controls.practiceAreaEffectiveDate.errors.required">Practice Area Effective Date is
-            required</div>
+          <div class="mt-5" *ngIf="date.isPracticeEffectiveDateActive">
+            <p-calendar formControlName="practiceAreaEffectiveDate" placeholder="Practice Area Date"></p-calendar>
+            <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.practiceAreaEffectiveDate.errors">
+              <div *ngIf="addUser.controls.practiceAreaEffectiveDate.errors.required">Practice Area Effective Date is
+                required</div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="p-grid mt-20">
         <div class="p-col-2"><span class="compulsory">*</span>Time Zone</div>
         <div class="p-col-4">
           <p-dropdown placeholder="Select Time Zone" [options]="adminDropDown.timeZoneArray" formControlName="timeZone"
-            (onChange)="onTimezoneChange()">
+            (onChange)="onTimezoneChange()" filter="true">
           </p-dropdown>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.timeZone.errors">
             <div *ngIf="addUser.controls.timeZone.errors.required">Time Zone is required</div>
+          </div>
+          <div class="mt-5" *ngIf="date.isTimeZoneEffectiveDateActive">
+            <p-calendar formControlName="timeZoneEffectiveDate" placeholder="Time Zone Date"></p-calendar>
+            <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.timeZoneEffectiveDate.errors">
+              <div *ngIf="addUser.controls.timeZoneEffectiveDate.errors.required">TimeZone Effective Date is
+                required</div>
+            </div>
           </div>
         </div>
         <div class="p-col-2"><span class="compulsory">*</span>Date of Joining</div>
@@ -420,16 +427,6 @@
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.dateofjoin.errors">
             <div *ngIf="addUser.controls.dateofjoin.errors.required"> Date of Joining is required</div>
           </div>
-        </div>
-      </div>
-      <div class="p-grid mt-20" *ngIf="date.isTimeZoneEffectiveDateActive">
-        <div class="p-col-2"><span class="compulsory">*</span>Time Zone Effective Date</div>
-        <div class="p-col-4">
-          <p-calendar formControlName="timeZoneEffectiveDate" placeholder="Time Zone Date"></p-calendar>
-        </div>
-        <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.timeZoneEffectiveDate.errors">
-          <div *ngIf="addUser.controls.timeZoneEffectiveDate.errors.required">TimeZone Effective Date is
-            required</div>
         </div>
       </div>
       <div class="p-grid mt-20">
@@ -486,55 +483,41 @@
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.primarySkill.errors">
             <div *ngIf="addUser.controls.primarySkill.errors.required"> Primary Skill is required</div>
           </div>
-        </div>
-      </div>
-      <div class="p-grid mt-20" *ngIf="date.isPrimarySkillEffectiveDateActive">
-        <div class="p-col-2 p-offset-6"><span class="compulsory">*</span>Primary Skill Effective Date</div>
-        <div class="p-col-4">
-          <p-calendar formControlName="primarySkillEffectiveDate" placeholder="Primary Skill Date"></p-calendar>
-        </div>
-        <div class="error p-offset-6"
-          *ngIf="upObject.isFormSubmit && addUser.controls.primarySkillEffectiveDate.errors">
-          <div *ngIf="addUser.controls.primarySkillEffectiveDate.errors.required">Primary Skill Effective Date is
-            required</div>
+          <div class="mt-5" *ngIf="date.isPrimarySkillEffectiveDateActive">
+            <p-calendar formControlName="primarySkillEffectiveDate" placeholder="Primary Skill Date"></p-calendar>
+            <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.primarySkillEffectiveDate.errors">
+              <div *ngIf="addUser.controls.primarySkillEffectiveDate.errors.required">Primary Skill Effective Date is
+                required</div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="p-grid mt-20">
         <div class="p-col-2"><span class="compulsory">*</span>Skill Level</div>
         <div class="p-col-4">
           <p-dropdown placeholder="Select Skill Level" [options]="adminDropDown.skillLevelArray"
-            formControlName="skillLevel" (onChange)="onSkillLevelChange()">
+            formControlName="skillLevel" (onChange)="onSkillLevelChange()" filter="true">
           </p-dropdown>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.skillLevel.errors">
             <div *ngIf="addUser.controls.skillLevel.errors.required">Skill Level is required</div>
           </div>
+          <div class="mt-5" *ngIf="date.isSkillLevelEffectiveDateActive">
+            <p-calendar formControlName="skillLevelEffectiveDate" placeholder="Skill Level Date"></p-calendar>
+            <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.skillLevelEffectiveDate.errors">
+              <div *ngIf="addUser.controls.skillLevelEffectiveDate.errors.required">Skill Level Effective Date is
+                required</div>
+            </div>
+          </div>
         </div>
-        <div class="p-col-2"><span class="compulsory">*</span>Role</div>
+        <div class="p-col-2">Role</div>
         <div class="p-col-4">
           <p-dropdown placeholder="Select Role" [options]="adminDropDown.roleArray" formControlName="role"></p-dropdown>
-          <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.role.errors">
-            <div *ngIf="addUser.controls.role.errors.required">Role is required</div>
-          </div>
-        </div>
-      </div>
-      <div class="p-grid mt-20" *ngIf="date.isSkillLevelEffectiveDateActive">
-        <div class="p-col-2"><span class="compulsory">*</span>Skill Level Effective Date</div>
-        <div class="p-col-4">
-          <p-calendar formControlName="skillLevelEffectiveDate" placeholder="Skill Level Date"></p-calendar>
-          <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.skillLevelEffectiveDate.errors">
-            <div *ngIf="addUser.controls.skillLevelEffectiveDate.errors.required">Skill Level Effective Date is
-              required</div>
-          </div>
         </div>
       </div>
       <div class="p-grid mt-20">
-        <div class="p-col-2"><span class="compulsory">*</span>Ready To</div>
+        <div class="p-col-2">Ready To</div>
         <div class="p-col-4">
           <textarea [rows]="5" [cols]="60" formControlName="readyTo" pInputTextarea></textarea>
-          <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.readyTo.errors">
-            <div *ngIf="addUser.controls.readyTo.errors.required">
-              Ready To is required</div>
-          </div>
         </div>
       </div>
       <div class="p-grid mt-20">
@@ -547,63 +530,45 @@
             <div *ngIf="addUser.controls.task.errors.required">Task is required</div>
           </div>
         </div>
-        <div class="p-col-2"><span class="compulsory">*</span>Account</div>
+        <div class="p-col-2">Account</div>
         <div class="p-col-4">
           <p-multiSelect [options]="adminDropDown.accountArray" defaultLabel="Select Account" formControlName="account"
             (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
           </p-multiSelect>
-          <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.account.errors">
-            <div *ngIf="addUser.controls.account.errors.required">
-              Account is required</div>
-          </div>
         </div>
 
       </div>
       <div class="p-grid mt-20">
-        <div class="p-col-2"><span class="compulsory">*</span>Deliverable</div>
+        <div class="p-col-2">Deliverable</div>
         <div class="p-col-4">
           <p-multiSelect [options]="adminDropDown.deliverableArray" defaultLabel="Select Deliverable"
             formControlName="deliverable" (keydown.enter)="$event.preventDefault()" filter="true"
-            resetFilterOnHide="true">
+            resetFilterOnHide="true" (onPanelHide)="onDeliverableChange()">
           </p-multiSelect>
-          <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.deliverable.errors">
-            <div *ngIf="addUser.controls.deliverable.errors.required">
-              Deliverable is required</div>
-          </div>
         </div>
-        <div class="p-col-2"><span class="compulsory">*</span>Deliverable Exclusion</div>
+        <div class="p-col-2">Deliverable Exclusion</div>
         <div class="p-col-4">
           <p-multiSelect [options]="adminDropDown.deliverableExclusionArray" defaultLabel="Select Deliverable Exclusion"
             formControlName="deliverableExclusion" (keydown.enter)="$event.preventDefault()" filter="true"
             resetFilterOnHide="true">
           </p-multiSelect>
-          <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.deliverableExclusion.errors">
-            <div *ngIf="addUser.controls.deliverableExclusion.errors.required">
-              Deliverable Exclusion is required</div>
-          </div>
         </div>
 
       </div>
       <div class="p-grid mt-20">
-        <div class="p-col-2"><span class="compulsory">*</span>TA</div>
+        <div class="p-col-2">TA</div>
         <div class="p-col-4">
           <p-multiSelect [options]="adminDropDown.taArray" defaultLabel="Select TA" formControlName="ta"
-            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
+            (onPanelHide)="onTAChange()">
           </p-multiSelect>
-          <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.ta.errors">
-            <div *ngIf="addUser.controls.ta.errors.required">TA is required</div>
-          </div>
         </div>
-        <div class="p-col-2"><span class="compulsory">*</span>TA Exclusion</div>
+        <div class="p-col-2">TA Exclusion</div>
         <div class="p-col-4">
           <p-multiSelect [options]="adminDropDown.taExclusionArray" defaultLabel="Select TA Exclusion"
             formControlName="taExclusion" (keydown.enter)="$event.preventDefault()" filter="true"
             resetFilterOnHide="true">
           </p-multiSelect>
-          <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.taExclusion.errors">
-            <div *ngIf="addUser.controls.taExclusion.errors.required">
-              TA Exclusione is required</div>
-          </div>
         </div>
       </div>
       <div class="p-grid mt-20" *ngIf="showeditUser">

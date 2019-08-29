@@ -32,7 +32,11 @@ export class UserProfileComponent implements OnInit {
   showModal = false;
   showeditUser = false;
   isUserProfileRightSideVisible = false;
+  userFilterOptions = [];
   customLabel = '';
+  showUserInput = false;
+  providedUser = '';
+  selectedOption = '';
   /**
    * This pMenuItems will be displayed as menu, while clicking on 3(...) dots in each rows.
    */
@@ -119,12 +123,12 @@ export class UserProfileComponent implements OnInit {
   ) {
     this.addUser = frmbuilder.group({
       username: ['', Validators.required],
-      account: ['', Validators.required],
+      account: ['', null],
       bucket: ['', Validators.required],
       dateofexit: ['', null],
       dateofjoin: ['', Validators.required],
-      deliverableExclusion: ['', Validators.required],
-      deliverable: ['', Validators.required],
+      deliverableExclusion: ['', null],
+      deliverable: ['', null],
       designation: ['', Validators.required],
       liveDate: ['', Validators.required],
       inCapacity: ['', Validators.required],
@@ -133,11 +137,11 @@ export class UserProfileComponent implements OnInit {
       maxHrs: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
       pooled: ['', Validators.required],
       primarySkill: ['', Validators.required],
-      readyTo: ['', Validators.required],
-      role: ['', Validators.required],
+      readyTo: ['', null],
+      role: ['', null],
       skillLevel: ['', Validators.required],
-      ta: ['', Validators.required],
-      taExclusion: ['', Validators.required],
+      ta: ['', null],
+      taExclusion: ['', null],
       task: ['', Validators.required],
       timeZone: ['', Validators.required],
       practiceArea: ['', Validators.required],
@@ -419,6 +423,18 @@ export class UserProfileComponent implements OnInit {
        * call dropdown initialize method to make dropdown null.
        */
       this.initializeDropdownArray();
+      // user filter dropdown
+      this.userFilterOptions = [
+        {
+          label: this.adminConstants.LOGICAL_FIELD.ACTIVE,
+          value: this.adminConstants.LOGICAL_FIELD.ACTIVE
+        },
+        {
+          label: this.adminConstants.LOGICAL_FIELD.INACTIVE,
+          value: this.adminConstants.LOGICAL_FIELD.INACTIVE
+        }
+      ];
+      console.log(this.userFilterOptions);
       // load bucket dropdown.
       const bucketResults = dropdownResults[0].retItems;
       if (bucketResults && bucketResults.length) {
@@ -510,6 +526,119 @@ export class UserProfileComponent implements OnInit {
         });
       }
     }
+  }
+  onChangeSelect() {
+    if (this.selectedOption === this.adminConstants.LOGICAL_FIELD.INACTIVE) {
+      this.showUserInput = true;
+      const emptyProjects = [];
+      this.userProfileData = [...emptyProjects];
+      this.providedUser = '';
+    } else {
+      this.showUserInput = false;
+      this.loadUserTable();
+    }
+  }
+  async searchInactiveUser() {
+    const resCatFilter = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION);
+    resCatFilter.filter = resCatFilter.filter.replace(/{{isActive}}/gi,
+      this.adminConstants.LOGICAL_FIELD.NO);
+    resCatFilter.filter = resCatFilter.filter + ' and startswith(UserNameText,\'' + this.providedUser + '\') ';
+    const sResult = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resCatFilter);
+    const tempResult = [];
+    if (sResult && sResult) {
+      for (const item of sResult) {
+        const userObj = Object.assign({}, this.adminObject.addUser);
+        userObj.UserNameEmail = item.UserName.EMail;
+        userObj.UserId = item.UserName.ID;
+        userObj.ManagerEmail = item.Manager.EMail;
+        userObj.ManagerId = item.Manager.ID;
+        userObj.Bucket = item.Bucket;
+        userObj.PracticeArea = item.Practice_x0020_Area;
+        userObj.TimeZone = item.TimeZone;
+        userObj.DateOfJoining = item.DateOfJoining;
+        userObj.GoLiveDate = item.GoLiveDate;
+        userObj.Designation = item.Designation;
+        userObj.InCapacity = item.InCapacity;
+        userObj.Pooled = item.Pooled;
+        userObj.MaxHrs = item.MaxHrs;
+        userObj.PrimarySkill = item.PrimarySkill;
+        userObj.SkillLevel = item.SkillLevel;
+        userObj.Role = item.Role;
+        userObj.ReadyTo = item.Ready_x0020_To;
+        userObj.Task = item.Tasks;
+        userObj.Account = item.Account;
+        userObj.Deliverable = item.Deliverables;
+        userObj.DeliverableExclusion = item.DeliverableExclusion;
+        userObj.TA = item.TA;
+        userObj.TAExclusion = item.TAExclusion;
+        userObj.PracticeAreaEffectiveDate = item.PracticeAreaEffectiveDate;
+        userObj.TimeZoneEffectiveDate = item.TimeZoneEffectiveDate;
+        userObj.ManagerEffectiveDate = item.ManagerEffectiveDate;
+        userObj.PrimarySkillEffectiveDate = item.PrimarySkillEffectiveDate;
+        userObj.SkillLevelEffectiveDate = item.SkillLevelEffectiveDate;
+        userObj.ID = item.ID;
+        userObj.Manager = item.Manager.Title;
+        userObj.User = item.UserName.Title;
+        userObj.LastUpdated = item.Modified;
+        userObj.LastUpdatedFormat = this.datePipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+        userObj.LastUpdatedBy = item.Editor.Title;
+        userObj.IsActive = item.IsActive;
+        userObj.DisplayText = item.Manager.Title;
+        userObj.DateofExit = item.DateofExit;
+        // Add the text of below item.
+        if (userObj.Task) {
+          const tasks: any = userObj.Task;
+          if (tasks.results && tasks.results.length) {
+            userObj.TaskText = tasks.results.map(x => x.Title).join(', ');
+          }
+        }
+        // Add the text of below item.
+        if (userObj.Account) {
+          const account: any = userObj.Account;
+          if (account.results && account.results.length) {
+            userObj.AccountText = account.results.map(x => x.Title).join(', ');
+          }
+        }
+        // Add the text of below item.
+        if (userObj.Deliverable) {
+          const deliverable: any = userObj.Deliverable;
+          if (deliverable.results && deliverable.results.length) {
+            userObj.DeliverableText = deliverable.results.map(x => x.Title).join(', ');
+          }
+        }
+        // Add the text of below item.
+        if (userObj.DeliverableExclusion) {
+          const deliverableEx: any = userObj.DeliverableExclusion;
+          if (deliverableEx.results && deliverableEx.results.length) {
+            userObj.DeliverableExclusionText = deliverableEx.results.map(x => x.Title).join(', ');
+          }
+        }
+        // Add the text of below item.
+        if (userObj.TA) {
+          const ta: any = userObj.TA;
+          if (ta.results && ta.results.length) {
+            userObj.TAText = ta.results.map(x => x.Title).join(', ');
+          }
+        }
+        // Add the text of below item.
+        if (userObj.TAExclusion) {
+          const taExclusion: any = userObj.TAExclusion;
+          if (taExclusion.results && taExclusion.results.length) {
+            userObj.TAExclusionText = taExclusion.results.map(x => x.Title).join(', ');
+          }
+        }
+        // Add the text of below item.
+        if (userObj.Task) {
+          const tasks: any = userObj.Task;
+          if (tasks.results && tasks.results.length) {
+            userObj.TaskText = tasks.results.map(x => x.Title).join(', ');
+          }
+        }
+        tempResult.push(userObj);
+      }
+    }
+    this.userProfileData = tempResult;
+
   }
   /**
    * Construct a method to initialize the dropdown array to null.
@@ -782,11 +911,20 @@ export class UserProfileComponent implements OnInit {
           key: 'adminCustom', severity: 'error',
           summary: 'Error Message', detail: 'Please select proper username name.'
         });
+        return false;
       } else if (addUserForm.value.manager && !addUserForm.value.manager.hasOwnProperty('EntityData')) {
         this.messageService.add({
           key: 'adminCustom', severity: 'error',
           summary: 'Error Message', detail: 'Please select proper manager name.'
         });
+        return false;
+      } else if (this.datePipe.transform(new Date(addUserForm.value.dateofjoin), 'MMM dd yyyy') >
+        this.datePipe.transform(new Date(addUserForm.value.liveDate), 'MMM dd yyyy')) {
+        this.messageService.add({
+          key: 'adminCustom', severity: 'error',
+          summary: 'Error Message', detail: 'Go live date cannot be less than date of joining.'
+        });
+        return false;
       } else {
         this.adminObject.isMainLoaderHidden = false;
         // This method is used to save all the addform value into global object.
@@ -878,7 +1016,6 @@ export class UserProfileComponent implements OnInit {
       }
     } else {
       this.upObject.isFormSubmit = true;
-      this.upObject.isEditFormSubmit = true;
     }
   }
   /**
@@ -895,7 +1032,7 @@ export class UserProfileComponent implements OnInit {
       this.adminObject.isMainLoaderHidden = true;
       this.messageService.add({
         key: 'adminCustom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: 'User - ' + this.currUserObj.User + ' has been updated sucessfully'
+        summary: 'Success Message', detail: 'User - ' + this.currUserObj.User + ' has updated sucessfully'
       });
       await this.loadRecentRecords(this.currUserObj.ID, this.showeditUser);
       this.showModal = false;
@@ -907,16 +1044,16 @@ export class UserProfileComponent implements OnInit {
       if (result.hasOwnProperty('hasError') && result.hasError && result.message.value.includes('duplicate')) {
         this.messageService.add({
           key: 'adminCustom', severity: 'error', sticky: true,
-          summary: 'Error Message', detail: 'User - ' + formValue.username.DisplayText + ' has been already exist.'
+          summary: 'Error Message', detail: 'User - ' + formValue.username.DisplayText + ' has already exist.'
         });
       } else {
+        this.showModal = false;
         this.messageService.add({
           key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'User - ' + formValue.username.DisplayText + ' has been added sucessfully'
+          summary: 'Success Message', detail: 'User - ' + formValue.username.DisplayText + ' has added sucessfully'
         });
         await this.loadRecentRecords(result.ID, this.showeditUser);
       }
-      this.showModal = false;
     }
   }
   /**
@@ -1106,15 +1243,21 @@ export class UserProfileComponent implements OnInit {
     // Extract userId and managerId
     let userId = 0;
     let managerId = 0;
+    let managerText = '';
+    let userText = '';
     if (isEdit) {
       managerId = formObj.manager.EntityData.hasOwnProperty('ID') ? formObj.manager.EntityData.ID : IdResults[0].retItems[0].ID;
+      managerText = formObj.manager.hasOwnProperty('DisplayText') ? formObj.manager.DisplayText : IdResults[0].retItems[0].Title;
     } else {
       userId = formObj.username.EntityData.hasOwnProperty('ID') ? formObj.username.EntityData.ID : IdResults[0].retItems[0].ID;
       managerId = formObj.manager.EntityData.hasOwnProperty('ID') ? formObj.manager.EntityData.ID : IdResults[1].retItems[0].ID;
+      userText = formObj.username.hasOwnProperty('DisplayText') ? formObj.username.DisplayText : IdResults[0].retItems[0].Title;
+      managerText = formObj.manager.hasOwnProperty('DisplayText') ? formObj.manager.DisplayText : IdResults[0].retItems[0].Title;
     }
     const data: any = {
       __metadata: { type: this.constants.listNames.ResourceCategorization.type },
       ManagerId: managerId,
+      ManagerText: managerText,
       Bucket: formObj.bucket,
       Practice_x0020_Area: formObj.practiceArea,
       TimeZoneId: formObj.timeZone,
@@ -1126,29 +1269,44 @@ export class UserProfileComponent implements OnInit {
       MaxHrs: +formObj.maxHrs,
       PrimarySkill: formObj.primarySkill,
       SkillLevelId: formObj.skillLevel,
-      Role: formObj.role,
-      Ready_x0020_To: formObj.readyTo,
       TasksId: {
         results: formObj.task
-      },
-      AccountId: {
-        results: formObj.account
-      },
-      DeliverablesId: {
-        results: formObj.deliverable
-      },
-      DeliverableExclusionId: {
-        results: formObj.deliverableExclusion
-      },
-      TAId: {
-        results: formObj.ta
-      },
-      TAExclusionId: {
-        results: formObj.taExclusion
       }
     };
+    if (formObj.role) {
+      data.Role = formObj.role;
+    }
+    if (formObj.readyTo) {
+      data.Ready_x0020_To = formObj.readyTo;
+    }
+    if (formObj.account && formObj.account.length) {
+      data.AccountId = {
+        results: formObj.account
+      };
+    }
+    if (formObj.deliverable && formObj.deliverable.length) {
+      data.DeliverablesId = {
+        results: formObj.deliverable
+      };
+    }
+    if (formObj.deliverableExclusion && formObj.deliverableExclusion.length) {
+      data.DeliverableExclusionId = {
+        results: formObj.deliverableExclusion
+      };
+    }
+    if (formObj.ta && formObj.ta.length) {
+      data.TAId = {
+        results: formObj.ta
+      };
+    }
+    if (formObj.taExclusion && formObj.taExclusion.length) {
+      data.TAExclusionId = {
+        results: formObj.taExclusion
+      };
+    }
     if (!isEdit) {
       data.UserNameId = userId;
+      data.UserNameText = userText;
       if (formObj.isActive === this.adminConstants.LOGICAL_FIELD.NO) {
         data.IsActive = formObj.isActive;
         data.DateofExit = formObj.dateofexit;
@@ -1216,6 +1374,13 @@ export class UserProfileComponent implements OnInit {
         managerEffectiveDateControl.setValidators([Validators.required]);
         managerEffectiveDateControl.updateValueAndValidity();
         this.date.isManagerEffectiveDateActive = true;
+        this.addUser.get('managerEffectiveDate').setValue(null);
+        this.addUser.get('managerEffectiveDate').enable();
+      } else if (this.showeditUser && this.currUserObj.ManagerEmail === this.addUser.value.manager.EntityData.Email) {
+        this.date.isManagerEffectiveDateActive = true;
+        const userObj = this.currUserObj;
+        this.addUser.get('managerEffectiveDate').setValue(new Date(userObj.ManagerEffectiveDate));
+        this.addUser.get('managerEffectiveDate').disable();
       } else {
         managerEffectiveDateControl.clearValidators();
         this.date.isManagerEffectiveDateActive = false;
@@ -1236,6 +1401,13 @@ export class UserProfileComponent implements OnInit {
       practiceAreaEffectiveDateControl.setValidators([Validators.required]);
       practiceAreaEffectiveDateControl.updateValueAndValidity();
       this.date.isPracticeEffectiveDateActive = true;
+      this.addUser.get('practiceAreaEffectiveDate').setValue(null);
+      this.addUser.get('practiceAreaEffectiveDate').enable();
+    } else if (this.showeditUser && this.currUserObj.PracticeArea === this.addUser.value.practiceArea) {
+      this.date.isPracticeEffectiveDateActive = true;
+      const userObj = this.currUserObj;
+      this.addUser.get('practiceAreaEffectiveDate').setValue(new Date(userObj.PracticeAreaEffectiveDate));
+      this.addUser.get('practiceAreaEffectiveDate').disable();
     } else {
       practiceAreaEffectiveDateControl.clearValidators();
       this.date.isPracticeEffectiveDateActive = false;
@@ -1255,6 +1427,13 @@ export class UserProfileComponent implements OnInit {
       timeZoneEffectiveDateControl.setValidators([Validators.required]);
       timeZoneEffectiveDateControl.updateValueAndValidity();
       this.date.isTimeZoneEffectiveDateActive = true;
+      this.addUser.get('timeZoneEffectiveDate').setValue(null);
+      this.addUser.get('timeZoneEffectiveDate').enable();
+    } else if (this.showeditUser && this.currUserObj.TimeZone.ID === this.addUser.value.timeZone) {
+      this.date.isTimeZoneEffectiveDateActive = true;
+      const userObj = this.currUserObj;
+      this.addUser.get('timeZoneEffectiveDate').setValue(new Date(userObj.TimeZoneEffectiveDate));
+      this.addUser.get('timeZoneEffectiveDate').disable();
     } else {
       timeZoneEffectiveDateControl.clearValidators();
       this.date.isTimeZoneEffectiveDateActive = false;
@@ -1274,6 +1453,13 @@ export class UserProfileComponent implements OnInit {
       primarySkillEffectiveDateControl.setValidators([Validators.required]);
       primarySkillEffectiveDateControl.updateValueAndValidity();
       this.date.isPrimarySkillEffectiveDateActive = true;
+      this.addUser.get('primarySkillEffectiveDate').setValue(null);
+      this.addUser.get('primarySkillEffectiveDate').enable();
+    } else if (this.showeditUser && this.currUserObj.PrimarySkill === this.addUser.value.primarySkill) {
+      this.date.isPrimarySkillEffectiveDateActive = true;
+      const userObj = this.currUserObj;
+      this.addUser.get('primarySkillEffectiveDate').setValue(new Date(userObj.PrimarySkillEffectiveDate));
+      this.addUser.get('primarySkillEffectiveDate').disable();
     } else {
       primarySkillEffectiveDateControl.clearValidators();
       this.date.isPrimarySkillEffectiveDateActive = false;
@@ -1293,6 +1479,13 @@ export class UserProfileComponent implements OnInit {
       skillLevelEffectiveDateControl.setValidators([Validators.required]);
       skillLevelEffectiveDateControl.updateValueAndValidity();
       this.date.isSkillLevelEffectiveDateActive = true;
+      this.addUser.get('skillLevelEffectiveDate').setValue(null);
+      this.addUser.get('skillLevelEffectiveDate').enable();
+    } else if (this.showeditUser && this.currUserObj.SkillLevel.ID === this.addUser.value.skillLevel) {
+      this.date.isSkillLevelEffectiveDateActive = true;
+      const userObj = this.currUserObj;
+      this.addUser.get('skillLevelEffectiveDate').setValue(new Date(userObj.SkillLevelEffectiveDate));
+      this.addUser.get('skillLevelEffectiveDate').disable();
     } else {
       skillLevelEffectiveDateControl.clearValidators();
       this.date.isSkillLevelEffectiveDateActive = false;
@@ -1318,13 +1511,40 @@ export class UserProfileComponent implements OnInit {
     }
   }
   /**
+   * Construct a method to trigger whenever `Deliverable` field value changes.
+   *
+   * @description
+   *
+   * The options selected in `Deliverable` field , that options will not in `Deliverable Exclusion` field.
+   */
+  onDeliverableChange() {
+    const deliverableIdArray = this.addUser.value.deliverable;
+    const filterdeliverableArray = this.adminDropDown.deliverableArray.filter(x => !deliverableIdArray.includes(x.value));
+    this.adminDropDown.deliverableExclusionArray = filterdeliverableArray;
+  }
+  /**
+   * Construct a method to trigger whenever `TA` field value changes.
+   *
+   * @description
+   *
+   * The options selected in `TA` field, that options will not available in `TA Exclusion` field.
+   */
+  onTAChange() {
+    const taIdArray = this.addUser.value.ta;
+    const filtertaArray = this.adminDropDown.taArray.filter(x => !taIdArray.includes(x.value));
+    this.adminDropDown.taExclusionArray = filtertaArray;
+  }
+  /**
    * Construct a method to show the add user form.
    */
   showAddUserModal() {
     this.addUser.reset();
-    // const uLoginName = 'i:0#.f|membership|nirlep.chhiber@cactusglobal.com';
-    // const mLoginName = 'i:0#.f|membership|praveen.amancha@cactusglobal.com';
-    // this.addUserToGroup(uLoginName, mLoginName);
+    this.date.isManagerEffectiveDateActive = false;
+    this.date.isPracticeEffectiveDateActive = false;
+    this.date.isPrimarySkillEffectiveDateActive = false;
+    this.date.isSkillLevelEffectiveDateActive = false;
+    this.date.isTimeZoneEffectiveDateActive = false;
+    this.upObject.isFormSubmit = false;
     this.showeditUser = false;
     this.customLabel = 'Submit';
     this.addUser.controls.username.enable();
@@ -1386,8 +1606,8 @@ export class UserProfileComponent implements OnInit {
     this.addUser.get('bucket').setValue(userObj.Bucket);
     this.addUser.get('practiceArea').setValue(userObj.PracticeArea);
     this.addUser.get('timeZone').setValue(userObj.TimeZone.ID);
-    this.addUser.get('liveDate').setValue(new Date(userObj.DateOfJoining));
-    this.addUser.get('dateofjoin').setValue(new Date(userObj.GoLiveDate));
+    this.addUser.get('liveDate').setValue(new Date(userObj.GoLiveDate));
+    this.addUser.get('dateofjoin').setValue(new Date(userObj.DateOfJoining));
     this.addUser.get('inCapacity').setValue(userObj.InCapacity);
     this.addUser.get('designation').setValue(userObj.Designation);
     this.addUser.get('pooled').setValue(userObj.Pooled);
@@ -1426,22 +1646,27 @@ export class UserProfileComponent implements OnInit {
     if (userObj.ManagerEffectiveDate) {
       this.date.isManagerEffectiveDateActive = true;
       this.addUser.get('managerEffectiveDate').setValue(new Date(userObj.ManagerEffectiveDate));
+      this.addUser.get('managerEffectiveDate').disable();
     }
     if (userObj.PracticeAreaEffectiveDate) {
       this.date.isPracticeEffectiveDateActive = true;
       this.addUser.get('practiceAreaEffectiveDate').setValue(new Date(userObj.PracticeAreaEffectiveDate));
+      this.addUser.get('practiceAreaEffectiveDate').disable();
     }
     if (userObj.TimeZoneEffectiveDate) {
       this.date.isTimeZoneEffectiveDateActive = true;
       this.addUser.get('timeZoneEffectiveDate').setValue(new Date(userObj.TimeZoneEffectiveDate));
+      this.addUser.get('timeZoneEffectiveDate').disable();
     }
     if (userObj.PrimarySkillEffectiveDate) {
       this.date.isPrimarySkillEffectiveDateActive = true;
       this.addUser.get('primarySkillEffectiveDate').setValue(new Date(userObj.PrimarySkillEffectiveDate));
+      this.addUser.get('primarySkillEffectiveDate').disable();
     }
     if (userObj.SkillLevelEffectiveDate) {
       this.date.isSkillLevelEffectiveDateActive = true;
       this.addUser.get('skillLevelEffectiveDate').setValue(new Date(userObj.SkillLevelEffectiveDate));
+      this.addUser.get('skillLevelEffectiveDate').disable();
     }
     if (userObj.DateofExit) {
       this.showeditUser = true;
