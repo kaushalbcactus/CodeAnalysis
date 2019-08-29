@@ -68,6 +68,7 @@ export class FeedbackPopupComponent implements OnInit {
       };
       templateMatrix.push(obj);
     });
+    this.global.templateMatrix.averageRating = 0;
     this.global.templateMatrix.selectedTemplateDetails = templateMatrix;
   }
 
@@ -357,27 +358,7 @@ export class FeedbackPopupComponent implements OnInit {
     this.global.templateMatrix.reviewTask = element.reviewTask ? element.reviewTask : '';
   }
 
-  // // /**
-  // //  * Open modal dialog with large size with external JS
-  // //  *
-  // //  * @param  content - content dispalyed within popup which is defined in HTML
-  // //  */
-  // openPopupByJS(element: any) {
-  //   this.popupByJS = true;
-  //   this.deliveryDashboardSharedObj = element;
-  //   this.getTemplates();
-  //   this.global.templateMatrix.task = element.taskTitle;
-  //   this.global.templateMatrix.submilestones = element.subMilestones;
-  //   this.global.templateMatrix.taskID = element.taskID;
-  //   this.global.templateMatrix.assignedToID = element.resourceID;
-  //   this.global.templateMatrix.assignedTo = element.resource;
-  //   this.global.templateMatrix.taskCompletionDate = element.taskCompletionDate;
-  //   this.global.templateMatrix.documentUrl = element.documentURL.length > 0 ? element.documentURL.map(a => a.url).join(';#') : '';
-  //   this.global.templateMatrix.reviewTaskDocUrl = element.reviewTaskDocUrl.length > 0 ?
-  //                                                 element.reviewTaskDocUrl.map(a => a.url).join(';#') : '';
-  //   this.global.templateMatrix.reviewTask = element.reviewTask;
-  // }
-// #endregion ForRatingPopup
+ // #endregion ForRatingPopup
   showTable() {
     this.hidePopupTable = false;
     this.hidePopupLoader = true;
