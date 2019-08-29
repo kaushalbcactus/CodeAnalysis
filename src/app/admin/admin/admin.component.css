@@ -3,7 +3,7 @@
 }
 
 .mt-5{
-    margin-top: 5px;
+    margin-top: 5px !important;
 }
 
 .mr-10 {
@@ -105,4 +105,34 @@ form{
     .ng-right-side-overlay .ui-sidebar {
         overflow-x: auto !important; 
     }
-      
+    .top-right-title {
+        float: right;     
+        margin-right: 20px;
+        margin-top: 5px;
+    }
+    .clearBoth{
+        clear: both;
+    }
+    .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active, 
+    .ui-button, 
+    .ui-button:enabled:active, 
+    .ui-button:enabled:hover, 
+    .ui-steps .ui-steps-item.ui-state-highlight .ui-steps-number, 
+    .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active, 
+    .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover, 
+    .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight, 
+    .ui-table .ui-sortable-column.ui-state-highlight, 
+    .ui-radiobutton .ui-radiobutton-box.ui-state-active, 
+    .ui-radiobutton .ui-radiobutton-box.ui-state-active:not(.ui-state-disabled):hover, 
+    .ui-datepicker table td>a.ui-state-active, 
+    .ui-datepicker table td>span.ui-state-active, 
+    .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight, 
+    .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item-group.ui-state-highlight,
+    .ui-chkbox .ui-chkbox-box.ui-state-active {
+        background-color: #C53E3E !important;
+        border: 1px solid #C53E3E !important;
+    }
+    .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active .ui-menuitem-link {
+        color: #ffffff;
+    }
+    
