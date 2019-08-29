@@ -1232,7 +1232,7 @@ export class AllProjectsComponent implements OnInit {
       pinfoUdateData.Status = this.constants.projectStatus.SentToAMForApproval;
     } else {
       pinfoUdateData.Status = this.constants.projectStatus.AuditInProgress;
-      pinfoUdateData.ProposedEndDate = new Date();
+      pinfoUdateData.ProposeClosureDate = new Date();
     }
     const piInfoUpdate = Object.assign({}, options);
     piInfoUpdate.data = pinfoUdateData;
