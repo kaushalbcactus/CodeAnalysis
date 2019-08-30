@@ -66,6 +66,7 @@ export class ProjectAttributesComponent implements OnInit {
         this.addProjectAttributesForm.get('billedBy').disable();
         this.editProject(this.projObj);
         this.showEditSave = true;
+
       } else {
         const sow = this.pmObject.allSOWItems.filter(objt => objt.SOWCode === this.pmObject.addProject.SOWSelect.SOWCode);
         if (sow && sow.length) {
@@ -379,9 +380,14 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.Molecule = projObj.Molecule;
     this.pmObject.addProject.ProjectAttributes.TherapeuticArea = projObj.TA;
     this.pmObject.addProject.ProjectAttributes.Indication = projObj.Indication;
-    this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = projObj.IsPubSupport;
+    this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = projObj.IsPubSupport === "Yes" ? true : false;
     this.pmObject.addProject.ProjectAttributes.PUBSupportStatus = projObj.PubSupportStatus;
     const poc2Array = [];
+    if(this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value) {
+      this.isPubSupportDisabled = false;
+    } else {
+      this.isPubSupportDisabled = true;
+    }
     if (projObj.AdditionalPOC && projObj.AdditionalPOC.length) {
       projObj.AdditionalPOC.forEach(element => {
         poc2Array.push(+element);

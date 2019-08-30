@@ -846,7 +846,7 @@ export class PMCommonService {
     this.pmObject.addProject.ProjectAttributes.Molecule = '';
     this.pmObject.addProject.ProjectAttributes.TherapeuticArea = '';
     this.pmObject.addProject.ProjectAttributes.Indication = '';
-    this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = '';
+    this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = false;
     this.pmObject.addProject.ProjectAttributes.PUBSupportStatus = '';
     this.pmObject.addProject.ProjectAttributes.ProjectTitle = '';
     this.pmObject.addProject.ProjectAttributes.AlternateShortTitle = '';

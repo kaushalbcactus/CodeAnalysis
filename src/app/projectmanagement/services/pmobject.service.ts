@@ -234,7 +234,7 @@ export class PMObjectService {
       Molecule: '',
       TherapeuticArea: '',
       Indication: '',
-      PUBSupportRequired: '',
+      PUBSupportRequired: false,
       PUBSupportStatus: '',
       ActiveCM1: [],
       ActiveCM1Text: '',

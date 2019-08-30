@@ -1464,7 +1464,7 @@ export class AllProjectsComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.Molecule = proj.Molecule;
     this.pmObject.addProject.ProjectAttributes.TherapeuticArea = proj.TA;
     this.pmObject.addProject.ProjectAttributes.Indication = proj.Indication;
-    this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = proj.IsPubSupport;
+    this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = proj.IsPubSupport === "Yes" ? true : false;
     this.pmObject.addProject.ProjectAttributes.PUBSupportStatus = proj.PubSupportStatus;
     this.pmObject.addProject.ProjectAttributes.AlternateShortTitle = proj.ShortTitle;
     this.pmObject.addProject.ProjectAttributes.SOWBoxLink = proj.SOWBoxLink;
