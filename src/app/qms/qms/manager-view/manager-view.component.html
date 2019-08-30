@@ -36,7 +36,7 @@
               aria-hidden="true"></i> Provide feedback</a>
           <div class="content" [ngbCollapse]="rowData['hideFeedbackForm']">
             <span class="ui-float-label example-full-width">
-              <textarea id="float-input" class="commentsText" #comments maxlength="1000" rows="5" cols="90" pInputTextarea color="#B13E3E"
+              <textarea style="width:100%" id="float-input" class="commentsText" #comments maxlength="1000" cols="90" rows="5" pInputTextarea color="#B13E3E"
                 [(ngModel)]="rowData['comments']"></textarea>
               <label for="float-input">Comments</label>
             </span>
