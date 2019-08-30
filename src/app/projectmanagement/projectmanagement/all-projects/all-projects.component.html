@@ -177,7 +177,7 @@
                     </tr>
                     <tr>
                         <td [ngStyle]="{'color':'#d7181f'}">PUB Support Required</td>
-                        <td>{{task.ProjectAttributes.PUBSupportRequired}}</td>
+                        <td>{{task.ProjectAttributes.PUBSupportRequired ? "Yes" : "No"  }}</td>
                     </tr>
                     <tr>
                         <td [ngStyle]="{'color':'#d7181f'}">PUB Support Status</td>
