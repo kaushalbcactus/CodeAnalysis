@@ -4,9 +4,6 @@ import { PubsupportRoutingModule } from './pubsupport-routing.module';
 import { PubsupportComponent } from './pubsupport/pubsupport.component';
 import { PrimengModule } from '../primeng/primeng.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-// FIle upload
-import { FileUploadModule } from 'ng2-file-upload';
-
 import { SharedModule } from '../shared/shared.module';
 import { CreateConferenceComponent } from './pubsupport/create-conference/create-conference.component';
 import { CreateJournalComponent } from './pubsupport/create-journal/create-journal.component';
