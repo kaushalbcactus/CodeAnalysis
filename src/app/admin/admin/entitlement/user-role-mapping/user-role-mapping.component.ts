@@ -88,6 +88,10 @@ export class UserRoleMappingComponent implements OnInit {
       }
       // load groups
       this.groups = results[1].retItems;
+      // assign the value to global array.
+
+      this.adminObject.resourceCatArray = userResults;
+      this.adminObject.groupArray = this.groups;
     }
     this.adminObject.isMainLoaderHidden = true;
   }
@@ -141,6 +145,7 @@ export class UserRoleMappingComponent implements OnInit {
    *
    */
   async onUserChange() {
+    this.messageService.clear();
     this.adminObject.isMainLoaderHidden = false;
     const currentUserId = this.selectedUser.value.ID;
     await this.highlightGroups(currentUserId);
@@ -159,11 +164,15 @@ export class UserRoleMappingComponent implements OnInit {
    */
   async highlightGroups(userId) {
     this.userInfo = await this.spServices.getUserInfo(userId);
-    console.log(this.userInfo);
     this.userExistGroupArray = [];
     if (this.userInfo && this.userInfo.hasOwnProperty('Groups')) {
       if (this.userInfo.Groups && this.userInfo.Groups.results && this.userInfo.Groups.results.length) {
         this.userExistGroupArray = this.userInfo.Groups.results.map(x => x.Title);
+      } else {
+        this.messageService.add({
+          key: 'adminCustom', severity: 'error',
+          summary: 'Error Message', detail: 'User does not exist in any groups.'
+        });
       }
     }
     return this.selectedRoles = this.userExistGroupArray;
@@ -207,59 +216,60 @@ export class UserRoleMappingComponent implements OnInit {
         summary: 'Error Message', detail: 'Please select user.'
       });
       return false;
-    } else if (!this.selectedRoles.length) {
+    }
+    const removeGroups = this.userExistGroupArray.filter(x => !this.selectedRoles.includes(x));
+    const groups = this.selectedRoles;
+    if (!groups.length && !removeGroups.length) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error', sticky: true,
         summary: 'Error Message', detail: 'Please select any one group.'
       });
       return false;
-    } else {
-      this.adminObject.isMainLoaderHidden = false;
-      const removeGroups = this.userExistGroupArray.filter(x => !this.selectedRoles.includes(x));
-      console.log(removeGroups);
-      const groups = this.selectedRoles;
-      const batchURL = [];
-      const options = {
-        data: null,
-        url: '',
-        type: '',
-        listName: ''
-      };
-      groups.forEach(element => {
-        const userData = {
-          __metadata: { type: 'SP.User' },
-          LoginName: this.userInfo.LoginName
-        };
-        const userCreate = Object.assign({}, options);
-        userCreate.url = this.spServices.getGroupUrl(element, null);
-        userCreate.data = userData;
-        userCreate.type = 'POST';
-        userCreate.listName = element;
-        batchURL.push(userCreate);
-      });
-      removeGroups.forEach(element => {
-        const userData = {
-          loginName: this.userInfo.LoginName
-        };
-        const userRemove = Object.assign({}, options);
-        userRemove.url = this.spServices.removeUserFromGroupByLoginName(element);
-        userRemove.data = userData;
-        userRemove.type = 'POST';
-        userRemove.listName = element;
-        batchURL.push(userRemove);
-      });
-      if (batchURL.length) {
-        const sResult = await this.spServices.executeBatch(batchURL);
-        if (sResult && sResult.length) {
-          this.adminObject.isMainLoaderHidden = true;
-          this.messageService.add({
-            key: 'adminCustom', severity: 'success', sticky: true,
-            summary: 'Success Message', detail: 'User - ' + this.userInfo.Title + ' has been updated sucessfully'
-          });
-        }
-      }
-      this.highlightGroups(this.userInfo.Id);
     }
+    this.adminObject.isMainLoaderHidden = false;
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    groups.forEach(element => {
+      const userData = {
+        __metadata: { type: 'SP.User' },
+        LoginName: this.userInfo.LoginName
+      };
+      const userCreate = Object.assign({}, options);
+      userCreate.url = this.spServices.getGroupUrl(element, null);
+      userCreate.data = userData;
+      userCreate.type = 'POST';
+      userCreate.listName = element;
+      batchURL.push(userCreate);
+    });
+    removeGroups.forEach(element => {
+      const userData = {
+        loginName: this.userInfo.LoginName
+      };
+      const userRemove = Object.assign({}, options);
+      userRemove.url = this.spServices.removeUserFromGroupByLoginName(element);
+      userRemove.data = userData;
+      userRemove.type = 'POST';
+      userRemove.listName = element;
+      batchURL.push(userRemove);
+    });
+    if (batchURL.length) {
+      const sResult = await this.spServices.executeBatch(batchURL);
+      if (sResult && sResult.length) {
+        this.adminObject.isMainLoaderHidden = true;
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success', sticky: true,
+          summary: 'Success Message', detail: 'User - ' + this.userInfo.Title + ' has been updated sucessfully'
+        });
+      }
+    }
+    this.adminObject.isMainLoaderHidden = true;
+    this.highlightGroups(this.userInfo.Id);
   }
 }
+
 

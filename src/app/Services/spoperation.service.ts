@@ -276,6 +276,15 @@ export class SPOperationService {
     });
     return this.parseRetMultiple(res);
   }
+  async readGroupUsers(groupName: string, options?: any) {
+    const url = this.getGroupUrl(groupName, options);
+    let res;
+    res = await this.httpClient.get(url, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+      const error = err.error;
+      return error;
+    });
+    return this.parseRetMultiple(res);
+  }
   // READ single item - SharePoint list name, and item ID number
   async readItem(listName: string, id: any, options?: any) {
     const url = this.getItemURL(listName, id, options);

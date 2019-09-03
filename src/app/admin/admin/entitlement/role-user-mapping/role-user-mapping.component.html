@@ -1,21 +1,36 @@
 <div>
     <div class="userRole">
-        <span style="padding-right: 10px;">Role:</span>
-        <p-dropdown [options]="roles" filter="true" optionLabel="label" resetFilterOnHide="true"
-            placeholder='Select Role' [(ngModel)]="selectedRole" (onChange)="roleChange()">
-        </p-dropdown>
+        <div class="ui-g">
+            <div class="ui-g-2">
+                <span class="mr-10">Groups:</span>
+            </div>
+            <div class="ui-g-4">
+                <p-dropdown [options]="groupsArray" filter="true" resetFilterOnHide="true" placeholder='Select Role'
+                    [(ngModel)]="selectedGroup" (onChange)="onGroupsChange()">
+                </p-dropdown>
+            </div>
+            <div class="ui-g-1">
+                <p-button label="Remove" type="button" (onClick)="save()"></p-button>
+            </div>
+        </div>
     </div>
-
     <div class="userRole">
-        <span style="padding-right: 10px;">User:</span>
-        <p-multiSelect [options]="Users" [(ngModel)]="selectedUsers" (onChange)="userChange()"></p-multiSelect>
-    </div>
-
-    <div class="userRole savebtn">
-        <p-button label="Save" (onClick)="save()"></p-button>
+        <div class="ui-g">
+            <div class="ui-g-2">
+                <span>Users:</span>
+            </div>
+        </div>
+        <div class=" ui-g">
+            <div class="ui-g-3" *ngFor="let user of usersArray">
+                <p-card>
+                    <p-checkbox name="{{user.Title}}" value="{{user.LoginName}}" label="{{user.Title}}"
+                        [(ngModel)]="selectedUsers" inputId="r1">
+                    </p-checkbox>
+                </p-card>
+            </div>
+        </div>
     </div>
 </div>
-
 <!-- <h3 style="text-align: center">Audit History</h3>
     
     <p-table #ru [columns]="roleUserColumns" [value]="roleUserRows" exportFilename="Role-User Mapping">
