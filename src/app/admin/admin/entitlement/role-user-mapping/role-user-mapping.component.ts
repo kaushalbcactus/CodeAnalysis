@@ -1,31 +1,34 @@
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-role-user-mapping',
   templateUrl: './role-user-mapping.component.html',
   styleUrls: ['./role-user-mapping.component.css']
 })
+/**
+ * A class that uses ngPrime to display the data in table.
+ * It also have feature like paging, sorting and naviagation to different component.
+ *
+ * @description
+ * This class is used to remove the users from group
+ */
 export class RoleUserMappingComponent implements OnInit {
-
-  constructor(private datepipe: DatePipe) { }
+  constructor(
+    private datepipe: DatePipe,
+    private spServices: SPOperationService,
+    private adminObject: AdminObjectService,
+    private messageService: MessageService
+  ) { }
   roleUserColumns = [];
   roleUserRows = [];
-
-  roles = [{ label: 'Role 1', value: 'Role 1' },
-  { label: 'Role 2', value: 'Role 2' },
-  { label: 'Role 3', value: 'Role 3' },
-  { label: 'Role 4', value: 'Role 4' },
-  { label: 'Role 5', value: 'Role 5' }];
-
-  Users = [{ label: 'User 1', value: 'User 1' },
-  { label: 'User 2', value: 'User 2' },
-  { label: 'User 3', value: 'User 3' },
-  { label: 'User 4', value: 'User 4' },
-  { label: 'User 5', value: 'User 5' }];
-  selectedRole: any;
+  groupsArray = [];
+  usersArray = [];
+  selectedGroup: any;
   selectedUsers: any;
-
   roleUserColArray = {
     User: [],
     Role: [],
@@ -33,7 +36,6 @@ export class RoleUserMappingComponent implements OnInit {
     By: [],
     Date: []
   };
-
   ngOnInit() {
     this.roleUserColumns = [
       { field: 'User', header: 'User' },
@@ -53,8 +55,140 @@ export class RoleUserMappingComponent implements OnInit {
       }
     ];
     this.colFilters(this.roleUserRows);
+    this.loadGroups();
   }
-
+  /**
+   * Construct a request for calling the batches request and load the groups values.
+   * @description
+   * Once the batch request completed and returns the value.
+   * It will iterate all the batch array to cater the request in group array.
+   */
+  async loadGroups() {
+    this.adminObject.isMainLoaderHidden = false;
+    const results = this.adminObject.groupArray && this.adminObject.groupArray.length ?
+      this.adminObject.groupArray : await this.getInitData();
+    if (results && results.length) {
+      this.groupsArray = [];
+      // load Users dropdown.
+      const groupResults = this.adminObject.groupArray && this.adminObject.groupArray.length ?
+        this.adminObject.groupArray : results[0].retItems;
+      if (groupResults && groupResults.length) {
+        groupResults.forEach(element => {
+          this.groupsArray.push({ label: element.Title, value: element.Title });
+        });
+      }
+    }
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
+   * This method will prepare the `Batch` request to get the data based on query.
+   *
+   * @description
+   * It will prepare the request as per following Sequence.
+   * 1. Groups          - Get data from Groups.
+   *
+   * @return An Array of the response in `JSON` format in above sequence.
+   */
+  async getInitData() {
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    // Get all Groups from sites list ##1
+    const groupGet = Object.assign({}, options);
+    groupGet.url = this.spServices.getAllGroupUrl();
+    groupGet.type = 'GET';
+    groupGet.listName = 'Groups';
+    batchURL.push(groupGet);
+    const result = await this.spServices.executeBatch(batchURL);
+    console.log(result);
+    return result;
+  }
+  /**
+   * Construct a request to SharePoint based API using REST-CALL to provide the result based on query.
+   *
+   * @description
+   *
+   * This method will get all the users exist into the selected groups.
+   */
+  async onGroupsChange() {
+    this.messageService.clear();
+    this.adminObject.isMainLoaderHidden = false;
+    const groupName = this.selectedGroup;
+    const usersArrayResult = await this.spServices.readGroupUsers(groupName, null);
+    if (usersArrayResult && usersArrayResult.length) {
+      console.log(usersArrayResult);
+      this.usersArray = usersArrayResult;
+      this.adminObject.isMainLoaderHidden = true;
+    } else {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error',
+        summary: 'Error Message', detail: 'Users does not exist in this group.'
+      });
+      this.usersArray = [];
+      this.adminObject.isMainLoaderHidden = true;
+    }
+  }
+  /**
+   * construct a method to add/remove the user from the selected/unselected group.
+   *
+   * @description
+   * This method will get all the information about user.
+   * It will highlight the group in which user is already presents.
+   *
+   */
+  async save() {
+    const groupName = this.selectedGroup;
+    const usersArray = this.selectedUsers;
+    if (!groupName) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error', sticky: true,
+        summary: 'Error Message', detail: 'Please select group.'
+      });
+      return false;
+    }
+    if (!usersArray) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error', sticky: true,
+        summary: 'Error Message', detail: 'Please select atleast one user.'
+      });
+      return false;
+    }
+    this.adminObject.isMainLoaderHidden = false;
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    usersArray.forEach(element => {
+      const userData = {
+        loginName: element
+      };
+      const userRemove = Object.assign({}, options);
+      userRemove.url = this.spServices.removeUserFromGroupByLoginName(groupName);
+      userRemove.data = userData;
+      userRemove.type = 'POST';
+      userRemove.listName = element;
+      batchURL.push(userRemove);
+    });
+    if (batchURL.length) {
+      const sResult = await this.spServices.executeBatch(batchURL);
+      if (sResult && sResult.length) {
+        this.adminObject.isMainLoaderHidden = true;
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success', sticky: true,
+          summary: 'Success Message', detail: 'Selected User has been removed from \'' + groupName + '\' group  sucessfully.'
+        });
+        this.onGroupsChange();
+      }
+    }
+  }
   colFilters(colData) {
     this.roleUserColArray.User = this.uniqueArrayObj(colData.map(a => { const b = { label: a.User, value: a.User }; return b; }));
     this.roleUserColArray.Role = this.uniqueArrayObj(colData.map(a => { const b = { label: a.Role, value: a.Role }; return b; }));
@@ -64,12 +198,11 @@ export class RoleUserMappingComponent implements OnInit {
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
-          value: this.datepipe.transform(a.Date, 'MMM d, yyyy')
+          value: this.datepipe.transform(a.Date)
         };
         return b;
       }));
   }
-
   uniqueArrayObj(array: any) {
     let sts: any = '';
     return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
@@ -79,21 +212,5 @@ export class RoleUserMappingComponent implements OnInit {
       };
     });
   }
-
-  roleChange() {
-    this.selectedUsers = ['User 1',
-      'User 2',
-      'User 4'];
-  }
-
-  userChange() {
-    // console.log(this.selectedUsers);
-  }
-
-  save() {
-    console.log(this.selectedRole);
-    console.log(this.selectedUsers);
-  }
-
 }
 

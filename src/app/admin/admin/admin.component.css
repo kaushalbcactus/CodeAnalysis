@@ -135,4 +135,7 @@ form{
     .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active .ui-menuitem-link {
         color: #ffffff;
     }
+    .brandColor {
+        color: #d7181f;
+    }
     

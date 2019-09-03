@@ -96,13 +96,32 @@ export class UserProfileComponent implements OnInit {
   public multipleUsers: PeoplePickerUser[];
   spuser: PeoplePickerUser;
   spusers: PeoplePickerUser[];
+  /**
+   * PrincipalSource: What sources you wish to search.
+   * Choices are
+   * 1. All - 15
+   * 2. Membership Provider - 4
+   * 3. RoleProvider - 8
+   * 4. UserInfoList - 1
+   * 5. Windows - 2.
+   * These values can be combined.
+   *
+   * PrincipalType: Controls the type of entities that are returned in the results.
+   * Choices are
+   * 1. All - 15
+   * 2. Distribution List - 2
+   * 3. Security Groups - 4
+   * 4. SharePoint Groups – 8
+   * 5. User – 1. These values can be combined.
+   * For more details - http://sharepointfieldnotes.blogspot.com/2014/06/sharepoint-2013-clientpeoplepicker.html
+   */
   peoplePickerQuery: PeoplePickerQuery = {
     queryParams: {
       QueryString: '',
       MaximumEntitySuggestions: 10,
       AllowEmailAddresses: true,
       AllowOnlyEmailAddresses: false,
-      PrincipalSource: 2,
+      PrincipalSource: 15,
       PrincipalType: 1,
       SharePointGroupID: 0
     }
@@ -382,7 +401,7 @@ export class UserProfileComponent implements OnInit {
         MaximumEntitySuggestions: 10,
         AllowEmailAddresses: true,
         AllowOnlyEmailAddresses: false,
-        PrincipalSource: 2,
+        PrincipalSource: 15,
         PrincipalType: 1,
         SharePointGroupID: 0
       }

@@ -1,11 +1,12 @@
 <div class="tableLoader" [hidden]='adminObject.isMainLoaderHidden'>
-    <div id="mainLoader"></div>
-    <div id="mainLoaderText">Loading...</div>
+  <div id="mainLoader"></div>
+  <div id="mainLoaderText">Loading...</div>
 </div>
 <p-tabMenu [model]="navLinks">
   <ng-template pTemplate="link" let-link let-i="index">
-      {{link.label}}
+    {{link.label}}
   </ng-template>
 </p-tabMenu>
 <router-outlet></router-outlet>
+<p-confirmDialog [style]="{width: '50vw'}" key="confirm"></p-confirmDialog>
 <p-toast position="bottom-right" key="adminCustom"></p-toast>
