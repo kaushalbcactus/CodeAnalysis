@@ -45,11 +45,6 @@
   </ng-template>
 </p-table>
 
-<!-- <div style="text-align: center;">
-  <h4>Add Deliverable Type</h4>
-  <input type="text" pInputText/>
-  <p-button label="Add"></p-button>
-</div> -->
 
 <div>
   <div class="p-grid addNew">
@@ -58,7 +53,7 @@
       </div>
       <div class="p-col">
           <input type="text" [(ngModel)]="deliverableTypes" pInputText/>
-          <p-button label="Add" (click)="addDeliverableData(deliverableTypes)"></p-button>
+          <p-button label="Add" type="button" (click)="addDeliverableData(deliverableTypes)"></p-button>
       </div>
   </div>
 </div>
