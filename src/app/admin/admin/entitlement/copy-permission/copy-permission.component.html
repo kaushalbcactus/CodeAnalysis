@@ -64,23 +64,8 @@
       </ng-template>
     </p-table>
   </div>
-  <div class="ui-g-4" *ngIf="viewArray.finalResultArray.length">
-    <p-table [value]="viewArray.finalResultArray" [paginator]="true" [rows]="7">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Results Groups</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" style="overflow: auto" let-rowData let-rowIndex="rowIndex">
-        <p-card>
-          <tr>
-            <td>{{ rowIndex+1 }}.</td>
-            <td class="brandColor">
-              {{rowData}}
-            </td>
-          </tr>
-        </p-card>
-      </ng-template>
-    </p-table>
+
+  <div class="userRole savebtn">
+    <p-button type="button" label="Save" (onClick)="save()"></p-button>
   </div>
 </div>

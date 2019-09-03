@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-add-user-to-projects',
@@ -6,27 +7,41 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./add-user-to-projects.component.css']
 })
 export class AddUserToProjectsComponent implements OnInit {
+  clients: any;
+  cols;
   isTypeDisabled: any = [];
   users = [{ label: 'User 1', value: 'User 1' },
   { label: 'User 2', value: 'User 2' },
   { label: 'User 3', value: 'User 3' },
   { label: 'User 4', value: 'User 4' },
   { label: 'User 5', value: 'User 5' }];
-
-  clients: any;
-
   accessType = [{ label: 'Accountable', type: 'Accountable' },
   { label: 'Access', type: 'Access' }];
 
+  selectedType = { label: 'Access', type: 'Access' };
   projectList: any;
-
-  index = [];
-  selectedRowData = [];
-  selectedUsers: any;
+  projectTable = true;
+  selectedUser: any;
   selectedClient: any;
-  constructor() { }
+  selectedProject: any;
+  selectedRowItems: any;
+  constructor(private messageService: MessageService) { }
 
   ngOnInit() {
+    this.cols = [
+      { field: 'project', header: 'Project' },
+      // { field: 'color', header: '' }
+    ];
+    this.projectList = [{ project: 'Project 1', type: { label: 'Accountable', type: 'Accountable' }, },
+    { project: 'Project 2', type: this.selectedType },
+    { project: 'Project 3', type: { label: 'Access', type: 'Access' }, },
+    { project: 'Project 4', type: { label: 'Accountable', type: 'Accountable' }, },
+    { project: 'Project 5', type: this.selectedType, },
+    { project: 'Project 6', type: this.selectedType, },
+    { project: 'Project 7', type: this.selectedType, },
+    { project: 'Project 8', type: { label: 'Access', type: 'Access' }, },
+    { project: 'Project 9', type: this.selectedType },
+    { project: 'Project 10', type: { label: 'Accountable', type: 'Accountable' }, }];
   }
 
   userChange() {
@@ -41,43 +56,56 @@ export class AddUserToProjectsComponent implements OnInit {
     console.log(val);
   }
 
-  projectCheck(i, rowData) {
-    if (rowData.status) {
-      if (rowData.type.type === 'Access') {
-        this.isTypeDisabled[i] = false;
-      }
-      this.index.push(i);
-      this.selectedRowData.push(rowData);
-    } else {
-      // this.isTypeDisabled[i] = true;
-      const index = this.index.findIndex(x => x === i);
-      this.index.splice(index, 1);
-      const index1 = this.selectedRowData.findIndex(x => x === rowData);
-      this.selectedRowData.splice(index1, 1);
+  projectCheck(event) {
+    console.log(event);
+    console.log(this.selectedProject);
+  }
+
+  uncheck(event) {
+    console.log(event);
+    event.data.type = '';
+  }
+
+  headerCheck(event) {
+    console.log(event);
+    if (this.selectedProject.length === 0) {
+      this.selectedProject = this.selectedRowItems;
     }
   }
 
-  clientChange() {
-    this.projectList = [{ project: 'Project 1', type: { label: 'Accountable', type: 'Accountable' }, status: true },
-    { project: 'Project 2', type: { label: 'Accountable', type: 'Accountable' }, status: true },
-    { project: 'Project 3', type: { label: 'Access', type: 'Access' }, status: true },
-    { project: 'Project 4', type: { label: 'Access', type: 'Access' }, status: false },
-    { project: 'Project 5', type: { label: 'Accountable', type: 'Accountable' }, status: false }];
+  getData() {
+    this.selectedProject = [{ project: 'Project 1', type: { label: 'Accountable', type: 'Accountable' }, },
+    { project: 'Project 3', type: { label: 'Access', type: 'Access' }, },
+    { project: 'Project 4', type: { label: 'Accountable', type: 'Accountable' }, },
+    { project: 'Project 8', type: { label: 'Access', type: 'Access' }, },
+    { project: 'Project 10', type: { label: 'Accountable', type: 'Accountable' }, }];
 
+    this.selectedRowItems = this.selectedProject;
+  }
+
+  clientChange() {
+    this.getData();
     this.projectList.forEach((e, i) => {
-      if (e.status) {
-        if (e.type.type === 'Accountable') {
-          this.isTypeDisabled[i] = true;
-        } else {
-          this.isTypeDisabled[i] = false;
-        }
-        this.selectedRowData.push(e);
+      // console.log(e, i);
+      if (e.type.type === 'Accountable') {
+        this.isTypeDisabled[i] = true;
+      } else {
+        this.isTypeDisabled[i] = false;
       }
     });
+    this.projectTable = false;
   }
 
   save() {
-    console.log(this.selectedRowData);
+    this.selectedProject.forEach((e) => {
+      if (e.type === '') {
+        this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'please select value' });
+      } else {
+      }
+    });
+    console.log(this.selectedUser);
+    console.log(this.selectedClient);
+    console.log(this.selectedProject);
   }
 
 }

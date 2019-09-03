@@ -63,17 +63,21 @@ export class ClientMasterdataComponent implements OnInit {
 
   };
   addClient: FormGroup;
-  editClient: FormGroup;
+  // editClient: FormGroup;
+
   // tslint:disable-next-line: variable-name
   subdivision_form: FormGroup;
   // tslint:disable-next-line: variable-name
-  editSubdivision_form: FormGroup;
+
+  // editSubdivision_form: FormGroup;
+
   // tslint:disable-next-line: variable-name
   poc_form: FormGroup;
   // tslint:disable-next-line: variable-name
-  editPoc_form: FormGroup;
+
+  // editPoc_form: FormGroup;
   PoForm: FormGroup;
-  editPoForm: FormGroup;
+  // editPoForm: FormGroup;
   addBudgetForm: FormGroup;
 
   clientMasterDataColArray = {
@@ -138,42 +142,42 @@ export class ClientMasterdataComponent implements OnInit {
       notes: ['', Validators.required],
       bucket: ['', Validators.required]
     });
-    this.editClient = frmbuilder.group({
-      name: ['', Validators.required],
-      acronym: ['', Validators.required],
-      group: ['', Validators.required],
-      distributionList: ['', Validators.required],
-      invoiceName: ['', Validators.required],
-      realization: ['', Validators.required],
-      market: ['', Validators.required],
-      billingEntry: ['', Validators.required],
-      poRequired: ['', Validators.required],
-      timeZone: ['', Validators.required],
-      cmLevel1: ['', Validators.required],
-      cmLevel2: ['', Validators.required],
-      deliveryLevel1: ['', Validators.required],
-      deliveryLevel2: ['', Validators.required],
-      currency: ['', Validators.required],
-      APEmail: ['', Validators.required],
-      address1: [''],
-      address2: [''],
-      address3: [''],
-      address4: [''],
-      notes: ['', Validators.required],
-      bucket: ['', Validators.required]
-    });
+    // this.editClient = frmbuilder.group({
+    //   name: ['', Validators.required],
+    //   acronym: ['', Validators.required],
+    //   group: ['', Validators.required],
+    //   distributionList: ['', Validators.required],
+    //   invoiceName: ['', Validators.required],
+    //   realization: ['', Validators.required],
+    //   market: ['', Validators.required],
+    //   billingEntry: ['', Validators.required],
+    //   poRequired: ['', Validators.required],
+    //   timeZone: ['', Validators.required],
+    //   cmLevel1: ['', Validators.required],
+    //   cmLevel2: ['', Validators.required],
+    //   deliveryLevel1: ['', Validators.required],
+    //   deliveryLevel2: ['', Validators.required],
+    //   currency: ['', Validators.required],
+    //   APEmail: ['', Validators.required],
+    //   address1: [''],
+    //   address2: [''],
+    //   address3: [''],
+    //   address4: [''],
+    //   notes: ['', Validators.required],
+    //   bucket: ['', Validators.required]
+    // });
     this.subdivision_form = frmbuilder.group({
       subDivision_Name: ['', Validators.required],
       distributionList: ['', Validators.required],
       cmLevel1: ['', Validators.required],
       deliveryLevel1: ['', Validators.required],
     });
-    this.editSubdivision_form = frmbuilder.group({
-      subDivision_Name: ['', Validators.required],
-      distributionList: ['', Validators.required],
-      cmLevel1: ['', Validators.required],
-      deliveryLevel1: ['', Validators.required],
-    });
+    // this.editSubdivision_form = frmbuilder.group({
+    //   subDivision_Name: ['', Validators.required],
+    //   distributionList: ['', Validators.required],
+    //   cmLevel1: ['', Validators.required],
+    //   deliveryLevel1: ['', Validators.required],
+    // });
     this.poc_form = frmbuilder.group({
       fname: ['', Validators.required],
       lname: ['', Validators.required],
@@ -192,37 +196,37 @@ export class ClientMasterdataComponent implements OnInit {
       comments: ['', Validators.required],
       contactsType: ['', Validators.required],
     });
-    this.editPoc_form = frmbuilder.group({
-      fname: ['', Validators.required],
-      lname: ['', Validators.required],
-      designation: ['', Validators.required],
-      email: ['', Validators.required],
-      phone: ['', Validators.required],
-      address1: ['', Validators.required],
-      address2: [''],
-      address3: [''],
-      address4: [''],
-      department: ['', Validators.required],
-      referralSource: ['', Validators.required],
-      status: ['', Validators.required],
-      relationshipStrength: ['', Validators.required],
-      engagementPlan: ['', Validators.required],
-      comments: ['', Validators.required],
-      contactsType: ['', Validators.required],
-    });
+    // this.editPoc_form = frmbuilder.group({
+    //   fname: ['', Validators.required],
+    //   lname: ['', Validators.required],
+    //   designation: ['', Validators.required],
+    //   email: ['', Validators.required],
+    //   phone: ['', Validators.required],
+    //   address1: ['', Validators.required],
+    //   address2: [''],
+    //   address3: [''],
+    //   address4: [''],
+    //   department: ['', Validators.required],
+    //   referralSource: ['', Validators.required],
+    //   status: ['', Validators.required],
+    //   relationshipStrength: ['', Validators.required],
+    //   engagementPlan: ['', Validators.required],
+    //   comments: ['', Validators.required],
+    //   contactsType: ['', Validators.required],
+    // });
     this.initAddPOForm();
-    this.editPoForm = frmbuilder.group({
-      poNumber: [{ value: '', disabled: true }, Validators.required],
-      poName: ['', Validators.required],
-      currency: [{ value: '', disabled: true }, Validators.required],
-      poExpiryDate: ['', Validators.required],
-      poc: ['', Validators.required],
-      poFile: ['', Validators.required],
-      ta: ['', Validators.required],
-      molecule: ['', Validators.required],
-      cmLevel2: ['', Validators.required],
-      poBuyingEntity: ['', Validators.required]
-    });
+    // this.editPoForm = frmbuilder.group({
+    //   poNumber: [{ value: '', disabled: true }, Validators.required],
+    //   poName: ['', Validators.required],
+    //   currency: [{ value: '', disabled: true }, Validators.required],
+    //   poExpiryDate: ['', Validators.required],
+    //   poc: ['', Validators.required],
+    //   poFile: ['', Validators.required],
+    //   ta: ['', Validators.required],
+    //   molecule: ['', Validators.required],
+    //   cmLevel2: ['', Validators.required],
+    //   poBuyingEntity: ['', Validators.required]
+    // });
     this.initAddBudgetForm();
   }
 
@@ -615,12 +619,12 @@ export class ClientMasterdataComponent implements OnInit {
   showEditSubDivision(data) {
     this.showeditSubDivision = true;
     this.cmObject.isEditSubDivisionFormSubmit = false;
-    this.editSubdivision_form.patchValue({
-        subDivision_Name: 'Test',
-        distributionList: 'Test',
-        cmLevel1: ['option1', 'option2'],
-        deliveryLevel1: ['option1'],
-    });
+    // this.editSubdivision_form.patchValue({
+    //     subDivision_Name: 'Test',
+    //     distributionList: 'Test',
+    //     cmLevel1: ['option1', 'option2'],
+    //     deliveryLevel1: ['option1'],
+    // });
   }
 
   showAddPOC() {
@@ -631,24 +635,24 @@ export class ClientMasterdataComponent implements OnInit {
   showEditPOC(data) {
     this.showeditPOC = true;
     this.cmObject.isEditPOCFormSubmit = false;
-    this.editPoc_form.patchValue({
-      fname: 'Test',
-      lname: 'Test',
-      designation: 'Test',
-      email: 'Test',
-      phone: 'Test',
-      address1: 'Test',
-      address2: 'Test',
-      address3: 'Test',
-      address4: 'Test',
-      department: 'Test',
-      referralSource: 'option1',
-      status: 'option1',
-      relationshipStrength: 'Test',
-      engagementPlan: 'Test',
-      comments: 'Test',
-      contactsType: 'option2',
-  });
+  //   this.editPoc_form.patchValue({
+  //     fname: 'Test',
+  //     lname: 'Test',
+  //     designation: 'Test',
+  //     email: 'Test',
+  //     phone: 'Test',
+  //     address1: 'Test',
+  //     address2: 'Test',
+  //     address3: 'Test',
+  //     address4: 'Test',
+  //     department: 'Test',
+  //     referralSource: 'option1',
+  //     status: 'option1',
+  //     relationshipStrength: 'Test',
+  //     engagementPlan: 'Test',
+  //     comments: 'Test',
+  //     contactsType: 'option2',
+  // });
   }
 
   showAddPO() {
@@ -660,18 +664,18 @@ export class ClientMasterdataComponent implements OnInit {
   showEditPOModal() {
     this.showeditPO = true;
     this.cmObject.isEditPOFormSubmit = false;
-    this.editPoForm.patchValue({
-      poNumber: 'Test',
-      poName: 'Test',
-      currency: 'option2',
-      poExpiryDate: new Date(),
-      poc: 'option2',
-      // poFile: 'Bucket Master Data.csv',
-      ta: 'option2',
-      molecule: 'option2',
-      cmLevel2: 'option2',
-      poBuyingEntity: 'option2'
-  });
+  //   this.editPoForm.patchValue({
+  //     poNumber: 'Test',
+  //     poName: 'Test',
+  //     currency: 'option2',
+  //     poExpiryDate: new Date(),
+  //     poc: 'option2',
+  //     // poFile: 'Bucket Master Data.csv',
+  //     ta: 'option2',
+  //     molecule: 'option2',
+  //     cmLevel2: 'option2',
+  //     poBuyingEntity: 'option2'
+  // });
   }
 
   showaddBudgetModal(data) {
@@ -679,17 +683,6 @@ export class ClientMasterdataComponent implements OnInit {
     this.initAddBudgetForm();
     this.showaddBudget = true;
     this.cmObject.isBudgetFormSubmit = false;
-  }
-
-  validateAllFormFields(formGroup: FormGroup) {
-    Object.keys(formGroup.controls).forEach(field => {
-      const control = formGroup.get(field);
-      if (control instanceof FormControl) {
-        control.markAsTouched({ onlySelf: false });
-      } else if (control instanceof FormGroup) {
-        this.validateAllFormFields(control);
-      }
-    });
   }
 
   downloadExcel(cmd) {

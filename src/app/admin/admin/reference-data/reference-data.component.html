@@ -63,7 +63,7 @@
 </p-table>
 
 <div style="text-align: center;margin-top:10px;">
-  <p-button icon="pi pi-plus-circle" label="Add New Vendor" (click)="showAddVendor()"></p-button>
+  <p-button icon="pi pi-plus-circle" type="button" label="Add New Vendor" (click)="showAddVendor()"></p-button>
 </div>
 
 <!-- <div style="margin-top: 10px;">
@@ -238,7 +238,7 @@
 </p-table>
 
 <div style="text-align: center;margin-top:10px;">
-  <p-button icon="pi pi-plus-circle" label="Add New QmsTemplate" (click)="showAddQmsTemplate()"></p-button>
+  <p-button icon="pi pi-plus-circle" type="button" label="Add New QmsTemplate" (click)="showAddQmsTemplate()"></p-button>
 </div>
 
 <!-- <div style="margin-top: 10px;">
@@ -412,7 +412,7 @@
 </p-table>
 
 <div style="text-align: center;margin-top:10px;">
-  <p-button icon="pi pi-plus-circle" label="Add New Standard Template" (click)="showAddStandardTemplate()"></p-button>
+  <p-button type="button" icon="pi pi-plus-circle" label="Add New Standard Template" (click)="showAddStandardTemplate()"></p-button>
 </div>
 
 <!-- <div style="margin-top: 10px;">
@@ -641,7 +641,7 @@
       </div>
       <div class="p-col-12 p-md-6 p-lg-3">
           <div class="box">
-              <p-dropdown resetFilterOnHide="true" [options]="recordTypes" virtualScroll="true" itemSize="30" [showClear]="false" placeholder="Select a type" [style]="{'width':'100%'}" formControlName="RecordType" optionLabel="label">
+              <p-dropdown resetFilterOnHide="true" [options]="recordTypes" virtualScroll="true" itemSize="30" [showClear]="false" placeholder="Select a type" [style]="{'width':'100%'}" formControlName="RecordType">
               </p-dropdown>
               <div class="error" *ngIf="referenceDataObject.isVendorFormSubmit && addVendor.controls.RecordType.errors">
                   <div *ngIf="addVendor.controls.RecordType.errors.required">
@@ -757,7 +757,7 @@
     </div>
   </form>
   <p-footer>
-    <p-button label="Submit" type="button" (click)="saveVendor(addVendor)"></p-button>
+    <button pButton label="Submit" type="button" (click)="saveVendor(addVendor)"></button>
   </p-footer>
 </p-dialog>
 
@@ -884,7 +884,7 @@
     </div>
   </form>
   <p-footer>
-    <p-button label="Submit" type="button" (click)="saveQmsTemplate(addQmsTemplate)"></p-button>
+    <button pButton label="Submit" type="button" (click)="saveQmsTemplate(addQmsTemplate)"></button>
   </p-footer>
 </p-dialog>
 
@@ -915,6 +915,6 @@
     </div>
   </form>
   <p-footer>
-    <p-button label="Submit" type="button" (click)="saveStandardTemplate(addStandardTemplate)"></p-button>
+    <button pButton type="button" label="Submit" type="button" (click)="saveStandardTemplate(addStandardTemplate)"></button>
   </p-footer>
 </p-dialog>
