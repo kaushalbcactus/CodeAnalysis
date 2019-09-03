@@ -57,12 +57,6 @@
   </ng-template>
 </p-table>
 
-<!-- <div style="text-align: center;">
-  <h4>Add Therapeutic Area</h4>
-  <input type="text" pInputText/>
-  <p-button label="Add"></p-button>
-</div> -->
-
 <div>
   <div class="p-grid addNew">
       <div class="p-col-4">
@@ -70,7 +64,7 @@
       </div>
       <div class="p-col">
           <input type="text" [(ngModel)]="therapeuticArea" pInputText/>
-          <p-button label="Add" (click)="addTherapeuticArea(therapeuticArea)"></p-button>
+          <p-button label="Add" type="button" (click)="addTherapeuticArea(therapeuticArea)"></p-button>
       </div>
   </div>
 </div>

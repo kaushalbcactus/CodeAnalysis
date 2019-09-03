@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChange } from '@angular/core';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-add-user-to-sow',
@@ -18,16 +19,39 @@ export class AddUserToSowComponent implements OnInit {
   accessType = [{ label: 'Accountable', type: 'Accountable' },
   { label: 'Access', type: 'Access' }];
 
+  sowTable = true;
   sowList: any;
-
-  index = [];
-  selectedRowData = [];
+  cols: any;
   selectedSow: any = [];
   selectedUser: any;
   selectedClient: any;
-  constructor() { }
+  selectedRowItems: any;
+  selectedType = { label: 'Access', type: 'Access' };
+  constructor(private messageService: MessageService) { }
 
   ngOnInit() {
+    this.cols = [
+      { field: 'sow', header: 'SOW' },
+      // { field: 'color', header: '' }
+    ];
+    this.sowList = [{ sow: 'Sow 1', type: { label: 'Accountable', type: 'Accountable' } },
+    { sow: 'Sow 2', type: { label: 'Accountable', type: 'Accountable' } },
+    { sow: 'Sow 3', type: this.selectedType },
+    { sow: 'Sow 4', type: this.selectedType },
+    { sow: 'Sow 5', type: { label: 'Access', type: 'Access' } },
+    { sow: 'Sow 6', type: this.selectedType },
+    { sow: 'Sow 7', type: this.selectedType },
+    { sow: 'Sow 8', type: { label: 'Accountable', type: 'Accountable' } },
+    { sow: 'Sow 9', type: { label: 'Access', type: 'Access' } },
+    { sow: 'Sow 10', type: this.selectedType },
+    { sow: 'Sow 11', type: this.selectedType },
+    { sow: 'Sow 12', type: { label: 'Accountable', type: 'Accountable' } },
+    { sow: 'Sow 13', type: this.selectedType },
+    { sow: 'Sow 14', type: this.selectedType }];
+  }
+
+  ngOnChagnes(changes: SimpleChange) {
+    console.log(changes);
   }
 
   userChange() {
@@ -42,45 +66,58 @@ export class AddUserToSowComponent implements OnInit {
     console.log(value);
   }
 
-  sowCheck(i, rowData) {
-    if (rowData.status) {
-      if (rowData.type.type === 'Access') {
-        this.isTypeDisabled[i] = false;
-      }
-      this.index.push(i);
-      this.selectedRowData.push(rowData);
-    } else {
-      const index = this.index.findIndex(x => x === i);
-      this.index.splice(index, 1);
-      const index1 = this.selectedRowData.findIndex(x => x === rowData);
-      this.selectedRowData.splice(index1, 1);
+  sowCheck(event) {
+    console.log(event);
+    console.log(this.selectedSow);
+  }
+
+  uncheck(event) {
+    console.log(event);
+    // event.data.type = '';
+  }
+
+  headerCheck(event) {
+    console.log(event);
+    if (this.selectedSow.length === 0) {
+      this.selectedSow = this.selectedRowItems;
     }
   }
 
+  getData() {
+    this.selectedSow = [
+      { sow: 'Sow 1', type: { label: 'Accountable', type: 'Accountable' } },
+      { sow: 'Sow 2', type: { label: 'Accountable', type: 'Accountable' } },
+      { sow: 'Sow 5', type: { label: 'Access', type: 'Access' } },
+      { sow: 'Sow 8', type: { label: 'Accountable', type: 'Accountable' } },
+      { sow: 'Sow 9', type: { label: 'Access', type: 'Access' } },
+      { sow: 'Sow 12', type: { label: 'Accountable', type: 'Accountable' } },
+    ];
+    this.selectedRowItems = this.selectedSow;
+  }
+
   clientChange() {
-    this.sowList = [{ sow: 'Sow 1', type: { label: 'Accountable', type: 'Accountable' }, status: true },
-    { sow: 'Sow 2', type: { label: 'Accountable', type: 'Accountable' }, status: true },
-    { sow: 'Sow 3', type: { label: 'Access', type: 'Access' }, status: false },
-    { sow: 'Sow 4', type: { label: 'Access', type: 'Access' }, status: true },
-    { sow: 'Sow 5', type: { label: 'Accountable', type: 'Accountable' }, status: false }];
-
-
+    this.getData();
     this.sowList.forEach((e, i) => {
-      if (e.status) {
-        if (e.type.type === 'Accountable') {
-          this.isTypeDisabled[i] = true;
-        } else {
-          this.isTypeDisabled[i] = false;
-        }
-        this.selectedRowData.push(e);
+      // console.log(e, i);
+      if (e.type.type === 'Accountable') {
+        this.isTypeDisabled[i] = true;
+      } else {
+        this.isTypeDisabled[i] = false;
       }
     });
+    this.sowTable = false;
   }
 
   save() {
+    // this.selectedSow.forEach((e) => {
+    //   if (e.type === '') {
+    //     this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'please select value' });
+    //   } else {
+    //   }
+    // });
     console.log(this.selectedUser);
     console.log(this.selectedClient);
-    console.log(this.selectedRowData);
+    console.log(this.selectedSow);
   }
 
 }
