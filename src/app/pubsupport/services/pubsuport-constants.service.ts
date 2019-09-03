@@ -36,7 +36,7 @@ export class PubsuportConstantsService {
             top: 4500
         },
         journalConf: {
-            select: "ID, Title, Name, IF, RejectionRate, ExpectedReviewPeriod, JournalEditorInfo, IsSelected, Status, UserName, Password, PublicationDate, PublicationURL, PublicationTitle, Citation, PDFAvailable, JournalRequirementURL, EntryType, AbstractSubmissionDeadline, CongressDate, Milestone, JournalRequirementDate, Created, Comments, JournalRequirementResponse",
+            select: "ID, Title, Name, IF, RejectionRate, ExpectedReviewPeriod, JournalEditorInfo, IsSelected, Status, UserName, Password, PublicationDate, PublicationURL, PublicationTitle, Citation, PDFAvailable, JournalRequirementURL, EntryType, AbstractSubmissionDeadline, CongressDate, Milestone, JournalRequirementDate, Created, Comments, JournalRequirementResponse, JournalConferenceId",
             filter: "Title eq '{{ProjectCode}}' and Status ne 'Cancelled' ",
             top: 4500,
             orderby: "Created desc"

@@ -63,6 +63,11 @@ export class PubsupportComponent implements OnInit {
         // this.journal_Conf_form
     }
 
+    get isValidEditJCDetailsForm() {
+        return this.journal_Conference_Edit_Detail_form.controls;
+        // this.journal_Conf_form
+    }
+
     // convenience getter for easy access to form fields
     get isValidConferenceForm() {
         return this.journal_Conf_form.controls;
@@ -116,6 +121,7 @@ export class PubsupportComponent implements OnInit {
     update_publication_form: FormGroup;
     galley_form: FormGroup;
     journal_Conference_Detail_form: FormGroup;
+    journal_Conference_Edit_Detail_form: FormGroup;
     update_Journal_Requirement_form: FormGroup;
     // tslint:enable
     submitted = false;
@@ -233,6 +239,7 @@ export class PubsupportComponent implements OnInit {
 
     documentTypes: any = [];
     addJCDetailsModal: boolean = false;
+    editJCDetailsModal: boolean = false;
     updateJCRequirementModal: boolean = false;
 
     milestoneListArray: any = [];
@@ -478,6 +485,7 @@ export class PubsupportComponent implements OnInit {
             }
             case 'selected': {
                 this.items = [
+                    { label: 'Edit Journal conference', command: e => this.openMenuContent(e, data) },
                     { label: 'Add Authors', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Author forms & emails', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Journal Requirement', command: e => this.openMenuContent(e, data) },
@@ -487,6 +495,7 @@ export class PubsupportComponent implements OnInit {
             }
             case 'resubmit to same journal': {
                 this.items = [
+                    { label: 'Edit Journal conference', command: e => this.openMenuContent(e, data) },
                     { label: 'Add Authors', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Author forms & emails', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Journal Requirement', command: e => this.openMenuContent(e, data) }
@@ -495,6 +504,7 @@ export class PubsupportComponent implements OnInit {
             }
             case 'submitted': {
                 this.items = [
+                    { label: 'Edit Journal conference', command: e => this.openMenuContent(e, data) },
                     { label: 'Add Authors', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Author forms & emails', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Decision details', command: e => this.openMenuContent(e, data) },
@@ -541,7 +551,34 @@ export class PubsupportComponent implements OnInit {
         }
     }
 
-    openMenuContent(index, data) {
+    setJCDetails(data) {
+        const form = this.journal_Conference_Edit_Detail_form;
+        const journalConfItem = this.jcListArray.find(j => j.ID === data.element.JournalConferenceId);
+        if (data.element) {
+            form.get('Name').setValue(data.element.Name);
+            form.get('EntryType').setValue(data.element.EntryType);
+            form.get('Milestone').setValue(data.element.Milestone);
+            form.get('UserName').setValue(data.element.UserName);
+            form.get('Password').setValue(data.element.Password);
+            form.get('Comments').setValue(data.element.Comments);
+            if (data.element.EntryType === 'journal') {
+                // Set New Values
+                form.get('jcLineItemName').setValue(journalConfItem.JournalName);
+                form.get('ExpectedReviewPeriod').setValue(data.element.ExpectedReviewPeriod);
+                form.get('IF').setValue(data.element.IF);
+                form.get('RejectionRate').setValue(data.element.RejectionRate);
+                form.get('JournalEditorInfo').setValue(data.element.JournalEditorInfo);
+            } else {
+                form.get('jcLineItemName').setValue(journalConfItem.ConferenceName);
+                form.get('CongressDate').setValue(this.datePipe.transform(new Date(data.element.CongressDate), 'MMM dd, yyyy'));
+                form.get('AbstractSubmissionDeadline').setValue(this.datePipe.transform(new Date(data.element.AbstractSubmissionDeadline), 'MMM dd, yyyy'));
+                form.get('Comments').setValue(data.element.Comments);
+            }
+            this.journal_Conference_Edit_Detail_form.updateValueAndValidity();
+        }
+    }
+
+    async openMenuContent(index, data) {
         if (data.Milestones) {
             this.milestonesList = data.Milestones.split(';#');
         } else {
@@ -566,6 +603,14 @@ export class PubsupportComponent implements OnInit {
             this.addJCDetailsModal = true;
             this.formatMilestone(this.milestonesList);
             // console.log('this.pubSupportProjectInfoData ', this.pubSupportProjectInfoData);
+            return;
+        } else if (this.selectedModal === 'Edit Journal conference') {
+            await this.getJCDetails(data);
+            await this.getJCList(this.journal_Conf_data[0].element.EntryType);
+            this.addJCControls(this.journal_Conference_Edit_Detail_form, this.journal_Conf_data[0].element.EntryType)
+            this.setJCDetails(this.journal_Conf_data[0]);
+            this.editJCDetailsModal = true;
+            this.formatMilestone(this.milestonesList);
             return;
         } else if (this.selectedModal === 'Update Author forms & emails') {
             this.selectedType = '';
@@ -624,6 +669,15 @@ export class PubsupportComponent implements OnInit {
     }
 
     jcDetailsForm() {
+        this.journal_Conference_Edit_Detail_form = this.formBuilder.group({
+            EntryType: ['', Validators.required],
+            jcLineItemName: [''],
+            Milestone: ['', Validators.required],
+            Name: { value: '', disabled: true },
+            Comments: ['', [Validators.required]],
+            UserName: [''],
+            Password: ['']
+        });
         this.journal_Conference_Detail_form = this.formBuilder.group({
             EntryType: ['', Validators.required],
             jcLineItem: ['', Validators.required],
@@ -899,7 +953,6 @@ export class PubsupportComponent implements OnInit {
             this.jcListArray = res[0].retItems;
             console.log('this.jcListArray ', this.jcListArray);
         }
-
         if (type === 'journal') {
             this.jcListArray = this.sortJournalData(res[0].retItems);
         } else if (type === 'conference') {
@@ -936,72 +989,161 @@ export class PubsupportComponent implements OnInit {
         })
     }
 
-    onChangeSelectedJCItem(item: any, type: string) {
-        console.log('item ', item);
+    // onChangeSelectedJCItem(item: any, type: string) {
+    //     console.log('item ', item);
+    //     if (item.value) {
+    //         this.journal_Conference_Detail_form.addControl('UserName', new FormControl('', [Validators.required]));
+    //         this.journal_Conference_Detail_form.addControl('Password', new FormControl('', [Validators.required]));
+    //         if (type === 'journal') {
+    //             // tslint:disable-next-line: max-line-length
+    //             // this.journal_Conference_Detail_form.addControl('Name', new FormControl({ value: '', disabled: true }, Validators.required));
+    //             this.journal_Conference_Detail_form.addControl('ExpectedReviewPeriod', new FormControl([''], Validators.required));
+    //             this.journal_Conference_Detail_form.addControl('IF', new FormControl([''], Validators.required));
+    //             this.journal_Conference_Detail_form.addControl('RejectionRate', new FormControl([''], Validators.required));
+    //             this.journal_Conference_Detail_form.addControl('Comments', new FormControl([''], Validators.required));
+    //             this.journal_Conference_Detail_form.addControl('JournalEditorInfo', new FormControl([''], Validators.required));
+
+    //             // Set New Values
+    //             this.journal_Conference_Detail_form.get('Name').setValue(item.value.JournalName);
+    //             this.journal_Conference_Detail_form.get('ExpectedReviewPeriod').setValue(item.value.ExpectedReviewPeriod);
+    //             this.journal_Conference_Detail_form.get('IF').setValue(item.value.ImpactFactor);
+    //             this.journal_Conference_Detail_form.get('RejectionRate').setValue(item.value.RejectionRate);
+    //             this.journal_Conference_Detail_form.get('Comments').setValue(item.value.Comments);
+    //             this.journal_Conference_Detail_form.get('JournalEditorInfo').setValue(item.value.JournalEditorInfo);
+
+    //             // Remove Conference Form
+    //             this.journal_Conference_Detail_form.removeControl('CongressDate');
+    //             this.journal_Conference_Detail_form.removeControl('AbstractSubmissionDeadline');
+    //             // this.journal_Conference_Detail_form.removeControl('Name');
+    //         } else {
+    //             // tslint:disable-next-line: max-line-length
+    //             // this.journal_Conference_Detail_form.addControl('Name', new FormControl({ value: '', disabled: true }, Validators.required));
+    //             this.journal_Conference_Detail_form.addControl('CongressDate', new FormControl(new Date(), [Validators.required]));
+    //             this.journal_Conference_Detail_form.addControl('AbstractSubmissionDeadline', new FormControl(new Date(), [Validators.required]));
+    //             this.journal_Conference_Detail_form.addControl('Comments', new FormControl([''], Validators.required));
+
+    //             this.journal_Conference_Detail_form.get('Name').setValue(item.value.ConferenceName);
+    //             this.journal_Conference_Detail_form.get('CongressDate').setValue(this.datePipe.transform(new Date(item.value.ConferenceDate), 'MMM dd, yyyy'));
+    //             this.journal_Conference_Detail_form.get('AbstractSubmissionDeadline').setValue(this.datePipe.transform(new Date(item.value.SubmissionDeadline), 'MMM dd, yyyy'));
+    //             this.journal_Conference_Detail_form.get('Comments').setValue(item.value.Comments);
+
+    //             // // Remove Journal Form
+    //             this.journal_Conference_Detail_form.removeControl('ExpectedReviewPeriod');
+    //             this.journal_Conference_Detail_form.removeControl('IF');
+    //             this.journal_Conference_Detail_form.removeControl('RejectionRate');
+    //             this.journal_Conference_Detail_form.removeControl('JournalEditorInfo');
+    //         }
+    //         this.journal_Conference_Detail_form.updateValueAndValidity();
+    //         console.log(this.journal_Conference_Detail_form.controls);
+    //     }
+    // }
+
+    // onTypeSelected(type: string) {
+    //     if (type === 'journal') {
+    //         this.jcListArray = this.sortJournalData(res[0].retItems);
+    //     } else if (type === 'conference') {
+    //         this.jcListArray = this.sortConferenceData(res[0].retItems);
+    //     }
+    //     this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+    // }
+
+    // sortJournalData(array: any) {
+    //     return array.sort((a, b) => {
+    //         if (a.JournalName && a.JournalName !== null && b.JournalName && b.JournalName !== null) {
+    //             if (a.JournalName.toLowerCase() < b.JournalName.toLowerCase()) {
+    //                 return -1;
+    //             }
+    //             if (a.JournalName.toLowerCase() > b.JournalName.toLowerCase()) {
+    //                 return 1;
+    //             }
+    //         }
+    //         return 0;
+    //     })
+    // }
+
+    // sortConferenceData(array: any) {
+    //     return array.sort((a, b) => {
+    //         if (a.ConferenceName && a.ConferenceName !== null && b.ConferenceName && b.ConferenceName !== null) {
+    //             if (a.ConferenceName.toLowerCase() < b.ConferenceName.toLowerCase()) {
+    //                 return -1;
+    //             }
+    //             if (a.ConferenceName.toLowerCase() > b.ConferenceName.toLowerCase()) {
+    //                 return 1;
+    //             }
+    //         }
+    //         return 0;
+    //     })
+    // }
+
+    addJCControls(form: any, type: string) {
+        form.addControl('UserName', new FormControl('', [Validators.required]));
+        form.addControl('Password', new FormControl('', [Validators.required]));
+        if (type === 'journal') {
+            // tslint:disable-next-line: max-line-length
+            form.addControl('ExpectedReviewPeriod', new FormControl([''], Validators.required));
+            form.addControl('IF', new FormControl([''], Validators.required));
+            form.addControl('RejectionRate', new FormControl([''], Validators.required));
+            form.addControl('Comments', new FormControl([''], Validators.required));
+            form.addControl('JournalEditorInfo', new FormControl([''], Validators.required));
+            // Remove Conference Form
+            form.removeControl('CongressDate');
+            form.removeControl('AbstractSubmissionDeadline');
+        } else {
+            // tslint:disable-next-line: max-line-length
+            form.addControl('CongressDate', new FormControl(new Date(), [Validators.required]));
+            form.addControl('AbstractSubmissionDeadline', new FormControl(new Date(), [Validators.required]));
+            form.addControl('Comments', new FormControl([''], Validators.required));
+            // Remove Journal Form
+            form.removeControl('ExpectedReviewPeriod');
+            form.removeControl('IF');
+            form.removeControl('RejectionRate');
+            form.removeControl('JournalEditorInfo');
+        }
+        form.updateValueAndValidity();
+    }
+
+    setJCValue(form: any, item: any, type: string) {
         if (item.value) {
-            this.journal_Conference_Detail_form.addControl('UserName', new FormControl('', [Validators.required]));
-            this.journal_Conference_Detail_form.addControl('Password', new FormControl('', [Validators.required]));
             if (type === 'journal') {
-                // tslint:disable-next-line: max-line-length
-                // this.journal_Conference_Detail_form.addControl('Name', new FormControl({ value: '', disabled: true }, Validators.required));
-                this.journal_Conference_Detail_form.addControl('ExpectedReviewPeriod', new FormControl([''], Validators.required));
-                this.journal_Conference_Detail_form.addControl('IF', new FormControl([''], Validators.required));
-                this.journal_Conference_Detail_form.addControl('RejectionRate', new FormControl([''], Validators.required));
-                this.journal_Conference_Detail_form.addControl('Comments', new FormControl([''], Validators.required));
-                this.journal_Conference_Detail_form.addControl('JournalEditorInfo', new FormControl([''], Validators.required));
-
                 // Set New Values
-                this.journal_Conference_Detail_form.get('Name').setValue(item.value.JournalName);
-                this.journal_Conference_Detail_form.get('ExpectedReviewPeriod').setValue(item.value.ExpectedReviewPeriod);
-                this.journal_Conference_Detail_form.get('IF').setValue(item.value.ImpactFactor);
-                this.journal_Conference_Detail_form.get('RejectionRate').setValue(item.value.RejectionRate);
-                this.journal_Conference_Detail_form.get('Comments').setValue(item.value.Comments);
-                this.journal_Conference_Detail_form.get('JournalEditorInfo').setValue(item.value.JournalEditorInfo);
-
-                // Remove Conference Form
-                this.journal_Conference_Detail_form.removeControl('CongressDate');
-                this.journal_Conference_Detail_form.removeControl('AbstractSubmissionDeadline');
-                // this.journal_Conference_Detail_form.removeControl('Name');
+                form.get('Name').setValue(item.value.JournalName);
+                form.get('ExpectedReviewPeriod').setValue(item.value.ExpectedReviewPeriod);
+                form.get('IF').setValue(item.value.ImpactFactor);
+                form.get('RejectionRate').setValue(item.value.RejectionRate);
+                form.get('Comments').setValue(item.value.Comments);
+                form.get('JournalEditorInfo').setValue(item.value.JournalEditorInfo);
             } else {
-                // tslint:disable-next-line: max-line-length
-                // this.journal_Conference_Detail_form.addControl('Name', new FormControl({ value: '', disabled: true }, Validators.required));
-                this.journal_Conference_Detail_form.addControl('CongressDate', new FormControl(new Date(), [Validators.required]));
-                this.journal_Conference_Detail_form.addControl('AbstractSubmissionDeadline', new FormControl(new Date(), [Validators.required]));
-                this.journal_Conference_Detail_form.addControl('Comments', new FormControl([''], Validators.required));
-
-                this.journal_Conference_Detail_form.get('Name').setValue(item.value.ConferenceName);
-                this.journal_Conference_Detail_form.get('CongressDate').setValue(this.datePipe.transform(new Date(item.value.ConferenceDate), 'MMM dd, yyyy'));
-                this.journal_Conference_Detail_form.get('AbstractSubmissionDeadline').setValue(this.datePipe.transform(new Date(item.value.SubmissionDeadline), 'MMM dd, yyyy'));
-                this.journal_Conference_Detail_form.get('Comments').setValue(item.value.Comments);
-
-                // // Remove Journal Form
-                this.journal_Conference_Detail_form.removeControl('ExpectedReviewPeriod');
-                this.journal_Conference_Detail_form.removeControl('IF');
-                this.journal_Conference_Detail_form.removeControl('RejectionRate');
-                this.journal_Conference_Detail_form.removeControl('JournalEditorInfo');
+                form.get('Name').setValue(item.value.ConferenceName);
+                form.get('CongressDate').setValue(this.datePipe.transform(new Date(item.value.ConferenceDate), 'MMM dd, yyyy'));
+                form.get('AbstractSubmissionDeadline').setValue(this.datePipe.transform(new Date(item.value.SubmissionDeadline), 'MMM dd, yyyy'));
+                form.get('Comments').setValue(item.value.Comments);
             }
             this.journal_Conference_Detail_form.updateValueAndValidity();
-            console.log(this.journal_Conference_Detail_form.controls);
         }
     }
 
-    onTypeSelected(type: string) {
-        if (type === 'journal') {
-            this.journal_Conf_form.addControl('IF', new FormControl('', Validators.required));
-            this.journal_Conf_form.addControl('RejectionRate', new FormControl('', Validators.required));
-            this.journal_Conf_form.addControl('ExpectedReviewPeriod', new FormControl('', Validators.required));
-            this.journal_Conf_form.addControl('JournalEditorInfo', new FormControl('', Validators.required));
-            this.journal_Conf_form.removeControl('CongressDate');
-            this.journal_Conf_form.removeControl('AbstractSubmissionDeadline');
-        } else {
-            this.journal_Conf_form.addControl('CongressDate', new FormControl('', Validators.required));
-            this.journal_Conf_form.addControl('AbstractSubmissionDeadline', new FormControl('', Validators.required));
-            this.journal_Conf_form.removeControl('IF');
-            this.journal_Conf_form.removeControl('RejectionRate');
-            this.journal_Conf_form.removeControl('ExpectedReviewPeriod');
-            this.journal_Conf_form.removeControl('JournalEditorInfo');
-        }
+    onChangeSelectedJCItem(item: any, type: string) {
+        this.addJCControls(this.journal_Conference_Detail_form, type);
+        this.setJCValue(this.journal_Conference_Detail_form, item, type);
     }
+
+    // onTypeSelected(type: string) {
+    //     if (type === 'journal') {
+    //         this.journal_Conf_form.addControl('IF', new FormControl('', Validators.required));
+    //         this.journal_Conf_form.addControl('RejectionRate', new FormControl('', Validators.required));
+    //         this.journal_Conf_form.addControl('ExpectedReviewPeriod', new FormControl('', Validators.required));
+    //         this.journal_Conf_form.addControl('JournalEditorInfo', new FormControl('', Validators.required));
+    //         this.journal_Conf_form.removeControl('CongressDate');
+    //         this.journal_Conf_form.removeControl('AbstractSubmissionDeadline');
+    //     } else {
+    //         this.journal_Conf_form.addControl('CongressDate', new FormControl('', Validators.required));
+    //         this.journal_Conf_form.addControl('AbstractSubmissionDeadline', new FormControl('', Validators.required));
+    //         this.journal_Conf_form.removeControl('IF');
+    //         this.journal_Conf_form.removeControl('RejectionRate');
+    //         this.journal_Conf_form.removeControl('ExpectedReviewPeriod');
+    //         this.journal_Conf_form.removeControl('JournalEditorInfo');
+    //     }
+    // }
     createJC() {
         const type = this.journal_Conference_Detail_form.get('EntryType').value;
         this.formSubmit.isSubmit = false;
@@ -1055,6 +1197,9 @@ export class PubsupportComponent implements OnInit {
         if (formType === 'addJCDetailsModal') {
             this.addJCDetailsModal = false;
             this.journal_Conference_Detail_form.reset();
+        } else if (formType === 'editJCDetailsModal') {
+            this.editJCDetailsModal = false;
+            this.journal_Conference_Edit_Detail_form.reset();
         } else if (formType === 'updateJCRequirementModal') {
             this.updateJCRequirementModal = false;
             this.update_Journal_Requirement_form.reset();
@@ -1099,12 +1244,32 @@ export class PubsupportComponent implements OnInit {
             obj['JournalConferenceId'] = this.journal_Conference_Detail_form.getRawValue().jcLineItem.ID;
             obj['__metadata'] = { type: this.constantService.listNames.JournalConf.type };
             /* tslint:enable:no-string-literal */
-            // console.log('this.journal_Conference_Detail_form ', obj);
             const endpoint = this.spOperationsService.getReadURL(this.constantService.listNames.JournalConf.name);
             const data = [{
                 data: obj,
                 url: endpoint,
                 type: 'POST',
+                listName: this.constantService.listNames.JournalConf.name
+            }];
+            this.submit(data, type);
+        } else if (type === 'editJCDetailsModal') {
+            if (this.journal_Conference_Edit_Detail_form.invalid) {
+                this.submitBtn.isClicked = false;
+                return;
+            }
+            this.submitBtn.isClicked = true;
+            this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
+            const obj = this.journal_Conference_Edit_Detail_form.getRawValue();
+            /* tslint:disable:no-string-literal */
+            delete obj['jcLineItemName'];
+            delete obj['EntryType'];
+            obj['__metadata'] = { type: this.constantService.listNames.JournalConf.type };
+            /* tslint:enable:no-string-literal */
+            const endpoint = this.spOperationsService.getItemURL(this.constantService.listNames.JournalConf.name, this.journal_Conf_data[0].element.ID);
+            const data = [{
+                data: obj,
+                url: endpoint,
+                type: 'PATCH',
                 listName: this.constantService.listNames.JournalConf.name
             }];
             this.submit(data, type);
@@ -1210,7 +1375,7 @@ export class PubsupportComponent implements OnInit {
     async submit(dataEndpointArray, type: string) {
 
         if (type === 'addJCDetailsModal' || type === 'addAuthor' || type === 'updateDecision' || type === 'galley' ||
-            type === 'updatePublication' || type === 'cancelJC' || type === 'updateJCRequirementModal') {
+            type === 'updatePublication' || type === 'cancelJC' || type === 'updateJCRequirementModal' || type === 'editJCDetailsModal') {
             const result = await this.spOperationsService.executeBatch(dataEndpointArray);
             let res: any = {};
             if (result.length) {
@@ -1225,6 +1390,10 @@ export class PubsupportComponent implements OnInit {
                 console.log('res ', res);
                 this.updateProjectSts_JCSubmissionDetails(res, type);
 
+            } else if (type === 'editJCDetailsModal') {
+                this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success message', detail: 'Journal/Conference details updated.', life: 4000 });
+                this.editJCDetailsModal = false;
+                this.reload();
             } else if (type === 'updateDecision') {
                 this.update_decision_details.reset();
                 this.messageService.add({
@@ -1488,9 +1657,12 @@ export class PubsupportComponent implements OnInit {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         this.showHideJC = false;
         this.getJCDetails(psProject.data);
+        this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
+        this.showHideJC = true;
         this.state = false;
         this.parentRowIndex = psProject.data.id - 1;
         this.showSubDetails = false;
+
     }
     async getJCDetails(project: any) {
         // this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;

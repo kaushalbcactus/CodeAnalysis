@@ -923,6 +923,252 @@
     </p-footer>
 </p-dialog>
 
+<!-- Edit Journal Requirement Modal -->
+<p-dialog header="Edit Journal conference details" [(visible)]="editJCDetailsModal" [modal]="true" [draggable]="false"
+    [contentStyle]="{'min-height':'350px','max-height':'450px'}" [responsive]="true" [style]="{'width': '75%'}"
+    (onHide)="cancelFormSub('editJCDetailsModal')">
+
+    <form id="myform" [formGroup]="journal_Conference_Edit_Detail_form">
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                Type
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                <p-dropdown resetFilterOnHide="true" [disabled]="true" [options]="documentTypes" placeholder="Select document type"
+                    [style]="{'width':'100%'}" formControlName="EntryType"
+                    (onChange)="onChangeSelectedType($event.value)">
+                </p-dropdown>
+                <!-- <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.EntryType.errors">
+                    <div *ngIf="isValidAddUpdateJCDetailsForm.EntryType.errors.required" style="color:red;">
+                        Please select one of type & try again.</div>
+                </div> -->
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                List
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                <input type="text" disabled="true" pInputText maxlength="100" formControlName="jcLineItemName" style="width: 100%;"
+                    placeholder="-" />
+                
+            </div>
+            
+        </div>
+
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                Milestones
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                <p-dropdown resetFilterOnHide="true" [options]="milestoneListArray" placeholder="Select milestone"
+                    [style]="{'width':'100%'}" filter="true" formControlName="Milestone">
+                </p-dropdown>
+                <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Milestone.errors">
+                    <div *ngIf="isValidEditJCDetailsForm.Milestone.errors.required" style="color:red;">
+                        Please select one of milestone & try again.</div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="ui-g">
+                <div class="p-col-12 p-md-6 p-lg-2">
+                    User Name
+                </div>
+                <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                    <input type="text" pInputText maxlength="30" formControlName="UserName" style="width: 100%;"
+                        placeholder="User Name" />
+                    <!-- <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.UserName.errors">
+                        <div *ngIf="isValidAddUpdateJCDetailsForm.UserName.errors.required" style="color:red;">
+                            Please provide User Name.</div>
+                    </div> -->
+                </div>
+
+                <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
+                    <div class="box">Password</div>
+                </div>
+                <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                    <input type="text" pInputText maxlength="30" formControlName="Password" style="width: 100%;"
+                        placeholder="Password" />
+                    <!-- <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Password.errors">
+                        <div *ngIf="isValidEditJCDetailsForm.Password.errors.required" style="color:red;">
+                            Please provide Password.</div>
+                    </div> -->
+                </div>
+            </div>
+
+        </div>
+
+        <div
+            *ngIf="journal_Conference_Edit_Detail_form.value.EntryType === 'journal' && journal_Conference_Edit_Detail_form.value.jcLineItemName">
+            <div class="ui-g">
+                <div class="p-col-12 p-md-6 p-lg-2">
+                    Name
+                </div>
+                <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                    <!-- <input type="text" pInputText maxlength="30" formControlName="Name" style="width: 100%;" placeholder="Name" />  (keyup)="onKey($event.value)" (blur)="checkUniqueName()"-->
+                    <textarea rows="5" cols="30" pInputTextarea formControlName="Name" maxlength="200"></textarea>
+                    <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Name.errors">
+                        <div *ngIf="isValidEditJCDetailsForm.Name.errors.required" style="color:red;">
+                            Please provide Name.</div>
+                    </div>
+                </div>
+
+                <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
+                    <div class="box">Expected Review Period</div>
+                </div>
+                <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                    <div class="box">
+                        <input type="text" pInputText maxlength="25" formControlName="ExpectedReviewPeriod"
+                            placeholder="12 Months">
+                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.ExpectedReviewPeriod.errors">
+                            <div *ngIf="isValidEditJCDetailsForm.ExpectedReviewPeriod.errors.required"
+                                style="color:red;">
+                                Expected Review is required.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-g">
+                <div class="p-col-12 p-md-6 p-lg-2">
+                    Impact factor
+                </div>
+                <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                    <input type="text" maxlength="10" id="factor" name="name" placeholder="50%" formControlName="IF">
+                    <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.IF.errors">
+                        <div *ngIf="isValidEditJCDetailsForm.IF.errors.required" style="color:red;">
+                            Impact factor is required.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
+                    <div class="box">Rejection Ratio</div>
+                </div>
+                <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                    <div class="box">
+                        <input type="text" maxlength="10" placeholder="20%" formControlName="RejectionRate">
+                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.RejectionRate.errors">
+                            <div *ngIf="isValidEditJCDetailsForm.RejectionRate.errors.required" style="color:red;">
+                                Rejection
+                                Rate is required.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-g">
+                <div class="p-col-12 p-md-6 p-lg-2">
+                    Comments
+                </div>
+                <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                    <div class="box">
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
+                            maxlength="100"></textarea>
+                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Comments.errors">
+                            <div *ngIf="isValidEditJCDetailsForm.Comments.errors.required" style="color:red;">
+                                Please provide Comments.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
+                    <div class="box">Journal Editor Info</div>
+                </div>
+                <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                    <div class="box">
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="JournalEditorInfo"
+                            maxlength="100"></textarea>
+                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.JournalEditorInfo.errors">
+                            <div *ngIf="isValidEditJCDetailsForm.JournalEditorInfo.errors.required"
+                                style="color:red;">
+                                Journal Editor Info is required.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div
+            *ngIf="journal_Conference_Edit_Detail_form.value.EntryType === 'conference' && journal_Conference_Edit_Detail_form.value.jcLineItemName">
+            <div class="ui-g">
+                <div class="p-col-12 p-md-6 p-lg-2 padding15">
+                    Conference Name
+                </div>
+                <div class="p-col-12 p-md-6 p-lg-10">
+                    <!-- <input type="text" pInputText maxlength="30" formControlName="Name" style="width: 100% !important;" placeholder="Name" (keyup)="onKey($event.value)" (blur)="checkUniqueName()" /> -->
+                    <textarea rows="5" cols="30" pInputTextarea formControlName="Name" maxlength="200"></textarea>
+                    <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Name.errors">
+                        <div *ngIf="isValidEditJCDetailsForm.Name.errors.required" style="color:red;">
+                            Please provide Conference Name.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-g">
+                <div class="p-col-12 p-md-6 p-lg-2 padding15">
+                    <div class="box">
+                        Conference Date
+                    </div>
+                </div>
+                <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                    <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true"
+                        dateFormat="M dd, yy" placeholder="Select Date" formControlName="CongressDate"
+                        [disabledDays]="[0,6]" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
+                        [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [yearNavigator]="true">
+                    </p-calendar>
+                    <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.CongressDate.errors">
+                        <div *ngIf="isValidEditJCDetailsForm.CongressDate.errors.required" style="color:red;">
+                            Please provide Start Date.</div>
+                    </div>
+                </div>
+                <div class="p-col-12 p-md-6 p-lg-2 padding15">
+                    <div class="box">Submission Deadline</div>
+                </div>
+                <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
+                    <div class="box">
+                        <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true"
+                            dateFormat="M dd, yy" placeholder="Select Date" formControlName="AbstractSubmissionDeadline"
+                            [disabledDays]="[0,6]" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
+                            [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [yearNavigator]="true">
+                        </p-calendar>
+                        <div
+                            *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.AbstractSubmissionDeadline.errors">
+                            <div *ngIf="isValidEditJCDetailsForm.AbstractSubmissionDeadline.errors.required"
+                                style="color:red;">
+                                Please provide Submission Deadline Date.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui-g">
+                <div class="p-col-12 p-md-6 p-lg-2 padding15">
+                    Comments
+                </div>
+                <div class="p-col-12 p-md-6 p-lg-10">
+                    <div class="box">
+                        <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
+                            maxlength="100"></textarea>
+                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Comments.errors">
+                            <div *ngIf="isValidEditJCDetailsForm.Comments.errors.required" style="color:red;">
+                                Please provide Comments.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <p-footer>
+        <button pButton type="button" label="Update" [disabled]="submitBtn.isClicked"
+            (click)="onSubmit('editJCDetailsModal')"></button>
+        <button pButton type="button" label="Close" (click)="cancelFormSub('editJCDetailsModal')"></button>
+    </p-footer>
+</p-dialog>
+
 <!-- Update Journal Requirement Modal -->
 
 <p-dialog header="Update journal requirement details" [(visible)]="updateJCRequirementModal" [modal]="true"
