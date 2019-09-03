@@ -2,7 +2,7 @@
     <div class="userRole">
         <div class="ui-g">
             <div class="ui-g-2">
-                <span class="mr-10">User:</span>
+                <span>User:</span>
             </div>
             <div class="ui-g-4">
                 <p-dropdown [options]="users" filter="true" optionLabel="label" resetFilterOnHide="true"
@@ -10,7 +10,7 @@
                 </p-dropdown>
             </div>
             <div class="ui-g-1">
-                <p-button label="Save" (onClick)="save()"></p-button>
+                <p-button label="Save" type="button" (onClick)="save()"></p-button>
             </div>
             <!-- <div class="ui-g-5">
                 <a (click)="downloadExcel(ur)" class="download-worksheet td-none"><i class="fa fa-download"
@@ -21,21 +21,19 @@
     </div>
 
     <div class="userRole">
-        <span class="mr-10">Groups:</span>
         <div class="ui-g">
-            <div class="ui-g-4" *ngFor="let group of groups">
-                <p-checkbox name="{{group.Title}}" value="{{group.Title}}" label="{{group.Title}}"
-                    [(ngModel)]="selectedRoles" inputId="r1">
-                </p-checkbox>
+            <div class="ui-g-2">
+                <span>Groups:</span>
             </div>
-            <!-- <div class="ui-g-12">
-                <p-checkbox name="group1" value="Role 2" label="Role 2" [(ngModel)]="selectedRoles" inputId="r2">
-                </p-checkbox>
+        </div>
+        <div class="ui-g">
+            <div class="ui-g-3" *ngFor="let group of groups">
+                <p-card>
+                    <p-checkbox name="{{group.Title}}" value="{{group.Title}}" label="{{group.Title}}"
+                        [(ngModel)]="selectedRoles" inputId="r1">
+                    </p-checkbox>
+                </p-card>
             </div>
-            <div class="ui-g-12">
-                <p-checkbox name="group1" value="Role 3" label="Role 3" [(ngModel)]="selectedRoles" inputId="r3">
-                </p-checkbox>
-            </div> -->
         </div>
     </div>
 </div>

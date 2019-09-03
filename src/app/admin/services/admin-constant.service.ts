@@ -115,4 +115,8 @@ export class AdminConstantService {
     PRIMARYSKILL: 'PrimarySkill',
     ROLE: 'Role',
   };
+  public ACTION = {
+    COPY: 'Copy',
+    ADD: 'Add'
+  };
 }

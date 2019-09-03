@@ -54,4 +54,6 @@ export class AdminObjectService {
     DateofExit: new Date()
   };
   public isMainLoaderHidden = true;
+  public resourceCatArray = [];
+  public groupArray = [];
 }
