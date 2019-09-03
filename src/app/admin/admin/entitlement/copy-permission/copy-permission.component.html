@@ -27,12 +27,16 @@
 </div>
 <div class="ui-g mt-20">
   <div class="ui-g-4" *ngIf="viewArray.sourceGroupsArray.length">
-    <p-table [value]="viewArray.sourceGroupsArray" [paginator]="true" [rows]="7">
+    <p-table #sourceTable [value]="viewArray.sourceGroupsArray" [scrollable]="true" scrollHeight="400px">
       <ng-template pTemplate="header">
         <tr>
           <th>Source Groups</th>
         </tr>
       </ng-template>
+      <!-- <ng-template pTemplate="caption">
+          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+          <input type="text" pInputText size="50" placeholder="Source Group" (input)="sourceTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+      </ng-template> -->
       <ng-template pTemplate="body" style="overflow: auto" let-rowData let-rowIndex="rowIndex">
         <p-card>
           <tr>
@@ -46,12 +50,16 @@
     </p-table>
   </div>
   <div class="ui-g-4" *ngIf="viewArray.destinationGroupsArray.length">
-    <p-table [value]="viewArray.destinationGroupsArray" [paginator]="true" [rows]="7">
+    <p-table #destinationTable [value]="viewArray.destinationGroupsArray" [scrollable]="true" scrollHeight="400px">
       <ng-template pTemplate="header">
         <tr>
           <th>Destination Groups</th>
         </tr>
       </ng-template>
+      <!-- <ng-template pTemplate="caption">
+          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+          <input type="text" pInputText size="50" placeholder="Source Group" (input)="destinationTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+      </ng-template> -->
       <ng-template pTemplate="body" style="overflow: auto" let-rowData let-rowIndex="rowIndex">
         <p-card>
           <tr>
@@ -65,12 +73,16 @@
     </p-table>
   </div>
   <div class="ui-g-4" *ngIf="viewArray.finalResultArray.length">
-    <p-table [value]="viewArray.finalResultArray" [paginator]="true" [rows]="7">
+    <p-table #resultTable [value]="viewArray.finalResultArray" [scrollable]="true" scrollHeight="400px">
       <ng-template pTemplate="header">
         <tr>
           <th>Results Groups</th>
         </tr>
       </ng-template>
+      <!-- <ng-template pTemplate="caption">
+          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+          <input type="text" pInputText size="50" placeholder="Source Group" (input)="resultTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+      </ng-template> -->
       <ng-template pTemplate="body" style="overflow: auto" let-rowData let-rowIndex="rowIndex">
         <p-card>
           <tr>
