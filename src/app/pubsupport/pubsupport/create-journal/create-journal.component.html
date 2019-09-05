@@ -11,12 +11,13 @@
 
         <div class="ui-g">
             <div class="p-col-12 p-md-6 p-lg-2">
-                Name
+                Name <span style="color:red">*</span>
             </div>
             <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                 <!-- <input type="text" pInputText maxlength="30" formControlName="JournalName" style="width: 100%;" placeholder="Name" /> -->
                 <textarea rows="5" cols="30" pInputTextarea formControlName="JournalName" maxlength="200"
                     (keyup)="onKey($event.value)" (blur)="checkUniqueName()"></textarea>
+                
                 <span *ngIf="uniqueJName" style="color:red;">Please provide unique name.</span>
                 <span *ngIf="createJournal_form.value.JournalName"
                     style="float: right;">{{createJournal_form.value.JournalName.length}}/200</span>
@@ -29,7 +30,7 @@
             </div>
 
             <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
-                <div class="box">Expected Review Period</div>
+                <div class="box">Expected Review Period <span style="color:red">*</span></div>
             </div>
             <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
                 <div class="box">
@@ -46,7 +47,7 @@
 
         <div class="ui-g">
             <div class="p-col-12 p-md-6 p-lg-2">
-                Impact factor
+                Impact factor <span style="color:red">*</span>
             </div>
             <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                 <input type="text" maxlength="10" id="factor" name="name" placeholder="50%"
@@ -59,7 +60,7 @@
             </div>
 
             <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
-                <div class="box">Rejection Ratio</div>
+                <div class="box">Rejection Ratio <span style="color:red">*</span></div>
             </div>
             <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
                 <div class="box">
@@ -79,15 +80,15 @@
             <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                 <div class="box">
                     <textarea rows="5" cols="30" pInputTextarea formControlName="Comments" maxlength="100"></textarea>
-                    <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.Comments.errors">
+                    <!-- <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.Comments.errors">
                         <div *ngIf="isValidCreateJournalForm.Comments.errors.required" style="color:red;">
                             Please provide Comments.</div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 
             <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
-                <div class="box">Journal Editor Info</div>
+                <div class="box">Journal Editor Info <span style="color:red">*</span></div>
             </div>
             <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
                 <div class="box">

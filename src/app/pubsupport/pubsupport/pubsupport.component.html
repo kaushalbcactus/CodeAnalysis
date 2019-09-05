@@ -676,7 +676,7 @@
     <form id="myform" [formGroup]="journal_Conference_Detail_form">
         <div class="ui-g">
             <div class="ui-g-12 ui-md-6 ui-lg-2">
-                Type
+                Type <span style="color:red">*</span>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
                 <p-dropdown resetFilterOnHide="true" [options]="documentTypes" placeholder="Select document type"
@@ -689,7 +689,7 @@
                 </div>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-1">
-                List
+                List <span style="color:red">*</span>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
                 <p-dropdown resetFilterOnHide="true" filter="true" [options]="jcListArray"
@@ -710,7 +710,7 @@
 
         <div class="ui-g">
             <div class="ui-g-12 ui-md-6 ui-lg-2">
-                Milestones
+                Milestones <span style="color:red">*</span>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
                 <p-dropdown resetFilterOnHide="true" [options]="milestoneListArray" placeholder="Select milestone"
@@ -727,7 +727,7 @@
             *ngIf="(journal_Conference_Detail_form.value.EntryType === 'journal' || journal_Conference_Detail_form.value.EntryType === 'conference') && journal_Conference_Detail_form.value.jcLineItem">
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
-                    User Name
+                    User Name <span style="color:red">*</span>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <input type="text" pInputText maxlength="100" formControlName="UserName" style="width: 100%;"
@@ -739,7 +739,7 @@
                 </div>
 
                 <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
-                    <div class="box">Password</div>
+                    <div class="box">Password <span style="color:red">*</span></div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <input type="text" pInputText maxlength="100" formControlName="Password" style="width: 100%;"
@@ -756,7 +756,7 @@
             *ngIf="journal_Conference_Detail_form.value.EntryType === 'journal' && journal_Conference_Detail_form.value.jcLineItem">
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
-                    Name
+                    Name <span style="color:red">*</span>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <!-- <input type="text" pInputText maxlength="30" formControlName="Name" style="width: 100%;" placeholder="Name" />  (keyup)="onKey($event.value)" (blur)="checkUniqueName()"-->
@@ -768,7 +768,7 @@
                 </div>
 
                 <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
-                    <div class="box">Expected Review Period</div>
+                    <div class="box">Expected Review Period <span style="color:red">*</span></div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
@@ -786,7 +786,7 @@
 
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
-                    Impact factor
+                    Impact factor <span style="color:red">*</span>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <input type="text" maxlength="10" id="factor" name="name" placeholder="50%" formControlName="IF">
@@ -798,7 +798,7 @@
                 </div>
 
                 <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
-                    <div class="box">Rejection Ratio</div>
+                    <div class="box">Rejection Ratio <span style="color:red">*</span></div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
@@ -825,7 +825,7 @@
                 </div>
 
                 <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
-                    <div class="box">Journal Editor Info</div>
+                    <div class="box">Journal Editor Info <span style="color:red">*</span></div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
@@ -847,7 +847,7 @@
             *ngIf="journal_Conference_Detail_form.value.EntryType === 'conference' && journal_Conference_Detail_form.value.jcLineItem">
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2 padding15">
-                    Conference Name
+                    Conference Name <span style="color:red">*</span>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-10">
                     <!-- <input type="text" pInputText maxlength="30" formControlName="Name" style="width: 100% !important;" placeholder="Name" (keyup)="onKey($event.value)" (blur)="checkUniqueName()" /> -->
@@ -862,7 +862,7 @@
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2 padding15">
                     <div class="box">
-                        Conference Date
+                        Conference Date <span style="color:red">*</span>
                     </div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
@@ -877,7 +877,7 @@
                     </div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-2 padding15">
-                    <div class="box">Submission Deadline</div>
+                    <div class="box">Submission Deadline <span style="color:red">*</span></div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
@@ -928,7 +928,7 @@
     <form id="myform" [formGroup]="journal_Conference_Edit_Detail_form">
         <div class="ui-g">
             <div class="ui-g-12 ui-md-6 ui-lg-2">
-                Type
+                Type <span style="color:red">*</span>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
                 <p-dropdown resetFilterOnHide="true" [disabled]="true" [options]="documentTypes" placeholder="Select document type"
@@ -941,7 +941,7 @@
                 </div> -->
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-2">
-                List
+                List <span style="color:red">*</span>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
                 <input type="text" disabled="true" pInputText maxlength="100" formControlName="jcLineItemName" style="width: 100%;"
@@ -953,7 +953,7 @@
 
         <div class="ui-g">
             <div class="ui-g-12 ui-md-6 ui-lg-2">
-                Milestones
+                Milestones <span style="color:red">*</span>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
                 <p-dropdown resetFilterOnHide="true" [options]="milestoneListArray" placeholder="Select milestone"
@@ -969,7 +969,7 @@
         <div>
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
-                    User Name
+                    User Name <span style="color:red">*</span>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <input type="text" pInputText formControlName="UserName" maxlength="100" style="width: 100%;"
@@ -981,7 +981,7 @@
                 </div>
 
                 <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
-                    <div class="box">Password</div>
+                    <div class="box">Password <span style="color:red">*</span></div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <input type="text" pInputText maxlength="100" formControlName="Password" style="width: 100%;"
@@ -999,7 +999,7 @@
             *ngIf="journal_Conference_Edit_Detail_form.value.EntryType === 'journal' && journal_Conference_Edit_Detail_form.value.jcLineItemName">
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
-                    Name
+                    Name <span style="color:red">*</span>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <!-- <input type="text" pInputText maxlength="30" formControlName="Name" style="width: 100%;" placeholder="Name" />  (keyup)="onKey($event.value)" (blur)="checkUniqueName()"-->
@@ -1011,7 +1011,7 @@
                 </div>
 
                 <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
-                    <div class="box">Expected Review Period</div>
+                    <div class="box">Expected Review Period <span style="color:red">*</span></div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
@@ -1029,7 +1029,7 @@
 
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
-                    Impact factor
+                    Impact factor <span style="color:red">*</span>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <input type="text" maxlength="10" id="factor" name="name" placeholder="50%" formControlName="IF">
@@ -1041,7 +1041,7 @@
                 </div>
 
                 <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
-                    <div class="box">Rejection Ratio</div>
+                    <div class="box">Rejection Ratio <span style="color:red">*</span></div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
@@ -1067,7 +1067,7 @@
                 </div>
 
                 <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
-                    <div class="box">Journal Editor Info</div>
+                    <div class="box">Journal Editor Info <span style="color:red">*</span></div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
@@ -1089,7 +1089,7 @@
             *ngIf="journal_Conference_Edit_Detail_form.value.EntryType === 'conference' && journal_Conference_Edit_Detail_form.value.jcLineItemName">
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2 padding15">
-                    Conference Name
+                    Conference Name <span style="color:red">*</span>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-10">
                     <!-- <input type="text" pInputText maxlength="30" formControlName="Name" style="width: 100% !important;" placeholder="Name" (keyup)="onKey($event.value)" (blur)="checkUniqueName()" /> -->
@@ -1104,7 +1104,7 @@
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2 padding15">
                     <div class="box">
-                        Conference Date
+                        Conference Date <span style="color:red">*</span>
                     </div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
@@ -1119,7 +1119,7 @@
                     </div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-2 padding15">
-                    <div class="box">Submission Deadline</div>
+                    <div class="box">Submission Deadline <span style="color:red">*</span></div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
