@@ -60,6 +60,8 @@ export class TimeBookingDialogComponent implements OnInit {
   MainminDate: any;
   TotalOfTotal: any = [];
   FinalTotal = '00:00';
+  displayComment = false;
+  timebookingRow: any;
   constructor(
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
@@ -104,6 +106,8 @@ export class TimeBookingDialogComponent implements OnInit {
         label: 'Select Project',
         value: null
       }], dbMilestones: [{ label: 'Select Milestone', value: null }], isEditable: true,
+      commentEnable: false,
+      Comments: '',
       TimeSpents: this.weekDays.map(c => new Object({
         date: c, MileHrs: '00:00', minHrs: '00:00',
         editable: new Date(this.datePipe.transform(this.MainminDate, 'yyyy-MM-dd')).getTime() <=
@@ -210,7 +214,7 @@ export class TimeBookingDialogComponent implements OnInit {
     this.weekDays = [];
     const WeekDate = new Date(new Date().getTime() - 60 * 60 * 24 * this.dayscount * 1000);
     const day = WeekDate.getDay();
-    const diffToMonday = (WeekDate.getDate() - day + (day === 0 ? -6 : 1)) - 1;
+    const diffToMonday = (WeekDate.getDate() - day + (day === 0 ? -6 : 1)) - 1;
 
     const tempdate = new Date(WeekDate.setDate(diffToMonday));
     for (let i = 0; i <= 6; i++) {
@@ -238,10 +242,20 @@ export class TimeBookingDialogComponent implements OnInit {
 
 
 
-  SetTime(time, dayhoursObj) {
-
+  SetTime(time, dayhoursObj, rowData) {
     const timespent = time.split(':')[0] % 12 + ':' + time.split(':')[1];
     dayhoursObj.MileHrs = timespent;
+
+    rowData.TimeSpents.some((value) => {
+      const MileHrsArray = value.MileHrs.split(':');
+      const minHrsArray = value.minHrs.split(':');
+      // tslint:disable-next-line: radix
+      rowData.commentEnable = (parseInt(MileHrsArray[0]) + 60 * parseInt(MileHrsArray[1])) >
+        // tslint:disable-next-line: radix
+        (parseInt(minHrsArray[0]) + 60 * parseInt(minHrsArray[1])) ? true : false;
+      return rowData.commentEnable === true;
+    });
+
   }
 
   // *************************************************************************************************
@@ -285,6 +299,8 @@ export class TimeBookingDialogComponent implements OnInit {
       displayName: o.Milestone === 'Select one' ? o.Comments : o.SubMilestones &&
         o.SubMilestones !== 'Default' ? o.Milestone + ' - ' + o.SubMilestones : o.Milestone,
       type: o.Entity === null ? 'task' : 'Adhoc',
+      commentEnable: o.Task === 'Time Booking' ? true : false,
+      Comments: o.Task === 'Time Booking' ? o.TaskComments : '',
       TimeSpents: this.weekDays.map(c => new Object({
         date: c, MileHrs: '00:00', minHrs: '00: 00',
         editable: (new Date(this.datePipe.transform(c, 'yyyy-MM-dd')).getTime() >
@@ -506,9 +522,10 @@ export class TimeBookingDialogComponent implements OnInit {
 
       if (existingObjItem.length) {
         const existingObj = existingObjItem[0];
-        if (existingObj.TimeSpentPerDay !== timeSpentString) {
+        if (existingObj.TimeSpentPerDay !== timeSpentString || existingObj.TaskComments !== dbTasks[i].Comments) {
           existingObj.TimeSpent = totalTimeSpent;
           existingObj.TimeSpentPerDay = timeSpentString;
+          existingObj.TaskComments = dbTasks[i].Comments;
           count++;
           await
             this.spOperations.updateItem(this.constants.listNames.Schedules.name, existingObj.ID, existingObj, 'SP.Data.SchedulesListItem');
@@ -551,6 +568,7 @@ export class TimeBookingDialogComponent implements OnInit {
                 Task: 'Time Booking',
                 TimeSpent: totalTimeSpent,
                 TimeSpentPerDay: timeSpentString,
+                TaskComments: dbTasks[i].Comments,
                 Title: dbTasks[i].ProjectCode + ' ' + dbTasks[i].Milestone + ' TB ' + this.sharedObject.currentUser.title,
                 AssignedToId: this.sharedObject.currentUser.id,
               };
@@ -646,6 +664,19 @@ export class TimeBookingDialogComponent implements OnInit {
     const temphours = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
     return temphours + ':' + tempminutes;
   }
+
+
+  // *************************************************************************************************
+  //  open / close dialog for comment
+  // *************************************************************************************************
+
+
+  openDialog(rowData) {
+    console.log(rowData);
+    this.displayComment = true;
+    this.timebookingRow = rowData;
+  }
+
 
 }
 // tslint:disable-next-line: class-name

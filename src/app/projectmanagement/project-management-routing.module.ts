@@ -9,7 +9,7 @@ import { SOWComponent } from './projectmanagement/sow/sow.component';
 import { PendingAllocationComponent } from './projectmanagement/pending-allocation/pending-allocation.component';
 import { PMResolve } from './PMResolve';
 import { PMMainResolve } from './PMMainResolve';
-import { CommunicationComponent } from './projectmanagement/communication/communication.component';
+// import { CommunicationComponent } from './projectmanagement/communication/communication.component';
 
 const appRoutes: Routes = [
 {
@@ -24,7 +24,7 @@ const appRoutes: Routes = [
     {path: 'clientReview', component: ClientReviewComponent, resolve: { pmData: PMResolve }},
     {path: 'pendingAllocation', component: PendingAllocationComponent, resolve: { pmData: PMResolve }},
     {path: 'inActive', component: InactiveComponent, resolve: { pmData: PMResolve }},
-    {path: 'communication', component: CommunicationComponent}
+   // {path: 'communication', component: CommunicationComponent}
   ]
 }
 ];

@@ -19,18 +19,21 @@ import { AddTimelineComponent } from './projectmanagement/add-projects/addtimeli
 import { FinanceManagementComponent } from './projectmanagement/add-projects/finance-management/finance-management.component';
 import { ManageFinanceComponent } from './projectmanagement/add-projects/manage-finance/manage-finance.component';
 import { StandardprojectComponent } from './projectmanagement/add-projects/addtimeline/standardproject/standardproject.component';
+// tslint:disable-next-line: max-line-length
 import { NonStandardprojectComponent } from './projectmanagement/add-projects/addtimeline/non-standardproject/non-standardproject.component';
 import { UsercapacityComponent } from './projectmanagement/add-projects/addtimeline/usercapacity/usercapacity.component';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { PMResolve } from './PMResolve';
 import { PMMainResolve } from './PMMainResolve';
-import { CommunicationComponent } from './projectmanagement/communication/communication.component';
 import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/api';
 import { TimelineModule } from '../timeline/timeline.module';
 import { CustomMaterialModule } from '../shared/material.module';
 import { TaskAllocationModule } from '../task-allocation/task-allocation.module';
 import { ProjectTimelineComponent } from './projectmanagement/all-projects/project-timeline/project-timeline.component';
+import { ViewUploadDocumentModule } from '../shared/view-upload-document-dialog/view-upload-document.module';
+import { SharedModule } from 'primeng/primeng';
+import { ViewUploadDocumentDialogComponent } from '../shared/view-upload-document-dialog/view-upload-document-dialog.component';
 
 @NgModule({
   declarations: [
@@ -50,10 +53,11 @@ import { ProjectTimelineComponent } from './projectmanagement/all-projects/proje
     StandardprojectComponent,
     NonStandardprojectComponent,
     UsercapacityComponent,
-    CommunicationComponent,
     ProjectTimelineComponent],
   imports: [
+    SharedModule,
     CommonModule,
+    ViewUploadDocumentModule,
     ProjectManagementRoutingModule,
     PrimengModule,
     FormsModule,
@@ -65,7 +69,7 @@ import { ProjectTimelineComponent } from './projectmanagement/all-projects/proje
     NgbModule,
     TaskAllocationModule
   ],
-  exports:[
+  exports: [
     AllProjectsComponent
   ],
   providers: [
@@ -81,7 +85,8 @@ import { ProjectTimelineComponent } from './projectmanagement/all-projects/proje
     ProjectAttributesComponent,
     ManageFinanceComponent,
     AddProjectsComponent,
-    ProjectTimelineComponent
+    ProjectTimelineComponent,
+    ViewUploadDocumentDialogComponent
   ]
 })
 export class ProjectmanagementModule { }
