@@ -730,7 +730,7 @@
                     User Name
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <input type="text" pInputText formControlName="UserName" style="width: 100%;"
+                    <input type="text" pInputText maxlength="100" formControlName="UserName" style="width: 100%;"
                         placeholder="User Name" />
                     <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.UserName.errors">
                         <div *ngIf="isValidAddUpdateJCDetailsForm.UserName.errors.required" style="color:red;">
@@ -742,7 +742,7 @@
                     <div class="box">Password</div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <input type="text" pInputText formControlName="Password" style="width: 100%;"
+                    <input type="text" pInputText maxlength="100" formControlName="Password" style="width: 100%;"
                         placeholder="Password" />
                     <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Password.errors">
                         <div *ngIf="isValidAddUpdateJCDetailsForm.Password.errors.required" style="color:red;">
@@ -972,7 +972,7 @@
                     User Name
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <input type="text" pInputText formControlName="UserName" style="width: 100%;"
+                    <input type="text" pInputText formControlName="UserName" maxlength="100" style="width: 100%;"
                         placeholder="User Name" />
                      <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.UserName.errors">
                         <div *ngIf="isValidEditJCDetailsForm.UserName.errors.required" style="color:red;">
@@ -984,7 +984,7 @@
                     <div class="box">Password</div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <input type="text" pInputText formControlName="Password" style="width: 100%;"
+                    <input type="text" pInputText maxlength="100" formControlName="Password" style="width: 100%;"
                         placeholder="Password" />
                     <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Password.errors">
                         <div *ngIf="isValidEditJCDetailsForm.Password.errors.required" style="color:red;">
