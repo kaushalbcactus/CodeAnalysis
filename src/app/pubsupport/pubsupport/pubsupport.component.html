@@ -730,7 +730,7 @@
                     User Name
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <input type="text" pInputText maxlength="30" formControlName="UserName" style="width: 100%;"
+                    <input type="text" pInputText formControlName="UserName" style="width: 100%;"
                         placeholder="User Name" />
                     <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.UserName.errors">
                         <div *ngIf="isValidAddUpdateJCDetailsForm.UserName.errors.required" style="color:red;">
@@ -742,7 +742,7 @@
                     <div class="box">Password</div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <input type="text" pInputText maxlength="30" formControlName="Password" style="width: 100%;"
+                    <input type="text" pInputText formControlName="Password" style="width: 100%;"
                         placeholder="Password" />
                     <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Password.errors">
                         <div *ngIf="isValidAddUpdateJCDetailsForm.Password.errors.required" style="color:red;">
@@ -820,10 +820,7 @@
                     <div class="box">
                         <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
                             maxlength="100"></textarea>
-                        <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Comments.errors">
-                            <div *ngIf="isValidAddUpdateJCDetailsForm.Comments.errors.required" style="color:red;">
-                                Please provide Comments.</div>
-                        </div>
+
                     </div>
                 </div>
 
@@ -975,24 +972,24 @@
                     User Name
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <input type="text" pInputText maxlength="30" formControlName="UserName" style="width: 100%;"
+                    <input type="text" pInputText formControlName="UserName" style="width: 100%;"
                         placeholder="User Name" />
-                    <!-- <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.UserName.errors">
-                        <div *ngIf="isValidAddUpdateJCDetailsForm.UserName.errors.required" style="color:red;">
-                            Please provide User Name.</div>
-                    </div> -->
+                     <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.UserName.errors">
+                        <div *ngIf="isValidEditJCDetailsForm.UserName.errors.required" style="color:red;">
+                            Please provide Name.</div>
+                    </div>
                 </div>
 
                 <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
                     <div class="box">Password</div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
-                    <input type="text" pInputText maxlength="30" formControlName="Password" style="width: 100%;"
+                    <input type="text" pInputText formControlName="Password" style="width: 100%;"
                         placeholder="Password" />
-                    <!-- <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Password.errors">
+                    <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Password.errors">
                         <div *ngIf="isValidEditJCDetailsForm.Password.errors.required" style="color:red;">
                             Please provide Password.</div>
-                    </div> -->
+                    </div>
                 </div>
             </div>
 
@@ -1066,10 +1063,6 @@
                     <div class="box">
                         <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
                             maxlength="100"></textarea>
-                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Comments.errors">
-                            <div *ngIf="isValidEditJCDetailsForm.Comments.errors.required" style="color:red;">
-                                Please provide Comments.</div>
-                        </div>
                     </div>
                 </div>
 

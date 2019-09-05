@@ -674,16 +674,16 @@ export class PubsupportComponent implements OnInit {
             jcLineItemName: [''],
             Milestone: ['', Validators.required],
             Name: { value: '', disabled: true },
-            Comments: ['', [Validators.required]],
-            UserName: [''],
-            Password: ['']
+            Comments: [''],
+            UserName: ['', Validators.required],
+            Password: ['', Validators.required]
         });
         this.journal_Conference_Detail_form = this.formBuilder.group({
             EntryType: ['', Validators.required],
             jcLineItem: ['', Validators.required],
             Milestone: ['', Validators.required],
             Name: { value: '', disabled: true },
-            Comments: ['', [Validators.required]]
+            Comments: ['']
         });
     }
 
