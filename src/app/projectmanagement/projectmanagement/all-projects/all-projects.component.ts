@@ -7,7 +7,7 @@ import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem, MessageService, DialogService, SelectItem, ConfirmationService } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { CommunicationComponent } from '../communication/communication.component';
+// import { CommunicationComponent } from '../communication/communication.component';
 import { ProjectAttributesComponent } from '../add-projects/project-attributes/project-attributes.component';
 import { ManageFinanceComponent } from '../add-projects/manage-finance/manage-finance.component';
 import { TimelineHistoryComponent } from '../../../timeline/timeline-history/timeline-history.component';
@@ -16,6 +16,7 @@ import { ProjectTimelineComponent } from './project-timeline/project-timeline.co
 import { GlobalService } from 'src/app/Services/global.service';
 import { DataService } from 'src/app/Services/data.service';
 import { Table } from 'primeng/table';
+import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
 
 declare var $;
 @Component({
@@ -1552,11 +1553,10 @@ export class AllProjectsComponent implements OnInit {
     });
   }
   communications(selectedProjectObj) {
-    const ref = this.dialogService.open(CommunicationComponent, {
+    selectedProjectObj.IsSearchProject = true;
+    const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
       header: 'Communications - ' + selectedProjectObj.ProjectCode + '(' + selectedProjectObj.Title + ')',
-      data: {
-        projectObj: selectedProjectObj
-      }
+      data:  selectedProjectObj
     });
     ref.onClose.subscribe(element => {
       this.pmCommonService.resetAddProject();

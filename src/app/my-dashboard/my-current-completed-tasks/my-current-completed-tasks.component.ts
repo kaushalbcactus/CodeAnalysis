@@ -10,10 +10,10 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 import { ActivatedRoute } from '@angular/router';
 import { TimeSpentDialogComponent } from '../time-spent-dialog/time-spent-dialog.component';
 import { AddEditCommentComponent } from '../add-edit-comment-dialog/add-edit-comment-dialog.component';
-import { ViewUploadDocumentDialogComponent } from '../view-upload-document-dialog/view-upload-document-dialog.component';
 import { PreviosNextTasksDialogComponent } from '../previos-next-tasks-dialog/previos-next-tasks-dialog.component';
 import { Table } from 'primeng/table';
 import { FeedbackPopupComponent } from '../../qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
+import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
 
 @Component({
   selector: 'app-my-current-completed-tasks',

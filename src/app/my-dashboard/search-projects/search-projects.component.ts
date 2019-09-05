@@ -6,11 +6,11 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ProjectDraftsComponent } from './project-drafts/project-drafts.component';
 import { TimelineComponent } from 'src/app/task-allocation/timeline/timeline.component';
-import { ViewUploadDocumentDialogComponent } from '../view-upload-document-dialog/view-upload-document-dialog.component';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { TimelineHistoryComponent } from './../../timeline/timeline-history/timeline-history.component';
 import { CommonService } from 'src/app/Services/common.service';
+import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
 
 @Component({
   selector: 'app-search-projects',
@@ -36,16 +36,16 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   ProjectCode: any = '';
   batchContents: any[];
   response: any[];
-  loaderenable: boolean = false;
-  tableviewenable: boolean = false;
+  loaderenable = false;
+  tableviewenable = false;
   projectMenu: MenuItem[];
   cols: { field: string; header: string; }[];
   ProjectColArray: any;
   ProjectList: any;
-  showDetailsenable: boolean = false;
-  onSearchProject: boolean = true;
+  showDetailsenable = false;
+  onSearchProject = true;
   step: number;
-  modalloaderenable: boolean = false;
+  modalloaderenable = false;
   projectDisplayTitle: any;
   ProjectPopupDetails: any;
   showDetails: boolean;
@@ -79,7 +79,8 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   tempClick: any;
 
 
-  constructor(public messageService: MessageService,
+  constructor(
+    public messageService: MessageService,
     private constants: ConstantsService,
     private myDashboardConstantsService: MyDashboardConstantsService,
     private spServices: SPOperationService,
@@ -92,8 +93,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
     if (route.indexOf('search-projects') > -1) {
       this.onSearchProject = true;
-    }
-    else {
+    } else {
       this.onSearchProject = false;
     }
     this.cols = [
@@ -114,38 +114,38 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
 
   // *************************************************************************************************************************************
-  // hide popup menu on production 
+  // hide popup menu on production
   // *************************************************************************************************************************************
 
   @HostListener('document:click', ['$event'])
   clickout(event) {
-    if (event.target.className === "pi pi-ellipsis-v") {
+    if (event.target.className === 'pi pi-ellipsis-v') {
       if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        if(this.tempClick !== event.target.parentElement.children[0].children[0]) {
+        this.tempClick.style.display = 'none';
+        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
           this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = "";
+          this.tempClick.style.display = '';
         } else {
           this.tempClick = undefined;
         }
       } else {
         this.tempClick = event.target.parentElement.children[0].children[0];
-        this.tempClick.style.display = "";
+        this.tempClick.style.display = '';
       }
 
     } else {
       if (this.tempClick) {
-        this.tempClick.style.display = "none";
-        this.tempClick =  undefined;
+        this.tempClick.style.display = 'none';
+        this.tempClick = undefined;
       }
     }
   }
 
 
 
-   // *************************************************************************************************************************************
-  //  pop up menu options 
-  // *************************************************************************************************************************************
+  // *************************************************************************************************
+  //  pop up menu options
+  // **************************************************************************************************
 
   openPopup(data) {
     this.projectMenu = [
@@ -154,9 +154,9 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     ];
   }
 
-   // *************************************************************************************************************************************
-  //  destroy load components 
-  // *************************************************************************************************************************************
+  // ************************************************************************************************
+  //  destroy load components
+  // **************************************************************************************************
 
   onCancel() {
     this.projectDraftsComponent.ngOnDestroy();
@@ -164,32 +164,62 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.timelineComponent.ngOnDestroy();
   }
 
-    // *************************************************************************************************************************************
+  // **************************************************************************************************
   //   create column heading multiselect options
-  // *************************************************************************************************************************************
+  // **************************************************************************************************
 
   createColFieldValues() {
 
-    this.ProjectColArray = { SOWCode: [], ProjectCode: [], WBJID: [], ClientLegalEntity: [], DeliverableType: [], ProjectType: [], Status: [], CreatedBy: [], Created: [] };
-    this.ProjectColArray.SOWCode = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; })));
+    this.ProjectColArray = {
+      SOWCode: [], ProjectCode: [], WBJID: [], ClientLegalEntity: [],
+      DeliverableType: [], ProjectType: [], Status: [], CreatedBy: [], Created: []
+    };
+    this.ProjectColArray.SOWCode = this.commonService.sortData
+      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+        const b = { label: a.SOWCode, value: a.SOWCode }; return b;
+      })));
 
-    this.ProjectColArray.ProjectCode = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; })));
+    this.ProjectColArray.ProjectCode = this.commonService.sortData
+      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+        const b = { label: a.ProjectCode, value: a.ProjectCode }; return b;
+      })));
 
-    this.ProjectColArray.WBJID = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.WBJID, value: a.WBJID }; return b; })));
+    this.ProjectColArray.WBJID = this.commonService.sortData
+      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+        const b = { label: a.WBJID, value: a.WBJID }; return b;
+      })));
 
-    this.ProjectColArray.ClientLegalEntity = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; })));
+    this.ProjectColArray.ClientLegalEntity = this.commonService.sortData
+      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+        const b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b;
+      })));
 
-    this.ProjectColArray.DeliverableType = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.DeliverableType, value: a.DeliverableType }; return b; })));
+    this.ProjectColArray.DeliverableType = this.commonService.sortData
+      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+        const b = { label: a.DeliverableType, value: a.DeliverableType }; return b;
+      })));
 
-    this.ProjectColArray.ProjectType = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.ProjectType, value: a.ProjectType }; return b; })));
+    this.ProjectColArray.ProjectType = this.commonService.sortData
+      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+        const b = { label: a.ProjectType, value: a.ProjectType }; return b;
+      })));
 
-    this.ProjectColArray.Status = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.Status, value: a.Status }; return b; })));
+    this.ProjectColArray.Status = this.commonService.sortData
+      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+        const b = { label: a.Status, value: a.Status }; return b;
+      })));
 
 
-    this.ProjectColArray.CreatedBy = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; })));
+    this.ProjectColArray.CreatedBy = this.commonService.sortData
+      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+        const b = { label: a.CreatedBy, value: a.CreatedBy }; return b;
+      })));
 
 
-    this.ProjectColArray.Created.push.apply(this.ProjectColArray.Created, this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => { let b = { label: this.datePipe.transform(a.Created, "MMM d, y, h:mm a"), value: a.Created }; return b; })));
+    this.ProjectColArray.Created.push.apply(this.ProjectColArray.Created,
+      this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+        const b = { label: this.datePipe.transform(a.Created, 'MMM d, y, h:mm a'), value: a.Create }; return b;
+      })));
 
 
 
@@ -203,12 +233,12 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   }
 
   keyDownFunction(event) {
-    if (event.keyCode == 13) {
+    if (event.keyCode === 13) {
       this.SearchProject();
     }
   }
 
-    // *************************************************************************************************************************************
+  // *************************************************************************************************************************************
   //   Search projects
   // *************************************************************************************************************************************
 
@@ -222,19 +252,20 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.modalloaderenable = true;
 
     if (!this.ProjectCode && !this.ProjectTitle) {
-      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Enter Project Code or Project Short Title.' });
-    }
-    else {
+      this.messageService.add({
+        key: 'custom', severity: 'warn', summary: 'Warning Message',
+        detail: 'Please Enter Project Code or Project Short Title.'
+      });
+    } else {
       this.loaderenable = true;
       this.batchContents = new Array();
       const batchGuid = this.spServices.generateUUID();
-      var Project;
+      let Project;
       if (this.ProjectCode !== '') {
         Project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformation);
         Project.filterByCode = Project.filterByCode.replace(/{{projectCode}}/gi, this.ProjectCode.trim());
         Project.filter = Project.filterByCode;
-      }
-      else {
+      } else {
         this.ProjectTitle.trimStart();
         Project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformation);
         Project.filterByTitle = Project.filterByTitle.replace(/{{shortTitle}}/gi, this.ProjectTitle.trimEnd());
@@ -257,15 +288,21 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
         this.ProjectCode = '';
         this.ProjectTitle = '';
 
-      }
-      else {
+      } else {
         this.loaderenable = false;
         if (this.ProjectCode !== '') {
-          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Warning Message', detail: "Project code doesn't exist. Please verify if it is correct." });
-        }
-        else {
+          this.messageService.add({
+            key: 'custom', severity: 'error', summary: 'Warning Message',
+            // tslint:disable-next-line: quotemark
+            detail: "Project code doesn't exist. Please verify if it is correct."
+          });
+        } else {
           this.loaderenable = false;
-          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Warning Message', detail: "Project Short Title doesn't exist. Please verify if it is correct." });
+          this.messageService.add({
+            key: 'custom', severity: 'error', summary: 'Warning Message',
+            // tslint:disable-next-line: quotemark
+            detail: "Project Short Title doesn't exist. Please verify if it is correct."
+          });
         }
       }
 
@@ -276,9 +313,9 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.ProjectTitle = event === 'ProjectCode' ? '' : this.ProjectTitle;
     this.ProjectCode = event === 'ProjectTitle' ? '' : this.ProjectCode;
   }
-  // *************************************************************************************************************************************
+  // **************************************************************************************************
   //  get project details by search
-  // *************************************************************************************************************************************
+  // **************************************************************************************************
 
   getProjectDetails(project) {
 
@@ -287,10 +324,12 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.ProjectDetails = project;
 
     this.modalloaderenable = true;
-    this.projectDisplayTitle = project.ProjectCode + " - " + project.ClientLegalEntity;
+    this.projectDisplayTitle = project.ProjectCode + ' - ' + project.ClientLegalEntity;
     this.ProjectPopupDetails = project;
     this.ProjectPopupDetails.IsSearchProject = true;
-    this.ProjectPopupDetails.POC = this.sharedObject.DashboardData.ProjectContacts.find(c => c.ID === project.PrimaryPOC) !== undefined ? this.sharedObject.DashboardData.ProjectContacts.find(c => c.ID === project.PrimaryPOC).FullName : '';
+    this.ProjectPopupDetails.POC = this.sharedObject.DashboardData.ProjectContacts.find(c => c.ID ===
+      project.PrimaryPOC) !== undefined ? this.sharedObject.DashboardData.ProjectContacts.find(c =>
+        c.ID === project.PrimaryPOC).FullName : '';
 
     this.modalloaderenable = false;
 
@@ -299,22 +338,16 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
   }
 
-
-
-  // *************************************************************************************************************************************
-  //   to get event on title click 
-  // *************************************************************************************************************************************
-
-
+  // *************************************************************************************************
+  //   to get event on title click
+  // **************************************************************************************************
   async setStep(index: number) {
 
     this.step = index;
   }
-
-
-  //*************************************************************************************************
-  //   to get event on title click 
-  //***************************************************************************************************
+  // *************************************************************************************************
+  //   to get event on title click
+  // **************************************************************************************************
 
   async GetProjectResources() {
 
@@ -322,13 +355,14 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     const batchGuid = this.spServices.generateUUID();
 
 
-    let ProjectInfoResources = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInfoResources);
+    const ProjectInfoResources = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInfoResources);
     ProjectInfoResources.filter = ProjectInfoResources.filter.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
-    const ProjectInfoResourcesUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', ProjectInfoResources);
+    const ProjectInfoResourcesUrl = this.spServices.getReadURL('' +
+      this.constants.listNames.ProjectInformation.name + '', ProjectInfoResources);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectInfoResourcesUrl);
 
 
-    let ProjectResources = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectResource);
+    const ProjectResources = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectResource);
     ProjectResources.filter = ProjectResources.filter.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
     const ProjectResourcesUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', ProjectResources);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectResourcesUrl);
@@ -337,26 +371,38 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     this.ProjectDetails.cmLevel1 = this.response[1][0].CMLevel1;
 
 
-    this.projectResource.CMMembers = this.response[1].map(c => c).map(c => c.CMLevel1)[0].results ? this.response[1].map(c => c).map(c => c.CMLevel1).map(c => c.results)[0].map(c => c.Title) + ", " + this.response[1][0].CMLevel2.Title : this.response[1][0].CMLevel2.Title;
+    this.projectResource.CMMembers = this.response[1].map(c => c).map(c => c.CMLevel1)[0].results ?
+      this.response[1].map(c => c).map(c => c.CMLevel1).map(c => c.results)[0].map(c => c.Title) + ', '
+      + this.response[1][0].CMLevel2.Title : this.response[1][0].CMLevel2.Title;
 
-    this.projectResource.PMMembers = this.response[1].map(c => c).map(c => c.DeliveryLevel1)[0].results ? this.response[1].map(c => c).map(c => c.DeliveryLevel1).map(c => c.results)[0].map(c => c.Title) + ", " + this.response[1][0].DeliveryLevel2.Title : this.response[1][0].DeliveryLevel2.Title;
+    this.projectResource.PMMembers = this.response[1].map(c => c).map(c => c.DeliveryLevel1)[0]
+      .results ? this.response[1].map(c => c).map(c => c.DeliveryLevel1).map(c => c.results)[0].map(c =>
+        c.Title) + ', ' + this.response[1][0].DeliveryLevel2.Title : this.response[1][0].DeliveryLevel2.Title;
 
-    // this.projectResource.PMMembers = this.response[1][0].DeliveryLevel1.Title ? this.response[1][0].DeliveryLevel1.Title + ", " + this.response[1][0].DeliveryLevel2.Title : this.response[1][0].DeliveryLevel2.Title;
+    this.projectResource.PrimaryResource = this.response[0].map(c => c).map(c => c.PrimaryResMembers)
+      .find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.PrimaryResMembers)
+        .map(c => c.results)[0].map(e => e.Title) : '';
 
-    this.projectResource.PrimaryResource = this.response[0].map(c => c).map(c => c.PrimaryResMembers).find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.PrimaryResMembers).map(c => c.results)[0].map(e => e.Title) : '';
+    this.projectResource.Writers = this.response[0].map(c => c).map(c => c.Writers).find(c =>
+      c.results) !== undefined ? this.response[0].map(c => c).map(c => c.Writers).map(c => c.results)[0].map(e => e.Title) : '';
 
-    this.projectResource.Writers = this.response[0].map(c => c).map(c => c.Writers).find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.Writers).map(c => c.results)[0].map(e => e.Title) : '';
+    this.projectResource.Reviewers = this.response[0].map(c => c).map(c => c.Reviewers).find(c =>
+      c.results) !== undefined ? this.response[0].map(c => c).map(c => c.Reviewers).map(c => c.results)[0].map(e => e.Title) : '';
 
-    this.projectResource.Reviewers = this.response[0].map(c => c).map(c => c.Reviewers).find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.Reviewers).map(c => c.results)[0].map(e => e.Title) : '';
+    this.projectResource.Editors = this.response[0].map(c => c).map(c => c.Editors).find(c =>
+      c.results) !== undefined ? this.response[0].map(c => c).map(c => c.Editors).map(c => c.results)[0].map(e => e.Title) : '';
 
-    this.projectResource.Editors = this.response[0].map(c => c).map(c => c.Editors).find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.Editors).map(c => c.results)[0].map(e => e.Title) : '';
+    this.projectResource.GraphicsMembers = this.response[0].map(c => c).map(c => c.GraphicsMembers)
+      .find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.GraphicsMembers).map
+        (c => c.results)[0].map(e => e.Title) : '';
 
-    this.projectResource.GraphicsMembers = this.response[0].map(c => c).map(c => c.GraphicsMembers).find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.GraphicsMembers).map(c => c.results)[0].map(e => e.Title) : '';
+    this.projectResource.QC = this.response[0].map(c => c).map(c => c.QC).find(c => c.results) !==
+      undefined ? this.response[0].map(c => c).map(c => c.QC).map(c => c.results)[0].map(e => e.Title) :
+      '';
 
-    this.projectResource.QC = this.response[0].map(c => c).map(c => c.QC).find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.QC).map(c => c.results)[0].map(e => e.Title) : '';
 
-
-    this.projectResource.PubSupport = this.response[0].map(c => c).map(c => c.PSMembers).find(c => c.results) !== undefined ? this.response[0].map(c => c).map(c => c.PSMembers).map(c => c.results)[0].map(e => e.Title) : '';
+    this.projectResource.PubSupport = this.response[0].map(c => c).map(c => c.PSMembers).find(c =>
+      c.results) !== undefined ? this.response[0].map(c => c).map(c => c.PSMembers).map(c => c.results)[0].map(e => e.Title) : '';
   }
 
   showTimeline(selectedProjectObj) {
