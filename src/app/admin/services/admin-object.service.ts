@@ -56,4 +56,31 @@ export class AdminObjectService {
   public isMainLoaderHidden = true;
   public resourceCatArray = [];
   public groupArray = [];
+  public sowObj = {
+    CMLevel1: [],
+    CMLevel2: '',
+    DeliveryLevel1: [],
+    DeliveryLevel2: '',
+    ID: 0,
+    Title: '',
+    IsTypeChangedDisabled: false,
+    ClientLegalEntity: '',
+    AccessType: '',
+    SOWCode: '',
+    IsCheckBoxChecked: false
+  };
+  public projObj = {
+    CMLevel1: [],
+    CMLevel2: '',
+    DeliveryLevel1: [],
+    DeliveryLevel2: '',
+    ID: 0,
+    Title: '',
+    IsTypeChangedDisabled: false,
+    ClientLegalEntity: '',
+    AccessType: '',
+    ProjectCode: '',
+    SOWCode: '',
+    WBJID: ''
+  };
 }
