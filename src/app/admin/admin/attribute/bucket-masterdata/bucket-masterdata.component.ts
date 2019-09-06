@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { MessageService } from 'primeng/api';
+import { MessageService, Message, ConfirmationService } from 'primeng/api';
 import { CommonService } from '../../../../Services/common.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { CommonService } from '../../../../Services/common.service';
 })
 export class BucketMasterdataComponent implements OnInit {
   bucketDataColumns = [];
-  bucketDataRows = [];
+  bucketDataRows: any = [];
   auditHistoryColumns = [];
   auditHistoryRows = [];
   found;
@@ -26,26 +26,51 @@ export class BucketMasterdataComponent implements OnInit {
     ActionBy: [],
     Date: [],
   };
-  items = [
-    { label: 'Delete' }
-  ];
+  items = [];
+  rowIndex;
+  rowData;
+
+  cols;
+  editClient = false;
+  clientList: any;
   bucketData: any;
-  constructor(private datepipe: DatePipe, private messageService: MessageService, private commonService: CommonService) { }
+  msgs: Message[] = [];
+  selectedClient: any = [];
+  selectedRowItems: any = [];
+  isCheckboxDisabled = [];
+  constructor(private datepipe: DatePipe, private messageService: MessageService, private commonService: CommonService,
+    private confirmationService: ConfirmationService) { }
 
   ngOnInit() {
-    this.bucketDataColumns = [
-      // { field: 'Sr', header: 'Sr.No.' },
-      { field: 'Bucket', header: 'Bucket' , visibility: true},
-      { field: 'Client', header: 'Client' , visibility: true},
-      { field: 'LastUpdated', header: 'Last Updated' , visibility: true, exportable: false},
-      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
+    this.cols = [
+      { field: 'client', header: 'Client' },
+      // { field: 'color', header: '' }
     ];
 
+    this.clientList = [{ client: 'Client 1' },
+    { client: 'Client 2' },
+    { client: 'Client 3' },
+    { client: 'Client 4' },
+    { client: 'Client 5' },
+    { client: 'Client 6' },
+    { client: 'Client 7' },
+    { client: 'Client 8' },
+    { client: 'Client 9' },
+    { client: 'Client 10' }];
+
+    this.bucketDataColumns = [
+      // { field: 'Sr', header: 'Sr.No.' },
+      { field: 'Bucket', header: 'Bucket', visibility: true },
+      { field: 'Client', header: 'Client', visibility: true },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
+      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
+    ];
+    const clients = ['Client 1' , 'Client 2' , 'Client 6' , 'Client 9'];
     this.bucketDataRows = [
       {
         // Sr: 1,
         Bucket: 'Test',
-        Client: 'Test',
+        Client: clients,
         LastUpdated: 'Jul 3, 2019',
         LastUpdatedBy: 'Kaushal Bagrodia'
       }
@@ -77,9 +102,14 @@ export class BucketMasterdataComponent implements OnInit {
     this.bucketDataColArray.Bucket = this.uniqueArrayObj(colData.map(a => { const b = { label: a.Bucket, value: a.Bucket }; return b; }));
     this.bucketDataColArray.Client = this.uniqueArrayObj(colData.map(a => { const b = { label: a.Client, value: a.Client }; return b; }));
     this.bucketDataColArray.LastUpdated = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-      // tslint:disable-next-line: align
-      value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
+          // tslint:disable-next-line: align
+        }; return b;
+      }));
     this.bucketDataColArray.LastUpdatedBy = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
@@ -92,9 +122,14 @@ export class BucketMasterdataComponent implements OnInit {
     this.auditHistoryArray.ActionBy = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
     this.auditHistoryArray.Date = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.Date, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.Date, 'MMM d, yyyy')
+          // tslint:disable-next-line: align
+        }; return b;
+      }));
   }
 
   uniqueArrayObj(array: any) {
@@ -122,10 +157,87 @@ export class BucketMasterdataComponent implements OnInit {
         return item;
       }
     });
-    return found ? this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Data Already Exist in Table' })
-     : this.messageService.add({ severity: 'success', summary: 'Success Message', detail: 'Data Submitted' });
+
+    if (found) {
+      this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Data Already Exist in Table' });
+    } else {
+      const obj = {
+        Bucket: data,
+        Client: '',
+        LastUpdated: 'Sep 2, 2019',
+        LastUpdatedBy: 'Aditya Joshi'
+      };
+      this.bucketDataRows[this.bucketDataRows.length] = obj;
+      this.messageService.add({ severity: 'success', summary: 'Success Message', detail: 'Data Submitted' });
+    }
   }
 
+  editClientData(data) {
+    this.selectedClient = [];
+    this.selectedRowItems = [];
+    this.isCheckboxDisabled = [];
+    console.log(data);
+    this.editClient = true;
+    this.clientList.forEach((e, i) => {
+      if (data.Client !== '') {
+      data.Client.forEach((e1, j) => {
+        if (e1 !== undefined && e1 !== '') {
+          if (e.client === e1) {
+            this.selectedRowItems.push(e);
+            this.isCheckboxDisabled[i] = true;
+          }
+        }
+      });
+    }
+    });
+    this.selectedClient = this.selectedRowItems;
+  }
+
+  bucketMenu(data, rowIndex) {
+    this.rowIndex = rowIndex;
+    this.rowData = data;
+    this.items = [
+      { label: 'Edit', command: (e) => this.editClientData(data) },
+      { label: 'Delete', command: (e) => this.delete() , visible: data.Client !== '' ? false : true}
+    ];
+  }
+
+  headerCheck(event) {
+    console.log(event);
+    if (this.selectedClient.length === 0) {
+      this.selectedClient = this.selectedRowItems;
+    }
+  }
+
+  delete() {
+    this.confirmationService.confirm({
+      message: 'Do you want to delete this record?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-info-circle',
+      key: 'confirm',
+      accept: () => {
+        this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'Record deleted' }];
+      },
+      reject: () => {
+        this.msgs = [{ severity: 'info', summary: 'Rejected', detail: 'You have rejected' }];
+      }
+    });
+  }
+
+  update() {
+    const clients = [];
+    this.selectedClient.forEach((e) => {
+      clients.push(e.client);
+    });
+    const obj = {
+      Bucket: this.rowData.Bucket,
+      Client: clients,
+      LastUpdated: this.rowData.LastUpdated,
+      LastUpdatedBy: this.rowData.LastUpdatedBy
+    };
+    this.bucketDataRows[this.rowIndex] = obj;
+    this.editClient = false;
+  }
 
   downloadExcel(bmd) {
     bmd.exportCSV();

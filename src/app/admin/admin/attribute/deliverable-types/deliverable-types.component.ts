@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { MessageService } from 'primeng/api';
+import { MessageService, Message, ConfirmationService } from 'primeng/api';
 import { CommonService } from '../../../../Services/common.service';
 
 @Component({
@@ -26,16 +26,18 @@ export class DeliverableTypesComponent implements OnInit {
     Date: [],
   };
   items = [
-    { label: 'Delete'}
+    { label: 'Delete', command: (e) => this.delete() }
   ];
-  constructor(private datepipe: DatePipe,  private messageService: MessageService,  private common: CommonService) { }
+  msgs: Message[] = [];
+  constructor(private datepipe: DatePipe, private messageService: MessageService, private common: CommonService,
+              private confirmationService: ConfirmationService) { }
 
   ngOnInit() {
     this.deliverableTypesColumns = [
       // { field: 'Sr', header: 'Sr.No.' },
-      { field: 'DeliverableType', header: 'Deliverable Type' , visibility: true},
-      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
-      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
+      { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
+      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
     ];
 
     this.deliverableTypesRows = [
@@ -73,9 +75,14 @@ export class DeliverableTypesComponent implements OnInit {
     this.deliverableTypesColArray.DeliverableType = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.DeliverableType, value: a.DeliverableType }; return b; }));
     this.deliverableTypesColArray.LastUpdated = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
+        };
+        return b;
+      }));
     this.deliverableTypesColArray.LastUpdatedBy = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
@@ -87,25 +94,30 @@ export class DeliverableTypesComponent implements OnInit {
     this.auditHistoryArray.ActionBy = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
     this.auditHistoryArray.Date = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.Date, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.Date, 'MMM d, yyyy')
+        };
+        return b;
+      }));
   }
 
   uniqueArrayObj(array: any) {
     let sts: any = '';
     return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-        return {
-            label: label1,
-            value: array.find(s => s.label === label1).value
-        };
+      return {
+        label: label1,
+        value: array.find(s => s.label === label1).value
+      };
     });
   }
 
   addDeliverableData(deliverableTypes) {
     // this.common.checkUniqueData(this.deliverableTypesRows, deliverableTypes);
     if (deliverableTypes.trim() !== '') {
-    this.checkUniqueData(deliverableTypes);
+      this.checkUniqueData(deliverableTypes);
     }
   }
 
@@ -116,7 +128,21 @@ export class DeliverableTypesComponent implements OnInit {
       }
     });
     return found ? this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Data Already Exist in Table' })
-     : this.messageService.add({ severity: 'success', summary: 'Success Message', detail: 'Data Submitted' });
+      : this.messageService.add({ severity: 'success', summary: 'Success Message', detail: 'Data Submitted' });
+  }
+
+  delete() {
+    this.confirmationService.confirm({
+      message: 'Do you want to delete this record?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-info-circle',
+      accept: () => {
+        this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'Record deleted' }];
+      },
+      reject: () => {
+        this.msgs = [{ severity: 'info', summary: 'Rejected', detail: 'You have rejected' }];
+      }
+    });
   }
 
   downloadExcel(dt) {
