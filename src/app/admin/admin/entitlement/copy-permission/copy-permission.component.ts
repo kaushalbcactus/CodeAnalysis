@@ -449,6 +449,7 @@ export class CopyPermissionComponent implements OnInit {
    * else return null.
    */
   async getSourceUsersGroups(sourceUserIdArray) {
+    this.messageService.clear();
     const batchURL = [];
     const options = {
       data: null,
@@ -489,6 +490,11 @@ export class CopyPermissionComponent implements OnInit {
       this.permission.sourceGroups = tempSourceArray;
       return tempSourceArray;
     } else {
+      this.sourceUsers = [];
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error', sticky: true,
+        summary: 'Error Message', detail: 'The selected source users doesn\'t\ have any permission. Kindly select another user'
+      });
       return null;
     }
   }

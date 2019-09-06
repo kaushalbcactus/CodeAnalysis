@@ -98,6 +98,7 @@ form{
       text-transform: uppercase;
       top: 0;
       margin-bottom: 1%;
+      position: relative;
     }
     .ng-invalid.ng-dirty:not(form), .ng-invalid:not(form).form-submitted {
         border: solid 2px lightcoral;
@@ -138,4 +139,19 @@ form{
     .brandColor {
         color: #d7181f;
     }
-    
+    .accountableUser .ui-table .ui-table-thead > tr > th:nth-child(1),
+    .accountableUser .ui-table .ui-table-tbody > tr > td:nth-child(1)  {
+     width: 5%;
+    }
+    .accountableUser .ui-table .ui-table-thead > tr > th:nth-child(2),
+    .accountableUser .ui-table .ui-table-tbody > tr > td:nth-child(2)  {
+     width: 3%;
+    }
+    .accountableUser .ui-table .ui-table-thead > tr > th:nth-child(3),
+    .accountableUser .ui-table .ui-table-tbody > tr > td:nth-child(3)  {
+     width: 72%;
+    }
+    .accountableUser .ui-table .ui-table-thead > tr > th:nth-child(4),
+    .accountableUser .ui-table .ui-table-tbody > tr > td:nth-child(4)  {
+     width: 20%;
+    } 
