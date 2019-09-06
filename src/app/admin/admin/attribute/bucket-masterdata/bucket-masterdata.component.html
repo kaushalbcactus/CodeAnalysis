@@ -33,7 +33,7 @@
          <td>
             <p-menu #menu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
             <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-          (click)="menu.toggle($event);"></i>
+          (click)="menu.toggle($event);bucketMenu(rowData,rowIndex)"></i>
          </td>
       </tr>
   </ng-template>
@@ -96,3 +96,39 @@
     </ng-template>
   </p-table> -->
   <p-toast [style]="{marginTop: '80px'}"></p-toast>
+
+  <p-dialog [(visible)]="editClient" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
+      <p-header>
+        Edit Client
+      </p-header>
+      <p-table [columns]="cols" [value]="clientList" [(selection)]="selectedClient" dataKey="client"
+      [rows]="10">
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th style="width: 3em">
+            <p-tableHeaderCheckbox (click)="headerCheck($event)"></p-tableHeaderCheckbox>
+          </th>
+          <th *ngFor="let col of columns">
+            {{col.header}}
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr>
+          <td>
+            <p-tableCheckbox [disabled]="isCheckboxDisabled[rowIndex]" [value]="rowData"></p-tableCheckbox>
+          </td>
+          <td *ngFor="let col of columns">
+            {{rowData[col.field]}}
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+      <p-footer>
+        <button pButton label="Update" type="button" (click)="update()"></button>
+      </p-footer>
+  </p-dialog>
+
+  <p-confirmDialog [style]="{width: '500px',height:'100px'}" appendTo="body"></p-confirmDialog>
+
+  <p-messages [value]="msgs" key="confirm"></p-messages>

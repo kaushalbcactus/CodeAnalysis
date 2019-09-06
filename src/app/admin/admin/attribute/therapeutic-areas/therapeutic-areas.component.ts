@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { MessageService } from 'primeng/api';
+import { MessageService, Message , ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-therapeutic-areas',
@@ -25,9 +25,10 @@ export class TherapeuticAreasComponent implements OnInit {
     Date: [],
   };
   items = [
-    { label: 'Delete'}
+    { label: 'Delete' , command: (e) => this.delete()}
   ];
-  constructor(private datepipe: DatePipe, private messageService: MessageService) { }
+  msgs: Message[] = [];
+  constructor(private datepipe: DatePipe, private messageService: MessageService, private confirmationService: ConfirmationService) { }
 
   ngOnInit() {
     this.therapeuticAreaColumns = [
@@ -116,6 +117,20 @@ export class TherapeuticAreasComponent implements OnInit {
     });
     return found ? this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Data Already Exist in Table' })
      : this.messageService.add({ severity: 'success', summary: 'Success Message', detail: 'Data Submitted' });
+  }
+
+  delete() {
+    this.confirmationService.confirm({
+      message: 'Do you want to delete this record?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-info-circle',
+      accept: () => {
+        this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'Record deleted' }];
+      },
+      reject: () => {
+        this.msgs = [{ severity: 'info', summary: 'Rejected', detail: 'You have rejected' }];
+      }
+    });
   }
 
   downloadExcel(ta) {

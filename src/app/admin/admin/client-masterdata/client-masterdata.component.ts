@@ -21,24 +21,27 @@ export class ClientMasterdataComponent implements OnInit {
   POCRows = [];
   POColumns = [];
   PORows = [];
+  items = [];
+  items1 = [];
 
   poValue;
   selectedValue: any;
+  buttonLabel;
 
   showaddClientModal = false;
-  editClientLegalEntry = false;
+  showEditClient = false;
   showSubDivisionDetails = false;
-  showPointofContact = false;
-  showPurchaseOrder = false;
   showaddSubDivision = false;
-  showaddPOC = false;
   showeditSubDivision = false;
+
+  showPointofContact = false;
+  showaddPOC = false;
   showeditPOC = false;
+
+  showPurchaseOrder = false;
   showaddPO = false;
   showeditPO = false;
   showaddBudget = false;
-  items = [];
-  items1 = [];
 
   budgetType = [
     { label: 'Add', value: 'Add' },
@@ -52,32 +55,15 @@ export class ClientMasterdataComponent implements OnInit {
   ];
   cmObject = {
     isClientFormSubmit: false,
-    isEditClientFormSubmit: false,
     isSubDivisionFormSubmit: false,
-    isEditSubDivisionFormSubmit: false,
     isPOCFormSubmit: false,
-    isEditPOCFormSubmit: false,
     isBudgetFormSubmit: false,
     isPOFormSubmit: false,
-    isEditPOFormSubmit: false
-
   };
   addClient: FormGroup;
-  // editClient: FormGroup;
-
-  // tslint:disable-next-line: variable-name
-  subdivision_form: FormGroup;
-  // tslint:disable-next-line: variable-name
-
-  // editSubdivision_form: FormGroup;
-
-  // tslint:disable-next-line: variable-name
-  poc_form: FormGroup;
-  // tslint:disable-next-line: variable-name
-
-  // editPoc_form: FormGroup;
+  subDivisionform: FormGroup;
+  pocForm: FormGroup;
   PoForm: FormGroup;
-  // editPoForm: FormGroup;
   addBudgetForm: FormGroup;
 
   clientMasterDataColArray = {
@@ -122,7 +108,7 @@ export class ClientMasterdataComponent implements OnInit {
       name: ['', Validators.required],
       acronym: ['', Validators.required],
       group: ['', Validators.required],
-      distributionList: ['', Validators.required],
+      distributionList: [''],
       invoiceName: ['', Validators.required],
       realization: ['', Validators.required],
       market: ['', Validators.required],
@@ -131,102 +117,42 @@ export class ClientMasterdataComponent implements OnInit {
       timeZone: ['', Validators.required],
       cmLevel1: ['', Validators.required],
       cmLevel2: ['', Validators.required],
-      deliveryLevel1: ['', Validators.required],
+      deliveryLevel1: [''],
       deliveryLevel2: ['', Validators.required],
       currency: ['', Validators.required],
-      APEmail: ['', Validators.required],
+      APEmail: [''],
       address1: [''],
       address2: [''],
       address3: [''],
       address4: [''],
-      notes: ['', Validators.required],
+      notes: [''],
       bucket: ['', Validators.required]
     });
-    // this.editClient = frmbuilder.group({
-    //   name: ['', Validators.required],
-    //   acronym: ['', Validators.required],
-    //   group: ['', Validators.required],
-    //   distributionList: ['', Validators.required],
-    //   invoiceName: ['', Validators.required],
-    //   realization: ['', Validators.required],
-    //   market: ['', Validators.required],
-    //   billingEntry: ['', Validators.required],
-    //   poRequired: ['', Validators.required],
-    //   timeZone: ['', Validators.required],
-    //   cmLevel1: ['', Validators.required],
-    //   cmLevel2: ['', Validators.required],
-    //   deliveryLevel1: ['', Validators.required],
-    //   deliveryLevel2: ['', Validators.required],
-    //   currency: ['', Validators.required],
-    //   APEmail: ['', Validators.required],
-    //   address1: [''],
-    //   address2: [''],
-    //   address3: [''],
-    //   address4: [''],
-    //   notes: ['', Validators.required],
-    //   bucket: ['', Validators.required]
-    // });
-    this.subdivision_form = frmbuilder.group({
+    this.subDivisionform = frmbuilder.group({
       subDivision_Name: ['', Validators.required],
-      distributionList: ['', Validators.required],
-      cmLevel1: ['', Validators.required],
-      deliveryLevel1: ['', Validators.required],
+      distributionList: [''],
+      cmLevel1: [''],
+      deliveryLevel1: [''],
     });
-    // this.editSubdivision_form = frmbuilder.group({
-    //   subDivision_Name: ['', Validators.required],
-    //   distributionList: ['', Validators.required],
-    //   cmLevel1: ['', Validators.required],
-    //   deliveryLevel1: ['', Validators.required],
-    // });
-    this.poc_form = frmbuilder.group({
+    this.pocForm = frmbuilder.group({
       fname: ['', Validators.required],
       lname: ['', Validators.required],
       designation: ['', Validators.required],
       email: ['', Validators.required],
-      phone: ['', Validators.required],
-      address1: ['', Validators.required],
+      phone: [''],
+      address1: [''],
       address2: [''],
       address3: [''],
       address4: [''],
-      department: ['', Validators.required],
+      department: [''],
       referralSource: ['', Validators.required],
       status: ['', Validators.required],
-      relationshipStrength: ['', Validators.required],
-      engagementPlan: ['', Validators.required],
-      comments: ['', Validators.required],
+      relationshipStrength: [''],
+      engagementPlan: [''],
+      comments: [''],
       contactsType: ['', Validators.required],
     });
-    // this.editPoc_form = frmbuilder.group({
-    //   fname: ['', Validators.required],
-    //   lname: ['', Validators.required],
-    //   designation: ['', Validators.required],
-    //   email: ['', Validators.required],
-    //   phone: ['', Validators.required],
-    //   address1: ['', Validators.required],
-    //   address2: [''],
-    //   address3: [''],
-    //   address4: [''],
-    //   department: ['', Validators.required],
-    //   referralSource: ['', Validators.required],
-    //   status: ['', Validators.required],
-    //   relationshipStrength: ['', Validators.required],
-    //   engagementPlan: ['', Validators.required],
-    //   comments: ['', Validators.required],
-    //   contactsType: ['', Validators.required],
-    // });
     this.initAddPOForm();
-    // this.editPoForm = frmbuilder.group({
-    //   poNumber: [{ value: '', disabled: true }, Validators.required],
-    //   poName: ['', Validators.required],
-    //   currency: [{ value: '', disabled: true }, Validators.required],
-    //   poExpiryDate: ['', Validators.required],
-    //   poc: ['', Validators.required],
-    //   poFile: ['', Validators.required],
-    //   ta: ['', Validators.required],
-    //   molecule: ['', Validators.required],
-    //   cmLevel2: ['', Validators.required],
-    //   poBuyingEntity: ['', Validators.required]
-    // });
     this.initAddBudgetForm();
   }
 
@@ -256,9 +182,9 @@ export class ClientMasterdataComponent implements OnInit {
 
   ngOnInit() {
     this.clientMasterDataColumns = [
-      { field: 'ClientLegalEntry', header: 'Client Legal Entry' , visibility: true},
-      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
-      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
+      { field: 'ClientLegalEntry', header: 'Client Legal Entry', visibility: true },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
+      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
     ];
 
     this.clientMasterDataRows = [
@@ -306,9 +232,9 @@ export class ClientMasterdataComponent implements OnInit {
     ];
 
     this.subDivisionDetailsColumns = [
-      { field: 'SubDivision', header: 'Sub-Division' , visibility: true},
-      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
-      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
+      { field: 'SubDivision', header: 'Sub-Division', visibility: true },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
+      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
     ];
 
     this.subDivisionDetailsRows = [
@@ -319,9 +245,9 @@ export class ClientMasterdataComponent implements OnInit {
       }
     ];
     this.POCColumns = [
-      { field: 'POC', header: 'POC' , visibility: true},
-      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
-      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
+      { field: 'POC', header: 'POC', visibility: true },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
+      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
     ];
 
     this.POCRows = [
@@ -333,9 +259,9 @@ export class ClientMasterdataComponent implements OnInit {
     ];
     this.POColumns = [
       { field: 'PO', header: 'PO' },
-      { field: 'PoValues', header: 'PO Values' , visibility: true},
-      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
-      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
+      { field: 'PoValues', header: 'PO Values', visibility: true },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
+      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
     ];
 
     this.PORows = [
@@ -359,9 +285,13 @@ export class ClientMasterdataComponent implements OnInit {
     this.subDivisionDetailsColArray.SubDivision = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.SubDivision, value: a.SubDivision }; return b; }));
     this.subDivisionDetailsColArray.LastUpdated = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
+        }; return b;
+      }));
     this.subDivisionDetailsColArray.LastUpdatedBy = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
@@ -369,9 +299,13 @@ export class ClientMasterdataComponent implements OnInit {
     this.POCColArray.POC = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.POC, value: a.POC }; return b; }));
     this.POCColArray.LastUpdated = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
+        }; return b;
+      }));
     this.POCColArray.LastUpdatedBy = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
@@ -379,9 +313,13 @@ export class ClientMasterdataComponent implements OnInit {
     this.POColArray.PO = this.uniqueArrayObj(colData.map(a => { const b = { label: a.PO, value: a.PO }; return b; }));
     this.POColArray.PoValues = this.uniqueArrayObj(colData.map(a => { const b = { label: a.PoValues, value: a.PoValues }; return b; }));
     this.POColArray.LastUpdated = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
+        }; return b;
+      }));
     this.POColArray.LastUpdatedBy = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
@@ -391,9 +329,13 @@ export class ClientMasterdataComponent implements OnInit {
     this.clientMasterDataColArray.ClientLegalEntry = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ClientLegalEntry, value: a.ClientLegalEntry }; return b; }));
     this.clientMasterDataColArray.LastUpdated = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
+        }; return b;
+      }));
     this.clientMasterDataColArray.LastUpdatedBy = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
@@ -403,9 +345,13 @@ export class ClientMasterdataComponent implements OnInit {
     this.auditHistoryArray.ActionBy = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
     this.auditHistoryArray.Date = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.Date, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.Date, 'MMM d, yyyy')
+        }; return b;
+      }));
     this.auditHistoryArray.Details = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
 
@@ -419,9 +365,13 @@ export class ClientMasterdataComponent implements OnInit {
     this.auditHistorySelectedArray.ActionBy = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
     this.auditHistorySelectedArray.Date = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.Date, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.Date, 'MMM d, yyyy')
+        }; return b;
+      }));
     this.auditHistorySelectedArray.Details = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
   }
@@ -457,7 +407,7 @@ export class ClientMasterdataComponent implements OnInit {
   }
 
   poMenu(data) {
-   this.items1 = [{ label: 'Add Budget', command: (e) => this.showaddBudgetModal(data) },
+    this.items1 = [{ label: 'Add Budget', command: (e) => this.showaddBudgetModal(data) },
     { label: 'Edit', command: (e) => this.showEditPOModal() },
     { label: 'Delete' }];
   }
@@ -468,7 +418,6 @@ export class ClientMasterdataComponent implements OnInit {
       console.log(clientData.value);
     } else {
       this.cmObject.isClientFormSubmit = true;
-      this.cmObject.isEditClientFormSubmit = true;
     }
   }
 
@@ -477,7 +426,6 @@ export class ClientMasterdataComponent implements OnInit {
       console.log(subDivisionData.value);
     } else {
       this.cmObject.isSubDivisionFormSubmit = true;
-      this.cmObject.isEditSubDivisionFormSubmit = true;
     }
   }
 
@@ -486,7 +434,6 @@ export class ClientMasterdataComponent implements OnInit {
       console.log(pocData.value);
     } else {
       this.cmObject.isPOCFormSubmit = true;
-      this.cmObject.isEditPOCFormSubmit = true;
     }
   }
 
@@ -495,7 +442,6 @@ export class ClientMasterdataComponent implements OnInit {
       console.log(poData.value);
     } else {
       this.cmObject.isPOFormSubmit = true;
-      this.cmObject.isEditPOFormSubmit = true;
     }
   }
 
@@ -521,10 +467,10 @@ export class ClientMasterdataComponent implements OnInit {
   addBudget() {
     if (this.addBudgetForm.controls.revenue.value < 0 ||
       this.addBudgetForm.controls.oop.value < 0 || this.addBudgetForm.controls.tax.value < 0) {
-        this.messageService.add({severity: 'error', summary: 'Error Message', detail: 'Values should be Positve Number'});
+      this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Values should be Positve Number' });
     } else {
       if (this.addBudgetForm.controls.total.value < 0) {
-        this.messageService.add({severity: 'error', summary: 'Error Message', detail: 'Total should be in Positve Number'});
+        this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Total should be in Positve Number' });
       } else {
         console.log(this.addBudgetForm.getRawValue());
       }
@@ -535,13 +481,15 @@ export class ClientMasterdataComponent implements OnInit {
     const value = Math.abs(this.addBudgetForm.controls.total.value);
     if (this.addBudgetForm.controls.revenue.value > 0 ||
       this.addBudgetForm.controls.oop.value > 0 || this.addBudgetForm.controls.tax.value > 0) {
-        this.messageService.add({severity: 'error', summary: 'Error Message', detail: 'Values should be Negative Number'});
+      this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Values should be Negative Number' });
     } else {
       if (this.addBudgetForm.controls.total.value > 0) {
-        this.messageService.add({severity: 'error', summary: 'Error Message', detail: 'Total should be in Negative Number'});
-      } else if ( value > this.poValue.PoValues) {
-        this.messageService.add({severity: 'error', summary: 'Error Message',
-        detail: 'Total Amount must be less than or equal to existing PO Value'});
+        this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Total should be in Negative Number' });
+      } else if (value > this.poValue.PoValues) {
+        this.messageService.add({
+          severity: 'error', summary: 'Error Message',
+          detail: 'Total Amount must be less than or equal to existing PO Value'
+        });
       } else {
         console.log(this.addBudgetForm.getRawValue());
       }
@@ -550,8 +498,8 @@ export class ClientMasterdataComponent implements OnInit {
 
   restructureBudget() {
     if (this.addBudgetForm.controls.total.value !== 0) {
-      this.messageService.add({severity: 'error', summary: 'Error Message', detail: 'Total Should be Zero'});
-      } else {
+      this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Total Should be Zero' });
+    } else {
       console.log(this.addBudgetForm.getRawValue());
     }
   }
@@ -565,11 +513,25 @@ export class ClientMasterdataComponent implements OnInit {
 
   showAddClientModal() {
     this.addClient.reset();
+    this.addClient.controls.name.enable();
+    this.addClient.controls.acronym.enable();
+    this.addClient.controls.currency.enable();
+    this.addClient.controls.billingEntry.enable();
+    this.addClient.controls.timeZone.enable();
+    this.showEditClient = false;
+    this.buttonLabel = 'Submit';
     this.showaddClientModal = true;
     this.cmObject.isClientFormSubmit = false;
   }
 
   showEditCLientModal(data) {
+    this.showEditClient = true;
+    this.buttonLabel = 'Update';
+    this.addClient.controls.name.disable();
+    this.addClient.controls.acronym.disable();
+    this.addClient.controls.currency.disable();
+    this.addClient.controls.billingEntry.disable();
+    this.addClient.controls.timeZone.disable();
     this.addClient.patchValue({
       name: 'Test',
       acronym: 'test',
@@ -595,8 +557,6 @@ export class ClientMasterdataComponent implements OnInit {
       bucket: 'option1'
     });
     this.showaddClientModal = true;
-    // this.editClientLegalEntry = true;
-    this.cmObject.isEditClientFormSubmit = false;
   }
 
   showSubDivision(data) {
@@ -612,47 +572,56 @@ export class ClientMasterdataComponent implements OnInit {
   }
 
   showAddSubDivision() {
+    this.subDivisionform.reset();
+    this.showeditSubDivision = false;
+    this.buttonLabel = 'Submit';
     this.showaddSubDivision = true;
-    this.cmObject.isSubDivisionFormSubmit = false;
+    this.subDivisionform.controls.subDivision_Name.enable();
   }
 
   showEditSubDivision(data) {
     this.showeditSubDivision = true;
-    this.cmObject.isEditSubDivisionFormSubmit = false;
-    // this.editSubdivision_form.patchValue({
-    //     subDivision_Name: 'Test',
-    //     distributionList: 'Test',
-    //     cmLevel1: ['option1', 'option2'],
-    //     deliveryLevel1: ['option1'],
-    // });
+    this.buttonLabel = 'Update';
+    this.showaddSubDivision = true;
+    this.subDivisionform.controls.subDivision_Name.disable();
+    this.subDivisionform.patchValue({
+      subDivision_Name: 'Test',
+      distributionList: 'Test',
+      cmLevel1: ['option1', 'option2'],
+      deliveryLevel1: ['option1'],
+    });
   }
 
   showAddPOC() {
+    this.pocForm.reset();
+    this.showeditPOC = false;
+    this.buttonLabel = 'Submit';
     this.showaddPOC = true;
     this.cmObject.isPOCFormSubmit = false;
   }
 
   showEditPOC(data) {
     this.showeditPOC = true;
-    this.cmObject.isEditPOCFormSubmit = false;
-  //   this.editPoc_form.patchValue({
-  //     fname: 'Test',
-  //     lname: 'Test',
-  //     designation: 'Test',
-  //     email: 'Test',
-  //     phone: 'Test',
-  //     address1: 'Test',
-  //     address2: 'Test',
-  //     address3: 'Test',
-  //     address4: 'Test',
-  //     department: 'Test',
-  //     referralSource: 'option1',
-  //     status: 'option1',
-  //     relationshipStrength: 'Test',
-  //     engagementPlan: 'Test',
-  //     comments: 'Test',
-  //     contactsType: 'option2',
-  // });
+    this.buttonLabel = 'Update';
+    this.showaddPOC = true;
+    this.pocForm.patchValue({
+      fname: 'Test',
+      lname: 'Test',
+      designation: 'Test',
+      email: 'Test',
+      phone: 'Test',
+      address1: 'Test',
+      address2: 'Test',
+      address3: 'Test',
+      address4: 'Test',
+      department: 'Test',
+      referralSource: 'option1',
+      status: 'option1',
+      relationshipStrength: 'Test',
+      engagementPlan: 'Test',
+      comments: 'Test',
+      contactsType: 'option2',
+    });
   }
 
   showAddPO() {
@@ -663,19 +632,18 @@ export class ClientMasterdataComponent implements OnInit {
 
   showEditPOModal() {
     this.showeditPO = true;
-    this.cmObject.isEditPOFormSubmit = false;
-  //   this.editPoForm.patchValue({
-  //     poNumber: 'Test',
-  //     poName: 'Test',
-  //     currency: 'option2',
-  //     poExpiryDate: new Date(),
-  //     poc: 'option2',
-  //     // poFile: 'Bucket Master Data.csv',
-  //     ta: 'option2',
-  //     molecule: 'option2',
-  //     cmLevel2: 'option2',
-  //     poBuyingEntity: 'option2'
-  // });
+    //   this.editPoForm.patchValue({
+    //     poNumber: 'Test',
+    //     poName: 'Test',
+    //     currency: 'option2',
+    //     poExpiryDate: new Date(),
+    //     poc: 'option2',
+    //     // poFile: 'Bucket Master Data.csv',
+    //     ta: 'option2',
+    //     molecule: 'option2',
+    //     cmLevel2: 'option2',
+    //     poBuyingEntity: 'option2'
+    // });
   }
 
   showaddBudgetModal(data) {
