@@ -1,83 +1,66 @@
 <div>
   <div class="userRole">
     <div class="ui-g">
-      <div class="ui-g-2">
-        <span style="padding-right: 10px;">User:</span>
-        <p-dropdown [options]="users" filter="true" resetFilterOnHide="true" placeholder='Select User'
-          [(ngModel)]="selectedUser" (onChange)="userChange()">
-        </p-dropdown>
+      <div class="ui-g-5">
+        <div class="ui-g-2">
+          <span>User:</span>
+        </div>
+        <div class="ui-g-3">
+          <p-dropdown [options]="users" filter="true" resetFilterOnHide="true" placeholder='Select User'
+            [(ngModel)]="selectedUser" (onChange)="userChange()">
+          </p-dropdown>
+        </div>
       </div>
-
-      <div class="ui-g-2">
-        <span style="padding-right: 10px;">Client:</span>
-        <p-dropdown [options]="clients" filter="true" resetFilterOnHide="true" placeholder='Select Client'
-          [(ngModel)]="selectedClient" (onChange)="clientChange()">
-        </p-dropdown>
+      <div class="ui-g-5">
+        <div class="ui-g-2">
+          <span>Client:</span>
+        </div>
+        <div class="ui-g-3">
+          <p-dropdown [options]="clients" filter="true" resetFilterOnHide="true" placeholder='Select Client'
+            [(ngModel)]="selectedClient" (onChange)="clientChange()">
+          </p-dropdown>
+        </div>
       </div>
-
       <div class="ui-g-2">
         <p-button type="button" label="Save" (onClick)="save()"></p-button>
       </div>
     </div>
-
-    <div [hidden]="projectTable">
-      <p-table [columns]="cols" [value]="projectList" [(selection)]="selectedProject" dataKey="project"
-        [paginator]="true" [rows]="10" (onRowSelect)="projectCheck($event)" (onRowUnselect)="uncheck($event)">
+    <div *ngIf="projectList.length" class="accountableUser">
+      <p-table [columns]="cols" [value]="projectList" [(selection)]="selectedProject" dataKey="ID"
+        [scrollable]="true" scrollHeight="400px">
         <ng-template pTemplate="header" let-columns>
           <tr>
-            <th style="width: 3em">
-              <p-tableHeaderCheckbox (click)="headerCheck($event)"></p-tableHeaderCheckbox>
+            <th>Sr No.</th>
+            <th>
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
             </th>
-            <th *ngFor="let col of columns">
-              {{col.header}}
+            <th>
+              Project
             </th>
-            <th></th>
+            <th>Action</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
           <tr>
+            <td>{{rowIndex +1}}</td>
             <td>
-              <p-tableCheckbox [disabled]="isTypeDisabled[rowIndex]" [value]="rowData"></p-tableCheckbox>
+              <p-tableCheckbox [disabled]="rowData.IsTypeChangedDisabled" [value]="rowData"></p-tableCheckbox>
             </td>
-            <td *ngFor="let col of columns">
-              {{rowData[col.field]}}
+            <td class="brandColor">
+              {{rowData.ProjectCode}}({{rowData.WBJID}})
             </td>
             <td>
-              <p-dropdown [disabled]="isTypeDisabled[rowIndex]" [options]="accessType" filter="true"
-                resetFilterOnHide="true" [(ngModel)]='rowData.type' (onChange)="typeChange($event.value)">
+              <p-dropdown [disabled]="rowData.IsTypeChangedDisabled" [options]="accessType" [(ngModel)]="rowData.AccessType" (onChange)="typeChange(rowData)">
               </p-dropdown>
             </td>
           </tr>
         </ng-template>
-        <!-- <ng-template pTemplate="summary">
-          <ul>
-            <li *ngFor="let project of selectedProject" style="text-align: left">
-              {{project | json}}
-            </li>
-          </ul>
-        </ng-template> -->
       </p-table>
+    </div>
+    <div *ngIf="!projectList.length">
+      <div class="ui-g">
+          <div class="ui-g-12 brandColor">No Projects found.</div>
+      </div>
     </div>
   </div>
 </div>
-
-<p-toast [style]="{marginTop: '80px'}"></p-toast>
-
-
-<!-- <table>
-  <tr *ngFor="let projectData of projectList; let i= index;">
-    <td>
-      <p-checkbox name="group1" [disabled]="isTypeDisabled[i]" [(ngModel)]="projectData.status" binary="true"
-        (click)="projectCheck(i,projectData)">
-      </p-checkbox>
-    </td>
-    <td>
-      {{projectData.project}}
-    </td>
-    <td>
-      <p-dropdown [disabled]="isTypeDisabled[i]" [options]="accessType" filter="true"         resetFilterOnHide="true" placeholder='Select value' [(ngModel)]='projectData.type'
-        (onChange)="typeChange($event.value)">
-      </p-dropdown>
-    </td>
-  </tr>
-</table> -->

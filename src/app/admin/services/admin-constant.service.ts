@@ -102,6 +102,28 @@ export class AdminConstantService {
       top: 4900,
       orderby: 'UserName/Title asc'
     },
+    GET_CLIENTLEGALENTITY_BY_USER_ROLE: {
+      select: 'ID,Title,Acronym,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,'
+        + 'DeliveryLevel2/ID,DeliveryLevel2/Title,BillingEntity',
+      expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,'
+        + 'DeliveryLevel2/ID,DeliveryLevel2/Title',
+      filter: '',
+      orderby: 'Title asc'
+    },
+    GET_SOW_BY_CLIENT: {
+      select: 'ID,Title,SOWCode,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,'
+        + 'DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
+      expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,'
+        + 'DeliveryLevel2/ID,DeliveryLevel2/Title',
+      filter: 'Status ne \'Closed\' and ClientLegalEntity eq \'{{clientLegalEntity}}\''
+    },
+    GET_PROJECT_BY_CLIENT: {
+      select: 'ID,Title,SOWCode,WBJID,ProjectCode,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,'
+        + 'DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
+      expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,'
+        + 'DeliveryLevel2/ID,DeliveryLevel2/Title',
+      filter: 'Status ne \'Closed\' and ClientLegalEntity eq \'{{clientLegalEntity}}\''
+    }
   };
   public LOGICAL_FIELD = {
     YES: 'Yes',
@@ -118,5 +140,15 @@ export class AdminConstantService {
   public ACTION = {
     COPY: 'Copy',
     ADD: 'Add'
+  };
+  public FILTER = {
+    CM_LEVEL_1: 'CM L1',
+    CM_LEVEL_2: 'CM L2',
+    DELIVERY_LEVEL_1: 'Delivery L1',
+    DELIVERY_LEVEL_2: 'Delivery L2'
+  };
+  public ACCESS_TYPE = {
+    ACCESS: 'Access',
+    ACCOUNTABLE: 'Accountable'
   };
 }
