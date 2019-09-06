@@ -2,12 +2,25 @@ import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { MessageService, Message, ConfirmationService } from 'primeng/api';
 import { CommonService } from '../../../../Services/common.service';
+import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
+import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 
 @Component({
   selector: 'app-bucket-masterdata',
   templateUrl: './bucket-masterdata.component.html',
   styleUrls: ['./bucket-masterdata.component.css']
 })
+/**
+ * A class that uses ngPrime to display the data in table.
+ * It also have feature like paging, sorting and naviagation to different component.
+ *
+ * @description
+ *
+ * This class is used to add user to bucket into `Focus Group` list.
+ *
+ */
 export class BucketMasterdataComponent implements OnInit {
   bucketDataColumns = [];
   bucketDataRows: any = [];
@@ -38,8 +51,16 @@ export class BucketMasterdataComponent implements OnInit {
   selectedClient: any = [];
   selectedRowItems: any = [];
   isCheckboxDisabled = [];
-  constructor(private datepipe: DatePipe, private messageService: MessageService, private commonService: CommonService,
-    private confirmationService: ConfirmationService) { }
+  constructor(
+    private datepipe: DatePipe,
+    private messageService: MessageService,
+    private commonService: CommonService,
+    private confirmationService: ConfirmationService,
+    private adminObject: AdminObjectService,
+    private spServices: SPOperationService,
+    private constants: ConstantsService,
+    private adminConstants: AdminConstantService
+  ) { }
 
   ngOnInit() {
     this.cols = [
@@ -65,7 +86,7 @@ export class BucketMasterdataComponent implements OnInit {
       { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
       { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
     ];
-    const clients = ['Client 1' , 'Client 2' , 'Client 6' , 'Client 9'];
+    const clients = ['Client 1', 'Client 2', 'Client 6', 'Client 9'];
     this.bucketDataRows = [
       {
         // Sr: 1,
@@ -76,28 +97,87 @@ export class BucketMasterdataComponent implements OnInit {
       }
     ];
 
-    this.auditHistoryColumns = [
-      // { field: 'Sr', header: 'Sr.No.' },
-      { field: 'Action', header: 'Action' },
-      { field: 'SubAction', header: 'Sub Action' },
-      { field: 'ActionBy', header: 'Action By' },
-      { field: 'Date', header: 'Date' },
-    ];
+    // this.auditHistoryColumns = [
+    //   // { field: 'Sr', header: 'Sr.No.' },
+    //   { field: 'Action', header: 'Action' },
+    //   { field: 'SubAction', header: 'Sub Action' },
+    //   { field: 'ActionBy', header: 'Action By' },
+    //   { field: 'Date', header: 'Date' },
+    // ];
 
-    this.auditHistoryRows = [
-      {
-        // Sr: 1,
-        Action: '',
-        SubAction: '',
-        ActionBy: '',
-        ActionDate: '',
-      }
-    ];
-
+    // this.auditHistoryRows = [
+    //   {
+    //     // Sr: 1,
+    //     Action: '',
+    //     SubAction: '',
+    //     ActionBy: '',
+    //     ActionDate: '',
+    //   }
+    // ];
+    this.loadBucketTable();
     this.colFilters(this.bucketDataRows);
     this.colFilters1(this.auditHistoryRows);
   }
-
+  /**
+   * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
+   *
+   * @description
+   *
+   * It will iterate all the response array to cater the request and show into the table.
+   * The table have option for sorting, pagination, edit and delete the bucket.
+   *
+   */
+  async loadBucketTable() {
+    this.adminObject.isMainLoaderHidden = false;
+    const tempArray = [];
+    const results = await this.getInitData();
+    console.log(results);
+    if (results && results.length) {
+      results.forEach(item => {
+        const obj = Object.assign({}, this.adminObject.sowObj);
+        obj.CMLevel1 = item.CMLevel1 && item.CMLevel1.results && item.CMLevel1.results.length ?
+          item.CMLevel1.results : [];
+        obj.CMLevel2 = item.CMLevel2 && item.CMLevel2.hasOwnProperty('ID') ? item.CMLevel2 : '';
+        obj.DeliveryLevel1 = item.DeliveryLevel1 && item.DeliveryLevel1.results && item.DeliveryLevel1.results.length ?
+          item.DeliveryLevel1.results : [];
+        obj.DeliveryLevel2 = item.DeliveryLevel2 && item.DeliveryLevel2.hasOwnProperty('ID') ? item.DeliveryLevel2 : '';
+        obj.ClientLegalEntity = item.ClientLegalEntity ? item.ClientLegalEntity : '';
+        obj.ID = item.ID;
+        obj.Title = item.Title;
+        obj.IsCheckBoxChecked = false;
+        obj.SOWCode = item.SOWCode ? item.SOWCode : '';
+        // if (item.CMLevel2 && item.CMLevel2.hasOwnProperty('ID')
+        //   && userObj.UserName.ID === item.CMLevel2.ID ||
+        //   item.DeliveryLevel2 && item.DeliveryLevel2.hasOwnProperty('ID')
+        //   && userObj.UserName.ID === item.DeliveryLevel2.ID) {
+        //   obj.IsTypeChangedDisabled = true;
+        //   obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
+        // } else {
+        //   obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCESS;
+        //   obj.IsTypeChangedDisabled = false;
+        // }
+        tempArray.push(obj);
+      });
+      this.bucketDataRows = tempArray;
+    }
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
+   * This method will prepare REST request to get the data based on query.
+   *
+   * @description
+   * It will prepare the request as per following Sequence.
+   * 1. Bucket  - Get data from `Focus Group` list based on filter `IsActive='Yes'`.
+   *
+   * @return An Array of the response in `JSON` format in above sequence.
+   */
+  async getInitData() {
+    const getSOW = Object.assign({}, this.adminConstants.QUERY.GET_FOCUS_GROUP_BY_ACTIVE);
+    getSOW.filter = getSOW.filter.replace(/{{isActive}}/gi, '1');
+    const sResults = await this.spServices.readItems(this.constants.listNames.FocusGroup.name, getSOW);
+    return sResults;
+  }
   colFilters(colData) {
     this.bucketDataColArray.Bucket = this.uniqueArrayObj(colData.map(a => { const b = { label: a.Bucket, value: a.Bucket }; return b; }));
     this.bucketDataColArray.Client = this.uniqueArrayObj(colData.map(a => { const b = { label: a.Client, value: a.Client }; return b; }));
@@ -180,15 +260,15 @@ export class BucketMasterdataComponent implements OnInit {
     this.editClient = true;
     this.clientList.forEach((e, i) => {
       if (data.Client !== '') {
-      data.Client.forEach((e1, j) => {
-        if (e1 !== undefined && e1 !== '') {
-          if (e.client === e1) {
-            this.selectedRowItems.push(e);
-            this.isCheckboxDisabled[i] = true;
+        data.Client.forEach((e1, j) => {
+          if (e1 !== undefined && e1 !== '') {
+            if (e.client === e1) {
+              this.selectedRowItems.push(e);
+              this.isCheckboxDisabled[i] = true;
+            }
           }
-        }
-      });
-    }
+        });
+      }
     });
     this.selectedClient = this.selectedRowItems;
   }
@@ -198,7 +278,7 @@ export class BucketMasterdataComponent implements OnInit {
     this.rowData = data;
     this.items = [
       { label: 'Edit', command: (e) => this.editClientData(data) },
-      { label: 'Delete', command: (e) => this.delete() , visible: data.Client !== '' ? false : true}
+      { label: 'Delete', command: (e) => this.delete(), visible: data.Client !== '' ? false : true }
     ];
   }
 

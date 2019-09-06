@@ -95,8 +95,6 @@
         </tr>
     </ng-template>
   </p-table> -->
-  <p-toast [style]="{marginTop: '80px'}"></p-toast>
-
   <p-dialog [(visible)]="editClient" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
       <p-header>
         Edit Client
@@ -128,7 +126,4 @@
         <button pButton label="Update" type="button" (click)="update()"></button>
       </p-footer>
   </p-dialog>
-
-  <p-confirmDialog [style]="{width: '500px',height:'100px'}" appendTo="body"></p-confirmDialog>
-
   <p-messages [value]="msgs" key="confirm"></p-messages>

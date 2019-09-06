@@ -123,6 +123,11 @@ export class AdminConstantService {
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,'
         + 'DeliveryLevel2/ID,DeliveryLevel2/Title',
       filter: 'Status ne \'Closed\' and ClientLegalEntity eq \'{{clientLegalEntity}}\''
+    },
+    GET_FOCUS_GROUP_BY_ACTIVE: {
+      select: 'ID,Title,Modified,IsActive,Editor/ID,Editor/Title',
+      expand: 'Editor/ID,Editor/Title',
+      filter: 'IsActive eq {{isActive}}'
     }
   };
   public LOGICAL_FIELD = {

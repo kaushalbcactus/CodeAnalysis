@@ -83,4 +83,12 @@ export class AdminObjectService {
     SOWCode: '',
     WBJID: ''
   };
+  public bucketObj = {
+    ID: 0,
+    Bucket: '',
+    Client: [],
+    ClientsArray: [],
+    LastUpdated: new Date(),
+    LastUpdatedBy: ''
+  };
 }
