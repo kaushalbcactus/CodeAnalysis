@@ -84,7 +84,7 @@ export class AdminConstantService {
         + 'Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,'
         + 'Tasks/Title,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,'
         + 'Editor/ID,Editor/Title',
-      filter: 'IsActive eq \'{{isActive}}\' and ID eq \'{{Id}}\'',
+      filter: 'IsActive eq \'{{isActive}}\' and ID eq \'{{Id}}\''
     },
     GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME: {
       select: 'ID,Title,Account/ID,Account/Title,Bucket,Categories,Created,DateofExit,DateOfJoining,DeliverableExclusion/ID,'
@@ -115,19 +115,27 @@ export class AdminConstantService {
         + 'DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,'
         + 'DeliveryLevel2/ID,DeliveryLevel2/Title',
-      filter: 'Status ne \'Closed\' and ClientLegalEntity eq \'{{clientLegalEntity}}\''
+      filter: 'Status ne \'Closed\' and ClientLegalEntity eq \'{{clientLegalEntity}}\'',
+      top: 4900
     },
     GET_PROJECT_BY_CLIENT: {
       select: 'ID,Title,SOWCode,WBJID,ProjectCode,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,'
         + 'DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,'
         + 'DeliveryLevel2/ID,DeliveryLevel2/Title',
-      filter: 'Status ne \'Closed\' and ClientLegalEntity eq \'{{clientLegalEntity}}\''
+      filter: 'Status ne \'Closed\' and ClientLegalEntity eq \'{{clientLegalEntity}}\'',
+      top: 4900
     },
     GET_FOCUS_GROUP_BY_ACTIVE: {
       select: 'ID,Title,Modified,IsActive,Editor/ID,Editor/Title',
       expand: 'Editor/ID,Editor/Title',
-      filter: 'IsActive eq {{isActive}}'
+      filter: 'IsActive eq {{isActive}}',
+    },
+    GET_CLIENTLEGALENTITY_BY_ACTIVE: {
+      select: 'ID,Title,Bucket',
+      filter: 'IsActive eq \'{{isActive}}\'',
+      orderby: 'Title asc',
+      top: 4900
     }
   };
   public LOGICAL_FIELD = {

@@ -1,0 +1,20 @@
+
+    .ui-tooltip{
+        max-width: 50%;
+    }
+    .ui-tooltip .ui-tooltip-text {
+        background-color:  #B71C1C !important;
+    }
+    .ui-tooltip.ui-tooltip-top .ui-tooltip-arrow{
+        border-top-color: #B71C1C !important;
+    }
+    .ui-tooltip.ui-tooltip-left .ui-tooltip-arrow {
+        border-left-color: #B71C1C !important
+    }
+    .ui-tooltip.ui-tooltip-right .ui-tooltip-arrow{
+        border-right-color: #B71C1C !important;
+    }
+    .ui-tooltip.ui-tooltip-bottom .ui-tooltip-arrow{
+        border-bottom-color: #B71C1C !important;
+    }
+

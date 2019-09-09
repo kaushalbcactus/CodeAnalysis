@@ -86,7 +86,9 @@ export class AdminObjectService {
   public bucketObj = {
     ID: 0,
     Bucket: '',
-    Client: [],
+    Clients: '',
+    PatClients: '',
+    RowClientsArray: [],
     ClientsArray: [],
     LastUpdated: new Date(),
     LastUpdatedBy: ''
