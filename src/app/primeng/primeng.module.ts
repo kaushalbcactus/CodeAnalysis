@@ -31,7 +31,8 @@ import { SidebarModule } from 'primeng/sidebar';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { FullCalendarModule } from 'primeng/fullcalendar';
 import {ListboxModule} from 'primeng/listbox';
-
+import {AutoCompleteModule} from 'primeng/autocomplete';
+import {TooltipModule} from 'primeng/tooltip';
 @NgModule({
   declarations: [],
   imports: [
@@ -74,7 +75,9 @@ import {ListboxModule} from 'primeng/listbox';
     OverlayPanelModule,
     InputTextareaModule,
     InputTextModule,
-    ListboxModule
+    ListboxModule,
+    AutoCompleteModule,
+    TooltipModule
   ],
   providers: [ConfirmationService, DialogService, MessageService]
 })
