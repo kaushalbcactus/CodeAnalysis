@@ -140,7 +140,7 @@ form{
         color: #ffffff;
     }
     .brandColor {
-        color: #d7181f;
+        color:  #B71C1C !important;
     }
     .accountableUser .ui-table .ui-table-thead > tr > th:nth-child(1),
     .accountableUser .ui-table .ui-table-tbody > tr > td:nth-child(1)  {
@@ -161,4 +161,7 @@ form{
 
     .addNewBtn {
         text-align: center;margin-top:10px;
+    }
+    .noTextDecoration {
+        text-decoration: none !important;
     }

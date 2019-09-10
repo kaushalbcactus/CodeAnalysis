@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { MessageService, Message, ConfirmationService } from 'primeng/api';
 import { CommonService } from '../../../../Services/common.service';
@@ -10,7 +10,8 @@ import { AdminConstantService } from 'src/app/admin/services/admin-constant.serv
 @Component({
   selector: 'app-bucket-masterdata',
   templateUrl: './bucket-masterdata.component.html',
-  styleUrls: ['./bucket-masterdata.component.css']
+  styleUrls: ['./bucket-masterdata.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 /**
  * A class that uses ngPrime to display the data in table.
@@ -44,6 +45,7 @@ export class BucketMasterdataComponent implements OnInit {
   rowData;
 
   cols;
+  viewClient = false;
   editClient = false;
   clientList: any;
   bucketData: any;
@@ -51,6 +53,7 @@ export class BucketMasterdataComponent implements OnInit {
   selectedClient: any = [];
   selectedRowItems: any = [];
   isCheckboxDisabled = [];
+  viewClientArray: any = [];
   constructor(
     private datepipe: DatePipe,
     private messageService: MessageService,
@@ -68,17 +71,7 @@ export class BucketMasterdataComponent implements OnInit {
       // { field: 'color', header: '' }
     ];
 
-    this.clientList = [{ client: 'Client 1' },
-    { client: 'Client 2' },
-    { client: 'Client 3' },
-    { client: 'Client 4' },
-    { client: 'Client 5' },
-    { client: 'Client 6' },
-    { client: 'Client 7' },
-    { client: 'Client 8' },
-    { client: 'Client 9' },
-    { client: 'Client 10' }];
-
+    this.clientList = [];
     this.bucketDataColumns = [
       // { field: 'Sr', header: 'Sr.No.' },
       { field: 'Bucket', header: 'Bucket', visibility: true },
@@ -133,29 +126,21 @@ export class BucketMasterdataComponent implements OnInit {
     const results = await this.getInitData();
     console.log(results);
     if (results && results.length) {
-      results.forEach(item => {
-        const obj = Object.assign({}, this.adminObject.sowObj);
-        obj.CMLevel1 = item.CMLevel1 && item.CMLevel1.results && item.CMLevel1.results.length ?
-          item.CMLevel1.results : [];
-        obj.CMLevel2 = item.CMLevel2 && item.CMLevel2.hasOwnProperty('ID') ? item.CMLevel2 : '';
-        obj.DeliveryLevel1 = item.DeliveryLevel1 && item.DeliveryLevel1.results && item.DeliveryLevel1.results.length ?
-          item.DeliveryLevel1.results : [];
-        obj.DeliveryLevel2 = item.DeliveryLevel2 && item.DeliveryLevel2.hasOwnProperty('ID') ? item.DeliveryLevel2 : '';
-        obj.ClientLegalEntity = item.ClientLegalEntity ? item.ClientLegalEntity : '';
+      const bucketArray = results[0].retItems;
+      const clientArray = results[1].retItems;
+      this.clientList = clientArray;
+      bucketArray.forEach(item => {
+        const obj = Object.assign({}, this.adminObject.bucketObj);
+        const clientFilteredArray = clientArray.filter(x => x.Bucket === item.Title);
+        obj.RowClientsArray = clientFilteredArray;
         obj.ID = item.ID;
-        obj.Title = item.Title;
-        obj.IsCheckBoxChecked = false;
-        obj.SOWCode = item.SOWCode ? item.SOWCode : '';
-        // if (item.CMLevel2 && item.CMLevel2.hasOwnProperty('ID')
-        //   && userObj.UserName.ID === item.CMLevel2.ID ||
-        //   item.DeliveryLevel2 && item.DeliveryLevel2.hasOwnProperty('ID')
-        //   && userObj.UserName.ID === item.DeliveryLevel2.ID) {
-        //   obj.IsTypeChangedDisabled = true;
-        //   obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
-        // } else {
-        //   obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCESS;
-        //   obj.IsTypeChangedDisabled = false;
-        // }
+        obj.Bucket = item.Title;
+        obj.LastUpdated = item.Modified;
+        obj.LastUpdatedBy = item.Editor.Title;
+        obj.Clients = clientFilteredArray && clientFilteredArray.length ? clientFilteredArray.map(x => x.Title).join(', ') : '';
+        if (obj.Clients.length > 30) {
+          obj.PatClients = obj.Clients.substring(0, 30) + '...';
+        }
         tempArray.push(obj);
       });
       this.bucketDataRows = tempArray;
@@ -164,19 +149,59 @@ export class BucketMasterdataComponent implements OnInit {
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
-   * This method will prepare REST request to get the data based on query.
+   * This method will prepare the `Batch` request to get the data based on query.
    *
    * @description
    * It will prepare the request as per following Sequence.
    * 1. Bucket  - Get data from `Focus Group` list based on filter `IsActive='Yes'`.
+   * 2. ClientLegalEntity - Get data from `ClientLegalEntity` list based on filter `IsActive='Yes'`.
    *
    * @return An Array of the response in `JSON` format in above sequence.
    */
   async getInitData() {
-    const getSOW = Object.assign({}, this.adminConstants.QUERY.GET_FOCUS_GROUP_BY_ACTIVE);
-    getSOW.filter = getSOW.filter.replace(/{{isActive}}/gi, '1');
-    const sResults = await this.spServices.readItems(this.constants.listNames.FocusGroup.name, getSOW);
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    // Get Bucket value  from FocusGroup list ##0;
+    const bucketGet = Object.assign({}, options);
+    const bucketFilter = Object.assign({}, this.adminConstants.QUERY.GET_FOCUS_GROUP_BY_ACTIVE);
+    bucketFilter.filter = bucketFilter.filter.replace(/{{isActive}}/gi, '1');
+    bucketGet.url = this.spServices.getReadURL(this.constants.listNames.FocusGroup.name,
+      bucketFilter);
+    bucketGet.type = 'GET';
+    bucketGet.listName = this.constants.listNames.FocusGroup.name;
+    batchURL.push(bucketGet);
+
+    // Get Practice Area from ClientLegalEntity list ##1;
+    const getClientLegalEntity = Object.assign({}, options);
+    const clientLegalEntityFilter = Object.assign({}, this.adminConstants.QUERY.GET_CLIENTLEGALENTITY_BY_ACTIVE);
+    clientLegalEntityFilter.filter = clientLegalEntityFilter.filter.replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES);
+    getClientLegalEntity.url = this.spServices.getReadURL(this.constants.listNames.ClientLegalEntity.name,
+      clientLegalEntityFilter);
+    getClientLegalEntity.type = 'GET';
+    getClientLegalEntity.listName = this.constants.listNames.ClientLegalEntity.name;
+    batchURL.push(getClientLegalEntity);
+    const sResults = await this.spServices.executeBatch(batchURL);
     return sResults;
+  }
+  /**
+   * construct a method to trigger when user click on hpyer-link and
+   * display the client legal entity into dialog.
+   *
+   * @description
+   *
+   * This method will display all the clientlegal entity for particular bucket.
+   *
+   * @param clientArray An clientLegalEntity array required as parameter.
+   */
+  displayClient(clientArray) {
+    this.viewClientArray = clientArray;
+    this.viewClient = true;
+    console.log(this.viewClientArray);
   }
   colFilters(colData) {
     this.bucketDataColArray.Bucket = this.uniqueArrayObj(colData.map(a => { const b = { label: a.Bucket, value: a.Bucket }; return b; }));
@@ -322,4 +347,5 @@ export class BucketMasterdataComponent implements OnInit {
   downloadExcel(bmd) {
     bmd.exportCSV();
   }
+
 }
