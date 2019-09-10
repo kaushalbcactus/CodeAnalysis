@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, FormControl, Validators, NgForm } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { AdminCommonService } from '../../services/admin-common.service';
 
 @Component({
   selector: 'app-client-masterdata',
@@ -109,7 +110,8 @@ export class ClientMasterdataComponent implements OnInit {
     LastUpdated: [],
     LastUpdatedBy: []
   };
-  constructor(private datepipe: DatePipe, private frmbuilder: FormBuilder, private messageService: MessageService) {
+  constructor(private datepipe: DatePipe, private frmbuilder: FormBuilder, private messageService: MessageService,
+              private common: AdminCommonService) {
     this.addClient = frmbuilder.group({
       name: ['', Validators.required],
       acronym: ['', Validators.required],
@@ -321,9 +323,9 @@ export class ClientMasterdataComponent implements OnInit {
   }
 
   subDivisionFilters(colData) {
-    this.subDivisionDetailsColArray.SubDivision = this.uniqueArrayObj(
+    this.subDivisionDetailsColArray.SubDivision = this.common.uniqueArrayObj(
       colData.map(a => { const b = { label: a.SubDivision, value: a.SubDivision }; return b; }));
-    this.subDivisionDetailsColArray.LastUpdated = this.uniqueArrayObj(
+    this.subDivisionDetailsColArray.LastUpdated = this.common.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
@@ -332,19 +334,19 @@ export class ClientMasterdataComponent implements OnInit {
         };
         return b;
       }));
-    this.subDivisionDetailsColArray.LastUpdatedBy = this.uniqueArrayObj(
+    this.subDivisionDetailsColArray.LastUpdatedBy = this.common.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
   POCFilters(colData) {
-    // this.POCColArray.POC = this.uniqueArrayObj(
+    // this.POCColArray.POC = this.common.uniqueArrayObj(
     //   colData.map(a => { const b = { label: a.POC, value: a.POC }; return b; }));
-    this.POCColArray.fName = this.uniqueArrayObj(
+    this.POCColArray.fName = this.common.uniqueArrayObj(
       colData.map(a => { const b = { label: a.fName, value: a.fName }; return b; }));
-    this.POCColArray.lName = this.uniqueArrayObj(
+    this.POCColArray.lName = this.common.uniqueArrayObj(
       colData.map(a => { const b = { label: a.lName, value: a.lName }; return b; }));
-    this.POCColArray.email = this.uniqueArrayObj(
+    this.POCColArray.email = this.common.uniqueArrayObj(
       colData.map(a => { const b = { label: a.email, value: a.email }; return b; }));
-    this.POCColArray.LastUpdated = this.uniqueArrayObj(
+    this.POCColArray.LastUpdated = this.common.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
@@ -353,15 +355,15 @@ export class ClientMasterdataComponent implements OnInit {
         };
         return b;
       }));
-    this.POCColArray.LastUpdatedBy = this.uniqueArrayObj(
+    this.POCColArray.LastUpdatedBy = this.common.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
   POFilters(colData) {
-    this.POColArray.PoName = this.uniqueArrayObj(colData.map(a => { const b = { label: a.poName, value: a.poName }; return b; }));
-    this.POColArray.PoNo = this.uniqueArrayObj(colData.map(a => { const b = { label: a.poNo, value: a.poNo }; return b; }));
-    this.POColArray.Revenue = this.uniqueArrayObj(colData.map(a => { const b = { label: a.revenue, value: a.revenue }; return b; }));
-    this.POColArray.Oop = this.uniqueArrayObj(colData.map(a => { const b = { label: a.oop, value: a.oop }; return b; }));
-    this.POColArray.LastUpdated = this.uniqueArrayObj(
+    this.POColArray.PoName = this.common.uniqueArrayObj(colData.map(a => { const b = { label: a.poName, value: a.poName }; return b; }));
+    this.POColArray.PoNo = this.common.uniqueArrayObj(colData.map(a => { const b = { label: a.poNo, value: a.poNo }; return b; }));
+    this.POColArray.Revenue = this.common.uniqueArrayObj(colData.map(a => { const b = { label: a.revenue, value: a.revenue }; return b; }));
+    this.POColArray.Oop = this.common.uniqueArrayObj(colData.map(a => { const b = { label: a.oop, value: a.oop }; return b; }));
+    this.POColArray.LastUpdated = this.common.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
@@ -370,15 +372,15 @@ export class ClientMasterdataComponent implements OnInit {
         };
         return b;
       }));
-    this.POColArray.LastUpdatedBy = this.uniqueArrayObj(
+    this.POColArray.LastUpdatedBy = this.common.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
 
 
   colFilters(colData) {
-    this.clientMasterDataColArray.ClientLegalEntry = this.uniqueArrayObj(
+    this.clientMasterDataColArray.ClientLegalEntry = this.common.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ClientLegalEntry, value: a.ClientLegalEntry }; return b; }));
-    this.clientMasterDataColArray.LastUpdated = this.uniqueArrayObj(
+    this.clientMasterDataColArray.LastUpdated = this.common.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
@@ -387,15 +389,16 @@ export class ClientMasterdataComponent implements OnInit {
         };
         return b;
       }));
-    this.clientMasterDataColArray.LastUpdatedBy = this.uniqueArrayObj(
+    this.clientMasterDataColArray.LastUpdatedBy = this.common.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
 
   colFilters1(colData) {
-    this.auditHistoryArray.Action = this.uniqueArrayObj(colData.map(a => { const b = { label: a.Action, value: a.Action }; return b; }));
-    this.auditHistoryArray.ActionBy = this.uniqueArrayObj(
+    this.auditHistoryArray.Action = this.common.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.Action, value: a.Action }; return b; }));
+    this.auditHistoryArray.ActionBy = this.common.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
-    this.auditHistoryArray.Date = this.uniqueArrayObj(
+    this.auditHistoryArray.Date = this.common.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
@@ -404,19 +407,19 @@ export class ClientMasterdataComponent implements OnInit {
         };
         return b;
       }));
-    this.auditHistoryArray.Details = this.uniqueArrayObj(
+    this.auditHistoryArray.Details = this.common.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
 
   }
 
   colFilters2(colData) {
-    this.auditHistorySelectedArray.ClientLegalEntry = this.uniqueArrayObj(
+    this.auditHistorySelectedArray.ClientLegalEntry = this.common.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ClientLegalEntry, value: a.ClientLegalEntry }; return b; }));
-    this.auditHistorySelectedArray.Action = this.uniqueArrayObj(
+    this.auditHistorySelectedArray.Action = this.common.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Action, value: a.Action }; return b; }));
-    this.auditHistorySelectedArray.ActionBy = this.uniqueArrayObj(
+    this.auditHistorySelectedArray.ActionBy = this.common.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
-    this.auditHistorySelectedArray.Date = this.uniqueArrayObj(
+    this.auditHistorySelectedArray.Date = this.common.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
@@ -425,18 +428,8 @@ export class ClientMasterdataComponent implements OnInit {
         };
         return b;
       }));
-    this.auditHistorySelectedArray.Details = this.uniqueArrayObj(
+    this.auditHistorySelectedArray.Details = this.common.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
-  }
-
-  uniqueArrayObj(array: any) {
-    let sts: any = '';
-    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-      return {
-        label: label1,
-        value: array.find(s => s.label === label1).value
-      };
-    });
   }
 
   openMenuPopup(data) {

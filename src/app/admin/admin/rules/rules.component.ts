@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { AdminCommonService } from '../../services/admin-common.service';
 
 @Component({
   selector: 'app-rules',
@@ -21,7 +22,7 @@ export class RulesComponent implements OnInit {
     UpdatedBy: [],
     UpdatedDetails: []
   };
-  constructor(private datepipe: DatePipe) { }
+  constructor(private datepipe: DatePipe, private common: AdminCommonService) { }
 
   ngOnInit() {
     this.ruleColumns = [
@@ -56,34 +57,24 @@ export class RulesComponent implements OnInit {
   }
 
   colFilters(colData) {
-      this.ruleColArray.Form = this.uniqueArrayObj(colData.map(a => { const b = { label: a.Form, value: a.Form }; return b; }));
-      this.ruleColArray.LastUpdated = this.uniqueArrayObj(
+      this.ruleColArray.Form = this.common.uniqueArrayObj(colData.map(a => { const b = { label: a.Form, value: a.Form }; return b; }));
+      this.ruleColArray.LastUpdated = this.common.uniqueArrayObj(
         colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
          // tslint:disable-next-line: align
          value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
-      this.ruleColArray.LastUpdatedBy = this.uniqueArrayObj(
+      this.ruleColArray.LastUpdatedBy = this.common.uniqueArrayObj(
         colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
     }
 
     colFilters1(colData) {
-      this.auditTrailColArray.UpdatedOn = this.uniqueArrayObj(
+      this.auditTrailColArray.UpdatedOn = this.common.uniqueArrayObj(
         colData.map(a => { const b = { label: a.UpdatedOn, value: a.UpdatedOn }; return b; }));
-      this.auditTrailColArray.UpdatedBy = this.uniqueArrayObj(
+      this.auditTrailColArray.UpdatedBy = this.common.uniqueArrayObj(
         colData.map(a => { const b = { label: this.datepipe.transform(a.UpdatedBy, 'MMM d, yyyy'),
          // tslint:disable-next-line: align
          value: this.datepipe.transform(a.UpdatedBy, 'MMM d, yyyy') }; return b; }));
-      this.auditTrailColArray.UpdatedDetails = this.uniqueArrayObj(
+      this.auditTrailColArray.UpdatedDetails = this.common.uniqueArrayObj(
         colData.map(a => { const b = { label: a.UpdatedDetails, value: a.UpdatedDetails }; return b; }));
-    }
-
-    uniqueArrayObj(array: any) {
-      let sts: any = '';
-      return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-          return {
-              label: label1,
-              value: array.find(s => s.label === label1).value
-          };
-      });
     }
 
   downloadExcel(rule) {
