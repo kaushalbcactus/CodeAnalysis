@@ -598,7 +598,7 @@ export class UserProfileComponent implements OnInit {
         userObj.ID = item.ID;
         userObj.Manager = item.Manager.Title;
         userObj.User = item.UserName.Title;
-        userObj.LastUpdated = item.Modified;
+        userObj.LastUpdated = new Date(new Date(item.Modified).toDateString());
         userObj.LastUpdatedFormat = this.datePipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
         userObj.LastUpdatedBy = item.Editor.Title;
         userObj.IsActive = item.IsActive;
@@ -843,60 +843,40 @@ export class UserProfileComponent implements OnInit {
    * @param colData The colData parameters contains table array which is required to prefill the multiselect dropdown with unique values.
    */
   colFilters(colData) {
-    this.userProfileColArray.User = this.uniqueArrayObj(colData.map(a => {
+    this.userProfileColArray.User = this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = {
         label: a.User, value: a.User
       };
       return b;
     }));
-    this.userProfileColArray.LastUpdated = this.uniqueArrayObj(colData.map(a => {
+    this.userProfileColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = {
         label: this.datePipe.transform(a.LastUpdated, 'MMM d, yyyy'), value: a.LastUpdated
       };
       return b;
     }));
-    this.userProfileColArray.LastUpdatedBy = this.uniqueArrayObj(colData.map(a => {
+    this.userProfileColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b;
     }));
   }
   colFilters1(colData) {
-    this.auditHistoryArray.User = this.uniqueArrayObj(colData.map(a => {
+    this.auditHistoryArray.User = this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = { label: a.User, value: a.User }; return b;
     }));
-    this.auditHistoryArray.ActionBy = this.uniqueArrayObj(colData.map(a => {
+    this.auditHistoryArray.ActionBy = this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = { label: a.ActionBy, value: a.ActionBy }; return b;
     }));
-    this.auditHistoryArray.ActionDate = this.uniqueArrayObj(colData.map(a => {
+    this.auditHistoryArray.ActionDate = this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = {
         label: this.datePipe.transform(a.ActionDate, 'MMM d, yyyy'),
         value: this.datePipe.transform(a.ActionDate, 'MMM d, yyyy')
       };
       return b;
     }));
-    this.auditHistoryArray.Details = this.uniqueArrayObj(colData.map(a => {
+    this.auditHistoryArray.Details = this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = { label: a.Details, value: a.Details }; return b;
     }));
 
-  }
-  /**
-   * construct a request to filter the array data into unique records.
-   *
-   * @description
-   *
-   * It will filter the array with unique records and return the filter array.
-   *
-   * @param array The array parameters contains an array which is required to filter the data.
-   *
-   * @return array It will returns an array having a unique value into the array.
-   */
-  uniqueArrayObj(array: any) {
-    let sts: any = '';
-    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-      return {
-        label: label1,
-        value: array.find(s => s.label === label1).value
-      };
-    });
   }
   /**
    * Construct a method for saving and updating the user details to `Resource Categerization` List.

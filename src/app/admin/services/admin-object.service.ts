@@ -86,11 +86,12 @@ export class AdminObjectService {
   public bucketObj = {
     ID: 0,
     Bucket: '',
-    Clients: '',
+    Client: '',
     PatClients: '',
     RowClientsArray: [],
     ClientsArray: [],
     LastUpdated: new Date(),
-    LastUpdatedBy: ''
+    LastUpdatedBy: '',
+    LastUpdatedFormat: '',
   };
 }

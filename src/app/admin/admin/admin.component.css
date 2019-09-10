@@ -162,3 +162,15 @@ form{
     .addNewBtn {
         text-align: center;margin-top:10px;
     }
+    .noTextDecoration {
+        text-decoration: none !important;
+    }
+    .disableColor{
+        background-color: #FFF0F0 !important;
+    }
+    .width10Per{
+        width: 10%;
+    }
+    .width5Per {
+        width: 5%;
+    }
