@@ -243,6 +243,8 @@ export class TimeBookingDialogComponent implements OnInit {
 
 
   SetTime(time, dayhoursObj, rowData) {
+
+    debugger;
     const timespent = time.split(':')[0] % 12 + ':' + time.split(':')[1];
     dayhoursObj.MileHrs = timespent;
 
@@ -373,6 +375,9 @@ export class TimeBookingDialogComponent implements OnInit {
                 const timeSpentHours1 = timeSpentHours < 10 ? '0' + timeSpentHours : timeSpentHours;
                 currentMilestone.minHrs = timeSpentMin < 10 ? timeSpentHours1 + ':' + '0' +
                   timeSpentMin : timeSpentHours1 + ':' + timeSpentMin;
+              } else {
+                milestone.commentEnable = true;
+                milestone.Comments = task.TaskComments;
               }
 
 
@@ -673,6 +678,7 @@ export class TimeBookingDialogComponent implements OnInit {
 
   openDialog(rowData) {
     console.log(rowData);
+    debugger;
     this.displayComment = true;
     this.timebookingRow = rowData;
   }
