@@ -52,7 +52,7 @@
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-rowData let-editing="editing" let-ri="rowIndex">
-                <tr>
+                <tr [pEditableRow]="rowData">
 
                     <td [ngStyle]="{'padding': rowData.isEditable ? '0px':'5px'}">
 
@@ -120,8 +120,8 @@
 <!-- *********************************************************************************************
                                                          Comment Popup
            ********************************************************************************************************** -->
-<p-dialog header="Comments" [modal]="true" [style]="{width: '750px', minWidth: '300px'}" [(visible)]="displayComment" appendTo='body'>
-    <textarea *ngIf="displayComment" placeholder="Leave Comment" [rows]="8" [cols]="30" pInputTextarea style="width:100%;padding: 3%;" [(ngModel)]="timebookingRow.Comments"> </textarea>
+<p-dialog header="Comments" [closable]='false' [modal]="true" [style]="{width: '750px', minWidth: '300px'}" [(visible)]="displayComment" appendTo='body'>
+    <textarea *ngIf='displayComment' [(ngModel)]="timebookingRow.Comments" placeholder="Leave Comment" [rows]="8" [cols]="30" pInputTextarea style="width:100%;padding: 3%;"> </textarea>
     <p-footer>
         <button type="button" pButton icon="pi pi-check" style="background-color: #af0b14;border-color:#af0b14;" (click)="displayComment=false" label="Add"></button>
 
