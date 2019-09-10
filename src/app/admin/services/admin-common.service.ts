@@ -188,4 +188,24 @@ export class AdminCommonService {
     }
     return data;
   }
+  /**
+   * construct a request to filter the array data into unique records.
+   *
+   * @description
+   *
+   * It will filter the array with unique records and return the filter array.
+   *
+   * @param array The array parameters contains an array which is required to filter the data.
+   *
+   * @return array It will returns an array having a unique value into the array.
+   */
+  uniqueArrayObj(array: any) {
+    let sts: any = '';
+    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
+      return {
+        label: label1,
+        value: array.find(s => s.label === label1).value
+      };
+    });
+  }
 }

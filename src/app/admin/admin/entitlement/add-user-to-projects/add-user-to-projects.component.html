@@ -26,8 +26,8 @@
       </div>
     </div>
     <div *ngIf="projectList.length" class="accountableUser">
-      <p-table [columns]="cols" [value]="projectList" [(selection)]="selectedProject" dataKey="ID"
-        [scrollable]="true" scrollHeight="400px">
+      <p-table [columns]="cols" [value]="projectList" [(selection)]="selectedProject" dataKey="ID" [scrollable]="true"
+        scrollHeight="400px">
         <ng-template pTemplate="header" let-columns>
           <tr>
             <th>Sr No.</th>
@@ -41,7 +41,7 @@
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
-          <tr>
+          <tr [ngClass]="{'disableColor':rowData.IsTypeChangedDisabled}">
             <td>{{rowIndex +1}}</td>
             <td>
               <p-tableCheckbox [disabled]="rowData.IsTypeChangedDisabled" [value]="rowData"></p-tableCheckbox>
@@ -50,7 +50,8 @@
               {{rowData.ProjectCode}}({{rowData.WBJID}})
             </td>
             <td>
-              <p-dropdown [disabled]="rowData.IsTypeChangedDisabled" [options]="accessType" [(ngModel)]="rowData.AccessType" (onChange)="typeChange(rowData)">
+              <p-dropdown [disabled]="rowData.IsTypeChangedDisabled" [options]="accessType"
+                [(ngModel)]="rowData.AccessType" (onChange)="typeChange(rowData)">
               </p-dropdown>
             </td>
           </tr>
@@ -59,7 +60,7 @@
     </div>
     <div *ngIf="!projectList.length">
       <div class="ui-g">
-          <div class="ui-g-12 brandColor">No Projects found.</div>
+        <div class="ui-g-12 brandColor">No Projects found.</div>
       </div>
     </div>
   </div>

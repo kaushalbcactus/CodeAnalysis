@@ -38,7 +38,7 @@
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
-          <tr>
+          <tr [ngClass]="{'disableColor':rowData.IsTypeChangedDisabled}">
             <td>{{rowIndex+1}}</td>
             <td>
               <p-tableCheckbox [disabled]="rowData.IsTypeChangedDisabled" [value]="rowData"></p-tableCheckbox>

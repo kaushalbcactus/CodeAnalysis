@@ -6,6 +6,7 @@ import { AdminObjectService } from 'src/app/admin/services/admin-object.service'
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
+import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 
 @Component({
   selector: 'app-bucket-masterdata',
@@ -23,11 +24,6 @@ import { AdminConstantService } from 'src/app/admin/services/admin-constant.serv
  *
  */
 export class BucketMasterdataComponent implements OnInit {
-  bucketDataColumns = [];
-  bucketDataRows: any = [];
-  auditHistoryColumns = [];
-  auditHistoryRows = [];
-  found;
   bucketDataColArray = {
     Bucket: [],
     Client: [],
@@ -41,19 +37,16 @@ export class BucketMasterdataComponent implements OnInit {
     Date: [],
   };
   items = [];
-  rowIndex;
-  rowData;
-
-  cols;
   viewClient = false;
   editClient = false;
-  clientList: any;
+  clientList: any = [];
   bucketData: any;
   msgs: Message[] = [];
   selectedClient: any = [];
   selectedRowItems: any = [];
-  isCheckboxDisabled = [];
   viewClientArray: any = [];
+  bucketDataRows = [];
+  bucketDataColumns = [];
   constructor(
     private datepipe: DatePipe,
     private messageService: MessageService,
@@ -62,54 +55,20 @@ export class BucketMasterdataComponent implements OnInit {
     private adminObject: AdminObjectService,
     private spServices: SPOperationService,
     private constants: ConstantsService,
-    private adminConstants: AdminConstantService
+    private adminConstants: AdminConstantService,
+    private adminCommonService: AdminCommonService
   ) { }
 
   ngOnInit() {
-    this.cols = [
-      { field: 'client', header: 'Client' },
-      // { field: 'color', header: '' }
-    ];
-
     this.clientList = [];
     this.bucketDataColumns = [
-      // { field: 'Sr', header: 'Sr.No.' },
       { field: 'Bucket', header: 'Bucket', visibility: true },
       { field: 'Client', header: 'Client', visibility: true },
       { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
       { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
+      { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false },
     ];
-    const clients = ['Client 1', 'Client 2', 'Client 6', 'Client 9'];
-    this.bucketDataRows = [
-      {
-        // Sr: 1,
-        Bucket: 'Test',
-        Client: clients,
-        LastUpdated: 'Jul 3, 2019',
-        LastUpdatedBy: 'Kaushal Bagrodia'
-      }
-    ];
-
-    // this.auditHistoryColumns = [
-    //   // { field: 'Sr', header: 'Sr.No.' },
-    //   { field: 'Action', header: 'Action' },
-    //   { field: 'SubAction', header: 'Sub Action' },
-    //   { field: 'ActionBy', header: 'Action By' },
-    //   { field: 'Date', header: 'Date' },
-    // ];
-
-    // this.auditHistoryRows = [
-    //   {
-    //     // Sr: 1,
-    //     Action: '',
-    //     SubAction: '',
-    //     ActionBy: '',
-    //     ActionDate: '',
-    //   }
-    // ];
     this.loadBucketTable();
-    this.colFilters(this.bucketDataRows);
-    this.colFilters1(this.auditHistoryRows);
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -124,7 +83,6 @@ export class BucketMasterdataComponent implements OnInit {
     this.adminObject.isMainLoaderHidden = false;
     const tempArray = [];
     const results = await this.getInitData();
-    console.log(results);
     if (results && results.length) {
       const bucketArray = results[0].retItems;
       const clientArray = results[1].retItems;
@@ -135,15 +93,20 @@ export class BucketMasterdataComponent implements OnInit {
         obj.RowClientsArray = clientFilteredArray;
         obj.ID = item.ID;
         obj.Bucket = item.Title;
-        obj.LastUpdated = item.Modified;
+        obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
+        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
         obj.LastUpdatedBy = item.Editor.Title;
-        obj.Clients = clientFilteredArray && clientFilteredArray.length ? clientFilteredArray.map(x => x.Title).join(', ') : '';
-        if (obj.Clients.length > 30) {
-          obj.PatClients = obj.Clients.substring(0, 30) + '...';
+        obj.Client = clientFilteredArray && clientFilteredArray.length ? clientFilteredArray.map(x => x.Title).join(', ') : '';
+        if (obj.Client.length > 30) {
+          obj.PatClients = obj.Client.substring(0, 30) + '...';
+        }
+        if (clientFilteredArray && clientFilteredArray.length) {
+
         }
         tempArray.push(obj);
       });
       this.bucketDataRows = tempArray;
+      this.colFilters(this.bucketDataRows);
     }
     this.adminObject.isMainLoaderHidden = true;
   }
@@ -201,146 +164,176 @@ export class BucketMasterdataComponent implements OnInit {
   displayClient(clientArray) {
     this.viewClientArray = clientArray;
     this.viewClient = true;
-    console.log(this.viewClientArray);
   }
+  /**
+   * Construct a method to map the array values into particular column dropdown.
+   *
+   * @description
+   *
+   * This method will extract the column object value from an array and stores into the column dropdown array and display
+   * the values into the Bucket,Client,LastUpdated and LastUpdatedBy column dropdown.
+   *
+   * @param colData Pass colData as a parameter which contains an array of column object.
+   *
+   */
   colFilters(colData) {
-    this.bucketDataColArray.Bucket = this.uniqueArrayObj(colData.map(a => { const b = { label: a.Bucket, value: a.Bucket }; return b; }));
-    this.bucketDataColArray.Client = this.uniqueArrayObj(colData.map(a => { const b = { label: a.Client, value: a.Client }; return b; }));
-    this.bucketDataColArray.LastUpdated = this.uniqueArrayObj(
+    this.bucketDataColArray.Bucket = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = {
+        label: a.Bucket, value: a.Bucket
+      };
+      return b;
+    }));
+    this.bucketDataColArray.Client = this.adminCommonService.uniqueArrayObj(this.clientList.map(a => {
+      const b = { label: a.Title, value: a.Title };
+      return b;
+    }));
+    this.bucketDataColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-          // tslint:disable-next-line: align
-          value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
-          // tslint:disable-next-line: align
-        }; return b;
+          value: a.LastUpdated
+        };
+        return b;
       }));
-    this.bucketDataColArray.LastUpdatedBy = this.uniqueArrayObj(
+    this.bucketDataColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
-
-  colFilters1(colData) {
-    this.auditHistoryArray.Action = this.uniqueArrayObj(colData.map
-      (a => { const b = { label: a.Action, value: a.Action }; return b; }));
-    this.auditHistoryArray.SubAction = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.SubAction, value: a.SubAction }; return b; }));
-    this.auditHistoryArray.ActionBy = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
-    this.auditHistoryArray.Date = this.uniqueArrayObj(
-      colData.map(a => {
-        const b = {
-          label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
-          // tslint:disable-next-line: align
-          value: this.datepipe.transform(a.Date, 'MMM d, yyyy')
-          // tslint:disable-next-line: align
-        }; return b;
-      }));
-  }
-
-  uniqueArrayObj(array: any) {
-    let sts: any = '';
-    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-      return {
-        label: label1,
-        value: array.find(s => s.label === label1).value
-      };
-    });
-  }
-
-  addBucketData(bucketData) {
-    // var type = 'Bucket';
-    if (bucketData.trim() !== '') {
-      this.checkUniqueData(bucketData);
-      // this.found = this.commonService.checkUniqueData(this.bucketDataRows, bucketData , type);
-      // console.log(this.found);
-    }
-  }
-
-  checkUniqueData(data) {
-    const found = this.bucketDataRows.find((item) => {
-      if ((item.Bucket).toLowerCase() === data.trim().toLowerCase()) {
-        return item;
-      }
-    });
-
-    if (found) {
-      this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Data Already Exist in Table' });
-    } else {
-      const obj = {
-        Bucket: data,
-        Client: '',
-        LastUpdated: 'Sep 2, 2019',
-        LastUpdatedBy: 'Aditya Joshi'
-      };
-      this.bucketDataRows[this.bucketDataRows.length] = obj;
-      this.messageService.add({ severity: 'success', summary: 'Success Message', detail: 'Data Submitted' });
-    }
-  }
-
-  editClientData(data) {
-    this.selectedClient = [];
-    this.selectedRowItems = [];
-    this.isCheckboxDisabled = [];
-    console.log(data);
-    this.editClient = true;
-    this.clientList.forEach((e, i) => {
-      if (data.Client !== '') {
-        data.Client.forEach((e1, j) => {
-          if (e1 !== undefined && e1 !== '') {
-            if (e.client === e1) {
-              this.selectedRowItems.push(e);
-              this.isCheckboxDisabled[i] = true;
-            }
-          }
-        });
-      }
-    });
-    this.selectedClient = this.selectedRowItems;
-  }
-
-  bucketMenu(data, rowIndex) {
-    this.rowIndex = rowIndex;
-    this.rowData = data;
+  /**
+   * Construct a method to append the menu in bucket table.
+   *
+   * @description
+   *
+   * This method will add menu in each row of table.
+   *
+   * @param data Pass data as parameter which contains table row value.
+   */
+  bucketMenu(data) {
     this.items = [
       { label: 'Edit', command: (e) => this.editClientData(data) },
-      { label: 'Delete', command: (e) => this.delete(), visible: data.Client !== '' ? false : true }
+      { label: 'Delete', command: (e) => this.delete(data), visible: data.Client !== '' ? false : true }
     ];
   }
-
-  headerCheck(event) {
-    console.log(event);
-    if (this.selectedClient.length === 0) {
-      this.selectedClient = this.selectedRowItems;
-    }
+  /**
+   * Construct a method to allow user to select or update client for particular bucket.
+   *
+   * @description
+   *
+   * If bucket have any client then that client will be `disabled` while updating the client.
+   * This method will allow user to select or update the client for bucket.
+   *
+   * @param data Pass data as parameter which contains table row value.
+   */
+  editClientData(data) {
+    this.adminObject.isMainLoaderHidden = false;
+    this.selectedClient = [];
+    this.selectedRowItems = [];
+    this.clientList.forEach(client => {
+      client.isCheckboxDisabled = false;
+      data.RowClientsArray.forEach(element => {
+        if (client.ID === element.ID) {
+          client.isCheckboxDisabled = true;
+        }
+      });
+    });
+    this.selectedClient = this.selectedRowItems;
+    this.editClient = true;
+    this.adminObject.isMainLoaderHidden = true;
   }
-
-  delete() {
+  /**
+   * Construct a method to add the new bucket into `Focus Group` list.
+   *
+   * @description
+   *
+   * This method will add bucket into `Focus Group list` and shows that bucket into the table.
+   *
+   * @Note
+   * If bucket is already present then system will throws error and return `false`.
+   * If blank bucket is submitted then system will throws error and return `false`.
+   *
+   */
+  async addBucketData() {
+    const alphaExp = /^[a-zA-Z]+$/;
+    this.messageService.clear();
+    if (!this.bucketData) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error',
+        summary: 'Error Message', detail: 'Please enter bucket name.'
+      });
+      return false;
+    }
+    if (!this.bucketData.match(alphaExp)) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error',
+        summary: 'Error Message', detail: 'Please enter only alphabets.'
+      });
+      return false;
+    }
+    if (this.bucketDataRows.some(a => a.Bucket.toLowerCase() === this.bucketData.toLowerCase())) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error',
+        summary: 'Error Message', detail: 'This bucket is already exist. Please enter another bucket name.'
+      });
+      return false;
+    }
+    this.adminObject.isMainLoaderHidden = false;
+    const data = {
+      Title: this.bucketData
+    };
+    const result = await this.spServices.createItem(this.constants.listNames.FocusGroup.name, data,
+      this.constants.listNames.FocusGroup.type);
+    console.log(result);
+    this.messageService.add({
+      key: 'adminCustom', severity: 'success', sticky: true,
+      summary: 'Success Message', detail: 'The bucket ' + this.bucketData + ' has added successfully.'
+    });
+    this.bucketData = '';
+    await this.loadBucketTable();
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * Construct a method to remove the item from table.
+   *
+   * @description
+   *
+   * This method mark the bucket as inactive so that it is not visible in table.
+   *
+   * @param data Pass data as parameter which contains value of bucket row.
+   */
+  delete(data) {
+    console.log(data);
     this.confirmationService.confirm({
       message: 'Do you want to delete this record?',
       header: 'Delete Confirmation',
       icon: 'pi pi-info-circle',
       key: 'confirm',
       accept: () => {
-        this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'Record deleted' }];
+        const updateData = {
+          IsActive: false
+        };
+        this.confirmUpdate(data, updateData, this.constants.listNames.FocusGroup.name, this.constants.listNames.FocusGroup.type);
       },
-      reject: () => {
-        this.msgs = [{ severity: 'info', summary: 'Rejected', detail: 'You have rejected' }];
-      }
     });
   }
-
+  /**
+   * Construct a method to save the update the data.
+   * @param data Pass data as parameter which have Id in it.
+   * @param updateData Pass the data which wants to update it.
+   * @param listName pass the list name.
+   * @param type pass the list type.
+   */
+  async confirmUpdate(data, updateData, listName, type) {
+    this.adminObject.isMainLoaderHidden = false;
+    const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
+    this.messageService.add({
+      key: 'adminCustom', severity: 'success', sticky: true,
+      summary: 'Success Message', detail: 'The bucket ' + data.Bucket + ' has deleted successfully.'
+    });
+    this.loadBucketTable();
+    this.adminObject.isMainLoaderHidden = true;
+  }
   update() {
     const clients = [];
-    this.selectedClient.forEach((e) => {
-      clients.push(e.client);
-    });
-    const obj = {
-      Bucket: this.rowData.Bucket,
-      Client: clients,
-      LastUpdated: this.rowData.LastUpdated,
-      LastUpdatedBy: this.rowData.LastUpdatedBy
-    };
-    this.bucketDataRows[this.rowIndex] = obj;
+    console.log(this.selectedClient);
     this.editClient = false;
   }
 
