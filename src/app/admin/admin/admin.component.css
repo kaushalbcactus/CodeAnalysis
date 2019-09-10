@@ -1,5 +1,8 @@
-.mt-20{
+.mt-20 {
     margin-top: 20px;
+}
+.mt-10 {
+    margin-top: 10px;
 }
 
 .mt-5{
@@ -154,6 +157,10 @@ form{
     .accountableUser .ui-table .ui-table-thead > tr > th:nth-child(4),
     .accountableUser .ui-table .ui-table-tbody > tr > td:nth-child(4)  {
      width: 20%;
+    } 
+
+    .addNewBtn {
+        text-align: center;margin-top:10px;
     }
     .noTextDecoration {
         text-decoration: none !important;
