@@ -42,6 +42,7 @@ export class ClientMasterdataComponent implements OnInit {
   showaddPO = false;
   showeditPO = false;
   showaddBudget = false;
+  editPo = false;
 
   budgetType = [
     { label: 'Add', value: 'Add' },
@@ -64,7 +65,7 @@ export class ClientMasterdataComponent implements OnInit {
   subDivisionform: FormGroup;
   pocForm: FormGroup;
   PoForm: FormGroup;
-  addBudgetForm: FormGroup;
+  changeBudgetForm: FormGroup;
 
   clientMasterDataColArray = {
     ClientLegalEntry: [],
@@ -94,12 +95,17 @@ export class ClientMasterdataComponent implements OnInit {
   };
   POCColArray = {
     POC: [],
+    fName: [],
+    lName: [],
+    email: [],
     LastUpdated: [],
     LastUpdatedBy: []
   };
   POColArray = {
-    PO: [],
-    PoValues: [],
+    PoName: [],
+    PoNo: [],
+    Revenue: [],
+    Oop: [],
     LastUpdated: [],
     LastUpdatedBy: []
   };
@@ -167,13 +173,17 @@ export class ClientMasterdataComponent implements OnInit {
       ta: ['', Validators.required],
       molecule: ['', Validators.required],
       cmLevel2: ['', Validators.required],
-      poBuyingEntity: ['', Validators.required]
+      poBuyingEntity: ['', Validators.required],
+      total: [0, Validators.required],
+      revenue: [0, Validators.required],
+      oop: [0, Validators.required],
+      tax: [0, Validators.required],
     });
   }
 
   initAddBudgetForm() {
-    this.addBudgetForm = this.frmbuilder.group({
-      total: [{ value: 0, disabled: true }, Validators.required],
+    this.changeBudgetForm = this.frmbuilder.group({
+      total: [0, Validators.required],
       revenue: [0, Validators.required],
       oop: [0, Validators.required],
       tax: [0, Validators.required],
@@ -245,31 +255,60 @@ export class ClientMasterdataComponent implements OnInit {
       }
     ];
     this.POCColumns = [
-      { field: 'POC', header: 'POC', visibility: true },
+      // { field: 'POC', header: 'POC', visibility: true },
+      { field: 'fName', header: 'First Name', visibility: true },
+      { field: 'lName', header: 'Last Name', visibility: true },
+      { field: 'email', header: 'Email', visibility: true },
       { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
       { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
     ];
 
     this.POCRows = [
       {
-        POC: 'POC',
-        LastUpdated: '',
-        LastUpdatedBy: ''
+        // POC: 'POC',
+        fName: 'Aditya',
+        lName: 'Joshi',
+        email: 'aditya@gmail.com',
+        LastUpdated: 'Sep 3, 2019',
+        LastUpdatedBy: 'Aditya Joshi'
+      },
+      {
+        fName: 'Test',
+        lName: 'Test',
+        email: 'test@gmail.com',
+        LastUpdated: 'Sep 5, 2019',
+        LastUpdatedBy: 'Test'
       }
     ];
     this.POColumns = [
-      { field: 'PO', header: 'PO' },
-      { field: 'PoValues', header: 'PO Values', visibility: true },
+      { field: 'poName', header: 'Po Name' , visibility: true},
+      { field: 'poNo', header: 'Po Number', visibility: true },
+      { field: 'revenue', header: 'Revenue', visibility: true },
+      { field: 'oop', header: 'OOP', visibility: true },
       { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
       { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
     ];
 
     this.PORows = [
       {
-        PO: 'PO',
-        PoValues: '1000',
+        poName: 'PO 1',
+        poNo: 'PO-1',
         LastUpdated: '',
-        LastUpdatedBy: ''
+        LastUpdatedBy: '',
+        total: 1000,
+        revenue: 500,
+        oop: 500,
+        tax: 0
+      },
+      {
+        poName: 'PO 2',
+        poNo: 'PO-2',
+        LastUpdated: '',
+        LastUpdatedBy: '',
+        total: 1500,
+        revenue: 800,
+        oop: 600,
+        tax: 100
       }
     ];
 
@@ -290,35 +329,46 @@ export class ClientMasterdataComponent implements OnInit {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
           // tslint:disable-next-line: align
           value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
-        }; return b;
+        };
+        return b;
       }));
     this.subDivisionDetailsColArray.LastUpdatedBy = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
   POCFilters(colData) {
-    this.POCColArray.POC = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.POC, value: a.POC }; return b; }));
+    // this.POCColArray.POC = this.uniqueArrayObj(
+    //   colData.map(a => { const b = { label: a.POC, value: a.POC }; return b; }));
+    this.POCColArray.fName = this.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.fName, value: a.fName }; return b; }));
+    this.POCColArray.lName = this.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.lName, value: a.lName }; return b; }));
+    this.POCColArray.email = this.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.email, value: a.email }; return b; }));
     this.POCColArray.LastUpdated = this.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
           // tslint:disable-next-line: align
           value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
-        }; return b;
+        };
+        return b;
       }));
     this.POCColArray.LastUpdatedBy = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
   POFilters(colData) {
-    this.POColArray.PO = this.uniqueArrayObj(colData.map(a => { const b = { label: a.PO, value: a.PO }; return b; }));
-    this.POColArray.PoValues = this.uniqueArrayObj(colData.map(a => { const b = { label: a.PoValues, value: a.PoValues }; return b; }));
+    this.POColArray.PoName = this.uniqueArrayObj(colData.map(a => { const b = { label: a.poName, value: a.poName }; return b; }));
+    this.POColArray.PoNo = this.uniqueArrayObj(colData.map(a => { const b = { label: a.poNo, value: a.poNo }; return b; }));
+    this.POColArray.Revenue = this.uniqueArrayObj(colData.map(a => { const b = { label: a.revenue, value: a.revenue }; return b; }));
+    this.POColArray.Oop = this.uniqueArrayObj(colData.map(a => { const b = { label: a.oop, value: a.oop }; return b; }));
     this.POColArray.LastUpdated = this.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
           // tslint:disable-next-line: align
           value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
-        }; return b;
+        };
+        return b;
       }));
     this.POColArray.LastUpdatedBy = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
@@ -334,7 +384,8 @@ export class ClientMasterdataComponent implements OnInit {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
           // tslint:disable-next-line: align
           value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
-        }; return b;
+        };
+        return b;
       }));
     this.clientMasterDataColArray.LastUpdatedBy = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
@@ -350,7 +401,8 @@ export class ClientMasterdataComponent implements OnInit {
           label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
           // tslint:disable-next-line: align
           value: this.datepipe.transform(a.Date, 'MMM d, yyyy')
-        }; return b;
+        };
+        return b;
       }));
     this.auditHistoryArray.Details = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
@@ -370,7 +422,8 @@ export class ClientMasterdataComponent implements OnInit {
           label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
           // tslint:disable-next-line: align
           value: this.datepipe.transform(a.Date, 'MMM d, yyyy')
-        }; return b;
+        };
+        return b;
       }));
     this.auditHistorySelectedArray.Details = this.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
@@ -407,8 +460,8 @@ export class ClientMasterdataComponent implements OnInit {
   }
 
   poMenu(data) {
-    this.items1 = [{ label: 'Add Budget', command: (e) => this.showaddBudgetModal(data) },
-    { label: 'Edit', command: (e) => this.showEditPOModal() },
+    this.items1 = [{ label: 'Change Budget', command: (e) => this.showchangeBudgetModal(data) },
+    { label: 'Edit', command: (e) => this.showEditPOModal(data) },
     { label: 'Delete' }];
   }
 
@@ -432,6 +485,11 @@ export class ClientMasterdataComponent implements OnInit {
   savePOC(pocData) {
     if (pocData.valid) {
       console.log(pocData.value);
+      this.POCRows.forEach((e) => {
+        if (e.email === pocData.controls.email.value) {
+          console.log('Email Id Must be Unique');
+        }
+      });
     } else {
       this.cmObject.isPOCFormSubmit = true;
     }
@@ -465,50 +523,57 @@ export class ClientMasterdataComponent implements OnInit {
 
 
   addBudget() {
-    if (this.addBudgetForm.controls.revenue.value < 0 ||
-      this.addBudgetForm.controls.oop.value < 0 || this.addBudgetForm.controls.tax.value < 0) {
-      this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Values should be Positve Number' });
+    if (this.changeBudgetForm.controls.revenue.value < 0 ||
+      this.changeBudgetForm.controls.oop.value < 0 || this.changeBudgetForm.controls.tax.value < 0) {
+      this.messageService.add({key: 'adminCustom', severity: 'error', summary: 'Error Message',
+       detail: 'Values should be Positve Number' });
     } else {
-      if (this.addBudgetForm.controls.total.value < 0) {
-        this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Total should be in Positve Number' });
+      if (this.changeBudgetForm.controls.total.value < 0) {
+        this.messageService.add({key: 'adminCustom', severity: 'error', summary: 'Error Message',
+         detail: 'Total should be in Positve Number' });
       } else {
-        console.log(this.addBudgetForm.getRawValue());
+        console.log(this.changeBudgetForm.value);
+        // console.log(this.changeBudgetForm.getRawValue());
       }
     }
   }
 
   reduceBudget() {
-    const value = Math.abs(this.addBudgetForm.controls.total.value);
-    if (this.addBudgetForm.controls.revenue.value > 0 ||
-      this.addBudgetForm.controls.oop.value > 0 || this.addBudgetForm.controls.tax.value > 0) {
-      this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Values should be Negative Number' });
+    const value = Math.abs(this.changeBudgetForm.controls.total.value);
+    if (this.changeBudgetForm.controls.revenue.value > 0 ||
+      this.changeBudgetForm.controls.oop.value > 0 || this.changeBudgetForm.controls.tax.value > 0) {
+      this.messageService.add({key: 'adminCustom', severity: 'error', summary: 'Error Message',
+       detail: 'Values should be Negative Number' });
     } else {
-      if (this.addBudgetForm.controls.total.value > 0) {
-        this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Total should be in Negative Number' });
-      } else if (value > this.poValue.PoValues) {
-        this.messageService.add({
+      if (this.changeBudgetForm.controls.total.value > 0) {
+        this.messageService.add({key: 'adminCustom', severity: 'error', summary: 'Error Message',
+         detail: 'Total should be in Negative Number' });
+      } else if (value > this.poValue.total) {
+        this.messageService.add({key: 'adminCustom',
           severity: 'error', summary: 'Error Message',
           detail: 'Total Amount must be less than or equal to existing PO Value'
         });
       } else {
-        console.log(this.addBudgetForm.getRawValue());
+        console.log(this.changeBudgetForm.value);
+        // console.log(this.changeBudgetForm.getRawValue());
       }
     }
   }
 
   restructureBudget() {
-    if (this.addBudgetForm.controls.total.value !== 0) {
-      this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Total Should be Zero' });
+    if (this.changeBudgetForm.controls.total.value !== 0) {
+      this.messageService.add({key: 'adminCustom', severity: 'error', summary: 'Error Message', detail: 'Total Should be Zero' });
     } else {
-      console.log(this.addBudgetForm.getRawValue());
+      console.log(this.changeBudgetForm.value);
+      // console.log(this.changeBudgetForm.getRawValue());
     }
   }
 
 
   onChange() {
     let total = 0;
-    total = this.addBudgetForm.get('revenue').value + this.addBudgetForm.get('oop').value + this.addBudgetForm.get('tax').value;
-    this.addBudgetForm.controls.total.setValue(total);
+    total = this.changeBudgetForm.get('revenue').value + this.changeBudgetForm.get('oop').value + this.changeBudgetForm.get('tax').value;
+    this.changeBudgetForm.controls.total.setValue(total);
   }
 
   showAddClientModal() {
@@ -525,6 +590,7 @@ export class ClientMasterdataComponent implements OnInit {
   }
 
   showEditCLientModal(data) {
+    this.cmObject.isClientFormSubmit = false;
     this.showEditClient = true;
     this.buttonLabel = 'Update';
     this.addClient.controls.name.disable();
@@ -547,7 +613,7 @@ export class ClientMasterdataComponent implements OnInit {
       cmLevel2: 'option1',
       deliveryLevel1: ['option1', 'option2'],
       deliveryLevel2: 'option1',
-      currency: 'option1',
+      currency: '',
       APEmail: 'test',
       address1: 'hfgsdjgfjsg',
       address2: 'sdgfasgd',
@@ -572,6 +638,7 @@ export class ClientMasterdataComponent implements OnInit {
   }
 
   showAddSubDivision() {
+    this.cmObject.isSubDivisionFormSubmit = false;
     this.subDivisionform.reset();
     this.showeditSubDivision = false;
     this.buttonLabel = 'Submit';
@@ -580,6 +647,7 @@ export class ClientMasterdataComponent implements OnInit {
   }
 
   showEditSubDivision(data) {
+    this.cmObject.isSubDivisionFormSubmit = false;
     this.showeditSubDivision = true;
     this.buttonLabel = 'Update';
     this.showaddSubDivision = true;
@@ -601,6 +669,7 @@ export class ClientMasterdataComponent implements OnInit {
   }
 
   showEditPOC(data) {
+    this.cmObject.isPOCFormSubmit = false;
     this.showeditPOC = true;
     this.buttonLabel = 'Update';
     this.showaddPOC = true;
@@ -625,36 +694,51 @@ export class ClientMasterdataComponent implements OnInit {
   }
 
   showAddPO() {
+    this.editPo = true;
+    this.PoForm.controls.poNumber.enable();
+    this.PoForm.controls.currency.enable();
+    this.buttonLabel = 'Submit';
     this.showaddPO = true;
+    this.showeditPO = false;
     this.initAddPOForm();
     this.cmObject.isPOFormSubmit = false;
   }
 
-  showEditPOModal() {
+  showEditPOModal(data) {
+    this.cmObject.isPOFormSubmit = false;
+    this.editPo = false;
+    this.buttonLabel = 'Update';
     this.showeditPO = true;
-    //   this.editPoForm.patchValue({
-    //     poNumber: 'Test',
-    //     poName: 'Test',
-    //     currency: 'option2',
-    //     poExpiryDate: new Date(),
-    //     poc: 'option2',
-    //     // poFile: 'Bucket Master Data.csv',
-    //     ta: 'option2',
-    //     molecule: 'option2',
-    //     cmLevel2: 'option2',
-    //     poBuyingEntity: 'option2'
-    // });
+    this.showaddPO = true;
+    this.PoForm.controls.poNumber.disable();
+    this.PoForm.controls.currency.disable();
+    this.PoForm.patchValue({
+      poNumber: data.poNo,
+      poName: data.poName,
+      currency: 'option2',
+      poExpiryDate: new Date(),
+      poc: 'option2',
+      total: data.total,
+      revenue: data.revenue,
+      oop: data.oop,
+      tax: data.tax,
+      // poFile: 'Purchase Order.csv',
+      ta: 'option2',
+      molecule: 'option2',
+      cmLevel2: 'option2',
+      poBuyingEntity: 'option2'
+    });
   }
 
-  showaddBudgetModal(data) {
+  showchangeBudgetModal(data) {
     this.poValue = data;
+    this.changeBudgetForm.controls.total.disable();
     this.initAddBudgetForm();
     this.showaddBudget = true;
     this.cmObject.isBudgetFormSubmit = false;
   }
 
   downloadExcel(cmd) {
-    // console.log(cmd);
     cmd.exportCSV();
   }
 
