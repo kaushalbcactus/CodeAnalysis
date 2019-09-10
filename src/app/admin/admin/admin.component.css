@@ -165,3 +165,12 @@ form{
     .noTextDecoration {
         text-decoration: none !important;
     }
+    .disableColor{
+        background-color: #FFF0F0 !important;
+    }
+    .width10Per{
+        width: 10%;
+    }
+    .width5Per {
+        width: 5%;
+    }
