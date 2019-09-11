@@ -44,9 +44,12 @@ export class BucketMasterdataComponent implements OnInit {
   msgs: Message[] = [];
   selectedClient: any = [];
   selectedRowItems: any = [];
+  selectedBucket: any;
   viewClientArray: any = [];
   bucketDataRows = [];
   bucketDataColumns = [];
+  bucketArray = [];
+  clientArray = [];
   constructor(
     private datepipe: DatePipe,
     private messageService: MessageService,
@@ -82,14 +85,15 @@ export class BucketMasterdataComponent implements OnInit {
   async loadBucketTable() {
     this.adminObject.isMainLoaderHidden = false;
     const tempArray = [];
-    const results = await this.getInitData();
+    let results = [];
+    results = await this.getInitData();
     if (results && results.length) {
-      const bucketArray = results[0].retItems;
-      const clientArray = results[1].retItems;
-      this.clientList = clientArray;
-      bucketArray.forEach(item => {
+      this.bucketArray = results[0].retItems;
+      this.clientArray = results[1].retItems;
+      this.clientList = this.clientArray;
+      this.bucketArray.forEach(item => {
         const obj = Object.assign({}, this.adminObject.bucketObj);
-        const clientFilteredArray = clientArray.filter(x => x.Bucket === item.Title);
+        const clientFilteredArray = this.clientArray.filter(x => x.Bucket === item.Title);
         obj.RowClientsArray = clientFilteredArray;
         obj.ID = item.ID;
         obj.Bucket = item.Title;
@@ -99,9 +103,8 @@ export class BucketMasterdataComponent implements OnInit {
         obj.Client = clientFilteredArray && clientFilteredArray.length ? clientFilteredArray.map(x => x.Title).join(', ') : '';
         if (obj.Client.length > 30) {
           obj.PatClients = obj.Client.substring(0, 30) + '...';
-        }
-        if (clientFilteredArray && clientFilteredArray.length) {
-
+        } else {
+          obj.PatClients = obj.Client;
         }
         tempArray.push(obj);
       });
@@ -208,6 +211,7 @@ export class BucketMasterdataComponent implements OnInit {
    * @param data Pass data as parameter which contains table row value.
    */
   bucketMenu(data) {
+    this.selectedBucket = data;
     this.items = [
       { label: 'Edit', command: (e) => this.editClientData(data) },
       { label: 'Delete', command: (e) => this.delete(data), visible: data.Client !== '' ? false : true }
@@ -247,12 +251,14 @@ export class BucketMasterdataComponent implements OnInit {
    * This method will add bucket into `Focus Group list` and shows that bucket into the table.
    *
    * @Note
+   *
    * If bucket is already present then system will throws error and return `false`.
    * If blank bucket is submitted then system will throws error and return `false`.
+   * Alphabets and two special characters are only allowed and special characters cannot start or end the words.
    *
    */
   async addBucketData() {
-    const alphaExp = /^[a-zA-Z]+$/;
+    const alphaExp = /^[a-zA-Z]+(-?[a-zA-Z]+)?(_?[a-zA-Z]+)?$/;
     this.messageService.clear();
     if (!this.bucketData) {
       this.messageService.add({
@@ -263,8 +269,8 @@ export class BucketMasterdataComponent implements OnInit {
     }
     if (!this.bucketData.match(alphaExp)) {
       this.messageService.add({
-        key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please enter only alphabets.'
+        key: 'adminCustom', severity: 'error', summary: 'Error Message',
+        detail: 'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.'
       });
       return false;
     }
@@ -331,10 +337,63 @@ export class BucketMasterdataComponent implements OnInit {
     this.loadBucketTable();
     this.adminObject.isMainLoaderHidden = true;
   }
-  update() {
-    const clients = [];
-    console.log(this.selectedClient);
-    this.editClient = false;
+  /**
+   * construct a request to SharePoint based API using REST-CALL to update the records in `ClientLegalEntity` list.
+   * This method will prepare the `Batch` to update the records in `ClientLegalEntity` list.
+   *
+   * @description
+   *
+   * This method will update the column `Bucket` in `ClientLegalEntity` list.
+   *
+   * @Note
+   *
+   * It will only update the Client which are selected.
+   * If all Clients are selected then it will update the client which are not disabled.
+   */
+  async update() {
+    console.log(this.selectedBucket);
+    console.log(this.selectedRowItems);
+    if (!this.selectedClient.length) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error',
+        summary: 'Error Message', detail: 'Please select atleast one client.'
+      });
+      return false;
+    }
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    this.adminObject.isMainLoaderHidden = false;
+    this.selectedClient.forEach(element => {
+      if (!element.isCheckboxDisabled) {
+        const updatedData = {
+          __metadata: {
+            type: this.constants.listNames.ClientLegalEntity.type
+          },
+          Bucket: this.selectedBucket.Bucket
+        };
+        const updateClientData = Object.assign({}, options);
+        updateClientData.data = updatedData;
+        updateClientData.listName = this.constants.listNames.ClientLegalEntity.name;
+        updateClientData.type = 'PATCH';
+        updateClientData.url = this.spServices.getItemURL(this.constants.listNames.ClientLegalEntity.name, element.ID);
+        batchURL.push(updateClientData);
+      }
+    });
+    if (batchURL.length) {
+      const results = await this.spServices.executeBatch(batchURL);
+      this.editClient = false;
+      this.messageService.add({
+        key: 'adminCustom', severity: 'success', sticky: true,
+        summary: 'Success Message', detail: 'The selected clients are updated successfully.'
+      });
+      this.loadBucketTable();
+      this.adminObject.isMainLoaderHidden = true;
+    }
   }
 
   downloadExcel(bmd) {

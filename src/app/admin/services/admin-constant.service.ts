@@ -130,6 +130,7 @@ export class AdminConstantService {
       select: 'ID,Title,Modified,IsActive,Editor/ID,Editor/Title',
       expand: 'Editor/ID,Editor/Title',
       filter: 'IsActive eq {{isActive}}',
+      orderby: 'Modified desc'
     },
     GET_CLIENTLEGALENTITY_BY_ACTIVE: {
       select: 'ID,Title,Bucket',
