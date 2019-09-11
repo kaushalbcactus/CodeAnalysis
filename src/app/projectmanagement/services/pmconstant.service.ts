@@ -166,11 +166,12 @@ export class PmconstantService {
   };
   public SOW_QUERY = {
     ALL_SOW: {
-      select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget, '
+      select: 'ID,Title,SOWCode,PrimaryPOC,ClientLegalEntity,Author/Id,Author/Title,Created,TotalBudget,NetBudget,OOPBudget,TaxBudget,'
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked, TotalScheduled, ScheduledRevenue, TotalInvoiced, InvoicedRevenue,'
         + 'BillingEntity, AdditionalPOC, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
-        + 'DeliveryLevel2/ID, DeliveryLevel2/Title, Currency, BD/ID, BD/Title',
-      expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
+        + 'DeliveryLevel2/ID, DeliveryLevel2/Title, Currency, BD/ID, BD/Title,Editor/Title,Modified',
+      expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
+      + 'DeliveryLevel1/ID, DeliveryLevel1/Title,Editor/Title,'
         + 'DeliveryLevel2/ID, DeliveryLevel2/Title, BD/ID, BD/Title',
       filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\')',
       orderby: 'Modified desc',
@@ -400,7 +401,7 @@ export class PmconstantService {
       top: 4900
     },
     GET_PO: {
-      select: 'ID,Title, ClientLegalEntity, Currency, Number, Name, Amount, AmountOOP, AmountRevenue, AmountTax,'
+      select: 'ID,Title, ClientLegalEntity, Currency, Number, Name, Amount, AmountOOP, AmountRevenue, AmountTax,POCategory,POExpiryDate,'
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked,TotalScheduled,ScheduledRevenue',
       filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\'',
       orderby: 'Created desc',

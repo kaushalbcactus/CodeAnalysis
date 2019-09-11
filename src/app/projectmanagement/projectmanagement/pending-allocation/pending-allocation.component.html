@@ -1,19 +1,17 @@
 <div class="wrap-table100" [hidden]="isPAFilterHidden">
-    <div [hidden]='isPAInnerLoaderHidden'>
+    <div [hidden]='isPAInnerLoaderHidden' style="padding: 15vw;">
         <div id="scInnerLoader"></div>
         <div id="scInnerLoaderText">Loading...</div>
     </div>
-    <div class="noDataMessage" [hidden]='paHideNoDataMessage'> 
+    <div class="noDataMessage" [hidden]='paHideNoDataMessage'>
         No Project Found.
     </div>
     <div class="pendingTable table100 projectDataExist ver4 m-b-110" [hidden]="isPATableHidden">
         <div class="box excelIcon">
-            <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(paTableRef)"
-                title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+            <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(paTableRef)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
         </div>
         <div class="clear"></div>
-        <p-table #paTableRef [columns]="displayedColumns" [value]="pmObject.pendingAllocationArray" [paginator]="true"
-            [rows]="10" selectionMode="" exportFilename="Pending Allocation">
+        <p-table #paTableRef [columns]="displayedColumns" [value]="pmObject.pendingAllocationArray" [paginator]="true" [rows]="10" selectionMode="" exportFilename="Pending Allocation">
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th class="lastColumnWidth">S.No</th>
@@ -25,27 +23,21 @@
                 </tr>
                 <tr>
                     <th class="lastColumnWidth"></th>
-                    <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" >
-                        <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="paArrays.projectCodeArray"
-                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                    <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
+                        <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="paArrays.projectCodeArray" defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="paArrays.clientLegalEntityArray"
-                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        <p-multiSelect *ngSwitchCase="'shortTitle'" [options]="paArrays.shortTitleArray" defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'POC'" [options]="paArrays.POCArray" defaultLabel="All"
-                            (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="paArrays.deliveryTypeArray"
-                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="paArrays.clientLegalEntityArray" defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'TA'" [options]="paArrays.taArray" defaultLabel="All"
-                            (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'Molecule'" [options]="paArrays.moleculeArray" defaultLabel="All"
-                            (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'Milestone'" [options]="paArrays.milestoneArray"
-                            defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        <p-multiSelect *ngSwitchCase="'POC'" [options]="paArrays.POCArray" defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="paArrays.deliveryTypeArray" defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'Status'" [options]="paArrays.statusArray" defaultLabel="All"
-                            (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'TA'" [options]="paArrays.taArray" defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'Molecule'" [options]="paArrays.moleculeArray" defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'Milestone'" [options]="paArrays.milestoneArray" defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'Status'" [options]="paArrays.statusArray" defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
                     </th>
                     <th class="lastColumnWidth"></th>
                 </tr>
@@ -54,6 +46,7 @@
                 <tr>
                     <td>{{rowIndex+1}}</td>
                     <td>{{task.ProjectCode}}</td>
+                    <td>{{task.shortTitle}}</td>
                     <td>{{task.ClientLegalEntity}}</td>
                     <td>{{task.POC}}</td>
                     <td>{{task.DeliverableType}}</td>
@@ -64,11 +57,9 @@
                     <td>{{task.Status}}</td>
                     <td>
                         <div>
-                            <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems"
-                                [popup]="true">
+                            <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems" [popup]="true">
                             </p-menu>
-                            <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
-                                (click)="storeRowData(rowData); menu.show($event);"></i>
+                            <i class="pi pi-ellipsis-v"  style="font-size:2em;cursor: pointer;" (click)="storeRowData(rowData); menu.show($event);"></i>
                         </div>
                     </td>
                 </tr>

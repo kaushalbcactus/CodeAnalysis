@@ -23,6 +23,7 @@ export class InactiveComponent implements OnInit {
 
   displayedColumns: any[] = [
     { field: 'ProjectCode', header: 'Project Code' },
+    { field: 'shortTitle', header: 'Short Title' },
     { field: 'ClientLegalEntity', header: 'Client' },
     { field: 'POC', header: 'POC' },
     { field: 'DeliverableType', header: 'Deliverable Type' },
@@ -33,6 +34,7 @@ export class InactiveComponent implements OnInit {
     { field: 'Status', header: 'Status' }];
   filterColumns: any[] = [
     { field: 'ProjectCode' },
+    { field: 'shortTitle' },
     { field: 'ClientLegalEntity' },
     { field: 'POC' },
     { field: 'DeliverableType' },
@@ -56,6 +58,7 @@ export class InactiveComponent implements OnInit {
   public iapArrays = {
     projectItems: [],
     projectCodeArray: [],
+    shortTitleArray: [],
     clientLegalEntityArray: [],
     POCArray: [],
     taArray: [],
@@ -123,6 +126,7 @@ export class InactiveComponent implements OnInit {
       x.Status === this.Constant.projectStatus.OnHold ||
       x.Status === this.Constant.projectStatus.InDiscussion);
     const projectCodeTempArray = [];
+    const shortTitleTempArray = [];
     const clientLegalEntityTempArray = [];
     const POCTempArray = [];
     const deliveryTypeTempArray = [];
@@ -142,6 +146,7 @@ export class InactiveComponent implements OnInit {
         const paObj = $.extend(true, {}, this.pmObject.paObj);
         paObj.ID = task.ID;
         paObj.ProjectCode = task.ProjectCode;
+        paObj.shortTitle = task.WBJID;
         paObj.WBJID = task.WBJID;
         paObj.ClientLegalEntity = task.ClientLegalEntity;
         paObj.DeliverableType = task.DeliverableType;
@@ -157,6 +162,7 @@ export class InactiveComponent implements OnInit {
         paObj.POC = poc.length > 0 ? poc[0].FullName : '';
         // Adding the particular value into the array for sorting and filtering.
         projectCodeTempArray.push({ label: paObj.ProjectCode, value: paObj.ProjectCode });
+        shortTitleTempArray.push({ label: paObj.shortTitle, value: paObj.shortTitle });
         clientLegalEntityTempArray.push({ label: paObj.ClientLegalEntity, value: paObj.ClientLegalEntity });
         POCTempArray.push({ label: paObj.POC, value: paObj.POC });
         deliveryTypeTempArray.push({ label: paObj.DeliverableType, value: paObj.DeliverableType });
@@ -168,6 +174,7 @@ export class InactiveComponent implements OnInit {
         tempPAArray.push(paObj);
       }
       this.iapArrays.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
+      this.iapArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
       this.iapArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
       this.iapArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
       this.iapArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
@@ -205,31 +212,31 @@ export class InactiveComponent implements OnInit {
     const paArray = this.pmObject.inActiveProjectArray;
     this.commonService.lazyLoadTask(event, paArray, this.filterColumns, this.pmConstant.filterAction.INACTIVE_PROJECTS);
   }
-  
+
   storeRowData(rowData) {
     this.selectedIAPTask = rowData;
   }
   @HostListener('document:click', ['$event'])
-    clickout(event) {
-      if (event.target.className === "pi pi-ellipsis-v") {
-        if (this.tempClick) {
-          this.tempClick.style.display = "none";
-          if(this.tempClick !== event.target.parentElement.children[0].children[0]) {
-            this.tempClick = event.target.parentElement.children[0].children[0];
-            this.tempClick.style.display = "";
-          } else {
-            this.tempClick = undefined;
-          }
-        } else {
+  clickout(event) {
+    if (event.target.className === "pi pi-ellipsis-v") {
+      if (this.tempClick) {
+        this.tempClick.style.display = "none";
+        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
           this.tempClick = event.target.parentElement.children[0].children[0];
           this.tempClick.style.display = "";
+        } else {
+          this.tempClick = undefined;
         }
-  
       } else {
-        if (this.tempClick) {
-          this.tempClick.style.display = "none";
-          this.tempClick =  undefined;
-        }
+        this.tempClick = event.target.parentElement.children[0].children[0];
+        this.tempClick.style.display = "";
+      }
+
+    } else {
+      if (this.tempClick) {
+        this.tempClick.style.display = "none";
+        this.tempClick = undefined;
       }
     }
+  }
 }

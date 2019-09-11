@@ -45,6 +45,8 @@
                     <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                         <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="scArrays.projectCodeArray" defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'shortTitle'" [options]="scArrays.shortTitleArray" defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="scArrays.clientLegalEntityArray" defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'POC'" [options]="scArrays.POCArray" defaultLabel="All" (onChange)="sendToClientTableRef.filter($event.value, col.field, 'in') " (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
@@ -67,6 +69,7 @@
                         <span [ngClass]="{dot : true,'blueColor' : task.isBlueIndicator,'redColor': task.isRedIndicator,'greenColor': task.isGreenIndicator}"></span>
                     </td>
                     <td>{{task.ProjectCode}}</td>
+                    <td>{{task.shortTitle}}</td>
                     <td>{{task.ClientLegalEntity}}</td>
                     <td>{{task.POC}}</td>
                     <td>{{task.DeliverableType}}</td>
@@ -74,6 +77,7 @@
                     <td>{{task.Milestone}}</td>
                     <td>{{task.PreviousTaskUser}}</td>
                     <td>{{task.PreviousTaskStatus}}</td>
+                    <!-- <td [style.backgroundColor]="task.backgroundColor"> -->
                     <td>
                         <div>
                             <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems" [popup]="true">

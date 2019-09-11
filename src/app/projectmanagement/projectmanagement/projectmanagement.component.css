@@ -84,7 +84,7 @@ ul.custabs li.current {
 
 .filter {
     color: #BDBDBD;
-    font-size: 14px;
+    font-size: 13px;
     line-height: 20px;
     text-transform: uppercase
 }
@@ -166,7 +166,7 @@ img.ribbon {
 .star-white {
     color: #fff;
     margin-left: 2px;
-    font-size: 14px !important
+    font-size: 13px !important
 }
 
 .cd-rating {
@@ -540,12 +540,12 @@ td {
 /*==================================================================*/
 
 .table100.ver4 td {
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.4;
 }
 
 .table100.ver4 th {
-    font-size: 14px;
+    font-size: 13px;
     color: #777777;
     line-height: 1.4;
     background-color: #fafafa;
@@ -713,7 +713,7 @@ td {
 .select-link span {
     display: block;
     float: right;
-    font-size: 14px;
+    font-size: 13px;
     color: #777777
 }
 
@@ -786,7 +786,7 @@ td {
 }
 
 .cs-dashboard .fa.fa-circle.sla-color {
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .cs-dashboard .fa.fa-circle.sla-color.green {

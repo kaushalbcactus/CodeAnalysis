@@ -1641,4 +1641,42 @@ export class PMCommonService {
     }
     return data;
   }
+
+  async getAllBudget(projectArray) {
+    let batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    let batchResults = [];
+    let finalArray = [];
+    if (projectArray && projectArray.length) {
+      for (const element of projectArray) {
+        if (batchURL.length < 100) {
+          const projectFinanceGet = Object.assign({}, options);
+          const projectFinanceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE);
+          projectFinanceFilter.filter = projectFinanceFilter.filter.replace(/{{projectCode}}/gi,
+            element.ProjectCode);
+          projectFinanceGet.url = this.spServices.getReadURL(this.constant.listNames.ProjectFinances.name,
+            projectFinanceFilter);
+          projectFinanceGet.type = 'GET';
+          projectFinanceGet.listName = this.constant.listNames.ProjectFinances.name;
+          batchURL.push(projectFinanceGet);
+          if (batchURL.length === 99) {
+            batchResults = await this.spServices.executeBatch(batchURL);
+            finalArray = [...finalArray, ...batchResults];
+            batchURL = [];
+          }
+        }
+      }
+      if (batchURL.length) {
+        batchResults = await this.spServices.executeBatch(batchURL);
+        finalArray = [...finalArray, ...batchResults];
+      }
+    }
+    console.log('batch length: ' + batchURL.length);
+    return finalArray;
+  }
 }

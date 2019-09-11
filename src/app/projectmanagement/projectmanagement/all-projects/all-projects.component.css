@@ -1,103 +1,169 @@
-
 /** Loader **/
+
 @-webkit-keyframes spin {
-    0% { -webkit-transform: rotate(0deg); }
-    100% { -webkit-transform: rotate(360deg); }
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  
-  #mainLoader, #scInnerLoader, #allProjectLoader,#allSOWLoader,#selectSOWLoader{
-      border: 10px solid #f3f3f3;
-      border-radius: 50%;
-      border-top: 10px solid red;
-      border-bottom: 10px solid red;
-      width: 100px;
-      height: 100px;
-      -webkit-animation: spin 2s linear infinite;
-      animation: spin 2s linear infinite;
-      margin: 0 auto;
-      position: relative;
-      top: 50%;
-      transform: translateY(-50%);
-      margin-top: 1%;
+    0% {
+        -webkit-transform: rotate(0deg);
     }
-    
-    #mainLoaderText , #scInnerLoaderText, #allProjectLoaderText, #allSOWLoaderText,#selectSOWLoaderText{
-      -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
-      -o-animation: loading-text-opacity 2s linear 0s infinite normal;
-      -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
-      animation: loading-text-opacity 2s linear 0s infinite normal;
-      color: black;
-      font-family: "Helvetica Neue, "Helvetica", ""arial";
-      font-size: 10px;
-      font-weight: bold;
-      opacity: 0.5;
-      text-align: center;
-      text-transform: uppercase;
-      top: 0;
-      margin-bottom: 1%;
+    100% {
+        -webkit-transform: rotate(360deg);
     }
+}
 
-  .lastColumnWidth {
-    width: 60px;
-  }
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
 
-  .excelIcon {
-    float: right !important;
-    margin-top: 10px !important;
-  }
+.tableLoader {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    right: 0;
+    margin: 87px 0px 80px 0px;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 9999;
+}
 
-  body .ui-table .ui-table-tbody > tr > td {
-    word-break: break-all;
-  }
-  
-  .allProjects-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
-    overflow: visible;
-  }
-  
-  .allProjects-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
+#excelDownloadLoader {
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid red;
+    border-bottom: 10px solid red;
+    width: 100px;
+    height: 100px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
     position: relative;
-  }
-  
-  .allProjects-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div > i {
+    top: 20%;
+    transform: translateY(-50%);
+    margin-top: 1%;
+}
+
+#excelDownloadLoadertext {
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, "Helvetica", ""arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
+    margin-top: 9%;
+    margin-bottom: 1%;
+}
+
+#mainLoader,
+#scInnerLoader,
+#allProjectLoader,
+#allSOWLoader,
+#selectSOWLoader {
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid red;
+    border-bottom: 10px solid red;
+    width: 100px;
+    height: 100px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-top: 1%;
+}
+
+#mainLoaderText,
+#scInnerLoaderText,
+#allProjectLoaderText,
+#allSOWLoaderText,
+#selectSOWLoaderText {
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, "Helvetica", ""arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
+    margin-bottom: 1%;
+}
+
+.lastColumnWidth {
+    width: 60px;
+}
+
+.excelIcon {
+    float: right !important;
+    margin-top: 0px !important;
+}
+
+body .ui-table .ui-table-tbody>tr>td {
+    word-break: break-all;
+}
+
+.allProjects-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
+    overflow: visible;
+}
+
+.allProjects-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
+    position: relative;
+}
+
+.allProjects-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div>i {
     top: 0px !important;
-  }
-  
-  .allProjects-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+}
+
+.allProjects-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
     top: 0px !important;
     left: inherit !important;
     right: 40px !important;
-  }
+}
 
-  .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
+.ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
     background: #D7181F !important;
 }
-.ui-button:enabled:active{
+
+.ui-button:enabled:active {
     background-color: #D7181F !important;
     border-color: #D7181F !important;
 }
-.clear{clear: both;margin-bottom: 20px}
+
+.clear {
+    clear: both;
+    margin-bottom: 20px
+}
 
 .ng-right-side-overlay .ui-sidebar {
-  /* background-color: #B13E3E !important;
+    /* background-color: #B13E3E !important;
   color: #ffff !important;  */
-  overflow-x: auto; 
+    overflow-x: auto;
 }
 
 .ui-dynamicdialog .VisualRepresentationpopup>ng-gantt>div>.gchartcontainer>.gmainright {
-  width: 540px !important;
+    width: 540px !important;
 }
 
 .ui-table table {
-  table-layout: inherit !important;
+    table-layout: inherit !important;
 }
 
 .top-right-title {
-  float: right;     
-  margin-right: 20px;
-  margin-top: 5px;
+    float: right;
+    margin-right: 20px;
+    margin-top: 5px;
 }
