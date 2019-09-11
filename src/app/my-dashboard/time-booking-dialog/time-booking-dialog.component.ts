@@ -244,7 +244,6 @@ export class TimeBookingDialogComponent implements OnInit {
 
   SetTime(time, dayhoursObj, rowData) {
 
-    debugger;
     const timespent = time.split(':')[0] % 12 + ':' + time.split(':')[1];
     dayhoursObj.MileHrs = timespent;
 
@@ -678,7 +677,6 @@ export class TimeBookingDialogComponent implements OnInit {
 
   openDialog(rowData) {
     console.log(rowData);
-    debugger;
     this.displayComment = true;
     this.timebookingRow = rowData;
   }

@@ -255,6 +255,7 @@ export class ManageFinanceComponent implements OnInit {
 
     const arrResults = await this.spServices.executeBatch(batchURL);
     if (arrResults && arrResults.length) {
+
       const unfilteredPOArray = arrResults[0].retItems;
       this.poArray = unfilteredPOArray.filter(x => x.Currency === currency);
       if (this.poArray && this.poArray) {
@@ -374,7 +375,9 @@ export class ManageFinanceComponent implements OnInit {
 
   async reduceBudget() {
     if (this.selectedReason && this.selectedReasonType && this.newBudgetHrs) {
-      if (this.budgetData[0].budget_hours === this.newBudgetHrs) {
+  
+      if (this.budgetData[0].budget_hours === this.newBudgetHrs &&
+         this.selectedReasonType !== this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.INPUT_ERROR ) {
         this.messageService.add({
           key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
           detail: 'New and old budget hours cant be same.'
@@ -509,7 +512,7 @@ export class ManageFinanceComponent implements OnInit {
   addBudgetToProject() {
     let showError = false;
     if (this.projectStatus === this.constant.projectStatus.InDiscussion) {
-      if(this.projObj) {
+      if (this.projObj) {
         if (this.updatedBudget === 0 && this.budgetHours === 0) {
           showError = true;
         } else if (this.updatedBudget < 0) {
@@ -518,12 +521,12 @@ export class ManageFinanceComponent implements OnInit {
           showError = true;
         }
       } else {
-        if(this.updatedBudget < 0) {
+        if (this.updatedBudget < 0) {
           this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGET;
           return
         }
       }
-      
+
     } else {
       if (this.updatedBudget === 0 && this.budgetHours === 0) {
         showError = true;
@@ -1100,11 +1103,14 @@ export class ManageFinanceComponent implements OnInit {
   }
 
   lineItemConfirmAllowed(invoice) {
+
+    const POObj = this.poArray.find(c => c.Id === invoice.poId);
     const currentDate = new Date();
     const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
     const last3Days = this.commonService.getLastWorkingDay(3, new Date());
 
-    if (invoice.date >= last3Days && invoice.date < lastDay && invoice.amount > 0) {
+    if (invoice.date >= last3Days && invoice.date < lastDay && invoice.amount > 0 &&
+       POObj.POCategory !== 'Client PO Pending' && new Date(POObj.POExpiryDate) >= new Date()) {
       return true;
     } else {
       return false;

@@ -16,20 +16,18 @@
         <div class="floatLeft legendColor smalldot redColor"></div>
         Overdue
     </label>
-    <div  [hidden]='isCRInnerLoaderHidden'>
+    <div [hidden]='isCRInnerLoaderHidden' style="padding: 15vw;">
         <div id="scInnerLoader"></div>
         <div id="scInnerLoaderText">Loading...</div>
     </div>
     <div class="box excelIcon" [hidden]='isCRTableHidden'>
-        <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(crTableRef)"
-            title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
+        <i style="font-size: 1.8em;cursor: pointer;" (click)="pmCommonService.convertToExcelFile(crTableRef)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>
     </div>
     <div class="noDataMessage" [hidden]='crHideNoDataMessage'>
         No Tasks Found.
     </div>
     <div class="crTable table100 slaExist ver4 m-b-110" [hidden]="isCRTableHidden">
-        <p-table #crTableRef [columns]="displayedColumns" [value]="pmObject.clientReviewArray" [paginator]="true"
-            [rows]="10" selectionMode="" exportFilename="Client Review">
+        <p-table #crTableRef [columns]="displayedColumns" [value]="pmObject.clientReviewArray" [paginator]="true" [rows]="10" selectionMode="" exportFilename="Client Review">
             <ng-template pTemplate="header" let-columns>
                 <tr>
                     <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
@@ -40,24 +38,19 @@
                 </tr>
                 <tr>
                     <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
-                        <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="crArrays.projectCodeArray"
-                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="crArrays.projectCodeArray" defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="crArrays.clientLegalEntityArray"
-                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        <p-multiSelect *ngSwitchCase="'shortTitle'" [options]="crArrays.shortTitleArray" defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'POC'" [options]="crArrays.POCArray" defaultLabel="All"
-                            (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="crArrays.deliveryTypeArray"
-                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="crArrays.clientLegalEntityArray" defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'DueDate'" [options]="crArrays.dueDateArray" defaultLabel="All"
-                            (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'Milestone'" [options]="crArrays.milestoneArray"
-                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        <p-multiSelect *ngSwitchCase="'POC'" [options]="crArrays.POCArray" defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="crArrays.deliveryTypeArray" defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'DeliveryDate'" [options]="crArrays.deliveryDateArray"
-                            defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        <p-multiSelect *ngSwitchCase="'DueDate'" [options]="crArrays.dueDateArray" defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'Milestone'" [options]="crArrays.milestoneArray" defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'DeliveryDate'" [options]="crArrays.deliveryDateArray" defaultLabel="All" (onChange)="crTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                     </th>
                     <th class="lastColumnWidth"></th>
@@ -66,23 +59,22 @@
             <ng-template pTemplate="body" let-rowData let-task>
                 <tr [pContextMenuRow]="rowData">
                     <td>
-                        <span
-                            [ngClass]="{dot : true,'blueColor' : task.isBlueIndicator,'redColor': task.isRedIndicator,'greenColor': task.isGreenIndicator}"></span>
+                        <span [ngClass]="{dot : true,'blueColor' : task.isBlueIndicator,'redColor': task.isRedIndicator,'greenColor': task.isGreenIndicator}"></span>
                     </td>
                     <td>{{task.ProjectCode}}</td>
+                    <td>{{task.shortTitle}}</td>
                     <td>{{task.ClientLegalEntity}}</td>
                     <td>{{task.POC}}</td>
                     <td>{{task.DeliverableType}}</td>
                     <td>{{task.DueDate | date:'MMM dd yyyy hh:mm:ss aa'}}</td>
                     <td>{{task.Milestone}}</td>
                     <td>{{task.DeliveryDate | date:'MMM dd yyyy hh:mm:ss aa'}}</td>
+                    <!-- <td [style.backgroundColor]="task.backgroundColor"> -->
                     <td>
                         <div>
-                            <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu
-                                [model]="popItems" [popup]="true">
+                            <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems" [popup]="true">
                             </p-menu>
-                            <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
-                                (click)="storeRowData(rowData); menu.show($event);"></i>
+                            <i class="pi pi-ellipsis-v"  style="font-size:2em;cursor: pointer;" (click)="storeRowData(rowData); menu.show($event);"></i>
                         </div>
                     </td>
                 </tr>

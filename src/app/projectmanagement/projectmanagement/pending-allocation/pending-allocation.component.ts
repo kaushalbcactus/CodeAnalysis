@@ -21,12 +21,13 @@ export class PendingAllocationComponent implements OnInit {
   tempClick: any;
 
   displayedColumns: any[] = [
-    { field: 'ProjectCode', header: 'Project Code'},
+    { field: 'ProjectCode', header: 'Project Code' },
+    { field: 'shortTitle', header: 'Short Title' },
     { field: 'ClientLegalEntity', header: 'Client' },
-    { field: 'POC', header: 'POC'  },
+    { field: 'POC', header: 'POC' },
     { field: 'DeliverableType', header: 'Deliverable Type' },
     { field: 'TA', header: 'TA' },
-    { field: 'Molecule', header: 'Molecule'},
+    { field: 'Molecule', header: 'Molecule' },
     { field: 'PrimaryResourceText', header: 'Primary Resource' },
     { field: 'Milestone', header: 'Milestone' },
     { field: 'Status', header: 'Status' }
@@ -34,6 +35,7 @@ export class PendingAllocationComponent implements OnInit {
   filterColumns: any[] = [
     { field: 'ProjectCode' },
     { field: 'ClientLegalEntity' },
+    { field: 'shortTitle' },
     { field: 'POC' },
     { field: 'DeliverableType' },
     { field: 'TA' },
@@ -56,6 +58,7 @@ export class PendingAllocationComponent implements OnInit {
   public paArrays = {
     projectItems: [],
     projectCodeArray: [],
+    shortTitleArray: [],
     clientLegalEntityArray: [],
     POCArray: [],
     taArray: [],
@@ -123,6 +126,7 @@ export class PendingAllocationComponent implements OnInit {
     this.pmObject.countObj.paCount = this.paArrays.projectItems.length;
     this.pmObject.totalRecords.PendingAllocation = this.pmObject.countObj.paCount;
     const projectCodeTempArray = [];
+    const shortTitleTempArray = [];
     const clientLegalEntityTempArray = [];
     const POCTempArray = [];
     const deliveryTypeTempArray = [];
@@ -140,6 +144,7 @@ export class PendingAllocationComponent implements OnInit {
         const paObj = $.extend(true, {}, this.pmObject.paObj);
         paObj.ID = task.ID;
         paObj.ProjectCode = task.ProjectCode;
+        paObj.shortTitle = task.WBJID;
         paObj.WBJID = task.WBJID;
         paObj.ClientLegalEntity = task.ClientLegalEntity;
         paObj.DeliverableType = task.DeliverableType;
@@ -154,6 +159,7 @@ export class PendingAllocationComponent implements OnInit {
         paObj.POC = poc.length > 0 ? poc[0].FullName : '';
         // Adding the particular value into the array for sorting and filtering.
         projectCodeTempArray.push({ label: paObj.ProjectCode, value: paObj.ProjectCode });
+        shortTitleTempArray.push({ label: paObj.shortTitle, value: paObj.shortTitle });
         clientLegalEntityTempArray.push({ label: paObj.ClientLegalEntity, value: paObj.ClientLegalEntity });
         POCTempArray.push({ label: paObj.POC, value: paObj.POC });
         deliveryTypeTempArray.push({ label: paObj.DeliverableType, value: paObj.DeliverableType });
@@ -165,6 +171,7 @@ export class PendingAllocationComponent implements OnInit {
         tempPAArray.push(paObj);
       }
       this.paArrays.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
+      this.paArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
       this.paArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
       this.paArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
       this.paArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
@@ -204,26 +211,26 @@ export class PendingAllocationComponent implements OnInit {
     this.selectedPATask = rowData;
   }
   @HostListener('document:click', ['$event'])
-    clickout(event) {
-      if (event.target.className === "pi pi-ellipsis-v") {
-        if (this.tempClick) {
-          this.tempClick.style.display = "none";
-          if(this.tempClick !== event.target.parentElement.children[0].children[0]) {
-            this.tempClick = event.target.parentElement.children[0].children[0];
-            this.tempClick.style.display = "";
-          } else {
-            this.tempClick = undefined;
-          }
-        } else {
+  clickout(event) {
+    if (event.target.className === 'pi pi-ellipsis-v') {
+      if (this.tempClick) {
+        this.tempClick.style.display = 'none';
+        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
           this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = "";
+          this.tempClick.style.display = '';
+        } else {
+          this.tempClick = undefined;
         }
-  
       } else {
-        if (this.tempClick) {
-          this.tempClick.style.display = "none";
-          this.tempClick =  undefined;
-        }
+        this.tempClick = event.target.parentElement.children[0].children[0];
+        this.tempClick.style.display = '';
+      }
+
+    } else {
+      if (this.tempClick) {
+        this.tempClick.style.display = 'none';
+        this.tempClick = undefined;
       }
     }
+  }
 }

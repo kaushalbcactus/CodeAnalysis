@@ -14,6 +14,7 @@ import { DataService } from './Services/data.service';
 import { TimelineHistoryComponent } from './timeline/timeline-history/timeline-history.component';
 import { MessageService } from 'primeng/api';
 
+
 @NgModule({
   imports: [
     BrowserModule,
@@ -29,7 +30,7 @@ import { MessageService } from 'primeng/api';
     NgbModule
   ],
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService],
   bootstrap: [AppComponent]

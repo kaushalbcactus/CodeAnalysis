@@ -35,33 +35,50 @@ export class AllProjectsComponent implements OnInit {
     { field: 'ProjectCode', header: 'Project Code', visibility: true },
     { field: 'ShortTitle', header: 'Short Title', visibility: true },
     { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
-    { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
+    { field: 'DeliverableType', header: 'Deliverable Type', visibility: false },
     { field: 'ProjectType', header: 'Project Type', visibility: true },
-    { field: 'Status', header: 'Status', visibility: true },
-    { field: 'CreatedBy', header: 'Created By', visibility: true },
+    { field: 'PrimaryResources', header: 'Primary Resources', visibility: true },
+    { field: 'POC', header: 'POC', visibility: true },
+    { field: 'TA', header: 'TA', visibility: true },
+    { field: 'Molecule', header: 'Molecule', visibility: true },
+    { field: 'RevenueBudget', header: 'Revenue Budget', visibility: false },
+    { field: 'OOPBudget', header: 'OOP Budget', visibility: false },
+    { field: 'Currency', header: 'Currency', visibility: false },
+    { field: 'CreatedBy', header: 'Created By', visibility: false },
     { field: 'CreatedDateFormat', header: 'Created Date', visibility: false },
-    { field: 'CreatedDate', header: 'Created Date', visibility: true, exportable: false }
+    { field: 'Status', header: 'Status', visibility: true },
+
+    // { field: 'CreatedDate', header: 'Created Date', visibility: true, exportable: false }
   ];
   filterColumns: any[] = [
     { field: 'SOWCode' },
     { field: 'ProjectCode' },
     { field: 'ShortTitle' },
     { field: 'ClientLegalEntity' },
-    { field: 'DeliverableType' },
+    // { field: 'DeliverableType' },
     { field: 'ProjectType' },
     { field: 'Status' },
-    { field: 'CreatedBy' },
-    { field: 'CreatedDate' }];
+    { field: 'PrimaryResources' },
+    { field: 'POC' },
+    { field: 'TA' },
+    { field: 'Molecule' },
+  ];
+  // { field: 'CreatedBy' },
+  // { field: 'CreatedDate' }];
   public allProjects = {
     sowCodeArray: [],
     projectCodeArray: [],
     shortTitleArray: [],
     clientLegalEntityArray: [],
-    deliveryTypeArray: [],
+    // deliveryTypeArray: [],
+    POCArray: [],
+    TAArray: [],
+    PrimaryResourcesArray: [],
+    MoleculeArray: [],
     projectTypeArray: [],
     statusArray: [],
-    createdByArray: [],
-    createdDateArray: []
+    // createdByArray: [],
+    // createdDateArray: []
   };
   projectViewDataArray = [];
   public toUpdateIds = [];
@@ -94,6 +111,8 @@ export class AllProjectsComponent implements OnInit {
   providedProjectCode = '';
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   @ViewChild('allProjectRef', { static: true }) allProjectRef: Table;
+  ExcelDownloadenable = false;
+  firstLoad = true;
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
@@ -130,6 +149,34 @@ export class AllProjectsComponent implements OnInit {
   navigateToSOW(oProject) {
     this.pmObject.columnFilter.SOWCode = [oProject.SOWCode];
     this.router.navigate(['/projectMgmt/allSOW']);
+  }
+
+  async convertToExcelFile(data) {
+
+
+    this.ExcelDownloadenable = true;
+    console.log(data);
+    if (this.firstLoad) {
+      const budgets = await this.pmCommonService.getAllBudget(this.pmObject.allProjectsArray);
+      const AllBudgets = budgets.filter(c => c.retItems[0] !== undefined).map(c => c.retItems[0]);
+
+      console.log(AllBudgets);
+      this.pmObject.allProjectsArray.forEach(project => {
+        const projBudget = AllBudgets.find(c => c.Title === project.ProjectCode);
+        if (projBudget) {
+          project.RevenueBudget = projBudget.RevenueBudget ? projBudget.RevenueBudget : 0;
+          project.OOPBudget = projBudget.OOPBudget ? projBudget.OOPBudget : 0;
+          project.Currency = projBudget.Currency;
+        }
+      });
+      this.firstLoad = false;
+      data._values = this.pmObject.allProjectsArray;
+    }
+
+
+    this.pmCommonService.convertToExcelFile(data);
+    this.ExcelDownloadenable = false;
+
   }
 
   reloadAllProject() {
@@ -185,11 +232,15 @@ export class AllProjectsComponent implements OnInit {
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
     const clientLegalEntityTempArray = [];
-    const deliveryTypeTempArray = [];
+    // const deliveryTypeTempArray = [];
     const projectTypeTempArray = [];
     const statusTempArray = [];
-    const createdByTempArray = [];
-    const createDateTempArray = [];
+    const TATempArray = [];
+    const MoleculeTempArray = [];
+    const PrimaryResourcesTempArray = [];
+    const POCTempArray = [];
+    // const createdByTempArray = [];
+    // const createDateTempArray = [];
     let arrResults: any = [];
     if (!this.pmObject.allProjectItems.length) {
       // Get all project information based on current user.
@@ -298,6 +349,7 @@ export class AllProjectsComponent implements OnInit {
     if (this.pmObject.allProjectItems && this.pmObject.allProjectItems.length) {
       const tempAllProjectArray = [];
       for (const task of this.pmObject.allProjectItems) {
+
         const projObj = $.extend(true, {}, this.pmObject.allProject);
         projObj.ID = task.ID;
         projObj.Title = task.Title;
@@ -308,6 +360,9 @@ export class AllProjectsComponent implements OnInit {
         projObj.DeliverableType = task.DeliverableType;
         projObj.ProjectType = task.ProjectType;
         projObj.Status = task.Status;
+        projObj.OOPBudget = 0;
+        projObj.RevenueBudget = 0;
+        projObj.Currency = null;
         projObj.CreatedBy = task.Author ? task.Author.Title : '';
         projObj.CreatedDate = task.Created;
         projObj.CreatedDateFormat = this.datePipe.transform(new Date(projObj.CreatedDate), 'MMM dd yyyy hh:mm:ss aa');
@@ -355,6 +410,7 @@ export class AllProjectsComponent implements OnInit {
         projObj.StandardService = task.StandardService ? task.StandardService : '';
         projObj.Priority = task.Priority ? task.Priority : '';
         projObj.Authors = task.Authors ? task.Authors : '';
+        projObj.PrimaryResources = this.commonService.returnText(task.PrimaryResMembers.results);
         switch (projObj.Status) {
           case this.constants.projectStatus.InDiscussion:
             projObj.isRedIndicator = true;
@@ -387,25 +443,37 @@ export class AllProjectsComponent implements OnInit {
         projectCodeTempArray.push({ label: projObj.ProjectCode, value: projObj.ProjectCode });
         shortTitleTempArray.push({ label: projObj.ShortTitle, value: projObj.ShortTitle });
         clientLegalEntityTempArray.push({ label: projObj.ClientLegalEntity, value: projObj.ClientLegalEntity });
-        deliveryTypeTempArray.push({ label: projObj.DeliverableType, value: projObj.DeliverableType });
+        // deliveryTypeTempArray.push({ label: projObj.DeliverableType, value: projObj.DeliverableType });
+
+        // console.log(projObj);
         projectTypeTempArray.push({ label: projObj.ProjectType, value: projObj.ProjectType });
         statusTempArray.push({ label: projObj.Status, value: projObj.Status });
-        createdByTempArray.push({ label: projObj.CreatedBy, value: projObj.CreatedBy });
-        createDateTempArray.push({
-          label: this.datePipe.transform(projObj.CreatedDate, 'MMM dd yyyy hh:mm:ss aa'),
-          value: projObj.CreatedDate
-        });
+
+        TATempArray.push({ label: projObj.TA, value: projObj.TA });
+        MoleculeTempArray.push({ label: projObj.Molecule, value: projObj.Molecule });
+        POCTempArray.push({ label: projObj.PrimaryPOCText, value: projObj.PrimaryPOCText });
+        // PrimaryResourcesTempArray.push({ label: projObj.Status, value: projObj.Status });
+        // createdByTempArray.push({ label: projObj.CreatedBy, value: projObj.CreatedBy });
+        // createDateTempArray.push({
+        //   label: this.datePipe.transform(projObj.CreatedDate, 'MMM dd yyyy hh:mm:ss aa'),
+        //   value: projObj.CreatedDate
+        // });
         tempAllProjectArray.push(projObj);
       }
       this.allProjects.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');
       this.allProjects.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
       this.allProjects.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
       this.allProjects.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
-      this.allProjects.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
+      // this.allProjects.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
       this.allProjects.projectTypeArray = this.commonService.unique(projectTypeTempArray, 'value');
       this.allProjects.statusArray = this.commonService.unique(statusTempArray, 'value');
-      this.allProjects.createdByArray = this.commonService.unique(createdByTempArray, 'value');
-      this.allProjects.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
+
+      // this.allProjects.PrimaryResourcesArray = this.commonService.unique(PrimaryResourcesTempArray, 'value');
+      this.allProjects.POCArray = this.commonService.unique(POCTempArray, 'value');
+      this.allProjects.TAArray = this.commonService.unique(TATempArray, 'value');
+      this.allProjects.MoleculeArray = this.commonService.unique(MoleculeTempArray, 'value');
+      // this.allProjects.createdByArray = this.commonService.unique(createdByTempArray, 'value');
+      // this.allProjects.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
       this.pmObject.allProjectsArray = [];
       this.pmObject.allProjectsArray = tempAllProjectArray;
       setTimeout(() => {
@@ -654,7 +722,7 @@ export class AllProjectsComponent implements OnInit {
           menu.model[1].visible = false;
           menu.model[3].visible = false;
           menu.model[13].visible = false;
-          //menu.model[10].visible = false;
+          // menu.model[10].visible = false;
           break;
         case this.constants.projectStatus.PendingClosure:
           menu.model[0].visible = false;
@@ -673,7 +741,7 @@ export class AllProjectsComponent implements OnInit {
           menu.model[5].visible = false;
           menu.model[9].visible = false;
           menu.model[13].visible = false;
-          //menu.model[10].visible = false;
+          // menu.model[10].visible = false;
           break;
         case this.constants.projectStatus.SentToAMForApproval:
           menu.model[0].visible = false;
@@ -682,7 +750,7 @@ export class AllProjectsComponent implements OnInit {
           menu.model[3].visible = false;
           menu.model[5].visible = false;
           menu.model[13].visible = false;
-          //menu.model[10].visible = false;
+          // menu.model[10].visible = false;
           break;
         case this.constants.projectStatus.AwaitingCancelApproval:
           menu.model[0].visible = false;
@@ -1097,7 +1165,7 @@ export class AllProjectsComponent implements OnInit {
     }
     if (batchURL.length) {
       const updateResults = await this.spServices.executeBatch(batchURL);
-      console.log(updateResults);
+      // console.log(updateResults);
     }
     this.pmObject.isMainLoaderHidden = true;
     this.pmObject.isReasonSectionVisible = false;
@@ -1465,7 +1533,7 @@ export class AllProjectsComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.Molecule = proj.Molecule;
     this.pmObject.addProject.ProjectAttributes.TherapeuticArea = proj.TA;
     this.pmObject.addProject.ProjectAttributes.Indication = proj.Indication;
-    this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = proj.IsPubSupport === "Yes" ? true : false;
+    this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = proj.IsPubSupport === 'Yes' ? true : false;
     this.pmObject.addProject.ProjectAttributes.PUBSupportStatus = proj.PubSupportStatus;
     this.pmObject.addProject.ProjectAttributes.AlternateShortTitle = proj.ShortTitle;
     this.pmObject.addProject.ProjectAttributes.SOWBoxLink = proj.SOWBoxLink;
@@ -1556,7 +1624,7 @@ export class AllProjectsComponent implements OnInit {
     selectedProjectObj.IsSearchProject = true;
     const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
       header: 'Communications - ' + selectedProjectObj.ProjectCode + '(' + selectedProjectObj.Title + ')',
-      data:  selectedProjectObj
+      data: selectedProjectObj
     });
     ref.onClose.subscribe(element => {
       this.pmCommonService.resetAddProject();
@@ -2019,8 +2087,7 @@ export class AllProjectsComponent implements OnInit {
     let projectInfoFilter;
     if (this.pmObject.userRights.isMangers || this.pmObject.userRights.isHaveProjectFullAccess) {
       projectInfoFilter = Object.assign({}, this.pmConstant.PM_QUERY.PROJECT_INFORMATION_BY_PROJECTCODE_ALL);
-    }
-    else {
+    } else {
       projectInfoFilter = Object.assign({}, this.pmConstant.PM_QUERY.PROJECT_INFORMATION_BY_PROJECTCODE);
     }
 

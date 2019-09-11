@@ -22,34 +22,54 @@ declare var $;
 export class SOWComponent implements OnInit, OnDestroy {
   @Output() projectItem: EventEmitter<any> = new EventEmitter();
   tempClick: any;
-
+  viewBudget = false;
+  viewNote: true;
   displayedColumns: any[] = [
     { field: 'SOWCode', header: 'SOW Code', visibility: true },
     { field: 'ShortTitle', header: 'SOW Title', visibility: true },
     { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
     { field: 'POC', header: 'POC', visibility: true },
-    { field: 'CreatedBy', header: 'Created By', visibility: true },
-    { field: 'CreatedDate', header: 'Created Date', visibility: true, exportable: false },
+    { field: 'RevenueBudget', header: 'Revenue Budget', visibility: true },
+    { field: 'OOPBudget', header: 'OOP Budget', visibility: true },
+    { field: 'Currency', header: 'Currency', visibility: true },
+    { field: 'CreatedBy', header: 'Created By', visibility: false },
+    { field: 'CreatedDate', header: 'Created Date', visibility: false, exportable: false },
     { field: 'CreatedDateFormat', header: 'Created Date', visibility: false },
+    { field: 'ModifiedBy', header: 'Modified By', visibility: true },
+    { field: 'ModifiedDate', header: 'Modified Date', visibility: true, exportable: false },
+    { field: 'ModifiedDateFormat', header: 'Modified Date', visibility: false },
+
+
   ];
   filterColumns: any[] = [
     { field: 'SOWCode' },
     { field: 'ShortTitle' },
     { field: 'ClientLegalEntity' },
     { field: 'POC' },
+    { field: 'RevenueBudget' },
+    { field: 'OOPBudget' },
+    { field: 'Currency' },
     { field: 'CreatedBy' },
-    { field: 'CreatedDate' }];
+    { field: 'CreatedDate' },
+    { field: 'ModifiedBy' },
+    { field: 'ModifiedDate' }];
   projectsDisplayedColumns: any[] = [
     { field: 'DeliverableType', header: 'Deliverable Type' },
     { field: 'ProjectCode', header: 'Project Code' },
     { field: 'Title', header: 'Title' },
-    { field: 'Budget', header: 'Budget' },
+    { field: 'RevenueBudget', header: 'Revenue Budget' },
+    { field: 'OOPBudget', header: 'OOP Budget' },
+
+    //  { field: 'Budget', header: 'Budget' },
     { field: 'Status', header: 'Status' }];
   projectFilterColumns: any[] = [
     { field: 'DeliverableType' },
     { field: 'ProjectCode' },
     { field: 'Title' },
-    { field: 'Budget' },
+    { field: 'RevenueBudget' },
+    { field: 'OOPBudget' },
+
+    // { field: 'Budget' },
     { field: 'Status' }];
   public allSOW = {
     sowCodeArray: [],
@@ -57,14 +77,20 @@ export class SOWComponent implements OnInit, OnDestroy {
     clientLegalEntityArray: [],
     pocArray: [],
     createdByArray: [],
-    createdDateArray: []
+    createdDateArray: [],
+    modifiedByArray: [],
+    modifiedDateArray: [],
+    RevenueBudgetArray: [],
+    OOPBudgetArray: [],
+    currencyArray: [],
   };
   public projectObj = {
     ID: 0,
     DeliverableType: '',
     ProjectCode: '',
     Title: '',
-    Budget: '',
+    OOPBudget: '',
+    RevenueBudget: '',
     Status: ''
   };
   rangeDates: Date[];
@@ -84,6 +110,10 @@ export class SOWComponent implements OnInit, OnDestroy {
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   @ViewChild('allProjectRef', { static: true }) allProjectRef: Table;
   step: number;
+  ProjectArray = [];
+  totalRevenueBudget = 0;
+  totalOOPBudget = 0;
+  loaderenable = false;
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
@@ -206,6 +236,11 @@ export class SOWComponent implements OnInit, OnDestroy {
     const pocTempArray = [];
     const createdByTempArray = [];
     const createDateTempArray = [];
+    const modifiedByTempArray = [];
+    const modifiedDateTempArray = [];
+    const RevenueBudgetTempArray = [];
+    const OOPBudgetTempArray = [];
+    const currencyTempArray = [];
     let arrResults = [];
     if (this.pmObject.userRights.isMangers
       || this.pmObject.userRights.isHaveSOWFullAccess
@@ -243,14 +278,19 @@ export class SOWComponent implements OnInit, OnDestroy {
         const poc = this.pmObject.projectContactsItems.filter((obj) => {
           return (obj.ID === task.PrimaryPOC);
         });
+
         sowObj.POC = poc.length > 0 ? poc[0].FullName : '';
         sowObj.CreatedBy = task.Author ? task.Author.Title : '';
         sowObj.CreatedDate = task.Created;
         sowObj.CreatedDateFormat = this.datePipe.transform(new Date(sowObj.CreatedDate), 'MMM dd yyyy hh:mm:ss aa');
+        sowObj.ModifiedBy = task.Editor ? task.Editor.Title : '';
+        sowObj.ModifiedDate = task.Modified;
+        sowObj.ModifiedDateFormat = this.datePipe.transform(new Date(sowObj.ModifiedDate), 'MMM dd yyyy hh:mm:ss aa');
         sowObj.TotalBudget = task.TotalBudget ? task.TotalBudget : 0;
         sowObj.NetBudget = task.NetBudget ? task.NetBudget : 0;
         sowObj.OOPBudget = task.OOPBudget ? task.OOPBudget : 0;
         sowObj.TaxBudget = task.TaxBudget ? task.TaxBudget : 0;
+        sowObj.RevenueBudget = task.NetBudget ? task.NetBudget : 0;
         sowObj.RevenueLinked = task.RevenueLinked ? task.RevenueLinked : 0;
         sowObj.OOPLinked = task.OOPLinked ? task.OOPLinked : 0;
         sowObj.TaxLinked = task.TaxLinked ? task.TaxLinked : 0;
@@ -260,23 +300,37 @@ export class SOWComponent implements OnInit, OnDestroy {
         sowObj.TotalInvoiced = task.TotalInvoiced ? task.TotalInvoiced : 0;
         sowObj.InvoicedRevenue = task.InvoicedRevenue ? task.InvoicedRevenue : 0;
         sowObj.ClientLegalEntity = task.ClientLegalEntity;
+        sowObj.Currency = task.Currency;
         sowCodeTempArray.push({ label: sowObj.SOWCode, value: sowObj.SOWCode });
         shortTitleTempArray.push({ label: sowObj.ShortTitle, value: sowObj.ShortTitle });
         clientLegalEntityTempArray.push({ label: sowObj.ClientLegalEntity, value: sowObj.ClientLegalEntity });
         pocTempArray.push({ label: sowObj.POC, value: sowObj.POC });
         createdByTempArray.push({ label: sowObj.CreatedBy, value: sowObj.CreatedBy });
+        currencyTempArray.push({ label: sowObj.Currency, value: sowObj.Currency });
+        RevenueBudgetTempArray.push({ label: sowObj.RevenueBudget, value: sowObj.RevenueBudget });
+        OOPBudgetTempArray.push({ label: sowObj.OOPBudget, value: sowObj.OOPBudget });
         createDateTempArray.push({
+          label: this.datePipe.transform(sowObj.CreatedDate, 'MMM dd yyyy hh:mm:ss aa'),
+          value: sowObj.CreatedDate
+        });
+        modifiedByTempArray.push({ label: sowObj.CreatedBy, value: sowObj.CreatedBy });
+        modifiedDateTempArray.push({
           label: this.datePipe.transform(sowObj.CreatedDate, 'MMM dd yyyy hh:mm:ss aa'),
           value: sowObj.CreatedDate
         });
         tempAllSOWArray.push(sowObj);
       }
       this.allSOW.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');
+      this.allSOW.currencyArray = this.commonService.unique(currencyTempArray, 'value');
+      this.allSOW.RevenueBudgetArray = this.commonService.unique(RevenueBudgetTempArray, 'value');
+      this.allSOW.OOPBudgetArray = this.commonService.unique(OOPBudgetTempArray, 'value');
       this.allSOW.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
       this.allSOW.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
       this.allSOW.pocArray = this.commonService.unique(pocTempArray, 'value');
       this.allSOW.createdByArray = this.commonService.unique(createdByTempArray, 'value');
       this.allSOW.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
+      this.allSOW.modifiedByArray = this.commonService.unique(modifiedByTempArray, 'value');
+      this.allSOW.modifiedDateArray = this.commonService.unique(modifiedDateTempArray, 'value');
       this.pmObject.allSOWArray = tempAllSOWArray;
 
     }
@@ -333,6 +387,7 @@ export class SOWComponent implements OnInit, OnDestroy {
     }, this.pmConstant.TIME_OUT);
   }
   async loadProjectTable(projectFilter) {
+
     let projectInformationFilter: any = {};
     switch (projectFilter) {
       case this.pmConstant.filterAction.ACTIVE_PROJECT:
@@ -367,8 +422,11 @@ export class SOWComponent implements OnInit, OnDestroy {
           .replace(/{{proposedEndDate}}/gi, endDate);
         break;
     }
+
+    this.ProjectArray = [];
     const sResults = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInformationFilter);
-    const budgetArray = await this.getBudget(sResults);
+    this.ProjectArray = sResults;
+    //  const budgetArray = await this.getBudget(sResults);
     this.pmObject.allProjects.activeProjectArray = [];
     this.pmObject.allProjects.activeProjectCopyArray = [];
     const tempProjectArray = [];
@@ -379,11 +437,13 @@ export class SOWComponent implements OnInit, OnDestroy {
         projectObj.DeliverableType = projectItem.DeliverableType;
         projectObj.ProjectCode = projectItem.ProjectCode;
         projectObj.Title = projectItem.Title;
-        const tempBuget = budgetArray.find(x => x.retItems && x.retItems.length &&
-          x.retItems[0].Title === projectItem.ProjectCode);
-        projectObj.Budget = tempBuget && tempBuget.retItems.length
-          ? (tempBuget.retItems[0].ApprovedBudget ? tempBuget.retItems[0].ApprovedBudget :
-            (tempBuget.retItems[0].RevenueBudget ? tempBuget.retItems[0].RevenueBudget : 0)) : 0;
+        // const tempBuget = budgetArray.find(x => x.retItems && x.retItems.length &&
+        //   x.retItems[0].Title === projectItem.ProjectCode);
+        // projectObj.Budget = tempBuget && tempBuget.retItems.length
+        //   ? (tempBuget.retItems[0].ApprovedBudget ? tempBuget.retItems[0].ApprovedBudget :
+        //     (tempBuget.retItems[0].RevenueBudget ? tempBuget.retItems[0].RevenueBudget : 0)) : 0;
+
+
         projectObj.Status = projectItem.Status;
         tempProjectArray.push(projectObj);
       });
@@ -412,43 +472,63 @@ export class SOWComponent implements OnInit, OnDestroy {
         break;
     }
   }
-  async getBudget(projectArray) {
-    let batchURL = [];
-    const options = {
-      data: null,
-      url: '',
-      type: '',
-      listName: ''
-    };
-    let batchResults = [];
-    let finalArray = [];
-    if (projectArray && projectArray.length) {
-      for (const element of projectArray) {
-        if (batchURL.length < 100) {
-          const projectFinanceGet = Object.assign({}, options);
-          const projectFinanceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE);
-          projectFinanceFilter.filter = projectFinanceFilter.filter.replace(/{{projectCode}}/gi,
-            element.ProjectCode);
-          projectFinanceGet.url = this.spServices.getReadURL(this.constants.listNames.ProjectFinances.name,
-            projectFinanceFilter);
-          projectFinanceGet.type = 'GET';
-          projectFinanceGet.listName = this.constants.listNames.ProjectFinances.name;
-          batchURL.push(projectFinanceGet);
-          if (batchURL.length === 99) {
-            batchResults = await this.spServices.executeBatch(batchURL);
-            finalArray = [...finalArray, ...batchResults];
-            batchURL = [];
-          }
-        }
-      }
-      if (batchURL.length) {
-        batchResults = await this.spServices.executeBatch(batchURL);
-        finalArray = [...finalArray, ...batchResults];
-      }
+
+  async loadBudgetHours(projectFilter) {
+    this.loaderenable = true;
+    const budgetArray = await this.pmCommonService.getAllBudget(this.ProjectArray);
+    const tempProjectArray = [];
+    let AllArrayObj = [];
+    this.ProjectArray.forEach(projectItem => {
+      const projectObj = $.extend(true, {}, this.projectObj);
+      projectObj.ID = projectItem.ID;
+      projectObj.DeliverableType = projectItem.DeliverableType;
+      projectObj.ProjectCode = projectItem.ProjectCode;
+      projectObj.Title = projectItem.Title;
+      const tempBuget = budgetArray.find(x => x.retItems && x.retItems.length &&
+        x.retItems[0].Title === projectItem.ProjectCode);
+
+
+      projectObj.RevenueBudget = tempBuget && tempBuget.retItems.length ?
+        projectItem.ProjectType.includes('Deliverable') ?
+          (tempBuget.retItems[0].RevenueBudget ? tempBuget.retItems[0].RevenueBudget : 0) :
+          (tempBuget.retItems[0].ApprovedBudget ? tempBuget.retItems[0].ApprovedBudget : 0) : 0;
+
+      projectObj.OOPBudget = tempBuget && tempBuget.retItems.length ?
+        (tempBuget.retItems[0].OOPBudget ? tempBuget.retItems[0].OOPBudget : 0) : 0;
+      projectObj.Status = projectItem.Status;
+      tempProjectArray.push(projectObj);
+    });
+    AllArrayObj = Object.assign([], tempProjectArray);
+    switch (projectFilter) {
+      case this.pmConstant.filterAction.ACTIVE_PROJECT:
+        this.pmObject.allProjects.activeProjectArray = Object.assign([], tempProjectArray);
+        this.pmObject.totalRecords.activeProject = tempProjectArray.length;
+        this.pmObject.allProjects.activeProjectCopyArray = tempProjectArray.splice(0, 5);
+        this.activeProjectLoader = true;
+        this.isActiveProjectTableHidden = false;
+        break;
+      case this.pmConstant.filterAction.PIPELINE_PROJECT:
+        this.pmObject.allProjects.pipelineProjectArray = Object.assign([], tempProjectArray);
+        this.pmObject.totalRecords.pipelineProject = tempProjectArray.length;
+        this.pmObject.allProjects.pipelineProjectCopyArray = tempProjectArray.splice(0, 5);
+        this.pipelineProjectLoader = true;
+        this.isPipelineProjectTableHidden = false;
+        break;
+      case this.pmConstant.filterAction.INACTIVE_PROJECT:
+        this.pmObject.allProjects.inActiveProjectArray = Object.assign([], tempProjectArray);
+        this.pmObject.totalRecords.inActiveProject = tempProjectArray.length;
+        this.pmObject.allProjects.inActiveProjectCopyArray = tempProjectArray.splice(0, 5);
+        this.inActiveProjectLoader = true;
+        this.isInActiveProjectTableHidden = false;
+        break;
     }
-    console.log('batch length: ' + batchURL.length);
-    return finalArray;
+    this.loaderenable = false;
+    this.viewBudget = true;
+    this.totalRevenueBudget = AllArrayObj.map(c => c.RevenueBudget).reduce((a, b) => a + b, 0);
+    this.totalOOPBudget = AllArrayObj.map(c => c.OOPBudget).reduce((a, b) => a + b, 0);
+
   }
+
   activeProjectlazyLoadTask(event) {
     const activeProjectArray = this.pmObject.allProjects.activeProjectArray;
     this.commonService.lazyLoadTask(event, activeProjectArray, this.projectFilterColumns, this.pmConstant.filterAction.ACTIVE_PROJECT);
@@ -462,6 +542,9 @@ export class SOWComponent implements OnInit, OnDestroy {
     this.commonService.lazyLoadTask(event, inActiveProjectArray, this.projectFilterColumns, this.pmConstant.filterAction.INACTIVE_PROJECT);
   }
   setStep(index: number) {
+
+    this.viewBudget = false;
+    this.viewNote = true;
     this.step = index;
     if (this.step === 0) {
       this.getActiveProject();

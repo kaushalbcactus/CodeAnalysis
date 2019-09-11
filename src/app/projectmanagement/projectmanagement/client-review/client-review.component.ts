@@ -25,6 +25,7 @@ export class ClientReviewComponent implements OnInit {
   displayedColumns: any[] = [
     { field: 'SLA', header: 'SLA', visibility: true },
     { field: 'ProjectCode', header: 'Project Code', visibility: true },
+    { field: 'shortTitle', header: 'Short Title', visibility: true },
     { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
     { field: 'POC', header: 'POC', visibility: true },
     { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
@@ -35,6 +36,7 @@ export class ClientReviewComponent implements OnInit {
     { field: 'DueDateFormat', header: 'Due Date', visibility: false }];
   filterColumns: any[] = [
     { field: 'ProjectCode' },
+    { field: 'shortTitle' },
     { field: 'ClientLegalEntity' },
     { field: 'POC' },
     { field: 'DeliverableType' },
@@ -60,6 +62,7 @@ export class ClientReviewComponent implements OnInit {
   public crArrays = {
     taskItems: [],
     projectCodeArray: [],
+    shortTitleArray: [],
     clientLegalEntityArray: [],
     POCArray: [],
     deliveryTypeArray: [],
@@ -191,6 +194,7 @@ export class ClientReviewComponent implements OnInit {
     };
     this.crArrays.taskItems = await this.spServices.read('' + this.Constant.listNames.Schedules.name + '', queryOptions);
     const projectCodeTempArray = [];
+    const shortTitleTempArray = [];
     const clientLegalEntityTempArray = [];
     const POCTempArray = [];
     const deliveryTypeTempArray = [];
@@ -214,9 +218,11 @@ export class ClientReviewComponent implements OnInit {
       // Iterate each CR Task
       for (const task of this.crArrays.taskItems) {
         const crObj: any = $.extend(true, {}, this.pmObject.clientReviewObj);
+
         crObj.ID = task.ID;
         crObj.Title = task.Title;
         crObj.ProjectCode = task.ProjectCode;
+
         crObj.NextTasks = task.NextTasks;
         crObj.PreviousTask = task.PrevTasks;
         // tslint:disable-next-line:only-arrow-functions
@@ -225,6 +231,7 @@ export class ClientReviewComponent implements OnInit {
         });
         if (projectObj.length) {
           crObj.ClientLegalEntity = projectObj[0].ClientLegalEntity;
+          crObj.shortTitle = projectObj[0].WBJID;
           crObj.DeliverableType = projectObj[0].DeliverableType;
           crObj.ProjectFolder = projectObj[0].ProjectFolder;
           // tslint:disable-next-line:only-arrow-functions
@@ -243,15 +250,19 @@ export class ClientReviewComponent implements OnInit {
         // Check Task Due is greater or smaller than current date.
         if (new Date(new Date(crObj.DueDate).setHours(0, 0, 0, 0)).getTime() === new Date(new Date().setHours(0, 0, 0, 0)).getTime()) {
           crObj.isBlueIndicator = true;
+          crObj.backgroundColor = '#add8e6';
           crObj.SLA = this.pmConstant.ColorIndicator.BLUE;
         } else if (new Date(new Date(crObj.DueDate).setHours(0, 0, 0, 0)) > new Date(new Date().setHours(0, 0, 0, 0))) {
           crObj.isGreenIndicator = true;
+          crObj.backgroundColor = '#90ee90';
           crObj.SLA = this.pmConstant.ColorIndicator.GREEN;
         } else {
           crObj.isRedIndicator = true;
+          crObj.backgroundColor = '#f08080';
           crObj.SLA = this.pmConstant.ColorIndicator.RED;
         }
         projectCodeTempArray.push({ label: crObj.ProjectCode, value: crObj.ProjectCode });
+        shortTitleTempArray.push({ label: crObj.shortTitle, value: crObj.shortTitle });
         clientLegalEntityTempArray.push({ label: crObj.ClientLegalEntity, value: crObj.ClientLegalEntity });
         POCTempArray.push({ label: crObj.POC, value: crObj.POC });
         deliveryTypeTempArray.push({ label: crObj.DeliverableType, value: crObj.DeliverableType });
@@ -280,6 +291,7 @@ export class ClientReviewComponent implements OnInit {
         }
       }
       this.crArrays.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
+      this.crArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
       this.crArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
       this.crArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
       this.crArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
@@ -383,26 +395,26 @@ export class ClientReviewComponent implements OnInit {
     this.selectedCRTask = rowData;
   }
   @HostListener('document:click', ['$event'])
-    clickout(event) {
-      if (event.target.className === "pi pi-ellipsis-v") {
-        if (this.tempClick) {
-          this.tempClick.style.display = "none";
-          if(this.tempClick !== event.target.parentElement.children[0].children[0]) {
-            this.tempClick = event.target.parentElement.children[0].children[0];
-            this.tempClick.style.display = "";
-          } else {
-            this.tempClick = undefined;
-          }
-        } else {
+  clickout(event) {
+    if (event.target.className === "pi pi-ellipsis-v") {
+      if (this.tempClick) {
+        this.tempClick.style.display = "none";
+        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
           this.tempClick = event.target.parentElement.children[0].children[0];
           this.tempClick.style.display = "";
+        } else {
+          this.tempClick = undefined;
         }
-  
       } else {
-        if (this.tempClick) {
-          this.tempClick.style.display = "none";
-          this.tempClick =  undefined;
-        }
+        this.tempClick = event.target.parentElement.children[0].children[0];
+        this.tempClick.style.display = "";
+      }
+
+    } else {
+      if (this.tempClick) {
+        this.tempClick.style.display = "none";
+        this.tempClick = undefined;
       }
     }
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, HostListener} from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -23,6 +23,7 @@ export class SendToClientComponent implements OnInit {
   displayedColumns: any[] = [
     { field: 'SLA', header: 'SLA', visibility: true },
     { field: 'ProjectCode', header: 'Project Code', visibility: true },
+    { field: 'shortTitle', header: 'Short Title', visibility: true },
     { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
     { field: 'POC', header: 'POC', visibility: true },
     { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
@@ -30,9 +31,10 @@ export class SendToClientComponent implements OnInit {
     { field: 'Milestone', header: 'Milestone', visibility: true },
     { field: 'PreviousTaskUser', header: 'Previous Task Owner', visibility: true },
     { field: 'PreviousTaskStatus', header: 'Previous Task Status', visibility: true },
-    { field: 'DueDateFormat', header: 'Due Date', visibility: false}];
+    { field: 'DueDateFormat', header: 'Due Date', visibility: false }];
   filterColumns: any[] = [
     { field: 'ProjectCode' },
+    { field: 'shortTitle' },
     { field: 'ClientLegalEntity' },
     { field: 'POC' },
     { field: 'DeliverableType' },
@@ -59,6 +61,7 @@ export class SendToClientComponent implements OnInit {
   public scArrays = {
     taskItems: [],
     projectCodeArray: [],
+    shortTitleArray: [],
     clientLegalEntityArray: [],
     POCArray: [],
     deliveryTypeArray: [],
@@ -207,7 +210,7 @@ export class SendToClientComponent implements OnInit {
     const pastFiveDays = $('#overdue').is(':checked');
     const todayFilterDate = this.commonService.calcBusinessDate('Today', 1);
     const nextFiveDate = this.commonService.calcBusinessDate('Next', 5);
-    const pastFiveFilterDate = this.commonService.calcBusinessDate('Past', 5);
+    const pastFiveFilterDate = this.commonService.calcBusinessDate('Past', 10);
     if (todayDelivery) {
       this.queryStartDate = todayFilterDate.startDate;
       this.queryEndDate = todayFilterDate.endDate;
@@ -270,6 +273,7 @@ export class SendToClientComponent implements OnInit {
 
     this.scArrays.taskItems = await this.spServices.read('' + this.Constant.listNames.Schedules.name + '', queryOptions);
     const projectCodeTempArray = [];
+    const shortTitleTempArray = [];
     const clientLegalEntityTempArray = [];
     const POCTempArray = [];
     const deliveryTypeTempArray = [];
@@ -291,7 +295,7 @@ export class SendToClientComponent implements OnInit {
       const tempSendToClientArray = [];
       const batchContents = new Array();
       const batchGuid = this.spServices.generateUUID();
- 
+
       for (const task of this.scArrays.taskItems) {
         const scObj: any = $.extend(true, {}, this.pmObject.sendToClient);
         scObj.ID = task.ID;
@@ -305,6 +309,7 @@ export class SendToClientComponent implements OnInit {
         });
         if (projectObj.length) {
           scObj.ClientLegalEntity = projectObj[0].ClientLegalEntity;
+          scObj.shortTitle = projectObj[0].WBJID;
           scObj.DeliverableType = projectObj[0].DeliverableType;
           scObj.ProjectFolder = projectObj[0].ProjectFolder;
           // tslint:disable-next-line:only-arrow-functions
@@ -319,18 +324,22 @@ export class SendToClientComponent implements OnInit {
         scObj.DueDate = task.DueDate;
         scObj.DueDateFormat = this.datePipe.transform(new Date(scObj.DueDate), 'MMM dd yyyy hh:mm:ss aa');
         scObj.Milestone = task.SubMilestones ?
-        task.Milestone + ' - ' + task.SubMilestones  : task.Milestone;
+          task.Milestone + ' - ' + task.SubMilestones : task.Milestone;
         if (new Date(new Date(scObj.DueDate).setHours(0, 0, 0, 0)).getTime() === new Date(new Date().setHours(0, 0, 0, 0)).getTime()) {
           scObj.isBlueIndicator = true;
+          scObj.backgroundColor = '#add8e6';
           scObj.SLA = this.pmConstant.ColorIndicator.BLUE;
         } else if (new Date(new Date(scObj.DueDate).setHours(0, 0, 0, 0)) > new Date(new Date().setHours(0, 0, 0, 0))) {
           scObj.isGreenIndicator = true;
+          scObj.backgroundColor = '#90ee90';
           scObj.SLA = this.pmConstant.ColorIndicator.GREEN;
         } else {
           scObj.isRedIndicator = true;
+          scObj.backgroundColor = '#f08080';
           scObj.SLA = this.pmConstant.ColorIndicator.RED;
         }
         projectCodeTempArray.push({ label: scObj.ProjectCode, value: scObj.ProjectCode });
+        shortTitleTempArray.push({ label: scObj.shortTitle, value: scObj.shortTitle });
         clientLegalEntityTempArray.push({ label: scObj.ClientLegalEntity, value: scObj.ClientLegalEntity });
         POCTempArray.push({ label: scObj.POC, value: scObj.POC });
         deliveryTypeTempArray.push({ label: scObj.DeliverableType, value: scObj.DeliverableType });
@@ -369,6 +378,7 @@ export class SendToClientComponent implements OnInit {
         }
       }
       this.scArrays.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
+      this.scArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
       this.scArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
       this.scArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
       this.scArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
@@ -394,7 +404,7 @@ export class SendToClientComponent implements OnInit {
       this.isSCInnerLoaderHidden = true;
       this.isSCFilterHidden = false;
     }
-    //this.commonService.setIframeHeight();
+    // this.commonService.setIframeHeight();
   }
   myFunction() {
     document.getElementById('myDropdown').classList.toggle('show');
@@ -414,26 +424,25 @@ export class SendToClientComponent implements OnInit {
     }
   }
   @HostListener('document:click', ['$event'])
-    clickout(event) {
-      if (event.target.className === "pi pi-ellipsis-v") {
-        if (this.tempClick) {
-          this.tempClick.style.display = "none";
-          if(this.tempClick !== event.target.parentElement.children[0].children[0]) {
-            this.tempClick = event.target.parentElement.children[0].children[0];
-            this.tempClick.style.display = "";
-          } else {
-            this.tempClick = undefined;
-          }
-        } else {
+  clickout(event) {
+    if (event.target.className === 'pi pi-ellipsis-v') {
+      if (this.tempClick) {
+        this.tempClick.style.display = 'none';
+        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
           this.tempClick = event.target.parentElement.children[0].children[0];
-          this.tempClick.style.display = "";
+          this.tempClick.style.display = '';
+        } else {
+          this.tempClick = undefined;
         }
-  
       } else {
-        if (this.tempClick) {
-          this.tempClick.style.display = "none";
-          this.tempClick =  undefined;
-        }
+        this.tempClick = event.target.parentElement.children[0].children[0];
+        this.tempClick.style.display = '';
+      }
+    } else {
+      if (this.tempClick) {
+        this.tempClick.style.display = 'none';
+        this.tempClick = undefined;
       }
     }
+  }
 }
