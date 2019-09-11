@@ -557,6 +557,13 @@ export class UserProfileComponent implements OnInit {
       this.loadUserTable();
     }
   }
+  /**
+   * Construct a method to search the user based on filter `IsActive=No`.
+   *
+   * @description
+   *
+   * This method is used to search the inactive user based on `IsActive` column and display in table.
+   */
   async searchInactiveUser() {
     const resCatFilter = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION);
     resCatFilter.filter = resCatFilter.filter.replace(/{{isActive}}/gi,
