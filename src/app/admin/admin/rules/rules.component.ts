@@ -22,7 +22,7 @@ export class RulesComponent implements OnInit {
     UpdatedBy: [],
     UpdatedDetails: []
   };
-  constructor(private datepipe: DatePipe, private common: AdminCommonService) { }
+  constructor(private datepipe: DatePipe, private adminCommonService: AdminCommonService) { }
 
   ngOnInit() {
     this.ruleColumns = [
@@ -57,23 +57,24 @@ export class RulesComponent implements OnInit {
   }
 
   colFilters(colData) {
-      this.ruleColArray.Form = this.common.uniqueArrayObj(colData.map(a => { const b = { label: a.Form, value: a.Form }; return b; }));
-      this.ruleColArray.LastUpdated = this.common.uniqueArrayObj(
+      this.ruleColArray.Form = this.adminCommonService.uniqueArrayObj(
+        colData.map(a => { const b = { label: a.Form, value: a.Form }; return b; }));
+      this.ruleColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
         colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
          // tslint:disable-next-line: align
          value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
-      this.ruleColArray.LastUpdatedBy = this.common.uniqueArrayObj(
+      this.ruleColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
         colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
     }
 
     colFilters1(colData) {
-      this.auditTrailColArray.UpdatedOn = this.common.uniqueArrayObj(
+      this.auditTrailColArray.UpdatedOn = this.adminCommonService.uniqueArrayObj(
         colData.map(a => { const b = { label: a.UpdatedOn, value: a.UpdatedOn }; return b; }));
-      this.auditTrailColArray.UpdatedBy = this.common.uniqueArrayObj(
+      this.auditTrailColArray.UpdatedBy = this.adminCommonService.uniqueArrayObj(
         colData.map(a => { const b = { label: this.datepipe.transform(a.UpdatedBy, 'MMM d, yyyy'),
          // tslint:disable-next-line: align
          value: this.datepipe.transform(a.UpdatedBy, 'MMM d, yyyy') }; return b; }));
-      this.auditTrailColArray.UpdatedDetails = this.common.uniqueArrayObj(
+      this.auditTrailColArray.UpdatedDetails = this.adminCommonService.uniqueArrayObj(
         colData.map(a => { const b = { label: a.UpdatedDetails, value: a.UpdatedDetails }; return b; }));
     }
 

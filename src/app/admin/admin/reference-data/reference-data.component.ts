@@ -90,7 +90,7 @@ export class ReferenceDataComponent implements OnInit {
     isQmsTemplateFormSubmit: false,
     isStandardTemplateFormSubmit: false
   };
-  constructor(private datepipe: DatePipe, private frmbuilder: FormBuilder, private common: AdminCommonService) {
+  constructor(private datepipe: DatePipe, private frmbuilder: FormBuilder, private adminCommonService: AdminCommonService) {
     this.initForm();
   }
 
@@ -278,88 +278,88 @@ export class ReferenceDataComponent implements OnInit {
   }
 
   vendorTableFilters(colData) {
-    this.vendorDetailsColArray.VendorName = this.common.uniqueArrayObj(
+    this.vendorDetailsColArray.VendorName = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.VendorName, value: a.VendorName }; return b; }));
-    this.vendorDetailsColArray.LastUpdated = this.common.uniqueArrayObj(
+    this.vendorDetailsColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
        // tslint:disable-next-line: align
        value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
-    this.vendorDetailsColArray.LastUpdatedBy = this.common.uniqueArrayObj(
+    this.vendorDetailsColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
 
   qmsTemplateTableFilters(colData) {
-    this.qmsTemplateColArray.QmsTemplate = this.common.uniqueArrayObj(
+    this.qmsTemplateColArray.QmsTemplate = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.QmsTemplate, value: a.QmsTemplate }; return b; }));
-    this.qmsTemplateColArray.LastUpdated = this.common.uniqueArrayObj(
+    this.qmsTemplateColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
        // tslint:disable-next-line: align
        value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
-    this.qmsTemplateColArray.LastUpdatedBy = this.common.uniqueArrayObj(
+    this.qmsTemplateColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
 
   standardTemplateTableFilters(colData) {
-    this.standardTemplateColArray.StandardTemplate = this.common.uniqueArrayObj(
+    this.standardTemplateColArray.StandardTemplate = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.StandardTemplate, value: a.StandardTemplate }; return b; }));
-    this.standardTemplateColArray.LastUpdated = this.common.uniqueArrayObj(
+    this.standardTemplateColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
        // tslint:disable-next-line: align
        value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
-    this.standardTemplateColArray.LastUpdatedBy = this.common.uniqueArrayObj(
+    this.standardTemplateColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
 
   colFilters(colData) {
-    this.auditHistoryArray.Action = this.common.uniqueArrayObj(
+    this.auditHistoryArray.Action = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Action, value: a.Action }; return b; }));
-    this.auditHistoryArray.ActionBy = this.common.uniqueArrayObj(
+    this.auditHistoryArray.ActionBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
-    this.auditHistoryArray.Date = this.common.uniqueArrayObj(
+    this.auditHistoryArray.Date = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
       // tslint:disable-next-line: align
       value: this.datepipe.transform(a.Date, 'MMM d, yyyy') }; return b; }));
-    this.auditHistoryArray.Details = this.common.uniqueArrayObj(
+    this.auditHistoryArray.Details = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
 
   }
 
   colFilters1(colData) {
-    this.auditHistorySelectedArray.VendorName = this.common.uniqueArrayObj(
+    this.auditHistorySelectedArray.VendorName = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.VendorName, value: a.VendorName }; return b; }));
-    this.auditHistorySelectedArray.ActionBy = this.common.uniqueArrayObj(
+    this.auditHistorySelectedArray.ActionBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
-    this.auditHistorySelectedArray.Date = this.common.uniqueArrayObj(
+    this.auditHistorySelectedArray.Date = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
        // tslint:disable-next-line: align
        value: this.datepipe.transform(a.Date, 'MMM d, yyyy') }; return b; }));
-    this.auditHistorySelectedArray.Details = this.common.uniqueArrayObj(
+    this.auditHistorySelectedArray.Details = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
   }
 
   colFilters2(colData) {
-    this.auditHistoryQmsSelectedArray.QmsTemplate = this.common.uniqueArrayObj(
+    this.auditHistoryQmsSelectedArray.QmsTemplate = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.QmsTemplate, value: a.QmsTemplate }; return b; }));
-    this.auditHistoryQmsSelectedArray.ActionBy = this.common.uniqueArrayObj(
+    this.auditHistoryQmsSelectedArray.ActionBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
-    this.auditHistoryQmsSelectedArray.Date = this.common.uniqueArrayObj(
+    this.auditHistoryQmsSelectedArray.Date = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
        // tslint:disable-next-line: align
        value: this.datepipe.transform(a.Date, 'MMM d, yyyy') }; return b; }));
-    this.auditHistoryQmsSelectedArray.Details = this.common.uniqueArrayObj(
+    this.auditHistoryQmsSelectedArray.Details = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
   }
 
   colFilters3(colData) {
-    this.auditHistoryStandardSelectedArray.StandardTemplate = this.common.uniqueArrayObj(
+    this.auditHistoryStandardSelectedArray.StandardTemplate = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.StandardTemplate, value: a.StandardTemplate }; return b; }));
-    this.auditHistoryStandardSelectedArray.ActionBy = this.common.uniqueArrayObj(
+    this.auditHistoryStandardSelectedArray.ActionBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
-    this.auditHistoryStandardSelectedArray.Date = this.common.uniqueArrayObj(
+    this.auditHistoryStandardSelectedArray.Date = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
        // tslint:disable-next-line: align
        value: this.datepipe.transform(a.Date, 'MMM d, yyyy') }; return b; }));
-    this.auditHistoryStandardSelectedArray.Details = this.common.uniqueArrayObj(
+    this.auditHistoryStandardSelectedArray.Details = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
   }
 
