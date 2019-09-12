@@ -32,6 +32,16 @@ export class AddUserToProjectsComponent implements OnInit {
   selectedUser: any;
   selectedClient: any;
   selectedProject: any = [];
+  /**
+   * Construct a method to create an instance of required component.
+   *
+   * @param messageService This is instance referance of `MessageService` component.
+   * @param spServices This is instance referance of `SPOperationService` component.
+   * @param adminObject This is instance referance of `AdminObjectService` component.
+   * @param adminConstants This is instance referance of `AdminConstantService` component.
+   * @param constants This is instance referance of `ConstantsService` component.
+   * @param adminCommon This is instance referance of `AdminCommonService` component.
+   */
   constructor(
     private messageService: MessageService,
     private spServices: SPOperationService,
@@ -40,6 +50,14 @@ export class AddUserToProjectsComponent implements OnInit {
     private constants: ConstantsService,
     private adminCommon: AdminCommonService
   ) { }
+  /**
+   * Construct a method to initialize all the data.
+   *
+   * @description
+   *
+   * This is the entry point in this class which jobs is to initialize and load the required data.
+   *
+   */
   ngOnInit() {
     this.loadUsers();
   }

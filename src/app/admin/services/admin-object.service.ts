@@ -94,4 +94,19 @@ export class AdminObjectService {
     LastUpdatedBy: '',
     LastUpdatedFormat: '',
   };
+  public projectTypeObj = {
+    ID: 0,
+    ProjectType: '',
+    LastUpdated: new Date(),
+    LastUpdatedBy: '',
+    LastUpdatedFormat: '',
+  };
+  public deliverableTypeObj = {
+    ID: 0,
+    DeliverableType: '',
+    Acronym: '',
+    LastUpdated: new Date(),
+    LastUpdatedBy: '',
+    LastUpdatedFormat: '',
+  };
 }

@@ -37,6 +37,16 @@ export class CopyPermissionComponent implements OnInit {
     destinationGroupsArray: [],
     finalResultArray: [],
   };
+  /**
+   * Construct a method to create an instance of required component.
+   *
+   * @param spServices This is instance referance of `SPOperationService` component.
+   * @param messageService This is instance referance of `MessageService` component.
+   * @param adminConstants This is instance referance of `AdminConstantService` component.
+   * @param adminObject This is instance referance of `AdminObjectService` component.
+   * @param constants This is instance referance of `ConstantsService` component.
+   * @param confirmationService This is instance referance of `ConfirmationService` component.
+   */
   constructor(
     private spServices: SPOperationService,
     private messageService: MessageService,
@@ -45,7 +55,14 @@ export class CopyPermissionComponent implements OnInit {
     private constants: ConstantsService,
     private confirmationService: ConfirmationService
   ) { }
-
+  /**
+   * Construct a method to initialize all the data.
+   *
+   * @description
+   *
+   * This is the entry point in this class which jobs is to initialize and load the required data.
+   *
+   */
   ngOnInit() {
     this.buttons = [
       {

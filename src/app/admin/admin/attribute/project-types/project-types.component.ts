@@ -1,18 +1,31 @@
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { MessageService, ConfirmationService, Message } from 'primeng/api';
+import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
+import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
+import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 
 @Component({
   selector: 'app-project-types',
   templateUrl: './project-types.component.html',
   styleUrls: ['./project-types.component.css']
 })
+/**
+ * A class that uses ngPrime to display the data in table.
+ * It also have feature like paging, sorting and naviagation to different component.
+ *
+ * @description
+ *
+ * This class is used to add user to Title column into `ProjectType` list.
+ *
+ */
 export class ProjectTypesComponent implements OnInit {
   projectType: any;
   projectTypeColumns = [];
   projectTypeRows = [];
-  auditHistoryColumns = [];
-  auditHistoryRows = [];
+  currProjectTypeObj: any;
   projectTypeColArray = {
     ProjectType: [],
     LastUpdated: [],
@@ -24,114 +37,217 @@ export class ProjectTypesComponent implements OnInit {
     Date: [],
   };
   items = [
-    { label: 'Delete' , command: (e) => this.delete()}
+    { label: 'Delete', command: (e) => this.delete() }
   ];
   msgs: Message[] = [];
-  constructor(private datepipe: DatePipe, private messageService: MessageService,private confirmationService: ConfirmationService) { }
-
-  ngOnInit() {
+  /**
+   * Construct a method to create an instance of required component.
+   *
+   * @param datepipe This is instance referance of `DatePipe` component.
+   * @param messageService This is instance referance of `MessageService` component.
+   * @param confirmationService This is instance referance of `ConfirmationService` component.
+   * @param adminCommonService This is instance referance of `AdminCommonService` component.
+   * @param adminObject This is instance referance of `AdminObjectService` component.
+   * @param spServices This is instance referance of `SPOperationService` component.
+   * @param constants This is instance referance of `ConstantsService` component.
+   * @param adminConstants This is instance referance of `AdminConstantService` component.
+   */
+  constructor(
+    private datepipe: DatePipe,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService,
+    private adminCommonService: AdminCommonService,
+    private adminObject: AdminObjectService,
+    private spServices: SPOperationService,
+    private constants: ConstantsService,
+    private adminConstants: AdminConstantService
+  ) { }
+  /**
+   * Construct a method to initialize all the data.
+   *
+   * @description
+   *
+   * This is the entry point in this class which jobs is to initialize and load the required data.
+   *
+   */
+  async ngOnInit() {
     this.projectTypeColumns = [
       // { field: 'Sr', header: 'Sr.No.' },
-      { field: 'ProjectType', header: 'Project Type' , visibility: true},
-      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
-      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
+      { field: 'ProjectType', header: 'Project Type', visibility: true },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
+      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
+      { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false }
     ];
-
-    this.projectTypeRows = [
-      {
-        // Sr: 1,
-        ProjectType: 'Test',
-        LastUpdated: 'Jul 3, 2019',
-        LastUpdatedBy: 'Kaushal Bagrodia'
-      }
-    ];
-
-    this.auditHistoryColumns = [
-      // { field: 'Sr', header: 'Sr.No.' },
-      { field: 'Action', header: 'Action' },
-      // { field: 'SubAction', header: 'Sub Action' },
-      { field: 'Date', header: 'Date' },
-      { field: 'ActionBy', header: 'Action By' },
-    ];
-
-    this.auditHistoryRows = [
-      {
-        // Sr: 1,
-        Action: '',
-        SubAction: '',
-        ActionBy: '',
-        ActionDate: '',
-      }
-    ];
-
+    await this.loadProjectTypeTable();
     this.colFilters(this.projectTypeRows);
-    this.colFilters1(this.auditHistoryRows);
   }
-
+  /**
+   * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
+   *
+   * @description
+   *
+   * It will iterate all the response array to cater the request and show into the table.
+   * The table have option for sorting, pagination and delete the Project Type.
+   *
+   */
+  async loadProjectTypeTable() {
+    this.adminObject.isMainLoaderHidden = false;
+    const tempArray = [];
+    const getProjectTypeInfo = Object.assign({}, this.adminConstants.QUERY.GET_PROJECT_TYPE_BY_ACTIVE);
+    getProjectTypeInfo.filter = getProjectTypeInfo.filter.replace(/{{isActive}}/gi,
+      this.adminConstants.LOGICAL_FIELD.YES);
+    const results = await this.spServices.readItems(this.constants.listNames.ProjectType.name, getProjectTypeInfo);
+    if (results && results.length) {
+      results.forEach(item => {
+        const obj = Object.assign({}, this.adminObject.projectTypeObj);
+        obj.ID = item.ID;
+        obj.ProjectType = item.Title;
+        obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
+        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+        obj.LastUpdatedBy = item.Editor.Title;
+        tempArray.push(obj);
+      });
+      this.projectTypeRows = tempArray;
+      this.colFilters(this.projectTypeRows);
+    }
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * Construct a method to map the array values into particular column dropdown.
+   *
+   * @description
+   *
+   * This method will extract the column object value from an array and stores into the column dropdown array and display
+   * the values into the ProjectType,LastUpdated and LastUpdatedBy column dropdown.
+   *
+   * @param colData Pass colData as a parameter which contains an array of column object.
+   *
+   */
   colFilters(colData) {
-    this.projectTypeColArray.ProjectType = this.uniqueArrayObj(
+    this.projectTypeColArray.ProjectType = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ProjectType, value: a.ProjectType }; return b; }));
-    this.projectTypeColArray.LastUpdated = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
-    this.projectTypeColArray.LastUpdatedBy = this.uniqueArrayObj(
+    this.projectTypeColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
+          value: a.LastUpdated
+        };
+        return b;
+      }));
+    this.projectTypeColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
-
-  colFilters1(colData) {
-    this.auditHistoryArray.Action = this.uniqueArrayObj(colData.map(a => { const b = { label: a.Action, value: a.Action }; return b; }));
-    this.auditHistoryArray.ActionBy = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
-    this.auditHistoryArray.Date = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.Date, 'MMM d, yyyy') }; return b; }));
-  }
-
-  uniqueArrayObj(array: any) {
-    let sts: any = '';
-    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-        return {
-            label: label1,
-            value: array.find(s => s.label === label1).value
-        };
-    });
-  }
-
-  addProjectType(projectType) {
-    if (projectType.trim() !== '') {
-    this.checkUniqueData(projectType);
+  /**
+   * Construct a method to add the new Project Type into `ProjectType` list.
+   *
+   * @description
+   *
+   * This method will add bucket into `ProjectType` list and shows that Project Type into the table.
+   *
+   * @Note
+   *
+   * If ProjectType is already present then system will throws error and return `false`.
+   * If blank ProjectType is submitted then system will throws error and return `false`.
+   * Only alphabets and two special characters are allowed and special characters cannot start or end the words.
+   *
+   */
+  async addProjectType() {
+    const alphaExp = /^[a-zA-Z]+(-?[a-zA-Z]+)?(_?[a-zA-Z]+)?$/;
+    this.messageService.clear();
+    if (!this.projectType) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error',
+        summary: 'Error Message', detail: 'Please enter bucket Project Type.'
+      });
+      return false;
     }
-  }
-
-  checkUniqueData(data) {
-    const found = this.projectTypeRows.find((item) => {
-      if ((item.ProjectType).toLowerCase() === data.trim().toLowerCase()) {
-        return item;
-      }
+    if (!this.projectType.match(alphaExp)) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error', summary: 'Error Message',
+        detail: 'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.'
+      });
+      return false;
+    }
+    if (this.projectTypeRows.some(a => a.ProjectType.toLowerCase() === this.projectType.toLowerCase())) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error',
+        summary: 'Error Message', detail: 'This Project Type is already exist. Please enter another Project Type.'
+      });
+      return false;
+    }
+    this.adminObject.isMainLoaderHidden = false;
+    const data = {
+      Title: this.projectType
+    };
+    const result = await this.spServices.createItem(this.constants.listNames.ProjectType.name, data,
+      this.constants.listNames.ProjectType.type);
+    console.log(result);
+    this.messageService.add({
+      key: 'adminCustom', severity: 'success', sticky: true,
+      summary: 'Success Message', detail: 'The Project Type ' + this.projectType + ' has added successfully.'
     });
-    return found ? this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Data Already Exist in Table' })
-     : this.messageService.add({ severity: 'success', summary: 'Success Message', detail: 'Data Submitted' });
+    this.projectType = '';
+    await this.loadProjectTypeTable();
+    this.adminObject.isMainLoaderHidden = true;
   }
-
+  /**
+   * Construct a method to remove the item from table.
+   *
+   * @description
+   *
+   * This method mark the `ProjectType` as inactive so that it is not visible in table.
+   *
+   * @param data Pass data as parameter which contains value of bucket row.
+   *
+   */
   delete() {
+    const data  = this.currProjectTypeObj;
     this.confirmationService.confirm({
       message: 'Do you want to delete this record?',
       header: 'Delete Confirmation',
       icon: 'pi pi-info-circle',
+      key: 'confirm',
       accept: () => {
-        this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'Record deleted' }];
+        const updateData = {
+          IsActive: this.adminConstants.LOGICAL_FIELD.NO
+        };
+        this.confirmUpdate(data, updateData, this.constants.listNames.ProjectType.name, this.constants.listNames.ProjectType.type);
       },
-      reject: () => {
-        this.msgs = [{ severity: 'info', summary: 'Rejected', detail: 'You have rejected' }];
-      }
     });
   }
 
+  /**
+   * Construct a method to save the update the data.
+   * @param data Pass data as parameter which have Id in it.
+   * @param updateData Pass the data which wants to update it.
+   * @param listName pass the list name.
+   * @param type pass the list type.
+   */
+  async confirmUpdate(data, updateData, listName, type) {
+    this.adminObject.isMainLoaderHidden = false;
+    const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
+    this.messageService.add({
+      key: 'adminCustom', severity: 'success', sticky: true,
+      summary: 'Success Message', detail: 'The ProjectType ' + data.ProjectType + ' has deleted successfully.'
+    });
+    this.loadProjectTypeTable();
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * Construct a method to store current selected row data into variable `currProjectTypeObj`.
+   *
+   * @description
+   *
+   * This method will trigger when user click on menu option in the table.
+   * It will store the current selected row value into the class variable `currProjectTypeObj`.
+   *
+   */
+  storeRowData(rowData) {
+    this.currProjectTypeObj = rowData;
+    console.log(rowData);
+  }
   downloadExcel(pt) {
     pt.exportCSV();
   }
-
 }
 

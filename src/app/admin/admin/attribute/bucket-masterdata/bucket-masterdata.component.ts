@@ -50,10 +50,22 @@ export class BucketMasterdataComponent implements OnInit {
   bucketDataColumns = [];
   bucketArray = [];
   clientArray = [];
+  /**
+   * Construct a method to create an instance of required component.
+   *
+   * @param datepipe This is instance referance of `DatePipe` component.
+   * @param messageService This is instance referance of `MessageService` component.
+   * @param confirmationService This is instance referance of `ConfirmationService` component.
+   * @param adminObject This is instance referance of `AdminObjectService` component.
+   * @param spServices This is instance referance of `SPOperationService` component.
+   * @param constants This is instance referance of `ConstantsService` component.
+   * @param adminConstants This is instance referance of `AdminConstantService` component.
+   * @param adminCommonService This is instance referance of `AdminCommonService` component.
+   *
+   */
   constructor(
     private datepipe: DatePipe,
     private messageService: MessageService,
-    private commonService: CommonService,
     private confirmationService: ConfirmationService,
     private adminObject: AdminObjectService,
     private spServices: SPOperationService,
@@ -61,7 +73,14 @@ export class BucketMasterdataComponent implements OnInit {
     private adminConstants: AdminConstantService,
     private adminCommonService: AdminCommonService
   ) { }
-
+  /**
+   * Construct a method to initialize all the data.
+   *
+   * @description
+   *
+   * This is the entry point in this class which jobs is to initialize and load the required data.
+   *
+   */
   ngOnInit() {
     this.clientList = [];
     this.bucketDataColumns = [
@@ -85,8 +104,7 @@ export class BucketMasterdataComponent implements OnInit {
   async loadBucketTable() {
     this.adminObject.isMainLoaderHidden = false;
     const tempArray = [];
-    let results = [];
-    results = await this.getInitData();
+    const results = await this.getInitData();
     if (results && results.length) {
       this.bucketArray = results[0].retItems;
       this.clientArray = results[1].retItems;
