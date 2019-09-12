@@ -1,7 +1,8 @@
 <div>
   <a (click)="downloadExcel(pt)" class="download-worksheet td-none"><i class="fa fa-download" aria-hidden="true"></i> Download worksheet</a>
 </div>
-<p-table #pt [columns]="projectTypeColumns" [value]="projectTypeRows" exportFilename="Project Type">
+<p-table #pt [columns]="projectTypeColumns" [value]="projectTypeRows" exportFilename="Project Type"
+[paginator]="true" [rows]="10">
   <ng-template pTemplate="header" let-columns>
       <tr>
           <th>Sr.No.</th>
@@ -14,9 +15,9 @@
       <tr>
           <th></th>
           <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
-              <p-multiSelect *ngSwitchCase="'ProjectType'" [style]="{'width':'100%'}" appendTo="body" [options]="projectTypeColArray.ProjectType" defaultLabel="Project Type" (onChange)="pa.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-              <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body" [options]="projectTypeColArray.LastUpdated" defaultLabel="LastUpdated" (onChange)="pa.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-              <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body" [options]="projectTypeColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy" (onChange)="pa.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'ProjectType'" [style]="{'width':'100%'}" appendTo="body" [options]="projectTypeColArray.ProjectType" defaultLabel="Project Type" (onChange)="pt.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body" [options]="projectTypeColArray.LastUpdated" defaultLabel="LastUpdated" (onChange)="pt.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+              <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body" [options]="projectTypeColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy" (onChange)="pt.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
           </th>
           <th></th>
       </tr>
@@ -24,21 +25,19 @@
   <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
       <tr>
           <td>{{ rowIndex+1 }}</td>
-          <td *ngFor="let col of columns" [hidden]="!col.visibility">
-              <ng-container *ngIf="col.field != ''">
-                  {{rowData[col.field]}}
-              </ng-container>
-         </td>
+          <td>{{rowData.ProjectType}}</td>
+          <td>{{rowData.LastUpdated | date:'MMM dd, yyyy'}}</td>
+          <td>{{rowData.LastUpdatedBy}}</td>
          <td>
             <p-menu #menu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
             <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-          (click)="menu.toggle($event);"></i>
+          (click)="storeRowData(rowData); menu.toggle($event);"></i>
          </td>
       </tr>
   </ng-template>
   <ng-template pTemplate="emptymessage" let-columns>
       <tr>
-          <td [attr.colspan]="columns.length">
+          <td [attr.colspan]="!projectTypeRows.length">
               No Data found
           </td>
       </tr>
@@ -53,7 +52,7 @@
       </div>
       <div class="p-col">
           <input type="text" [(ngModel)]="projectType" pInputText/>
-          <p-button label="Add" type="button" (click)="addProjectType(projectType)"></p-button>
+          <p-button label="Add" type="button" (click)="addProjectType()"></p-button>
       </div>
   </div>
 </div>
@@ -96,9 +95,3 @@
         </tr>
     </ng-template>
   </p-table> -->
-
-  <p-toast [style]="{marginTop: '80px'}"></p-toast>
-
-  <p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog>
-
-  <p-messages [value]="msgs"></p-messages>

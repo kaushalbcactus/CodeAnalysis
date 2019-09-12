@@ -128,7 +128,17 @@ export class UserProfileComponent implements OnInit {
   };
   filteredCountriesMultiple: any[];
   /**
-   * This method is used to create the object of all datePipe, formbuilder and all required object.
+   * Construct a method to create an instance of required component.
+   *
+   * @param datepipe This is instance referance of `DatePipe` component.
+   * @param frmbuilder This is instance referance of `FormBuilder` component.
+   * @param adminCommonService This is instance referance of `AdminCommonService` component.
+   * @param constants This is instance referance of `ConstantsService` component.
+   * @param adminConstants This is instance referance of `AdminConstantService` component.
+   * @param spServices This is instance referance of `SPOperationService` component.
+   * @param messageService This is instance referance of `MessageService` component.
+   * @param adminObject This is instance referance of `AdminObjectService` component.
+   *
    */
   constructor(
     private datePipe: DatePipe,
@@ -172,7 +182,12 @@ export class UserProfileComponent implements OnInit {
     });
   }
   /**
-   * This method is used to initialize all the default object.
+   * Construct a method to initialize all the data.
+   *
+   * @description
+   *
+   * This is the entry point in this class which jobs is to initialize and load the required data.
+   *
    */
   async ngOnInit() {
     this.userProfileColumns = [

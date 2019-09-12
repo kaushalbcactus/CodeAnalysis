@@ -35,15 +35,34 @@ export class UserRoleMappingComponent implements OnInit {
     Date: []
   };
   userInfo;
+  /**
+   * Construct a method to create an instance of required component.
+   *
+   * @param datepipe This is instance referance of `DatePipe` component.
+   * @param spServices This is instance referance of `SPOperationService` component.
+   * @param constants This is instance referance of `ConstantsService` component.
+   * @param adminConstants This is instance referance of `AdminConstantService` component.
+   * @param adminObject This is instance referance of `AdminObjectService` component.
+   * @param messageService This is instance referance of `MessageService` component.
+   *  @param adminCommonService This is instance referance of `AdminCommonService` component.
+   */
   constructor(
     private datepipe: DatePipe,
     private spServices: SPOperationService,
     private constants: ConstantsService,
     private adminConstants: AdminConstantService,
     private adminObject: AdminObjectService,
-    private adminService: AdminCommonService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private adminCommonService: AdminCommonService
   ) { }
+  /**
+   * Construct a method to initialize all the data.
+   *
+   * @description
+   *
+   * This is the entry point in this class which jobs is to initialize and load the required data.
+   *
+   */
   ngOnInit() {
     this.userRoleColumns = [
       { field: 'User', header: 'User' },
@@ -177,12 +196,43 @@ export class UserRoleMappingComponent implements OnInit {
     }
     return this.selectedRoles = this.userExistGroupArray;
   }
+  /**
+   * Construct a method to map the array values into particular column dropdown.
+   *
+   * @description
+   *
+   * This method will extract the column object value from an array and stores into the column dropdown array and display
+   * the values into the User,Role,Action,By and Date column dropdown.
+   *
+   * @param colData Pass colData as a parameter which contains an array of column object.
+   *
+   */
   colFilters(colData) {
-    this.userRoleColArray.User = this.uniqueArrayObj(colData.map(a => { const b = { label: a.User, value: a.User }; return b; }));
-    this.userRoleColArray.Role = this.uniqueArrayObj(colData.map(a => { const b = { label: a.Role, value: a.Role }; return b; }));
-    this.userRoleColArray.Action = this.uniqueArrayObj(colData.map(a => { const b = { label: a.Action, value: a.Action }; return b; }));
-    this.userRoleColArray.By = this.uniqueArrayObj(colData.map(a => { const b = { label: a.By, value: a.By }; return b; }));
-    this.userRoleColArray.Date = this.uniqueArrayObj(
+    this.userRoleColArray.User = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = {
+        label: a.User, value: a.User
+      };
+      return b;
+    }));
+    this.userRoleColArray.Role = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = {
+        label: a.Role, value: a.Role
+      };
+      return b;
+    }));
+    this.userRoleColArray.Action = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = {
+        label: a.Action, value: a.Action
+      };
+      return b;
+    }));
+    this.userRoleColArray.By = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = {
+        label: a.By, value: a.By
+      };
+      return b;
+    }));
+    this.userRoleColArray.Date = this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
@@ -190,16 +240,6 @@ export class UserRoleMappingComponent implements OnInit {
         };
         return b;
       }));
-  }
-
-  uniqueArrayObj(array: any) {
-    let sts: any = '';
-    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-      return {
-        label: label1,
-        value: array.find(s => s.label === label1).value
-      };
-    });
   }
   /**
    * construct a method to add/remove the user from the selected/unselected group.

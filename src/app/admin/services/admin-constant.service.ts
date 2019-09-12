@@ -130,12 +130,27 @@ export class AdminConstantService {
       select: 'ID,Title,Modified,IsActive,Editor/ID,Editor/Title',
       expand: 'Editor/ID,Editor/Title',
       filter: 'IsActive eq {{isActive}}',
-      orderby: 'Modified desc'
+      orderby: 'Modified desc',
+      top: 4900
     },
     GET_CLIENTLEGALENTITY_BY_ACTIVE: {
       select: 'ID,Title,Bucket',
       filter: 'IsActive eq \'{{isActive}}\'',
       orderby: 'Title asc',
+      top: 4900
+    },
+    GET_PROJECT_TYPE_BY_ACTIVE: {
+      select: 'ID,Title,Modified,IsActive,Editor/ID,Editor/Title',
+      expand: 'Editor/ID,Editor/Title',
+      filter: 'IsActive eq \'{{isActive}}\'',
+      orderby: 'Modified desc',
+      top: 4900
+    },
+    GET_DELIVERABLE_TYPE_BY_ACTIVE: {
+      select: 'ID,Title,Acronym,Modified,Active,Editor/ID,Editor/Title',
+      expand: 'Editor/ID,Editor/Title',
+      filter: 'Active eq \'{{isActive}}\'',
+      orderby: 'Modified desc',
       top: 4900
     }
   };
