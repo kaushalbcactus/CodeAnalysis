@@ -1288,10 +1288,10 @@ export class EditorComponent implements OnInit {
                     .signature-table {
                         float: right;
                         text-align: right;
-                        margin-right: 10px;
-                        background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M5U1nFCgVaguRgo4S0B3-L67nYrXIgtxcYoJEba9w);
-                        background-repeat: no-repeat;
-                        background-position: right;
+                        margin-right: 10px !important;
+                        background-image: url(https://cactusglobal.sharepoint.com/:i:/s/medcomcdn/EZNP0M5U1nFCgVaguRgo4S0B3-L67nYrXIgtxcYoJEba9w) !important;
+                        background-repeat: no-repeat !important;
+                        background-position: right !important;
                     }
                     
                     .signature-table p {
