@@ -37,10 +37,14 @@
     <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
         <tr>
             <td>{{ rowIndex+1 }}</td>
-            <td *ngFor="let col of columns" [hidden]="!col.visibility">
-                <ng-container *ngIf="col.field != ''">
-                    {{rowData[col.field]}}
-                </ng-container>
+            <td>
+                {{rowData.ClientLegalEntry}}
+            </td>
+            <td>
+                {{rowData.LastUpdated}}
+            </td>
+            <td>
+                {{rowData.LastUpdatedBy}}
             </td>
             <td>
                 <p-menu #menu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
@@ -419,10 +423,14 @@
         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
             <tr>
                 <td>{{ rowIndex+1 }}</td>
-                <td *ngFor="let col of columns" [hidden]="!col.visibility">
-                    <ng-container *ngIf="col.field != ''">
-                        {{rowData[col.field]}}
-                    </ng-container>
+                <td>
+                    {{rowData.SubDivision}}
+                </td>
+                <td>
+                    {{rowData.LastUpdated}}
+                </td>
+                <td>
+                    {{rowData.LastUpdatedBy}}
                 </td>
                 <td>
                     <p-menu #menu [popup]="true" appendTo="body" [model]="items1" styleClass="borderMenu"></p-menu>
@@ -553,10 +561,20 @@
         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
             <tr>
                 <td>{{ rowIndex+1 }}</td>
-                <td *ngFor="let col of columns" [hidden]="!col.visibility">
-                    <ng-container *ngIf="col.field != ''">
-                        {{rowData[col.field]}}
-                    </ng-container>
+                <td>
+                    {{rowData.fName}}
+                </td>
+                <td>
+                    {{rowData.lName}}
+                </td>
+                <td>
+                    {{rowData.email}}
+                </td>
+                <td>
+                    {{rowData.LastUpdated}}
+                </td>
+                <td>
+                    {{rowData.LastUpdatedBy}}
                 </td>
                 <td>
                     <p-menu #menu [popup]="true" appendTo="body" [model]="items1" styleClass="borderMenu"></p-menu>
@@ -588,7 +606,7 @@
     </p-header>
     <form [formGroup]='pocForm'>
         <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10"><span class="compulsory">*</span>First Name</div>
+            <div class="p-col-3 mr-10"><span class="compulsory">*</span>First Name</div>
             <div class="p-col-4">
                 <input class="mr-5" type="text" size="60" formControlName="fname" placeholder="First Name" pInputText>
                 <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.fname.errors">
@@ -598,7 +616,7 @@
             </div>
         </div>
         <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10"><span class="compulsory">*</span>Last Name</div>
+            <div class="p-col-3 mr-10"><span class="compulsory">*</span>Last Name</div>
             <div class="p-col-4">
                 <input class="mr-5" type="text" size="60" formControlName="lname" placeholder="Last Name" pInputText>
                 <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.lname.errors">
@@ -608,7 +626,7 @@
             </div>
         </div>
         <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10"><span class="compulsory">*</span>Designation</div>
+            <div class="p-col-3 mr-10"><span class="compulsory">*</span>Designation</div>
             <div class="p-col-4">
                 <input class="mr-5" type="text" size="60" formControlName="designation" placeholder="Designation"
                     pInputText>
@@ -619,7 +637,7 @@
             </div>
         </div>
         <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10"><span class="compulsory">*</span>Email</div>
+            <div class="p-col-3 mr-10"><span class="compulsory">*</span>Email</div>
             <div class="p-col-4">
                 <input class="mr-5" type="text" size="60" formControlName="email" placeholder="Email" pInputText>
                 <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.email.errors">
@@ -629,13 +647,13 @@
             </div>
         </div>
         <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10">Phone No.</div>
+            <div class="p-col-3 mr-10">Phone No.</div>
             <div class="p-col-4">
                 <input class="mr-5" type="text" size="60" formControlName="phone" placeholder="Phone No" pInputText>
             </div>
         </div>
         <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10">Address</div>
+            <div class="p-col-3 mr-10">Address</div>
             <div class="p-col-4">
                 <input class="mr-5" type="text" size="60" formControlName="address1" placeholder="Address" pInputText>
                 <input class="mr-5 mt-5" class="mt-10" type="text" size="60" formControlName="address2"
@@ -647,14 +665,14 @@
             </div>
         </div>
         <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10">Department</div>
+            <div class="p-col-3 mr-10">Department</div>
             <div class="p-col-4">
                 <input class="mr-5" type="text" size="60" formControlName="department" placeholder="Department"
                     pInputText>
             </div>
         </div>
         <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10"><span class="compulsory">*</span>Referral Source</div>
+            <div class="p-col-3 mr-10"><span class="compulsory">*</span>Referral Source</div>
             <div class="p-col-4">
                 <p-dropdown [options]="options" placeholder="Select Referral Source" formControlName="referralSource"
                     filter="true">
@@ -666,7 +684,7 @@
             </div>
         </div>
         <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10"><span class="compulsory">*</span>Status</div>
+            <div class="p-col-3 mr-10"><span class="compulsory">*</span>Status</div>
             <div class="p-col-4">
                 <p-dropdown [options]="options" placeholder="Select Status" formControlName="status" filter="true">
                 </p-dropdown>
@@ -677,21 +695,21 @@
             </div>
         </div>
         <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10">Relationship Strength</div>
+            <div class="p-col-3 mr-10">Relationship Strength</div>
             <div class="p-col-4">
                 <input class="mr-5" type="text" size="60" formControlName="relationshipStrength"
                     placeholder="Relationship Strength" pInputText>
             </div>
         </div>
         <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10">Engagement Plan</div>
+            <div class="p-col-3 mr-10">Engagement Plan</div>
             <div class="p-col-4">
                 <textarea [rows]="5" [cols]="60" formControlName="engagementPlan" placeholder="Engagement Plan"
                     pInputTextarea></textarea>
             </div>
         </div>
         <div class="p-grid mt-20">
-            <div class="p-col-2 mr-10">Comments</div>
+            <div class="p-col-3 mr-10">Comments</div>
             <div class="p-col-4">
                 <textarea [rows]="5" [cols]="60" formControlName="comments" placeholder="Comments"
                     pInputTextarea></textarea>
@@ -699,7 +717,7 @@
         </div>
         <div class="p-grid mt-20">
             <div class="p-col-3 mr-10"><span class="compulsory">*</span>Project Contacts Type</div>
-            <div class="p-col-3">
+            <div class="p-col-4">
                 <p-dropdown [options]="options" placeholder="Select Project Contacts Type"
                     formControlName="contactsType" filter="true"></p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.contactsType.errors">
@@ -776,10 +794,23 @@
         <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
             <tr>
                 <td>{{ rowIndex+1 }}</td>
-                <td *ngFor="let col of columns" [hidden]="!col.visibility">
-                    <ng-container *ngIf="col.field != ''">
-                        {{rowData[col.field]}}
-                    </ng-container>
+                <td>
+                    {{rowData.poName}}
+                </td>
+                <td>
+                    {{rowData.poNo}}
+                </td>
+                <td>
+                    {{rowData.revenue}}
+                </td>
+                <td>
+                    {{rowData.oop}}
+                </td>
+                <td>
+                    {{rowData.LastUpdated}}
+                </td>
+                <td>
+                    {{rowData.LastUpdatedBy}}
                 </td>
                 <td>
                     <p-menu #menu [popup]="true" appendTo="body" [model]="items1" styleClass="borderMenu"></p-menu>
@@ -810,6 +841,10 @@
 
     <p-dropdown [options]="budgetType" placeholder="Select Value" [(ngModel)]="selectedValue" filter="true">
     </p-dropdown>
+
+    <div class="ui-g" *ngIf="checkBudgetValue">
+        <div class="ui-g-12 error">Please Select Value</div>
+    </div>
 
     <form [formGroup]='changeBudgetForm'>
         <div class="p-grid mt-20">

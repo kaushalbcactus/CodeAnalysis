@@ -28,6 +28,7 @@ export class ClientMasterdataComponent implements OnInit {
   poValue;
   selectedValue: any;
   buttonLabel;
+  checkBudgetValue = false;
 
   showaddClientModal = false;
   showEditClient = false;
@@ -110,8 +111,10 @@ export class ClientMasterdataComponent implements OnInit {
     LastUpdated: [],
     LastUpdatedBy: []
   };
-  constructor(private datepipe: DatePipe, private frmbuilder: FormBuilder, private messageService: MessageService,
-              private common: AdminCommonService) {
+  constructor(private datepipe: DatePipe,
+              private frmbuilder: FormBuilder,
+              private messageService: MessageService,
+              private adminCommonService: AdminCommonService) {
     this.addClient = frmbuilder.group({
       name: ['', Validators.required],
       acronym: ['', Validators.required],
@@ -323,9 +326,9 @@ export class ClientMasterdataComponent implements OnInit {
   }
 
   subDivisionFilters(colData) {
-    this.subDivisionDetailsColArray.SubDivision = this.common.uniqueArrayObj(
+    this.subDivisionDetailsColArray.SubDivision = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.SubDivision, value: a.SubDivision }; return b; }));
-    this.subDivisionDetailsColArray.LastUpdated = this.common.uniqueArrayObj(
+    this.subDivisionDetailsColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
@@ -334,19 +337,19 @@ export class ClientMasterdataComponent implements OnInit {
         };
         return b;
       }));
-    this.subDivisionDetailsColArray.LastUpdatedBy = this.common.uniqueArrayObj(
+    this.subDivisionDetailsColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
   POCFilters(colData) {
-    // this.POCColArray.POC = this.common.uniqueArrayObj(
+    // this.POCColArray.POC = this.adminCommonService.uniqueArrayObj(
     //   colData.map(a => { const b = { label: a.POC, value: a.POC }; return b; }));
-    this.POCColArray.fName = this.common.uniqueArrayObj(
+    this.POCColArray.fName = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.fName, value: a.fName }; return b; }));
-    this.POCColArray.lName = this.common.uniqueArrayObj(
+    this.POCColArray.lName = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.lName, value: a.lName }; return b; }));
-    this.POCColArray.email = this.common.uniqueArrayObj(
+    this.POCColArray.email = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.email, value: a.email }; return b; }));
-    this.POCColArray.LastUpdated = this.common.uniqueArrayObj(
+    this.POCColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
@@ -355,15 +358,18 @@ export class ClientMasterdataComponent implements OnInit {
         };
         return b;
       }));
-    this.POCColArray.LastUpdatedBy = this.common.uniqueArrayObj(
+    this.POCColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
   POFilters(colData) {
-    this.POColArray.PoName = this.common.uniqueArrayObj(colData.map(a => { const b = { label: a.poName, value: a.poName }; return b; }));
-    this.POColArray.PoNo = this.common.uniqueArrayObj(colData.map(a => { const b = { label: a.poNo, value: a.poNo }; return b; }));
-    this.POColArray.Revenue = this.common.uniqueArrayObj(colData.map(a => { const b = { label: a.revenue, value: a.revenue }; return b; }));
-    this.POColArray.Oop = this.common.uniqueArrayObj(colData.map(a => { const b = { label: a.oop, value: a.oop }; return b; }));
-    this.POColArray.LastUpdated = this.common.uniqueArrayObj(
+    this.POColArray.PoName = this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.poName, value: a.poName }; return b; }));
+    this.POColArray.PoNo = this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.poNo, value: a.poNo }; return b; }));
+    this.POColArray.Revenue = this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.revenue, value: a.revenue }; return b; }));
+    this.POColArray.Oop = this.adminCommonService.uniqueArrayObj(colData.map(a => { const b = { label: a.oop, value: a.oop }; return b; }));
+    this.POColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
@@ -372,15 +378,15 @@ export class ClientMasterdataComponent implements OnInit {
         };
         return b;
       }));
-    this.POColArray.LastUpdatedBy = this.common.uniqueArrayObj(
+    this.POColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
 
 
   colFilters(colData) {
-    this.clientMasterDataColArray.ClientLegalEntry = this.common.uniqueArrayObj(
+    this.clientMasterDataColArray.ClientLegalEntry = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ClientLegalEntry, value: a.ClientLegalEntry }; return b; }));
-    this.clientMasterDataColArray.LastUpdated = this.common.uniqueArrayObj(
+    this.clientMasterDataColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
@@ -389,16 +395,16 @@ export class ClientMasterdataComponent implements OnInit {
         };
         return b;
       }));
-    this.clientMasterDataColArray.LastUpdatedBy = this.common.uniqueArrayObj(
+    this.clientMasterDataColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
 
   colFilters1(colData) {
-    this.auditHistoryArray.Action = this.common.uniqueArrayObj(
+    this.auditHistoryArray.Action = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Action, value: a.Action }; return b; }));
-    this.auditHistoryArray.ActionBy = this.common.uniqueArrayObj(
+    this.auditHistoryArray.ActionBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
-    this.auditHistoryArray.Date = this.common.uniqueArrayObj(
+    this.auditHistoryArray.Date = this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
@@ -407,19 +413,19 @@ export class ClientMasterdataComponent implements OnInit {
         };
         return b;
       }));
-    this.auditHistoryArray.Details = this.common.uniqueArrayObj(
+    this.auditHistoryArray.Details = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
 
   }
 
   colFilters2(colData) {
-    this.auditHistorySelectedArray.ClientLegalEntry = this.common.uniqueArrayObj(
+    this.auditHistorySelectedArray.ClientLegalEntry = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ClientLegalEntry, value: a.ClientLegalEntry }; return b; }));
-    this.auditHistorySelectedArray.Action = this.common.uniqueArrayObj(
+    this.auditHistorySelectedArray.Action = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Action, value: a.Action }; return b; }));
-    this.auditHistorySelectedArray.ActionBy = this.common.uniqueArrayObj(
+    this.auditHistorySelectedArray.ActionBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
-    this.auditHistorySelectedArray.Date = this.common.uniqueArrayObj(
+    this.auditHistorySelectedArray.Date = this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
@@ -428,7 +434,7 @@ export class ClientMasterdataComponent implements OnInit {
         };
         return b;
       }));
-    this.auditHistorySelectedArray.Details = this.common.uniqueArrayObj(
+    this.auditHistorySelectedArray.Details = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
   }
 
@@ -497,13 +503,18 @@ export class ClientMasterdataComponent implements OnInit {
   }
 
   saveBudget(budgetData) {
+    if (!this.selectedValue.length) {
+      this.checkBudgetValue = true;
+    } else {
+      this.checkBudgetValue = false;
+    }
     if (budgetData.valid) {
       switch (this.selectedValue) {
         case 'Add':
           this.addBudget();
           break;
         case 'Reduce':
-          this.reduceBudget();
+          this.reduceBudget(budgetData);
           break;
         case 'Restructure':
           this.restructureBudget();
@@ -531,8 +542,12 @@ export class ClientMasterdataComponent implements OnInit {
     }
   }
 
-  reduceBudget() {
-    const value = Math.abs(this.changeBudgetForm.controls.total.value);
+  reduceBudget(data) {
+    console.log(data);
+    const total = Math.abs(this.changeBudgetForm.controls.total.value);
+    const revenue = Math.abs(this.changeBudgetForm.controls.revenue.value);
+    const oop = Math.abs(this.changeBudgetForm.controls.oop.value);
+    const tax = Math.abs(this.changeBudgetForm.controls.tax.value);
     if (this.changeBudgetForm.controls.revenue.value > 0 ||
       this.changeBudgetForm.controls.oop.value > 0 || this.changeBudgetForm.controls.tax.value > 0) {
       this.messageService.add({key: 'adminCustom', severity: 'error', summary: 'Error Message',
@@ -541,10 +556,25 @@ export class ClientMasterdataComponent implements OnInit {
       if (this.changeBudgetForm.controls.total.value > 0) {
         this.messageService.add({key: 'adminCustom', severity: 'error', summary: 'Error Message',
          detail: 'Total should be in Negative Number' });
-      } else if (value > this.poValue.total) {
+      } else if (total > this.poValue.total) {
         this.messageService.add({key: 'adminCustom',
           severity: 'error', summary: 'Error Message',
-          detail: 'Total Amount must be less than or equal to existing PO Value'
+          detail: 'Total Amount must be less than or equal to existing Total'
+        });
+      } else if (revenue > this.poValue.revenue) {
+        this.messageService.add({key: 'adminCustom',
+          severity: 'error', summary: 'Error Message',
+          detail: 'Revenue must be less than or equal to existing Revenue'
+        });
+      } else if (oop > this.poValue.oop) {
+        this.messageService.add({key: 'adminCustom',
+          severity: 'error', summary: 'Error Message',
+          detail: 'OOP must be less than or equal to existing OOP Value'
+        });
+      } else if (tax > this.poValue.tax) {
+        this.messageService.add({key: 'adminCustom',
+          severity: 'error', summary: 'Error Message',
+          detail: 'Tax Amount must be less than or equal to existing Tax'
         });
       } else {
         console.log(this.changeBudgetForm.value);
@@ -724,6 +754,8 @@ export class ClientMasterdataComponent implements OnInit {
   }
 
   showchangeBudgetModal(data) {
+    this.selectedValue = [];
+    this.checkBudgetValue = false;
     this.poValue = data;
     this.changeBudgetForm.controls.total.disable();
     this.initAddBudgetForm();
