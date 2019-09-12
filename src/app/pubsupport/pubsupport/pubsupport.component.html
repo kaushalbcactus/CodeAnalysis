@@ -931,8 +931,8 @@
                 Type <span style="color:red">*</span>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <p-dropdown resetFilterOnHide="true" [disabled]="true" [options]="documentTypes" placeholder="Select document type"
-                    [style]="{'width':'100%'}" formControlName="EntryType"
+                <p-dropdown resetFilterOnHide="true" [disabled]="true" [options]="documentTypes"
+                    placeholder="Select document type" [style]="{'width':'100%'}" formControlName="EntryType"
                     (onChange)="onChangeSelectedType($event.value)">
                 </p-dropdown>
                 <!-- <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.EntryType.errors">
@@ -944,11 +944,11 @@
                 List <span style="color:red">*</span>
             </div>
             <div class="ui-g-12 ui-md-6 ui-lg-4">
-                <input type="text" disabled="true" pInputText maxlength="100" formControlName="jcLineItemName" style="width: 100%;"
-                    placeholder="-" />
-                
+                <input type="text" disabled="true" pInputText maxlength="100" formControlName="jcLineItemName"
+                    style="width: 100%;" placeholder="-" />
+
             </div>
-            
+
         </div>
 
         <div class="ui-g">
@@ -974,7 +974,7 @@
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <input type="text" pInputText formControlName="UserName" maxlength="100" style="width: 100%;"
                         placeholder="User Name" />
-                     <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.UserName.errors">
+                    <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.UserName.errors">
                         <div *ngIf="isValidEditJCDetailsForm.UserName.errors.required" style="color:red;">
                             Please provide Name.</div>
                     </div>
@@ -1074,8 +1074,7 @@
                         <textarea rows="5" cols="30" pInputTextarea formControlName="JournalEditorInfo"
                             maxlength="100"></textarea>
                         <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.JournalEditorInfo.errors">
-                            <div *ngIf="isValidEditJCDetailsForm.JournalEditorInfo.errors.required"
-                                style="color:red;">
+                            <div *ngIf="isValidEditJCDetailsForm.JournalEditorInfo.errors.required" style="color:red;">
                                 Journal Editor Info is required.
                             </div>
                         </div>
@@ -1128,8 +1127,7 @@
                             [disabledDays]="[0,6]" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
                             [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" [yearNavigator]="true">
                         </p-calendar>
-                        <div
-                            *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.AbstractSubmissionDeadline.errors">
+                        <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.AbstractSubmissionDeadline.errors">
                             <div *ngIf="isValidEditJCDetailsForm.AbstractSubmissionDeadline.errors.required"
                                 style="color:red;">
                                 Please provide Submission Deadline Date.</div>

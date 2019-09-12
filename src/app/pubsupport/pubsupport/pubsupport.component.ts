@@ -529,6 +529,7 @@ export class PubsupportComponent implements OnInit {
                 ];
                 break;
             }
+            case 'presented':
             case 'published': {
                 this.items = [
                     { label: 'Your document is Published.' }
@@ -602,7 +603,17 @@ export class PubsupportComponent implements OnInit {
             // this.journalConfFormField();
             this.addJCDetailsModal = true;
             this.formatMilestone(this.milestonesList);
-            // console.log('this.pubSupportProjectInfoData ', this.pubSupportProjectInfoData);
+            if (this.selectedProject.DeliverableType === 'Abstract' || this.selectedProject.DeliverableType === 'Poster' || this.selectedProject.DeliverableType === 'Oral Presentation') {
+                this.documentTypes = [
+                    { label: 'Select type', value: '' },
+                    { label: 'Conference', value: 'conference' }
+                ];
+            } else {
+                this.documentTypes = [
+                    { label: 'Select type', value: '' },
+                    { label: 'Journal', value: 'journal' },
+                ];
+            }
             return;
         } else if (this.selectedModal === 'Edit Journal conference') {
             await this.getJCDetails(data);
