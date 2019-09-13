@@ -40,6 +40,7 @@
             <tr>
                 <th></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
+                    <input *ngSwitchCase="'PrimaryResources'" pInputText type="text" (input)="allProjectRef.filter($event.target.value, col.field, col.filterMatchMode)" (keydown.enter)="$event.preventDefault()">
                     <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allProjects.sowCodeArray" defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProjectCode'" [(ngModel)]="pmObject.columnFilter.ProjectCode" [options]="allProjects.projectCodeArray" defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
@@ -160,6 +161,10 @@
                     <tr>
                         <td [ngStyle]="{'color':'#d7181f'}">Priority</td>
                         <td>{{task.ProjectAttributes.Priority}}</td>
+                    </tr>
+                    <tr>
+                        <td [ngStyle]="{'color':'#d7181f'}">Current Milestone</td>
+                        <td>{{task.ProjectAttributes.Milestone}}</td>
                     </tr>
                     <tr>
                         <td [ngStyle]="{'color':'#d7181f'}">Project Status</td>

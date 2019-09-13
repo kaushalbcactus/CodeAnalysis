@@ -92,7 +92,7 @@
                                 <ng-template pTemplate="caption">
                                     <div style="text-align: left">
                                         <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-                                        <input type="text" pInputText size="50" placeholder="search" (input)="activeProject.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                                        <input type="text" pInputText size="50" placeholder="search" (input)="activeProject.filterGlobal($event.target.value, 'contains')" (keydown.enter)="$event.preventDefault()" style="width:auto">
 
                                         <span *ngIf="viewNote" style="color:red;    padding: 0px 0px 0px 15px;">Note*: Please click on load budgets button to load budget data. </span>
 
@@ -157,7 +157,7 @@
                                 <ng-template pTemplate="caption">
                                     <div style="text-align: left">
                                         <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-                                        <input type="text" pInputText size="50" placeholder="search" (input)="pipeLineProject.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                                        <input type="text" pInputText size="50" placeholder="search" (input)="pipeLineProject.filterGlobal($event.target.value, 'contains')" (keydown.enter)="$event.preventDefault()" style="width:auto">
 
                                         <span *ngIf="viewNote" style="color:red;    padding: 0px 0px 0px 15px;">Note*: Please click on load budgets button to load budget data. </span>
                                         <p-button *ngIf="!viewBudget && pmObject.allProjects.pipelineProjectCopyArray" style="float:right;" label="load Budgets" (onClick)="loadBudgetHours(pmConstant.filterAction.PIPELINE_PROJECT);viewNote =false;"></p-button>
@@ -220,7 +220,7 @@
                                 <ng-template pTemplate="caption">
                                     <div style="text-align: left">
                                         <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-                                        <input type="text" pInputText size="50" placeholder="search" (input)="inActiveProject.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                                        <input type="text" pInputText size="50" (keydown.enter)="$event.preventDefault()" placeholder="search" (input)="inActiveProject.filterGlobal($event.target.value, 'contains')" style="width:auto">
 
                                         <span *ngIf="viewNote" style="color:red;    padding: 0px 0px 0px 15px;">Note*: Please click on load budgets button to load budget data. </span>
 
@@ -308,7 +308,7 @@
                     <td>{{task.SOWTitle}}</td>
                 </tr>
                 <tr>
-                    <td [ngStyle]="{'color':'#d7181f'}">SOW Cretion Date</td>
+                    <td [ngStyle]="{'color':'#d7181f'}">SOW Creation Date</td>
                     <td>{{task.SOWCreationDate | date:'medium'}}</td>
                 </tr>
                 <tr>
