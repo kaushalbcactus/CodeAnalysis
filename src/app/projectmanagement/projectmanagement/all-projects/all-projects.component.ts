@@ -113,6 +113,13 @@ export class AllProjectsComponent implements OnInit {
   @ViewChild('allProjectRef', { static: true }) allProjectRef: Table;
   ExcelDownloadenable = false;
   firstLoad = true;
+  showExpenseEnable = false;
+  expensedataloaderEnable = true;
+  projectTitle: any;
+  ExpenseCols: ({ field: string; header: string; visibility: boolean; exportable?: undefined; } |
+  { field: string; header: string; visibility: boolean; exportable: boolean; })[];
+  projectExpenses: any;
+  expenseColArray: any = [];
   constructor(
     public pmObject: PMObjectService,
     private datePipe: DatePipe,
@@ -183,36 +190,53 @@ export class AllProjectsComponent implements OnInit {
     this.isAllProjectTableHidden = true;
     this.isAllProjectLoaderHidden = false;
     this.showFilterOptions = false;
+
     this.popItems = [
       {
-        label: 'Confirm Project', command: (event) =>
-          this.changeProjectStatus(this.selectedProjectObj, this.pmConstant.ACTION.CONFIRM_PROJECT)
+        label: 'Status',
+        items: [{
+          label: 'Confirm Project', command: (event) =>
+            this.changeProjectStatus(this.selectedProjectObj, this.pmConstant.ACTION.CONFIRM_PROJECT)
+        },
+        {
+          label: 'Propose Closure', command: (event) =>
+            this.changeProjectStatus(this.selectedProjectObj, this.pmConstant.ACTION.PROPOSE_CLOSURE)
+        },
+        {
+          label: 'Audit Project', command: (event) =>
+            this.changeProjectStatus(this.selectedProjectObj, this.pmConstant.ACTION.AUDIT_PROJECT)
+        },
+        {
+          label: 'Close Project', command: (event) =>
+            this.changeProjectStatus(this.selectedProjectObj, this.pmConstant.ACTION.CLOSE_PROJECT)
+        },
+        {
+          label: 'Cancel Project', command: (event) =>
+            this.changeProjectStatus(this.selectedProjectObj, this.pmConstant.ACTION.CANCEL_PROJECT)
+        }]
       },
       {
-        label: 'Propose Closure', command: (event) =>
-          this.changeProjectStatus(this.selectedProjectObj, this.pmConstant.ACTION.PROPOSE_CLOSURE)
+        label: 'Misc',
+        items: [
+          { label: 'View Project Details', command: (event) => this.viewProject(this.selectedProjectObj) },
+          { label: 'Edit Project', command: (event) => this.editProject(this.selectedProjectObj) },
+          { label: 'Communications', command: (event) => this.communications(this.selectedProjectObj) },
+          { label: 'Timeline', command: (event) => this.projectTimeline(this.selectedProjectObj) },
+          { label: 'Go to Allocation', command: (event) => this.goToAllocationPage(this.selectedProjectObj) },
+        ]
       },
       {
-        label: 'Audit Project', command: (event) =>
-          this.changeProjectStatus(this.selectedProjectObj, this.pmConstant.ACTION.AUDIT_PROJECT)
+        label: 'Finance',
+        items: [
+          { label: 'Manage Finance', command: (event) => this.manageFinances(this.selectedProjectObj) },
+          { label: 'Change SOW', command: (event) => this.moveSOW(this.selectedProjectObj) },
+          { label: 'Expense', command: (event) => this.showExpense(this.selectedProjectObj) },
+        ]
       },
-      {
-        label: 'Close Project', command: (event) =>
-          this.changeProjectStatus(this.selectedProjectObj, this.pmConstant.ACTION.CLOSE_PROJECT)
-      },
-      { label: 'View Project Details', command: (event) => this.viewProject(this.selectedProjectObj) },
-      { label: 'Edit Project', command: (event) => this.editProject(this.selectedProjectObj) },
-      { label: 'Communications', command: (event) => this.communications(this.selectedProjectObj) },
-      { label: 'Timeline', command: (event) => this.projectTimeline(this.selectedProjectObj) },
-      { label: 'Manage Finance', command: (event) => this.manageFinances(this.selectedProjectObj) },
-      { label: 'Change SOW', command: (event) => this.moveSOW(this.selectedProjectObj) },
-      { label: 'Go to Allocation', command: (event) => this.goToAllocationPage(this.selectedProjectObj) },
-      { label: 'Show History', command: (event) => this.showTimeline(this.selectedProjectObj) },
       { label: 'View Details', command: (event) => this.sendOutput.next(this.selectedProjectObj) },
-      {
-        label: 'Cancel Project', command: (event) =>
-          this.changeProjectStatus(this.selectedProjectObj, this.pmConstant.ACTION.CANCEL_PROJECT)
-      },
+      { label: 'Show History', command: (event) => this.showTimeline(this.selectedProjectObj) },
+
+
     ];
     this.getAllProjects();
 
@@ -669,99 +693,70 @@ export class AllProjectsComponent implements OnInit {
    * @param menu menu object.
    */
   storeRowData(rowData, menu) {
+
     this.selectedProjectObj = rowData;
     const status = this.selectedProjectObj.Status;
     const route = this.router.url;
+
     menu.model[0].visible = true;
     menu.model[1].visible = true;
     menu.model[2].visible = true;
     menu.model[3].visible = true;
     menu.model[4].visible = true;
-    menu.model[5].visible = true;
-    menu.model[6].visible = true;
-    menu.model[7].visible = true;
-    menu.model[8].visible = true;
-    menu.model[9].visible = true;
-    menu.model[10].visible = true;
-    menu.model[11].visible = true;
-    menu.model[12].visible = true;
-    menu.model[13].visible = true;
+    menu.model[0].items.map(c => c.visible = true);
+    menu.model[1].items.map(c => c.visible = true);
+    menu.model[2].items.map(c => c.visible = true);
+
+
     if (route.indexOf('myDashboard') > -1) {
       menu.model[0].visible = false;
       menu.model[1].visible = false;
       menu.model[2].visible = false;
-      menu.model[3].visible = false;
-      menu.model[4].visible = false;
-      menu.model[5].visible = false;
-      menu.model[6].visible = false;
-      menu.model[7].visible = false;
-      menu.model[8].visible = false;
-      menu.model[9].visible = false;
-      menu.model[10].visible = false;
-      menu.model[13].visible = false;
     } else {
-      menu.model[12].visible = false;
+      menu.model[3].visible = false;
       switch (status) {
         case this.constants.projectStatus.InDiscussion:
-          menu.model[1].visible = false;
-          menu.model[2].visible = false;
-          menu.model[3].visible = false;
-          // menu.model[10].visible = false;
+          menu.model[0].items[1].visible = false;
+          menu.model[0].items[2].visible = false;
+          menu.model[0].items[3].visible = false;
           break;
         case this.constants.projectStatus.Unallocated:
         case this.constants.projectStatus.InProgress:
         case this.constants.projectStatus.ReadyForClient:
         case this.constants.projectStatus.OnHold:
         case this.constants.projectStatus.AuthorReview:
-          menu.model[0].visible = false;
-          menu.model[2].visible = false;
-          menu.model[3].visible = false;
+          menu.model[0].items[1].visible = false;
+          menu.model[0].items[2].visible = false;
+          menu.model[0].items[3].visible = false;
           break;
         case this.constants.projectStatus.AuditInProgress:
-          menu.model[0].visible = false;
-          menu.model[1].visible = false;
-          menu.model[3].visible = false;
-          menu.model[13].visible = false;
-          // menu.model[10].visible = false;
+          menu.model[0].items[0].visible = false;
+          menu.model[0].items[1].visible = false;
+          menu.model[0].items[3].visible = false;
+          menu.model[0].items[4].visible = false;
           break;
         case this.constants.projectStatus.PendingClosure:
-          menu.model[0].visible = false;
-          menu.model[1].visible = false;
-          menu.model[2].visible = false;
-          menu.model[5].visible = false;
-          menu.model[13].visible = false;
-          // menu.model[10].visible = false;
+          menu.model[0].items[0].visible = false;
+          menu.model[0].items[1].visible = false;
+          menu.model[0].items[2].visible = false;
+          menu.model[0].items[4].visible = false;
+          menu.model[1].items[1].visible = false;
           break;
         case this.constants.projectStatus.Closed:
         case this.constants.projectStatus.Cancelled:
           menu.model[0].visible = false;
-          menu.model[1].visible = false;
-          menu.model[2].visible = false;
-          menu.model[3].visible = false;
-          menu.model[5].visible = false;
-          menu.model[9].visible = false;
-          menu.model[13].visible = false;
-          // menu.model[10].visible = false;
+          menu.model[1].items[1].visible = false;
+          menu.model[2].items[1].visible = false;
           break;
         case this.constants.projectStatus.SentToAMForApproval:
           menu.model[0].visible = false;
-          menu.model[1].visible = false;
-          menu.model[2].visible = false;
-          menu.model[3].visible = false;
-          menu.model[5].visible = false;
-          menu.model[13].visible = false;
-          // menu.model[10].visible = false;
+          menu.model[1].items[1].visible = false;
           break;
         case this.constants.projectStatus.AwaitingCancelApproval:
           menu.model[0].visible = false;
-          menu.model[1].visible = false;
+          menu.model[1].items[1].visible = false;
+          menu.model[1].items[4].visible = false;
           menu.model[2].visible = false;
-          menu.model[3].visible = false;
-          menu.model[5].visible = false;
-          menu.model[8].visible = false;
-          menu.model[9].visible = false;
-          menu.model[10].visible = false;
-          menu.model[13].visible = false;
           break;
       }
     }
@@ -1847,6 +1842,144 @@ export class AllProjectsComponent implements OnInit {
     this.pmObject.isMainLoaderHidden = true;
     this.pmObject.isMoveProjectToSOWVisible = true;
   }
+
+  /**
+   * This function is used to show expense of project.
+   * @param projObj pass the project object as a parameter.
+   */
+  async showExpense(projObj) {
+    this.showExpenseEnable = true;
+    this.expensedataloaderEnable = true;
+    this.ExpenseCols = [
+      { field: 'RequestType', header: 'Request Type', visibility: true },
+      { field: 'VendorName', header: 'Vendor Freelancer', visibility: true },
+      // { field: 'ClientLegalEntity', header: 'Client', visibility: true },
+      { field: 'Category', header: 'Category', visibility: true },
+      { field: 'ExpenseType', header: 'Expense Type', visibility: true },
+      { field: 'ClientAmount', header: 'Client Amount', visibility: true },
+      { field: 'ClientCurrency', header: 'Client Currency', visibility: true },
+      { field: 'Status', header: 'Status', visibility: true },
+      { field: 'Modified', header: 'Modified Date', visibility: false, exportable: false },
+      { field: 'ModifiedDateFormat', header: 'Modified Date', visibility: false },
+      { field: 'ModifiedBy', header: 'Modified By', visibility: false },
+    ];
+
+    const result = await this.getExpanseByProjectCode(projObj.ProjectCode);
+
+    this.projectExpenses = [];
+
+    result.expanse.forEach(element => {
+
+      this.projectExpenses.push({
+        Category: element.Category,
+        ExpenseType: element.SpendType,
+        ClientAmount: parseFloat(element.ClientAmount ? element.ClientAmount : 0).toFixed(2),
+        ClientCurrency: element.ClientCurrency,
+        ModifiedBy: element.Editor ? element.Editor.Title : '',
+        Modified: new Date(this.datePipe.transform(element.Modified, 'MMM dd, yyyy')),
+        ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
+        RequestType: element.RequestType,
+        Status: element.Status,
+        VendorName: this.getVendorNameById(result.Freelancer, element),
+      });
+    });
+    this.expenseColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj
+      (this.projectExpenses.map(a => { const b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
+    this.expenseColArray.RequestType = this.commonService.sortData(this.uniqueArrayObj
+      (this.projectExpenses.map(a => { const b = { label: a.RequestType, value: a.RequestType }; return b; }).filter(ele => ele.label)));
+    this.expenseColArray.Status = this.commonService.sortData(this.uniqueArrayObj
+      (this.projectExpenses.map(a => { const b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
+    this.expenseColArray.Category = this.commonService.sortData(this.uniqueArrayObj
+      (this.projectExpenses.map(a => { const b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
+    this.expenseColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj
+      (this.projectExpenses.map(a => { const b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
+    const ClientAmount = this.uniqueArrayObj(this.projectExpenses.map(a => {
+      const b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b;
+    }).filter(ele => ele.label));
+    this.expenseColArray.ClientAmount = this.pmCommonService.customSort(ClientAmount, 1, 'label');
+    this.expenseColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj
+      (this.projectExpenses.map
+        (a => { const b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
+    this.expenseColArray.ModifiedBy = this.uniqueArrayObj(this.projectExpenses.map(a => {
+      const b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b;
+    }).filter(ele => ele.label));
+    this.expenseColArray.ModifiedDate = this.uniqueArrayObj(this.projectExpenses.map(a => {
+      const b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b;
+    }).filter(ele => ele.label));
+
+    this.projectTitle = projObj.ShortTitle ?
+      projObj.ProjectCode + ' (' + projObj.ShortTitle + ') ' : projObj.ProjectCode;
+
+    this.expensedataloaderEnable = false;
+  }
+  uniqueArrayObj(array: any) {
+    let sts: any = '';
+    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
+      const keys = {
+        label: label1,
+        value: array.find(s => s.label === label1).value
+      };
+      return keys ? keys : '';
+    });
+  }
+
+
+
+  async getExpanseByProjectCode(projectCode) {
+
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+
+    // Get Expanses
+    const expanseGet = Object.assign({}, options);
+    const expanseQuery = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_OOP);
+    expanseQuery.filter = expanseQuery.filterByProjectCode.replace(/{{projectCode}}/gi, projectCode);
+    const expanseEndPoint = this.spServices.getReadURL('' + this.constants.listNames.SpendingInfo.name +
+      '', expanseQuery);
+    expanseGet.url = expanseEndPoint.replace('{0}', '' + this.globalObject.sharePointPageObject.userId);
+    expanseGet.type = 'GET';
+    expanseGet.listName = this.constants.listNames.SpendingInfo.name;
+    batchURL.push(expanseGet);
+
+
+    // Get Vendor FreeLancer
+    const VendorFreeLancerGet = Object.assign({}, options);
+    VendorFreeLancerGet.url = this.spServices.getReadURL('' + this.constants.listNames.VendorFreelancer.name +
+      '');
+    VendorFreeLancerGet.type = 'GET';
+    VendorFreeLancerGet.listName = this.constants.listNames.VendorFreelancer.name;
+    batchURL.push(VendorFreeLancerGet);
+
+    const arrResults = await this.spServices.executeBatch(batchURL);
+
+
+    const resultArray = { expanse: [], Freelancer: [], Resources: [] };
+
+    if (arrResults) {
+      resultArray.expanse = arrResults[0].retItems;
+      resultArray.Freelancer = arrResults[1].retItems;
+    }
+
+    return resultArray;
+  }
+
+
+
+  getVendorNameById(freelancerVendersRes, ele) {
+    const found = freelancerVendersRes.find((x) => {
+      if (x.ID === ele.VendorFreelancer) {
+        return x;
+      }
+    });
+    return found ? found.Title : '';
+  }
+
+
   /**
    * This method is used to transfer the project from one sow code to another sow code.
    */
@@ -2122,6 +2255,7 @@ export class AllProjectsComponent implements OnInit {
 
   @HostListener('document:click', ['$event'])
   clickout(event) {
+
     if (event.target.className === 'pi pi-ellipsis-v') {
       if (this.tempClick) {
         this.tempClick.style.display = 'none';

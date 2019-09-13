@@ -43,7 +43,7 @@ export class AccessleveldashboardComponent implements OnInit {
     batchURL.push(resourceGet);
 
     const arrResults = await this.spServices.executeBatch(batchURL);
-debugger
+
     if (arrResults) {
       if (arrResults[0].retItems) {
         if (arrResults[0].retItems[0].Role === 'CM L1' || arrResults[0].retItems[0].Role === 'CM L2') {
