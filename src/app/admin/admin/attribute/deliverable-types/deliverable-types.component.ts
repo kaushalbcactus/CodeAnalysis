@@ -199,8 +199,8 @@ export class DeliverableTypesComponent implements OnInit {
    * @returns  It will return boolean value either `true` or `false`
    */
   isFormValid() {
-    const alphaSpecialExp = /^[a-zA-Z]+(-?[a-zA-Z]+)?(_?[a-zA-Z]+)?$/;
-    const alphaExp = /^[a-zA-Z]+$/;
+    const alphaSpecialExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL;
+    const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA;
     if (!this.deliverableTypes) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error',

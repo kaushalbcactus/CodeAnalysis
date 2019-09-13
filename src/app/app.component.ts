@@ -46,25 +46,7 @@ export class AppComponent {
     window['pmComponentReference'] = { component: this, zone: this._ngZone, loadPM: () => this.goToPM(), };
     // tslint:disable-next-line: no-string-literal
     window['myDashboardComponentReference'] = { component: this, zone: this._ngZone, loadMyDashboard: () => this.goToMyDashboard(), };
-    // tslint:disable-next-line: no-string-literal
-    window['taskAllocationComponentReference'] = {
-      component: this, zone: this._ngZone,
-      loadTaskAllocation: () => this.goToTaskAllocation(),
-    };
-    window['accessLecelDashboardComponentReference'] = {
-      component: this, zone: this._ngZone,
-      loadAccessLevelDashboard: () => this.goToAccessLevelDashboard(),
-    };
-    // tslint:disable-next-line: no-string-literal
-    window['caComponentReference'] = { component: this, zone: this._ngZone,
-      loadCA: () => this.goToCA(), };
-
-
-  }
-  goToQMS() {
-    if (!window.location.href.includes('qms')) {
-      this.router.navigate(['/qms']);
-    }
+    window['adminComponentReference'] = { component: this, zone: this._ngZone, loadAdmin: () => this.goToAdmin(), };
   }
 
   goToPubSupport() {
@@ -88,25 +70,11 @@ export class AppComponent {
       this.router.navigate(['/myDashboard']);
     }
   }
-
-  goToCA() {
-    if (!window.location.href.includes('centralallocation')) {
-      this.router.navigate(['/centralallocation']);
+  goToAdmin() {
+    if (!window.location.href.includes('admin')) {
+      this.router.navigate(['/admin']);
     }
   }
-  goToTaskAllocation() {
-    if (!window.location.href.includes('taskAllocation')) {
-      this.router.navigate(['/taskAllocation']);
-    }
-  }
-
-  goToAccessLevelDashboard() {
-    if (!window.location.href.includes('accessleveldashboard')) {
-      this.router.navigate(['/accessleveldashboard']);
-    }
-
-  }
-
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnDestroy() {
     // tslint:disable-next-line:no-string-literal
@@ -117,11 +85,6 @@ export class AppComponent {
     window['pmComponentReference'] = null;
     // tslint:disable-next-line: no-string-literal
     window['myDashboardComponentReference'] = null;
-    // tslint:disable-next-line: no-string-literal
-    window['taskAllocationComponentReference'] = null;
-    window['qmsComponentReference'] = null;
-    window['accessLecelDashboardComponentReference'] = null;
-    window['caComponentReference'] = null;
-    
+    window['adminComponentReference'] = null;
   }
 }

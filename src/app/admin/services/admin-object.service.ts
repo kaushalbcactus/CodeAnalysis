@@ -109,4 +109,18 @@ export class AdminObjectService {
     LastUpdatedBy: '',
     LastUpdatedFormat: '',
   };
+  public taObj = {
+    ID: 0,
+    TherapeuticArea: '',
+    LastUpdated: new Date(),
+    LastUpdatedBy: '',
+    LastUpdatedFormat: '',
+  };
+  public practiveAreaObj = {
+    ID: 0,
+    PracticeArea: '',
+    LastUpdated: new Date(),
+    LastUpdatedBy: '',
+    LastUpdatedFormat: '',
+  };
 }

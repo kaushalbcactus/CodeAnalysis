@@ -78,8 +78,7 @@ export class ProjectTypesComponent implements OnInit {
       { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
       { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false }
     ];
-    await this.loadProjectTypeTable();
-    this.colFilters(this.projectTypeRows);
+    this.loadProjectTypeTable();
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -152,12 +151,12 @@ export class ProjectTypesComponent implements OnInit {
    *
    */
   async addProjectType() {
-    const alphaExp = /^[a-zA-Z]+(-?[a-zA-Z]+)?(_?[a-zA-Z]+)?$/;
+    const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL;
     this.messageService.clear();
     if (!this.projectType) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error',
-        summary: 'Error Message', detail: 'Please enter bucket Project Type.'
+        summary: 'Error Message', detail: 'Please enter Project Type.'
       });
       return false;
     }
