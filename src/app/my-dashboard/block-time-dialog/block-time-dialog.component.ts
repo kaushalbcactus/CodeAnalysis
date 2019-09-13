@@ -60,9 +60,9 @@ export class BlockTimeDialogComponent implements OnInit {
 
   async ngOnInit() {
 
-    this.getMaxDate();
+    
     this.data = this.config.data;
-
+    this.getMaxDate();
     if (this.data.task !== undefined) {
       this.SelectedClientLegalEntity = this.data.timeblockType !== 'Admin' &&
         this.data.timeblockType !== 'Training' && this.data.timeblockType !== 'Internal Meeting' ?
@@ -302,7 +302,7 @@ export class BlockTimeDialogComponent implements OnInit {
     const currentDate = new Date();
     const tempdate = new Date(currentDate.setDate(currentDate.getDate() + (3 * 7)));
     const lastday = tempdate.getDate() - (tempdate.getDay() - 1) + 4;
-    this.maxDate = new Date(tempdate.setDate(lastday));
+    this.maxDate = this.data.timeblockType === 'Admin' ? new Date()  :  new Date(tempdate.setDate(lastday));
   }
 
   // *************************************************************************************************
