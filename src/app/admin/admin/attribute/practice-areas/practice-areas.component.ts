@@ -1,14 +1,30 @@
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { MessageService, Message , ConfirmationService } from 'primeng/api';
+import { MessageService, Message, ConfirmationService } from 'primeng/api';
+import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
+import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
+import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
+import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 
 @Component({
   selector: 'app-practice-areas',
   templateUrl: './practice-areas.component.html',
   styleUrls: ['./practice-areas.component.css']
 })
+/**
+ * A class that uses ngPrime to display the data in table.
+ * It also have feature like paging, sorting and naviagation to different component.
+ *
+ * @description
+ *
+ * This class is used to add user to Title column into `BusinessVerticals` list.
+ *
+ */
+
 export class PracticeAreasComponent implements OnInit {
   practiceArea: any;
+  currPracticeAreaObj: any;
   practiceAreaColumns = [];
   practiceAreaRows = [];
   auditHistoryColumns = [];
@@ -25,114 +41,214 @@ export class PracticeAreasComponent implements OnInit {
     Date: [],
   };
   items = [
-    { label: 'Delete' , command: (e) => this.delete()}
+    { label: 'Delete', command: (e) => this.delete() }
   ];
   msgs: Message[] = [];
-  constructor(private datepipe: DatePipe,  private messageService: MessageService , private confirmationService: ConfirmationService) { }
-
+  /**
+   * Construct a method to create an instance of required component.
+   *
+   * @param datepipe This is instance referance of `DatePipe` component.
+   * @param messageService This is instance referance of `MessageService` component.
+   * @param confirmationService This is instance referance of `ConfirmationService` component.
+   * @param adminCommonService This is instance referance of `AdminCommonService` component.
+   * @param adminObject This is instance referance of `AdminObjectService` component.
+   * @param spServices This is instance referance of `SPOperationService` component.
+   * @param constants This is instance referance of `ConstantsService` component.
+   * @param adminConstants This is instance referance of `AdminConstantService` component.
+   */
+  constructor(
+    private datepipe: DatePipe,
+    private messageService: MessageService,
+    private confirmationService: ConfirmationService,
+    private adminCommonService: AdminCommonService,
+    private adminObject: AdminObjectService,
+    private spServices: SPOperationService,
+    private constants: ConstantsService,
+    private adminConstants: AdminConstantService
+  ) { }
+  /**
+   * Construct a method to initialize all the data.
+   *
+   * @description
+   *
+   * This is the entry point in this class which jobs is to initialize and load the required data.
+   *
+   */
   ngOnInit() {
     this.practiceAreaColumns = [
       // { field: 'Sr', header: 'Sr.No.' },
-      { field: 'PracticeArea', header: 'Practice Area' , visibility: true},
-      { field: 'LastUpdated', header: 'Last Updated' , visibility: true , exportable: false},
-      { field: 'LastUpdatedBy', header: 'Last Updated By' , visibility: true},
+      { field: 'PracticeArea', header: 'Practice Area', visibility: true },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
+      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
     ];
-
-    this.practiceAreaRows = [
-      {
-        // Sr: 1,
-        PracticeArea: 'Test',
-        LastUpdated: 'Jul 3, 2019',
-        LastUpdatedBy: 'Kaushal Bagrodia'
-      }
-    ];
-
-    this.auditHistoryColumns = [
-      // { field: 'Sr', header: 'Sr.No.' },
-      { field: 'Action', header: 'Action' },
-      { field: 'SubAction', header: 'Sub Action' },
-      { field: 'ActionBy', header: 'Action By' },
-      { field: 'Date', header: 'Date' },
-    ];
-
-    this.auditHistoryRows = [
-      {
-        // Sr: 1,
-        Action: '',
-        SubAction: '',
-        ActionBy: '',
-        ActionDate: '',
-      }
-    ];
-
-    this.colFilters(this.practiceAreaRows);
-    this.colFilters1(this.auditHistoryRows);
+    this.loadPractiveArea();
   }
-
+  /**
+   * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
+   *
+   * @description
+   *
+   * It will iterate all the response array to cater the request and show into the table.
+   * The table have option for sorting, pagination and delete the practice area.
+   *
+   */
+  async loadPractiveArea() {
+    this.adminObject.isMainLoaderHidden = false;
+    const tempArray = [];
+    const getPracticeAreaInfo = Object.assign({}, this.adminConstants.QUERY.GET_PRACTICE_AREA_BY_ACTIVE);
+    getPracticeAreaInfo.filter = getPracticeAreaInfo.filter.replace(/{{isActive}}/gi,
+      this.adminConstants.LOGICAL_FIELD.YES);
+    const results = await this.spServices.readItems(this.constants.listNames.BusinessVerticals.name, getPracticeAreaInfo);
+    if (results && results.length) {
+      results.forEach(item => {
+        const obj = Object.assign({}, this.adminObject.practiveAreaObj);
+        obj.ID = item.ID;
+        obj.PracticeArea = item.Title;
+        obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
+        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+        obj.LastUpdatedBy = item.Editor.Title;
+        tempArray.push(obj);
+      });
+      this.practiceAreaRows = tempArray;
+      this.colFilters(this.practiceAreaRows);
+    }
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * Construct a method to map the array values into particular column dropdown.
+   *
+   * @description
+   *
+   * This method will extract the column object value from an array and stores into the column dropdown array and display
+   * the values into the PracticeArea,LastUpdated and LastUpdatedBy column dropdown.
+   *
+   * @param colData Pass colData as a parameter which contains an array of column object.
+   *
+   */
   colFilters(colData) {
-    this.practiceAreaColArray.PracticeArea = this.uniqueArrayObj(
+    this.practiceAreaColArray.PracticeArea = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.PracticeArea, value: a.PracticeArea }; return b; }));
-    this.practiceAreaColArray.LastUpdated = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-      // tslint:disable-next-line: align
-      value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
-    this.practiceAreaColArray.LastUpdatedBy = this.uniqueArrayObj(
+    this.practiceAreaColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
+          value: a.LastUpdated
+        };
+        return b;
+      }));
+    this.practiceAreaColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
-
-  colFilters1(colData) {
-    this.auditHistoryArray.Action = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.Action, value: a.Action }; return b; }));
-    this.auditHistoryArray.SubAction = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.SubAction, value: a.SubAction }; return b; }));
-    this.auditHistoryArray.ActionBy = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
-    this.auditHistoryArray.Date = this.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.Date, 'MMM d, yyyy') }; return b; }));
-  }
-
-  uniqueArrayObj(array: any) {
-    let sts: any = '';
-    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-        return {
-            label: label1,
-            value: array.find(s => s.label === label1).value
-        };
-    });
-  }
-
-  addPracticeArea(practiceArea) {
-    if (practiceArea.trim() !== '') {
-    this.checkUniqueData(practiceArea);
+  /**
+   * Construct a method to add the new Project Type into `BusinessVerticals` list.
+   *
+   * @description
+   *
+   * This method will add practice area into `BusinessVerticals` list and shows that Project Type into the table.
+   *
+   * @Note
+   *
+   * If practice area is already present then system will throws error and return `false`.
+   * If blank practice area is submitted then system will throws error and return `false`.
+   * Only alphabets and two special characters are allowed and special characters cannot start or end the words.
+   *
+   */
+  async addPracticeArea() {
+    const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL;
+    this.messageService.clear();
+    if (!this.practiceArea) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error',
+        summary: 'Error Message', detail: 'Please enter practice area.'
+      });
+      return false;
     }
-  }
-
-  checkUniqueData(data) {
-    const found = this.practiceAreaRows.find((item) => {
-      if ((item.PracticeArea).toLowerCase() === data.trim().toLowerCase()) {
-        return item;
-      }
+    if (!this.practiceArea.match(alphaExp)) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error', summary: 'Error Message',
+        detail: 'Special characters are allowed between alphabets. Allowed special characters are \'-\' and \'_\'.'
+      });
+      return false;
+    }
+    if (this.practiceAreaRows.some(a => a.PracticeArea.toLowerCase() === this.practiceArea.toLowerCase())) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error',
+        summary: 'Error Message', detail: 'This practice area is already exist. Please enter another practice area.'
+      });
+      return false;
+    }
+    this.adminObject.isMainLoaderHidden = false;
+    const data = {
+      Title: this.practiceArea
+    };
+    const result = await this.spServices.createItem(this.constants.listNames.BusinessVerticals.name, data,
+      this.constants.listNames.BusinessVerticals.type);
+    console.log(result);
+    this.messageService.add({
+      key: 'adminCustom', severity: 'success', sticky: true,
+      summary: 'Success Message', detail: 'The practice area ' + this.practiceArea + ' has added successfully.'
     });
-    return found ? this.messageService.add({ severity: 'error', summary: 'Error Message', detail: 'Data Already Exist in Table' })
-     : this.messageService.add({ severity: 'success', summary: 'Success Message', detail: 'Data Submitted' });
+    this.practiceArea = '';
+    await this.loadPractiveArea();
+    this.adminObject.isMainLoaderHidden = true;
   }
-
+  /**
+   * Construct a method to remove the item from table.
+   *
+   * @description
+   *
+   * This method mark the `Practive Area` as inactive so that it is not visible in table.
+   *
+   * @param data Pass data as parameter which contains value of bucket row.
+   *
+   */
   delete() {
+    const data = this.currPracticeAreaObj;
     this.confirmationService.confirm({
       message: 'Do you want to delete this record?',
       header: 'Delete Confirmation',
       icon: 'pi pi-info-circle',
+      key: 'confirm',
       accept: () => {
-        this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'Record deleted' }];
+        const updateData = {
+          IsActive: this.adminConstants.LOGICAL_FIELD.NO
+        };
+        this.confirmUpdate(data, updateData, this.constants.listNames.BusinessVerticals.name,
+          this.constants.listNames.BusinessVerticals.type);
       },
-      reject: () => {
-        this.msgs = [{ severity: 'info', summary: 'Rejected', detail: 'You have rejected' }];
-      }
     });
   }
 
+  /**
+   * Construct a method to save the update the data.
+   * @param data Pass data as parameter which have Id in it.
+   * @param updateData Pass the data which wants to update it.
+   * @param listName pass the list name.
+   * @param type pass the list type.
+   */
+  async confirmUpdate(data, updateData, listName, type) {
+    this.adminObject.isMainLoaderHidden = false;
+    const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
+    this.messageService.add({
+      key: 'adminCustom', severity: 'success', sticky: true,
+      summary: 'Success Message', detail: 'The practice area ' + data.PracticeArea + ' has deleted successfully.'
+    });
+    this.loadPractiveArea();
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * Construct a method to store current selected row data into variable `currPracticeAreaObj`.
+   *
+   * @description
+   *
+   * This method will trigger when user click on menu option in the table.
+   * It will store the current selected row value into the class variable `currPracticeAreaObj`.
+   *
+   */
+  storeRowData(rowData) {
+    this.currPracticeAreaObj = rowData;
+    console.log(rowData);
+  }
   downloadExcel(pa) {
     pa.exportCSV();
   }

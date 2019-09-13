@@ -152,6 +152,20 @@ export class AdminConstantService {
       filter: 'Active eq \'{{isActive}}\'',
       orderby: 'Modified desc',
       top: 4900
+    },
+    GET_TA_BY_ACTIVE: {
+      select: 'ID,Title,Modified,Active,Editor/ID,Editor/Title',
+      expand: 'Editor/ID,Editor/Title',
+      filter: 'Active eq \'{{isActive}}\'',
+      orderby: 'Modified desc',
+      top: 4900
+    },
+    GET_PRACTICE_AREA_BY_ACTIVE: {
+      select: 'ID,Title,Modified,IsActive,Editor/ID,Editor/Title',
+      expand: 'Editor/ID,Editor/Title',
+      filter: 'IsActive eq \'{{isActive}}\'',
+      orderby: 'Modified desc',
+      top: 4900
     }
   };
   public LOGICAL_FIELD = {
@@ -179,5 +193,9 @@ export class AdminConstantService {
   public ACCESS_TYPE = {
     ACCESS: 'Access',
     ACCOUNTABLE: 'Accountable'
+  };
+  public REG_EXPRESSION = {
+    ALPHA_SPECIAL: /^[a-zA-Z]+(-?[a-zA-Z]+)?(_?[a-zA-Z]+)?$/,
+    ALPHA: /^[a-zA-Z]+$/
   };
 }

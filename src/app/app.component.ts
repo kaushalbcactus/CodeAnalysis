@@ -39,6 +39,7 @@ export class AppComponent {
     window['fdComponentReference'] = { component: this, zone: this._ngZone, loadFD: () => this.goToFD(), };
     window['pmComponentReference'] = { component: this, zone: this._ngZone, loadPM: () => this.goToPM(), };
     window['myDashboardComponentReference'] = { component: this, zone: this._ngZone, loadMyDashboard: () => this.goToMyDashboard(), };
+    window['adminComponentReference'] = { component: this, zone: this._ngZone, loadAdmin: () => this.goToAdmin(), };
   }
 
   goToPubSupport() {
@@ -62,7 +63,11 @@ export class AppComponent {
       this.router.navigate(['/myDashboard']);
     }
   }
-
+  goToAdmin() {
+    if (!window.location.href.includes('admin')) {
+      this.router.navigate(['/admin']);
+    }
+  }
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnDestroy() {
     // tslint:disable-next-line:no-string-literal
@@ -70,5 +75,6 @@ export class AppComponent {
     window['fdComponentReference'] = null;
     window['pmComponentReference'] = null;
     window['myDashboardComponentReference'] = null;
+    window['adminComponentReference'] = null;
   }
 }
