@@ -338,12 +338,12 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.addSOW.SOWOwner = this.addSowForm.value.sowOwner;
       // Add user to all operation field.
       this.pmObject.addSOW.AllOperationId.push(this.pmObject.currLoginInfo.Id);
-      if(this.pmObject.addSOW.CM1 && this.pmObject.addSOW.CM1.length) {
+      if (this.pmObject.addSOW.CM1 && this.pmObject.addSOW.CM1.length) {
         this.pmObject.addSOW.CM1.forEach(element => {
           this.pmObject.addSOW.AllOperationId.push(element);
         });
       }
-      if(this.pmObject.addSOW.Delivery && this.pmObject.addSOW.Delivery.length) {
+      if (this.pmObject.addSOW.Delivery && this.pmObject.addSOW.Delivery.length) {
         this.pmObject.addSOW.Delivery.forEach(element => {
           this.pmObject.addSOW.AllOperationId.push(element);
         });
@@ -848,6 +848,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.addAdditionalBudgetForm.reset();
     this.pmObject.isSOWFormSubmit = false;
     this.pmObject.isAdditionalBudgetVisible = false;
+
   }
   /**
    * This method is used to add sow total.
@@ -856,8 +857,10 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.pmObject.addSOW.Additonal.NetBudget = this.addAdditionalBudgetForm.value.addNet;
     this.pmObject.addSOW.Additonal.OOPBudget = this.addAdditionalBudgetForm.value.addOOP ? this.addAdditionalBudgetForm.value.addOOP : 0;
     this.pmObject.addSOW.Additonal.TaxBudget = this.addAdditionalBudgetForm.value.addTax ? this.addAdditionalBudgetForm.value.addTax : 0;
-    this.addAdditionalBudgetForm.get('addTotal').setValue(this.pmObject.addSOW.Additonal.NetBudget +
-      this.pmObject.addSOW.Additonal.OOPBudget + this.pmObject.addSOW.Additonal.TaxBudget);
+
+    const AddBudgets = this.pmObject.addSOW.Additonal.NetBudget +
+      this.pmObject.addSOW.Additonal.OOPBudget + this.pmObject.addSOW.Additonal.TaxBudget;
+    this.addAdditionalBudgetForm.get('addTotal').setValue(AddBudgets.toFixed(2));
   }
   /**
    * This method is used to add additional budget.

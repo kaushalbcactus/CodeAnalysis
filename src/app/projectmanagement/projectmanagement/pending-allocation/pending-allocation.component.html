@@ -24,6 +24,7 @@
                 <tr>
                     <th class="lastColumnWidth"></th>
                     <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
+                        <input *ngSwitchCase="'PrimaryResourceText'" pInputText type="text" (input)="paTableRef.filter($event.target.value, col.field, col.filterMatchMode)" (keydown.enter)="$event.preventDefault()">
                         <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="paArrays.projectCodeArray" defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'shortTitle'" [options]="paArrays.shortTitleArray" defaultLabel="All" (onChange)="paTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">

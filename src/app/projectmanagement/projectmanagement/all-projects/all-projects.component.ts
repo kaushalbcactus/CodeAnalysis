@@ -44,9 +44,11 @@ export class AllProjectsComponent implements OnInit {
     { field: 'RevenueBudget', header: 'Revenue Budget', visibility: false },
     { field: 'OOPBudget', header: 'OOP Budget', visibility: false },
     { field: 'Currency', header: 'Currency', visibility: false },
+    { field: 'Status', header: 'Status', visibility: true },
     { field: 'CreatedBy', header: 'Created By', visibility: false },
     { field: 'CreatedDateFormat', header: 'Created Date', visibility: false },
-    { field: 'Status', header: 'Status', visibility: true },
+    { field: 'ModifiedBy', header: 'Modified By', visibility: false },
+    { field: 'ModifiedDateFormat', header: 'Modified Date', visibility: false },
 
     // { field: 'CreatedDate', header: 'Created Date', visibility: true, exportable: false }
   ];
@@ -375,6 +377,7 @@ export class AllProjectsComponent implements OnInit {
       for (const task of this.pmObject.allProjectItems) {
 
         const projObj = $.extend(true, {}, this.pmObject.allProject);
+        debugger;
         projObj.ID = task.ID;
         projObj.Title = task.Title;
         projObj.SOWCode = task.SOWCode;
@@ -390,8 +393,12 @@ export class AllProjectsComponent implements OnInit {
         projObj.CreatedBy = task.Author ? task.Author.Title : '';
         projObj.CreatedDate = task.Created;
         projObj.CreatedDateFormat = this.datePipe.transform(new Date(projObj.CreatedDate), 'MMM dd yyyy hh:mm:ss aa');
+        projObj.ModifiedBy = task.Editor ? task.Editor.Title : '';
+        projObj.ModifiedDate = task.Modified;
+        projObj.ModifiedDateFormat = this.datePipe.transform(new Date(projObj.ModifiedDate), 'MMM dd yyyy hh:mm:ss aa');
         projObj.PrimaryPOC = task.PrimaryPOC;
         projObj.PrimaryPOCText = this.pmCommonService.extractNamefromPOC([projObj.PrimaryPOC]);
+        projObj.POC = projObj.PrimaryPOCText;
         projObj.AdditionalPOC = task.POC ? task.POC.split(';#') : [];
         projObj.AdditionalPOCText = this.pmCommonService.extractNamefromPOC(task.POC ? task.POC.split(';#') : []);
         projObj.ProjectFolder = task.ProjectFolder;
@@ -1514,6 +1521,7 @@ export class AllProjectsComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.ID = proj.hasOwnProperty('ID') ? proj.ID : 0;
     this.pmObject.addProject.ProjectAttributes.ProjectCode = proj.ProjectCode;
     this.pmObject.addProject.ProjectAttributes.ClientLegalEntity = proj.ClientLegalEntity;
+    this.pmObject.addProject.ProjectAttributes.Milestone = proj.Milestone;
     this.pmObject.addProject.ProjectAttributes.SubDivision = proj.SubDivision;
     this.pmObject.addProject.ProjectAttributes.BillingEntity = proj.BillingEntity;
     this.pmObject.addProject.ProjectAttributes.BilledBy = proj.ProjectType;
@@ -1595,7 +1603,10 @@ export class AllProjectsComponent implements OnInit {
         }
       }
     }
+
     this.projectViewDataArray.push(this.pmObject.addProject);
+    console.log('Test');
+    console.log(this.projectViewDataArray);
     this.pmObject.isProjectRightSideVisible = true;
   }
   goToAllocationPage(task) {
@@ -2226,6 +2237,8 @@ export class AllProjectsComponent implements OnInit {
 
     projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi,
       projectCode);
+
+      debugger
     const results = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInfoFilter);
     if (results && results.length) {
       this.pmObject.allProjectItems = results;

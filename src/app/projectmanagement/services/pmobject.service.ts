@@ -231,6 +231,7 @@ export class PMObjectService {
       PointOfContact1Text: '',
       PointOfContact2: [],
       PointOfContact2Text: '',
+      Milestone: '',
       Molecule: '',
       TherapeuticArea: '',
       Indication: '',

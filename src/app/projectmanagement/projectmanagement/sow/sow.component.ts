@@ -29,9 +29,25 @@ export class SOWComponent implements OnInit, OnDestroy {
     { field: 'ShortTitle', header: 'SOW Title', visibility: true },
     { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
     { field: 'POC', header: 'POC', visibility: true },
+    { field: 'Currency', header: 'Currency', visibility: true },
     { field: 'RevenueBudget', header: 'Revenue Budget', visibility: true },
     { field: 'OOPBudget', header: 'OOP Budget', visibility: true },
-    { field: 'Currency', header: 'Currency', visibility: true },
+    { field: 'TaxBudget', header: 'Tax Budget', visibility: false },
+    { field: 'TotalBudget', header: 'Total Budget', visibility: false },
+    { field: 'Revenue', header: 'Revenue Balance', visibility: false },
+    { field: 'OOP', header: 'OOP Balance', visibility: false },
+    { field: 'Tax', header: 'Tax Balance', visibility: false },
+    { field: 'Total', header: 'Total Balance', visibility: false },
+    { field: 'Status', header: 'Status', visibility: false },
+    { field: 'ExpiryDateFormat', header: 'ExpiryDate', visibility: false },
+    { field: 'BillingEntity', header: 'Billing Entity', visibility: false },
+    { field: 'BusinessVertical', header: 'Practice Areas', visibility: false },
+    { field: 'Comments', header: 'Comments', visibility: false },
+    { field: 'Owner', header: 'SOW Owner', visibility: false },
+    { field: 'CM1', header: 'CM1', visibility: false },
+    { field: 'CM2', header: 'CM2', visibility: false },
+    { field: 'Delivery1', header: 'Delivery1', visibility: false },
+    { field: 'Delivery2', header: 'Delivery2', visibility: false },
     { field: 'CreatedBy', header: 'Created By', visibility: false },
     { field: 'CreatedDate', header: 'Created Date', visibility: false, exportable: false },
     { field: 'CreatedDateFormat', header: 'Created Date', visibility: false },
@@ -270,6 +286,7 @@ export class SOWComponent implements OnInit, OnDestroy {
       const tempAllSOWArray = [];
       for (const task of this.pmObject.allSOWItems) {
         const sowObj = $.extend(true, {}, this.pmObject.allSOW);
+        debugger
         sowObj.ID = task.ID;
         sowObj.SOWCode = task.SOWCode;
         sowObj.ShortTitle = task.Title;
@@ -282,6 +299,18 @@ export class SOWComponent implements OnInit, OnDestroy {
         sowObj.POC = poc.length > 0 ? poc[0].FullName : '';
         sowObj.CreatedBy = task.Author ? task.Author.Title : '';
         sowObj.CreatedDate = task.Created;
+        sowObj.Comments = task.Comments;
+        sowObj.Status = task.Status;
+        sowObj.BusinessVertical = task.BusinessVertical ? task.BusinessVertical.replace(/;#/g, ',') : '';
+        sowObj.BillingEntity = task.BillingEntity;
+        sowObj.Owner = task.BD ? task.BD.Title : '';
+        sowObj.ExpiryDate = task.ExpiryDate;
+        sowObj.CM1 = task.CMLevel1 && task.CMLevel1.results ? task.CMLevel1.results.map(c => c.Title).toString() : '';
+        sowObj.CM2 = task.CMLevel2 ? task.CMLevel2.Title : '';
+        sowObj.Delivery1 = task.DeliveryLevel1 && task.DeliveryLevel1.results ?
+          task.DeliveryLevel1.results.map(c => c.Title).toString() : '';
+        sowObj.Delivery2 = task.DeliveryLevel2 ? task.DeliveryLevel2.Title : '';
+        sowObj.ExpiryDateFormat = this.datePipe.transform(new Date(sowObj.ExpiryDate), 'MMM dd yyyy hh:mm aa');
         sowObj.CreatedDateFormat = this.datePipe.transform(new Date(sowObj.CreatedDate), 'MMM dd yyyy hh:mm:ss aa');
         sowObj.ModifiedBy = task.Editor ? task.Editor.Title : '';
         sowObj.ModifiedDate = task.Modified;
@@ -299,6 +328,10 @@ export class SOWComponent implements OnInit, OnDestroy {
         sowObj.ScheduledRevenue = task.ScheduledRevenue ? task.ScheduledRevenue : 0;
         sowObj.TotalInvoiced = task.TotalInvoiced ? task.TotalInvoiced : 0;
         sowObj.InvoicedRevenue = task.InvoicedRevenue ? task.InvoicedRevenue : 0;
+        sowObj.Total = sowObj.TotalBudget - sowObj.TotalLinked;
+        sowObj.Revenue = sowObj.RevenueBudget - sowObj.RevenueLinked;
+        sowObj.OOP = sowObj.OOPBudget - sowObj.OOPLinked;
+        sowObj.Tax = sowObj.TaxBudget - sowObj.TaxLinked;
         sowObj.ClientLegalEntity = task.ClientLegalEntity;
         sowObj.Currency = task.Currency;
         sowCodeTempArray.push({ label: sowObj.SOWCode, value: sowObj.SOWCode });
