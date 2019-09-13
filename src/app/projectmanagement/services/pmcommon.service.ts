@@ -1679,4 +1679,22 @@ export class PMCommonService {
     console.log('batch length: ' + batchURL.length);
     return finalArray;
   }
+  customSort(data, order: number, fieldName?: string) {
+    data.sort((row1, row2) => {
+      const val1 = fieldName ? row1[fieldName] : row1;
+      const val2 = fieldName ? row2[fieldName] : row2;
+      if (val1 === val2) {
+        return 0;
+      }
+      let result = -1;
+      if (val1 > val2) {
+        result = 1;
+      }
+      if (order < 0) {
+        result = -result;
+      }
+      return result;
+    });
+    return data;
+  }
 }

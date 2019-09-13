@@ -103,6 +103,36 @@
     margin-bottom: 1%;
 }
 
+#modalInnerLoader {
+    border: 5px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 5px solid red;
+    border-bottom: 5px solid red;
+    width: 50px;
+    height: 50px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#modalInnerLoaderText {
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, "Helvetica", ""arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
+}
+
 .lastColumnWidth {
     width: 60px;
 }
@@ -124,11 +154,15 @@ body .ui-table .ui-table-tbody>tr>td {
     position: relative;
 }
 
+.ui-submenu-list {
+    left: -175px !important;
+}
+
 .allProjects-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div>i {
     top: 0px !important;
 }
 
-.allProjects-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+.allProjects-section .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-tieredmenu {
     top: 0px !important;
     left: inherit !important;
     right: 40px !important;

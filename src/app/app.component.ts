@@ -29,7 +29,7 @@ export class AppComponent {
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
 
 
-    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 44 : _spPageContextInfo.userId;
+    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 9 : _spPageContextInfo.userId;
 
 
     this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomm'

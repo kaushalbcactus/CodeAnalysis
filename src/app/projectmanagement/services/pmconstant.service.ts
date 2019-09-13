@@ -171,7 +171,7 @@ export class PmconstantService {
         + 'BillingEntity, AdditionalPOC, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
         + 'DeliveryLevel2/ID, DeliveryLevel2/Title, Currency, BD/ID, BD/Title,Editor/Title,Modified',
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
-      + 'DeliveryLevel1/ID, DeliveryLevel1/Title,Editor/Title,'
+        + 'DeliveryLevel1/ID, DeliveryLevel1/Title,Editor/Title,'
         + 'DeliveryLevel2/ID, DeliveryLevel2/Title, BD/ID, BD/Title',
       filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\')',
       orderby: 'Modified desc',
@@ -396,10 +396,14 @@ export class PmconstantService {
   };
   public FINANCE_QUERY = {
     GET_OOP: {
-      select: 'ID,Title,Amount, ClientAmount,Category,Currency,DollarAmount,FileURL,FiscalYear,Number,PayingEntity,PayingEntity',
+      select: 'ID,Title,Amount,ClientAmount,Category,Currency,DollarAmount,FileURL,FiscalYear,Number,' +
+        'PayingEntity,ClientCurrency,VendorFreelancer,RequestType,Status,SpendType,Editor/Title',
       filter: 'Title eq \'{{projectCode}}\' and Status eq \'{{status}}\'',
+      filterByProjectCode: 'Title eq \'{{projectCode}}\'',
+      expand: 'Editor/Title',
       top: 4900
     },
+
     GET_PO: {
       select: 'ID,Title, ClientLegalEntity, Currency, Number, Name, Amount, AmountOOP, AmountRevenue, AmountTax,POCategory,POExpiryDate,'
         + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked,TotalScheduled,ScheduledRevenue',
