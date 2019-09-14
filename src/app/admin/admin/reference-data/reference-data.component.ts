@@ -12,6 +12,7 @@ export class ReferenceDataComponent implements OnInit {
   vendorDetailsColumns = [];
   vendorDetailsRows = [];
   qmsTemplateColumns = [];
+  selectedValue: any;
   qmsTemplateRows = [];
   standardTemplateColumns = [];
   standardTemplateRows = [];
@@ -23,6 +24,8 @@ export class ReferenceDataComponent implements OnInit {
   auditHistoryQmsSelectedRows = [];
   auditHistoryStandardSelectedColumns = [];
   auditHistoryStandardSelectedRows = [];
+  recordTypes = [];
+  billingEntityData = [];
   vendorDetailsColArray = {
     VendorName: [],
     LastUpdated: [],
@@ -219,20 +222,20 @@ export class ReferenceDataComponent implements OnInit {
     // console.log(value);
     switch (value) {
       case 'Vendor Details':
-      this.isVendorDetailsVisible = true;
-      this.isQmsTemplateVisible = false;
-      this.isStandardTemplateVisible = false;
-      break;
+        this.isVendorDetailsVisible = true;
+        this.isQmsTemplateVisible = false;
+        this.isStandardTemplateVisible = false;
+        break;
       case 'QMS Template':
-      this.isVendorDetailsVisible = false;
-      this.isQmsTemplateVisible = true;
-      this.isStandardTemplateVisible = false;
-      break;
+        this.isVendorDetailsVisible = false;
+        this.isQmsTemplateVisible = true;
+        this.isStandardTemplateVisible = false;
+        break;
       case 'Standard Template':
-      this.isVendorDetailsVisible = false;
-      this.isQmsTemplateVisible = false;
-      this.isStandardTemplateVisible = true;
-      break;
+        this.isVendorDetailsVisible = false;
+        this.isQmsTemplateVisible = false;
+        this.isStandardTemplateVisible = true;
+        break;
     }
   }
 
@@ -281,9 +284,13 @@ export class ReferenceDataComponent implements OnInit {
     this.vendorDetailsColArray.VendorName = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.VendorName, value: a.VendorName }; return b; }));
     this.vendorDetailsColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
+        }; return b;
+      }));
     this.vendorDetailsColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
@@ -292,9 +299,13 @@ export class ReferenceDataComponent implements OnInit {
     this.qmsTemplateColArray.QmsTemplate = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.QmsTemplate, value: a.QmsTemplate }; return b; }));
     this.qmsTemplateColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
+        }; return b;
+      }));
     this.qmsTemplateColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
@@ -303,9 +314,13 @@ export class ReferenceDataComponent implements OnInit {
     this.standardTemplateColArray.StandardTemplate = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.StandardTemplate, value: a.StandardTemplate }; return b; }));
     this.standardTemplateColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
+        }; return b;
+      }));
     this.standardTemplateColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
@@ -316,9 +331,13 @@ export class ReferenceDataComponent implements OnInit {
     this.auditHistoryArray.ActionBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
     this.auditHistoryArray.Date = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
-      // tslint:disable-next-line: align
-      value: this.datepipe.transform(a.Date, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.Date, 'MMM d, yyyy')
+        }; return b;
+      }));
     this.auditHistoryArray.Details = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
 
@@ -330,9 +349,13 @@ export class ReferenceDataComponent implements OnInit {
     this.auditHistorySelectedArray.ActionBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
     this.auditHistorySelectedArray.Date = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.Date, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.Date, 'MMM d, yyyy')
+        }; return b;
+      }));
     this.auditHistorySelectedArray.Details = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
   }
@@ -343,9 +366,13 @@ export class ReferenceDataComponent implements OnInit {
     this.auditHistoryQmsSelectedArray.ActionBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
     this.auditHistoryQmsSelectedArray.Date = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.Date, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.Date, 'MMM d, yyyy')
+        }; return b;
+      }));
     this.auditHistoryQmsSelectedArray.Details = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
   }
@@ -356,9 +383,13 @@ export class ReferenceDataComponent implements OnInit {
     this.auditHistoryStandardSelectedArray.ActionBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
     this.auditHistoryStandardSelectedArray.Date = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
-       // tslint:disable-next-line: align
-       value: this.datepipe.transform(a.Date, 'MMM d, yyyy') }; return b; }));
+      colData.map(a => {
+        const b = {
+          label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
+          // tslint:disable-next-line: align
+          value: this.datepipe.transform(a.Date, 'MMM d, yyyy')
+        }; return b;
+      }));
     this.auditHistoryStandardSelectedArray.Details = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
   }
@@ -415,7 +446,9 @@ export class ReferenceDataComponent implements OnInit {
       }
     });
   }
-
+  onlyNumberKey(event) {
+    console.log(event);
+  }
   downloadExcel(rule) {
     // console.log(rule);
     rule.exportCSV();

@@ -1,6 +1,6 @@
 import { Component, NgZone } from '@angular/core';
 import { GlobalService } from './Services/global.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { environment } from '../environments/environment';
 // import { Environment } from '../environments/environment.prod';
 declare const _spPageContextInfo;
@@ -37,8 +37,11 @@ export class AppComponent {
     window['angularComponentReference'] = { component: this, zone: this._ngZone, loadPubSupport: () => this.goToPubSupport(), };
     // tslint:disable-next-line:no-string-literal
     window['fdComponentReference'] = { component: this, zone: this._ngZone, loadFD: () => this.goToFD(), };
+    // tslint:disable-next-line:no-string-literal
     window['pmComponentReference'] = { component: this, zone: this._ngZone, loadPM: () => this.goToPM(), };
+    // tslint:disable-next-line:no-string-literal
     window['myDashboardComponentReference'] = { component: this, zone: this._ngZone, loadMyDashboard: () => this.goToMyDashboard(), };
+    // tslint:disable-next-line:no-string-literal
     window['adminComponentReference'] = { component: this, zone: this._ngZone, loadAdmin: () => this.goToAdmin(), };
   }
 

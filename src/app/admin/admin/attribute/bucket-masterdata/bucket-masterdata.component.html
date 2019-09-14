@@ -124,7 +124,7 @@
   <p-header>
     List of Clients
   </p-header>
-  <p-table [columns]="cols" [value]="viewClientArray" [scrollable]="true" scrollHeight="400px">
+  <p-table [value]="viewClientArray" [scrollable]="true" scrollHeight="400px">
     <ng-template pTemplate="header" let-columns>
       <tr>
         <th class="width10Per">
@@ -151,7 +151,7 @@
   <p-header>
     Edit Client
   </p-header>
-  <p-table [columns]="cols" [value]="clientList" [(selection)]="selectedClient" dataKey="ID" [scrollable]="true"
+  <p-table  [value]="clientList" [(selection)]="selectedClient" dataKey="ID" [scrollable]="true"
     scrollHeight="400px">
     <ng-template pTemplate="header" let-columns>
       <tr>
