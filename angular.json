@@ -106,6 +106,10 @@
                             "buildOptimizer": true,
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/PM/"
                         },
+                        "devPM": {
+                            "outputHashing": "none",
+                            "deployUrl": "https://cactusglobal.sharepoint.com/sites/medcomdev/SiteAssets/CustomAssets/AngularModules/PM/"
+                        },
                         "qaPMDev": {
                             "outputHashing": "none",
                             "deployUrl": "https://cactusglobal.sharepoint.com/sites/medcomqa/SiteAssets/AngularModules/PM/"

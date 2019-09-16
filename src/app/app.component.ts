@@ -23,7 +23,7 @@ export class AppComponent {
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
     // tslint:disable-next-line: only-arrow-functions
-    if (environment.production) { if (window) { window.console.log = function() { }; } }
+    if (environment.production) { if (window) { window.console.log = function () { }; } }
     this.globalObject.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
     this.globalObject.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
@@ -42,13 +42,19 @@ export class AppComponent {
     window['angularComponentReference'] = { component: this, zone: this._ngZone, loadPubSupport: () => this.goToPubSupport(), };
     window['qmsComponentReference'] = { component: this, zone: this._ngZone, loadQMS: () => this.goToQMS(), };
     window['fdComponentReference'] = { component: this, zone: this._ngZone, loadFD: () => this.goToFD(), };
-     // tslint:disable-next-line: no-string-literal
+    // tslint:disable-next-line: no-string-literal
     window['pmComponentReference'] = { component: this, zone: this._ngZone, loadPM: () => this.goToPM(), };
-     // tslint:disable-next-line: no-string-literal
+    // tslint:disable-next-line: no-string-literal
     window['myDashboardComponentReference'] = { component: this, zone: this._ngZone, loadMyDashboard: () => this.goToMyDashboard(), };
     // tslint:disable-next-line: no-string-literal
-    window['taskAllocationComponentReference'] = { component: this, zone: this._ngZone,
-      loadTaskAllocation: () => this.goToTaskAllocation(), };
+    window['taskAllocationComponentReference'] = {
+      component: this, zone: this._ngZone,
+      loadTaskAllocation: () => this.goToTaskAllocation(),
+    };
+    window['accessLecelDashboardComponentReference'] = {
+      component: this, zone: this._ngZone,
+      loadAccessLevelDashboard: () => this.goToAccessLevelDashboard(),
+    };
 
 
   }
@@ -86,18 +92,26 @@ export class AppComponent {
     }
   }
 
+  goToAccessLevelDashboard() {
+    if (!window.location.href.includes('accessleveldashboard')) {
+      this.router.navigate(['/accessleveldashboard']);
+    }
+
+  }
+
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnDestroy() {
     // tslint:disable-next-line:no-string-literal
     window['angularComponentReference'] = null;
-     // tslint:disable-next-line: no-string-literal
+    // tslint:disable-next-line: no-string-literal
     window['fdComponentReference'] = null;
-     // tslint:disable-next-line: no-string-literal
+    // tslint:disable-next-line: no-string-literal
     window['pmComponentReference'] = null;
-     // tslint:disable-next-line: no-string-literal
+    // tslint:disable-next-line: no-string-literal
     window['myDashboardComponentReference'] = null;
-     // tslint:disable-next-line: no-string-literal
+    // tslint:disable-next-line: no-string-literal
     window['taskAllocationComponentReference'] = null;
     window['qmsComponentReference'] = null;
+    window['accessLecelDashboardComponentReference'] = null;
   }
 }
