@@ -177,6 +177,7 @@ export class ManageFinanceComponent implements OnInit {
     this.reInitializePopup();
   }
   reInitializePopup() {
+    this.poList = [];
     this.pmObject.addProject.FinanceManagement.POListArray = [];
     this.pmObject.addProject.FinanceManagement.POArray = [];
     this.pmObject.addProject.FinanceManagement.BudgetArray = [];
@@ -375,9 +376,9 @@ export class ManageFinanceComponent implements OnInit {
 
   async reduceBudget() {
     if (this.selectedReason && this.selectedReasonType && this.newBudgetHrs) {
-  
+
       if (this.budgetData[0].budget_hours === this.newBudgetHrs &&
-         this.selectedReasonType !== this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.INPUT_ERROR ) {
+        this.selectedReasonType !== this.pmConstant.PROJECT_BUDGET_DECREASE_REASON.INPUT_ERROR) {
         this.messageService.add({
           key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
           detail: 'New and old budget hours cant be same.'
@@ -1110,7 +1111,7 @@ export class ManageFinanceComponent implements OnInit {
     const last3Days = this.commonService.getLastWorkingDay(3, new Date());
 
     if (invoice.date >= last3Days && invoice.date < lastDay && invoice.amount > 0 &&
-       POObj.POCategory !== 'Client PO Pending' && new Date(POObj.POExpiryDate) >= new Date()) {
+      POObj.POCategory !== 'Client PO Pending' && new Date(POObj.POExpiryDate) >= new Date()) {
       return true;
     } else {
       return false;
