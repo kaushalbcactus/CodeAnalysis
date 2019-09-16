@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { Component, OnInit, NgZone, ViewEncapsulation, OnDestroy, ViewChild } from '@angular/core';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
@@ -10,6 +10,7 @@ import { PMCommonService } from '../services/pmcommon.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
+import { SOWComponent } from './sow/sow.component';
 @Component({
   selector: 'app-projectmanagement',
   templateUrl: './projectmanagement.component.html',
@@ -600,7 +601,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     });
     objEmailBody.push({
       key: '@@NewTotalBudget@@',
-      value: sowObj.Budget.Total + sowObj.Addendum.TotalBudget
+      value: parseFloat((sowObj.Budget.Total + sowObj.Addendum.TotalBudget).toFixed(2))
     });
 
     objEmailBody.push({
@@ -613,7 +614,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     });
     objEmailBody.push({
       key: '@@NewNetBudget@@',
-      value: sowObj.Budget.Net + sowObj.Addendum.NetBudget
+      value: parseFloat((sowObj.Budget.Net + sowObj.Addendum.NetBudget).toFixed(2))
     });
 
     objEmailBody.push({
@@ -626,7 +627,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     });
     objEmailBody.push({
       key: '@@NewOOPBudget@@',
-      value: sowObj.Budget.OOP + sowObj.Addendum.OOPBudget
+      value: parseFloat((sowObj.Budget.OOP + sowObj.Addendum.OOPBudget).toFixed(2))
     });
 
     objEmailBody.push({
@@ -639,7 +640,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     });
     objEmailBody.push({
       key: '@@NewTaxBudget@@',
-      value: sowObj.Budget.Tax + sowObj.Addendum.TaxBudget
+      value: parseFloat((sowObj.Budget.Tax + sowObj.Addendum.TaxBudget).toFixed(2))
     });
     let arrayTo = [];
     let tempArray = [];
@@ -653,6 +654,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * @param sowObj The parameter shoudl be SOW list object.
    */
   async addUpdateSOW(sowObj) {
+    debugger;
     if (!sowObj.ID) { // Create SOW
       const sowInfoOptions = this.getSOWDataObj(sowObj);
       await this.spServices.createItem(this.constant.listNames.SOW.name, sowInfoOptions, this.constant.listNames.SOW.type);
@@ -848,19 +850,23 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.addAdditionalBudgetForm.reset();
     this.pmObject.isSOWFormSubmit = false;
     this.pmObject.isAdditionalBudgetVisible = false;
-
+    
+    if (this.router.url === '/projectMgmt/allSOW') {
+      this.dataService.publish('reload-EditSOW');
+    }
   }
   /**
    * This method is used to add sow total.
    */
   setAddSOWTotal() {
+
     this.pmObject.addSOW.Additonal.NetBudget = this.addAdditionalBudgetForm.value.addNet;
     this.pmObject.addSOW.Additonal.OOPBudget = this.addAdditionalBudgetForm.value.addOOP ? this.addAdditionalBudgetForm.value.addOOP : 0;
     this.pmObject.addSOW.Additonal.TaxBudget = this.addAdditionalBudgetForm.value.addTax ? this.addAdditionalBudgetForm.value.addTax : 0;
 
     const AddBudgets = this.pmObject.addSOW.Additonal.NetBudget +
       this.pmObject.addSOW.Additonal.OOPBudget + this.pmObject.addSOW.Additonal.TaxBudget;
-    this.addAdditionalBudgetForm.get('addTotal').setValue(AddBudgets.toFixed(2));
+    this.addAdditionalBudgetForm.get('addTotal').setValue(parseFloat(AddBudgets.toFixed(2)));
   }
   /**
    * This method is used to add additional budget.
@@ -877,7 +883,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         });
         return;
       }
-
       this.pmObject.isMainLoaderHidden = false;
       const d = new Date();
       const today = this.pmService.toISODateString(d);
@@ -1026,7 +1031,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.pmObject.addSOW.isStatusDisabled = false;
       this.pmObject.addSOW.ID = currSelectedSOW.ID;
       this.sowHeader = 'Edit SOW';
-      this.sowButton = 'Edit SOW';
+      this.sowButton = 'Update SOW';
       this.setFieldProperties();
       this.pmObject.isAddSOWVisible = true;
       this.pmObject.isSOWFormSubmit = false;
