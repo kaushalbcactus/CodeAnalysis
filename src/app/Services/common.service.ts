@@ -431,8 +431,8 @@ export class CommonService {
     async checkTaskStatus(task) {
         const currentTask = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
         let isActionRequired: boolean;
-        if (currentTask && currentTask.length) {
-            if (currentTask[0].Status === 'Completed' || currentTask[0].Status === 'Closed' || currentTask[0].Status === 'Auto Closed') {
+        if (currentTask) {
+            if (currentTask.Status === 'Completed' || currentTask.Status === 'Closed' || currentTask.Status === 'Auto Closed') {
                 isActionRequired = false;
             } else {
                 isActionRequired = true;
