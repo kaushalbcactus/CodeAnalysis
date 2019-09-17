@@ -557,8 +557,8 @@ export class SOWComponent implements OnInit, OnDestroy {
     }
     this.loaderenable = false;
     this.viewBudget = true;
-    this.totalRevenueBudget = AllArrayObj.map(c => c.RevenueBudget).reduce((a, b) => a + b, 0);
-    this.totalOOPBudget = AllArrayObj.map(c => c.OOPBudget).reduce((a, b) => a + b, 0);
+    this.totalRevenueBudget = parseFloat(AllArrayObj.map(c => c.RevenueBudget).reduce((a, b) => a + b, 0).toFixed(2));
+    this.totalOOPBudget = parseFloat(AllArrayObj.map(c => c.OOPBudget).reduce((a, b) => a + b, 0).toFixed(2));
 
   }
 

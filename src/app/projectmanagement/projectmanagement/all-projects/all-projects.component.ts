@@ -4,7 +4,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem, MessageService, DialogService, SelectItem, ConfirmationService } from 'primeng/api';
+import { MenuItem, MessageService, DialogService, SelectItem, ConfirmationService, SortEvent } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 // import { CommunicationComponent } from '../communication/communication.component';
@@ -732,7 +732,7 @@ export class AllProjectsComponent implements OnInit {
         case this.constants.projectStatus.ReadyForClient:
         case this.constants.projectStatus.OnHold:
         case this.constants.projectStatus.AuthorReview:
-          menu.model[0].items[1].visible = false;
+          menu.model[0].items[0].visible = false;
           menu.model[0].items[2].visible = false;
           menu.model[0].items[3].visible = false;
           break;
@@ -1479,7 +1479,7 @@ export class AllProjectsComponent implements OnInit {
                 type: this.constants.listNames.Schedules.type
               },
               Status: this.constants.STATUS.AUTO_CLOSED,
-              ActiveCA:'No'
+              ActiveCA: 'No'
             };
             const invoiceUpdate = Object.assign({}, options);
             invoiceUpdate.data = scheduleData;
@@ -1886,7 +1886,7 @@ export class AllProjectsComponent implements OnInit {
       this.projectExpenses.push({
         Category: element.Category,
         ExpenseType: element.SpendType,
-        ClientAmount: parseFloat(element.ClientAmount ? element.ClientAmount : 0).toFixed(2),
+        ClientAmount: element.ClientAmount ? parseFloat(parseFloat(element.ClientAmount).toFixed(2)) : 0,
         ClientCurrency: element.ClientCurrency,
         ModifiedBy: element.Editor ? element.Editor.Title : '',
         Modified: new Date(this.datePipe.transform(element.Modified, 'MMM dd, yyyy')),
@@ -1937,6 +1937,27 @@ export class AllProjectsComponent implements OnInit {
   }
 
 
+  customSort(event: SortEvent) {
+
+    event.data.sort((data1, data2) => {
+      const value1 = data1[event.field];
+      const value2 = data2[event.field];
+      let result = null;
+
+      if (value1 == null && value2 != null) {
+        result = -1;
+      } else if (value1 != null && value2 == null) {
+        result = 1;
+      } else if (value1 == null && value2 == null) {
+        result = 0;
+      } else if (typeof value1 === 'string' && typeof value2 === 'string') {
+        result = value1.localeCompare(value2);
+      } else {
+        result = (value1 < value2) ? -1 : (value1 > value2) ? 1 : 0;
+      }
+      return (event.order * result);
+    });
+  }
 
   async getExpanseByProjectCode(projectCode) {
 
@@ -2240,7 +2261,7 @@ export class AllProjectsComponent implements OnInit {
     projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi,
       projectCode);
 
-      debugger
+    debugger
     const results = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInfoFilter);
     if (results && results.length) {
       this.pmObject.allProjectItems = results;

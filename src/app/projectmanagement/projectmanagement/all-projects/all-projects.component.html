@@ -416,7 +416,7 @@
         <div id="modalInnerLoader"></div>
         <div id="modalInnerLoaderText">Loading...</div>
     </div>
-    <p-table #dt2 *ngIf="!expensedataloaderEnable" [columns]="ExpenseCols" [value]="projectExpenses" [paginator]="true" [rows]="10" [style]="{'font-size':'13px'}">
+    <p-table #dt2 *ngIf="!expensedataloaderEnable" [columns]="ExpenseCols" [value]="projectExpenses" [paginator]="true" [rows]="10" [style]="{'font-size':'13px'}" (sortFunction)="customSort($event)" [customSort]="true">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th style="width: 4em;">S.No</th>
