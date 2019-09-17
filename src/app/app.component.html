@@ -1,2 +1,6 @@
 <!-- <a routerLink="dashboard">Dashboard</a> -->
+<div class="tableLoader" [hidden]='constantsService.loader.isPSInnerLoaderHidden'>
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
 <router-outlet></router-outlet>

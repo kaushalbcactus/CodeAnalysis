@@ -104,6 +104,10 @@
         </ng-template>
     </p-table>
 </div>
+
+<div *ngIf="rejectExpenses.length == 0" style="color:red;text-align: center;padding-top: 20px;">
+    No data available.
+</div>
 <!-- Right Side Bar -->
 <p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
     <ng-container *ngIf="rightSideBar">

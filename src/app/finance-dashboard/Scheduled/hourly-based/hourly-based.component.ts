@@ -639,7 +639,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     pcmLevels: any = [];
     updateRequiredItems() {
         if (new Date(this.poLookupDataObj.ExpiryDate) < (new Date())) {
-            this.messageService.add({ key: 'bottomCenter', severity: 'info', summary: 'PO is expired.', detail: '', life: 4000 })
+            this.messageService.add({ key: 'hourlyInfoToast', severity: 'info', summary: 'Info message', detail: 'PO is expired.', life: 4000 })
             this.isPSInnerLoaderHidden = true;
             return;
         }
@@ -784,7 +784,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
                 this.submitForm(data, 'confirmInvoice');
             } else {
-                this.messageService.add({ key: 'bottomCenter', severity: 'info', summary: 'Project budget cannot be more than SOW available budget or PO available budget.', detail: '', life: 4000 })
+                this.messageService.add({ key: 'hourlyInfoToast', severity: 'info', summary: 'Info message', detail: 'Project budget cannot be more than SOW available budget or PO available budget.', life: 4000 })
                 this.isPSInnerLoaderHidden = true;
                 this.confirmationModal = false;
                 this.formSubmit.isSubmit = false;
@@ -897,11 +897,11 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         const arrResults = res;
         console.log('--oo ', arrResults);
         if (type === "confirmInvoice") {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice is Confirmed.', detail: '', life: 2000 });
+            this.messageService.add({ key: 'hourlySuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000 });
             // this.cancelFormSub('confirmationModal');
             this.sendConfirmInvoiceMail();
         } else if (type === "editInvoice") {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Updated.', detail: '', life: 2000 });
+            this.messageService.add({ key: 'hourlySuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice Updated.', life: 2000 });
             this.cancelFormSub('editInvoice');
             this.reFetchData('edit');
         }

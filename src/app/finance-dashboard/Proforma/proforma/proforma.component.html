@@ -17,9 +17,6 @@
         </div>
     </div>
     <div style="clear: both;"></div>
-    <!-- <div class="p-col-12 p-md-6 p-lg-3 f-right">
-           
-        </div> -->
 </div>
 
 <!-- <button (click)="checkSelectedRowData()">Check Data</button> -->
@@ -109,7 +106,9 @@
 <!-- Context Menu End -->
 
 <!-- Toast Messages -->
-<p-toast position="bottom-right" key="myKey1"></p-toast>
+<p-toast position="bottom-center" key="proformaInfoToast"></p-toast>
+<p-toast position="bottom-center" key="proformaSuccessToast"></p-toast>
+<p-toast position="bottom-center" key="myKey1"></p-toast>
 <!-- Toast Message End -->
 
 <!-- Confirmation -->
@@ -212,7 +211,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <input id="disabled-input" type="text" (keypress)="onlyNumberKey($event)" pInputText formControlName="Amount" maxlength="15" (input)="enteredPOAmt($event.target.value)" />
+                    <input id="disabled-input" type="text" appNumberOnly pInputText formControlName="Amount" maxlength="15" (input)="enteredPOAmt($event.target.value)" />
                 </div>
                 <div *ngIf="formSubmit.isSubmit && isValidCreateProformaForm.Amount.errors">
                     <div *ngIf="isValidCreateProformaForm.Amount.errors.required" style="color:red;">Please provide Amount.</div>

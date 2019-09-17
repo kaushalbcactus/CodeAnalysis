@@ -12,6 +12,7 @@ import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
 import { Subject, Observable, timer, Subscription } from 'rxjs';
+import { FdAuthService } from '../fd-AuthGuard/fd-auth.service';
 
 @Component({
     selector: 'app-expenditure',
@@ -40,7 +41,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     recordTypes: any = [];
     expenseTypeArray: any = [];
     selectedExpenseType: any = {};
-    minimumDate = new Date();
+    minimumDate: Date;
 
     rangeDates: Date[];
     // Currency DD
@@ -54,9 +55,11 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     // MenuList
     expenditureMenuList: any = [];
     // hideDatesSectiuon: boolean = false;
-    
+
 
     @ViewChild("target", { static: true }) MyProp: ElementRef;
+    @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
+    @ViewChild('caFileInput', { static: false }) caFileInput: ElementRef;
 
     everysec$: Observable<number> = timer(0, 1000);
 
@@ -64,7 +67,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
 
     constructor(
-        private messageService: MessageService,
+        public messageService: MessageService,
         private fb: FormBuilder,
         private spServices: SPOperationService,
         private constantService: ConstantsService,
@@ -110,7 +113,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
         this.recordTypes = [
             { label: 'Freelancer', value: 'Freelancer' },
-            { label: 'Vendor', value: 'Vendor' }
+            { label: 'Vendor', value: 'Vendor' },
+            { label: 'Contractor', value: 'Contractor' },
         ];
 
         this.expenseTypeArray = [
@@ -235,6 +239,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             ContractEndDate: [''],
             BillingTerms: ['', Validators.required],
             WLA: ['', Validators.required],
+            NDA: ['', Validators.required],
             // File: new FormControl('', Validators.required),
         })
     }
@@ -274,21 +279,29 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             console.log('startDate ' + startDate + ' endDate' + endDate)
         }
     }
-
+    cleList: any = {};
     selectedBillable() {
-        if (this.addExpenditure_form.value.Billable === 'Yes') {
-            this.addExpenditure_form.removeControl('ExpenseOn');
-            this.addExpenditure_form.removeControl('ClientLegalEntity');
-            this.addExpenditure_form.addControl('PO', new FormControl('', Validators.required));
-        } else if (this.addExpenditure_form.value.Billable === 'No') {
-            this.addExpenditure_form.get('ProjectCode').setValue('');
-            this.expenditureFormField();
-            console.log(this.addExpenditure_form.value.ProjectCode);
-            this.addExpenditure_form.addControl('ExpenseOn', new FormControl('', Validators.required));
-            this.addExpenditure_form.addControl('ClientLegalEntity', new FormControl('', Validators.required));
-            this.addExpenditure_form.removeControl('PO');
+        if (this.addExpenditure_form.value.Billable === 'Billable') {
+            if (this.isPICleEmpty(this.piCleData[1])) {
+                this.cleList = this.piCleData[1];
+                this.piCleData[1] = {};
+            }
+        } else if (this.addExpenditure_form.value.Billable === 'Non Billable') {
+            if (this.cleList.hasOwnProperty('label')) {
+                this.piCleData[1] = this.cleList;
+            }
         }
     }
+
+    isPICleEmpty(obj) {
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key))
+                return true;
+        }
+        return false;
+    }
+
+
     selectedRequest() {
         console.log('selected Request ', this.addExpenditure_form.value.PaymentRequest);
         if (this.addExpenditure_form.value.PaymentRequest === 'Credit Card') {
@@ -303,15 +316,11 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     // Initialize methods
     async initialize() {
-
         // For Mail
         this.currentUserInfoData = await this.fdDataShareServie.getCurrentUserInfo();
         console.log('this.currentUserInfoData  ', this.currentUserInfoData);
         this.groupInfo = await this.fdDataShareServie.getGroupInfo();
-        console.log('this.groupInfo  ', this.groupInfo);
         this.groupITInfo = await this.fdDataShareServie.getITInfo();
-        console.log('this.groupITInfo  ', this.groupITInfo);
-
         this.getVendorFreelanceData();
         await this.getMailContent();
         this.showHideREModal = true;
@@ -320,30 +329,17 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     requestExpense() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         this.initialize();
-
         this.biilingEntityInfo();
         this.projectInfo();
         this.resourceCInfo();
         // Empty Selected Project & Client Array before push
         // this.eventsSubject.next()
         this.selectedPCArrays = [{ ProjectCode: '' }];
-
-
         this.cleInfo();
         this.brmInfo();
         this.gropDDData();
-        // VFData & BRM
-
-        // Empty 
         this.cmLevelIdList = [];
-
     }
-
-    // scroll(el: HTMLElement) {
-    //     this.showHideREModal = true;
-    //     this.MyProp.nativeElement.scrollIntoView({ behavior: "smooth", block: "start" });
-
-    // }
 
     freeLancerModal: boolean = false;
     openFreelancerModal() {
@@ -370,15 +366,13 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         batchContents.push('--batch_' + batchGuid + '--');
         userBatchBody = batchContents.join('\r\n');
         let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        // console.log('REs in Outstanding Invoice ', res);
+        const res = await this.spServices.getFDData(batchGuid, userBatchBody);
         arrResults = res;
         if (arrResults.length) {
             // console.log(arrResults);
             this.freelancerVendersRes = arrResults[0];
             console.log('this.freelancerVendersRes ', this.freelancerVendersRes);
         }
-        // });
     }
 
     piCleData: any = [];
@@ -461,7 +455,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             this.selectedPCArrays.push({ ProjectCode: '' });
             console.log('this.totalLineItems ', this.totalLineItems);
         } else {
-            this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Your entered amount is equal to actual Amount. So you  cant asign further amount.', detail: '', life: 2000 });
+            this.messageService.add({ key: 'expenseInfoToast', severity: 'info', summary: 'Info message', detail: 'Your entered amount is equal to actual Amount. So you  cant asign further amount.', life: 2000 });
         }
     }
 
@@ -473,7 +467,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         if (found) {
             // console.log('this.totalLineItems ', this.totalLineItems);
             // console.log('this.selectedPCArrays ', this.selectedPCArrays);
-            this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'You have already selected this project/client please select another one.', detail: '', life: 4000 });
+            this.messageService.add({ key: 'expenseInfoToast', severity: 'info', summary: 'Info message', detail: 'You have already selected this project/client please select another one.', life: 4000 });
             this.totalLineItems[index] = {};
             this.selectedPCArrays[index].ProjectCode = '';
 
@@ -544,7 +538,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         if (arrResults.length) {
             console.log(arrResults[0]);
             if (!arrResults[0].length) {
-                this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Currency not found for selected project / client.', detail: '', life: 4000 });
+                this.messageService.add({ key: 'expenseInfoToast', severity: 'info', summary: 'Info message', detail: 'Currency not found for selected project / client.', life: 4000 });
                 this.totalLineItems[index] = {};
                 this.selectedPCArrays[index].ProjectCode = '';
                 this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
@@ -614,7 +608,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             this.addSts = false;
             val = 0;
             // this.totalLineItems[index].AmountPerProject = '';
-            this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Your entered amount greater than actual Amount.', detail: '', life: 4000 });
+            this.messageService.add({ key: 'expenseInfoToast', severity: 'info', summary: 'Info message', detail: 'Your entered amount greater than actual Amount.', life: 4000 });
             let obj: any = this.totalLineItems[index];
             obj.AmountPerProject = val;
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
@@ -682,6 +676,20 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         return found ? true : false;
     }
 
+    contractSDate() {
+        if (this.createFreelancer_form.value.ContractStartDate) {
+            this.minimumDate = new Date(this.datePipe.transform(this.createFreelancer_form.value.ContractStartDate, "M dd, yy"));
+            this.minimumDate.setDate(this.minimumDate.getDate() + 1);
+        }
+    }
+
+    contractEDate() {
+        if (!this.createFreelancer_form.value.ContractStartDate) {
+            this.messageService.add({ key: 'expenseErrorToast', severity: 'error', summary: 'Error message', detail: 'Please select Contract start date first & try again.', life: 3000 });
+            this.createFreelancer_form.get('ContractEndDate').setValue('');
+        }
+    }
+
     finalAddEArray: any = [];
     projectClientIsEmpty: boolean = false;
     onSubmit(type: string) {
@@ -701,7 +709,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
         } else if (type === 'createFreelancer') {
             this.formSubmit.isSubmit = true;
-            if (this.createFreelancer_form.invalid || this.isUniqueClientVendorEmailID()) {
+            if (this.createFreelancer_form.invalid || this.cvEmailIdFound) {
                 return;
             }
             this.submitBtn.isClicked = true;
@@ -711,8 +719,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             this.createFreelancer_form.get('RecordType').setValue(this.createFreelancer_form.value.RecordType.value);
             this.createFreelancer_form.value["__metadata"] = { type: 'SP.Data.VendorFreelancerListItem' };
             const endpoint = this.fdConstantsService.fdComponent.addUpdateFreelancer.create;
-            let formValue : any =  this.createFreelancer_form.value;
-            if(!formValue.ContractEndDate) {
+            let formValue: any = this.createFreelancer_form.value;
+            if (!formValue.ContractEndDate) {
                 formValue.ContractEndDate = null;
             }
             let data = [
@@ -801,6 +809,14 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
             this.selectedFile = event.target.files[0];
+            const fileName = this.selectedFile.name;
+            const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+            if (fileName !== sNewFileName) {
+                this.fileInput.nativeElement.value = '';
+                this.addExpenditure_form.get('FileURL').setValue('');
+                this.messageService.add({ key: 'expenseSuccessToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+                return false;
+            }
             this.fileReader.readAsArrayBuffer(this.selectedFile);
             this.fileReader.onload = () => {
                 console.log('selectedFile ', this.selectedFile);
@@ -837,62 +853,51 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         this.cafileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
             this.selectedCAFile = event.target.files[0];
+            const fileName = this.selectedCAFile.name;
+            const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+            if (fileName !== sNewFileName) {
+                this.caFileInput.nativeElement.value = '';
+                this.addExpenditure_form.get('CAFileURL').setValue('');
+                this.messageService.add({ key: 'expenseSuccessToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+                return false;
+            }
             this.cafileReader.readAsArrayBuffer(this.selectedCAFile);
             this.cafileReader.onload = () => {
-                console.log('selectedCAFile ', this.selectedCAFile);
-                console.log('this.cafileReader  ', this.cafileReader.result);
                 let date = new Date();
-
                 let folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
-
                 this.cafilePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl(" + "'" + folderPath + "'" + ")/Files/add(url=@TargetFileName,overwrite='true')?" + "&@TargetFileName='" + this.selectedCAFile.name + "'";
-                // this.uploadCAFileData();
-                // this.nodeService.uploadFIle(this.cafilePathUrl, this.cafileReader.result).subscribe(res => {
-                //     console.log('selectedCAFile uploaded .', res);
-                // })
             };
-
         }
     }
 
     async uploadCAFileData() {
         const res = await this.spServices.uploadFile(this.cafilePathUrl, this.cafileReader.result);
-        console.log('selected File uploaded .', res.ServerRelativeUrl);
         this.caFileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
-        console.log('this.caFileUploadedUrl ', this.caFileUploadedUrl);
         if (this.caFileUploadedUrl) {
             this.submitExpediture();
         }
     }
 
-
-
     batchContents: any = [];
     async submitForm(dataEndpointArray, type: string) {
-        console.log('Form is submitting');
-
         this.batchContents = [];
         const batchGuid = this.spServices.generateUUID();
         const changeSetId = this.spServices.generateUUID();
-
         // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        console.log(' dataEndpointArray ', dataEndpointArray);
         dataEndpointArray.forEach(element => {
             if (element)
                 this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
         });
-
-        console.log("this.batchContents ", JSON.stringify(this.batchContents));
-
         this.batchContents.push('--changeset_' + changeSetId + '--');
         const batchBody = this.batchContents.join('\r\n');
         const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
         batchBodyContent.push('--batch_' + batchGuid + '--');
         const sBatchData = batchBodyContent.join('\r\n');
         const res = await this.spServices.getFDData(batchGuid, sBatchData);
+        // const res = await this.spServices.executeBatch(dataEndpointArray);
         console.log('res ', res);
         if (type === "addExpenditure") {
-            this.messageService.add({ key: 'fdToast', severity: 'success', summary: 'Success.', detail: '', life: 2000 });
+            this.messageService.add({ key: 'expenseSuccessToast', severity: 'success', summary: 'Success message', detail: 'Expense created.', life: 2000 });
             this.showHideREModal = false;
             for (let k = 0; k < res.length; k++) {
                 const element = res[k];
@@ -900,7 +905,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             }
 
         } else if (type === "createFreelancer") {
-            this.messageService.add({ key: 'fdToast', severity: 'success', summary: 'Submitted.', detail: '', life: 2000 })
+            this.messageService.add({ key: 'expenseSuccessToast', severity: 'success', summary: 'Success message', detail: this.createFreelancer_form.value.RecordType + ' created.', life: 3000 })
             this.cancelFormSub(type);
             this.getVendorFreelanceData();
         }
@@ -1037,7 +1042,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     // Tab Action
     onExpenditureTabs(event) {
-        // this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Tab Expanded' });
+        // this.messageService.add({ key: 'expenseInfoToast', severity: 'info', summary: 'Tab Expanded' });
         console.log('Expenditure Tabs event ', event);
         if (event.index === 0) {
             // this.loadComponent('pec');
@@ -1051,6 +1056,13 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         } else if (event.index === 3) {
             // this.loadComponent('abc');
             this.router.navigate(['/financeDashboard/expenditure/approvedBillable']);
+        }
+    }
+
+    ngAfterContentInit() {
+        if (this.constantService.userPermission.userPermissionMsg) {
+            this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Info message', detail: 'You don\'t have access.Please contact admin.', life: 5000 });
+            this.constantService.userPermission.userPermissionMsg = false;
         }
     }
 

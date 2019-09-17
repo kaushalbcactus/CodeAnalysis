@@ -1,6 +1,7 @@
 import { Component, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../environments/environment';
+import { ConstantsService } from './Services/constants.service';
 import { GlobalService } from './Services/global.service';
 // import { Environment } from '../environments/environment.prod';
 declare const _spPageContextInfo;
@@ -19,10 +20,13 @@ export class AppComponent {
     private router: Router,
     // tslint:disable-next-line: variable-name
     private _ngZone: NgZone,
+    public pubsupportService: PubsuportConstantsService,
+    public constantsService: ConstantsService
   ) { }
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
     // tslint:disable-next-line: only-arrow-functions
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
     if (environment.production) { if (window) { window.console.log = function() { }; } }
     this.globalService.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
     this.globalService.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1

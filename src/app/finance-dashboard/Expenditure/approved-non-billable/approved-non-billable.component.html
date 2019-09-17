@@ -7,7 +7,7 @@
     <div class="p-col-12 p-md-12 p-lg-12 f-right">
         <div style="display: -webkit-inline-box;">
 
-            <div class="box" style="margin-right: 20px">
+            <div class="box" style="margin-right: 20px" *ngIf="constantService.userPermission.isFDUserAdmin">
                 <button pButton type="button" type="button" label="Mark As Payment" class="ui-button-raised"
                     (click)="openPopup('markAsPaymentModal')" style="float:left"></button>
             </div>
@@ -116,6 +116,10 @@
     </p-table>
 </div>
 
+<div *ngIf="approvedNonBillableRes.length == 0" style="color:red;text-align: center;padding-top: 20px;">
+    No data available.
+</div>
+
 <!-- Right Side Bar -->
 <p-sidebar [(visible)]="rightSideBar" position="right" [style]="{overflow:'auto'}" styleClass="ui-sidebar-md">
     <ng-container *ngIf="rightSideBar">
@@ -166,7 +170,7 @@
                 </div>
             </div>
         </div>
-        <div class="ui-g">
+        <!-- <div class="ui-g">
             <div class="ui-g-4">Notes</div>
             <div class="ui-g-6">
                 <textarea [rows]="4" [cols]="30" pInputTextarea autoResize="autoResize"
@@ -176,7 +180,7 @@
                         provide Note.</div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="ui-g">
             <div class="ui-g-4">Upload File</div>
             <div class="ui-g-6">

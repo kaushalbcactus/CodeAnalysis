@@ -118,8 +118,8 @@
 
 
 <!-- Toast Messages -->
-<p-toast position="bottom-right" key="myKey1"></p-toast>
-<p-toast position="bottom-center" key="bottomCenter"></p-toast>
+<p-toast position="bottom-center" key="hourlySuccessToast"></p-toast>
+<p-toast position="bottom-center" key="hourlyInfoToast"></p-toast>
 <!-- Toast Message End -->
 
 <!-- Confirmation Hourly Based -->
@@ -205,7 +205,7 @@
             </div>
             <div class="ui-g-6">Hours Spent</div>
             <div class="ui-g-6">
-                <input type="text" pInputText formControlName="HoursSpent" (keypress)="onlyNumberKey($event)"
+                <input type="text" pInputText formControlName="HoursSpent" appNumberOnly
                     maxlength="15" />
                 <div *ngIf="formSubmit.isSubmit && isValidEdithourlyForm.HoursSpent.errors">
                     <div *ngIf="isValidEdithourlyForm.HoursSpent.errors.required" style="color:red;">Please

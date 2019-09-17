@@ -6,10 +6,10 @@
 <div class="p-grid">
     <div class="p-col-12 p-md-12 p-lg-12 f-right">
         <div style="display: -webkit-inline-box;">
-            <div *ngIf="showApproveReject" class="box" style="margin-right: 20px">
+            <div *ngIf="constantService.userPermission.isFDUserAdmin" class="box" style="margin-right: 20px">
                 <button type="button" pButton label="Approve Expense" (click)="approveExpense('approve')"></button>
             </div>
-            <div *ngIf="showApproveReject" class="box" style="margin-right: 20px">
+            <div *ngIf="constantService.userPermission.isFDUserAdmin" class="box" style="margin-right: 20px">
                 <button type="button" pButton label="Reject Expense" (click)="approveExpense('reject')"></button>
             </div>
             <div class="box">
@@ -22,9 +22,9 @@
     <div style="clear: both;"></div>
 </div>
 <div class="financeTable">
-    <p-table #dt2 [columns]="pendingExpeseCols" [value]="pendingExpenses"  [paginator]="true"
-        [rows]="10" exportFilename="Pending_Expenses" (onRowSelect)="onRowSelect($event)"
-        (onRowUnselect)="onRowUnselect($event)" selectionMode="" [(selection)]="selectedAllRowsItem">
+    <p-table #dt2 [columns]="pendingExpeseCols" [value]="pendingExpenses" [paginator]="true" [rows]="10"
+        exportFilename="Pending_Expenses" (onRowSelect)="onRowSelect($event)" (onRowUnselect)="onRowUnselect($event)"
+        selectionMode="" [(selection)]="selectedAllRowsItem">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th style="width: 4em;">S.No</th>
@@ -44,64 +44,64 @@
                 <th></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility" class="ui-fluid">
                     <ng-container *ngIf="col.field">
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'RequestType'"
-                            [options]="pendinExpenseColArray.RequestType" defaultLabel="All"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'RequestType'" [options]="pendinExpenseColArray.RequestType"
+                            defaultLabel="All" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'ClientLegalEntity'" [options]="pendinExpenseColArray.ClientLegalEntity"
+                            defaultLabel="All" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'ProjectCode'" [options]="pendinExpenseColArray.ProjectCode"
+                            defaultLabel="All" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'SOWCode'" [options]="pendinExpenseColArray.SOWCode" defaultLabel="All"
                             (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientLegalEntity'"
-                            [options]="pendinExpenseColArray.ClientLegalEntity" defaultLabel="All"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'SOWName'" [options]="pendinExpenseColArray.SOWName" defaultLabel="All"
                             (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProjectCode'"
-                            [options]="pendinExpenseColArray.ProjectCode" defaultLabel="All"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'Category'" [options]="pendinExpenseColArray.Category" defaultLabel="All"
                             (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'SOWCode'"
-                            [options]="pendinExpenseColArray.SOWCode" defaultLabel="All"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'PONumber'" [options]="pendinExpenseColArray.PONumber" defaultLabel="All"
                             (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'SOWName'"
-                            [options]="pendinExpenseColArray.SOWName" defaultLabel="All"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'ExpenseType'" [options]="pendinExpenseColArray.ExpenseType"
+                            defaultLabel="All" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'ClientAmount'" [options]="pendinExpenseColArray.ClientAmount"
+                            defaultLabel="All" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'ClientCurrency'" [options]="pendinExpenseColArray.ClientCurrency"
+                            defaultLabel="All" (onChange)="dt2.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'Created'" [options]="pendinExpenseColArray.Created" defaultLabel="All"
                             (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Category'"
-                            [options]="pendinExpenseColArray.Category" defaultLabel="All"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'CreatedBy'" [options]="pendinExpenseColArray.CreatedBy" defaultLabel="All"
                             (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'PONumber'"
-                            [options]="pendinExpenseColArray.PONumber" defaultLabel="All"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'ModifiedBy'" [options]="pendinExpenseColArray.ModifiedBy" defaultLabel="All"
                             (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ExpenseType'"
-                            [options]="pendinExpenseColArray.ExpenseType" defaultLabel="All"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'Modified'" [options]="pendinExpenseColArray.ModifiedDate" defaultLabel="All"
                             (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientAmount'"
-                            [options]="pendinExpenseColArray.ClientAmount" defaultLabel="All"
-                            (onChange)="dt2.filter($event.value, col.field, 'in')">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientCurrency'"
-                            [options]="pendinExpenseColArray.ClientCurrency" defaultLabel="All"
-                            (onChange)="dt2.filter($event.value, col.field, 'in')">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Created'"
-                            [options]="pendinExpenseColArray.Created" defaultLabel="All"
-                            (onChange)="dt2.filter($event.value, col.field, 'in')">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'CreatedBy'"
-                            [options]="pendinExpenseColArray.CreatedBy" defaultLabel="All"
-                            (onChange)="dt2.filter($event.value, col.field, 'in')">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ModifiedBy'"
-                            [options]="pendinExpenseColArray.ModifiedBy" defaultLabel="All"
-                            (onChange)="dt2.filter($event.value, col.field, 'in')">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Modified'"
-                            [options]="pendinExpenseColArray.ModifiedDate" defaultLabel="All"
-                            (onChange)="dt2.filter($event.value, col.field, 'in')">
-                        </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'VendorName'"
-                            [options]="pendinExpenseColArray.VendorName" defaultLabel="All"
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
+                            *ngSwitchCase="'VendorName'" [options]="pendinExpenseColArray.VendorName" defaultLabel="All"
                             (onChange)="dt2.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
                     </ng-container>
@@ -136,6 +136,9 @@
         </ng-template>
     </p-table>
 </div>
+<div *ngIf="pendingExpenses.length == 0" style="color:red;text-align: center;padding-top: 20px;">
+    No data available.
+</div>
 <!-- Table End  -->
 
 <!-- Right Side Bar -->
@@ -147,13 +150,12 @@
 
 <!-- <p-menu [model]="items1"></p-menu> -->
 
-<!-- Context Menu Start -->
-<p-contextMenu #cm [model]="items"></p-contextMenu>
-<!-- Context Menu End -->
+<!-- Toast Messages -->
+<p-toast position="bottom-center" key="pendingExpenseToast"></p-toast>
 
 <!-- Approve Accept Reject Modal -->
 <p-dialog header="{{cancelRejectDialog.title}}" [(visible)]="displayModal" [modal]="true" [draggable]="false"
-    [responsive]="true" [contentStyle]="{'max-height':'450px'}" [style]="{'width': '50%'}"
+    [responsive]="true" [contentStyle]="{'max-height':'450px'}" [style]="{'width': '50%'}" [blockScroll]="true"
     (onHide)="cancelFormSub('cancelReject_form')">
 
     <form id="myform" [formGroup]="cancelReject_form"
@@ -204,6 +206,19 @@
                 <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.PayingEntity.errors">
                     <div *ngIf="isValidApproveExpeseForm.PayingEntity.errors.required" style="color:red;">Paying
                         entity is required.</div>
+                </div>
+            </div>
+            <div *ngIf="selectedRowItem.RequestType === 'Invoice Payment' "
+                style="width: -webkit-fill-available !important;">
+                <div class="ui-g-6">Note</div>
+                <div class="ui-g-6">
+                    <!-- <input type="text" pInputText formControlName="ApproverComments" /> -->
+                    <textarea rows="5" cols="30" pInputTextarea formControlName="ApproverComments"
+                        maxlength="100"></textarea>
+                    <div *ngIf="formSubmit.isSubmit && isValidApproveExpeseForm.ApproverComments.errors">
+                        <div *ngIf="isValidApproveExpeseForm.ApproverComments.errors.required" style="color:red;">Please
+                            provide Note.</div>
+                    </div>
                 </div>
             </div>
             <div *ngIf="selectedRowItem.RequestType === 'Credit Card'">

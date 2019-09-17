@@ -89,7 +89,7 @@ export class FDDataShareService {
         private constantService: ConstantsService,
         private fdConstantsService: FdConstantsService,
         private globalObject: GlobalService,
-        private datePipe: DatePipe,
+        private datePipe: DatePipe
     ) { }
 
     async getCurrentUserInfo() {
@@ -241,55 +241,55 @@ export class FDDataShareService {
 
     async getRequiredData(): Promise<any> {
         if (!this.requiredData.length) {
-
+            this.constantService.loader.isPSInnerLoaderHidden = false;
             this.globalObject.userInfo = await this.spServices.getUserInfo(this.globalObject.sharePointPageObject.userId);
             // Default Tabs & sub Menus
-            this.fdConstantsService.fdComponent.tabs.topMenu = [
-                { label: 'Expenditure', routerLink: ['expenditure'] },
-                { label: 'Scheduled', routerLink: ['scheduled'] }
-            ];
-            this.fdConstantsService.fdComponent.tabs.expenditureMenu = [
-                { label: 'Pending Expense', routerLink: ['pending'] },
-            ]
-            // Scheduled Tabs
-            this.fdConstantsService.fdComponent.tabs.scheduleMenu = [
-                { label: 'Deliverable Based', routerLink: ['deliverable-based'] },
-                // { label: 'Hourly Based', routerLink: ['hourly-based'] },
-                { label: 'OOP', routerLink: ['oop'] },
-            ]
+            // this.fdConstantsService.fdComponent.tabs.topMenu = [
+            //     { label: 'Expenditure', routerLink: ['expenditure'] },
+            //     { label: 'Scheduled', routerLink: ['scheduled'] }
+            // ];
+            // this.fdConstantsService.fdComponent.tabs.expenditureMenu = [
+            //     { label: 'Pending Expense', routerLink: ['pending'] },
+            // ]
+            // // Scheduled Tabs
+            // this.fdConstantsService.fdComponent.tabs.scheduleMenu = [
+            //     { label: 'Deliverable Based', routerLink: ['deliverable-based'] },
+            //     // { label: 'Hourly Based', routerLink: ['hourly-based'] },
+            //     { label: 'OOP', routerLink: ['oop'] },
+            // ]
 
-            if (this.globalObject.userInfo.Groups.results.length) {
-                const groups = this.globalObject.userInfo.Groups.results.map(x => x.LoginName);
-                if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1) {
-                    // All 
-                    this.fdConstantsService.fdComponent.tabs.topMenu.push(
-                        { label: 'Confirmed', routerLink: ['confirmed'] },
-                        { label: 'Proforma', routerLink: ['proforma'] },
-                        { label: 'Outstanding Invoices', routerLink: ['outstanding-invoices'] },
-                        { label: 'Paid Invoices', routerLink: ['paid-invoices'] },
-                    );
-                    // All Expenditure Menus
-                    this.fdConstantsService.fdComponent.tabs.expenditureMenu.push(
-                        { label: 'Cancelled/Rejected', routerLink: ['cancelled-reject'] },
-                        { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'] },
-                        { label: 'Approved(Billable)', routerLink: ['approvedBillable'] }
-                    );
+            // if (this.globalObject.userInfo.Groups.results.length) {
+            //     const groups = this.globalObject.userInfo.Groups.results.map(x => x.LoginName);
+            //     if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1) {
+            //         // All 
+            //         this.fdConstantsService.fdComponent.tabs.topMenu.push(
+            //             { label: 'Confirmed', routerLink: ['confirmed'] },
+            //             { label: 'Proforma', routerLink: ['proforma'] },
+            //             { label: 'Outstanding Invoices', routerLink: ['outstanding-invoices'] },
+            //             { label: 'Paid Invoices', routerLink: ['paid-invoices'] },
+            //         );
+            //         // All Expenditure Menus
+            //         this.fdConstantsService.fdComponent.tabs.expenditureMenu.push(
+            //             { label: 'Cancelled/Rejected', routerLink: ['cancelled-reject'] },
+            //             { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'] },
+            //             { label: 'Approved(Billable)', routerLink: ['approvedBillable'] }
+            //         );
 
-                    // All Scheduled Tabs
-                    this.fdConstantsService.fdComponent.tabs.scheduleMenu.push(
-                        { label: 'Hourly Based', routerLink: ['hourly-based'] },
-                    )
+            //         // All Scheduled Tabs
+            //         this.fdConstantsService.fdComponent.tabs.scheduleMenu.push(
+            //             { label: 'Hourly Based', routerLink: ['hourly-based'] },
+            //         )
 
-                } else if (groups.indexOf('ExpenseApprovers') > -1) {
-                    // All Expenditure Menus
-                    this.fdConstantsService.fdComponent.tabs.expenditureMenu.push(
-                        { label: 'Cancelled/Rejected', routerLink: ['cancelled-reject'] },
-                        { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'] },
-                        { label: 'Approved(Billable)', routerLink: ['approvedBillable'] }
-                    );
+            //     } else if (groups.indexOf('ExpenseApprovers') > -1) {
+            //         // All Expenditure Menus
+            //         this.fdConstantsService.fdComponent.tabs.expenditureMenu.push(
+            //             { label: 'Cancelled/Rejected', routerLink: ['cancelled-reject'] },
+            //             { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'] },
+            //             { label: 'Approved(Billable)', routerLink: ['approvedBillable'] }
+            //         );
 
-                }
-            }
+            //     }
+            // }
             const batchContents = new Array();
             const batchGuid = this.spServices.generateUUID();
             const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
@@ -315,7 +315,7 @@ export class FDDataShareService {
             const arrResults = await this.spServices.getFDData(batchGuid, userBatchBody);
             this.requiredData = arrResults;
             this.setData(arrResults);
-
+            this.constantService.loader.isPSInnerLoaderHidden = true;
             return "";
         } else {
             return "";
@@ -387,8 +387,8 @@ export class FDDataShareService {
 
     styleIndia(amount) {
         // return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount.toFixed(2))
-       let x = amount.toString(); 
-       x = x.indexOf('.') > -1 ? x : x + '.00'
+        let x = amount.toString();
+        x = x.indexOf('.') > -1 ? x : x + '.00'
         var afterPoint = '';
         if (x.indexOf('.') > 0)
             afterPoint = x.substring(x.indexOf('.'), x.length);

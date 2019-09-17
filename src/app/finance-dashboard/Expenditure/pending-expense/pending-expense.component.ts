@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { SelectItem, MessageService } from 'primeng/api';
 import { SPOperationService } from '../../../Services/spoperation.service';
@@ -8,7 +8,6 @@ import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { CommonService } from '../../../Services/common.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { DatePipe } from '@angular/common';
-import { NodeService } from '../../../node.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 
@@ -76,34 +75,32 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
+    @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
 
     constructor(
         private messageService: MessageService,
         private fb: FormBuilder,
         private spServices: SPOperationService,
-        private constantService: ConstantsService,
+        public constantService: ConstantsService,
         private globalService: GlobalService,
         private fdConstantsService: FdConstantsService,
         private commonService: CommonService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private nodeService: NodeService,
         private route: ActivatedRoute,
     ) {
         this.subscription.add(this.fdDataShareServie.getAddExpenseSuccess().subscribe(date => {
-            console.log('I called when expense created success...... ');
             this.isExpenseCreate = true;
-            console.log('this.isExpenseCreate ', this.isExpenseCreate);
             this.getRequiredData();
         }));
     }
 
     async ngOnInit() {
-        let snapData = this.route.snapshot.data['fdData'];
+        // let snapData = this.route.snapshot.data['fdData'];
         this.fdConstantsService.fdComponent.hideDatesSection = true;
 
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
-        if (groups.indexOf('ExpenseApprovers') > -1) {
+        if (groups.indexOf('ExpenseApprovers') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('Invoice_Team') > -1) {
             this.showApproveReject = true;
         }
         else {
@@ -249,10 +246,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         ];
     }
 
-    onTabChange(event) {
-        this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Tab Expanded' });
-    }
-
     get isValidApproveExpeseForm() {
         return this.approveExpense_form.controls;
     }
@@ -299,17 +292,11 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     isExpenseRej() {
         this.submitBtn.isClicked = this.cancelReject_form.value.isCancel === 'No' ? this.submitBtn.isClicked = true : this.submitBtn.isClicked = false;
-        // if (this.cancelReject_form.value.isCancel === 'No') {
-        //     this.submitBtn.isClicked = true;
-        // } else {
-        //     this.submitBtn.isClicked = false;
-        // }
     }
 
     pendingExpenses: any = [];
     // On load get Required Data
     async getRequiredData() {
-
         // Refetch vendor list if expense created
         if (this.isExpenseCreate) {
             this.fdDataShareServie.freelancerVendersRes = [];
@@ -321,22 +308,15 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
         let speInfoObj
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
-        if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1) {
-            speInfoObj = {
-                filter: this.fdConstantsService.fdComponent.spendingInfo.filter.replace("{{Status}}", "Created"),
-                select: this.fdConstantsService.fdComponent.spendingInfo.select,
-                top: this.fdConstantsService.fdComponent.spendingInfo.top,
-                orderby: this.fdConstantsService.fdComponent.spendingInfo.orderby.replace("{{Status}}", "Created")
-            }
+        if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('ExpenseApprovers') > -1) {
+            speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfo);
+            speInfoObj.filter = speInfoObj.filter.replace("{{Status}}", "Created");
+            speInfoObj.orderby = speInfoObj.orderby.replace("{{Status}}", "Created");
         }
         else {
-            speInfoObj = {
-                filter: this.fdConstantsService.fdComponent.spendingInfoCS.filter.replace("{{Status}}", "Created").replace("{{UserID}}"
-                    , this.globalService.sharePointPageObject.userId.toString()),
-                select: this.fdConstantsService.fdComponent.spendingInfoCS.select,
-                top: this.fdConstantsService.fdComponent.spendingInfoCS.top,
-                orderby: this.fdConstantsService.fdComponent.spendingInfoCS.orderby.replace("{{Status}}", "Created")
-            }
+            speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoCS);
+            speInfoObj.filter = speInfoObj.filter.replace("{{Status}}", "Created").replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
+            speInfoObj.orderby = speInfoObj.orderby.replace("{{Status}}", "Created");
         }
 
         const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
@@ -424,8 +404,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         return found ? found : ''
     }
 
-
-
     getPIFromPC(pc) {
         let found = this.projectInfoData.find((x) => {
             if (x.ProjectCode === pc.Title) {
@@ -434,7 +412,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         })
         return found ? found.ClientLegalEntity : ''
     }
-
 
     getVendorNameById(ele) {
         let found = this.freelancerVendersRes.find((x) => {
@@ -505,83 +482,48 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         title: '',
         text: ''
     }
+
     // Open popups
     openPopup(data, popUpData) {
-        console.log('Row data  ', data);
-        // console.log('pubSupportSts  ', pubSupportSts);
-
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
-        if (groups.indexOf('ExpenseApprovers') > -1) {
+        if (groups.indexOf('ExpenseApprovers') > -1 || groups.indexOf('Managers') > -1) {
             this.items = [
                 { label: 'Approve Expense', command: (e) => this.openMenuContent(e, data) },
                 { label: 'Reject Expense', command: (e) => this.openMenuContent(e, data) },
                 { label: 'Cancel Expense', command: (e) => this.openMenuContent(e, data) },
                 { label: 'Details', command: (e) => this.openMenuContent(e, data) },
             ];
-        }
-        else {
+        } else {
             this.items = [
                 { label: 'Cancel Expense', command: (e) => this.openMenuContent(e, data) },
                 { label: 'Details', command: (e) => this.openMenuContent(e, data) },
             ];
         }
-
     }
 
     // CLick on Table Check box to Select All Row Item
     selectedAllRowsItem: any = [];
 
-    selectedRowItemData: any = [];
     // selectedRowItemPC: any;
     onRowSelect(event) {
         console.log(event);
-        // this.selectedRowItemData.push(event.data);
         // this.selectedRowItemPC = event.data.ProjectCode;
         console.log(this.selectedAllRowsItem);
     }
 
     onRowUnselect(event) {
-        // let rowUnselectIndex = this.selectedRowItemData.indexOf(event.data);
-        // this.selectedRowItemData.splice(rowUnselectIndex, 1);
         console.log(this.selectedAllRowsItem);
     }
 
     selectAllRows() {
-        this.selectedAllRowsItem.length === 0 ? this.selectedRowItemData = [] : this.selectedRowItemData;
-        if (this.selectedAllRowsItem.length === this.pendingExpenses.length) {
-            this.selectedRowItemData = this.selectedAllRowsItem;
-        }
         console.log('in selectAllRows ', this.selectedAllRowsItem);
-        console.log('selectedRowItemData ', this.selectedRowItemData);
-
-    }
-
-    // By Selecting Multiple Row Item Approve Or Cancel Expense
-
-    checkSameRT() {
-        // let found = this.selectedAllRowsItem.find(x => {
-        //     let selectedRT = this.selectedAllRowsItem[0].RequestType;
-        //     if (x.RequestType === selectedRT) {
-        //         return true;
-        //     }
-        // });
-        // return found ? found : false;
-        const arr = this.selectedAllRowsItem.map(x => {
-            let selectedRT = this.selectedAllRowsItem[0].RequestType;
-            if (x.RequestType !== selectedRT) {
-                console.log('Different ');
-            } else {
-                console.log('same ');
-
-            }
-        })
     }
 
     approveExpense(type: string) {
         // let uniqueRT = this.checkSameRT();
         // console.log('uniqueRT ', uniqueRT);
         if (!this.selectedAllRowsItem.length) {
-            this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Please select at least one line item try agian.', detail: '', life: 3000 });
+            this.messageService.add({ key: 'pendingExpenseToast', severity: 'info', summary: 'Info message', detail: 'Please select at least one line item try agian.', life: 3000 });
             return false;
         }
         let uniqueRT = false;
@@ -610,12 +552,11 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             this.selectedRowItem = this.selectedAllRowsItem[0];
         } else {
             this.displayModal = false;
-            this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Please select same Request type & try agian.', detail: '', life: 3000 });
+            this.messageService.add({ key: 'pendingExpenseToast', severity: 'info', summary: 'Info message', detail: 'Please select same Request type & try agian.', life: 3000 });
         }
     }
 
     cancelExpense() {
-
     }
 
     selectedRowItem: any;
@@ -654,7 +595,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             this.approveExpense_form.removeControl('Number');
             this.approveExpense_form.removeControl('DateSpend');
             this.approveExpense_form.removeControl('PaymentMode');
-            this.approveExpense_form.removeControl('ApproverComments');
+            // this.approveExpense_form.removeControl('ApproverComments');
             this.approveExpense_form.removeControl('ApproverFileUrl');
         } else if (type === 'Credit Card') {
             this.approveExpense_form.addControl('Number', new FormControl('', Validators.required));
@@ -687,49 +628,52 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
             this.selectedFile = event.target.files[0];
+            const fileName = this.selectedFile.name;
+            const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+            if (fileName !== sNewFileName) {
+                this.fileInput.nativeElement.value = '';
+                this.approveExpense_form.get('ApproverFileUrl').setValue('');
+                this.messageService.add({ key: 'pendingExpenseToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+                return false;
+            }
             this.fileReader.readAsArrayBuffer(this.selectedFile);
             this.fileReader.onload = () => {
                 let date = new Date();
                 let folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
                 this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl(" + "'" + folderPath + "'" + ")/Files/add(url=@TargetFileName,overwrite='true')?" + "&@TargetFileName='" + this.selectedFile.name + "'";
-                // this.uploadFileData('');
-                // this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
-                //     console.log('selectedFile uploaded .', res);
-                // })
             };
         }
     }
 
-    uploadFileData(type: string) {
-        this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
-            if (res.d) {
-                this.fileUploadedUrl = res.d.ServerRelativeUrl ? res.d.ServerRelativeUrl : '';
-                console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
-                if (this.fileUploadedUrl) {
-                    let speInfoObj = {
-                        PayingEntity: this.approveExpense_form.value.PayingEntity.Title,
-                        Number: this.approveExpense_form.value.Number,
-                        DateSpend: this.approveExpense_form.value.DateSpend,
-                        PaymentMode: this.approveExpense_form.value.PaymentMode.value,
-                        ApproverComments: this.approveExpense_form.value.ApproverComments,
-                        ApproverFileUrl: this.fileUploadedUrl,
-                        Status: 'Approved'
-                    }
-                    speInfoObj["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
-                    let data = [];
-                    for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
-                        const element = this.selectedAllRowsItem[inv];
-                        const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);
-                        data.push({
-                            objData: speInfoObj,
-                            endpoint: spEndpoint,
-                            requestPost: false
-                        })
-                    }
-                    this.submitForm(data, type);
+    async uploadFileData(type: string) {
+        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
+        if (res) {
+            this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
+            console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
+            if (this.fileUploadedUrl) {
+                let speInfoObj = {
+                    PayingEntity: this.approveExpense_form.value.PayingEntity.Title,
+                    Number: this.approveExpense_form.value.Number,
+                    DateSpend: this.approveExpense_form.value.DateSpend,
+                    PaymentMode: this.approveExpense_form.value.PaymentMode.value,
+                    ApproverComments: this.approveExpense_form.value.ApproverComments,
+                    ApproverFileUrl: this.fileUploadedUrl,
+                    Status: 'Approved'
                 }
+                speInfoObj["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
+                let data = [];
+                for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
+                    const element = this.selectedAllRowsItem[inv];
+                    const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);
+                    data.push({
+                        objData: speInfoObj,
+                        endpoint: spEndpoint,
+                        requestPost: false
+                    })
+                }
+                this.submitForm(data, type);
             }
-        });
+        }
     }
 
     onSubmit(type: string) {
@@ -789,6 +733,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             if (this.selectedRowItem.RequestType === "Invoice Payment") {
                 let speInfoObj = {
                     PayingEntity: this.approveExpense_form.value.PayingEntity.Title,
+                    ApproverComments: this.approveExpense_form.value.ApproverComments,
                     Status: 'Approved Payment Pending'
                 }
                 speInfoObj["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
@@ -812,19 +757,13 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     batchContents: any = [];
     async submitForm(dataEndpointArray, type: string) {
         console.log('Form is submitting');
-
         this.batchContents = [];
         const batchGuid = this.spServices.generateUUID();
         const changeSetId = this.spServices.generateUUID();
-
-        // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        console.log(' dataEndpointArray ', dataEndpointArray);
         dataEndpointArray.forEach(element => {
             if (element)
                 this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
         });
-
-        console.log("this.batchContents ", JSON.stringify(this.batchContents));
 
         this.batchContents.push('--changeset_' + changeSetId + '--');
         const batchBody = this.batchContents.join('\r\n');
@@ -834,22 +773,18 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         const res = await this.spServices.getFDData(batchGuid, sBatchData);
         const arrResults = res;
         console.log('--oo ', arrResults);
-        // .subscribe(res => {
-
         if (type === "Approve Expense") {
-            this.messageService.add({ key: 'fdToast', severity: 'success', summary: 'Expense Approved.', detail: '', life: 2000 });
+            this.messageService.add({ key: 'pendingExpenseToast', severity: 'success', summary: 'Success message', detail: 'Expense Approved.', life: 2000 });
             this.displayModal = false;
             // this.sendCreateExpenseMail(this.selectedRowItem, type);
             this.sendMailToSelectedLineItems(type);
         } else if (type === "Cancel Expense" || type === "Reject Expense") {
-            this.messageService.add({ key: 'fdToast', severity: 'success', summary: 'Submitted.', detail: '', life: 2000 })
+            this.messageService.add({ key: 'pendingExpenseToast', severity: 'success', summary: 'Success message', detail: 'Submitted.', life: 2000 })
             this.displayModal = false;
             // this.sendCreateExpenseMail(this.selectedRowItem, type);
             this.sendMailToSelectedLineItems(type);
         }
         this.isPSInnerLoaderHidden = true;
-        // });
-
     }
 
     sendMailToSelectedLineItems(type: string) {
@@ -860,10 +795,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         }
     }
 
-
-    // Send Mail
-
-    // Mail Content
+    // Send Mail // Mail Content
     mailContentRes: any;
     async getApproveExpenseMailContent(type) {
         // const mailContentEndpoint = this.fdConstantsService.fdComponent.mailContent;
@@ -1013,7 +945,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             } else {
                 mailContent = this.replaceContent(mailContent, "@@Val8@@", '');
                 mailContent = this.replaceContent(mailContent, "@@Val9@@", '');
-                mailContent = this.replaceContent(mailContent, "@@Val11@@", '');
+                mailContent = this.replaceContent(mailContent, "@@Val11@@", expense.Number);
                 mailContent = this.replaceContent(mailContent, "@@Val12@@", '');
 
             }

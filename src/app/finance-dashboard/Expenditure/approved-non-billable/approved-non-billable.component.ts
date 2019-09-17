@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -51,11 +51,13 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
 
+    @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
+
     constructor(
         private messageService: MessageService,
         private fb: FormBuilder,
         private spServices: SPOperationService,
-        private constantService: ConstantsService,
+        public constantService: ConstantsService,
         private globalService: GlobalService,
         private fdConstantsService: FdConstantsService,
         private commonService: CommonService,
@@ -143,7 +145,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             Number: ['', Validators.required],
             DateSpend: ['', Validators.required],
             PaymentMode: ['', Validators.required],
-            ApproverComments: ['', Validators.required],
+            // ApproverComments: ['', Validators.required],
             ApproverFileUrl: ['', Validators.required]
         })
     }
@@ -190,17 +192,23 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
-        // let speInfoObj = {
-        //     filter: this.fdConstantsService.fdComponent.spendingInfoForNonBillable.filter.replace("{{Status}}", "Approved Payment Pending").replace("{{Category}}", "Non Billable"),
-        //     select: this.fdConstantsService.fdComponent.spendingInfoForNonBillable.select,
-        //     top: this.fdConstantsService.fdComponent.spendingInfoForNonBillable.top,
-        //     // orderby: this.fdConstantsService.fdComponent.spendingInfoForBnNB.orderby.replace("{{Category}}", "Non Billable")
-        // }
 
-        let obj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForNonBillable);
-        obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
+        // let obj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForNonBillable);
+        // obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
 
-        const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', obj);
+        let speInfoObj
+        const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
+        if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('ExpenseApprovers') > -1) {
+            speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForNonBillable);
+            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
+        }
+        else {
+            speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForNonBillableCS);
+            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate).replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
+        }
+
+
+        const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
         let endPoints = [sinfoEndpoint];
         let userBatchBody;
         for (let i = 0; i < endPoints.length; i++) {
@@ -372,7 +380,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             let sts = this.selectedAllRowsItem[0].Status;
             if (element.Status !== sts) {
                 this.approvedSts = false;
-                this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Please select line item with status containing "Payment Pending" & try again.', detail: '', life: 4000 });
+                this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select line item with status containing "Payment Pending" & try again.', life: 4000 });
             }
 
         }
@@ -403,7 +411,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         console.log('selectedAllRowsItem ', this.selectedAllRowsItem);
         this.checkUniquePC();
         if (!this.selectedAllRowsItem.length) {
-            this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Please select at least 1 Projects & try again', detail: '', life: 4000 });
+            this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select at least 1 Projects & try again', life: 4000 });
             return;
         }
         if (this.pcFound) {
@@ -412,17 +420,17 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 let sts = this.checkPPStatus();
                 console.log('Sts ', sts);
                 if (!this.approvedSts) {
-                    this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Please select line item with status containing "Payment Pending" & try again.', detail: '', life: 4000 });
+                    this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select line item with status containing "Payment Pending" & try again.', life: 4000 });
                     return false;
                 }
                 if (sts) {
                     this.markAsPaymentModal = true;
                 } else {
-                    this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Payment already marked', detail: '', life: 4000 });
+                    this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Payment already marked', life: 4000 });
                 }
             }
         } else {
-            this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Please select same project & try again.', detail: '', life: 4000 });
+            this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select same project & try again.', life: 4000 });
         }
     }
 
@@ -438,6 +446,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 ppSts = false;
                 break;
             } else {
+                this.approvedSts = true;
                 ppSts = true;
             }
         }
@@ -492,52 +501,57 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
             this.selectedFile = event.target.files[0];
+            const fileName = this.selectedFile.name;
+            const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+            if (fileName !== sNewFileName) {
+                this.fileInput.nativeElement.value = '';
+                this.markAsPayment_form.get('ApproverFileUrl').setValue('');
+                this.messageService.add({ key: 'approvedNonBToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+                return false;
+            }
             this.fileReader.readAsArrayBuffer(this.selectedFile);
             this.fileReader.onload = () => {
                 let date = new Date();
                 let folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
                 this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl(" + "'" + folderPath + "'" + ")/Files/add(url=@TargetFileName,overwrite='true')?" + "&@TargetFileName='" + this.selectedFile.name + "'";
-                // this.uploadFileData('');
-                // this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
-                //     console.log('selectedFile uploaded .', res);
-                // })
             };
         }
     }
 
-    uploadFileData(type: string) {
-        this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
-            if (res.d) {
-                this.fileUploadedUrl = res.d.ServerRelativeUrl ? res.d.ServerRelativeUrl : '';
-                console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
-                if (this.fileUploadedUrl) {
-                    let speInfoObj = {
-                        // PayingEntity: this.markAsPayment_form.value.PayingEntity.Title,
-                        Number: this.markAsPayment_form.value.Number,
-                        DateSpend: this.markAsPayment_form.value.DateSpend,
-                        PaymentMode: this.markAsPayment_form.value.PaymentMode.value,
-                        ApproverComments: this.markAsPayment_form.value.ApproverComments,
-                        ApproverFileUrl: this.fileUploadedUrl,
-                        Status: 'Approved'
-                    }
-                    speInfoObj["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
-                    let data = [];
-                    for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
-                        const element = this.selectedAllRowsItem[j];
-                        const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);;
-                        data.push({
-                            objData: speInfoObj,
-                            endpoint: spEndpoint,
-                            requestPost: false
-                        })
-                    }
-                    this.submitForm(data, type);
+    async uploadFileData(type: string) {
+        // this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
+        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
+        if (res) {
+            this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
+            console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
+            if (this.fileUploadedUrl) {
+                let speInfoObj = {
+                    // PayingEntity: this.markAsPayment_form.value.PayingEntity.Title,
+                    Number: this.markAsPayment_form.value.Number,
+                    DateSpend: this.markAsPayment_form.value.DateSpend,
+                    PaymentMode: this.markAsPayment_form.value.PaymentMode.value,
+                    // ApproverComments: this.markAsPayment_form.value.ApproverComments,
+                    ApproverFileUrl: this.fileUploadedUrl,
+                    Status: 'Approved'
                 }
-            } else {
-                this.isPSInnerLoaderHidden = true;
-                this.submitBtn.isClicked = false;
+                speInfoObj["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
+                let data = [];
+                for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
+                    const element = this.selectedAllRowsItem[j];
+                    const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);;
+                    data.push({
+                        objData: speInfoObj,
+                        endpoint: spEndpoint,
+                        requestPost: false
+                    })
+                }
+                this.submitForm(data, type);
             }
-        });
+        } else {
+            this.isPSInnerLoaderHidden = true;
+            this.submitBtn.isClicked = false;
+        }
+        // });
     }
 
     batchContents: any = [];
@@ -566,7 +580,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         const arrResults = res;
         console.log('--oo ', arrResults);
         if (type === 'markAsPayment_form') {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Payment marked.', detail: '', life: 2000 });
+            this.messageService.add({ key: 'approvedNonBToast', severity: 'success', summary: 'Success message', detail: 'Payment marked.', life: 2000 });
             this.markAsPaymentModal = false;
             this.reFetchData();
         }

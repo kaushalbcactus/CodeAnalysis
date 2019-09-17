@@ -142,6 +142,10 @@
                             "outputHashing": "none",
                             "deployUrl": "https://cactusglobal.sharepoint.com/sites/medcomqa/SiteAssets/AngularModules/FD/"
                         },
+                        "devFD": {
+                            "outputHashing": "none",
+                            "deployUrl": "https://cactusglobal.sharepoint.com/sites/medcomdev/SiteAssets/AngularModules/FD/"
+                        },
                         "qaQMS": {
                             "optimization": true,
                             "outputHashing": "bundles",

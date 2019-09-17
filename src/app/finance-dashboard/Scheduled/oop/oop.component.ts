@@ -504,11 +504,11 @@ export class OopComponent implements OnInit, OnDestroy {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
             if (!(date >= last3Days && date <= lastDay)) {
-                this.messageService.add({ key: 'bottomCenter', severity: 'success', summary: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.', detail: '', life: 4000 })
+                this.messageService.add({ key: 'oopInfoToast', severity: 'info', summary: 'Info message', detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.', life: 4000 })
             } else if (!retPO) {
-                this.messageService.add({ key: 'bottomCenter', severity: 'success', summary: 'PO not available for the selected line item.', detail: '', life: 4000 })
+                this.messageService.add({ key: 'oopInfoToast', severity: 'info', summary: 'Info message', detail: 'PO not available for the selected line item.', life: 4000 })
             } else if (!(new Date(retPO.POExpiryDate) >= new Date())) {
-                this.messageService.add({ key: 'bottomCenter', severity: 'success', summary: 'PO expired on ' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), detail: '', life: 4000 })
+                this.messageService.add({ key: 'oopInfoToast', severity: 'info', summary: 'Info message', detail: 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), life: 4000 })
             }
         }
         this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });
@@ -683,11 +683,11 @@ export class OopComponent implements OnInit, OnDestroy {
         const arrResults = res;
         console.log('--oo ', arrResults);
         if (type === "confirmInvoice") {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice is Confirmed.', detail: '', life: 2000 });
+            this.messageService.add({ key: 'oopSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000 });
             this.sendCreateExpenseMail();
             this.reFetchData();
         } else if (type === "editDeliverable") {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Updated.', detail: '', life: 2000 })
+            this.messageService.add({ key: 'oopSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice Updated.', life: 2000 })
             this.cancelFormSub('editDeliverable');
             this.reFetchData();
         }
