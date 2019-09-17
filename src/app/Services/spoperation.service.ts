@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { GlobalService } from './global.service';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import * as JSZip from 'jszip';
 import * as FileSaver from 'file-saver';
@@ -7,8 +6,9 @@ import * as FileSaver from 'file-saver';
 //For getDataByApi
 import { Http, Response, Headers, RequestOptions, ResponseContentType } from '@angular/http';
 import { throwError, Observable } from 'rxjs';
-import { ConstantsService } from './constants.service';
 import { map, catchError } from 'rxjs/operators';
+import { ConstantsService } from './constants.service';
+import { GlobalService } from './global.service';
 declare const $: any;
 
 
@@ -26,7 +26,7 @@ export class SPOperationService {
   apiArchiveUrl: string;
   currentUser: string;
   login: string;
-  constructor(private http: Http, private globalService: GlobalService,
+  constructor(private http: Http, private globalServices: GlobalService,
               private httpClient: HttpClient, private constants: ConstantsService) { this.setBaseUrl(null); }
 
   setBaseUrl(webUrl?: string) {
@@ -40,13 +40,13 @@ export class SPOperationService {
       if (ctx) {
         this.baseUrl = ctx.webAbsoluteUrl;
       } else {
-        this.baseUrl = this.globalService.sharePointPageObject.webAbsoluteUrl;
+        this.baseUrl = this.globalServices.sharePointPageObject.webAbsoluteUrl;
       }
     }
     // Default to local web URL
     this.apiUrl = this.baseUrl + '/_api/web/lists/GetByTitle(\'{0}\')/items';
-    this.apiArchiveUrl = this.globalService.sharePointPageObject.webAbsoluteArchiveUrl + '/_api/web/lists/GetByTitle(\'{0}\')/items';
-    this.baseArchiveUrl = this.globalService.sharePointPageObject.webAbsoluteArchiveUrl;
+    this.apiArchiveUrl = this.globalServices.sharePointPageObject.webAbsoluteArchiveUrl + '/_api/web/lists/GetByTitle(\'{0}\')/items';
+    this.baseArchiveUrl = this.globalServices.sharePointPageObject.webAbsoluteArchiveUrl;
   }
 
   getHeaders(bAddContext, returnOp) {
@@ -675,7 +675,7 @@ export class SPOperationService {
     let tempArray = [];
     let arrUsers = [];
     $.ajax({
-      url: this.globalService.sharePointPageObject.webAbsoluteUrl + url,
+      url: this.globalServices.sharePointPageObject.webAbsoluteUrl + url,
       type: "GET",
       async: false,
       headers: {
@@ -736,7 +736,7 @@ export class SPOperationService {
     headers.append('X-RequestDigest', $('#__REQUESTDIGEST').val());
     let options = new RequestOptions({ headers: headers });
 
-    let apiURL = this.globalService.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
+    let apiURL = this.globalServices.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
     const res = await this.http.post(apiURL, userBatchBody, options).toPromise();
 
 
@@ -774,7 +774,7 @@ export class SPOperationService {
     const tempArray = [];
     try {
       $.ajax({
-        url: this.globalService.sharePointPageObject.webAbsoluteUrl + url,
+        url: this.globalServices.sharePointPageObject.webAbsoluteUrl + url,
         type: 'GET',
         async: false,
         headers: {
@@ -810,7 +810,7 @@ export class SPOperationService {
     // this.getData(batchGuid, batchBody);
     let resp = '';
     // create the request endpoint
-    const endpoint = this.globalService.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
+    const endpoint = this.globalServices.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
 
     // batches need a specific header
     const batchRequestHeader = {
@@ -847,7 +847,7 @@ export class SPOperationService {
     };
 
     // create the request endpoint
-    const endpoint = this.globalService.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
+    const endpoint = this.globalServices.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
     const res = await this.httpClient.post(endpoint, batchBody, { ...httpOptions, responseType: 'text' })
       .toPromise().catch((err: HttpErrorResponse) => {
         var error = err.error;
@@ -947,8 +947,8 @@ export class SPOperationService {
   // moveListItem(item, listName) {
   //   const currentYear = new Date().getFullYear();
   //   const currentMonth = this.getMonthName(new Date());
-  //   const fileUrl =  this.globalService.currentUser.serverRelativeUrl + '/Lists/' + listName + '/' + item.ID + '_.000';
-  //   const moveFileUrl =  this.globalService.currentUser.serverRelativeUrl + '/Lists/' + listName + '/' + currentYear + '/' +
+  //   const fileUrl =  this.globalServices.currentUser.serverRelativeUrl + '/Lists/' + listName + '/' + item.ID + '_.000';
+  //   const moveFileUrl =  this.globalServices.currentUser.serverRelativeUrl + '/Lists/' + listName + '/' + currentYear + '/' +
   //                      currentMonth + '/' + item.ID + '_.000';
   //   const moveItemEndpoint = this.constants.feedbackPopupComponent.moveFileUrl.replace('{{FileUrl}}', fileUrl)
   //                                                                            .replace('{{NewFileUrl}}', moveFileUrl);
@@ -1120,7 +1120,7 @@ export class SPOperationService {
     for (var index in sourceUrlArr) {
       const sourceUrl = sourceUrlArr[index];
       const destinationUrl = destinationUrlArr[index];
-      var oUrl = this.globalService.sharePointPageObject.webAbsoluteUrl + '/_api/web/getfilebyserverrelativeurl(\'' + sourceUrl + '\')/copyto(strnewurl=\'' + destinationUrl + '\',boverwrite=true)';
+      var oUrl = this.globalServices.sharePointPageObject.webAbsoluteUrl + '/_api/web/getfilebyserverrelativeurl(\'' + sourceUrl + '\')/copyto(strnewurl=\'' + destinationUrl + '\',boverwrite=true)';
       $.ajax({
         url: oUrl,
         async: false,
@@ -1159,7 +1159,7 @@ export class SPOperationService {
 
     // create the request endpoint
 
-    const endpoint = this.globalService.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
+    const endpoint = this.globalServices.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
     return this.httpClient.post(endpoint, batchBody, { ...httpOptions, responseType: 'text' }).
       pipe(
         map((res) => {
@@ -1281,7 +1281,7 @@ export class SPOperationService {
     //       this.addListItem(listName, updateInformationEmail);
     //   } catch (e) {
     //   }
-    const siteurl = this.globalService.sharePointPageObject.serverRelativeUrl;
+    const siteurl = this.globalServices.sharePointPageObject.serverRelativeUrl;
     const urlTemplate = siteurl + '/_api/SP.Utilities.Utility.SendEmail';
     const ccUser = cc != null || cc !== undefined ? cc : [];
     if (ccUser.length > 0 && cc.indexOf(from) === -1) {

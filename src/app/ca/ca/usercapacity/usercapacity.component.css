@@ -1,0 +1,284 @@
+
+.inprogress {
+    color: rgb(255, 223, 40);
+  }
+  
+  .error {
+    color: #bf0000;
+  }
+  
+  .hide {
+    display: none;
+  }
+  
+  .hideImp {
+    display: none !important;
+  }
+  
+  .colorLeave{
+    background-color:grey;
+  }
+  .colorAvailable{
+    background-color: #55bf3b;
+    cursor: pointer;
+  }
+  .colorFullAllocated{
+    background-color:#EF3D3D;
+    cursor: pointer;
+  }
+  
+  
+  .btnSave {
+    margin-left: 10px!important;
+  }
+  
+  .daysFilter{
+    height: 27px;
+    width: 40px;
+  }
+  
+  .filterNextLast,.filterDuration{
+    height: 27px;
+    margin: 0px 6px 0px 4px;
+  }
+  .filterByWeekOrMonth{
+    height: 27px;
+    width: 40px;
+  }
+  .startDateFilter,.startEndFilter
+  {
+    height: 27px;
+    margin: 0px 4px 0px 6px;
+  }
+  
+  #capacityTable tr
+  {
+    width: 100%;
+    display: inline-table;
+    table-layout: fixed;
+  }
+  #capacityTable{
+  /*  height: 404px; */
+    display: -moz-groupbox;
+    width: 1200px !important;
+  }
+  #capacityTable .capacityBody{
+      overflow-y: overlay;
+    /*  height: 348px;
+      width: 100%;
+      position: absolute;*/
+  }
+  #capacityTable > thead > tr > td:first-child, .capacityBody tr.UserTasksRow > td:first-child{
+    padding: 0px;
+    background-color: transparent;
+    border:none;
+  }
+  
+  
+  #TasksPerDay >thead> tr > td:first-child{
+    background-color: #80808038;
+    font-weight: bold;
+  }
+  
+  .taskCount{
+    color:white;
+    font-size: 11px;
+  }
+  .right{
+    float: right;
+  
+  }
+  .center{
+    display: inline-block;
+    /* margin-top: 7%; */
+  }
+  .wrap{
+    text-align:center
+  }
+  
+  .ui-multiselect-filter input{
+     font: menu;
+  }
+  .note{
+    font-style: italic;
+  }
+  .taskCount a{
+    color:white!important;
+  }
+  #TasksPerDay img{
+    height: 25px;
+    cursor: pointer;
+  }
+  .capacityBody .table {
+    margin-bottom: 0px;
+  }
+  
+  #TasksPerDay{
+    margin-bottom: 0px;
+  }
+  
+  .table>tbody>tr>td:first-child,.table>tbody>tr:first-child>td, .table>tbody>tr:first-child>th, .table>tfoot>tr:first-child>td, .table>tfoot>tr:first-child>th, .table>thead>tr:first-child>td, .table>thead>tr:first-child>th{
+    border:none;
+  }
+  
+  .capacityInnerTable{
+    border: 1px solid #ddd;
+  }
+  
+  .capacityDashboard {
+    display: none;
+  }
+  
+  .capacityDashboard #resp-table {
+    width: 100%;
+    display: table;
+    border-collapse: collapse;
+  }
+  
+  .capacityDashboard .table-header-cell{
+    display: table-cell;
+    text-align: left;
+    padding-top: 10px;
+  }
+  
+  .capacityDashboard #resp-table-body{
+    display: table-row-group;
+  }
+  
+  .capacityDashboard .resp-table-row{
+    display: table-row;
+  }
+  
+  .capacityDashboard .table-body-cell{
+    display: table-cell;
+    vertical-align: middle;
+  }
+  
+  .capacityDashboard #resp-table-header{
+    display: table-header-group;
+    font-weight: bold;
+    font-size: 15px;
+  }
+  
+  #capacityTable {
+    position: relative;
+    border: 0px !important;
+  }
+  
+  .capacityBody > tr > td, .capacityBody > tr > td > table, .TaskPerDayRow > td {
+  border: 0px !important;
+  }
+  
+  .capacityBody table tbody td {
+    border-top: 0px;
+    padding: 3px;
+    border: 1px solid #ddd;
+  
+  }
+  
+  .TaskPerDayRow > td {
+    padding: 0px !important;
+  }
+  
+  #capacityTable > thead > tr > td:first-child, .capacityBody tr.UserTasksRow table tr:first-child > td:first-child{
+    padding: 3px;
+    width: 6%;
+  }
+  
+  .capacityBody #TasksPerDay > thead > tr > td, #capacityTable > thead > tr > td, table#milestoneTasks thead td {
+    font-weight: bold;
+  }
+  
+  #capacityTable > thead > tr > td {
+    text-align: center;
+  }
+  
+  .ui-multiselect-checkboxes label input {
+    margin: 0px;
+    top: -1px;
+  }
+  
+  .catHeader {
+    margin-right: 10px;
+  }
+  
+  #CapacityCtrl {
+    padding-top: 10px;
+  }
+  
+  table#milestoneTasks td  {
+    border: 1px solid #ddd;
+  }
+  
+  .capacityBody tr, .UserTasksRow, .TaskPerDayRow {
+    background-color: white ;
+  }
+  
+  .highlightCell{
+    background-color: orange;
+  }
+  
+  
+  
+  /*  CSS for task spanning across dates */
+  .taskBar {
+    position: absolute;
+    font-size: 9px;
+    padding: 2px;
+    z-index: 100;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .tbl {
+    text-align: center;
+    position: relative;
+  }
+  
+  .confirmedTask{
+    background-color: yellow;
+  }
+  .plannedTask{
+    background-color: rgb(119, 152, 191);
+  }
+  .allocated,.unallocated{
+    width:6%;
+  }
+  tr[class$="taskrow"] + tr /*.capacityBody tr.UserTasksRow table tr:last-child */
+  {
+    position: absolute;
+    left: 0;
+    z-index: 200;
+    top:26px;
+    background-color: transparent;
+  }
+  
+  tr[class$="taskrow"] + tr > td /* .capacityBody tr.UserTasksRow table tr:last-child > td */
+  {
+  border: none !important;
+  }
+  .more,.less{
+    color:blue;
+    text-decoration:underline;
+    float: right;
+    cursor: pointer;
+  }
+  
+  #movingContainer {
+    display: none !important;
+  }
+  
+  .capacityBody #TasksPerDay > thead > tr > td:last-child,
+  .capacityBody #TasksPerDay > tbody > tr > td:last-child {
+    width: 70px;
+  }
+
+  .capacityBody > tr > td, #capacityTable .unallocated, #capacityTable .allocated{
+      padding-right: 0px !important;
+  }
+
+  #capacityTable .unallocated, #capacityTable .allocated {
+      font-size: 12px;
+  }
+  

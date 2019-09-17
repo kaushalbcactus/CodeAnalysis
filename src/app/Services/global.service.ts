@@ -6,15 +6,6 @@ import { Injectable } from '@angular/core';
 export class GlobalService {
 
   constructor() { }
-  // public currentUser = {
-  //   id: -1,
-  //   title: '',
-  //   email: '',
-  //   timeZone: 0,
-  //   designation: '',
-  //   webAbsoluteUrl: '',
-  //   serverRelativeUrl: ''
-  // };
   public userInfo: any;
   public oReviewerPendingTasks = [];
   public oTask = {
@@ -124,6 +115,8 @@ export class GlobalService {
     webRelativeUrl: '',
     publicCdn: '',
     userId: 0,
+    email: '',
+    title: '',
     rootsite: '',
   };
 
@@ -327,4 +320,9 @@ export class GlobalService {
   public pfAdmins = [];
   public cdAdmins = [];
 
+  public imageSrcURL = {
+    editImageURL: ''+this.sharePointPageObject.publicCdn+'/edit.png',
+    cancelImageURL:''+this.sharePointPageObject.publicCdn+'/cancel.png',
+    scopeImageURL: ''+this.sharePointPageObject.publicCdn+'/comments.png'
+  };
 }

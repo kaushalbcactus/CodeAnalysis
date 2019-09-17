@@ -1,11 +1,11 @@
 import { GlobalService } from '../../Services/global.service';
-import { ConstantsService } from '../../Services/constants.service';
-import { Component, OnInit, ElementRef, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ElementRef } from '@angular/core';
 import { SPCommonService } from '../../Services/spcommon.service';
 import { TimelineConstantsService } from './../services/timeline-constants.service';
 import { DatePipe } from '@angular/common';
 import { LazyLoadEvent } from 'primeng/primeng';
 import { SPOperationService } from '../../Services/spoperation.service';
+import { ConstantsService } from 'src/app/Services/constants.service';
 
 
 @Component({

@@ -1,0 +1,18 @@
+<div class="wrap-table100">
+  <h2>Centralized Allocation</h2>
+ 
+  <div class="allocated-radiobutton-section">
+      <div class="floatLeft">
+          <input id="unallocated" routerLink="unallocated" name="allocatedradio" type="radio" [checked]="globalService.isUnallocatedChecked" />
+      </div>
+      <div class="floatLeft catHeader">Unallocated</div>
+      <div class="floatLeft">
+          <input id="allocated" routerLink="allocated" name="allocatedradio" type="radio"  [checked]="globalService.isAllocatedChecked"/>
+      </div>
+      <div class="floatLeft catHeader">Allocated</div>
+  </div>
+  <div class="clearBoth"></div>
+  <div class="table-section">
+      <router-outlet></router-outlet>
+  </div>
+</div>

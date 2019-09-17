@@ -1103,7 +1103,7 @@ export class PMCommonService {
     let invoiceRevenue = 0;
     poArray.forEach((poInfoObj) => {
       poInfoObj.poInfoData.forEach(element => {
-        if (element.status === this.constant.STATUS.NOT_STARTED) {
+        if (element.status === this.constant.STATUS.NOT_SAVED) {
           invoiceSc = invoiceSc + element.amount;
           scRevenue = scRevenue + element.amount;
         }
@@ -1156,7 +1156,7 @@ export class PMCommonService {
       let invoiceRevenue = 0;
       const po = poInfoObj.poInfo[0];
       poInfoObj.poInfoData.forEach(element => {
-        if (element.status === this.constant.STATUS.NOT_STARTED) {
+        if (element.status === this.constant.STATUS.NOT_SAVED) {
           totalScheduled += element.amount;
           scRevenue += element.amount;
         }

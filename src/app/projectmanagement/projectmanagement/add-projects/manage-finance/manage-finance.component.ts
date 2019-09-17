@@ -989,7 +989,7 @@ export class ManageFinanceComponent implements OnInit {
         tempPOObj.date = new Date(this.datePipe.transform(this.addPOForm.value.poDate, 'MMM d, y'));
         tempPOObj.amount = this.addPOForm.value.amount;
         tempPOObj.type = 'revenue';
-        tempPOObj.status = this.constant.STATUS.NOT_STARTED;
+        tempPOObj.status = this.constant.STATUS.NOT_SAVED;
         tempPOObj.poc = this.addPOForm.value.primarypoc;
         tempPOObj.pocText = this.pmCommonService.extractNamefromPOC([tempPOObj.poc]);
         tempPOObj.address = this.addPOForm.value.address;

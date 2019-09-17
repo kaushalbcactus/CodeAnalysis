@@ -31,7 +31,7 @@ export class MyDashboardConstantsService {
 
     MyTasks: {
 
-      select: 'ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones',
+      select: 'ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones, IsCentrallyAllocated',
       orderby: 'DueDate asc',
       filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and (Task ne 'Time Booking') and",
       filterStatus: "(Status ne 'Completed') and (Status ne 'Auto Closed')  and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
@@ -464,16 +464,16 @@ export class MyDashboardConstantsService {
     const batchGuid = this.spServices.generateUUID();
     var batchContents = new Array();
     const changeSetId = this.spServices.generateUUID();
-    const data = {
-
+    let data = {
       __metadata: { type: 'SP.Data.SchedulesListItem' },
       Actual_x0020_End_x0020_Date: new Date(),
       Actual_x0020_Start_x0020_Date: task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date(),
       Status: task.Status,
-      TaskComments: task.TaskComments
+      TaskComments: task.TaskComments,
     };
+    const newdata = task.IsCentrallyAllocated === 'Yes' ? {...data, ActiveCA: 'No'} : {...data};
     const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(task.ID) + ")";
-    this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(data), false);
+    this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(newdata), false);
 
     if (isJcIdFound) {
       var docUrl = '';

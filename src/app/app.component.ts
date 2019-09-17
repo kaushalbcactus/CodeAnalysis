@@ -1,7 +1,7 @@
 import { Component, NgZone } from '@angular/core';
-import { GlobalService } from './Services/global.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { environment } from '../environments/environment';
+import { GlobalService } from './Services/global.service';
 // import { Environment } from '../environments/environment.prod';
 declare const _spPageContextInfo;
 
@@ -15,7 +15,7 @@ export class AppComponent {
   title = 'Medcom SPA';
   // tslint:disable-next-line:variable-name
   constructor(
-    public globalObject: GlobalService,
+    public globalService: GlobalService,
     private router: Router,
     // tslint:disable-next-line: variable-name
     private _ngZone: NgZone,
@@ -23,21 +23,19 @@ export class AppComponent {
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
     // tslint:disable-next-line: only-arrow-functions
-    if (environment.production) { if (window) { window.console.log = function () { }; } }
-    this.globalObject.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
-    this.globalObject.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
+    if (environment.production) { if (window) { window.console.log = function() { }; } }
+    this.globalService.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
+    this.globalService.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
-
-
-    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 103 : _spPageContextInfo.userId;
-
-
-    this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
+    this.globalService.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 79 : _spPageContextInfo.userId;
+    this.globalService.sharePointPageObject.email = window.location.href.indexOf('localhost') > -1 ? 'kaushal.bagrodia@cactusglobal.com' : _spPageContextInfo.userEmail;
+    this.globalService.sharePointPageObject.title = window.location.href.indexOf('localhost') > -1 ? 'Kaushal' : _spPageContextInfo.userDisplayName;
+    this.globalService.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
       : _spPageContextInfo.webAbsoluteUrl;
-    this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
+    this.globalService.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
       : _spPageContextInfo.siteServerRelativeUrl;
-    this.globalObject.sharePointPageObject.serverRelativeUrl = this.globalObject.sharePointPageObject.webRelativeUrl;
-    this.globalObject.sharePointPageObject.rootsite = window.origin;
+    this.globalService.sharePointPageObject.serverRelativeUrl = this.globalService.sharePointPageObject.webRelativeUrl;
+    this.globalService.sharePointPageObject.rootsite = window.origin;
     // tslint:disable:no-string-literal
     window['angularComponentReference'] = { component: this, zone: this._ngZone, loadPubSupport: () => this.goToPubSupport(), };
     window['qmsComponentReference'] = { component: this, zone: this._ngZone, loadQMS: () => this.goToQMS(), };
@@ -55,6 +53,9 @@ export class AppComponent {
       component: this, zone: this._ngZone,
       loadAccessLevelDashboard: () => this.goToAccessLevelDashboard(),
     };
+    // tslint:disable-next-line: no-string-literal
+    window['caComponentReference'] = { component: this, zone: this._ngZone,
+      loadCA: () => this.goToCA(), };
 
 
   }
@@ -86,6 +87,11 @@ export class AppComponent {
     }
   }
 
+  goToCA() {
+    if (!window.location.href.includes('centralallocation')) {
+      this.router.navigate(['/centralallocation']);
+    }
+  }
   goToTaskAllocation() {
     if (!window.location.href.includes('taskAllocation')) {
       this.router.navigate(['/taskAllocation']);
@@ -113,5 +119,7 @@ export class AppComponent {
     window['taskAllocationComponentReference'] = null;
     window['qmsComponentReference'] = null;
     window['accessLecelDashboardComponentReference'] = null;
+    window['caComponentReference'] = null;
+    
   }
 }
