@@ -336,6 +336,9 @@ export class EditorComponent implements OnInit {
                         Project Title
                     </th>
                     <th>
+                        POC
+                    </th>
+                    <th>
                         Amount
                     </th>
                 </tr>
@@ -343,7 +346,7 @@ export class EditorComponent implements OnInit {
             <tbody>
                 [[Appendix]]
                 <tr>
-                    <td colspan="3">
+                    <td colspan="4">
                         Total
                     </td>
                     <td>
@@ -436,7 +439,7 @@ export class EditorComponent implements OnInit {
             </td>
         </tr>
         </tbody> </table> </figure>`,
-            
+
             address2: `<p>[[Address2]]</p>`,
             address3: `<p>[[Address3]]</p>`,
             address4: `<p>[[Address4]]</p>`,
@@ -509,6 +512,9 @@ export class EditorComponent implements OnInit {
                         Project Title
                     </th>
                     <th>
+                        POC
+                    </th>
+                    <th>
                         Amount
                     </th>
                 </tr>
@@ -516,7 +522,7 @@ export class EditorComponent implements OnInit {
             <tbody>
                 [[Appendix]]
                 <tr>
-                    <td colspan="3">
+                    <td colspan="4">
                         Total
                     </td>
                     <td>
@@ -535,6 +541,9 @@ export class EditorComponent implements OnInit {
         </td>
         <td>
             [[ProjectTitle]]
+        </td>
+        <td>
+            [[POCName]]
         </td>
         <td>
             [[CurrencySymbol]] [[Amount]]
@@ -1419,6 +1428,35 @@ export class EditorComponent implements OnInit {
                     .col3 #appendix table tr td:last-child {
                         width: 17%;
                     }
+
+                    #appendix.col5 table tr th:first-child,
+                    #appendix.col5 table tr td:first-child,
+                    .col5 #appendix table tr th:first-child,
+                    .col5 #appendix table tr td:first-child  {
+                        width: 18%;
+                    }
+
+                    #appendix.col5 table tr th:nth-child(2),
+                    #appendix.col5 table tr td:nth-child(2),
+                    .col5 #appendix table tr th:nth-child(2),
+                    .col5 #appendix table tr td:nth-child(2) {
+                        width: 17%;
+                    }
+
+                    #appendix.col5 table tr th:nth-child(4),
+                    #appendix.col5 table tr td:nth-child(4),
+                    .col5 #appendix table tr th:nth-child(4),
+                    .col5 #appendix table tr td:nth-child(4) {
+                        width: 20%;
+                    }
+
+                    #appendix.col5 table tr th:last-child,
+                    #appendix.col5 table tr td:last-child,
+                    .col5 #appendix table tr th:last-child,
+                    .col5 #appendix table tr td:last-child {
+                        width: 17%;
+                    }
+
                     
                     #appendix figure img {
                         width: 100%;
@@ -2134,6 +2172,7 @@ export class EditorComponent implements OnInit {
                 appendixRow = appendixRow.replace('[[DvCode]]', invoiceData.Appendix[i].dvcode);
                 appendixRow = appendixRow.replace('[[CactusSpCode]]', invoiceData.Appendix[i].cactusSpCode);
                 appendixRow = appendixRow.replace('[[ProjectTitle]]', invoiceData.Appendix[i].title);
+                appendixRow = appendixRow.replace('[[POCName]]', invoiceData.Appendix[i].poc);
                 appendixRow = appendixRow.replace('[[Amount]]', this.fdShareDataService.styleUSJapan(invoiceData.Appendix[i].amount));
                 appendixRow = appendixRow.replace(new RegExp('\\[\\[CurrencySymbol\\]\\]', 'gi'),
                     invoiceData.usCurrencySymbol);
@@ -2613,21 +2652,93 @@ export class EditorComponent implements OnInit {
         console.log(obj);
         return obj;
     }
-
+    widthDefineModal: boolean;
     getData(data: { htmldata: string; class: string; }) {
         console.log(data);
         this.editor = false;
         const mainUl = document.getElementById(this.elementId);
         const getLi = mainUl.getElementsByTagName('li')[1];
-        console.log(data.htmldata);
+        console.log('data.htmldata ', data.htmldata);
+        console.log('data.class ', data.class);
         if (this.elementId === 'appendix') {
             document.getElementById(this.elementId).innerHTML = data.htmldata;
+            this.widthDefineModal = true;
+            this.extractData(data.htmldata);
             document.getElementById('appendix').parentElement.className = data.class;
         } else if (getLi === null || getLi === undefined) {
             document.getElementById(this.elementId).innerHTML = data.htmldata;
         } else {
             getLi.firstElementChild.innerHTML = data.htmldata;
         }
+    }
+    appendixEditTbHeader: any = [];
+    appendixEditTbbody: any = [];
+    appendixTableTh: any = [];
+    extractData(table) {
+        this.errMsg = '';
+        this.appendixEditTbHeader = [];
+        this.appendixEditTbbody = [];
+        var oDiv = document.createElement('div');
+        oDiv.innerHTML = table;
+        var oTable = oDiv.querySelector('table');
+        this.appendixTableTh = oTable.rows[0].cells;
+        const tableHeader = [];
+        const tableRowData = [];
+
+        if (oTable.rows[0].cells.length) {
+            for (let i = 0; i < oTable.rows[0].cells.length; i++) {
+                const element = oTable.rows[0].cells[i].innerText;
+                tableHeader.push(element);
+            }
+        }
+        if (oTable.rows[1].cells.length) {
+            for (let j = 0; j < oTable.rows[1].cells.length; j++) {
+                const element = oTable.rows[1].cells[j].innerText;
+                tableRowData.push({ element, width: '' });
+            }
+        }
+        this.appendixEditTbHeader = tableHeader;
+        this.appendixEditTbbody = tableRowData;
+    }
+    errMsg: string;
+    setWidth() {
+        this.errMsg = '';
+        let sum = 0;
+        this.appendixEditTbbody.forEach((ele) => {
+            if (!ele.width) {
+                this.errMsg = "Please define width of APPENDIX table coulumn equal to 100";
+                return;
+            }
+            if (ele.width.includes('%')) {
+                let newVal = ele.width.slice('%', -1);
+                ele.width = newVal;
+            }
+            sum += parseInt(ele.width);
+            if (sum !== 100) {
+                this.errMsg = "Please define width of APPENDIX table coulumn equal to 100";
+                return;
+            }
+        });
+        if (sum === 100) {
+            const th = document.getElementById(this.elementId).querySelector('table').querySelectorAll('th');
+            this.appendixEditTbbody.forEach((ele, i) => {
+                th[i].style.width = ele.width + '%';
+                if (sum === 100) {
+                    this.errMsg = '';
+                    this.widthDefineModal = false;
+                }
+            });
+        }
+    }
+
+    enterValue(e) {
+        let charCode = (e.which) ? e.which : e.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            this.errMsg = 'Please enter only integer numbers.';
+            return false;
+        }
+        this.errMsg = '';
+        return true;
     }
 
     disableButton() {
@@ -2658,7 +2769,7 @@ export class EditorComponent implements OnInit {
         }, 1000);
     }
 
-    remove_last_occurrence(str, searchstr)       {
+    remove_last_occurrence(str, searchstr) {
         var index = str.lastIndexOf(searchstr);
         if (index === -1) {
             return str;
@@ -2761,7 +2872,7 @@ export class EditorComponent implements OnInit {
             this.displayJapan = false;
             this.displayUS = false;
             this.displayIndia = false;
-            this.messageService.add({ key: 'editToast', severity: 'success', summary: this.fdConstantsService.fdComponent.selectedEditObject.Type + ' edited successfully.' });
+            this.messageService.add({ key: 'editToast', severity: 'success', summary: 'Success message', detail: this.fdConstantsService.fdComponent.selectedEditObject.Type + ' edited successfully.', life: 2000 });
         }, 300);
     }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { Message, ConfirmationService, MessageService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -7,7 +7,6 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { DatePipe } from '@angular/common';
-import { NodeService } from 'src/app/node.service';
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
@@ -61,6 +60,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     isPSInnerLoaderHidden: boolean = false;
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
     @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
+    @ViewChild('replaceInvoiceFile', { static: false }) replaceInvoiceFile: ElementRef;
+    @ViewChild('paymentResolvedFile', { static: false }) paymentResolvedFile: ElementRef;
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
@@ -75,7 +76,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
         private messageService: MessageService,
-        private nodeService: NodeService,
         private commonService: CommonService,
     ) { }
 
@@ -380,34 +380,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         return found ? found.FName + ' ' + found.LName : ''
     }
 
-    getOutstandingData() {
-        this.outstandingInvoicesRes = [
-            {
-                id: 1,
-                InvoiceStatus: 'Status',
-                InvoiceNumber: 11233,
-                PONumber: '11223344',
-                POName: 'Ashish P',
-                InvoiceDate: '12/1/2018 ',
-                Amount: '556.71',
-                Currency: 'INR',
-                POC: 'Test',
-            },
-            {
-                id: 1,
-                InvoiceStatus: 'Status -1',
-                InvoiceNumber: 11345,
-                PONumber: '2233455',
-                POName: 'PO Name',
-                InvoiceDate: '14/09/2019',
-                Amount: '123.71',
-                Currency: 'INR',
-                POC: 'Test poc',
-            }
-        ]
-        this.createColFieldValues();
-    }
-
     outInvoiceColArray = {
         ClientLegalEntity: [],
         InvoiceStatus: [],
@@ -446,7 +418,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             }
         })
     }
-
 
     // On Row Selection
     onRowSelect(event) {
@@ -567,6 +538,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                         this.editorRef.USTemplateCopy = invObj.saveObj;
                         if (this.editorRef.USTemplateCopy.appendix) {
                             this.editorRef.showAppendix = true;
+                            this.setAppendixCol(this.editorRef.USTemplateCopy.appendix);
                         } else {
                             this.editorRef.showAppendix = false;
                         }
@@ -581,6 +553,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                         this.editorRef.JapanTemplateCopy = invObj.saveObj;
                         if (this.editorRef.JapanTemplateCopy.appendix) {
                             this.editorRef.showAppendix = true;
+                            this.setAppendixCol(this.editorRef.JapanTemplateCopy.appendix);
                         } else {
                             this.editorRef.showAppendix = false;
                         }
@@ -596,6 +569,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                         this.editorRef.IndiaTemplateCopy = invObj.saveObj;
                         if (this.editorRef.IndiaTemplateCopy.appendix) {
                             this.editorRef.showAppendix = true;
+                            this.setAppendixCol(this.editorRef.IndiaTemplateCopy.appendix);
                         } else {
                             this.editorRef.showAppendix = false;
                         }
@@ -607,6 +581,33 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 }
             }
             // this.pdfEditor.getInvoiceData(JSON.parse(data.ProformaHtml));
+        }
+    }
+
+    setAppendixCol(sContent) {
+        var oDiv = document.createElement('div');
+        oDiv.innerHTML = sContent;
+        var oTable = oDiv.querySelector('table');
+        if (oTable) {
+            let colNumber = '';
+            const count = oTable.rows[0].cells.length;
+            switch (count) {
+                case 3:
+                    colNumber = 'col3';
+                    break;
+                case 4:
+                    colNumber = 'col4';
+                    break;
+                case 5:
+                    colNumber = 'col5';
+                    break;
+                default:
+                    break;
+            }
+            this.editorRef.setColumnClass(colNumber);
+        }
+        else {
+            this.editorRef.setColumnClass('');
         }
     }
 
@@ -627,31 +628,23 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
             this.selectedFile = event.target.files[0];
+            const fileName = this.selectedFile.name;
+            const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+            if (fileName !== sNewFileName) {
+                this.replaceInvoiceFile.nativeElement.value = '';
+                this.paymentResoved_form.get('file').setValue('');
+                this.messageService.add({ key: 'outstandingInfoToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+                return false;
+            }
             this.fileReader.readAsArrayBuffer(this.selectedFile);
             this.fileReader.onload = () => {
-                console.log('selectedFile ', this.selectedFile);
-                console.log('this.fileReader  ', this.fileReader.result);
                 let folderPath: string = '/Finance/Invoice/' + folderName + '/';
                 let cleListName = this.globalService.sharePointPageObject.webRelativeUrl + '/' + this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity);
                 this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl(" + "'" + cleListName + '' + folderPath + "'" + ")/Files/add(url=@TargetFileName,overwrite='true')?" +
                     "&@TargetFileName='" + this.selectedFile.name + "'";
-                // this.uploadFileData('');
-                // this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
-                //     console.log('selectedFile uploaded .', res);
-                // })
             };
-
         }
     }
-
-    // uploadFileData(type: string) {
-    //     this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
-    //         console.log('selectedFile uploaded .', res.d.ServerRelativeUrl);
-    //         if (res.d) {
-
-    //         }
-    //     });
-    // }
 
     // Replace File
     selectedFile: any;
@@ -664,7 +657,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             // let fileName = file.substr(0, file.indexOf('.'));
             console.log('fileName  ', file);
             if (file === event.target.files[0].name) {
-                this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'This file name already exit.Please select another file name.', detail: '', life: 4000 });
+                this.messageService.add({ key: 'outstandingInfoToast', severity: 'info', summary: 'Info message', detail: 'This file name already exit.Please select another file name.', life: 4000 });
                 this.replaceInvoice_form.reset();
                 return;
             }
@@ -672,20 +665,25 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
             this.selectedFile = event.target.files[0];
+            const fileName = this.selectedFile.name;
+            const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+            if (fileName !== sNewFileName) {
+                this.replaceInvoiceFile.nativeElement.value = '';
+                this.replaceInvoice_form.get('file').setValue('');
+                this.messageService.add({ key: 'outstandingInfoToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+                return false;
+            }
             this.fileReader.readAsArrayBuffer(this.selectedFile);
             this.fileReader.onload = () => {
-                console.log('selectedFile ', this.selectedFile);
-                console.log('this.fileReader  ', this.fileReader.result);
                 let folderPath: string = '/Finance/Invoice/Client/';
                 let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity);
                 this.filePathUrl = this.spServices.getFileUploadUrl(this.globalService.sharePointPageObject.webRelativeUrl + '/' + cleListName + folderPath, this.selectedFile.name, true);
             };
-
         }
     }
 
     async uploadFileData() {
-        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result)
+        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
         console.log('selectedFile uploaded .', res.ServerRelativeUrl);
         if (res.ServerRelativeUrl) {
             let fileUrl = res.ServerRelativeUrl;
@@ -705,7 +703,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.submitForm(data, 'replaceInvoice');
         } else if (res.hasError) {
             this.isPSInnerLoaderHidden = true;
-            this.messageService.add({ key: 'myKey1', severity: 'info', summary: 'File not uploaded.', detail: 'Folder / ' + res.message.value + '', life: 3000 })
+            this.messageService.add({ key: 'outstandingInfoToast', severity: 'info', summary: 'Info message', detail: 'File not uploaded,folder / ' + res.message.value + '', life: 3000 })
         }
     }
 
@@ -729,7 +727,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.submitForm(data, type);
         } else if (res.hasError) {
             this.isPSInnerLoaderHidden = true;
-            this.messageService.add({ key: 'myKey1', severity: 'info', summary: 'File not uploaded.', detail: 'Folder / ' + res.message.value + '', life: 3000 })
+            this.messageService.add({ key: 'outstandingInfoToast', severity: 'info', summary: 'Info message', detail: 'File not uploaded,folder / ' + res.message.value + '', life: 3000 })
         }
     }
 
@@ -767,7 +765,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         // this.getPOCNamesForEditInv(data.value);
     }
 
-    onSubmit(type: string) {
+    async onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
         console.log()
         if (type === 'paymentResoved') {
@@ -783,6 +781,8 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 return
             }
             console.log('form is submitting ..... & Form data is ', this.disputeInvoice_form.value);
+            this.submitBtn.isClicked = true;
+            this.isPSInnerLoaderHidden = false;
             let obj = {
                 DisputeReason: this.disputeInvoice_form.value.DisputeReason.value,
                 DisputeComments: this.disputeInvoice_form.value.DisputeComments
@@ -796,8 +796,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                     requestPost: false
                 }
             ]
-            this.isPSInnerLoaderHidden = false;
-            this.submitBtn.isClicked = true;;
             this.submitForm(data, type);
         } else if (type === 'replaceInvoice') {
             if (this.replaceInvoice_form.invalid) {
@@ -814,15 +812,14 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             console.log('form is submitting ..... & Form data is ', this.creditOrDebitNote_form.value);
             // sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
             this.isPSInnerLoaderHidden = false;
-            this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
-                if (res.d) {
-                    console.log('selectedFile uploaded .', res.d);
-                    this.submitDebitCreditNoteForm(type, res.d.ServerRelativeUrl);
-                }
-            });
-
+            const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
+            if (res) {
+                console.log('selectedFile uploaded .', res);
+                this.submitDebitCreditNoteForm(type, res.ServerRelativeUrl);
+            }
         } else if (type === 'sentToAP') {
             this.isPSInnerLoaderHidden = false;
+            this.submitBtn.isClicked = true;
             let sts = this.constantService.invoicesStatus.SentToAP;
             // sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
             let obj = {
@@ -837,7 +834,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                     requestPost: false
                 }
             ]
-            this.sentToAPModal = false;
             this.submitForm(data, type);
         }
     }
@@ -881,7 +877,6 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     batchContents: any = [];
     async submitForm(dataEndpointArray, type: string) {
         console.log('Form is submitting');
-
         this.batchContents = [];
         const batchGuid = this.spServices.generateUUID();
         const changeSetId = this.spServices.generateUUID();
@@ -904,21 +899,22 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         const arrResults = res;
         console.log('--oo ', arrResults);
         if (type === "creditDebit") {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success.', detail: '', life: 2000 });
+            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message', detail: 'Success.', life: 2000 });
             this.creditOrDebitModal = false;
             this.reFetchData();
         } else if (type === "sentToAP") {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Status Changed.', detail: '', life: 2000 })
+            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice Status Changed.', life: 2000 })
+            this.sentToAPModal = false;
             this.reFetchData();
         } else if (type === "disputeInvoice") {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Submitted.', detail: '', life: 2000 })
+            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message', detail: 'Submitted.', life: 2000 })
             this.disputeInvoiceModal = false;
         } else if (type === "paymentResoved") {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success.', detail: '', life: 2000 })
+            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message', detail: 'Success.', life: 2000 })
             this.paymentResovedModal = false;
             this.reFetchData();
         } else if (type === "replaceInvoice") {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success.', detail: '', life: 2000 })
+            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message', detail: 'Success.', life: 2000 })
             this.replaceInvoiceModal = false;
             this.reFetchData();
         }

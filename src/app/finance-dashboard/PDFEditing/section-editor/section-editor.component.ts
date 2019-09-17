@@ -15,8 +15,8 @@ export class SectionEditorComponent implements OnInit {
   customClass;
   obj;
   @Input() editableData;
-  Editor = DecoupledEditor;
-  config = { extraPlugins: [MyCustomUploadAdapterPlugin] }
+  public Editor = DecoupledEditor;
+  public config = { extraPlugins: [MyCustomUploadAdapterPlugin] }
   constructor() { }
 
 

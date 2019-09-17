@@ -10,6 +10,16 @@ import { GlobalService } from './global.service';
 export class ConstantsService {
 
   constructor(public globalService: GlobalService) { }
+  loader = {
+    isPSInnerLoaderHidden: false
+  }
+  public userPermission = {
+    isFdUserManager: false,
+    isFdUserExpenseApprover: false,
+    isFDUserAdmin: true,
+    userPermissionMsg: false,
+  }
+
   public listNames = {
     ProjectRelatedInvoices: {
       name: 'ProjectRelatedInvoices',

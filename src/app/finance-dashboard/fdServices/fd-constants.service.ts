@@ -120,6 +120,12 @@ export class FdConstantsService {
             top: 4500,
             // orderby: "Non Billable desc"
         },
+        spendingInfoForNonBillableCS: {
+            select: "ID,Title,Number,Header,DateSpend,FiscalYear,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,Notes,InvoiceID,Category,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,AuthorId,EditorId",
+            filter: "(Status eq 'Approved Payment Pending' or Status eq 'Approved') and Category eq 'Non Billable'  and CSId eq {{UserID}} and Modified ge '{{StartDate}}' and Modified le '{{EndDate}}'",
+            top: 4500,
+            // orderby: "Non Billable desc"
+        },
 
         spendingInfoForBillable: {
             select: "ID,Title,Number,Header,DateSpend,FiscalYear,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,Notes,InvoiceID,Category,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,AuthorId,EditorId",
@@ -127,13 +133,22 @@ export class FdConstantsService {
             top: 4500,
             // orderby: "{{Category}} desc"
         },
+        spendingInfoForBillableCS: {
+            select: "ID,Title,Number,Header,DateSpend,FiscalYear,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,Notes,InvoiceID,Category,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,AuthorId,EditorId",
+            filter: "Category eq 'Billable' and CSId eq {{UserID}} and (Status eq 'Approved Payment Pending' or Status eq 'Approved' or Status eq 'Billed Payment Pending' or (Status eq 'Billed' and Modified ge '{{StartDate}}' and Modified le '{{EndDate}}'))",
+            top: 4500,
+            // orderby: "{{Category}} desc"
+        },
 
         spendingInfoForRC: {
             select: "ID,Title,Number,Header,DateSpend,FiscalYear,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,Notes,InvoiceID,Category,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,AuthorId,EditorId",
             filter: "(Status eq 'Rejected' or Status eq 'Cancelled') and Modified ge '{{StartDate}}' and Modified le '{{EndDate}}' ",
-            top: 4500,
-            // expand:"ActionBy"
-            // orderby: " 'Rejected' desc"
+            top: 4500
+        },
+        spendingInfoForRCCS: {
+            select: "ID,Title,Number,Header,DateSpend,FiscalYear,SpendType,PaymentMode,Currency,Amount,ClientCurrency,ClientAmount,DollarAmount,Status,FileURL,Notes,InvoiceID,Category,Modified,POLookup,ApproverComments,ApproverFileUrl,Created,PayingEntity,VendorFreelancer,RequestType,ClientApprovalFileURL,AuthorId,EditorId",
+            filter: "(Status eq 'Rejected' or Status eq 'Cancelled') and Modified ge '{{StartDate}}' and Modified le '{{EndDate}}'  and CSId eq {{UserID}} ",
+            top: 4500
         },
         // Schedule Deliverable
         invoicesDel: {

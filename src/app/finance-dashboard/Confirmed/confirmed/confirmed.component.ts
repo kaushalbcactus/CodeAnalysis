@@ -597,14 +597,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         for (let i = 0; i < this.selectedAllRowData.length; i++) {
             const element = this.selectedAllRowData[i];
             this.selectedTotalAmt += parseFloat(element.Amount.toFixed(2));
-            //let scheduleType = this.selectedAllRowData[0].ScheduleType;
-            // if (element.ScheduleType !== scheduleType) {
-            //     this.uniqueST = false;
-            //     this.selectedAllRowData.splice(element);
-            //     this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Please select same Schedule type & try again.' });
-            //     break;
-            // }
-
         }
         this.selectedTotalAmt = parseFloat(this.selectedTotalAmt.toFixed(2));
     }
@@ -636,7 +628,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
     convertToExcelFile(cnf1) {
         console.log('cnf ', cnf1);
-
         cnf1.exportCSV();
     }
 
@@ -708,15 +699,15 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     proformaModal: boolean = false;
     addProforma() {
         if (!this.selectedPurchaseNumber) {
-            this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Please select Purchase order Number & try again.' });
+            this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message', detail: 'Please select Purchase order Number & try again.', life: 2000 });
         } else {
             if (this.selectedAllRowData.length) {
                 for (let i = 0; i < this.selectedAllRowData.length; i++) {
                     const element = this.selectedAllRowData[i];
-                    
+
                     let scheduleType = this.selectedAllRowData[0].ScheduleType;
                     if (element.ScheduleType !== scheduleType) {
-                        this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Please select same Schedule type & try again.' });
+                        this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message', detail: 'Please select same Schedule type & try again.', life: 2000 });
                         return;
                     }
                 }
@@ -752,11 +743,11 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                     this.getPOCNamesForEditInv(cle);
                 }
                 else {
-                    this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Proforma cant be generated on Expired PO' });
+                    this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message', detail: 'Proforma cant be generated on Expired PO', life: 2000 });
                 }
 
             } else {
-                this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Please select one of Row Item & try again.' });
+                this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message', detail: 'Please select one of Row Item & try again.', life: 2000 });
             }
         }
     }
@@ -854,8 +845,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             const date = this.addToProforma_form.value.ProformaDate ? new Date(this.addToProforma_form.value.ProformaDate) : new Date();
             proformaDate = this.datePipe.transform(date, 'MM') + this.datePipe.transform(date, 'yy');
             // console.log('proformaDate,', proformaDate);
-            let finalVal = isOOP ? (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum + '-OOP') : 
-                                    (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum);
+            let finalVal = isOOP ? (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum + '-OOP') :
+                (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum);
             this.addToProforma_form.get('ProformaNumber').setValue(finalVal);
 
         }
@@ -1058,7 +1049,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.proformaModal = false;
             this.isPSInnerLoaderHidden = true;
             this.reFetchData();
-            // this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Proforma added.', detail: '', life: 2000 });
+            // this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Proforma added.', detail: '', life: 2000 });
             this.messageService.add({ key: 'custom', sticky: true, severity: 'success', summary: 'Proforma Added', detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber });
 
         } else {
@@ -1066,10 +1057,10 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             const arrResults = res;
             console.log('--oo ', arrResults);
             if (type === "revertInvoice") {
-                this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Reverted the invoice from Confirmed to Scheduled.', detail: '', life: 2000 })
+                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message', detail: 'Reverted the invoice from Confirmed to Scheduled.', life: 2000 });
                 this.reFetchData();
             } else if (type === "editInvoice") {
-                this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Invoice Updated.', detail: '', life: 2000 })
+                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice Updated.', life: 2000 });
                 this.reFetchData();
             }
             this.isPSInnerLoaderHidden = true;
@@ -1117,13 +1108,13 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 batchURL.push(getPIData);
 
             });
-           
+
             retProjects = await this.spServices.executeBatch(batchURL);
-            const mappedProjects = retProjects.map( obj => obj.retItems.length ? obj.retItems[0] : []);
+            const mappedProjects = retProjects.map(obj => obj.retItems.length ? obj.retItems[0] : []);
             projects = [...projects, ...mappedProjects];
             projects = [...projects, ...retProjects];
         }
-        const appendixObj = { dvcode: '', cactusSpCode: '', title: '', amount: '' };
+        const appendixObj = { dvcode: '', cactusSpCode: '', title: '', amount: '', poc: '' };
         selectedProjects.forEach(element => {
             const project = projects.find(e => e.ProjectCode === element.ProjectCode);
             let appendix = Object.assign({}, appendixObj);
@@ -1132,6 +1123,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 appendix.cactusSpCode = project.ProjectCode ? project.ProjectCode : '';
                 appendix.title = project.Title ? project.Title : '';
             }
+            console.log('element ----> ', element);
+            appendix.poc = element.POCName;
             appendix.amount = element.Amount;
             projectAppendix.push(appendix);
         });

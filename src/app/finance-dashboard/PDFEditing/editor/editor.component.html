@@ -427,6 +427,61 @@
     <app-section-editor *ngIf="editor" [editableData]="data" (editdata)="getData($event)"></app-section-editor>
 </p-dialog>
 
-<p-toast position="bottom-right" key="editToast"></p-toast>
+<p-toast position="bottom-center" key="editToast"></p-toast>
+
+
+<!--  -->
+
+<p-dialog header="Define width to Appendix table column" [(visible)]="widthDefineModal" [modal]="true"
+    [draggable]="false" [contentStyle]="{'min-height':'150px','max-height':'450px'}" [responsive]="true"
+    [style]="{'width': '75%'}">
+
+    <form id="myform">
+        <div class="ui-g">
+            <div class="row container">
+                <div class="col-lg-3">
+                    <div *ngFor="let col of appendixEditTbHeader" style="height: 37px;">
+                        {{col}}
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div *ngFor="let body of appendixEditTbbody" style="margin: 1px;">
+                        <input type="text" name="width" placeholder="Define width" [(ngModel)]="body.width"
+                            (keypress)="enterValue($event)" style="width: 100%;">
+                    </div>
+                    <div *ngIf="errMsg">
+                        <span style="color: red;">{{errMsg}}</span>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <b style="color: red;">Tips: </b>
+                    <b style="font-size: 12px;">Following are the minimun values for respective fields.</b>
+                    <table>
+                        <tr>
+                            <td style="width: 40%">DV Code / Short title</td>
+                            <td style="width: 30%">18%</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%">SP Code</td>
+                            <td style="width: 30%">17%</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%">POC</td>
+                            <td style="width: 30%">20%</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%">Amount</td>
+                            <td style="width: 30%">17%</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </form>
+    <p-footer>
+        <button pButton type="button" label="Set" (click)="setWidth()"></button>
+    </p-footer>
+</p-dialog>
+
 
 <!-- <pre>{{ saveObject|json}}</pre> -->

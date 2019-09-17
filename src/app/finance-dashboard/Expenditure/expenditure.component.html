@@ -120,7 +120,7 @@
             </div>
             <div class="p-col-8">
                 <div class="box">
-                    <input id="input" type="text" (keypress)="onlyNumberKey($event)" pInputText style="width: 100%;" formControlName="Amount" maxlength="15" (input)="refAmt($event.target.value)" />
+                    <input id="input" type="text" appNumberOnly pInputText style="width: 100%;" formControlName="Amount" maxlength="15" (input)="refAmt($event.target.value)" />
 
                     <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.Amount.errors">
                         <div *ngIf="isValidExpenditureForm.Amount.errors.required" style="color:red;">Please provide Amount.</div>
@@ -183,7 +183,7 @@
             </div>
             <div class="p-col-8">
                 <div class="box">
-                    <input type="file" name="myfile" class="form-control" id="myfile" (change)="caOnFileChange($event, 'ClientApproval')" #fileInput formControlName="CAFileURL" />
+                    <input type="file" name="myfile" class="form-control" id="myfile" (change)="caOnFileChange($event, 'ClientApproval')" #caFileInput formControlName="CAFileURL" />
                     <div *ngIf="formSubmit.isSubmit && isValidExpenditureForm.CAFileURL.errors">
                         <div *ngIf="isValidExpenditureForm.CAFileURL.errors.required" style="color:red;">Approval file is required.
                         </div>
@@ -212,7 +212,7 @@
                         </p-dropdown>
                     </td>
                     <td>
-                        <input id="input" type="text" (keypress)="onlyNumberKey($event)" pInputText [(ngModel)]="p.AmountPerProject" maxlength="15" (input)="enteredAmt($event.target.value, i)" />
+                        <input id="input" type="text" appNumberOnly pInputText [(ngModel)]="p.AmountPerProject" maxlength="15" (input)="enteredAmt($event.target.value, i)" />
                     </td>
                     <td>
                         <!-- <button pButtontype="button" label="Add" (click)="addProjectAmtItem()" class="ui-button-rounded"></button> -->
@@ -239,7 +239,7 @@
 </p-dialog>
 
 <!-- Create Freelancer / Vendor Modal -->
-<p-dialog header="Create Freelancer / Vendor" [(visible)]="freeLancerModal" [modal]="true" [contentStyle]="{'max-height':'450px'}" [style]="{'width': '85%'}" [responsive]="true" (onHide)="cancelFormSub('editDeliverable')">
+<p-dialog header="Create Freelancer / Vendor" [(visible)]="freeLancerModal" [modal]="true" [contentStyle]="{'max-height':'450px'}" [style]="{'width': '85%'}" [responsive]="true" (onHide)="cancelFormSub('createFreelancer')">
     <form [formGroup]="createFreelancer_form">
 
         <div class="p-grid">
@@ -262,7 +262,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <input type="text" pInputText formControlName="PhoneNo" placeholder="" style="width: 100%;" (keypress)="onlyNumberKey($event)" maxlength="30" />
+                    <input type="text" pInputText formControlName="PhoneNo" placeholder="" style="width: 100%;" appNumberOnly maxlength="30" />
                     <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.PhoneNo.errors">
                         <div *ngIf="isValidCreateFreelancerForm.PhoneNo.errors.required" style="color:red;">
                             Please provide Phone NO .</div>
@@ -276,12 +276,12 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <input type="text" pInputText formControlName="Email" placeholder="a@a.com" maxlength="100" style="width: 100%;" />
+                    <input type="text" pInputText formControlName="Email" placeholder="a@a.com" maxlength="100" style="width: 100%;" (blur)="isUniqueClientVendorEmailID()" />
                     <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.Email.errors">
                         <div *ngIf="isValidCreateFreelancerForm.Email.errors.required" style="color:red;">
                             Please provide Email.</div>
                     </div>
-                    <div *ngIf="formSubmit.isSubmit && cvEmailIdFound">
+                    <div *ngIf="cvEmailIdFound">
                         <div style="color:red;">
                             This Email ID is already avaliable.Please provide new one.</div>
                     </div>
@@ -295,7 +295,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-dropdown resetFilterOnHide="true" [options]="recordTypes" virtualScroll="true" itemSize="30" [showClear]="false" placeholder="Select a type" [style]="{'width':'100%'}" formControlName="RecordType" optionLabel="label">
+                    <p-dropdown resetFilterOnHide="true" [options]="recordTypes" [showClear]="false" placeholder="Select a type" [style]="{'width':'100%'}" formControlName="RecordType" optionLabel="label">
                     </p-dropdown>
 
                     <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.RecordType.errors">
@@ -341,7 +341,7 @@
 
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="M dd, yy" yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="ContractStartDate">
+                    <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="M dd, yy" yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="ContractStartDate" (onSelect)="contractSDate()">
                     </p-calendar>
                     <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.ContractStartDate.errors">
                         <div *ngIf="isValidCreateFreelancerForm.ContractStartDate.errors.required" style="color:red;">
@@ -356,7 +356,7 @@
 
             <div class="p-col-12 p-md-6 p-lg-3">
                 <div class="box">
-                    <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="M dd, yy" yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="ContractEndDate">
+                    <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="M dd, yy" yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true" [minDate]="minimumDate" [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="ContractEndDate" (onSelect)="contractEDate()">
                     </p-calendar>
                     <!-- <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.ContractEndDate.errors">
                         <div *ngIf="isValidCreateFreelancerForm.ContractEndDate.errors.required" style="color:red;">
@@ -378,6 +378,23 @@
                     </p-radioButton>
                     <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.WLA.errors">
                         <div *ngIf="isValidCreateFreelancerForm.WLA.errors.required" style="color:red;">WLA is required.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    NDA
+                </div>
+            </div>
+            <div class="p-col-12 p-md-6 p-lg-3">
+                <div class="box">
+                    <p-radioButton name="nda" value="Yes" label="Yes" inputId="b1" formControlName="NDA">
+                    </p-radioButton>&nbsp;
+                    <p-radioButton name="nda" value="No" label="No" inputId="b2" formControlName="NDA">
+                    </p-radioButton>
+                    <div *ngIf="formSubmit.isSubmit && isValidCreateFreelancerForm.NDA.errors">
+                        <div *ngIf="isValidCreateFreelancerForm.NDA.errors.required" style="color:red;">NDA is required.</div>
                     </div>
                 </div>
             </div>
@@ -439,6 +456,8 @@
 </p-dialog>
 
 <!-- Toast Messages -->
-<p-toast position="bottom-right" key="fdToast"></p-toast>
+<p-toast position="bottom-center" key="expenseInfoToast"></p-toast>
+<p-toast position="bottom-center" key="expenseSuccessToast"></p-toast>
+<p-toast position="bottom-center" key="expenseErrorToast"></p-toast>
 
 <router-outlet></router-outlet>

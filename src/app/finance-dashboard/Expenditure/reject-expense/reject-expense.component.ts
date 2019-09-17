@@ -154,9 +154,20 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
-        let obj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForRC);
-        obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
-        const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', obj);
+        // let obj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForRC);
+        // obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
+        let speInfoObj
+        const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
+        if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('ExpenseApprovers') > -1) {
+            speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForRC);
+            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
+        }
+        else {
+            speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForRCCS);
+            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate).replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
+        }
+
+        const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
         let endPoints = [sinfoEndpoint];
         let userBatchBody;
         for (let i = 0; i < endPoints.length; i++) {

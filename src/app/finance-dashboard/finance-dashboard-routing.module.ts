@@ -15,21 +15,24 @@ import { ConfirmedComponent } from './Confirmed/confirmed/confirmed.component';
 import { ProformaComponent } from './Proforma/proforma/proforma.component';
 import { OutstandingInvoicesComponent } from './Outstanding-Invoices/outstanding-invoices/outstanding-invoices.component';
 import { PaidInvoicesComponent } from './Paid-Invoices/paid-invoices/paid-invoices.component';
+import { FdAuthGuard } from './fd-AuthGuard/fd-auth.guard';
 
 const routes: Routes = [
     // { path: '', component: FinanceDashboardComponent },
     {
         path: '',
         component: FinanceDashboardComponent,
+        canActivate: [FdAuthGuard],
         children: [
             { path: '', redirectTo: 'expenditure', pathMatch: 'full' },
             {
                 path: 'expenditure',
                 component: ExpenditureComponent,
+                canActivateChild: [FdAuthGuard],
                 children: [
                     { path: '', redirectTo: 'pending', pathMatch: 'full' },
                     { path: 'pending', component: PendingExpenseComponent },
-                    { path: 'cancelled-reject', component: RejectExpenseComponent },
+                    { path: 'cancelled-reject', component: RejectExpenseComponent, },
                     { path: 'approvedBillable', component: ApprovedBillableComponent },
                     { path: 'approvedNonBillable', component: ApprovedNonBillableComponent },
                 ]
@@ -40,6 +43,7 @@ const routes: Routes = [
             {
                 path: 'scheduled',
                 component: ScheduledComponent,
+                canActivateChild: [FdAuthGuard],
                 children: [
                     { path: '', redirectTo: 'deliverable-based', pathMatch: 'full' },
                     { path: 'deliverable-based', component: DeliverableBasedComponent },
@@ -49,10 +53,10 @@ const routes: Routes = [
                 ]
             },
 
-            { path: 'confirmed', component: ConfirmedComponent },
-            { path: 'proforma', component: ProformaComponent },
-            { path: 'outstanding-invoices', component: OutstandingInvoicesComponent },
-            { path: 'paid-invoices', component: PaidInvoicesComponent },
+            { path: 'confirmed', component: ConfirmedComponent, canActivate: [FdAuthGuard], },
+            { path: 'proforma', component: ProformaComponent, canActivate: [FdAuthGuard], },
+            { path: 'outstanding-invoices', component: OutstandingInvoicesComponent, canActivate: [FdAuthGuard], },
+            { path: 'paid-invoices', component: PaidInvoicesComponent, canActivate: [FdAuthGuard], },
 
         ],
         resolve: { fdData: FDResolve },

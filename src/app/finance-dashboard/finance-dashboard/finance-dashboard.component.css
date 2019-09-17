@@ -682,6 +682,34 @@ figure {
     width: 17%;
 }
 
+#appendix.col5 table tr th:first-child,
+#appendix.col5 table tr td:first-child,
+.col5 #appendix table tr th:first-child,
+.col5 #appendix table tr td:first-child  {
+    width: 18%;
+}
+
+#appendix.col5 table tr th:nth-child(2),
+#appendix.col5 table tr td:nth-child(2),
+.col5 #appendix table tr th:nth-child(2),
+.col5 #appendix table tr td:nth-child(2) {
+    width: 17%;
+}
+
+#appendix.col5 table tr th:nth-child(4),
+#appendix.col5 table tr td:nth-child(4),
+.col5 #appendix table tr th:nth-child(4),
+.col5 #appendix table tr td:nth-child(4) {
+    width: 20%;
+}
+
+#appendix.col5 table tr th:last-child,
+#appendix.col5 table tr td:last-child,
+.col5 #appendix table tr th:last-child,
+.col5 #appendix table tr td:last-child {
+    width: 17%;
+}
+
 #appendix figure img {
     width: 100%;
 }

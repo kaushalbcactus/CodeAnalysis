@@ -13,6 +13,7 @@ import { FileUploadModule  } from 'ng2-file-upload';
 import { DataService } from './Services/data.service';
 import { TimelineHistoryComponent } from './timeline/timeline-history/timeline-history.component';
 import { MessageService } from 'primeng/api';
+import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 
 
 
@@ -32,6 +33,7 @@ import { MessageService } from 'primeng/api';
   ],
   declarations: [
     AppComponent,
+    PageNotFoundComponent
   ],
   providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService],
   bootstrap: [AppComponent]

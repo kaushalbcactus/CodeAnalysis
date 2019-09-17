@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { Calendar } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
@@ -65,6 +65,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     proformaTypes: any = [];
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
     @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
+    @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
@@ -1136,7 +1137,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             // let fileName = file.substr(0, file.indexOf('.'));
             console.log('fileName  ', file);
             if (file === event.target.files[0].name) {
-                this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'This file name already exit.Please select another file name.', detail: '', life: 4000 });
+                this.messageService.add({ key: 'proformaInfoToast', severity: 'info', summary: 'Info message', detail: 'This file name already exit.Please select another file name.', life: 4000 });
                 this.replaceProforma_form.reset();
                 return;
             }
@@ -1144,6 +1145,14 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
             this.selectedFile = event.target.files[0];
+            const fileName = this.selectedFile.name;
+            const sNewFileName = fileName.replace(/[~#%&*\{\}\\:/\+<>?"'@/]/gi, '');
+            if (fileName !== sNewFileName) {
+                this.fileInput.nativeElement.value = '';
+                this.replaceProforma_form.get('file').setValue('');
+                this.messageService.add({ key: 'proformaInfoToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+                return false;
+            }
             this.fileReader.readAsArrayBuffer(this.selectedFile);
             this.fileReader.onload = () => {
                 console.log('selectedFile ', this.selectedFile);
@@ -1154,9 +1163,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 // this.filePathUrl = this.globalService.sharePointPageObject.webAbsoluteUrl + "/_api/web/GetFolderByServerRelativeUrl(" + "'" + cleListName + '' + folderPath + "'" + ")/Files/add(url=@TargetFileName,overwrite='true')?" +
                 // "&@TargetFileName='" + this.selectedFile.name + "'";
                 // this.uploadFileData('');
-                // this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
-                //     console.log('selectedFile uploaded .', res);
-                // })
             };
 
         }
@@ -1192,7 +1198,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             this.submitForm(data, 'replaceProforma');
         } else if (res.hasError) {
             this.isPSInnerLoaderHidden = true;
-            this.messageService.add({ key: 'myKey1', severity: 'info', summary: 'File not uploaded.', detail: 'Folder / ' + res.message.value + '', life: 3000 })
+            this.messageService.add({ key: 'proformaInfoToast', severity: 'info', summary: 'Info message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 })
         }
     }
 
@@ -1307,6 +1313,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.formSubmit.isSubmit = true;
         console.log('type ', type);
         if (type === 'Mark as Sent to Client') {
+            this.submitBtn.isClicked = true;
+            this.isPSInnerLoaderHidden = false;
             let sts = '';
             sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected';
             let obj = {
@@ -1321,11 +1329,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
                     requestPost: false
                 }
             ];
-            this.submitBtn.isClicked = true;
-            this.isPSInnerLoaderHidden = false;
             this.submitForm(data, type);
-        }
-        if (type === 'Reject Proforma') {
+        } else if (type === 'Reject Proforma') {
             let sts = '';
             sts = 'Rejected'
             let obj = {
@@ -1357,17 +1362,15 @@ export class ProformaComponent implements OnInit, OnDestroy {
                     }
                 )
             }
-
-
             this.submitBtn.isClicked = true;
             this.isPSInnerLoaderHidden = false;
             this.submitForm(data, type);
-        }
-        if (type === 'createProforma') {
+        } else if (type === 'createProforma') {
             if (this.createProforma_form.invalid) {
                 return;
             }
             this.isPSInnerLoaderHidden = false;
+            this.submitBtn.isClicked = true;
             console.log('form is submitting ..... & Form data is ', this.createProforma_form.getRawValue());
             let obj: any = {};
             obj = {
@@ -1411,8 +1414,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
                     requestPost: false
                 }
             ];
-            this.submitBtn.isClicked = true;
-
             this.submitForm(data, type);
         } else if (type === 'replaceProforma') {
             if (this.replaceProforma_form.invalid) {
@@ -1425,13 +1426,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
         } else if (type === 'generateInvoice') {
             if (this.generateInvoice_form.invalid) {
-                return
+                return;
             }
-
-            console.log('form is submitting ..... & Form data is ', this.generateInvoice_form.value);
-            this.generateInvoiceNumber();
             this.submitBtn.isClicked = true;
             this.isPSInnerLoaderHidden = false;
+            console.log('form is submitting ..... & Form data is ', this.generateInvoice_form.value);
+            this.generateInvoiceNumber();
         }
     }
 
@@ -1466,12 +1466,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (type === "Mark as Sent to Client" || type === "Reject Proforma") {
             let sts = '';
             sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Status changed to "' + sts + '" Successfully.', detail: '', life: 2000 })
+            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: 'Status changed to "' + sts + '" Successfully.', life: 2000 });
             this.reFetchData(type);
         } else if (type === "createProforma") {
             this.proformaModal = false;
             await this.fdDataShareServie.callProformaCreation(arrResults[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, []);
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Proforma Created.', detail: '', life: 2000 })
+            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: 'Proforma Created.', life: 2000 });
             this.reFetchData(type);
 
         } else if (type === "generateInvoice") {
@@ -1533,7 +1533,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             this.messageService.add({ key: 'custom', sticky: true, severity: 'success', summary: 'Invoice Generated', detail: 'Invoice Number: ' + oInv.InvoiceNumber });
             this.reFetchData(type);
         } else if (type === "replaceProforma") {
-            this.messageService.add({ key: 'myKey1', severity: 'success', summary: 'Success.', detail: '', life: 2000 });
+            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: 'Success.', life: 2000 });
             this.replaceProformaModal = false;
             this.reFetchData(type);
         }
@@ -1588,10 +1588,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
         return true;
     }
 
-    ngOnDestroy() {
-        // this.subscriptionPE.unsubscribe();
-        this.subscription.unsubscribe();
-    }
     @HostListener('document:click', ['$event'])
     clickout(event) {
         if (event.target.className === "pi pi-ellipsis-v") {
@@ -1614,6 +1610,11 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.tempClick = undefined;
             }
         }
+    }
+
+    ngOnDestroy() {
+        // this.subscriptionPE.unsubscribe();
+        this.subscription.unsubscribe();
     }
 
 }
