@@ -306,7 +306,7 @@
                             "buildOptimizer": true,
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomUAT/AngularModules/PublicationSupport/"
                         },
-                        "CADev": {
+                        "devCA": {
                             "outputHashing": "none",
                             "deployUrl": "https://cactusglobal.sharepoint.com/sites/medcomdev/SiteAssets/CustomAssets/AngularModules/CA/"
                         },
