@@ -518,6 +518,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                       'milestone': milestoneTask.Milestone,
                       'skillLevel': milestoneTask.SkillLevel,
                       'CentralAllocationDone': milestoneTask.CentralAllocationDone,
+                      'ActiveCA': milestoneTask.ActiveCA,
                       'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
                       'deallocateCentral': false
                     };
@@ -674,6 +675,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                       'milestone': milestoneTask.Milestone,
                       'skillLevel': milestoneTask.SkillLevel,
                       'CentralAllocationDone': milestoneTask.CentralAllocationDone,
+                      'ActiveCA': milestoneTask.ActiveCA,
                       'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
                       'deallocateCentral': false
                     };
@@ -783,6 +785,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                 'milestone': clientReviewObj[0].Milestone,
                 'skillLevel': clientReviewObj[0].SkillLevel,
                 'CentralAllocationDone': clientReviewObj[0].CentralAllocationDone,
+                'ActiveCA': clientReviewObj[0].ActiveCA,
                 'assignedUserTimeZone': clientReviewObj[0].assignedUserTimeZone,
                 'deallocateCentral': false
               };
@@ -909,6 +912,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'milestone': milestoneTask.Milestone,
                     'skillLevel': milestoneTask.SkillLevel,
                     'CentralAllocationDone': milestoneTask.CentralAllocationDone,
+                    'ActiveCA': milestoneTask.ActiveCA,
                     'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
                     'deallocateCentral': false
                   };
@@ -1744,6 +1748,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       milestoneTask.assignedUserChanged = true;
       if (milestoneTask.AssignedTo.hasOwnProperty('ID')) {
         milestoneTask.IsCentrallyAllocated = 'No';
+        // milestoneTask.ActiveCA = 'No';
         milestoneTask.skillLevel = this.commonService.getSkillName(milestoneTask.AssignedTo.SkillText);
         const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
         const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
@@ -1778,6 +1783,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         milestoneTask.pUserEndTimePart = this.getTimePart(milestoneTask.pUserEnd);
 
         milestoneTask.IsCentrallyAllocated = 'Yes';
+        // milestoneTask.ActiveCA = 'Yes';
         milestoneTask.skillLevel = milestoneTask.AssignedTo.SkillText;
         milestoneTask.edited = true;
         milestoneTask.deallocateCentral = true;
@@ -2533,10 +2539,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     if (milestoneTask.IsCentrallyAllocated === 'Yes' && milestoneTask.status === 'Not Started') {
       if (bAdd) {
+        milestoneTask.ActiveCA = 'Yes';
         //// send task creation email
         this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, 'New central task created'
           + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'New central task created');
       } else if (milestoneTask.CentralAllocationDone === 'Yes' && milestoneTask.deallocateCentral) {
+        // milestoneTask.ActiveCA = 'No';
         milestoneTask.CentralAllocationDone = 'No';
         milestoneTask.AssignedTo.ID = -1;
         const timeZone = milestoneTask.assignedUserTimeZone;
@@ -2572,7 +2580,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
           PrevTasks: this.setPreviousAndNext(milestoneTask.previousTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
           SkillLevel: milestoneTask.skillLevel,
           IsCentrallyAllocated: milestoneTask.IsCentrallyAllocated,
-          CentralAllocationDone: milestoneTask.CentralAllocationDone
+          CentralAllocationDone: milestoneTask.CentralAllocationDone,
+          ActiveCA: milestoneTask.ActiveCA
         } :
         {
           __metadata: { type: 'SP.Data.SchedulesListItem' },
@@ -2595,7 +2604,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
           Title: this.oProjectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.pName,
           SkillLevel: milestoneTask.skillLevel,
           IsCentrallyAllocated: milestoneTask.IsCentrallyAllocated,
-          CentralAllocationDone: milestoneTask.CentralAllocationDone
+          CentralAllocationDone: milestoneTask.CentralAllocationDone,
+          // ActiveCA: milestoneTask.ActiveCA
         }
     );
     return {
@@ -3248,6 +3258,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                 task.status = 'Auto Closed';
               }
             }
+            task.ActiveCA = 'No';
             // task.allowStart =  true;
             // tslint:disable
             const endpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(task.pID) + ")";
@@ -3255,7 +3266,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
             const updateSchedulesBody = JSON.stringify({
               __metadata: { type: 'SP.Data.SchedulesListItem' },
               Status: task.status,
-              AllowCompletion: 'Yes'
+              AllowCompletion: 'Yes',
+              ActiveCA : task.ActiveCA
             });
             this.spServices.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateSchedulesBody, false);
           }
@@ -3308,6 +3320,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
         if (element.IsCentrallyAllocated === 'Yes') {
           //// send task creation email
+          element.ActiveCA = 'Yes';
           this.sendCentralTaskMail(this.oProjectDetails, element, 'New central task created'
             + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'New central task created');
         }
@@ -3319,7 +3332,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
         // tslint:enable
         const updateSchedulesBody = JSON.stringify({
           __metadata: { type: 'SP.Data.SchedulesListItem' },
-          Status: element.status
+          Status: element.status,
+          ActiveCA:  element.ActiveCA
         });
         spservice.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateSchedulesBody, false);
       }
@@ -3690,6 +3704,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       'milestone': milestone.label,
       'skillLevel': task.skillLevel,
       'CentralAllocationDone': 'No',
+      'ActiveCA': 'No',
       'assignedUserTimeZone': '5.5',
       'deallocateCentral': true
     };

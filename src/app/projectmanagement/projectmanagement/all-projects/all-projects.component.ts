@@ -1150,7 +1150,8 @@ export class AllProjectsComponent implements OnInit {
           __metadata: {
             type: this.constants.listNames.Schedules.type
           },
-          Status: this.constants.STATUS.DELETED
+          Status: this.constants.STATUS.DELETED,
+          ActiveCA: 'No'
         };
         const scUpdate = Object.assign({}, options);
         scUpdate.data = scUpdateData;
@@ -1478,6 +1479,7 @@ export class AllProjectsComponent implements OnInit {
                 type: this.constants.listNames.Schedules.type
               },
               Status: this.constants.STATUS.AUTO_CLOSED,
+              ActiveCA:'No'
             };
             const invoiceUpdate = Object.assign({}, options);
             invoiceUpdate.data = scheduleData;

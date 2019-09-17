@@ -9,7 +9,7 @@ import { GlobalService } from './global.service';
 
 export class ConstantsService {
 
-  constructor(public global: GlobalService) { }
+  constructor(public globalService: GlobalService) { }
   public listNames = {
     ProjectRelatedInvoices: {
       name: 'ProjectRelatedInvoices',
@@ -319,7 +319,7 @@ export class ConstantsService {
     taskRating: 'Task Feedback',
     qualitative: 'Qualitative'
   };
-  public currentWebUrl = this.global.sharePointPageObject.serverRelativeUrl;
+  public currentWebUrl = this.globalService.sharePointPageObject.serverRelativeUrl;
   // ***********************************************************************//
   // Add SOW
   // ***********************************************************************//
@@ -335,7 +335,8 @@ export class ConstantsService {
   };
 
   public STATUS = {
-    NOT_STARTED: 'Not Saved',
+    NOT_STARTED: 'Not Started',
+    NOT_SAVED: 'Not Saved',
     SCHEDUELD: 'Scheduled',
     APPROVED: 'Approved',
     APPROVAL_PENDING: 'Approval Pending',
@@ -576,6 +577,11 @@ export class ConstantsService {
     AwaitingClosedCreditNote: 'Awaiting Closed Credit Note',
     AwaitingClosedDebitNote: 'Awaiting Closed Debit Note',
     ClosedWithDebitNote: 'Closed with Debit Note',
+  };
+
+  public userType = {
+    BEST_FIT : 'Best Fit',
+    RECOMMENDED : 'Recommended'
   };
 
 }

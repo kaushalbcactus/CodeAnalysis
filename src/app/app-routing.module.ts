@@ -11,8 +11,8 @@ const routes: Routes = [
   { path: 'taskAllocation', loadChildren: './task-allocation/task-allocation.module#TaskAllocationModule' },
   { path: 'financeDashboard', loadChildren: './finance-dashboard/finance-dashboard.module#FinanceDashboardModule' },
   { path: 'qms', loadChildren: './qms/qms.module#QmsModule' },
-  { path: 'admin', loadChildren: './admin/admin.module#AdminModule' }
-
+  { path: 'admin', loadChildren: './admin/admin.module#AdminModule' },
+  { path: 'centralallocation', loadChildren: './ca/ca.module#CAModule'}
 ];
 
 

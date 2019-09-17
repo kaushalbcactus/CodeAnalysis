@@ -306,7 +306,8 @@ export class TimeSpentDialogComponent implements OnInit {
       Actual_x0020_Start_x0020_Date: ActualStartDate,
       TimeSpent: totalTimeSpent,
       TimeSpentPerDay: timeSpentString,
-      Status: task.Status === "Not Started" ? "In Progress" : task.Status
+      Status: task.Status === "Not Started" ? "In Progress" : task.Status,
+      ActiveCA: 'No'
     };
     await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, "SP.Data.SchedulesListItem");
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task Time updated successfully.' });
