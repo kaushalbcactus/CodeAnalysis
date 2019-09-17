@@ -44,12 +44,7 @@
     margin-right: 10px;
     margin-left: 7px;
   }
-  #sideNavBox{
-    display: none !important;
-  }
-  #contentBox {
-    margin-left: 20px !important;
-  }
+ 
   :host ::ng-deep .allocated-radiobutton-section{
     padding-bottom: 30px !important;
     margin-bottom: 20px;
@@ -72,12 +67,12 @@
   /*//////////////////////////////////////////////////////////////////
   [ Table ]*/
   
-  :host ::ng-deep limiter {
+  :host ::ng-deep .limiter {
     width: 100%;
     margin: 0 auto;
   }
   
-  :host ::ng-deep container-table100 {
+  :host ::ng-deep .container-table100 {
     width: 100%;
     min-height: 100vh;
     background: #d1d1d1;
@@ -92,22 +87,22 @@
     padding: 33px 30px;
   }
   
-  :host ::ng-deep wrap-table100 {
+  :host ::ng-deep .wrap-table100 {
     /* width: 1300px;
     margin: 40px auto; */
       
   }
-  :host ::ng-deep wrap-table100 h2{ text-transform: uppercase; font-size:20px; color: #BDBDBD; letter-spacing: 3px; border-bottom: 1px solid #BDBDBD; padding-bottom: 18px; margin-bottom: 25px}
-  :host ::ng-deep red{ color:#be3131}
+  ::ng-deep .wrap-table100 h2{ text-transform: uppercase; font-size:20px; color: #BDBDBD; letter-spacing: 3px; border-bottom: 1px solid #BDBDBD; padding-bottom: 18px; margin-bottom: 25px}
+  :host ::ng-deep .red{ color:#be3131}
   
   /*//////////////////////////////////////////////////////////////////
   [ Table ]*/
-  table {
+  :host ::ng-deep table {
     width: 100%;
     background-color: #fff;
   }
   
-  th, td {
+  :host ::ng-deep th, :host ::ng-deep td {
     font-weight: unset;
     padding-right: 10px;
   }
@@ -313,13 +308,13 @@
    padding-left: 2px;
    cursor: pointer;
   }
-  :host ::ng-deep .table100 td.mat-cell:first-of-type, .table100 td.mat-footer-cell:first-of-type, .table100 th.mat-header-cell:first-of-type {
+  :host ::ng-deep .table100 td.mat-cell:first-of-type, :host ::ng-deep .table100 td.mat-footer-cell:first-of-type, :host ::ng-deep .table100 th.mat-header-cell:first-of-type {
     padding-left: 5px !important;
   }
-  :host ::ng-deep .table100 td.mat-cell:last-of-type, .table100 td.mat-footer-cell:last-of-type, .table100 th.mat-header-cell:last-of-type {
+  :host ::ng-deep .table100 td.mat-cell:last-of-type, :host ::ng-deep .table100 td.mat-footer-cell:last-of-type, :host ::ng-deep .table100 th.mat-header-cell:last-of-type {
     padding-right: 5px !important;
   }
-  :host ::ng-deep .table100 table tbody tr td:first-child,.table100 table tbody tr td:nth-child(2){
+  :host ::ng-deep .table100 table tbody tr td:first-child,:host ::ng-deep .table100 table tbody tr td:nth-child(2){
     word-break: break-all;
   }
   
@@ -364,7 +359,7 @@
     :host ::ng-deep .UserTasksRow>td>table>tbody>tr>td>div{
       word-break: break-all;
     }
-    p-multiselect>div {
+    :host ::ng-deep p-multiselect>div {
         width: 100% !important;    
     }
     :host ::ng-deep .table100 .ui-table-scrollable-wrapper .ui-table-scrollable-header-table .ui-table-thead tr:first-child th:nth-child(1),

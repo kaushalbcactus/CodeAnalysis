@@ -42,6 +42,10 @@
   ::ng-deep #allocatedTableDiv .ui-table-scrollable-body {
     min-height: 340px;
   }
+  ::ng-deep #allocatedTableDiv  .ng-dropdown-panel .scroll-host {
+    position: absolute;
+    background-color: white;
+  }
   ::ng-deep .pointer { 
     font-size:1em;top: 100px !important;cursor: pointer;
   }
