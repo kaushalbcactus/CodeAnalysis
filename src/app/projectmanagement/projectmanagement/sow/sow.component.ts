@@ -225,6 +225,7 @@ export class SOWComponent implements OnInit, OnDestroy {
       if (sowItemResult && sowItemResult.length) {
         this.pmCommonService.setGlobalVariable(sowItemResult[0]);
         this.sowViewDataArray.push(this.pmObject.addSOW);
+        console.log(this.pmObject.addSOW);
         this.pmObject.isSOWRightViewVisible = true;
       }
     }
