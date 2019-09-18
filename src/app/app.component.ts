@@ -3,10 +3,8 @@ import { GlobalService } from './Services/global.service';
 import { Router } from '@angular/router';
 import { environment } from '../environments/environment';
 import { ConstantsService } from './Services/constants.service';
-import { GlobalService } from './Services/global.service';
 // import { Environment } from '../environments/environment.prod';
 declare const _spPageContextInfo;
-
 
 @Component({
   selector: 'app-root',
@@ -32,10 +30,10 @@ export class AppComponent {
     this.globalService.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
 
-    this.globalObject.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 222 : _spPageContextInfo.userId;
-    this.globalObject.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
+    this.globalService.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 222 : _spPageContextInfo.userId;
+    this.globalService.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
       : _spPageContextInfo.webAbsoluteUrl;
-    this.globalObject.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
+    this.globalService.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
       : _spPageContextInfo.siteServerRelativeUrl;
     this.globalService.sharePointPageObject.serverRelativeUrl = this.globalService.sharePointPageObject.webRelativeUrl;
     this.globalService.sharePointPageObject.rootsite = window.origin;
@@ -81,12 +79,13 @@ export class AppComponent {
   ngOnDestroy() {
     // tslint:disable-next-line:no-string-literal
     window['angularComponentReference'] = null;
-    // tslint:disable-next-line: no-string-literal
+    // tslint:disable-next-line:no-string-literal
     window['fdComponentReference'] = null;
-    // tslint:disable-next-line: no-string-literal
+    // tslint:disable-next-line:no-string-literal
     window['pmComponentReference'] = null;
-    // tslint:disable-next-line: no-string-literal
+    // tslint:disable-next-line:no-string-literal
     window['myDashboardComponentReference'] = null;
+    // tslint:disable-next-line:no-string-literal
     window['adminComponentReference'] = null;
   }
 }
