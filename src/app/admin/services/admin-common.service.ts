@@ -8,6 +8,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { AdminConstantService } from './admin-constant.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
+import { ControlContainer } from '@angular/forms/public_api';
 const PEOPLE_PICKER_URL =
   '_api/SP.UI.ApplicationPages.ClientPeoplePickerWebServiceInterface.ClientPeoplePickerSearchUser';
 @Injectable({
@@ -207,5 +208,18 @@ export class AdminCommonService {
         value: array.find(s => s.label === label1).value
       };
     });
+  }
+  /**
+   * This method is used to validate the number.
+   *
+   * @param control Pass the form control.
+   *
+   * @returns `positiveNumber` if conditions fails else `null`
+   */
+  checkPositiveNumber(control: ControlContainer): { [key: string]: boolean; } | null {
+    if (isNaN(control.value) || Number(control.value) < 0) {
+      return { positiveNumber: true };
+    }
+    return null;
   }
 }

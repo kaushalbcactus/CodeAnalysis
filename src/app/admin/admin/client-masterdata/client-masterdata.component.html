@@ -3,8 +3,8 @@
         Download worksheet</a>
 </div>
 
-<p-table #cmd [columns]="clientMasterDataColumns" [value]="clientMasterDataRows" 
-exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
+<p-table #cmd [columns]="clientMasterDataColumns" [value]="clientMasterDataRows" exportFilename="Client Master Data"
+    [paginator]="true" [rows]="10">
     <ng-template pTemplate="header" let-columns>
         <tr>
             <th>Sr.No.</th>
@@ -185,7 +185,8 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
   </ng-template>
 </p-table> -->
 
-<p-dialog [(visible)]="showaddClientModal" [modal]="true" [style]="{width: '1000px', height: '500px'}">
+<p-dialog [(visible)]="showaddClientModal" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
+    [style]="{width: '60%'}">
     <p-header *ngIf="!showEditClient">
         Add Client Legal Entry
     </p-header>
@@ -200,6 +201,9 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.name.errors">
                     <div *ngIf="addClient.controls.name.errors.required">
                         Name is required</div>
+                    <div *ngIf="addClient.controls.name.errors.pattern">
+                        Special characters are allowed between alphabets. Allowed special characters are '-' and '_'.
+                    </div>
                 </div>
             </div>
             <div class="p-col-2"><span class="compulsory">*</span>Acronym</div>
@@ -208,13 +212,20 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.acronym.errors">
                     <div *ngIf="addClient.controls.acronym.errors.required">
                         Acronym is required</div>
+                    <div *ngIf="addClient.controls.acronym.errors.maxlength">
+                        Acronym can be max 5 aplhanumberic long.
+                    </div>
+                    <div *ngIf="addClient.controls.acronym.errors.pattern">
+                        Only aplhanumberic allowed.
+                    </div>
                 </div>
             </div>
         </div>
         <div class="p-grid mt-20">
             <div class="p-col-2"><span class="compulsory">*</span>Group</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.ClientGroupArray" placeholder="Select Group" formControlName="group" filter="true">
+                <p-dropdown [options]="dropdown.ClientGroupArray" placeholder="Select Group" formControlName="group"
+                    filter="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.group.errors">
                     <div *ngIf="addClient.controls.group.errors.required">
@@ -224,7 +235,12 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
             <div class="p-col-2">Distribution List</div>
             <div class="p-col-4">
                 <input class="mr-5" type="text" size="30" formControlName="distributionList"
-                    placeholder="Distribution List" pInputText>
+                    placeholder="Distribution List" (focusout)="validateEmailId()" pInputText>
+                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.distributionList.errors">
+                    <div *ngIf="addClient.controls.distributionList.errors.email">Distribution List must be a valid
+                        email address</div>
+                </div>
+
             </div>
         </div>
         <div class="p-grid mt-20">
@@ -244,13 +260,16 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.realization.errors">
                     <div *ngIf="addClient.controls.realization.errors.required">
                         Realization is required</div>
+                    <div *ngIf="addClient.controls.realization.errors.positiveNumber">
+                        Positive number only allowed.</div>
                 </div>
             </div>
         </div>
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>Market</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.MarketArray" placeholder="Select Market" formControlName="market" filter="true">
+                <p-dropdown [options]="dropdown.MarketArray" placeholder="Select Market" formControlName="market"
+                    filter="true">
                 </p-dropdown>
 
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.market.errors">
@@ -258,10 +277,10 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
                         Market is required</div>
                 </div>
             </div>
-            <div class="p-col-2 "><span class="compulsory">*</span>Billing Entry</div>
+            <div class="p-col-2 "><span class="compulsory">*</span>Billing Entity</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.BillingEntityArray" placeholder="Select Billing Entry" formControlName="billingEntry"
-                    filter="true">
+                <p-dropdown [options]="dropdown.BillingEntityArray" placeholder="Select Billing Entry"
+                    formControlName="billingEntry" filter="true">
                 </p-dropdown>
 
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.billingEntry.errors">
@@ -273,7 +292,8 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>PO Required</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.PORequiredArray" placeholder="Select Po Required" formControlName="poRequired">
+                <p-dropdown [options]="dropdown.PORequiredArray" placeholder="Select Po Required"
+                    formControlName="poRequired">
                 </p-dropdown>
 
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.poRequired.errors">
@@ -283,7 +303,8 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>Time Zone</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.TimeZonesArray" placeholder="Select Time Zone" formControlName="timeZone" filter="true">
+                <p-dropdown [options]="dropdown.TimeZonesArray" placeholder="Select Time Zone"
+                    formControlName="timeZone" filter="true">
                 </p-dropdown>
 
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.timeZone.errors">
@@ -295,8 +316,9 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>CM Level 1</div>
             <div class="p-col-4">
-                <p-multiSelect [options]="dropdown.CMLevel1Array" defaultLabel="Select CM Level 1" formControlName="cmLevel1"
-                    (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect [options]="dropdown.CMLevel1Array" defaultLabel="Select CM Level 1"
+                    formControlName="cmLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
+                    resetFilterOnHide="true"></p-multiSelect>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.cmLevel1.errors">
                     <div *ngIf="addClient.controls.cmLevel1.errors.required">
                         CM Level 1 is required</div>
@@ -304,8 +326,8 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>CM Level 2</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.CMLevel2Array" placeholder="Select CM Level 2" formControlName="cmLevel2"
-                    filter="true"></p-dropdown>
+                <p-dropdown [options]="dropdown.CMLevel2Array" placeholder="Select CM Level 2"
+                    formControlName="cmLevel2" filter="true"></p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.cmLevel2.errors">
                     <div *ngIf="addClient.controls.cmLevel2.errors.required">
                         CM Level 2 is required</div>
@@ -321,8 +343,8 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>Delivery Level 2</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.DeliveryLevel2Array" placeholder="Delivery Level 2" formControlName="deliveryLevel2"
-                    filter="true">
+                <p-dropdown [options]="dropdown.DeliveryLevel2Array" placeholder="Delivery Level 2"
+                    formControlName="deliveryLevel2" filter="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.deliveryLevel2.errors">
                     <div *ngIf="addClient.controls.deliveryLevel2.errors.required">
@@ -333,7 +355,8 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>Currency</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.CurrencyArray" placeholder="Select Currency" formControlName="currency" filter="true">
+                <p-dropdown [options]="dropdown.CurrencyArray" placeholder="Select Currency" formControlName="currency"
+                    filter="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.currency.errors">
                     <div *ngIf="addClient.controls.currency.errors.required">
@@ -342,7 +365,11 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
             </div>
             <div class="p-col-2 ">AP Email</div>
             <div class="p-col-4">
-                <input class="mr-5" type="text" size="30" formControlName="APEmail" placeholder="AP Email" pInputText>
+                <input class="mr-5" type="text" size="30" formControlName="APEmail" placeholder="AP Email"
+                    (focusout)="validateEmailId()" pInputText>
+                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.APEmail.errors">
+                    <div *ngIf="addClient.controls.APEmail.errors.email">APEmail must be a valid email address</div>
+                </div>
             </div>
         </div>
         <div class="p-grid mt-20">
@@ -363,7 +390,8 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>Bucket</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.BucketArray" placeholder="Select Bucket" formControlName="bucket" filter="true">
+                <p-dropdown [options]="dropdown.BucketArray" placeholder="Select Bucket" formControlName="bucket"
+                    filter="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.bucket.errors">
                     <div *ngIf="addClient.controls.bucket.errors.required">
@@ -373,7 +401,7 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
         </div>
     </form>
     <p-footer>
-        <button pButton label={{buttonLabel}} type="button" (click)="saveClient(addClient)"></button>
+        <button pButton label={{buttonLabel}} type="button" (click)="saveClient()"></button>
     </p-footer>
 </p-dialog>
 
@@ -612,7 +640,7 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
                 <input class="mr-5" type="text" size="60" formControlName="fname" placeholder="First Name" pInputText>
                 <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.fname.errors">
                     <div *ngIf="pocForm.controls.fname.errors.required">
-                        First Name is required</div> 
+                        First Name is required</div>
                 </div>
             </div>
         </div>
@@ -659,10 +687,10 @@ exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
                 <input class="mr-5" type="text" size="60" formControlName="address1" placeholder="Address" pInputText>
                 <input class="mr-5 mt-5" class="mt-10" type="text" size="60" formControlName="address2"
                     placeholder="Address" pInputText>
-                <input class="mr-5" class="mt-10" type="text" size="60" formControlName="address3"
-                    placeholder="Address" pInputText>
-                <input class="mr-5" class="mt-10" type="text" size="60" formControlName="address4"
-                    placeholder="Address" pInputText>
+                <input class="mr-5" class="mt-10" type="text" size="60" formControlName="address3" placeholder="Address"
+                    pInputText>
+                <input class="mr-5" class="mt-10" type="text" size="60" formControlName="address4" placeholder="Address"
+                    pInputText>
             </div>
         </div>
         <div class="p-grid mt-20">
