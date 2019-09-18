@@ -273,7 +273,7 @@
         <p-table [value]="sowViewDataArray">
             <ng-template pTemplate="header">
                 <tr>
-                    <th>Name</th>
+                    <th style="min-width: 140px !important">Name</th>
                     <th>Value</th>
                 </tr>
             </ng-template>
@@ -386,11 +386,11 @@
                 </tr>
                 <tr>
                     <td [ngStyle]="{'color':'#d7181f'}">Delivery1</td>
-                    <td>{{task.DeliveryOptionalText}}</td>
+                    <td>{{task.DeliveryText}}</td>
                 </tr>
                 <tr>
                     <td [ngStyle]="{'color':'#d7181f'}">Delivery2</td>
-                    <td>{{task.DeliveryText}}</td>
+                    <td>{{task.DeliveryOptionalText}}</td>
                 </tr>
                 <tr>
                     <td [ngStyle]="{'color':'#d7181f'}">SOW Owner</td>

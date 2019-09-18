@@ -20,7 +20,6 @@ export class AppComponent {
     private router: Router,
     // tslint:disable-next-line: variable-name
     private _ngZone: NgZone,
-    public pubsupportService: PubsuportConstantsService,
     public constantsService: ConstantsService
   ) { }
   // tslint:disable-next-line:use-life-cycle-interface
