@@ -3,7 +3,8 @@
         Download worksheet</a>
 </div>
 
-<p-table #cmd [columns]="clientMasterDataColumns" [value]="clientMasterDataRows" exportFilename="Client Master Data">
+<p-table #cmd [columns]="clientMasterDataColumns" [value]="clientMasterDataRows" 
+exportFilename="Client Master Data"  [paginator]="true" [rows]="10">
     <ng-template pTemplate="header" let-columns>
         <tr>
             <th>Sr.No.</th>
@@ -18,17 +19,17 @@
         <tr>
             <th></th>
             <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
-                <p-multiSelect *ngSwitchCase="'ClientLegalEntry'" [style]="{'width':'100%'}" appendTo="body"
-                    [options]="clientMasterDataColArray.ClientLegalEntry" defaultLabel="Client Legal Entry"
-                    (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [style]="{'width':'100%'}" appendTo="body"
+                    [options]="clientMasterDataColArray.ClientLegalEntity" defaultLabel="Client Legal Entry"
+                    (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
                     filter="true" resetFilterOnHide="true"></p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body"
                     [options]="clientMasterDataColArray.LastUpdated" defaultLabel="LastUpdated"
-                    (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                    (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
                     filter="true" resetFilterOnHide="true"></p-multiSelect>
                 <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body"
                     [options]="clientMasterDataColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
-                    (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                    (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
                     filter="true" resetFilterOnHide="true"></p-multiSelect>
             </th>
             <th></th>
@@ -38,10 +39,10 @@
         <tr>
             <td>{{ rowIndex+1 }}</td>
             <td>
-                {{rowData.ClientLegalEntry}}
+                {{rowData.ClientLegalEntity}}
             </td>
             <td>
-                {{rowData.LastUpdated}}
+                {{rowData.LastUpdated | date:'MMM dd, yyyy'}}
             </td>
             <td>
                 {{rowData.LastUpdatedBy}}
@@ -49,7 +50,7 @@
             <td>
                 <p-menu #menu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
                 <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                    (click)="menu.toggle($event);openMenuPopup(rowData)"></i>
+                    (click)="openMenuPopup(rowData);menu.toggle($event);"></i>
             </td>
         </tr>
     </ng-template>
@@ -213,7 +214,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2"><span class="compulsory">*</span>Group</div>
             <div class="p-col-4">
-                <p-dropdown [options]="options" placeholder="Select Group" formControlName="group" filter="true">
+                <p-dropdown [options]="dropdown.ClientGroupArray" placeholder="Select Group" formControlName="group" filter="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.group.errors">
                     <div *ngIf="addClient.controls.group.errors.required">
@@ -249,7 +250,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>Market</div>
             <div class="p-col-4">
-                <p-dropdown [options]="options" placeholder="Select Market" formControlName="market" filter="true">
+                <p-dropdown [options]="dropdown.MarketArray" placeholder="Select Market" formControlName="market" filter="true">
                 </p-dropdown>
 
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.market.errors">
@@ -259,7 +260,7 @@
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>Billing Entry</div>
             <div class="p-col-4">
-                <p-dropdown [options]="options" placeholder="Select Billing Entry" formControlName="billingEntry"
+                <p-dropdown [options]="dropdown.BillingEntityArray" placeholder="Select Billing Entry" formControlName="billingEntry"
                     filter="true">
                 </p-dropdown>
 
@@ -272,7 +273,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>PO Required</div>
             <div class="p-col-4">
-                <p-dropdown [options]="options" placeholder="Select Po Required" formControlName="poRequired" filter="true">
+                <p-dropdown [options]="dropdown.PORequiredArray" placeholder="Select Po Required" formControlName="poRequired">
                 </p-dropdown>
 
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.poRequired.errors">
@@ -282,7 +283,7 @@
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>Time Zone</div>
             <div class="p-col-4">
-                <p-dropdown [options]="options" placeholder="Select Time Zone" formControlName="timeZone" filter="true">
+                <p-dropdown [options]="dropdown.TimeZonesArray" placeholder="Select Time Zone" formControlName="timeZone" filter="true">
                 </p-dropdown>
 
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.timeZone.errors">
@@ -294,7 +295,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>CM Level 1</div>
             <div class="p-col-4">
-                <p-multiSelect [options]="options" defaultLabel="Select CM Level 1" formControlName="cmLevel1"
+                <p-multiSelect [options]="dropdown.CMLevel1Array" defaultLabel="Select CM Level 1" formControlName="cmLevel1"
                     (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.cmLevel1.errors">
                     <div *ngIf="addClient.controls.cmLevel1.errors.required">
@@ -303,7 +304,7 @@
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>CM Level 2</div>
             <div class="p-col-4">
-                <p-dropdown [options]="options" placeholder="Select CM Level 2" formControlName="cmLevel2"
+                <p-dropdown [options]="dropdown.CMLevel2Array" placeholder="Select CM Level 2" formControlName="cmLevel2"
                     filter="true"></p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.cmLevel2.errors">
                     <div *ngIf="addClient.controls.cmLevel2.errors.required">
@@ -314,13 +315,13 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 ">Delivery Level 1</div>
             <div class="p-col-4">
-                <p-multiSelect [options]="options" defaultLabel="Select Delivery Level 1"
+                <p-multiSelect [options]="dropdown.DeliveryLevel1Array" defaultLabel="Select Delivery Level 1"
                     formControlName="deliveryLevel1" (keydown.enter)="$event.preventDefault()" filter="true"
                     resetFilterOnHide="true"></p-multiSelect>
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>Delivery Level 2</div>
             <div class="p-col-4">
-                <p-dropdown [options]="options" placeholder="Delivery Level 2" formControlName="deliveryLevel2"
+                <p-dropdown [options]="dropdown.DeliveryLevel2Array" placeholder="Delivery Level 2" formControlName="deliveryLevel2"
                     filter="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.deliveryLevel2.errors">
@@ -332,7 +333,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>Currency</div>
             <div class="p-col-4">
-                <p-dropdown [options]="options" placeholder="Select Currency" formControlName="currency" filter="true">
+                <p-dropdown [options]="dropdown.CurrencyArray" placeholder="Select Currency" formControlName="currency" filter="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.currency.errors">
                     <div *ngIf="addClient.controls.currency.errors.required">
@@ -362,7 +363,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>Bucket</div>
             <div class="p-col-4">
-                <p-dropdown [options]="options" placeholder="Select Bucket" formControlName="bucket" filter="true">
+                <p-dropdown [options]="dropdown.BucketArray" placeholder="Select Bucket" formControlName="bucket" filter="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.bucket.errors">
                     <div *ngIf="addClient.controls.bucket.errors.required">

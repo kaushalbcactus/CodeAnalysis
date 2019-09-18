@@ -166,7 +166,36 @@ export class AdminConstantService {
       filter: 'IsActive eq \'{{isActive}}\'',
       orderby: 'Modified desc',
       top: 4900
-    }
+    },
+    GET_ALL_CLIENT_LEGAL_ENTITY_BY_ACTIVE: {
+      select: 'ID,Title,Acronym,Geography,ListName,Market,ClientGroup,InvoiceName,Currency,APAddress,APEmail,Template,'
+        + 'DistributionList,Realization,TimeZone,Notes,PORequired,BillingEntity,Bucket,IsCentrallyAllocated,IsActive,'
+        + 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,'
+        + 'DeliveryLevel2/Title,Editor/ID,Editor/Title,Modified',
+      expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,'
+        + 'DeliveryLevel2/Title,Editor/ID,Editor/Title',
+      filter: 'IsActive eq \'{{isActive}}\'',
+      orderby: 'Modified desc',
+      top: 4900
+    },
+    GET_CLIENT_GROUP_BY_ACTIVE: {
+      select: 'ID,Title,Realization,IsActive,Notes',
+      filter: 'IsActive eq \'{{isActive}}\'',
+      orderby: 'Title asc',
+      top: 4900
+    },
+    GET_BILLING_ENTITY_BY_ACTIVE: {
+      select: 'ID,Title,Acronym,IsActive,InvoiceTemplate',
+      filter: 'IsActive eq \'{{isActive}}\'',
+      orderby: 'Title asc',
+      top: 4900
+    },
+    GET_CURRENCY_BY_ACTIVE: {
+      select: 'ID,Title,IsActive',
+      filter: 'IsActive eq \'{{isActive}}\'',
+      orderby: 'Title asc',
+      top: 4900
+    },
   };
   public LOGICAL_FIELD = {
     YES: 'Yes',
@@ -179,6 +208,7 @@ export class AdminConstantService {
     POOLED: 'Pooled',
     PRIMARYSKILL: 'PrimarySkill',
     ROLE: 'Role',
+    MARKET: 'Market'
   };
   public ACTION = {
     COPY: 'Copy',
@@ -197,5 +227,11 @@ export class AdminConstantService {
   public REG_EXPRESSION = {
     ALPHA_SPECIAL: /^[a-zA-Z]+(-?[a-zA-Z]+)?(_?[a-zA-Z]+)?$/,
     ALPHA: /^[a-zA-Z]+$/
+  };
+  public resourCatConstant = {
+    CMLevel1: 'CM L1',
+    CMLevel2: 'CM L2',
+    DELIVERY_LEVEL_1: 'Delivery L1',
+    DELIVERY_LEVEL_2: 'Delivery L2'
   };
 }

@@ -228,7 +228,11 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
-              "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/Admin/"
+              "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/Medcomqa/AngularModules/Admin/"
+            },
+            "devAdmin": {
+              "outputHashing": "none",
+              "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/medcomdev/AngularModules/Admin/"
             }
           }
         },

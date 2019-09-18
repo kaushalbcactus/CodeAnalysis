@@ -276,6 +276,10 @@ export class ConstantsService {
     },
     UserInformationList: {
       name: 'User Information List'
+    },
+    ClientGroup: {
+      name: 'ClientGroup',
+      type: 'SP.Data.ClientGroupListItem'
     }
   };
 

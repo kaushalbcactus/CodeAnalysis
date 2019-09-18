@@ -2,9 +2,7 @@ import { Component, NgZone } from '@angular/core';
 import { GlobalService } from './Services/global.service';
 import { Router } from '@angular/router';
 import { environment } from '../environments/environment';
-// import { Environment } from '../environments/environment.prod';
 declare const _spPageContextInfo;
-
 
 @Component({
   selector: 'app-root',
@@ -75,9 +73,13 @@ export class AppComponent {
   ngOnDestroy() {
     // tslint:disable-next-line:no-string-literal
     window['angularComponentReference'] = null;
+    // tslint:disable-next-line:no-string-literal
     window['fdComponentReference'] = null;
+    // tslint:disable-next-line:no-string-literal
     window['pmComponentReference'] = null;
+    // tslint:disable-next-line:no-string-literal
     window['myDashboardComponentReference'] = null;
+    // tslint:disable-next-line:no-string-literal
     window['adminComponentReference'] = null;
   }
 }
