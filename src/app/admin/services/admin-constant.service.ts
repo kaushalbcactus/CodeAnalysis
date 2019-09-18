@@ -226,7 +226,8 @@ export class AdminConstantService {
   };
   public REG_EXPRESSION = {
     ALPHA_SPECIAL: /^[a-zA-Z]+(-?[a-zA-Z]+)?(_?[a-zA-Z]+)?$/,
-    ALPHA: /^[a-zA-Z]+$/
+    ALPHA: /^[a-zA-Z]+$/,
+    APLHA_NUMERIC: /^[a-zA-Z0-9]+$/
   };
   public resourCatConstant = {
     CMLevel1: 'CM L1',

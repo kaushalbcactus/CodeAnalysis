@@ -276,7 +276,7 @@ export class BucketMasterdataComponent implements OnInit {
    *
    */
   async addBucketData() {
-    const alphaExp = /^[a-zA-Z]+(-?[a-zA-Z]+)?(_?[a-zA-Z]+)?$/;
+    const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL;
     this.messageService.clear();
     if (!this.bucketData) {
       this.messageService.add({

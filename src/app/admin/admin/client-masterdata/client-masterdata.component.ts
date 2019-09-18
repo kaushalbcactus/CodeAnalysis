@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { FormBuilder, FormGroup, FormControl, Validators, NgForm } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl, Validators, NgForm, ControlContainer } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { AdminCommonService } from '../../services/admin-common.service';
 import { AdminConstantService } from '../../services/admin-constant.service';
@@ -124,14 +124,15 @@ export class ClientMasterdataComponent implements OnInit {
     LastUpdated: [],
     LastUpdatedBy: []
   };
-  batchResponse = {
+  resultResponse = {
     ClientGroupArray: [],
     MarketArray: [],
     TimeZonesArray: [],
     BillingEntityArray: [],
     ResourceCatArray: [],
     CurrencyArray: [],
-    BucketArray: []
+    BucketArray: [],
+    ClientLegalEntityArray: []
   };
   dropdown = {
     ClientGroupArray: [],
@@ -172,12 +173,12 @@ export class ClientMasterdataComponent implements OnInit {
      * This is used to initialize the Client form.
      */
     this.addClient = frmbuilder.group({
-      name: ['', Validators.required],
-      acronym: ['', Validators.required],
+      name: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL)]],
+      acronym: ['', [Validators.required, Validators.maxLength(5), Validators.pattern(this.adminConstants.REG_EXPRESSION.APLHA_NUMERIC)]],
       group: ['', Validators.required],
       distributionList: [''],
       invoiceName: ['', Validators.required],
-      realization: ['', Validators.required],
+      realization: ['', [Validators.required, this.adminCommonService.checkPositiveNumber]],
       market: ['', Validators.required],
       billingEntry: ['', Validators.required],
       poRequired: ['', Validators.required],
@@ -413,7 +414,7 @@ export class ClientMasterdataComponent implements OnInit {
       this.adminConstants.LOGICAL_FIELD.YES);
     const results = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, getClientLegalInfo);
     if (results && results.length) {
-      this.clientList = results;
+      this.resultResponse.ClientLegalEntityArray = results;
       results.forEach(item => {
         const obj = Object.assign({}, this.adminObject.clientObj);
         obj.ID = item.ID;
@@ -629,62 +630,62 @@ export class ClientMasterdataComponent implements OnInit {
   async loadClientDropdown() {
     const sResults = await this.getAddClientInitData();
     if (sResults && sResults.length) {
-      this.batchResponse.ClientGroupArray = sResults[0].retItems;
-      this.batchResponse.MarketArray = sResults[1].retItems;
-      this.batchResponse.TimeZonesArray = sResults[2].retItems;
-      this.batchResponse.BillingEntityArray = sResults[3].retItems;
-      this.batchResponse.ResourceCatArray = sResults[4].retItems;
-      this.batchResponse.CurrencyArray = sResults[5].retItems;
-      this.batchResponse.BucketArray = sResults[6].retItems;
+      this.resultResponse.ClientGroupArray = sResults[0].retItems;
+      this.resultResponse.MarketArray = sResults[1].retItems;
+      this.resultResponse.TimeZonesArray = sResults[2].retItems;
+      this.resultResponse.BillingEntityArray = sResults[3].retItems;
+      this.resultResponse.ResourceCatArray = sResults[4].retItems;
+      this.resultResponse.CurrencyArray = sResults[5].retItems;
+      this.resultResponse.BucketArray = sResults[6].retItems;
       this.dropdown.PORequiredArray = [
         { label: this.adminConstants.LOGICAL_FIELD.YES, value: this.adminConstants.LOGICAL_FIELD.YES },
         { label: this.adminConstants.LOGICAL_FIELD.NO, value: this.adminConstants.LOGICAL_FIELD.NO }
       ];
-      if (this.batchResponse.ClientGroupArray && this.batchResponse.ClientGroupArray.length) {
+      if (this.resultResponse.ClientGroupArray && this.resultResponse.ClientGroupArray.length) {
         this.dropdown.ClientGroupArray = [];
-        this.batchResponse.ClientGroupArray.forEach(element => {
+        this.resultResponse.ClientGroupArray.forEach(element => {
           this.dropdown.ClientGroupArray.push({ label: element.Title, value: element.Title });
         });
       }
-      if (this.batchResponse.MarketArray
-        && this.batchResponse.MarketArray.length) {
-        const tempArray = this.batchResponse.MarketArray[0].Choices.results;
+      if (this.resultResponse.MarketArray
+        && this.resultResponse.MarketArray.length) {
+        const tempArray = this.resultResponse.MarketArray[0].Choices.results;
         this.dropdown.MarketArray = [];
         tempArray.forEach(element => {
           this.dropdown.MarketArray.push({ label: element, value: element });
         });
       }
 
-      if (this.batchResponse.TimeZonesArray && this.batchResponse.TimeZonesArray.length) {
+      if (this.resultResponse.TimeZonesArray && this.resultResponse.TimeZonesArray.length) {
         this.dropdown.TimeZonesArray = [];
-        this.batchResponse.TimeZonesArray.forEach(element => {
+        this.resultResponse.TimeZonesArray.forEach(element => {
           this.dropdown.TimeZonesArray.push({ label: element.TimeZoneName, value: element.Title });
         });
       }
-      if (this.batchResponse.BillingEntityArray && this.batchResponse.BillingEntityArray.length) {
+      if (this.resultResponse.BillingEntityArray && this.resultResponse.BillingEntityArray.length) {
         this.dropdown.BillingEntityArray = [];
-        this.batchResponse.BillingEntityArray.forEach(element => {
+        this.resultResponse.BillingEntityArray.forEach(element => {
           this.dropdown.BillingEntityArray.push({ label: element.Title, value: element.Title });
         });
       }
-      if (this.batchResponse.CurrencyArray && this.batchResponse.CurrencyArray.length) {
+      if (this.resultResponse.CurrencyArray && this.resultResponse.CurrencyArray.length) {
         this.dropdown.CurrencyArray = [];
-        this.batchResponse.CurrencyArray.forEach(element => {
+        this.resultResponse.CurrencyArray.forEach(element => {
           this.dropdown.CurrencyArray.push({ label: element.Title, value: element.Title });
         });
       }
-      if (this.batchResponse.BucketArray && this.batchResponse.BucketArray.length) {
+      if (this.resultResponse.BucketArray && this.resultResponse.BucketArray.length) {
         this.dropdown.BucketArray = [];
-        this.batchResponse.BucketArray.forEach(element => {
+        this.resultResponse.BucketArray.forEach(element => {
           this.dropdown.BucketArray.push({ label: element.Title, value: element.Title });
         });
       }
-      if (this.batchResponse.ResourceCatArray && this.batchResponse.ResourceCatArray.length) {
+      if (this.resultResponse.ResourceCatArray && this.resultResponse.ResourceCatArray.length) {
         this.dropdown.CMLevel1Array = [];
         this.dropdown.CMLevel2Array = [];
         this.dropdown.DeliveryLevel1Array = [];
         this.dropdown.DeliveryLevel2Array = [];
-        this.batchResponse.ResourceCatArray.forEach(element => {
+        this.resultResponse.ResourceCatArray.forEach(element => {
           const role = element.Role;
           switch (role) {
             case this.adminConstants.resourCatConstant.CMLevel1:
@@ -703,6 +704,103 @@ export class ClientMasterdataComponent implements OnInit {
         });
       }
     }
+  }
+  /**
+   * Construct a funtion to validate the email id.
+   *
+   * @description
+   *
+   * This method is used to validate validate the email Id for `Distribution List` and `AP Email` field.
+   *
+   * @Note
+   *
+   * This method is only trigger when text field is not blank.
+   */
+  validateEmailId() {
+    if (!this.addClient.value.distributionList) {
+      const managerEffectiveDateControl = this.addClient.get('distributionList');
+      managerEffectiveDateControl.setValidators([Validators.email]);
+      managerEffectiveDateControl.updateValueAndValidity();
+    }
+    if (!this.addClient.value.APEmail) {
+      const managerEffectiveDateControl = this.addClient.get('APEmail');
+      managerEffectiveDateControl.setValidators([Validators.email]);
+      managerEffectiveDateControl.updateValueAndValidity();
+    }
+  }
+  /**
+   * Construct a method to save the client legal entity into `ClientLegalEntity` list.
+   * It will construct a REST-API Call to create item into `ClientLegalEntity` list.
+   *
+   * @description
+   *
+   * This method is used to validate and save the client legal entity into `ClientLegalEntity` list.
+   *
+   * @Note
+   *
+   * 1. Duplicate Client legal Entity is not allowed.
+   * 2. Only 2 special character are allowed.
+   * 3. `Client Legal Entity` name cannot start or end with special character.
+   * 4. Acronym can have maximum 5 alphanumberic character.
+   *
+   */
+  async saveClient() {
+    if (this.addClient.valid) {
+      console.log(this.addClient.value);
+      if (this.resultResponse.ClientLegalEntityArray.some(a =>
+        a.Title.toLowerCase() === this.addClient.value.name.toLowerCase())) {
+        this.messageService.add({
+          key: 'adminCustom', severity: 'error',
+          summary: 'Error Message', detail: 'This Client is already exist. Please enter another client name.'
+        });
+        return false;
+      }
+      // write the save logic using rest api.
+      const clientData = await this.getClientData();
+      const results = await this.spServices.createItem(this.constants.listNames.ClientLegalEntity.name,
+        clientData, this.constants.listNames.ClientLegalEntity.type);
+    } else {
+      this.cmObject.isClientFormSubmit = true;
+    }
+  }
+  getClientData() {
+    const data: any = {
+      Title: this.addClient.value.name,
+      Acronym: this.addClient.value.acronym,
+      ClientGroup: this.addClient.value.group,
+      InvoiceName: this.addClient.value.invoiceName,
+      Realization: + this.addClient.value.realization,
+      Market: this.addClient.value.market,
+      BillingEntity: this.addClient.value.billingEntry,
+      PORequired: this.addClient.value.poRequired,
+      TimeZone: this.addClient.value.timeZone,
+      CMLevel1: {
+        results: this.addClient.value.cmLevel1
+      },
+      CMLevel2: this.addClient.value.cmLevel2,
+      DeliveryLevel2: this.addClient.value.deliveryLevel2,
+      Currency: this.addClient.value.currency,
+      Bucket: this.addClient.value.bucket
+    };
+    if (this.addClient.value.distributionList) {
+      data.DistributionList = this.addClient.value.distributionList;
+    }
+    if (this.addClient.value.deliveryLevel1) {
+      data.DeliveryLevel1 = {
+        results: this.addClient.value.deliveryLevel1
+      };
+    }
+    if (this.addClient.value.APEmail) {
+      data.APEmail = this.addClient.value.APEmail;
+    }
+    if (this.addClient.value.address1 || this.addClient.value.address2 || this.addClient.value.address3 || this.addClient.value.address4) {
+      data.APAddress = this.addClient.value.address1 + ';#' + this.addClient.value.address2 + ';#' +
+        this.addClient.value.address3 + ';#' + this.addClient.value.address4;
+    }
+    if (this.addClient.value.notes) {
+      data.Notes = this.addClient.value.notes;
+    }
+    return data;
   }
   subDivisionFilters(colData) {
     this.subDivisionDetailsColArray.SubDivision = this.adminCommonService.uniqueArrayObj(
@@ -822,14 +920,7 @@ export class ClientMasterdataComponent implements OnInit {
     { label: 'Delete' }];
   }
 
-  saveClient(clientData) {
-    // console.log(clientData);
-    if (clientData.valid) {
-      console.log(clientData.value);
-    } else {
-      this.cmObject.isClientFormSubmit = true;
-    }
-  }
+
 
   saveSubdivision(subDivisionData) {
     if (subDivisionData.valid) {
