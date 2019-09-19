@@ -1061,7 +1061,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     ngAfterContentInit() {
         if (this.constantService.userPermission.userPermissionMsg) {
-            this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Info message', detail: 'You don\'t have access.Please contact admin.', life: 5000 });
+            this.messageService.add({ key: 'fdToast', severity: 'info', summary: 'Info message', detail: 'You don\'t have access to the url. Please contact SP team.', sticky: true });
             this.constantService.userPermission.userPermissionMsg = false;
         }
     }
