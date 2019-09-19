@@ -114,7 +114,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     this.global.pfAdmins = result.results ? result.results : [];
     this.global.currentUser.isPFAdmin = this.global.pfAdmins.find(t => t.Id === this.global.sharePointPageObject.userId) ? true : false;
     const lastMonthDate = new Date();
-    const daysPrior = 30;
+    const daysPrior = 180;
     lastMonthDate.setDate(lastMonthDate.getDate() - daysPrior);
     let startDate = new Date(new Date(lastMonthDate.setHours(0, 0, 0, 1))).toISOString();
     let endDate = new Date().toISOString();

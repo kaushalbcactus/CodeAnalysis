@@ -14,8 +14,7 @@ export class FilterComponent implements OnInit {
   @Output() callFilter = new EventEmitter<any>();
   @Output() searchFilter = new EventEmitter<any>();
   public location = '';
-  value: Date;
-
+  value: Date[] = [new Date(new Date().setDate(new Date().getDate() - 180)), new Date()];
   filterObj: any = {
     cdStatus: [{ type: 'All' }, { type: this.constant.cdStatus.Created }, { type: this.constant.cdStatus.ValidationPending },
     { type: this.constant.cdStatus.Closed + ' - ' + this.constant.cdStatus.Valid },

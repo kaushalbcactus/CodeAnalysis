@@ -14,7 +14,7 @@ import { SelectItem } from 'primeng/api';
 export class FiltersComponent implements OnInit {
   // Declared custom event callApplyFilter to pass object to other component -- PersonalFeedback component
   @Output() callApplyFilter = new EventEmitter<any>();
-  value: Date;
+  value: Date[] = [new Date(new Date().setMonth(new Date().getMonth() - 6)), new Date()];
   filter;
   // DateRange picker options
   myDateRangePickerOptions: IMyDrpOptions = {
