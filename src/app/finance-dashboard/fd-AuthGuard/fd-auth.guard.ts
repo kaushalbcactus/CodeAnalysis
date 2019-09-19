@@ -36,7 +36,7 @@ export class FdAuthGuard implements CanActivate, CanActivateChild, CanLoad {
             return true;
         } else if (!this.constantService.userPermission.isFDUserAdmin) {
             this.constantService.loader.isPSInnerLoaderHidden = true;
-            if (state.url.includes('confirmed') || state.url.includes('outstanding-invoices') || state.url.includes('proforma') || state.url.includes('paid-invoices')) {
+            if (state.url.includes('hourly-based') || state.url.includes('confirmed') || state.url.includes('outstanding-invoices') || state.url.includes('proforma') || state.url.includes('paid-invoices')) {
                 this.constantService.userPermission.userPermissionMsg = true;
                 this._router.navigate(['financeDashboard/expenditure']);
             }
