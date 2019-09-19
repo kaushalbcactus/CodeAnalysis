@@ -117,3 +117,7 @@ body .ui-button:enabled:hover {
 }
 
 ::ng-deep .cd-rating{background: #4faf54;color: #fff;padding: 0px 8px;border-radius: 3px;display: inline-block;margin-right: 3px}
+
+::ng-deep .ui-datepicker:not(.ui-datepicker-inline) {
+  top: 35px !important;
+}

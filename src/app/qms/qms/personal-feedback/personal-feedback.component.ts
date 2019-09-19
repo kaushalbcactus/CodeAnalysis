@@ -14,7 +14,7 @@ export class PersonalFeedbackComponent implements OnInit {
                       {routerLink: ['/qms/personalFeedback/feedbackByMe'], label: 'Feedback By Me'},
                     ];
   // Initialize tab value
-  public selectedTab = 'Internal';
+  public selectedTab = 'Feedback For Me';
   constructor(private router: Router, private data: DataService) { }
 
   ngOnInit() {

@@ -28,9 +28,9 @@
   }
   
   
-   div.filter-wrapper .daterange {
+   /* div.filter-wrapper .daterange {
     height: 55px;
-  }
+  } */
   
    div.filter-wrapper .daterange .dateRangePicker  {
       display: inline-block;
