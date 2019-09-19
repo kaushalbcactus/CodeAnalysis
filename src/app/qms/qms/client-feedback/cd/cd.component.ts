@@ -126,7 +126,7 @@ export class CDComponent implements OnInit, OnDestroy {
     this.global.cdAdmins = result.results ? result.results : [];
     this.global.currentUser.isCDAdmin = this.global.cdAdmins.find(t => t.Id === this.global.sharePointPageObject.userId) ? true : false;
     const lastMonthDate = new Date();
-    const daysPrior = 30;
+    const daysPrior = 180;
     lastMonthDate.setDate(lastMonthDate.getDate() - daysPrior);
     let startDate = new Date(new Date(lastMonthDate.setHours(0, 0, 0, 0))).toISOString();
     let endDate = new Date().toISOString();
