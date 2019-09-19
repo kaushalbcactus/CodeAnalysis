@@ -592,8 +592,7 @@ export class ClientMasterdataComponent implements OnInit {
 
     // Get Bucket value  from FocusGroup list ##7;
     const bucketGet = Object.assign({}, options);
-    const bucketFilter = Object.assign({}, this.adminConstants.QUERY.GET_FOCUS_GROUP_BY_ACTIVE);
-    bucketFilter.filter = bucketFilter.filter.replace(/{{isActive}}/gi, '1');
+    const bucketFilter = Object.assign({}, this.adminConstants.QUERY.GET_BUCKET);
     bucketGet.url = this.spServices.getReadURL(this.constants.listNames.FocusGroup.name,
       bucketFilter);
     bucketGet.type = 'GET';
@@ -717,15 +716,15 @@ export class ClientMasterdataComponent implements OnInit {
    * This method is only trigger when text field is not blank.
    */
   validateEmailId() {
-    if (!this.addClient.value.distributionList) {
-      const managerEffectiveDateControl = this.addClient.get('distributionList');
-      managerEffectiveDateControl.setValidators([Validators.email]);
-      managerEffectiveDateControl.updateValueAndValidity();
+    if (this.addClient.value.distributionList) {
+      const distributionListControl = this.addClient.get('distributionList');
+      distributionListControl.setValidators([Validators.email]);
+      distributionListControl.updateValueAndValidity();
     }
-    if (!this.addClient.value.APEmail) {
-      const managerEffectiveDateControl = this.addClient.get('APEmail');
-      managerEffectiveDateControl.setValidators([Validators.email]);
-      managerEffectiveDateControl.updateValueAndValidity();
+    if (this.addClient.value.APEmail) {
+      const APEmailControl = this.addClient.get('APEmail');
+      APEmailControl.setValidators([Validators.email]);
+      APEmailControl.updateValueAndValidity();
     }
   }
   /**
@@ -755,30 +754,107 @@ export class ClientMasterdataComponent implements OnInit {
         });
         return false;
       }
+      if (this.resultResponse.ClientLegalEntityArray.some(a =>
+        a.Acronym.toLowerCase() === this.addClient.value.acronym.toLowerCase())) {
+        this.messageService.add({
+          key: 'adminCustom', severity: 'error',
+          summary: 'Error Message', detail: 'This Acronym is already exist. Please enter another acronym.'
+        });
+        return false;
+      }
       // write the save logic using rest api.
+      this.adminObject.isMainLoaderHidden = false;
       const clientData = await this.getClientData();
       const results = await this.spServices.createItem(this.constants.listNames.ClientLegalEntity.name,
         clientData, this.constants.listNames.ClientLegalEntity.type);
+      if (!results.hasOwnProperty('hasError') && !results.hasError) {
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success',
+          summary: 'Success Message', detail: 'The Client ' + this.addClient.value.name + ' is created successfully.'
+        });
+        await this.loadRecentRecords(results.ID, false);
+        this.showaddClientModal = false;
+      }
+      this.adminObject.isMainLoaderHidden = true;
     } else {
       this.cmObject.isClientFormSubmit = true;
+    }
+  }
+  /**
+   * Construct a method to load the newly created item into the table without refreshing the whole page.
+   * @param item ID the item which is created or updated recently.
+   *
+   * @param isUpdate Pass the isUpdate as true/false for update and create item respectively.
+   *
+   * @description
+   *
+   * This method will load newly created item or updated item as first row in the table;
+   *  Pass `false` to add the new created item at position 0 in the array.
+   *  Pass `true` to replace the item in the array
+   */
+  async loadRecentRecords(ID, isUpdate) {
+    const resGet = Object.assign({}, this.adminConstants.QUERY.GET_CLIENT_LEGAL_ENTITY_BY_ID);
+    resGet.filter = resGet.filter.replace(/{{isActive}}/gi,
+      this.adminConstants.LOGICAL_FIELD.YES).replace(/{{Id}}/gi, ID);
+    const result = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, resGet);
+    if (result && result.length) {
+      const item = result[0];
+      const obj = Object.assign({}, this.adminObject.clientObj);
+      obj.ID = item.ID;
+      obj.ClientLegalEntity = item.Title;
+      obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
+      obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+      obj.LastUpdatedBy = item.Editor.Title;
+      obj.Acronym = item.Acronym;
+      obj.Geography = item.Geography;
+      obj.ListName = item.ListName;
+      obj.Market = item.Market;
+      obj.ClientGroup = item.ClientGroup;
+      obj.InvoiceName = item.InvoiceName;
+      obj.Currency = item.Currency;
+      obj.APAddress = item.APAddress;
+      obj.APEmail = item.APEmail;
+      obj.Template = item.Template;
+      obj.DistributionList = item.DistributionList;
+      obj.Realization = item.Realization;
+      obj.TimeZone = item.TimeZone;
+      obj.Notes = item.Notes;
+      obj.PORequired = item.PORequired;
+      obj.BillingEntity = item.BillingEntity;
+      obj.Bucket = item.Bucket;
+      obj.IsCentrallyAllocated = item.IsCentrallyAllocated;
+      obj.IsActive = item.IsActive;
+      obj.CMLevel1 = item.CMLevel1;
+      obj.CMLevel2 = item.CMLevel2;
+      obj.DeliveryLevel1 = item.DeliveryLevel1;
+      obj.DeliveryLevel2 = item.DeliveryLevel2;
+      // If Create - add the new created item at position 0 in the array.
+      // If Edit - Replace the item in the array
+      if (isUpdate) {
+        const index = this.clientMasterDataRows.findIndex(x => x.ID === obj.ID);
+        this.clientMasterDataRows.splice(index, 1, obj);
+      } else {
+        this.clientMasterDataRows.unshift(obj);
+      }
     }
   }
   getClientData() {
     const data: any = {
       Title: this.addClient.value.name,
-      Acronym: this.addClient.value.acronym,
+      ListName: this.addClient.value.name,
+      Acronym: this.addClient.value.acronym.toUpperCase(),
       ClientGroup: this.addClient.value.group,
       InvoiceName: this.addClient.value.invoiceName,
       Realization: + this.addClient.value.realization,
       Market: this.addClient.value.market,
       BillingEntity: this.addClient.value.billingEntry,
       PORequired: this.addClient.value.poRequired,
-      TimeZone: this.addClient.value.timeZone,
-      CMLevel1: {
+      TimeZone: + this.addClient.value.timeZone,
+      CMLevel1Id: {
         results: this.addClient.value.cmLevel1
       },
-      CMLevel2: this.addClient.value.cmLevel2,
-      DeliveryLevel2: this.addClient.value.deliveryLevel2,
+      CMLevel2Id: this.addClient.value.cmLevel2,
+      DeliveryLevel2Id: this.addClient.value.deliveryLevel2,
       Currency: this.addClient.value.currency,
       Bucket: this.addClient.value.bucket
     };
@@ -786,7 +862,7 @@ export class ClientMasterdataComponent implements OnInit {
       data.DistributionList = this.addClient.value.distributionList;
     }
     if (this.addClient.value.deliveryLevel1) {
-      data.DeliveryLevel1 = {
+      data.DeliveryLevel1Id = {
         results: this.addClient.value.deliveryLevel1
       };
     }
@@ -794,8 +870,8 @@ export class ClientMasterdataComponent implements OnInit {
       data.APEmail = this.addClient.value.APEmail;
     }
     if (this.addClient.value.address1 || this.addClient.value.address2 || this.addClient.value.address3 || this.addClient.value.address4) {
-      data.APAddress = this.addClient.value.address1 + ';#' + this.addClient.value.address2 + ';#' +
-        this.addClient.value.address3 + ';#' + this.addClient.value.address4;
+      data.APAddress = this.addClient.value.address1 + ';#' + this.addClient.value.address2 + ';#' + this.addClient.value.address3 +
+        ';#' + this.addClient.value.address4;
     }
     if (this.addClient.value.notes) {
       data.Notes = this.addClient.value.notes;

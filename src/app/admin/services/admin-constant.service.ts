@@ -178,6 +178,17 @@ export class AdminConstantService {
       orderby: 'Modified desc',
       top: 4900
     },
+    GET_CLIENT_LEGAL_ENTITY_BY_ID: {
+      select: 'ID,Title,Acronym,Geography,ListName,Market,ClientGroup,InvoiceName,Currency,APAddress,APEmail,Template,'
+        + 'DistributionList,Realization,TimeZone,Notes,PORequired,BillingEntity,Bucket,IsCentrallyAllocated,IsActive,'
+        + 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,'
+        + 'DeliveryLevel2/Title,Editor/ID,Editor/Title,Modified',
+      expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,'
+        + 'DeliveryLevel2/Title,Editor/ID,Editor/Title',
+      filter: 'IsActive eq \'{{isActive}}\' and ID eq \'{{Id}}\'',
+      orderby: 'Modified desc',
+      top: 4900
+    },
     GET_CLIENT_GROUP_BY_ACTIVE: {
       select: 'ID,Title,Realization,IsActive,Notes',
       filter: 'IsActive eq \'{{isActive}}\'',
