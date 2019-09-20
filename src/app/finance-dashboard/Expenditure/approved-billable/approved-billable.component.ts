@@ -272,7 +272,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForBillableCS);
             speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate).replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
         }
-        
+
         const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
         let endPoints = [sinfoEndpoint];
         let userBatchBody;
@@ -456,8 +456,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         // this.selectedRowItemData.splice(rowUnselectIndex, 1);
     }
 
-    pcFound: boolean = false;
-
     setValInScheduleOop(selectedLineItems: any) {
         let amt = 0;
         for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
@@ -496,19 +494,20 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         console.log('selectedAllRowsItem ', this.selectedAllRowsItem);
         // console.log('this.selectedRowItemData ', this.selectedRowItemData);
         this.listOfPOCs = [];
-        this.checkUniquePC();
+
         if (!this.selectedAllRowsItem.length) {
             this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Please select at least 1 Projects & try again', life: 4000 });
             return;
         }
-        if (this.pcFound) {
-            if (modal === 'scheduleOopModal') {
+        // if (this.pcFound) {
+        if (modal === 'scheduleOopModal') {
+            this.checkUniquePC();
+            if (this.pcFound) {
                 let sts = this.checkApprovedStatus();
                 console.log('Sts ', sts);
                 // if (this.selectedAllRowsItem[0].Status.includes('Approved')) {
                 if (sts) {
                     this.poNames = [];
-
                     let pInfo = this.getCleFromPC();
                     if (pInfo) {
                         this.getPONumberFromCLE(pInfo);
@@ -521,7 +520,15 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                     this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Please select only those Projects whose payment is pending & try again', life: 4000 });
                 }
 
-            } else if (modal === 'markAsPaymentModal') {
+            } else {
+                this.scheduleOopModal = false;
+                this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Please select same Projects & try again', life: 4000 });
+            }
+
+
+        } else if (modal === 'markAsPaymentModal') {
+            this.checkUniqueVF();
+            if (this.vfUnique) {
                 let sts = this.checkPPStatus();
                 console.log('Sts ', sts);
                 if (sts) {
@@ -529,12 +536,16 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 } else {
                     this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Payment already marked', life: 4000 });
                 }
+            } else {
+                this.scheduleOopModal = false;
+                this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Please select same Vendor/Freelance name & try again', life: 4000 });
             }
-
-        } else {
-            this.scheduleOopModal = false;
-            this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Please select same Projects & try again', life: 4000 });
         }
+
+        // } else {
+        //     this.scheduleOopModal = false;
+        //     this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Please select same Projects & try again', life: 4000 });
+        // }
     }
 
     checkApprovedStatus() {
@@ -552,12 +563,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     }
 
     checkPPStatus() {
-        // let found = this.selectedAllRowsItem.find((item) => {
-        //     if (item.Status.includes('Payment Pending')) {
-        //         return item;
-        //     }
-        // })
-        // return found ? true : false
         let ppSts = true;
         for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
             const element = this.selectedAllRowsItem[j];
@@ -617,6 +622,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         return found ? found : ''
     }
 
+    pcFound: boolean = false;
     checkUniquePC() {
         for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
             const element = this.selectedAllRowsItem[i];
@@ -629,8 +635,23 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 this.pcFound = true;
             }
         }
-
     }
+
+    vfUnique: boolean = false;
+    checkUniqueVF() {
+        for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
+            const element = this.selectedAllRowsItem[i];
+            let vfId = this.selectedAllRowsItem[0].VendorFreelancer;
+            if (element.VendorFreelancer !== vfId) {
+                this.vfUnique = false;
+                break;
+            } else {
+                this.vfUnique = true;
+            }
+        }
+    }
+
+
 
     updateSchedulteOopInvoice() {
         // this.scheduleOopInvoice_form.get('ProjectCode').setValue(this.selectedRowItem.data.ProjectCode);

@@ -47,6 +47,9 @@
                         <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProjectCode'" [options]="anonBillableColArray.ProjectCode"
                             defaultLabel="All" (onChange)="anb.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'VendorName'" [options]="anonBillableColArray.VendorName"
+                            defaultLabel="All" (onChange)="anb.filter($event.value, col.field, 'in')">
+                        </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Number'" [options]="anonBillableColArray.Number"
                             defaultLabel="All" (onChange)="anb.filter($event.value, col.field, 'in')">
                         </p-multiSelect>

@@ -84,11 +84,8 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             this.DateRange.endDate = new Date(this.datePipe.transform(this.rangeDates[1], "yyyy-MM-dd") + " 23:59:00").toISOString();
             this.fdDataShareServie.expenseDateRange = this.DateRange;
         }
-
-
         this.createANBCols();
         this.initializeMarkAsPaymentForm_field();
-
         // Get VendorFreelancer List
         this.freelancerVendersRes = await this.fdDataShareServie.getVendorFreelanceData();
         await this.projectInfo();
@@ -154,6 +151,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         this.approvedNonBillableCols = [
             { field: 'Number', header: 'Ref. Number', visibility: true },
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
+            { field: 'VendorName', header: 'Vendor Name', visibility: true },
             { field: 'ExpenseType', header: 'Expense Type', visibility: true },
             { field: 'PaymentMode', header: 'Payment Mode', visibility: true },
             { field: 'ClientAmount', header: 'Client Amount', visibility: true },
@@ -303,6 +301,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     anonBillableColArray = {
         ProjectCode: [],
         SOWCode: [],
+        VendorName: [],
         Category: [],
         ExpenseType: [],
         ClientAmount: [],
@@ -320,28 +319,21 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     }
 
     createColFieldValues() {
-
         this.anonBillableColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
         this.anonBillableColArray.Category = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
         this.anonBillableColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
         const clientAmount = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
         this.anonBillableColArray.ClientAmount = this.fdDataShareServie.customSort(clientAmount, 1, 'label');
         this.anonBillableColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
-
         this.anonBillableColArray.PaymentMode = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.PaymentMode, value: a.PaymentMode }; return b; }).filter(ele => ele.label)));
         this.anonBillableColArray.PayingEntity = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.PayingEntity, value: a.PayingEntity }; return b; }).filter(ele => ele.label)));
         this.anonBillableColArray.Status = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
-
         this.anonBillableColArray.Number = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Number, value: a.Number }; return b; }).filter(ele => ele.label)));
-
+        this.anonBillableColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
         this.anonBillableColArray.PaymentDate = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }).filter(ele => ele.label));
-
         const modified = this.commonService.sortDateArray(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b; }).filter(ele => ele.label)));
         this.anonBillableColArray.Modified = modified.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-
-
         this.anonBillableColArray.Created = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Created, value: a.Created }; return b; }).filter(ele => ele.label));
-
         // this.anonBillableColArray.SOWCode = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label));
         // this.anonBillableColArray.DateCreated = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.DateCreated, value: a.DateCreated }; return b; }).filter(ele => ele.label));
         // this.anonBillableColArray.ModifiedDate = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
@@ -382,7 +374,6 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 this.approvedSts = false;
                 this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select line item with status containing "Payment Pending" & try again.', life: 4000 });
             }
-
         }
     }
 
@@ -409,12 +400,12 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     listOfPOCs: any = [];
     openPopup(modal: string) {
         console.log('selectedAllRowsItem ', this.selectedAllRowsItem);
-        this.checkUniquePC();
+        this.checkUniqueVF();
         if (!this.selectedAllRowsItem.length) {
             this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select at least 1 Projects & try again', life: 4000 });
             return;
         }
-        if (this.pcFound) {
+        if (this.vfUnique) {
             if (modal === 'markAsPaymentModal') {
                 // if (this.selectedRowItemData[0].Status.includes("Payment Pending")) {
                 let sts = this.checkPPStatus();
@@ -430,7 +421,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 }
             }
         } else {
-            this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select same project & try again.', life: 4000 });
+            this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select same Vendor/Freelance name & try again', life: 4000 });
         }
     }
 
@@ -454,16 +445,16 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
 
     }
 
-    pcFound: boolean = false;
-    checkUniquePC() {
+    vfUnique: boolean = false;
+    checkUniqueVF() {
         for (let i = 0; i < this.selectedAllRowsItem.length; i++) {
             const element = this.selectedAllRowsItem[i];
-            let pc = this.selectedAllRowsItem[0].ProjectCode;
-            if (element.ProjectCode !== pc) {
-                this.pcFound = false;
+            let vfId = this.selectedAllRowsItem[0].VendorFreelancer;
+            if (element.VendorFreelancer !== vfId) {
+                this.vfUnique = false;
                 break;
             } else {
-                this.pcFound = true;
+                this.vfUnique = true;
             }
         }
     }
@@ -557,19 +548,15 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     batchContents: any = [];
     async submitForm(dataEndpointArray, type: string) {
         console.log('Form is submitting');
-
         this.batchContents = [];
         const batchGuid = this.spServices.generateUUID();
         const changeSetId = this.spServices.generateUUID();
-
         // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
         console.log(' dataEndpointArray ', dataEndpointArray);
         dataEndpointArray.forEach(element => {
             if (element)
                 this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
         });
-
-        console.log("this.batchContents ", JSON.stringify(this.batchContents));
 
         this.batchContents.push('--changeset_' + changeSetId + '--');
         const batchBody = this.batchContents.join('\r\n');
@@ -586,8 +573,6 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         }
         this.isPSInnerLoaderHidden = true;
         this.submitBtn.isClicked = false;
-
-        // });
     }
 
     reFetchData() {
