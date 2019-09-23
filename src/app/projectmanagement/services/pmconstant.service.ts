@@ -411,6 +411,21 @@ export class PmconstantService {
       orderby: 'Created desc',
       top: 4900
     },
+    GET_ClosePO: {
+      select: 'ID,Title, ClientLegalEntity, Currency, Number, Name, Amount, AmountOOP, AmountRevenue, AmountTax,POCategory,POExpiryDate,'
+        + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked,TotalScheduled,ScheduledRevenue',
+      filter: 'Id eq \'{{Id}}\'',
+      orderby: 'Created desc',
+      top: 4900
+    },
+
+    GET_FinancePO: {
+      select: 'ID,Title, ClientLegalEntity, Currency, Number, Name, Amount, AmountOOP, AmountRevenue, AmountTax,POCategory,POExpiryDate,'
+        + 'TotalLinked, RevenueLinked, OOPLinked, TaxLinked,TotalScheduled,ScheduledRevenue',
+      filter: 'Status eq \'Active\' and ClientLegalEntity eq \'{{clientLegalEntity}}\' and  Currency eq \'{{currency}}\'',
+      orderby: 'Created desc',
+      top: 4900
+    },
     PROJECT_FINANCE_BY_PROJECTCODE: {
       select: 'ID, Title, Currency, ApprovedBudget, Budget, RevenueBudget, OOPBudget, TaxBudget,BudgetHrs,' +
         'InvoicesScheduled, ScheduledRevenue, ScheduledOOP, Invoiced, InvoicedRevenue, InvoicedOOP, Template',

@@ -223,9 +223,11 @@ export class ManageFinanceComponent implements OnInit {
     };
     // Get Po ##0
     const poGet = Object.assign({}, options);
-    const poFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_PO);
+    const poFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_FinancePO);
     poFilter.filter = poFilter.filter.replace(/{{clientLegalEntity}}/gi,
       clientLegalEntity);
+    poFilter.filter = poFilter.filter.replace(/{{currency}}/gi,
+      currency);
     poGet.url = this.spServices.getReadURL(this.constant.listNames.PO.name,
       poFilter);
     poGet.type = 'GET';
@@ -258,7 +260,7 @@ export class ManageFinanceComponent implements OnInit {
     if (arrResults && arrResults.length) {
 
       const unfilteredPOArray = arrResults[0].retItems;
-      this.poArray = unfilteredPOArray.filter(x => x.Currency === currency);
+      this.poArray = unfilteredPOArray;
       if (this.poArray && this.poArray) {
         this.poArray.forEach((element) => {
           this.poList.push({ label: element.Number + '-' + element.Name, value: element.ID });
@@ -1239,6 +1241,34 @@ export class ManageFinanceComponent implements OnInit {
       let poRev = 0;
       let poOOP = 0;
       let poTax = 0;
+      const poValueArray = [];
+      // tslint:disable-next-line: prefer-for-of
+      for (let index = 0; index < this.existPOArray.retItems.length; index++) {
+        const poItem = this.existPOArray.retItems[index];
+        const poValue = this.poArray.filter(x => x.ID === poItem.POLookup);
+        if (poValue.length === 0) {
+          poValueArray.push(poItem.POLookup);
+        }
+      }
+      if (poValueArray) {
+        const batchURLs = [];
+        poValueArray.forEach(POelement => {
+          const poCloseGet = Object.assign({}, options);
+          const poCloseGetFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_ClosePO);
+          poCloseGetFilter.filter = poCloseGetFilter.filter.replace(/{{Id}}/gi,
+            POelement);
+          poCloseGet.url = this.spServices.getReadURL(this.constant.listNames.PO.name,
+            poCloseGetFilter);
+          poCloseGet.type = 'GET';
+          poCloseGet.listName = this.constant.listNames.PO.name;
+          batchURLs.push(poCloseGet);
+
+        });
+
+        const POresult = await this.spServices.executeBatch(batchURLs);
+        this.poArray.push.apply(this.poArray, POresult.map(c => c.retItems[0]));
+      }
+
 
       // add appropriate value for unassigned project.
       for (let index = 0; index < this.existPOArray.retItems.length; index++) {
@@ -1447,19 +1477,19 @@ export class ManageFinanceComponent implements OnInit {
       inoviceGet.type = 'GET';
       inoviceGet.listName = this.constant.listNames.Invoices.name;
       batchURL.push(inoviceGet);
-     
+
     }
     for (const invoiceItem of uniqueProforma) {
-       // Get Proforma  ##1;
-       const proformaGet = Object.assign({}, options);
-       const proformaFilter = Object.assign({}, this.pmConstant.QUERY.PROFORMA_BY_PROFORMALOOKUP);
-       proformaFilter.filter = proformaFilter.filter.replace(/{{proformaLookup}}/gi,
-         invoiceItem.ProformaLookup);
-       proformaGet.url = this.spServices.getReadURL(this.constant.listNames.Proforma.name,
-         proformaFilter);
-       proformaGet.type = 'GET';
-       proformaGet.listName = this.constant.listNames.Proforma.name;
-       batchURL.push(proformaGet);
+      // Get Proforma  ##1;
+      const proformaGet = Object.assign({}, options);
+      const proformaFilter = Object.assign({}, this.pmConstant.QUERY.PROFORMA_BY_PROFORMALOOKUP);
+      proformaFilter.filter = proformaFilter.filter.replace(/{{proformaLookup}}/gi,
+        invoiceItem.ProformaLookup);
+      proformaGet.url = this.spServices.getReadURL(this.constant.listNames.Proforma.name,
+        proformaFilter);
+      proformaGet.type = 'GET';
+      proformaGet.listName = this.constant.listNames.Proforma.name;
+      batchURL.push(proformaGet);
     }
     const invoiceProformaResult = await this.spServices.executeBatch(batchURL);
     if (invoiceProformaResult && invoiceProformaResult.length) {
