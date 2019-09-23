@@ -90,8 +90,8 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
   }
 
   protected async getPFItems(topCount, startDate, endDate): Promise<[]> {
-    const previousYear = new Date().getFullYear() - 2;
-    startDate = startDate ? startDate : new Date(previousYear, 11, 31).toISOString();
+    // const previousYear = new Date().getFullYear() - 2;
+    startDate = startDate ? startDate : new Date(new Date().setMonth(new Date().getMonth() - 6)).toISOString();
     endDate = endDate ? endDate : new Date().toISOString();
     // REST API url in contants file
 

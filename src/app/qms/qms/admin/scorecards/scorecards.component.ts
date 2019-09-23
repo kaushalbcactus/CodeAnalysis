@@ -57,7 +57,7 @@ export class ScorecardsComponent implements OnInit {
   };
   resourceRows: [];
   resourceColumns: [{}];
-  value: Date;
+  value: Date [] = [new Date(new Date().setMonth(new Date().getMonth() - 6)), new Date()];
   @ViewChild(FeedbackBymeComponent, { static: true }) feedbackTable: FeedbackBymeComponent;
   constructor(private qmsConstant: QMSConstantsService, private globalConstant: ConstantsService,
     private spService: SPOperationService, private global: GlobalService) { }
@@ -146,8 +146,8 @@ export class ScorecardsComponent implements OnInit {
   getScorecard(assignedToID, topCount, startDate, endDate) {
     const batchURL = [];
     const getScorecardURL = JSON.parse(JSON.stringify(this.qmsConstant.personalFeedbackComponent.Internal.getScorecard));
-    const previousYear = new Date().getFullYear() - 2;
-    this.filterObj.startDate = startDate ? new Date(startDate) : new Date(previousYear, 11, 31);
+    // const previousYear = new Date().getFullYear() - 2;
+    this.filterObj.startDate = startDate ? new Date(startDate) : new Date(new Date().setMonth(new Date().getMonth() - 6));
     startDate = new Date(this.filterObj.startDate).toISOString();
     this.filterObj.endDate = endDate ? new Date(endDate) : new Date();
     endDate = new Date(this.filterObj.endDate).toISOString();
@@ -209,6 +209,7 @@ export class ScorecardsComponent implements OnInit {
       this.filterObj.startDate = fromDate;
       this.filterObj.endDate = toDate;
     } else {
+      this.value = [new Date(new Date().setMonth(new Date().getMonth() - 6)), new Date()];
       this.filterObj.startDate = null;
       this.filterObj.endDate = null;
     }

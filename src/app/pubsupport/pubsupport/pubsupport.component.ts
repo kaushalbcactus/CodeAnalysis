@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ViewContainerRef, ViewChild, HostListener } from '@angular/core';
 import { MessageService, DialogService, ConfirmationService } from 'primeng/api';
 import { MenuItem } from 'primeng/components/common/menuitem';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl, MaxLengthValidator } from '@angular/forms';
 import { SPOperationService } from '../../Services/spoperation.service';
 import { ConstantsService } from '../../Services/constants.service';
 import { PubsuportConstantsService } from '../Services/pubsuport-constants.service';
@@ -528,6 +528,7 @@ export class PubsupportComponent implements OnInit {
                 ];
                 break;
             }
+            case 'presented':
             case 'published': {
                 this.items = [
                     { label: 'Your document is Published.' }
@@ -601,7 +602,17 @@ export class PubsupportComponent implements OnInit {
             // this.journalConfFormField();
             this.addJCDetailsModal = true;
             this.formatMilestone(this.milestonesList);
-            // console.log('this.pubSupportProjectInfoData ', this.pubSupportProjectInfoData);
+            if (this.selectedProject.DeliverableType === 'Abstract' || this.selectedProject.DeliverableType === 'Poster' || this.selectedProject.DeliverableType === 'Oral Presentation') {
+                this.documentTypes = [
+                    { label: 'Select type', value: '' },
+                    { label: 'Conference', value: 'conference' }
+                ];
+            } else {
+                this.documentTypes = [
+                    { label: 'Select type', value: '' },
+                    { label: 'Journal', value: 'journal' },
+                ];
+            }
             return;
         } else if (this.selectedModal === 'Edit Journal conference') {
             await this.getJCDetails(data);
@@ -673,16 +684,16 @@ export class PubsupportComponent implements OnInit {
             jcLineItemName: [''],
             Milestone: ['', Validators.required],
             Name: { value: '', disabled: true },
-            Comments: ['', [Validators.required]],
-            UserName: [''],
-            Password: ['']
+            Comments: [''],
+            UserName: ['', Validators.required],
+            Password: ['', Validators.required]
         });
         this.journal_Conference_Detail_form = this.formBuilder.group({
             EntryType: ['', Validators.required],
             jcLineItem: ['', Validators.required],
             Milestone: ['', Validators.required],
             Name: { value: '', disabled: true },
-            Comments: ['', [Validators.required]]
+            Comments: ['']
         });
     }
 

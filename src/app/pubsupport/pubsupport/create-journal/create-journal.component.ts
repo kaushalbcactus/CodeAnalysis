@@ -58,7 +58,7 @@ export class CreateJournalComponent implements OnInit {
             ExpectedReviewPeriod: ['', Validators.required],
             ImpactFactor: ['', Validators.required],
             RejectionRate: ['', Validators.required],
-            Comments: ['', Validators.required],
+            Comments: [''],
             JournalEditorInfo: ['', Validators.required],
         });
     }

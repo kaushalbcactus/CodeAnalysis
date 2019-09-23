@@ -103,8 +103,8 @@ export class ExternalComponent implements OnDestroy {
    *
    */
   async getQCItems(topCount, startDate, endDate) {
-    const previousYear = new Date().getFullYear() - 2;
-    startDate = startDate ? startDate : new Date(previousYear, 11, 31).toISOString();
+    // const previousYear = new Date().getFullYear() - 2;
+    startDate = startDate ? startDate : new Date(new Date().setMonth(new Date().getMonth() - 6)).toISOString();
     endDate = endDate ? endDate : new Date().toISOString();
     // REST API url in contants file
     const qcComponent = JSON.parse(JSON.stringify(this.qmsConstant.personalFeedbackComponent.External));

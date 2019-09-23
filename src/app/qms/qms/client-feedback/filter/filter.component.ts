@@ -14,8 +14,7 @@ export class FilterComponent implements OnInit {
   @Output() callFilter = new EventEmitter<any>();
   @Output() searchFilter = new EventEmitter<any>();
   public location = '';
-  value: Date;
-
+  value: Date[] = [new Date(new Date().setMonth(new Date().getMonth() - 6)), new Date()];
   filterObj: any = {
     cdStatus: [{ type: 'All' }, { type: this.constant.cdStatus.Created }, { type: this.constant.cdStatus.ValidationPending },
     { type: this.constant.cdStatus.Closed + ' - ' + this.constant.cdStatus.Valid },
@@ -55,10 +54,13 @@ export class FilterComponent implements OnInit {
   filterByDateRange() {
     if (this.value) {
       const fromDate = new Date(this.value[0].setHours(0, 0, 0, 0));
-      const toDate = new Date(this.value[1].setHours(23, 59, 59, 59));
+      // tslint:disable: max-line-length
+      const toDate = this.value[1] ? new Date(this.value[1].setHours(23, 59, 59, 0)) : fromDate ?
+                     new Date(this.value[0].setHours(23, 59, 59, 0)) : new Date();
       this.filterObj.startDate = fromDate;
       this.filterObj.endDate = toDate;
     } else {
+      this.value = [new Date(new Date().setMonth(new Date().getMonth() - 6)), new Date()];
       this.filterObj.startDate = null;
     }
     this.callFilter.emit(this.filterObj);
