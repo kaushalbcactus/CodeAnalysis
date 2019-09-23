@@ -411,17 +411,17 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 let sts = this.checkPPStatus();
                 console.log('Sts ', sts);
                 if (!this.approvedSts) {
-                    this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select line item with status containing "Payment Pending" & try again.', life: 4000 });
+                    this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select line item with status containing "Payment Pending".', life: 4000 });
                     return false;
                 }
                 if (sts) {
                     this.markAsPaymentModal = true;
                 } else {
-                    this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Payment already marked', life: 4000 });
+                    this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select line item with status containing "Payment Pending".', life: 4000 });
                 }
             }
         } else {
-            this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select same Vendor/Freelance name & try again', life: 4000 });
+            this.messageService.add({ key: 'approvedNonBToast', severity: 'info', summary: 'Info message', detail: 'Please select same Vendor/Freelance name', life: 4000 });
         }
     }
 
