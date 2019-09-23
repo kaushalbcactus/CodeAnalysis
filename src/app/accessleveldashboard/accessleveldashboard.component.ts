@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 })
 export class AccessleveldashboardComponent implements OnInit {
 
+ 
   constructor(
     private globalObject: GlobalService,
     private spServices: SPOperationService,
@@ -20,7 +21,7 @@ export class AccessleveldashboardComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit() {
-
+    this.constant.loader.isPSInnerLoaderHidden = false;
     this.checkAccessLevel();
   }
 
@@ -43,9 +44,9 @@ export class AccessleveldashboardComponent implements OnInit {
     batchURL.push(resourceGet);
 
     const arrResults = await this.spServices.executeBatch(batchURL);
-
     if (arrResults) {
       if (arrResults[0].retItems) {
+        this.constant.loader.isPSInnerLoaderHidden = true;
         if (arrResults[0].retItems[0].Role === 'CM L1' || arrResults[0].retItems[0].Role === 'CM L2') {
           if (arrResults[0].retItems[0].SkillLevel.Title.includes('Offsite')) {
             this.router.navigate(['/projectMgmt']);
@@ -57,6 +58,7 @@ export class AccessleveldashboardComponent implements OnInit {
           === 'Delivery' || arrResults[0].retItems[0].Role === 'Others') {
           this.router.navigate(['/myDashboard']);
         } else if (arrResults[0].retItems[0].Role === 'Finance') {
+
           this.router.navigate(['/financeDashboard']);
         } else {
           this.router.navigate(['/myDashboard']);
