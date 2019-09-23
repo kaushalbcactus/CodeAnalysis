@@ -41,7 +41,7 @@
   <div [hidden]="filterObj.hideDateRange">
       <div class="daterange" >
           <!-- <span>Date range</span> -->
-           <p-calendar [(ngModel)]="value" placeholder="Filter by date range" selectionMode="range" [readonlyInput]="true" dateFormat="M d, yy" showIcon='true' showButtonBar="true" (onClose)="filterByDateRange($event)"></p-calendar>
+           <p-calendar [(ngModel)]="value" placeholder="Filter by date range" selectionMode="range" [readonlyInput]="true" dateFormat="M d, yy" showIcon='true' showButtonBar="true" (onClose)="filterByDateRange()"></p-calendar>
        </div>
   </div>
 </div>

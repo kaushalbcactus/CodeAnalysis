@@ -209,6 +209,7 @@ export class ScorecardsComponent implements OnInit {
       this.filterObj.startDate = fromDate;
       this.filterObj.endDate = toDate;
     } else {
+      this.value = [new Date(new Date().setMonth(new Date().getMonth() - 6)), new Date()];
       this.filterObj.startDate = null;
       this.filterObj.endDate = null;
     }

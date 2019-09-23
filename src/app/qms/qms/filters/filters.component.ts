@@ -137,6 +137,7 @@ export class FiltersComponent implements OnInit {
           this.filterObj.hideYears = true;
           this.filterObj.hideQuarters = true;
           this.filterObj.hideDateRange = false;
+          this.filterByDateRange();
           break;
         default:
           this.filterObj.hideYears = true;
@@ -150,7 +151,7 @@ export class FiltersComponent implements OnInit {
     }
   }
 
-  filterByDateRange(event: IMyDateRangeModel) {
+  filterByDateRange() {
     if (this.value) {
       const fromDate = new Date(this.value[0].setHours(0, 0, 0, 0));
       // tslint:disable: max-line-length
@@ -158,8 +159,12 @@ export class FiltersComponent implements OnInit {
       this.filterObj.isDateFilter = true;
       this.filterObj.startDate = fromDate;
       this.filterObj.endDate = toDate;
-      this.callApplyFilter.emit(this.filterObj);
+    } else {
+      this.value = [new Date(new Date().setMonth(new Date().getMonth() - 6)), new Date()];
+      this.filterObj.startDate = new Date(new Date().setMonth(new Date().getMonth() - 6));
+      this.filterObj.endDate = new Date(new Date().setHours(23, 59, 59, 0));
     }
+    this.callApplyFilter.emit(this.filterObj);
   }
 
   clearQuarterFilter(event, filter) {

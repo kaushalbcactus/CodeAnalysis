@@ -125,14 +125,15 @@ export class CDComponent implements OnInit, OnDestroy {
     const result = await this.spService.getGroupInfo(this.globalConstant.Groups.CDAdmin);
     this.global.cdAdmins = result.results ? result.results : [];
     this.global.currentUser.isCDAdmin = this.global.cdAdmins.find(t => t.Id === this.global.sharePointPageObject.userId) ? true : false;
-    const lastMonthDate = new Date();
-    const daysPrior = 180;
-    lastMonthDate.setDate(lastMonthDate.getDate() - daysPrior);
-    let startDate = new Date(new Date(lastMonthDate.setHours(0, 0, 0, 0))).toISOString();
+    // const lastMonthDate = new Date();
+    // const daysPrior = 180;
+    // lastMonthDate.setDate(lastMonthDate.getDate() - daysPrior);
+    //let startDate = new Date(new Date(lastMonthDate.setHours(0, 0, 0, 0))).toISOString();
+    let startDate = new Date( new Date(new Date().setMonth(new Date().getMonth() - 6)).setHours(0, 0, 0, 0)).toISOString();
     let endDate = new Date().toISOString();
     if (filterObj && filterObj.startDate) {
       startDate = new Date(new Date(filterObj.startDate).setHours(0, 0, 0, 1)).toISOString();
-      endDate = new Date(new Date(filterObj.endDate).setHours(11, 59, 59, 59)).toISOString();
+      endDate = new Date(new Date(filterObj.endDate).setHours(23, 59, 59, 59)).toISOString();
     }
 
     let qcUrl = {};

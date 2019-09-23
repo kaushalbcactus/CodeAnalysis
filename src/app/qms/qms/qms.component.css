@@ -60,6 +60,13 @@
   color:#B13E3E;
 }
 
+  ::ng-deep app-qms .ui-datepicker table td.ui-datepicker-today a.ui-state-active,
+  ::ng-deep app-qms .ui-datepicker table td>a.ui-state-active,
+  ::ng-deep app-qms .ui-datepicker table td>a.ui-state-active:hover {
+      color: #ffffff !important;
+      background-color: #c53e3e !important;
+  }
+
 ::ng-deep app-qms button{
   min-width: 0em;
 }
