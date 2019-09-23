@@ -357,6 +357,10 @@
                             "vendorChunk": false,
                             "buildOptimizer": true,
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomUAT/AngularModules/CA/"
+                        },
+                        "devQMS": {
+                            "outputHashing": "none",
+                            "deployUrl": "https://cactusglobal.sharepoint.com/sites/medcomdev/SiteAssets/CustomAssets/AngularModules/QMS/"
                         }
                     }
                 },
