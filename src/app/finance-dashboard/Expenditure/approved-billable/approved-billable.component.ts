@@ -517,12 +517,12 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                     this.setValInScheduleOop(this.selectedAllRowsItem);
                     this.scheduleOopModal = true;
                 } else {
-                    this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Please select only those Projects whose payment is pending & try again', life: 4000 });
+                    this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Please select only those Projects whose scheduling is pending', life: 4000 });
                 }
 
             } else {
                 this.scheduleOopModal = false;
-                this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Please select same Projects & try again', life: 4000 });
+                this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Please select same Projects', life: 4000 });
             }
 
 
@@ -534,11 +534,11 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 if (sts) {
                     this.markAsPaymentModal = true;
                 } else {
-                    this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Payment already marked', life: 4000 });
+                    this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Please select only those Projects whose payment is pending', life: 4000 });
                 }
             } else {
                 this.scheduleOopModal = false;
-                this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Please select same Vendor/Freelance name & try again', life: 4000 });
+                this.messageService.add({ key: 'approvedToast', severity: 'info', summary: 'Info message', detail: 'Please select same Vendor/Freelance name', life: 4000 });
             }
         }
 
