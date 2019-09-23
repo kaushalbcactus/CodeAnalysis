@@ -9,7 +9,7 @@
 
     <div class="ui-g">
         <div class="p-col-12 p-md-6 p-lg-2 padding15">
-            Conference Name
+            Conference Name <span style="color:red">*</span>
         </div>
         <div class="p-col-12 p-md-6 p-lg-10">
             <!-- <input type="text" pInputText maxlength="30" formControlName="ConferenceName" style="width: 100% !important;" placeholder="Name" /> -->
@@ -28,27 +28,27 @@
     <div class="ui-g">
         <div class="p-col-12 p-md-6 p-lg-2 padding15">
             <div class="box">
-                Conference Date
+                Conference Date <span style="color:red">*</span>
             </div>
         </div>
         <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
             <p-calendar [showIcon]="true" [style]="{'width':'100%'}" placeholder="Select Date" [readonlyInput]="true"
                 formControlName="ConferenceDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}"
-                appendTo="body" [monthNavigator]="true" [yearNavigator]="true"></p-calendar>
+                appendTo="body" [monthNavigator]="true" [yearNavigator]="true"></p-calendar> 
             <div *ngIf="formSubmit.isSubmit && isValidAddConferenceDetailsForm.ConferenceDate.errors">
                 <div *ngIf="isValidAddConferenceDetailsForm.ConferenceDate.errors.required" style="color:red;">
                     Please provide Start Date.</div>
             </div>
         </div>
         <div class="p-col-12 p-md-6 p-lg-2 padding15">
-            <div class="box">Submission Deadline</div>
+            <div class="box">Submission Deadline <span style="color:red">*</span></div> 
         </div>
         <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
             <div class="box">
                 <p-calendar [showIcon]="true" [style]="{'width':'100%'}" [readonlyInput]="true"
                     placeholder="Select Date" formControlName="SubmissionDeadline" [disabledDays]="[0,6]"
                     dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
-                    [yearNavigator]="true">
+                    [yearNavigator]="true"> 
                 </p-calendar>
                 <div *ngIf="formSubmit.isSubmit && isValidAddConferenceDetailsForm.SubmissionDeadline.errors">
                     <div *ngIf="isValidAddConferenceDetailsForm.SubmissionDeadline.errors.required" style="color:red;">
@@ -65,10 +65,10 @@
         <div class="p-col-12 p-md-6 p-lg-10">
             <div class="box">
                 <textarea rows="5" cols="30" pInputTextarea formControlName="Comments" maxlength="100"></textarea>
-                <div *ngIf="formSubmit.isSubmit && isValidAddConferenceDetailsForm.Comments.errors">
+                <!-- <div *ngIf="formSubmit.isSubmit && isValidAddConferenceDetailsForm.Comments.errors">
                     <div *ngIf="isValidAddConferenceDetailsForm.Comments.errors.required" style="color:red;">
                         Please provide Comments.</div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

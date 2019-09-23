@@ -87,8 +87,8 @@ export class UserFeedbackComponent implements OnInit {
     // 1st  REST API request
     const batchURL = [];
     // REST API url in contants file
-    const previousYear = new Date().getFullYear() - 2;
-    startDate = startDate ? startDate : new Date(previousYear, 11, 31).toISOString();
+    // const previousYear = new Date().getFullYear() - 2;
+    startDate = startDate ? startDate : new Date(new Date().setMonth(new Date().getMonth() - 6)).toISOString();
     endDate = endDate ? endDate : new Date().toISOString();
 
     const personalFeedbackComponent = JSON.parse(JSON.stringify(this.qmsConstant.personalFeedbackComponent.Internal));

@@ -265,8 +265,8 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
   getScorecard(assignedToID, topCount, startDate, endDate) {
     const batchURL = [];
     const getScorecardURL = JSON.parse(JSON.stringify(this.qmsConstant.personalFeedbackComponent.Internal.getScorecard));
-    const previousYear = new Date().getFullYear() - 2;
-    startDate = startDate ? startDate : new Date(previousYear, 11, 31).toISOString();
+    // const previousYear = new Date().getFullYear() - 2;
+    startDate = startDate ? startDate : new Date(new Date().setMonth(new Date().getMonth() - 6)).toISOString();
     endDate = endDate ? endDate : new Date().toISOString();
 
     const getScorecardData = Object.assign({}, this.options);

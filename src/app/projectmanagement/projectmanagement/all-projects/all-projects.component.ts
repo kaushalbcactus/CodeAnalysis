@@ -1471,7 +1471,7 @@ export class AllProjectsComponent implements OnInit {
               task.ID);
             batchURL.push(invoiceUpdate);
           }
-          if (task.Status === this.constants.STATUS.NOT_STARTED
+          if (task.Status === 'Not Started'
             || task.Status === this.constants.STATUS.IN_PROGRESS
             || task.Status === this.constants.STATUS.ON_HOLD) {
             const scheduleData = {
