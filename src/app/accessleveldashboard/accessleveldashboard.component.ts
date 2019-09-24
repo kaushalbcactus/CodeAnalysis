@@ -42,10 +42,9 @@ export class AccessleveldashboardComponent implements OnInit {
     resourceGet.type = 'GET';
     resourceGet.listName = this.constant.listNames.ResourceCategorization.name;
     batchURL.push(resourceGet);
-
     const arrResults = await this.spServices.executeBatch(batchURL);
     if (arrResults) {
-      if (arrResults[0].retItems) {
+      if (arrResults[0].retItems.length > 0) {
         this.constant.loader.isPSInnerLoaderHidden = true;
         if (arrResults[0].retItems[0].Role === 'CM L1' || arrResults[0].retItems[0].Role === 'CM L2') {
           if (arrResults[0].retItems[0].SkillLevel.Title.includes('Offsite')) {
@@ -65,9 +64,11 @@ export class AccessleveldashboardComponent implements OnInit {
         }
 
       } else {
-        this.router.navigate(['/myDashboard']);
+        this.constant.loader.isPSInnerLoaderHidden = true;
+        this.router.navigate(['/404']);
       }
     } else {
+      this.constant.loader.isPSInnerLoaderHidden = true;
       this.router.navigate(['/myDashboard']);
     }
   }
