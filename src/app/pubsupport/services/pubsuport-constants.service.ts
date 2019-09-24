@@ -71,12 +71,12 @@ export class PubsuportConstantsService {
             top: 4500
         },
         journal: {
-            select: "ID,JournalName,Comments,ImpactFactor,RejectionRate,ExpectedReviewPeriod,JournalEditorInfo",
+            select: "ID,JournalName,Comments,ImpactFactor,RejectionRate,ExpectedReviewPeriod,JournalEditorInfo,IsActive",
             top: 4500,
             orderby: "Created desc"
         },
         conference: {
-            select: "ID,ConferenceName,ConferenceDate,SubmissionDeadline,Comments",
+            select: "ID,ConferenceName,ConferenceDate,SubmissionDeadline,Comments,IsActive",
             top: 4500,
             orderby: "Created desc"
         }
