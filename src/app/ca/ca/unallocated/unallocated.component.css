@@ -1,10 +1,52 @@
-::ng-deep #unallocatedTableDiv .ui-table-scrollable-body {
+/* ::ng-deep #unallocatedTableDiv .ui-table-scrollable-body {
     min-height: 340px;
+} */
+
+::ng-deep body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active {
+    background-color: #C53E3E !important;
 }
-::ng-deep #unallocatedTableDiv  .ng-dropdown-panel .scroll-host {
-    position: absolute;
+
+::ng-deep #unallocatedTableDiv .ng-dropdown-panel .scroll-host {
     background-color: white;
 }
-::ng-deep .pointer { 
-    font-size:1em;top: 100px !important;cursor: pointer;
-  }
+
+::ng-deep .ng-dropdown-panel .scroll-host {
+    overflow: auto !important;
+    overflow-y: visible !important;
+    position: fixed !important;
+    display: block !important;
+}
+
+::ng-deep .pointer {
+    font-size: 1em;
+    top: 100px !important;
+    cursor: pointer;
+}
+
+:host ::ng-deep .ui-slidemenu-wrapper {
+    height: 130px !important;
+}
+
+
+/* 
+ ::ng-deep .ui-table-scrollable-body-table tbody.ui-table-tbody>tr>td:last-child {
+    overflow: visible;
+}
+
+ ::ng-deep .ui-table-scrollable-body-table tbody.ui-table-tbody>tr>td:last-child>div {
+    position: relative;
+}
+
+ ::ng-deep .ui-table-scrollable-body-table tbody.ui-table-tbody>tr>td:last-child>div>i {
+    top: 0px !important;
+}
+
+ ::ng-deep .ui-table-scrollable-body-table tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+    top: 0px !important;
+    left: inherit !important;
+    right: 50px !important;
+} */
+
+ ::ng-deep .ui-menu.ui-menu-dynamic {
+    position: fixed;
+}

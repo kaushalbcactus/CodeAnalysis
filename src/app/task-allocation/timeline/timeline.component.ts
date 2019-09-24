@@ -1940,6 +1940,27 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
           if (submilestone.data.type === 'task') {
             if (Node === submilestone.data) {
+              // if(submilestone.data.itemType == 'SC')
+              // {
+              //   this.confirmationService.confirm({
+              //     message: 'Are you sure that you want to Confirm ' + Title + ' ?',
+              //     header: 'Confirmation',
+              //     icon: 'pi pi-exclamation-triangle',
+              //     accept: () => {
+              //       this.selectedSubMilestone = rowData;
+              //       const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
+              //       if (validateNextMilestone) {
+              //         this.loaderenable = true;
+              //         // const newCurrentMilestoneText = this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone;
+              //         // this.messageService.add({key: 'custom', severity:'warn', summary: 'Warning Message',
+              //         // detail:' Setting ' + newCurrentMilestoneText + ' as current milestone'});
+              //         setTimeout(() => { this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
+              //       }
+              //     },
+              //     reject: () => {
+              //     }
+              //   });
+              // }
               this.changeDateOfEditedTask(submilestone.data, type);
               selectedMil = milestonePosition;
               previousNode = submilestone.data;

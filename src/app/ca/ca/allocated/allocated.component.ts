@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 // import { Subject } from 'rxjs';
 // import { debounceTime } from 'rxjs/operators';
@@ -11,7 +11,7 @@ import { CAConstantService } from '../caservices/caconstant.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { MessageService } from 'primeng/api';
+import { MessageService, MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-allocated',
@@ -21,7 +21,7 @@ import { MessageService } from 'primeng/api';
 })
 export class AllocatedComponent implements OnInit {
   // tslint:disable
-
+  taskMenu: MenuItem[];
   displayedColumns: any[] = [
     { field: 'clientName', header: 'Client' },
     { field: 'projectCode', header: 'Project' },
@@ -70,6 +70,7 @@ export class AllocatedComponent implements OnInit {
   // public successMessage: string;
   // public popupSuccessMessage: string;
   public isTaskScopeButtonDisabled = false;
+  tempClick: any;
   constructor(private spServices: SPOperationService,
     private globalConstant: ConstantsService,
     private caConstant: CAConstantService,
@@ -296,6 +297,7 @@ export class AllocatedComponent implements OnInit {
     const endTime = new Date(new Date(endDate).setHours(23, 59, 59, 0));
     const oCapacity = await this.fetchResourceByDate(task,startTime, endTime);
     // This step added to show the capacity for best fit and recommend users.
+    debugger;
     const tempUserDetailsArray = [];
     for(let user of task.selectedResources){
       if((user.userType === this.globalConstant.userType.BEST_FIT || 
@@ -496,7 +498,7 @@ export class AllocatedComponent implements OnInit {
    * @param element 
    * @param task 
    */
-  enabledAllocateSelect(element,task){
+  enabledAllocateSelect(task){
     task.isAllocatedSelectHidden = false;
     task.isAssignedToHidden = true;
     task.isEditEnabled = false;
@@ -508,7 +510,7 @@ export class AllocatedComponent implements OnInit {
    * @param element 
    * @param task 
    */
-  cancelledAllocatedSelect(element,task){
+  cancelledAllocatedSelect(task){
     task.isAllocatedSelectHidden = true;;
     task.isAssignedToHidden = false;
     task.isEditEnabled = true;
@@ -546,5 +548,52 @@ export class AllocatedComponent implements OnInit {
 
   showToastMsg(type, msg, detail) {
     this.messageService.add({severity: type, summary: msg, detail: detail});
+  }
+
+
+
+  openPopup(data) {
+    if (data.isEditEnabled) {
+      this.taskMenu = [
+        { label: 'Edit Assgined To', icon: 'pi pi-fwpi pi-pencil', command: (e) => this.enabledAllocateSelect(data) },
+        { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) }
+       
+      ];
+    } else {
+      this.taskMenu = [
+        { label: 'Cancel Assgined To', icon: 'pi pi-fw pi-times', command: (e) => this.cancelledAllocatedSelect(data) },
+        { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) }
+       
+      ];
+    }
+  }
+
+
+   // *************************************************************************************************************************************
+  // hide popup menu on production
+  // *************************************************************************************************************************************
+
+  @HostListener('document:click', ['$event'])
+  clickout(event) {
+    if (event.target.className === 'pi pi-ellipsis-v') {
+      if (this.tempClick) {
+        this.tempClick.style.display = 'none';
+        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+          this.tempClick = event.target.parentElement.children[0].children[0];
+          this.tempClick.style.display = '';
+        } else {
+          this.tempClick = undefined;
+        }
+      } else {
+        this.tempClick = event.target.parentElement.children[0].children[0];
+        this.tempClick.style.display = '';
+      }
+
+    } else {
+      if (this.tempClick) {
+        this.tempClick.style.display = 'none';
+        this.tempClick = undefined;
+      }
+    }
   }
 }
