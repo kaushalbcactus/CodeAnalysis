@@ -50,9 +50,9 @@ export class QMSComponent implements OnInit {
     // 5th Batch Request
     let result = await this.spService.executeBatch(batchUrl);
     result = result.length > 0 ? result : [];
-    this.global.allResources = result[0].retItems ? result[0].retItems : [];
-    this.hideReviewerTaskPending = result[1].retItems ? false : true;
-    this.hideCD = result[2].retItems ? false : true;
+    this.global.allResources = result[0].retItems.length ? result[0].retItems : [];
+    this.hideReviewerTaskPending = result[1].retItems.length ? false : true;
+    this.hideCD = result[2].retItems.length ? false : true;
     this.global.currentUser.groups = result[3].retItems ? result[3].retItems.Groups.results ? result[3].retItems.Groups.results : [] : [];
     this.global.viewTabsPermission.hideAdmin = this.hideAdmin;
     this.displayManagerTab();

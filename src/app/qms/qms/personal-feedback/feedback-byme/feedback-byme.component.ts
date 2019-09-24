@@ -159,7 +159,7 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
         .replace('{{TopCount}}', '4500')
         .replace('{{startDate}}', qfStartDate)
         .replace('{{endDate}}', qfEndDate)
-        .replace('{{FeedbackTypeFilter}}', 'and FeedbackType eq "' + this.globalConstant.FeedbackType.qualitative + '"');
+        .replace('{{FeedbackTypeFilter}}', "and FeedbackType eq '" + this.globalConstant.FeedbackType.qualitative + "'");
       getScorecardData.listName = this.globalConstant.listNames.Scorecard.name;
       getScorecardData.type = 'GET';
       batchURL.push(getScorecardData);
