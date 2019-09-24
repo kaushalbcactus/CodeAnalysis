@@ -85,7 +85,7 @@ export class MyDashboardConstantsService {
     },
     Comments: {
       select: "ID,Title,Milestone,FileDirRef,NextTasks,PrevTasks,Status,ProjectCode,Task",
-      filter: "ID eq {{taskID}}"
+      // filter: "ID eq {{taskID}}"
     },
     Milestone: {
 
@@ -257,52 +257,46 @@ export class MyDashboardConstantsService {
 
   async getPrevTaskStatus(task) {
     var status = '';
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
 
-    let previousTask = Object.assign({}, this.mydashboardComponent.previousTaskStatus);
+    // let previousTask = Object.assign({}, this.mydashboardComponent.previousTaskStatus);
+    // previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
+
+    // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
+
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    const previousTask = Object.assign({}, this.mydashboardComponent.previousTaskStatus);
     previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
-
-    const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
-
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-
-    for (var i = 0; i < this.response[0].length; i++) {
-      if (this.response[0][i].AllowCompletion === "No") {
-        var previousTaskFilter = '';
-        if (this.response[0][i].PrevTasks) {
-          var previousTasks = task.PrevTasks.split(";#");
-          previousTasks.forEach(function (value, i) {
-            previousTaskFilter += "(Title eq '" + value + "')";
-            previousTaskFilter += i < previousTasks.length - 1 ? " or " : '';
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousTask);
+    this.asyncForEach(this.response, async (element) => {
+      if (element.AllowCompletion === 'No') {
+        let previousTaskFilter = '';
+        if (element.PrevTasks) {
+          const previousTasks = task.PrevTasks.split(';#');
+          previousTasks.forEach((value, i) => {
+            previousTaskFilter += '(Title eq \'' + value + '\')';
+            previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
           });
 
-          this.batchContents = new Array();
-          const batchGuid = this.spServices.generateUUID();
-
-          let previousTask = Object.assign({}, this.mydashboardComponent.taskStatus);
-          previousTask.filter = previousTaskFilter
-
-          const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
-          this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
-
-          this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-          this.response[0].forEach(element => {
+          const previousTask = Object.assign({}, this.mydashboardComponent.taskStatus);
+          previousTask.filter = previousTaskFilter;
+          const prevTaskResponse = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousTask);
+          this.asyncForEach(prevTaskResponse, async(element) => {
             status = element.Status;
           });
+          // prevTaskResponse.forEach(element => {
+          //   status = element.Status;
+          // });
 
+        } else {
+          status = 'AllowCompletion';
         }
-        else {
-          status = "AllowCompletion";
-        }
+      } else {
+        status = 'AllowCompletion';
       }
-      else {
-        status = "AllowCompletion";
-      }
-    }
+    });
     return status;
   }
 
@@ -718,24 +712,27 @@ export class MyDashboardConstantsService {
 
   async getAllClients() {
 
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
-
     let ClientLegalEntities = Object.assign({}, this.mydashboardComponent.ClientLegalEntities);
-    const ClientLegalEntitiesUrl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', ClientLegalEntities);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ClientLegalEntitiesUrl);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.response  = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, ClientLegalEntities);
+
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+
+    // let ClientLegalEntities = Object.assign({}, this.mydashboardComponent.ClientLegalEntities);
+    // const ClientLegalEntitiesUrl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', ClientLegalEntities);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ClientLegalEntitiesUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
 
-    const tempClientLegalEntities = this.response[0].map(c => c.Title);
+    const tempClientLegalEntities = this.response.map(c => c.Title);
 
     const ClientLegalEntitiesResponse = tempClientLegalEntities.filter(function (item, pos) {
       if (!item.toLowerCase().includes('cactus internal')) {
         return tempClientLegalEntities.indexOf(item) == pos;
       }
     });
-
-    var dbClientLegalEntities = ClientLegalEntitiesResponse.map(o => new Object({ label: o, value: o }))
+    let dbClientLegalEntities = [];
+    dbClientLegalEntities = ClientLegalEntitiesResponse.map(o => new Object({ label: o, value: o }))
 
     return dbClientLegalEntities;
 
@@ -897,7 +894,11 @@ export class MyDashboardConstantsService {
     }
   }
 
-
+  async asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
+    }
+  }
 
 }
 

@@ -245,19 +245,25 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   async getStatusFilterDropDownValue(status, filterDates) {
 
-
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
     const mytasks = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTasks);
     mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
     mytasks.filter += status === 'MyCompletedTask' ? mytasks.filterCompleted : mytasks.filterStatus;
     // mytasks.filter += mytasks.filterStatus;
     mytasks.filter += mytasks.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
-    const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', mytasks);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, mytasks);
 
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    this.allTasks = this.response[0] !== '' ? this.response[0] : [];
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+    // const mytasks = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTasks);
+    // mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
+    // mytasks.filter += status === 'MyCompletedTask' ? mytasks.filterCompleted : mytasks.filterStatus;
+    // // mytasks.filter += mytasks.filterStatus;
+    // mytasks.filter += mytasks.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
+    // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', mytasks);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
+
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.allTasks = this.response.length ? this.response : [];
 
     if (this.allTasks.length > 0) {
 
@@ -409,17 +415,20 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
       nextTaskFilter + ' or ' + previousTaskFilter : (nextTaskFilter === '' && previousTaskFilter !== '')
         ? previousTaskFilter : (nextTaskFilter !== '' && previousTaskFilter === '') ? nextTaskFilter : '';
 
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
 
+    // const previousNextTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTask);
+    // previousNextTask.filter = taskFilter;
+
+    // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousNextTask);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     const previousNextTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTask);
     previousNextTask.filter = taskFilter;
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTask);
 
-    const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousNextTask);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
-
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    this.tasks = this.response[0] !== '' ? this.response[0] : [];
+    this.tasks = this.response.length ? this.response : [];
 
     this.tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : '-');
     this.tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : '-');
@@ -584,57 +593,48 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
   //  get Previous Task Status
   // ***************************************************************************************************
 
-  async getPrevTaskStatus(task) {
-    let status = '';
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+  // async getPrevTaskStatus(task) {
+  //   let status = '';
+  //   // this.batchContents = new Array();
+  //   // const batchGuid = this.spServices.generateUUID();
 
-    const previousTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousTaskStatus);
-    previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi,
-      this.sharedObject.sharePointPageObject.userId.toString());
+  //   // const previousTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousTaskStatus);
+  //   // previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi,
+  //   // this.sharedObject.sharePointPageObject.userId.toString());
 
-    const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
+  //   // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
+  //   // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
 
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+  //   // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+  //   const previousTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousTaskStatus);
+  //   previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
+  //   this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousTask);
+  //   this.response.forEach(async element => {
+  //     if (element.AllowCompletion === 'No') {
+  //       let previousTaskFilter = '';
+  //       if (element.PrevTasks) {
+  //         const previousTasks = task.PrevTasks.split(';#');
+  //         previousTasks.forEach((value, i) => {
+  //           previousTaskFilter += '(Title eq \'' + value + '\')';
+  //           previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
+  //         });
 
-    this.response[0].forEach(async element => {
-      if (element.AllowCompletion === 'No') {
-        let previousTaskFilter = '';
-        if (element.PrevTasks) {
-          const previousTasks = task.PrevTasks.split(';#');
-          previousTasks.forEach((value, i) => {
-            previousTaskFilter += '(Title eq \'' + value + '\')';
-            previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
-          });
+  //         const previousTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.taskStatus);
+  //         previousTask.filter = previousTaskFilter;
+  //         this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousTask);
+  //         this.response.forEach(element => {
+  //           status = element.Status;
+  //         });
 
-          this.batchContents = new Array();
-          // tslint:disable-next-line: no-shadowed-variable
-          const batchGuid = this.spServices.generateUUID();
-
-          // tslint:disable-next-line: no-shadowed-variable
-          const previousTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.taskStatus);
-          previousTask.filter = previousTaskFilter;
-
-          // tslint:disable-next-line: no-shadowed-variable
-          const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
-          this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
-
-          this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-          // tslint:disable-next-line: no-shadowed-variable
-          this.response[0].forEach(element => {
-            status = element.Status;
-          });
-
-        } else {
-          status = 'AllowCompletion';
-        }
-      } else {
-        status = 'AllowCompletion';
-      }
-    });
-    return status;
-  }
+  //       } else {
+  //         status = 'AllowCompletion';
+  //       }
+  //     } else {
+  //       status = 'AllowCompletion';
+  //     }
+  //   });
+  //   return status;
+  // }
 
 
   // *************************************************************************************************************************************

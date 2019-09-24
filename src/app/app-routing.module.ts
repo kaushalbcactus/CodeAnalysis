@@ -15,6 +15,7 @@ const routes: Routes = [
   { path: 'financeDashboard', canLoad: [FdAuthGuard], loadChildren: './finance-dashboard/finance-dashboard.module#FinanceDashboardModule' },
   { path: 'centralallocation', loadChildren: './ca/ca.module#CAModule'},
   { path: 'qms', loadChildren: './qms/qms.module#QmsModule' },
+  { path: 'centralallocation', loadChildren: './ca/ca.module#CAModule'},
   { path: 'admin', loadChildren: './admin/admin.module#AdminModule' },
   { path: 'capacityDashboard', loadChildren: './capacity-dashboard/capacity-dashboard.module#CapacityDashboardModule' },
   { path: 'leavecalendar', loadChildren: './leave-calendar/leave-calendar.module#LeaveCalendarModule' },

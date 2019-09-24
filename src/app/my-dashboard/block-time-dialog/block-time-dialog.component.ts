@@ -18,7 +18,8 @@ export class BlockTimeDialogComponent implements OnInit {
   batchContents: any[];
   response: any[];
   SelectedClientLegalEntity: string;
-  modalloaderenable = true; ClientLegalEntities: { label: string; value: string; }[];
+  modalloaderenable = true; 
+  ClientLegalEntities: { label: string; value: string; }[];
   cars: { label: string; value: string; }[];
   starttime: any;
   endtime: any;
