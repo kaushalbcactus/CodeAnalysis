@@ -1,9 +1,11 @@
 import { FeedbackBymeComponent } from './../../personal-feedback/feedback-byme/feedback-byme.component';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ApplicationRef, NgZone } from '@angular/core';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
+import { PlatformLocation, LocationStrategy } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-scorecards',
@@ -57,14 +59,32 @@ export class ScorecardsComponent implements OnInit {
   };
   resourceRows: [];
   resourceColumns: [{}];
-  value: Date [] = [new Date(new Date().setMonth(new Date().getMonth() - 6)), new Date()];
+  value: Date[] = [new Date(new Date().setMonth(new Date().getMonth() - 6)), new Date()];
   @ViewChild(FeedbackBymeComponent, { static: true }) feedbackTable: FeedbackBymeComponent;
   constructor(private qmsConstant: QMSConstantsService, private globalConstant: ConstantsService,
-    private spService: SPOperationService, private global: GlobalService) { }
+    private spService: SPOperationService, private global: GlobalService,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+    
+  }
 
 
   async ngOnInit() {
-    if(!this.global.currentUser.groups.length) {
+    if (!this.global.currentUser.groups.length) {
       const result = await this.spService.getUserInfo(this.global.sharePointPageObject.userId);
       this.global.currentUser.groups = result.Groups.results ? result.Groups.results : [];
     }

@@ -1,5 +1,5 @@
-import { Component, OnInit, EventEmitter, Output, ViewChild, OnDestroy, ViewEncapsulation, HostListener } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component, OnInit, EventEmitter, Output, ViewChild, OnDestroy, ViewEncapsulation, HostListener, ApplicationRef, NgZone } from '@angular/core';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PmconstantService } from '../../services/pmconstant.service';
@@ -140,8 +140,25 @@ export class SOWComponent implements OnInit, OnDestroy {
     private spServices: SPOperationService,
     private constants: ConstantsService,
     private router: Router,
-    public pmCommonService: PMCommonService
-  ) { }
+    public pmCommonService: PMCommonService,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    _applicationRef: ApplicationRef,
+    zone: NgZone,
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+
+  }
 
   ngOnInit() {
     if (this.router.url.indexOf('myDashboard') > -1) {
@@ -287,7 +304,6 @@ export class SOWComponent implements OnInit, OnDestroy {
       const tempAllSOWArray = [];
       for (const task of this.pmObject.allSOWItems) {
         const sowObj = $.extend(true, {}, this.pmObject.allSOW);
-        debugger
         sowObj.ID = task.ID;
         sowObj.SOWCode = task.SOWCode;
         sowObj.ShortTitle = task.Title;

@@ -1,9 +1,10 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ApplicationRef, NgZone } from '@angular/core';
 import { GlobalService } from '../../../../Services/global.service';
 import { UserFeedbackComponent } from '../../user-feedback/user-feedback.component';
 import { CommonService } from '../../../../Services/common.service';
 import { DataService } from '../../../../Services/data.service';
 import { Router, NavigationEnd } from '@angular/router';
+import { PlatformLocation, LocationStrategy } from '@angular/common';
 
 @Component({
   selector: 'app-internal',
@@ -16,13 +17,33 @@ export class InternalComponent implements OnInit, OnDestroy {
   public globalInternalFeedback = this.global.personalFeedback.internal;
   private filterObj = {};
   public sub; navigationSubscription;
-  constructor(public global: GlobalService, public common: CommonService, private data: DataService, private router: Router) {
+  constructor(
+    public global: GlobalService,
+    public common: CommonService,
+    private data: DataService,
+    private router: Router,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+  ) {
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
         this.initialisePFInternal();
       }
     });
+
+    history.pushState(null, null, window.location.href);  
+    platformLocation.onPopState(() => {
+        history.pushState(null, null, window.location.href);
+    });
+
+    _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+    
   }
 
   initialisePFInternal() {

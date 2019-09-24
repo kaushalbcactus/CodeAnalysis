@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, HostListener, ApplicationRef, NgZone } from '@angular/core';
 import { debounceTime } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -11,6 +11,7 @@ import { MenuItem } from 'primeng/api';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
+import { PlatformLocation, LocationStrategy } from '@angular/common';
 declare var $: any;
 @Component({
   selector: 'app-inactive',
@@ -77,7 +78,23 @@ export class InactiveComponent implements OnInit {
     private pmConstant: PmconstantService,
     public pmCommonService: PMCommonService,
     public router: Router,
-  ) { }
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    _applicationRef: ApplicationRef,
+    zone: NgZone,
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+  }
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   ngOnInit() {
     this.isIAPInnerLoaderHidden = false;

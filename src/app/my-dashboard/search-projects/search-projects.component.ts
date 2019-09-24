@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, HostListener, ApplicationRef, NgZone } from '@angular/core';
 import { MessageService, MenuItem } from 'primeng/api';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
@@ -7,7 +7,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { ProjectDraftsComponent } from './project-drafts/project-drafts.component';
 import { TimelineComponent } from 'src/app/task-allocation/timeline/timeline.component';
 import { Router } from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { TimelineHistoryComponent } from './../../timeline/timeline-history/timeline-history.component';
 import { CommonService } from 'src/app/Services/common.service';
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
@@ -86,7 +86,26 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     private spServices: SPOperationService,
     private commonService: CommonService,
     private datePipe: DatePipe,
-    public sharedObject: GlobalService, public router: Router) { }
+    public sharedObject: GlobalService,
+    public router: Router,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    _applicationRef: ApplicationRef,
+    zone: NgZone,
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+
+  }
 
   ngOnInit() {
     const route = this.router.url;

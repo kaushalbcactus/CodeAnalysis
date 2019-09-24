@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, ElementRef, ViewEncapsulation, SimpleChange } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, ElementRef, ViewEncapsulation, SimpleChange, ApplicationRef, NgZone } from '@angular/core';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';
 import { CommonService } from '../../../Services/common.service';
@@ -8,10 +8,10 @@ import { GlobalService } from '../../../Services/global.service';
 // import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { SPCommonService } from '../../../Services/spcommon.service';
 import { TreeNode, MessageService } from 'primeng/api';
 import { UserFeedbackComponent } from '../user-feedback/user-feedback.component';
 import { QMSConstantsService } from '../services/qmsconstants.service';
+import { PlatformLocation, LocationStrategy } from '@angular/common';
 
 @Component({
   selector: 'app-manager-view',
@@ -82,13 +82,30 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
   };
   constructor(private spService: SPOperationService, private globalConstant: ConstantsService, private messageService: MessageService,
     private common: CommonService, private data: DataService, private router: Router, private global: GlobalService,
-    private qmsConstant: QMSConstantsService) {
+    private qmsConstant: QMSConstantsService,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+    ) {
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
         this.initialiseManagerView();
       }
     });
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
   }
 
   ngOnChanges(changes: SimpleChange) {

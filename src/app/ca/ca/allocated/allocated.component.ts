@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ApplicationRef, NgZone } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 // import { Subject } from 'rxjs';
 // import { debounceTime } from 'rxjs/operators';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { CAGlobalService } from '../caservices/caglobal.service';
 import { CACommonService } from '../caservices/cacommon.service';
 import { UsercapacityComponent } from '../usercapacity/usercapacity.component';
@@ -12,6 +12,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-allocated',
@@ -79,12 +80,29 @@ export class AllocatedComponent implements OnInit {
     public userCapacityRef: UsercapacityComponent,
     private modalService: NgbModal,
     private datePipe: DatePipe,
-    private messageService: MessageService) {
+    private messageService: MessageService,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone,
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
   }
- /**
-   * This method is used to initialize the angular component.
-   */
-  ngOnInit(){ 
+  /**
+    * This method is used to initialize the angular component.
+    */
+  ngOnInit() {
     $('#allocatedTableDiv').resize(this.commonService.setHeader);
     this.caGlobal.loading = true;
     this.caGlobal.dataSource = [];
@@ -99,9 +117,9 @@ export class AllocatedComponent implements OnInit {
     // this._popSuccess.pipe(
     //   debounceTime(5000)
     // ).subscribe(() => this.popupSuccessMessage = null);
-      setTimeout(() => {
-        this.getAllocatedProperties();
-      }, 500);
+    setTimeout(() => {
+      this.getAllocatedProperties();
+    }, 500);
   }
   /**
    * This method is used to display the message on page.
@@ -136,19 +154,19 @@ export class AllocatedComponent implements OnInit {
   /**
    * This method is used to get all allocated task.
    */
-  private async getAllocatedProperties(){
+  private async getAllocatedProperties() {
     // this.userDetails = this.spServices.getUserPropertiesById();
     let taskCounter = 0;
     const schedulesItemFetch = [];
     let acTempArrays = {
-      clientLegalEntityTempArray :[],
-      projectCodeTempArray :[],
-      milestoneTempArray :[],
-      taskTempArray :[],
-      deliveryTypeTempArray :[],
-      allocatedTempArray :[],
-      startTimeTempArray :[],
-      endTimeTempArray :[]
+      clientLegalEntityTempArray: [],
+      projectCodeTempArray: [],
+      milestoneTempArray: [],
+      taskTempArray: [],
+      deliveryTypeTempArray: [],
+      allocatedTempArray: [],
+      startTimeTempArray: [],
+      endTimeTempArray: []
     };
     // let currDate = new Date();
     // currDate.setDate(currDate.getDate() - 3);
@@ -156,30 +174,30 @@ export class AllocatedComponent implements OnInit {
     // const dateText = this.datePipe.transform(currDate,'yyyy-MM-ddT00:00:00');
     let allocatedQuery = Object.assign({}, this.caConstant.scheduleAllocatedQueryOptions);
     // allocatedQuery.filter = allocatedQuery.filter.replace('{0}',dateText);
-    const arrResults = await this.commonService.getItems(this.resourceCategorizationList,this.projectInformationList, this.scheduleList, allocatedQuery);
+    const arrResults = await this.commonService.getItems(this.resourceCategorizationList, this.projectInformationList, this.scheduleList, allocatedQuery);
     this.resourceList = arrResults[0];
     this.projects = arrResults[1];
     this.schedulesItems = arrResults[2];
-      if(this.schedulesItems && this.schedulesItems.length) {
-        for(let task of this.schedulesItems) {
-          this.commonService.getCaProperties(taskCounter, schedulesItemFetch, task, this.projects, this.resourceList, this.completeTaskArray,acTempArrays);
-        }
-        this.commonService.getScheduleItems(schedulesItemFetch, this.completeTaskArray);
-        this.acArrays.clientLegalEntityArray = this.commonService.sortByAttribute(this.commonService.unique(acTempArrays.clientLegalEntityTempArray, 'value'),'value','label');
-        this.acArrays.projectCodeArray = this.commonService.sortByAttribute(this.commonService.unique(acTempArrays.projectCodeTempArray, 'value'),'value','label');
-        this.acArrays.milestoneArray = this.commonService.sortByAttribute(this.commonService.unique(acTempArrays.milestoneTempArray, 'value'),'value','label');
-        this.acArrays.taskArray = this.commonService.sortByAttribute(this.commonService.unique(acTempArrays.taskTempArray, 'value'),'value','label');
-        this.acArrays.deliveryTypeArray = this.commonService.sortByAttribute(this.commonService.unique(acTempArrays.deliveryTypeTempArray, 'value'),'value','label');
-        this.acArrays.allocatedArray = this.commonService.sortByAttribute(this.commonService.unique(acTempArrays.allocatedTempArray, 'value'),'value','label');
-        this.acArrays.startTimeArray = this.commonService.sortByDate(this.commonService.unique(acTempArrays.startTimeTempArray, 'value'),'value');
-        this.acArrays.endTimeArray = this.commonService.sortByDate(this.commonService.unique(acTempArrays.endTimeTempArray, 'value'),'value');
-        this.caGlobal.totalRecords = this.completeTaskArray.length;
-        this.caGlobal.dataSource = this.completeTaskArray.slice(0,30);
-        this.caGlobal.loading = false;
-        this.allocatedHideTable = false;
-        setTimeout(() => {
-          this.commonService.setHeader();
-        }, 500);
+    if (this.schedulesItems && this.schedulesItems.length) {
+      for (let task of this.schedulesItems) {
+        this.commonService.getCaProperties(taskCounter, schedulesItemFetch, task, this.projects, this.resourceList, this.completeTaskArray, acTempArrays);
+      }
+      this.commonService.getScheduleItems(schedulesItemFetch, this.completeTaskArray);
+      this.acArrays.clientLegalEntityArray = this.commonService.sortByAttribute(this.commonService.unique(acTempArrays.clientLegalEntityTempArray, 'value'), 'value', 'label');
+      this.acArrays.projectCodeArray = this.commonService.sortByAttribute(this.commonService.unique(acTempArrays.projectCodeTempArray, 'value'), 'value', 'label');
+      this.acArrays.milestoneArray = this.commonService.sortByAttribute(this.commonService.unique(acTempArrays.milestoneTempArray, 'value'), 'value', 'label');
+      this.acArrays.taskArray = this.commonService.sortByAttribute(this.commonService.unique(acTempArrays.taskTempArray, 'value'), 'value', 'label');
+      this.acArrays.deliveryTypeArray = this.commonService.sortByAttribute(this.commonService.unique(acTempArrays.deliveryTypeTempArray, 'value'), 'value', 'label');
+      this.acArrays.allocatedArray = this.commonService.sortByAttribute(this.commonService.unique(acTempArrays.allocatedTempArray, 'value'), 'value', 'label');
+      this.acArrays.startTimeArray = this.commonService.sortByDate(this.commonService.unique(acTempArrays.startTimeTempArray, 'value'), 'value');
+      this.acArrays.endTimeArray = this.commonService.sortByDate(this.commonService.unique(acTempArrays.endTimeTempArray, 'value'), 'value');
+      this.caGlobal.totalRecords = this.completeTaskArray.length;
+      this.caGlobal.dataSource = this.completeTaskArray.slice(0, 30);
+      this.caGlobal.loading = false;
+      this.allocatedHideTable = false;
+      setTimeout(() => {
+        this.commonService.setHeader();
+      }, 500);
     }
     else {
       this.allocatedHideNoDataMessage = false;
@@ -193,40 +211,40 @@ export class AllocatedComponent implements OnInit {
   lazyLoadTask(event) {
     this.commonService.lazyLoadTask(event, this.completeTaskArray, this.filterColumns);
   }
-  onEnterKey(event){
-    if(event.keyCode == 13) {
+  onEnterKey(event) {
+    if (event.keyCode == 13) {
       event.preventDefault();
       return false;
-    }  
+    }
   }
   /**
    * This method will fetch all the resource whose role matches with task.
    * @param task 
    */
   fetchResources(task) {
-    if(!this.selectOpened) {
+    if (!this.selectOpened) {
       this.modalService.open(this.popupContent, { size: 'sm', centered: true, backdrop: 'static', keyboard: false });
       setTimeout(() => {
-        let setResourcesExtn = $.extend(true, [],task.resources);
+        let setResourcesExtn = $.extend(true, [], task.resources);
         const startTime = new Date(new Date(task.startTime).setHours(0, 0, 0, 0));
         const endTime = new Date(new Date(task.endTime).setHours(23, 59, 59, 0));
         const oCapacity = this.userCapacityRef.applyFilterReturn(startTime, endTime, setResourcesExtn);
         task.capacity = oCapacity;
-        let setResources = $.extend(true, [],task.resources);
-        for(const res of setResources) {
-          const retResource = oCapacity.arrUserDetails.filter(function(user){return user.uid === res.UserName.ID})
+        let setResources = $.extend(true, [], task.resources);
+        for (const res of setResources) {
+          const retResource = oCapacity.arrUserDetails.filter(function (user) { return user.uid === res.UserName.ID })
           this.setColorCode(retResource, res, task);
-          const dispTime = parseFloat(retResource[0].displayTotalUnAllocated.replace(':','.'));
+          const dispTime = parseFloat(retResource[0].displayTotalUnAllocated.replace(':', '.'));
           res.taskDetails = retResource[0];
           res.timeAvailable = dispTime;
         }
         task.selectedResources = [];
-        const res = this.commonService.sortResources(setResources,task);
-        const resExtn = $.extend(true, [],res);
-        for(const retRes of resExtn) {
+        const res = this.commonService.sortResources(setResources, task);
+        const resExtn = $.extend(true, [], res);
+        for (const retRes of resExtn) {
           task.selectedResources.push(retRes);
         }
-  
+
         this.modalService.dismissAll();
       }, 500);
     }
@@ -239,12 +257,12 @@ export class AllocatedComponent implements OnInit {
    */
   setColorCode(retResource, res, task) {
     const retRes = retResource[0];
-    const retTask = retRes.tasks.filter(function(tsk){
-      return (task.startDate <= tsk.DueDate && task.dueDate>= tsk.DueDate)
-      || (task.startDate <= tsk.StartDate && task.dueDate >= tsk.StartDate)
-      || (task.startDate >= tsk.StartDate && task.dueDate <= tsk.DueDate)
+    const retTask = retRes.tasks.filter(function (tsk) {
+      return (task.startDate <= tsk.DueDate && task.dueDate >= tsk.DueDate)
+        || (task.startDate <= tsk.StartDate && task.dueDate >= tsk.StartDate)
+        || (task.startDate >= tsk.StartDate && task.dueDate <= tsk.DueDate)
     })
-    if(retTask.length) {
+    if (retTask.length) {
       res.Color = '#D7181F';
     }
     else {
@@ -289,43 +307,43 @@ export class AllocatedComponent implements OnInit {
    */
   async showCapacityPopup(task, item, allocateResource) {
     const startTime = new Date(new Date(task.startTime).setHours(0, 0, 0, 0));
-    let endDate = new Date(new Date(task.endTime).setDate(new Date(task.endTime).getDate()+2));
-    if(endDate.getDay() == 6 || endDate.getDay() ==0){
-      endDate = new Date(new Date(endDate).setDate(new Date(endDate).getDate()+2))
+    let endDate = new Date(new Date(task.endTime).setDate(new Date(task.endTime).getDate() + 2));
+    if (endDate.getDay() == 6 || endDate.getDay() == 0) {
+      endDate = new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 2))
     }
     const endTime = new Date(new Date(endDate).setHours(23, 59, 59, 0));
-    const oCapacity = await this.fetchResourceByDate(task,startTime, endTime);
+    const oCapacity = await this.fetchResourceByDate(task, startTime, endTime);
     // This step added to show the capacity for best fit and recommend users.
     const tempUserDetailsArray = [];
-    for(let user of task.selectedResources){
-      if((user.userType === this.globalConstant.userType.BEST_FIT || 
-        user.userType === this.globalConstant.userType.RECOMMENDED) && 
-        (item.taskDetails.uid !== user.taskDetails.uid)){
-          const retResource = oCapacity.arrUserDetails.filter(function(arrdt){return arrdt.uid === user.taskDetails.uid});
-          tempUserDetailsArray.push(retResource[0]);
-        }
-        if(item.taskDetails.uid === user.taskDetails.uid){
-          const retResource = oCapacity.arrUserDetails.filter(function(arrdt){return arrdt.uid === user.taskDetails.uid});
-          tempUserDetailsArray.splice(0,0,retResource[0]);
-        }
+    for (let user of task.selectedResources) {
+      if ((user.userType === this.globalConstant.userType.BEST_FIT ||
+        user.userType === this.globalConstant.userType.RECOMMENDED) &&
+        (item.taskDetails.uid !== user.taskDetails.uid)) {
+        const retResource = oCapacity.arrUserDetails.filter(function (arrdt) { return arrdt.uid === user.taskDetails.uid });
+        tempUserDetailsArray.push(retResource[0]);
+      }
+      if (item.taskDetails.uid === user.taskDetails.uid) {
+        const retResource = oCapacity.arrUserDetails.filter(function (arrdt) { return arrdt.uid === user.taskDetails.uid });
+        tempUserDetailsArray.splice(0, 0, retResource[0]);
+      }
     }
     oCapacity.arrUserDetails = tempUserDetailsArray;
     this.selectOpened = true;
     task.allocatedResource = '';
     setTimeout(() => {
-     this.modalService.open(this.popupContentCapacity, {windowClass : "capacityModal", backdrop: 'static',  centered: true,  keyboard: false });
-      const modalRef = this.modalService.open(ModelComponent, {windowClass : "capacityModal", backdrop: 'static',  centered: true,  keyboard: false});
+      this.modalService.open(this.popupContentCapacity, { windowClass: "capacityModal", backdrop: 'static', centered: true, keyboard: false });
+      const modalRef = this.modalService.open(ModelComponent, { windowClass: "capacityModal", backdrop: 'static', centered: true, keyboard: false });
       modalRef.componentInstance.callUserCapacityModel(oCapacity);
       modalRef.componentInstance.closeModalEmit.subscribe(($event) => {
         this.closeModal();
       });
-      allocateResource.open(); 
+      allocateResource.open();
       this.openedSelect = allocateResource;
       task.allocatedResource = '';
       this.openedTask = task;
       $('.innerTableLoader').hide();
     }, 500);
-    
+
   }
   /**
    * This method will fetch task based on start time and endtime.
@@ -333,11 +351,11 @@ export class AllocatedComponent implements OnInit {
    * @param startTime 
    * @param endTime 
    */
-  fetchResourceByDate(task, startTime,endTime){
+  fetchResourceByDate(task, startTime, endTime) {
     if (!this.selectOpened) {
       this.modalService.open(this.popupContent, { size: 'sm', centered: true, backdrop: 'static', keyboard: false });
-      let setResourcesExtn = $.extend(true, [],task.resources);
-      const oCapacity = this.userCapacityRef.applyFilterReturn(startTime,endTime , setResourcesExtn);
+      let setResourcesExtn = $.extend(true, [], task.resources);
+      const oCapacity = this.userCapacityRef.applyFilterReturn(startTime, endTime, setResourcesExtn);
       return oCapacity;
     }
   }
@@ -364,39 +382,39 @@ export class AllocatedComponent implements OnInit {
  * @param unt 
  */
   async saveTask($event, task, unt) {
-    if(!this.selectOpened && task.allocatedResource !== '') {
-      if(!this.selectOpened && task.allocatedResource) {
-        const currentScheduleTask = await this.spServices.readItem(this.scheduleList,task.id);
-        if(currentScheduleTask){
-          if(new Date(task.startDate).getTime() === new Date(currentScheduleTask.StartDate).getTime() && 
-            new Date(task.dueDate).getTime() === new Date(currentScheduleTask.DueDate).getTime()){
-              const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource);
-              let resourceTimeZone = this.resourceList[indexRes].TimeZone.Title;
-              resourceTimeZone = resourceTimeZone ? resourceTimeZone : '5.5';
-              if(parseFloat(task.timezone) === parseFloat(resourceTimeZone)){
+    if (!this.selectOpened && task.allocatedResource !== '') {
+      if (!this.selectOpened && task.allocatedResource) {
+        const currentScheduleTask = await this.spServices.readItem(this.scheduleList, task.id);
+        if (currentScheduleTask) {
+          if (new Date(task.startDate).getTime() === new Date(currentScheduleTask.StartDate).getTime() &&
+            new Date(task.dueDate).getTime() === new Date(currentScheduleTask.DueDate).getTime()) {
+            const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource);
+            let resourceTimeZone = this.resourceList[indexRes].TimeZone.Title;
+            resourceTimeZone = resourceTimeZone ? resourceTimeZone : '5.5';
+            if (parseFloat(task.timezone) === parseFloat(resourceTimeZone)) {
+              this.modalService.open(this.popupUpdatingTaskContext, { size: 'sm', centered: true, backdrop: 'static', keyboard: false });
+              setTimeout(() => {
+                this.completeEqualTask(task, unt, false);
+                this.modalService.dismissAll();
+              }, 500);
+            } else {
+              const newStartTime = this.commonService.calcTimeForDifferentTimeZone(task.startDate, task.timezone, resourceTimeZone);
+              const newEndTime = this.commonService.calcTimeForDifferentTimeZone(task.dueDate, task.timezone, resourceTimeZone);
+              if (window.confirm("Task '" + task.title + "' will be allocated to " + this.resourceList[indexRes].UserName.Title + " from " + this.datePipe.transform(newStartTime, 'MMM dd yyyy hh:mm:ss aa') + " to " + this.datePipe.transform(newEndTime, 'MMM dd yyyy hh:mm:ss aa') + " in his/her timezone. Do you want to continue ?")) {
                 this.modalService.open(this.popupUpdatingTaskContext, { size: 'sm', centered: true, backdrop: 'static', keyboard: false });
+                task.newStartDate = newStartTime;
+                task.newDueDate = newEndTime;
+                task.userTimeZone = resourceTimeZone;
                 setTimeout(() => {
-                  this.completeEqualTask(task, unt , false);
+                  this.completeEqualTask(task, unt, true);
                   this.modalService.dismissAll();
                 }, 500);
-              }else{
-                const newStartTime = this.commonService.calcTimeForDifferentTimeZone(task.startDate, task.timezone, resourceTimeZone);
-                const newEndTime = this.commonService.calcTimeForDifferentTimeZone(task.dueDate, task.timezone, resourceTimeZone);
-                if(window.confirm("Task '"+task.title+"' will be allocated to "+this.resourceList[indexRes].UserName.Title+" from "+this.datePipe.transform(newStartTime,'MMM dd yyyy hh:mm:ss aa')+" to "+ this.datePipe.transform(newEndTime,'MMM dd yyyy hh:mm:ss aa') + " in his/her timezone. Do you want to continue ?")){
-                  this.modalService.open(this.popupUpdatingTaskContext, { size: 'sm', centered: true, backdrop: 'static', keyboard: false });
-                  task.newStartDate = newStartTime;
-                  task.newDueDate = newEndTime;
-                  task.userTimeZone = resourceTimeZone;
-                  setTimeout(() => {
-                    this.completeEqualTask(task, unt , true);
-                    this.modalService.dismissAll();
-                  }, 500);
-                }else{
-                  this.onClear(task);
-                }
+              } else {
+                this.onClear(task);
               }
-          }else{
-            this.showToastMsg('info', 'Info', 'Start and EndDate is not matched for this '+task.title +'. Hence page is refreshed in 30 sec.');
+            }
+          } else {
+            this.showToastMsg('info', 'Info', 'Start and EndDate is not matched for this ' + task.title + '. Hence page is refreshed in 30 sec.');
             // this.changeSuccessMessage('Start and EndDate is not matched for this '+task.title +'. Hence page is refreshed in 30 sec.');
             setTimeout(() => {
               location.reload();
@@ -407,7 +425,7 @@ export class AllocatedComponent implements OnInit {
     }
   }
 
-  
+
   /**
    * This method will update the Assigned To field with selected user and CentralallocationDone with Yes option.
    * 
@@ -415,88 +433,88 @@ export class AllocatedComponent implements OnInit {
    * @param unt 
    * @param istimeZoneUpdate 
    */
-   async completeEqualTask(task, unt,istimeZoneUpdate){
-    const options = {'AssignedToId' : task.allocatedResource, 'CentralAllocationDone' : 'Yes'}
-    const timezoneOptions = {'AssignedToId' : task.allocatedResource, 'CentralAllocationDone' : 'Yes', 'TimeZone': task.userTimeZone}
-      //// Save task and remove task from list 
-      if(istimeZoneUpdate){
-        this.spServices.update(this.scheduleList, task.id, timezoneOptions, 'SP.Data.SchedulesListItem');
-      }else{
-        this.spServices.update(this.scheduleList, task.id, options, 'SP.Data.SchedulesListItem');
-      }
+  async completeEqualTask(task, unt, istimeZoneUpdate) {
+    const options = { 'AssignedToId': task.allocatedResource, 'CentralAllocationDone': 'Yes' }
+    const timezoneOptions = { 'AssignedToId': task.allocatedResource, 'CentralAllocationDone': 'Yes', 'TimeZone': task.userTimeZone }
+    //// Save task and remove task from list 
+    if (istimeZoneUpdate) {
+      this.spServices.update(this.scheduleList, task.id, timezoneOptions, 'SP.Data.SchedulesListItem');
+    } else {
+      this.spServices.update(this.scheduleList, task.id, options, 'SP.Data.SchedulesListItem');
+    }
 
-      await this.commonService.ResourceAllocation(task,this.projectInformationList);
-      const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource);
-      const mailSubject = task.projectCode + '(' + task.projectName + ')' + ': Task created';
-      const objEmailBody = [];
+    await this.commonService.ResourceAllocation(task, this.projectInformationList);
+    const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource);
+    const mailSubject = task.projectCode + '(' + task.projectName + ')' + ': Task created';
+    const objEmailBody = [];
+    objEmailBody.push({
+      'key': '@@Val3@@',
+      'value': this.resourceList[indexRes].UserName.Title
+    });
+    objEmailBody.push({
+      'key': '@@Val1@@', // Project Code
+      'value': task.projectCode
+    });
+    objEmailBody.push({
+      'key': '@@Val2@@', // Task Name
+      'value': task.SubMilestones && task.SubMilestones !== 'Default' ? task.title + ' - ' + task.SubMilestones : task.title
+    });
+    objEmailBody.push({
+      'key': '@@Val4@@', // Task Type
+      'value': task.task
+    });
+    objEmailBody.push({
+      'key': '@@Val5@@', // Milestone
+      'value': task.milestone
+    });
+    if (istimeZoneUpdate) {
       objEmailBody.push({
-        'key': '@@Val3@@',
-        'value': this.resourceList[indexRes].UserName.Title
+        'key': '@@Val6@@', // new Start Date
+        'value': this.datePipe.transform(task.newStartDate, 'MMM dd yyyy hh:mm:ss aa')
       });
       objEmailBody.push({
-          'key': '@@Val1@@', // Project Code
-          'value': task.projectCode
+        'key': '@@Val7@@', // new End Date
+        'value': this.datePipe.transform(task.newDueDate, 'MMM dd yyyy hh:mm:ss aa')
+      });
+    } else {
+      objEmailBody.push({
+        'key': '@@Val6@@', // Start Date
+        'value': this.datePipe.transform(task.startDate, 'MMM dd yyyy hh:mm:ss aa')
       });
       objEmailBody.push({
-          'key': '@@Val2@@', // Task Name
-          'value':  task.SubMilestones && task.SubMilestones !== 'Default' ?  task.title + ' - ' +  task.SubMilestones : task.title
+        'key': '@@Val7@@', // End Date
+        'value': this.datePipe.transform(task.dueDate, 'MMM dd yyyy hh:mm:ss aa')
       });
-      objEmailBody.push({
-          'key': '@@Val4@@', // Task Type
-          'value': task.task
-      });
-      objEmailBody.push({
-          'key': '@@Val5@@', // Milestone
-          'value': task.milestone
-      });
-      if(istimeZoneUpdate){
-        objEmailBody.push({
-          'key': '@@Val6@@', // new Start Date
-          'value': this.datePipe.transform(task.newStartDate,'MMM dd yyyy hh:mm:ss aa')
-        });
-        objEmailBody.push({
-            'key': '@@Val7@@', // new End Date
-            'value': this.datePipe.transform(task.newDueDate,'MMM dd yyyy hh:mm:ss aa')
-        });
-      }else{
-        objEmailBody.push({
-          'key': '@@Val6@@', // Start Date
-          'value': this.datePipe.transform(task.startDate,'MMM dd yyyy hh:mm:ss aa')
-        });
-        objEmailBody.push({
-            'key': '@@Val7@@', // End Date
-            'value': this.datePipe.transform(task.dueDate,'MMM dd yyyy hh:mm:ss aa')
-        });
-      }
-      objEmailBody.push({
-          'key': '@@Val9@@', // Scope
-          'value': task.taskScope ? task.taskScope : ''
-      });
-      //// Send allocation email
-      this.commonService.triggerMail(this.resourceList[indexRes].UserName.EMail, this.globalService.sharePointPageObject.email,
-        '', 'TaskCreation', objEmailBody, mailSubject);
+    }
+    objEmailBody.push({
+      'key': '@@Val9@@', // Scope
+      'value': task.taskScope ? task.taskScope : ''
+    });
+    //// Send allocation email
+    this.commonService.triggerMail(this.resourceList[indexRes].UserName.EMail, this.globalService.sharePointPageObject.email,
+      '', 'TaskCreation', objEmailBody, mailSubject);
 
-      this.showToastMsg('success', 'Success', task.title + ' allocated to ' + this.resourceList[indexRes].UserName.Title);
-      // this.changeSuccessMessage(task.title + ' allocated to ' + this.resourceList[indexRes].UserName.Title);
-      const index = this.completeTaskArray.findIndex(item => item.id === task.id);
-      // this.completeTaskArray.splice(index,1);
-      this.completeTaskArray[index].isEditEnabled = true;
-      this.completeTaskArray[index].assignedTo = this.resourceList[indexRes].UserName.Title;
-      this.completeTaskArray[index].isAllocatedSelectHidden = true;
-      this.completeTaskArray[index].isAssignedToHidden = false;
-      this.completeTaskArray[index].editImageUrl = this.globalService.imageSrcURL.editImageURL;
-      if(unt){
-        this.caGlobal.loading = true;
-        this.commonService.filterAction(unt.sortField, unt.sortOrder, unt.filters.hasOwnProperty("global") ? unt.filters.global.value : null,unt.filters, unt.first, unt.rows, 
+    this.showToastMsg('success', 'Success', task.title + ' allocated to ' + this.resourceList[indexRes].UserName.Title);
+    // this.changeSuccessMessage(task.title + ' allocated to ' + this.resourceList[indexRes].UserName.Title);
+    const index = this.completeTaskArray.findIndex(item => item.id === task.id);
+    // this.completeTaskArray.splice(index,1);
+    this.completeTaskArray[index].isEditEnabled = true;
+    this.completeTaskArray[index].assignedTo = this.resourceList[indexRes].UserName.Title;
+    this.completeTaskArray[index].isAllocatedSelectHidden = true;
+    this.completeTaskArray[index].isAssignedToHidden = false;
+    this.completeTaskArray[index].editImageUrl = this.globalService.imageSrcURL.editImageURL;
+    if (unt) {
+      this.caGlobal.loading = true;
+      this.commonService.filterAction(unt.sortField, unt.sortOrder, unt.filters.hasOwnProperty("global") ? unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
         this.completeTaskArray, this.filterColumns);
-      }
+    }
   }
   /**
    * This method allows to reassign the task to different user.
    * @param element 
    * @param task 
    */
-  enabledAllocateSelect(element,task){
+  enabledAllocateSelect(element, task) {
     task.isAllocatedSelectHidden = false;
     task.isAssignedToHidden = true;
     task.isEditEnabled = false;
@@ -508,7 +526,7 @@ export class AllocatedComponent implements OnInit {
    * @param element 
    * @param task 
    */
-  cancelledAllocatedSelect(element,task){
+  cancelledAllocatedSelect(element, task) {
     task.isAllocatedSelectHidden = true;;
     task.isAssignedToHidden = false;
     task.isEditEnabled = true;
@@ -526,25 +544,25 @@ export class AllocatedComponent implements OnInit {
    * This method will fetch the comment and show in text area.
    * @param task 
    */
-  getAllocateTaskScope(task){
-    this.commonService.getAllocateTaskScope(task,this.popupTaskScopeContent, this.completeTaskArray, this.modalService);
+  getAllocateTaskScope(task) {
+    this.commonService.getAllocateTaskScope(task, this.popupTaskScopeContent, this.completeTaskArray, this.modalService);
   }
   /**
    * This method will update the comments field in schedules list with updated comments.
    * @param task 
    * @param comments 
    */
-  saveTaskScope(task, comments){
+  saveTaskScope(task, comments) {
     this.isTaskScopeButtonDisabled = true;
     this.commonService.saveTaskScopeComments(task, comments);
-    this.showToastMsg('success', 'Success', 'The comments - '+comments +' has saved Successfully');
+    this.showToastMsg('success', 'Success', 'The comments - ' + comments + ' has saved Successfully');
     // this.changePopupSuccessMessage('The comments - '+comments +' has saved Successfully');
-      setTimeout(() => {
-        location.reload();
-      }, 400);
+    setTimeout(() => {
+      location.reload();
+    }, 400);
   }
 
   showToastMsg(type, msg, detail) {
-    this.messageService.add({severity: type, summary: msg, detail: detail});
+    this.messageService.add({ severity: type, summary: msg, detail: detail });
   }
 }

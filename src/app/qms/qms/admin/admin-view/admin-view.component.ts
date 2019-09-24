@@ -1,15 +1,16 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ApplicationRef, NgZone } from '@angular/core';
 import { SPOperationService } from '../../../../Services/spoperation.service';
 import { ConstantsService } from '../../../../Services/constants.service';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { CommonService } from '../../../../Services/common.service';
 import { GlobalService } from '../../../../Services/global.service';
 import { SPCommonService } from '../../../../Services/spcommon.service';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { QMSCommonService } from '../../services/qmscommon.service';
 import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-view',
@@ -66,7 +67,25 @@ export class AdminViewComponent implements OnInit {
   };
   constructor(private spService: SPOperationService, private globalConstant: ConstantsService,
     public datepipe: DatePipe, private global: GlobalService, private qmsConstant: QMSConstantsService,
-    private qmsCommon: QMSCommonService, private messageService: MessageService) { }
+    private qmsCommon: QMSCommonService, private messageService: MessageService,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+  }
 
   async ngOnInit() {
     if (!this.global.currentUser.groups.length) {
@@ -272,6 +291,6 @@ export class AdminViewComponent implements OnInit {
   }
 
   showToastMsg(objMsg) {
-    this.messageService.add({severity: objMsg.type, summary: objMsg.msg, detail: objMsg.detail});
+    this.messageService.add({ severity: objMsg.type, summary: objMsg.msg, detail: objMsg.detail });
   }
 }

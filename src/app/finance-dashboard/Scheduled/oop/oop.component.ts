@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, HostListener, ApplicationRef, NgZone } from '@angular/core';
 import { Message, ConfirmationService, SelectItem, MessageService } from 'primeng/api';
 import { Calendar } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { formatDate, DatePipe } from '@angular/common';
+import { formatDate, DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -11,6 +11,7 @@ import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-oop',
@@ -72,12 +73,28 @@ export class OopComponent implements OnInit, OnDestroy {
         private messageService: MessageService,
         private commonService: CommonService,
         private spOperationsService: SPOperationService,
+        private platformLocation: PlatformLocation,
+        private locationStrategy: LocationStrategy,
+        private readonly _router: Router,
+        _applicationRef: ApplicationRef,
+        zone: NgZone,
     ) {
         this.subscription.add(this.fdDataShareServie.getScheduleDateRange().subscribe(date => {
             this.DateRange = date;
             console.log('this.DateRange ', this.DateRange);
             this.getRequiredData();
         }));
+
+        // Browser back button disabled & bookmark issue solution
+        history.pushState(null, null, window.location.href);
+        platformLocation.onPopState(() => {
+            history.pushState(null, null, window.location.href);
+        });
+
+        _router.events.subscribe((uri) => {
+            zone.run(() => _applicationRef.tick());
+        });
+        
     }
 
     async ngOnInit() {

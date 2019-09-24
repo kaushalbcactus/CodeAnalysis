@@ -1,16 +1,14 @@
-import { Component, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter, NgZone, ApplicationRef } from '@angular/core';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';
 import { GlobalService } from '../../../Services/global.service';
-import { DatePipe } from '@angular/common';
+import { DatePipe, LocationStrategy, PlatformLocation } from '@angular/common';
 import { CommonService } from '../../../Services/common.service';
 import { FeedbackPopupComponent } from './feedback-popup/feedback-popup.component';
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { SPCommonService } from '../../../Services/spcommon.service';
 import { QMSConstantsService } from '../services/qmsconstants.service';
 import { QMSCommonService } from '../services/qmscommon.service';
 import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reviewer-detail-view',
@@ -44,7 +42,25 @@ export class ReviewerDetailViewComponent implements OnInit {
   };
   constructor(private spService: SPOperationService, private globalConstant: ConstantsService,
     public global: GlobalService, private datepipe: DatePipe, private qmsConstant: QMSConstantsService,
-    private common: CommonService, private qmsCommon: QMSCommonService, private messageService: MessageService) { }
+    private common: CommonService, private qmsCommon: QMSCommonService, private messageService: MessageService,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+  }
   //#endregion of Initialisation
   /**
    * Initial function
@@ -72,12 +88,14 @@ export class ReviewerDetailViewComponent implements OnInit {
 
   colFilters(colData) {
     // tslint:disable
-    this.RDColArray.Resource = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.resource, value: a.resource, filterValue: a.resource  }; return b; }));
+    this.RDColArray.Resource = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.resource, value: a.resource, filterValue: a.resource }; return b; }));
     this.RDColArray.TaskTitle = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.taskTitle + '-' + a.SubMilestones, value: a.taskTitle + '-' + a.SubMilestones, filterValue: a.taskTitle + '-' + a.SubMilestones }; return b; }));
     this.RDColArray.TaskCompletionDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = { label: this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy'),
-      value: this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy') ? this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy') : '',
-      filterValue: new Date(a.taskCompletionDate) }; return b;
+      const b = {
+        label: this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy'),
+        value: this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy') ? this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy') : '',
+        filterValue: new Date(a.taskCompletionDate)
+      }; return b;
     }));
   }
 
@@ -283,7 +301,7 @@ export class ReviewerDetailViewComponent implements OnInit {
         reviewTask: element.reviewTask
       });
     });
-    this.colFilters( this.ReviewerDetail);
+    this.colFilters(this.ReviewerDetail);
   }
 
   //#endregion ForReviewer
@@ -297,10 +315,10 @@ export class ReviewerDetailViewComponent implements OnInit {
   }
 
   showToastMsg(type, msg, detail) {
-    this.messageService.add({severity: type, summary: msg, detail: detail});
+    this.messageService.add({ severity: type, summary: msg, detail: detail });
   }
 
-  
+
   exportToExcel(table, sheetname) {
     this.common.tableToExcel(table, sheetname);
   }

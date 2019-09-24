@@ -1,11 +1,11 @@
 import { QMSCommonService } from './../../services/qmscommon.service';
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ApplicationRef, NgZone } from '@angular/core';
 import { ConstantsService } from '../../../../Services/constants.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 import { SPCommonService } from '../../../../Services/spcommon.service';
 import { GlobalService } from '../../../../Services/global.service';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subject } from 'rxjs/internal/Subject';
 import { CommonService } from '../../../../Services/common.service';
 import { DataService } from '../../../../Services/data.service';
@@ -39,13 +39,30 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
   // tslint:disable: max-line-length
   constructor(private router: Router, private globalConstant: ConstantsService, private spCommon: SPCommonService, private qmsConstant: QMSConstantsService,
     public global: GlobalService, private datepipe: DatePipe, private common: CommonService, public data: DataService,
-    public spService: SPOperationService, private qmsCommon: QMSCommonService) {
+    public spService: SPOperationService, private qmsCommon: QMSCommonService,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+  ) {
     this.extPFNavigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
         this.initialisePFPositive();
       }
     });
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
   }
 
   ngOnInit() {
@@ -61,14 +78,16 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
   }
 
   colFilters(colData) {
-    this.PFColArray.ID = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.ID, value: a.ID, filterValue: +a.ID  }; return b; }));
+    this.PFColArray.ID = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.ID, value: a.ID, filterValue: +a.ID }; return b; }));
     this.PFColArray.Title = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Title, value: a.Title, filterValue: a.Title }; return b; }));
     this.PFColArray.SentDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = { label: this.datepipe.transform(a.SentDate, 'MMM d, yyyy'),
-                  value: this.datepipe.transform(a.SentDate, 'MMM d, yyyy') ? this.datepipe.transform(a.SentDate, 'MMM d, yyyy') : '',
-                  filterValue: new Date(a.SentDate)}; return b;
+      const b = {
+        label: this.datepipe.transform(a.SentDate, 'MMM d, yyyy'),
+        value: this.datepipe.transform(a.SentDate, 'MMM d, yyyy') ? this.datepipe.transform(a.SentDate, 'MMM d, yyyy') : '',
+        filterValue: new Date(a.SentDate)
+      }; return b;
     }));
-    this.PFColArray.SentBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.SentBy.Title, value: a.SentBy.Title, filterValue:  a.SentBy.Title}; return b; }));
+    this.PFColArray.SentBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.SentBy.Title, value: a.SentBy.Title, filterValue: a.SentBy.Title }; return b; }));
   }
 
   protected initialisePFPositive() {

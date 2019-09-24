@@ -1,11 +1,11 @@
 import { QMSCommonService } from './../../services/qmscommon.service';
 import { QMSConstantsService } from './../../services/qmsconstants.service';
-import { Component, OnInit, ViewChild, OnDestroy, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ElementRef, HostListener, ApplicationRef, NgZone } from '@angular/core';
 import { SPOperationService } from '../../../../Services/spoperation.service';
 import { ConstantsService } from '../../../../Services/constants.service';
 import { GlobalService } from '../../../../Services/global.service';
 import { CommonService } from '../../../../Services/common.service';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { DataService } from '../../../../Services/data.service';
 import { Router, NavigationEnd } from '@angular/router';
 // import { Subject } from 'rxjs';
@@ -57,13 +57,30 @@ export class CDComponent implements OnInit, OnDestroy {
   };
   constructor(private spService: SPOperationService, private globalConstant: ConstantsService, private datepipe: DatePipe,
     public global: GlobalService, public common: CommonService, public data: DataService, private router: Router, private messageService: MessageService,
-    private qmsConstant: QMSConstantsService, private qmsCommon: QMSCommonService) {
+    private qmsConstant: QMSConstantsService, private qmsCommon: QMSCommonService,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+  ) {
     this.extNavigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
         this.initialiseCFDissatisfaction();
       }
     });
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
   }
   async ngOnInit() {
   }
@@ -103,15 +120,17 @@ export class CDComponent implements OnInit, OnDestroy {
     this.CDColArray.ID = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.ID, value: a.ID, filterValue: +a.ID }; return b; }));
     this.CDColArray.Title = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Title, value: a.Title, filterValue: a.Title }; return b; }));
     this.CDColArray.SentDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = { label: this.datepipe.transform(a.SentDate, 'MMM d, yyyy'),
-      value: this.datepipe.transform(a.SentDate, 'MMM d, yyyy') ? this.datepipe.transform(a.SentDate, 'MMM d, yyyy') : '' ,
-      filterValue: new Date(a.SentDate) };
+      const b = {
+        label: this.datepipe.transform(a.SentDate, 'MMM d, yyyy'),
+        value: this.datepipe.transform(a.SentDate, 'MMM d, yyyy') ? this.datepipe.transform(a.SentDate, 'MMM d, yyyy') : '',
+        filterValue: new Date(a.SentDate)
+      };
       return b;
     }));
     this.CDColArray.SentBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.SentBy, value: a.SentBy, filterValue: a.SentBy }; return b; }));
     this.CDColArray.Status = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Status, value: a.Status, filterValue: a.Status }; return b; }));
     this.CDColArray.SeverityLevel = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.SeverityLevel, value: a.SeverityLevel, filterValue: a.SeverityLevel }; return b; }));
-    this.CDColArray.Accountable = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Accountable, value: a.Accountable, filterValue: a.Accountable}; return b; }));
+    this.CDColArray.Accountable = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Accountable, value: a.Accountable, filterValue: a.Accountable }; return b; }));
     this.CDColArray.Segregation = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Segregation, value: a.Segregation, filterValue: a.Segregation }; return b; }));
     this.CDColArray.BusinessImpact = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.BusinessImpact, value: a.BusinessImpact, filterValue: a.BusinessImpact }; return b; }));
   }
@@ -129,7 +148,7 @@ export class CDComponent implements OnInit, OnDestroy {
     // const daysPrior = 180;
     // lastMonthDate.setDate(lastMonthDate.getDate() - daysPrior);
     //let startDate = new Date(new Date(lastMonthDate.setHours(0, 0, 0, 0))).toISOString();
-    let startDate = new Date( new Date(new Date().setMonth(new Date().getMonth() - 6)).setHours(0, 0, 0, 0)).toISOString();
+    let startDate = new Date(new Date(new Date().setMonth(new Date().getMonth() - 6)).setHours(0, 0, 0, 0)).toISOString();
     let endDate = new Date().toISOString();
     if (filterObj && filterObj.startDate) {
       startDate = new Date(new Date(filterObj.startDate).setHours(0, 0, 0, 1)).toISOString();
@@ -270,7 +289,7 @@ export class CDComponent implements OnInit, OnDestroy {
   // }
 
   showToastMsg(obj) {
-    this.messageService.add({severity: obj.type, summary: obj.msg, detail: obj.detail});
+    this.messageService.add({ severity: obj.type, summary: obj.msg, detail: obj.detail });
   }
 
   /**

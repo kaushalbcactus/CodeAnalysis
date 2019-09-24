@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component, OnInit, ViewChild, ElementRef, ApplicationRef, NgZone } from '@angular/core';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CAGlobalService } from '../caservices/caglobal.service';
 import { CACommonService } from '../caservices/cacommon.service';
@@ -12,6 +12,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-unallocated',
@@ -20,7 +21,7 @@ import { MessageService } from 'primeng/api';
   providers: [UsercapacityComponent]
 })
 export class UnallocatedComponent implements OnInit {
-  
+
   displayedColumns: any[] = [
     { field: 'clientName', header: 'Client' },
     { field: 'projectCode', header: 'Project' },
@@ -48,12 +49,12 @@ export class UnallocatedComponent implements OnInit {
 
   completeTaskArray = [];
 
-  @ViewChild('popupContent', {static: true}) popupContent: ElementRef;
-  @ViewChild('popupUpdatingTaskContext', {static: true}) popupUpdatingTaskContext: ElementRef;
-  @ViewChild('popupDeletingTaskContext', {static: true}) popupDeletingTaskContext: ElementRef;
-  @ViewChild('userCapacityContainer', {static: true}) popupContentCapacity: ElementRef;
-  @ViewChild('popupTaskScopeContent', {static: true}) popupTaskScopeContent: ElementRef;
-  @ViewChild('userCapacityTask', {static: true}) userCapacity: UsercapacityComponent;
+  @ViewChild('popupContent', { static: true }) popupContent: ElementRef;
+  @ViewChild('popupUpdatingTaskContext', { static: true }) popupUpdatingTaskContext: ElementRef;
+  @ViewChild('popupDeletingTaskContext', { static: true }) popupDeletingTaskContext: ElementRef;
+  @ViewChild('userCapacityContainer', { static: true }) popupContentCapacity: ElementRef;
+  @ViewChild('popupTaskScopeContent', { static: true }) popupTaskScopeContent: ElementRef;
+  @ViewChild('userCapacityTask', { static: true }) userCapacity: UsercapacityComponent;
 
   private _success = new Subject<string>();
   private _popSuccess = new Subject<string>();
@@ -61,7 +62,7 @@ export class UnallocatedComponent implements OnInit {
   // public popupSuccessMessage: string;
   constructor(
     private spServices: SPOperationService,
-    private constantService: ConstantsService, 
+    private constantService: ConstantsService,
     public caGlobalService: CAGlobalService,
     private commonService: CACommonService,
     public userCapacityRef: UsercapacityComponent,
@@ -69,7 +70,24 @@ export class UnallocatedComponent implements OnInit {
     private datePipe: DatePipe,
     private caConstantService: CAConstantService,
     private globalService: GlobalService,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone,
+  ) {
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+    
+  }
   private scheduleList = this.constantService.listNames.Schedules.name;
   private resourceCategorizationList = this.constantService.listNames.ResourceCategorization.name;
   private projectInformationList = this.constantService.listNames.ProjectInformation.name;
@@ -315,7 +333,7 @@ export class UnallocatedComponent implements OnInit {
       task.allocatedResource = '';
       this.openedTask = task;
       $('.innerTableLoader').hide();
-    
+
     }, 500);
 
   }
@@ -386,7 +404,7 @@ export class UnallocatedComponent implements OnInit {
             }
           }
         } else {
-          this.showToastMsg('info', 'Info', 'Start and EndDate is not matched for this '+task.title +'. Hence page is refreshed in 30 sec.');
+          this.showToastMsg('info', 'Info', 'Start and EndDate is not matched for this ' + task.title + '. Hence page is refreshed in 30 sec.');
           // this.changeSuccessMessage('Start and EndDate is not matched for this ' + task.title + '. Hence page is refreshed in 30 sec.');
           setTimeout(() => {
             location.reload();
@@ -414,7 +432,7 @@ export class UnallocatedComponent implements OnInit {
       this.spServices.update(this.scheduleList, task.id, options, 'SP.Data.SchedulesListItem');
     }
 
-    await this.commonService.ResourceAllocation(task,this.projectInformationList);
+    await this.commonService.ResourceAllocation(task, this.projectInformationList);
     const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource);
     const mailSubject = task.projectCode + '(' + task.projectName + ')' + ': Task created';
     const objEmailBody = [];
@@ -577,7 +595,7 @@ export class UnallocatedComponent implements OnInit {
   saveTaskScope(task, comments) {
     this.isTaskScopeButtonDisabled = true;
     this.commonService.saveTaskScopeComments(task, comments);
-    this.showToastMsg('success', 'Success', 'The comments - '+comments +' has saved Successfully');
+    this.showToastMsg('success', 'Success', 'The comments - ' + comments + ' has saved Successfully');
     // this.changePopupSuccessMessage('The comments - ' + comments + ' has saved Successfully');
     setTimeout(() => {
       location.reload();
@@ -585,6 +603,6 @@ export class UnallocatedComponent implements OnInit {
   }
 
   showToastMsg(type, msg, detail) {
-    this.messageService.add({severity: type, summary: msg, detail: detail});
+    this.messageService.add({ severity: type, summary: msg, detail: detail });
   }
 }

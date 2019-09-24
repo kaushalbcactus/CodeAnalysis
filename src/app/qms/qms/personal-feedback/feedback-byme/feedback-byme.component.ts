@@ -1,7 +1,7 @@
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { QMSConstantsService } from 'src/app/qms/qms/services/qmsconstants.service';
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component, OnInit, ViewChild, OnDestroy, ApplicationRef, NgZone } from '@angular/core';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { GlobalService } from '../../../../Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router, NavigationEnd } from '@angular/router';
@@ -40,13 +40,30 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
   @ViewChild('fb', { static: true }) fb;
   constructor(private datepipe: DatePipe, private globalConstant: ConstantsService, private qmsConstant: QMSConstantsService,
     private router: Router, private spService: SPOperationService, public global: GlobalService, public data: DataService,
-    private qmsCommon: QMSCommonService) {
+    private qmsCommon: QMSCommonService,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+    ) {
     this.feedbackByMeNavSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
         this.initialiseFeedback();
       }
     });
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
   }
 
   ngOnInit() {
