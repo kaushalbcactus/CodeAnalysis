@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ApplicationRef, NgZone } from '@angular/core';
 import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
 
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,6 +10,7 @@ import { TimelineComponent } from './timeline/timeline.component';
 import { CommonService } from '../Services/common.service';
 import { SPOperationService } from '../Services/spoperation.service';
 import { ResourcesComponent } from './resources/resources.component';
+import { PlatformLocation, LocationStrategy } from '@angular/common';
 
 @Component({
   selector: 'app-taskallocation',
@@ -67,7 +68,25 @@ export class TaskAllocationComponent implements OnInit {
     public globalObject: GlobalService,
     public taskAllocatinoService: TaskAllocationConstantsService,
     private commonService: CommonService,
-    public taskAllocationService: TaskAllocationConstantsService) { }
+    public taskAllocationService: TaskAllocationConstantsService,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+  }
 
   async ngOnInit() {
     await this.currentUserGroup();
