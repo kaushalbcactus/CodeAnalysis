@@ -11,6 +11,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule } from '@angular/forms';
 import { CaRoutingModule } from './ca-routing.module';
 import { CaComponent } from './ca/ca.component';
+import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/api';
 
 @NgModule({
   declarations: [AllocatedComponent, ModelComponent, UnallocatedComponent, UsercapacityComponent, CaComponent],
@@ -22,6 +23,7 @@ import { CaComponent } from './ca/ca.component';
     FormsModule,
     CaRoutingModule
   ],
+  providers: [ DynamicDialogConfig, DynamicDialogRef],
   entryComponents: [UsercapacityComponent, ModelComponent],
 })
 export class CAModule { }

@@ -1,119 +1,124 @@
-<table class=" table-bordered table-striped header-fixed" id="capacityTable">
-  <thead class="tableHeader">
-      <tr>
-          <td>
-              Res(s) / Date(s)
-          </td>
-          <td title="{{date | date : 'EEE d MMM yyyy'}}" *ngFor="let date of oCapacity.arrDateFormat">
-              {{date | date : "d MMM"}}
-          </td>
-          <td class="unallocated">
-              Total Un-Allocated
-          </td>
-          <td class="allocated">
-              Total Allocated
-          </td>
-      </tr>
-  </thead>
-  <tbody class="capacityBody">
-      <tr *ngFor="let user of oCapacity.arrUserDetails">
-          <td>
-              <table class="table-bordered table-striped tbl">
-                  <tbody>
-                      <tr class="UserTasksRow">
-                          <td>
-                              <table>
-                                  <tbody>
-                                      <tr class="{{user.uid}}taskrow" [ngStyle]="{'height':height}">
-                                          <td [ngStyle]="{'vertical-align':verticalAlign}">
-                                              <div> {{user.userName}} </div>
-                                              <div class="{{user.uid}}more more" (click)="changeHeight(user,$event)" *ngIf="user.tasks.length > 3 && user.dates.length <= 10">More</div>
-                                              <div class="{{user.uid}}less less hide" (click)="changeHeight(user,$event)">Less</div>
-                                          </td>
-                                          <!-- (click)="fetchProjectTaskDetails(user, date.tasksDetails,$event)" -->
-                                          <td (click)="fetchProjectTaskDetails(user, date.tasksDetails,$event)" [ngStyle]="{'vertical-align':verticalAlign}" *ngFor="let date of user.dates" class="tableCell" [ngClass]="{'colorLeave': date.userCapacity==='Leave','colorFullAllocated':date.userCapacity === 'NotAvailable','colorAvailable':date.userCapacity === 'Available'}">
-                                              <div class="wrap">
-                                                  <div class="taskCount right">{{date.taskCount}}</div>
-                                                  <div class="availableHrs center"> {{date.displayAvailableHrs}} </div>
-                                              </div>
-                                          </td>
-                                          <td class="unallocated" [ngStyle]="{'vertical-align':verticalAlign}">
-                                              <div class="center"> {{user.displayTotalUnAllocated}}</div>
-                                          </td>
-                                          <td class="allocated" [ngStyle]="{'vertical-align':verticalAlign}">
-                                              <div class="center">{{user.displayTotalAllocated}}</div>
-                                          </td>
-                                      </tr>
-                                      <tr ng-if="user.dates.length<=10">
-                                          <td>
-                                              <div class="taskBar" *ngFor="let task of user.tasks" [ngStyle]="{'width':task.cssWidth,'left':task.cssLeft,'top':task.cssTop,'display':task.cssHide}" [ngClass]="{'plannedTask':task.Status==='Not Confirmed','confirmedTask':task.Status!=='Not confirmed'}">
-                                                  {{task.TotalAllocated}} : {{task.ProjectCode}}
-                                              </div>
-                                          </td>
-                                      </tr>
-                                  </tbody>
-                              </table>
-                          </td>
-                      </tr>
-                      <tr [hidden]="user.dayTasks.length === 0" class="TaskPerDayRow">
-                          <td colspan="4">
-                              <div class="innerTableLoader">
-                                  <div id="mainLoader"></div>
-                                  <div id="mainLoaderText">Loading...</div>
-                              </div>
-                              <table class="table-bordered table-striped" id="TasksPerDay">
-                                  <thead>
-                                      <tr class="tableHeader">
-                                          <td>
-                                              Task Name (Short Title)
-                                          </td>
-                                          <td>
-                                              Start Date
-                                          </td>
-                                          <td>
-                                              Due Date
-                                          </td>
-                                          <td>
-                                              Milestone Deadline
-                                          </td>
-                                          <td>
-                                              Per Day (Total Allocated)
-                                          </td>
-                                          <td>
-                                              Status
-                                              <span><img title="collapse" [src]="GlobalService.sharePointPageObject.publicCdn +'/collapseTable.png'" (click)="collpaseTable($event.target)"/>
+<div fxLayout="column" style="padding: 2vw;" fxLayoutAlign="center center" *ngIf="loaderenable">
+    <div id="modalInnerLoader"></div>
+    <div id="modalInnerLoaderText">Loading...</div>
+</div>
+
+<table *ngIf="!loaderenable" class=" table-bordered table-striped header-fixed" id="capacityTable">
+    <thead class="tableHeader">
+        <tr>
+            <td>
+                Res(s) / Date(s)
+            </td>
+            <td title="{{date | date : 'EEE d MMM yyyy'}}" *ngFor="let date of oCapacity.arrDateFormat">
+                {{date | date : "d MMM"}}
+            </td>
+            <td class="unallocated">
+                Total Un-Allocated
+            </td>
+            <td class="allocated">
+                Total Allocated
+            </td>
+        </tr>
+    </thead>
+    <tbody class="capacityBody">
+        <tr *ngFor="let user of oCapacity.arrUserDetails">
+            <td>
+                <table class="table-bordered table-striped tbl">
+                    <tbody>
+                        <tr class="UserTasksRow">
+                            <td>
+                                <table>
+                                    <tbody>
+                                        <tr class="{{user.uid}}taskrow" [ngStyle]="{'height':height}">
+                                            <td [ngStyle]="{'vertical-align':verticalAlign}">
+                                                <div> {{user.userName}} </div>
+                                                <div class="{{user.uid}}more more" (click)="changeHeight(user,$event)" *ngIf="user.tasks.length > 3 && user.dates.length <= 10">More</div>
+                                                <div class="{{user.uid}}less less hide" (click)="changeHeight(user,$event)">Less</div>
+                                            </td>
+                                            <!-- (click)="fetchProjectTaskDetails(user, date.tasksDetails,$event)" -->
+                                            <td (click)="fetchProjectTaskDetails(user, date.tasksDetails,$event)" [ngStyle]="{'vertical-align':verticalAlign}" *ngFor="let date of user.dates" class="tableCell" [ngClass]="{'colorLeave': date.userCapacity==='Leave','colorFullAllocated':date.userCapacity === 'NotAvailable','colorAvailable':date.userCapacity === 'Available'}">
+                                                <div class="wrap">
+                                                    <div class="taskCount right">{{date.taskCount}}</div>
+                                                    <div class="availableHrs center"> {{date.displayAvailableHrs}} </div>
+                                                </div>
+                                            </td>
+                                            <td class="unallocated" [ngStyle]="{'vertical-align':verticalAlign}">
+                                                <div class="center"> {{user.displayTotalUnAllocated}}</div>
+                                            </td>
+                                            <td class="allocated" [ngStyle]="{'vertical-align':verticalAlign}">
+                                                <div class="center">{{user.displayTotalAllocated}}</div>
+                                            </td>
+                                        </tr>
+                                        <tr ng-if="user.dates.length<=10">
+                                            <td>
+                                                <div class="taskBar" *ngFor="let task of user.tasks" [ngStyle]="{'width':task.cssWidth,'left':task.cssLeft,'top':task.cssTop,'display':task.cssHide}" [ngClass]="{'plannedTask':task.Status==='Not Confirmed','confirmedTask':task.Status!=='Not confirmed'}">
+                                                    {{task.TotalAllocated}} : {{task.ProjectCode}}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr [hidden]="user.dayTasks.length === 0" class="TaskPerDayRow">
+                            <td colspan="4">
+                                <!-- <div class="innerTableLoader">
+                                    <div id="mainLoader"></div>
+                                    <div id="mainLoaderText">Loading...</div>
+                                </div> -->
+                                <table class="table-bordered table-striped" id="TasksPerDay">
+                                    <thead>
+                                        <tr class="tableHeader">
+                                            <td>
+                                                Task Name (Short Title)
+                                            </td>
+                                            <td>
+                                                Start Date
+                                            </td>
+                                            <td>
+                                                Due Date
+                                            </td>
+                                            <td>
+                                                Milestone Deadline
+                                            </td>
+                                            <td>
+                                                Per Day (Total Allocated)
+                                            </td>
+                                            <td>
+                                                Status
+                                                <span><img title="collapse" [src]="GlobalService.sharePointPageObject.publicCdn +'/collapseTable.png'" (click)="collpaseTable($event.target)"/>
                                           </span>
-                                          </td>
-                                      </tr>
-                                  </thead>
-                                  <tbody>
-                                      <tr *ngFor="let task of user.dayTasks">
-                                          <td>
-                                              <span>{{task.title}} <span *ngIf='task.SubMilestones'> - {{task.SubMilestones}} </span>({{task.shortTitle}})</span>
-                                          </td>
-                                          <td>
-                                              <span>{{(task.startDate | date:'dd MMM yy h:mm a') || '--' }}</span>
-                                          </td>
-                                          <td>
-                                              <span>{{task.dueDate | date : "dd MMM yy h:mm a" || '--'}}</span>
-                                          </td>
-                                          <td>
-                                              <span>{{(task.milestoneDeadline!='--') ? (task.milestoneDeadline | date : "dd MMM yy h:mm a") : '--'}}</span>
-                                          </td>
-                                          <td>
-                                              <span>{{task.displayTimeAllocatedPerDay}} ({{task.displayTotalAllocatedTime}})</span>
-                                          </td>
-                                          <td>
-                                              <span>{{task.status}}</span>
-                                          </td>
-                                      </tr>
-                                  </tbody>
-                              </table>
-                          </td>
-                      </tr>
-                  </tbody>
-              </table>
-          </td>
-      </tr>
-  </tbody>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let task of user.dayTasks">
+                                            <td>
+                                                <span>{{task.title}} <span *ngIf='task.SubMilestones'> - {{task.SubMilestones}} </span>({{task.shortTitle}})</span>
+                                            </td>
+                                            <td>
+                                                <span>{{(task.startDate | date:'dd MMM yy h:mm a') || '--' }}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{task.dueDate | date : "dd MMM yy h:mm a" || '--'}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{(task.milestoneDeadline!='--') ? (task.milestoneDeadline | date : "dd MMM yy h:mm a") : '--'}}</span>
+                                            </td>
+                                            <td>
+                                                <span>{{task.displayTimeAllocatedPerDay}} ({{task.displayTotalAllocatedTime}})</span>
+                                            </td>
+                                            <td>
+                                                <span>{{task.status}}</span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
 </table>

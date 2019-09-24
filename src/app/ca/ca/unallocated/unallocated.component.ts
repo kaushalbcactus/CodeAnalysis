@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CAGlobalService } from '../caservices/caglobal.service';
@@ -11,7 +11,7 @@ import { CAConstantService } from '../caservices/caconstant.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
-import { MessageService } from 'primeng/api';
+import { MessageService, MenuItem, DialogService } from 'primeng/api';
 
 @Component({
   selector: 'app-unallocated',
@@ -20,7 +20,7 @@ import { MessageService } from 'primeng/api';
   providers: [UsercapacityComponent]
 })
 export class UnallocatedComponent implements OnInit {
-  
+  taskMenu: MenuItem[];
   displayedColumns: any[] = [
     { field: 'clientName', header: 'Client' },
     { field: 'projectCode', header: 'Project' },
@@ -48,24 +48,26 @@ export class UnallocatedComponent implements OnInit {
 
   completeTaskArray = [];
 
-  @ViewChild('popupContent', {static: true}) popupContent: ElementRef;
-  @ViewChild('popupUpdatingTaskContext', {static: true}) popupUpdatingTaskContext: ElementRef;
-  @ViewChild('popupDeletingTaskContext', {static: true}) popupDeletingTaskContext: ElementRef;
-  @ViewChild('userCapacityContainer', {static: true}) popupContentCapacity: ElementRef;
-  @ViewChild('popupTaskScopeContent', {static: true}) popupTaskScopeContent: ElementRef;
-  @ViewChild('userCapacityTask', {static: true}) userCapacity: UsercapacityComponent;
+  @ViewChild('popupContent', { static: true }) popupContent: ElementRef;
+  @ViewChild('popupUpdatingTaskContext', { static: true }) popupUpdatingTaskContext: ElementRef;
+  @ViewChild('popupDeletingTaskContext', { static: true }) popupDeletingTaskContext: ElementRef;
+  @ViewChild('userCapacityContainer', { static: true }) popupContentCapacity: ElementRef;
+  @ViewChild('popupTaskScopeContent', { static: true }) popupTaskScopeContent: ElementRef;
+  @ViewChild('userCapacityTask', { static: true }) userCapacity: UsercapacityComponent;
 
   private _success = new Subject<string>();
   private _popSuccess = new Subject<string>();
+  tempClick: any;
   // public successMessage: string;
   // public popupSuccessMessage: string;
   constructor(
     private spServices: SPOperationService,
-    private constantService: ConstantsService, 
+    private constantService: ConstantsService,
     public caGlobalService: CAGlobalService,
     private commonService: CACommonService,
     public userCapacityRef: UsercapacityComponent,
     private modalService: NgbModal,
+    public dialogService: DialogService,
     private datePipe: DatePipe,
     private caConstantService: CAConstantService,
     private globalService: GlobalService,
@@ -200,6 +202,7 @@ export class UnallocatedComponent implements OnInit {
    */
   fetchResources(task) {
     if (!this.selectOpened) {
+
       this.modalService.open(this.popupContent, { size: 'sm', centered: false, backdrop: 'static', keyboard: false });
       setTimeout(() => {
         let setResourcesExtn = $.extend(true, [], task.resources);
@@ -274,51 +277,87 @@ export class UnallocatedComponent implements OnInit {
   /**
    * This method will fire when view schedule is clicked.
    * This method will fetch Best Fit, Recommended resources along with their capacity and task.
-   * @param task 
-   * @param item 
-   * @param allocateResource 
+   * @param task
+   * @param item
+   * @param allocateResource
    */
   async showCapacityPopup(task, item, allocateResource) {
     const startTime = new Date(new Date(task.startTime).setHours(0, 0, 0, 0));
     let endDate = new Date(new Date(task.endTime).setDate(new Date(task.endTime).getDate() + 2));
-    if (endDate.getDay() == 6 || endDate.getDay() == 0) {
-      endDate = new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 2))
+    if (endDate.getDay() === 6 || endDate.getDay() === 0) {
+      endDate = new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 2));
     }
     const endTime = new Date(new Date(endDate).setHours(23, 59, 59, 0));
-    const oCapacity = await this.fetchResourceByDate(task, startTime, endTime);
-    // This step added to show the capacity for best fit and recommend users.
-    const tempUserDetailsArray = [];
-    for (let user of task.selectedResources) {
-      if ((user.userType === this.constantService.userType.BEST_FIT ||
-        user.userType === this.constantService.userType.RECOMMENDED) &&
-        (item.taskDetails.uid !== user.taskDetails.uid)) {
-        const retResource = oCapacity.arrUserDetails.filter(function (arrdt) { return arrdt.uid === user.taskDetails.uid });
-        tempUserDetailsArray.push(retResource[0]);
-      }
-      if (item.taskDetails.uid === user.taskDetails.uid) {
-        const retResource = oCapacity.arrUserDetails.filter(function (arrdt) { return arrdt.uid === user.taskDetails.uid });
-        tempUserDetailsArray.splice(0, 0, retResource[0]);
-      }
-    }
-    oCapacity.arrUserDetails = tempUserDetailsArray;
     this.selectOpened = true;
-    task.allocatedResource = '';
-    setTimeout(() => {
-      this.modalService.open(this.popupContentCapacity, { windowClass: "capacityModal", backdrop: 'static', centered: true, keyboard: false });
-      const modalRef = this.modalService.open(ModelComponent, { windowClass: "capacityModal", backdrop: 'static', centered: true, keyboard: false });
-      modalRef.componentInstance.callUserCapacityModel(oCapacity);
-      modalRef.componentInstance.closeModalEmit.subscribe(($event) => {
-        this.closeModal();
-      });
-      allocateResource.open();
-      this.openedSelect = allocateResource;
-      task.allocatedResource = '';
-      this.openedTask = task;
-      $('.innerTableLoader').hide();
-    
-    }, 500);
+    const ref = this.dialogService.open(UsercapacityComponent, {
+      data: {
+        task,
+        startTime,
+        endTime,
+        item
+      },
+      header: task.title,
+      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
 
+    });
+    ref.onClose.subscribe((task: any) => {
+
+      this.openedTask.allocatedResource = '';
+      this.openedSelect.open();
+      this.selectOpened = false;
+
+    });
+
+    this.openedSelect = allocateResource;
+    task.allocatedResource = '';
+    this.openedTask = task;
   }
+
+
+  // async showCapacityPopup(task, item, allocateResource) {
+  //   const startTime = new Date(new Date(task.startTime).setHours(0, 0, 0, 0));
+  //   let endDate = new Date(new Date(task.endTime).setDate(new Date(task.endTime).getDate() + 2));
+  //   if (endDate.getDay() == 6 || endDate.getDay() == 0) {
+  //     endDate = new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 2))
+  //   }
+  //   const endTime = new Date(new Date(endDate).setHours(23, 59, 59, 0));
+  //   const oCapacity = await this.fetchResourceByDate(task, startTime, endTime);
+  //   // This step added to show the capacity for best fit and recommend users.
+  //   const tempUserDetailsArray = [];
+  //   for (let user of task.selectedResources) {
+  //     if ((user.userType === this.constantService.userType.BEST_FIT ||
+  //       user.userType === this.constantService.userType.RECOMMENDED) &&
+  //       (item.taskDetails.uid !== user.taskDetails.uid)) {
+  //       const retResource = oCapacity.arrUserDetails.filter(function (arrdt) { return arrdt.uid === user.taskDetails.uid });
+  //       tempUserDetailsArray.push(retResource[0]);
+  //     }
+  //     if (item.taskDetails.uid === user.taskDetails.uid) {
+  //       const retResource = oCapacity.arrUserDetails.filter(function (arrdt) { return arrdt.uid === user.taskDetails.uid });
+  //       tempUserDetailsArray.splice(0, 0, retResource[0]);
+  //     }
+  //   }
+  //   oCapacity.arrUserDetails = tempUserDetailsArray;
+  //   this.selectOpened = true;
+  //   task.allocatedResource = '';
+  //   setTimeout(() => {
+  //     this.modalService.open(this.popupContentCapacity, { windowClass: "capacityModal", backdrop: 'static', centered: true, keyboard: false });
+  //     const modalRef = this.modalService.open(ModelComponent, { windowClass: "capacityModal", backdrop: 'static', centered: true, keyboard: false });
+  //     modalRef.componentInstance.callUserCapacityModel(oCapacity);
+  //     modalRef.componentInstance.closeModalEmit.subscribe(($event) => {
+  //       this.closeModal();
+  //     });
+  //     allocateResource.open();
+  //     this.openedSelect = allocateResource;
+  //     task.allocatedResource = '';
+  //     this.openedTask = task;
+  //     $('.innerTableLoader').hide();
+    
+  //   }, 500);
+
+  // }
+
+
+
   /**
    * This method will fetch task based on start time and endtime.
    * @param task 
@@ -327,7 +366,7 @@ export class UnallocatedComponent implements OnInit {
    */
   fetchResourceByDate(task, startTime, endTime) {
     if (!this.selectOpened) {
-      this.modalService.open(this.popupContent, { size: 'sm', centered: true, backdrop: 'static', keyboard: false });
+      // this.modalService.open(this.popupContent, { size: 'sm', centered: true, backdrop: 'static', keyboard: false });
       let setResourcesExtn = $.extend(true, [], task.resources);
       const oCapacity = this.userCapacityRef.applyFilterReturn(startTime, endTime, setResourcesExtn);
       return oCapacity;
@@ -386,7 +425,7 @@ export class UnallocatedComponent implements OnInit {
             }
           }
         } else {
-          this.showToastMsg('info', 'Info', 'Start and EndDate is not matched for this '+task.title +'. Hence page is refreshed in 30 sec.');
+          this.showToastMsg('info', 'Info', 'Start and EndDate is not matched for this ' + task.title + '. Hence page is refreshed in 30 sec.');
           // this.changeSuccessMessage('Start and EndDate is not matched for this ' + task.title + '. Hence page is refreshed in 30 sec.');
           setTimeout(() => {
             location.reload();
@@ -414,7 +453,7 @@ export class UnallocatedComponent implements OnInit {
       this.spServices.update(this.scheduleList, task.id, options, 'SP.Data.SchedulesListItem');
     }
 
-    await this.commonService.ResourceAllocation(task,this.projectInformationList);
+    await this.commonService.ResourceAllocation(task, this.projectInformationList);
     const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource);
     const mailSubject = task.projectCode + '(' + task.projectName + ')' + ': Task created';
     const objEmailBody = [];
@@ -577,7 +616,7 @@ export class UnallocatedComponent implements OnInit {
   saveTaskScope(task, comments) {
     this.isTaskScopeButtonDisabled = true;
     this.commonService.saveTaskScopeComments(task, comments);
-    this.showToastMsg('success', 'Success', 'The comments - '+comments +' has saved Successfully');
+    this.showToastMsg('success', 'Success', 'The comments - ' + comments + ' has saved Successfully');
     // this.changePopupSuccessMessage('The comments - ' + comments + ' has saved Successfully');
     setTimeout(() => {
       location.reload();
@@ -585,6 +624,49 @@ export class UnallocatedComponent implements OnInit {
   }
 
   showToastMsg(type, msg, detail) {
-    this.messageService.add({severity: type, summary: msg, detail: detail});
+    this.messageService.add({ severity: type, summary: msg, detail: detail });
+  }
+
+
+  openPopup(data) {
+    if (data.task !== 'QC' && data.task !== 'Edit' && data.task !== 'Graphics') {
+      this.taskMenu = [
+        { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) },
+        { label: 'Delete Task', icon: 'pi pi-fw pi-trash', command: (e) => this.deleteTask(data, 'unallocatedTable') }
+      ];
+    } else {
+      this.taskMenu = [
+        { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) }
+      ];
+    }
+  }
+
+
+  // *************************************************************************************************************************************
+  // hide popup menu on production
+  // *************************************************************************************************************************************
+
+  @HostListener('document:click', ['$event'])
+  clickout(event) {
+    if (event.target.className === 'pi pi-ellipsis-v') {
+      if (this.tempClick) {
+        this.tempClick.style.display = 'none';
+        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
+          this.tempClick = event.target.parentElement.children[0].children[0];
+          this.tempClick.style.display = '';
+        } else {
+          this.tempClick = undefined;
+        }
+      } else {
+        this.tempClick = event.target.parentElement.children[0].children[0];
+        this.tempClick.style.display = '';
+      }
+
+    } else {
+      if (this.tempClick) {
+        this.tempClick.style.display = 'none';
+        this.tempClick = undefined;
+      }
+    }
   }
 }
