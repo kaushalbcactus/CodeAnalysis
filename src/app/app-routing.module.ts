@@ -13,11 +13,12 @@ const routes: Routes = [
   { path: 'myDashboard', canLoad: [AuthGuard], loadChildren: './my-dashboard/my-dashboard.module#MyDashboardModule' },
   { path: 'taskAllocation', canLoad: [AuthGuard], loadChildren: './task-allocation/task-allocation.module#TaskAllocationModule' },
   { path: 'financeDashboard', canLoad: [FdAuthGuard], loadChildren: './finance-dashboard/finance-dashboard.module#FinanceDashboardModule' },
+  { path: 'centralallocation', loadChildren: './ca/ca.module#CAModule'},
   { path: 'qms', loadChildren: './qms/qms.module#QmsModule' },
   { path: 'admin', loadChildren: './admin/admin.module#AdminModule' },
   { path: '**', redirectTo: '/404' },
   { path: '404', component: PageNotFoundComponent },
-  { path: 'centralallocation', loadChildren: './ca/ca.module#CAModule'}
+
 ];
 
 
