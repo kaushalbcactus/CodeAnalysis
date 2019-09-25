@@ -1855,18 +1855,33 @@ export class PubsupportComponent implements OnInit {
             this.showProjectInput = false;
             this.callGetProjects(false);
         } else {
+            this.closedProjectCode = '';
             this.showProjectInput = true;
             this.pubSupportProjectInfoData = [];
             this.providedProjectCode = '';
         }
     }
 
+    closedProjectCode: string;
     searchClosedProject(event) {
-        // const projectCode = this.providedProjectCode;
-        // alert(projectCode);
+        let checkPC = this.providedProjectCode;
+        if (checkPC !== this.closedProjectCode) {
+            this.getClosedProject();
+        }
+    }
+    enterEvent(event) {
+        this.closedProjectCode = this.providedProjectCode;
+        this.getClosedProject();
+        if (event.keyCode === 13) {
+            event.preventDefault();
+        }
+    }
+
+    getClosedProject() {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         this.callGetProjects(true);
     }
+
     @HostListener('document:click', ['$event'])
     clickout(event) {
         if (event.target.className === 'pi pi-ellipsis-v') {

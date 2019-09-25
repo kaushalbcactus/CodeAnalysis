@@ -13,8 +13,9 @@
     <div class="ui-g-6">
         <p-dropdown [options]="overAllValues" [(ngModel)]="selectedOption" styleClass="custom-dropDown"
             optionLabel="name" (onChange)="onChangeSelect($event)"></p-dropdown>
-        <input type="text" (change)="searchClosedProject($event)" *ngIf="showProjectInput" id="projectCodeSelect"
-            placeholder="Project Code" pInputText [(ngModel)]="providedProjectCode" />
+        <input type="text" (change)="searchClosedProject($event)" (keydown.enter)="enterEvent($event)"
+            *ngIf="showProjectInput" id="projectCodeSelect" placeholder="Project Code" pInputText
+            [(ngModel)]="providedProjectCode" />
         <a href="https://tableau.cactusmum.com/#/views/PublishPaper/PublishPaperDump?:iid=1 "
             style="color: red;float: right;padding: 5px 20px;" target="_blank">Published paper report</a>
     </div>
