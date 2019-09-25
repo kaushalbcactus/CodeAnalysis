@@ -74,8 +74,8 @@ export class ReviewerDetailViewComponent implements OnInit {
     // tslint:disable
     this.RDColArray.Resource = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.resource, value: a.resource, filterValue: a.resource  }; return b; }));
     this.RDColArray.TaskTitle = this.qmsCommon.uniqueArrayObj(colData.map(a => {  const b = {
-      label: a.taskTitle ? a.SubMilestones ? a.taskTitle + ' - ' +  a.SubMilestones : a.taskTitle + ' - Default' : '',
-      value: a.taskTitle ? a.SubMilestones ? a.taskTitle + ' - ' +  a.SubMilestones : a.taskTitle + ' - Default' : '',
+      label: a.taskTitle,
+      value: a.taskTitle,
       filterValue: a.taskTitle};
     return b; }));
     this.RDColArray.TaskCompletionDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
@@ -122,7 +122,7 @@ export class ReviewerDetailViewComponent implements OnInit {
           resource: element.AssignedTo ? element.AssignedTo.Title : '',
           resourceID: element.AssignedTo ? element.AssignedTo.ID : '',
           taskTitle: element.Title ? element.Title : '',
-          SubMilestones: element.SubMilestones ? element.SubMilestones : 'Default',
+          SubMilestones: element.SubMilestones ? element.SubMilestones : '',
           taskID: element.ID ? element.ID : '',
           taskCompletionDate: taskDate,
           formattedCompletionDate: this.datepipe.transform(taskDate, 'd MMM, y'),
@@ -271,10 +271,10 @@ export class ReviewerDetailViewComponent implements OnInit {
     this.global.oReviewerPendingTasks = JSON.parse(JSON.stringify(reviewerPendingTasks));
     this.ReviewerDetail = [];
     reviewerPendingTasks.forEach(element => {
-      const subMilestones = element.SubMilestones ? element.SubMilestones : 'Default';
+      const subMilestones = element.SubMilestones ? element.SubMilestones : '';
       this.ReviewerDetail.push({
         resource: element.resource ? element.resource : '',
-        taskTitle: element.taskTitle ? element.taskTitle : '',
+        taskTitle: element.taskTitle ? subMilestones ? element.taskTitle + ' - ' +  subMilestones: element.taskTitle : '',
         subMilestones,
         taskCompletionDate: this.datepipe.transform(element.taskCompletionDate, 'MMM d, yyyy'),
         docUrlHtmlTag: element.docUrlHtmlTag ? element.docUrlHtmlTag : '',

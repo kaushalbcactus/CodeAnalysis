@@ -43,8 +43,8 @@ export class QMSComponent implements OnInit {
     batchUrl = this.getAllResources();
     // 2nd Batch Request
     batchUrl = [...batchUrl, ...this.displayReviewerPendingTasks(1)];
-    // 3rd Batch Request
-    batchUrl = [...batchUrl, ...this.displayCDTab(1)];
+    // // 3rd Batch Request
+    // batchUrl = [...batchUrl, ...this.displayCDTab(1)];
     // 4th Batch Request
     batchUrl = [...batchUrl, ...this.getCurrentResourceGroups()];
     // 5th Batch Request
@@ -52,11 +52,12 @@ export class QMSComponent implements OnInit {
     result = result.length > 0 ? result : [];
     this.global.allResources = result[0].retItems.length ? result[0].retItems : [];
     this.hideReviewerTaskPending = result[1].retItems.length ? false : true;
-    this.hideCD = result[2].retItems.length ? false : true;
-    this.global.currentUser.groups = result[3].retItems ? result[3].retItems.Groups.results ? result[3].retItems.Groups.results : [] : [];
-    this.global.viewTabsPermission.hideAdmin = this.hideAdmin;
+    // this.hideCD = result[2].retItems.length ? false : true;
+    this.global.currentUser.groups = result[2].retItems ? result[2].retItems.Groups.results ? result[2].retItems.Groups.results : [] : [];
+    this.hideCD = this.displayCFTab();
     this.displayManagerTab();
     this.displayAdminView();
+    this.global.viewTabsPermission.hideAdmin = this.hideAdmin;   
     resource = this.global.allResources.length > 0 ?
       this.global.allResources.filter(u => u.UserName.ID === this.global.sharePointPageObject.userId) : [];
     if (resource && resource.length > 0) {
@@ -141,24 +142,27 @@ export class QMSComponent implements OnInit {
   /**
    *  Display Client feedback tab if current user have atleast 1 CD as ASD/TL(Delivery Lead)
    */
-  displayCDTab(itemCount) {
-    const cdComponent = this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent;
-    const batchURL = [];
-    const previousYear = new Date().getFullYear() - 2;
-    const startDate = new Date(previousYear, 11, 31).toISOString();
-    const endDate = new Date().toISOString();
-    // REST API url in contants file
+  displayCFTab() {
+    const isCDAdmin = this.global.currentUser.groups.filter(u => u.Title === this.globalConstant.Groups.CDAdmin);
+    const isPFAdmin = this.global.currentUser.groups.filter(u => u.Title === this.globalConstant.Groups.PFAdmin);
+    return isCDAdmin.length || isPFAdmin.length ? false : true;
+    // const cdComponent = this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent;
+    // const batchURL = [];
+    // const previousYear = new Date().getFullYear() - 2;
+    // const startDate = new Date(previousYear, 11, 31).toISOString();
+    // const endDate = new Date().toISOString();
+    // // REST API url in contants file
 
-    const getQCData = Object.assign({}, this.options);
-    getQCData.url = this.spService.getReadURL(this.globalConstant.listNames.QualityComplaints.name, cdComponent.getQC);
-    getQCData.url = getQCData.url.replace('{{startDate}}', startDate)
-      .replace('{{endDate}}', endDate)
-      .replace('{{TopCount}}', '' + itemCount)
-      .replace('{{statusFilter}}', '');
-    getQCData.listName = this.globalConstant.listNames.QualityComplaints.name;
-    getQCData.type = 'GET';
-    batchURL.push(getQCData);
-    return batchURL;
+    // const getQCData = Object.assign({}, this.options);
+    // getQCData.url = this.spService.getReadURL(this.globalConstant.listNames.QualityComplaints.name, cdComponent.getQC);
+    // getQCData.url = getQCData.url.replace('{{startDate}}', startDate)
+    //   .replace('{{endDate}}', endDate)
+    //   .replace('{{TopCount}}', '' + itemCount)
+    //   .replace('{{statusFilter}}', '');
+    // getQCData.listName = this.globalConstant.listNames.QualityComplaints.name;
+    // getQCData.type = 'GET';
+    // batchURL.push(getQCData);
+    // return batchURL;
   }
 
   /**

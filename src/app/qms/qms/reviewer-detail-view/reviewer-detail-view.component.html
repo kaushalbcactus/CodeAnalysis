@@ -27,7 +27,7 @@
                     {{rowData[col.field]}}
                 </ng-container>
                 <ng-container *ngIf="col.field === 'taskTitle'">
-                   {{rowData[col.field]}} - {{rowData['subMilestones']}}
+                   {{rowData[col.field]}}
                 </ng-container>
                 <ng-container *ngIf="col.field === 'docUrlHtmlTag'">
                   <div [innerHTML]="rowData[col.field]"></div>
