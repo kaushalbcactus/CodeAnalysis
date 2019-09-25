@@ -73,11 +73,15 @@ export class ReviewerDetailViewComponent implements OnInit {
   colFilters(colData) {
     // tslint:disable
     this.RDColArray.Resource = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.resource, value: a.resource, filterValue: a.resource  }; return b; }));
-    this.RDColArray.TaskTitle = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.taskTitle + '-' + a.SubMilestones, value: a.taskTitle + '-' + a.SubMilestones, filterValue: a.taskTitle + '-' + a.SubMilestones }; return b; }));
+    this.RDColArray.TaskTitle = this.qmsCommon.uniqueArrayObj(colData.map(a => {  const b = {
+      label: a.taskTitle ? a.SubMilestones ? a.taskTitle + ' - ' +  a.SubMilestones : a.taskTitle + ' - Default' : '',
+      value: a.taskTitle ? a.SubMilestones ? a.taskTitle + ' - ' +  a.SubMilestones : a.taskTitle + ' - Default' : '',
+      filterValue: a.taskTitle};
+    return b; }));
     this.RDColArray.TaskCompletionDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = { label: this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy'),
-      value: this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy') ? this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy') : '',
-      filterValue: new Date(a.taskCompletionDate) }; return b;
+      const b = { label: a.taskCompletionDate ? this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy'): "",
+      value: a.taskCompletionDate ? this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy') : "",
+      filterValue: a.taskCompletionDate ? new Date(a.taskCompletionDate) : "" }; return b;
     }));
   }
 
