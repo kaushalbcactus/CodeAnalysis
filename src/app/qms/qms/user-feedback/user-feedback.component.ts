@@ -67,8 +67,8 @@ export class UserFeedbackComponent implements OnInit {
     }));
     this.UFColArray.Task = this.qmsCommon.uniqueArrayObj(colData.map(a => {
        const b = {
-         label: a.Title ? a.SubMilestones ? a.Title + ' - ' +  a.SubMilestones : a.Title + ' - Default' : '',
-         value: a.Title ? a.SubMilestones ? a.Title + ' - ' +  a.SubMilestones : a.Title + ' - Default' : '',
+         label: a.Title ? a.SubMilestones ? a.Title + ' - ' +  a.SubMilestones : a.Title  : '',
+         value: a.Title ? a.SubMilestones ? a.Title + ' - ' +  a.SubMilestones : a.Title  : '',
          filterValue: a.Title};
        return b; }));
     this.UFColArray.Type = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.FeedbackType, value: a.FeedbackType, filterValue: a.FeedbackType }; return b; }));
@@ -177,7 +177,7 @@ export class UserFeedbackComponent implements OnInit {
         DocumentsUrl: element.DocumentsUrl ? element.DocumentsUrl : '',
         AssignedTo: element.AssignedTo,
         Date: this.datepipe.transform(element.Created, 'MMM d, yyyy'),
-        Task: element.Title ? element.SubMilestones ? element.Title + ' - ' +  element.SubMilestones : element.Title + ' - Default' : '',
+        Task: element.Title ? element.SubMilestones ? element.Title + ' - ' +  element.SubMilestones : element.Title : '',
         Type: element.FeedbackType ? element.FeedbackType : '',
         Feedbackby: element.Author.Title ? element.Author.Title : '',
         Rating: element.AverageRating ? element.AverageRating : '',
