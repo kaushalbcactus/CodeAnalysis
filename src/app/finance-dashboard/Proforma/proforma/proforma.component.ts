@@ -434,6 +434,10 @@ export class ProformaComponent implements OnInit, OnDestroy {
         Status: []
     }
 
+    testFun(table) {
+        console.log('table ', table);
+    }
+
     createColFieldValues() {
         this.proformaColArray.ProformaNumber = this.commonService.sortData(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
         this.proformaColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));

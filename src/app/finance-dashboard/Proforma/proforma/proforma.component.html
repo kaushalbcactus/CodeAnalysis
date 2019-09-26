@@ -41,7 +41,7 @@
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                     <ng-container *ngIf="col.field">
                         <td></td>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ProformaNumber'" [options]="proformaColArray.ProformaNumber" defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ProformaNumber'" [options]="proformaColArray.ProformaNumber" defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in');" [maxSelectedLabels]="1">
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'PONumber'" [options]="proformaColArray.PONumber" defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
                         </p-multiSelect>

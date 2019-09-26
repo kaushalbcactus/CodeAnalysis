@@ -14,7 +14,7 @@ import { DataService } from './Services/data.service';
 import { TimelineHistoryComponent } from './timeline/timeline-history/timeline-history.component';
 import { MessageService } from 'primeng/api';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
-
+import { LoadingScreenComponent } from './loader/loading-screen/loading-screen.component';
 
 
 @NgModule({
@@ -33,7 +33,8 @@ import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.com
   ],
   declarations: [
     AppComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    LoadingScreenComponent,
   ],
   providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService],
   bootstrap: [AppComponent]

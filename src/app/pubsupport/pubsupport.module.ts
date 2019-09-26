@@ -9,6 +9,8 @@ import { CreateConferenceComponent } from './pubsupport/create-conference/create
 import { CreateJournalComponent } from './pubsupport/create-journal/create-journal.component';
 import { AddAuthorComponent } from './pubsupport/add-author/add-author.component';
 import { AuthorDetailsComponent } from './pubsupport/author-details/author-details.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { MyHttpInterceptor } from '../interceptor/my-http-interceptor';
 
 @NgModule({
   declarations: [PubsupportComponent, CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent, AuthorDetailsComponent],
@@ -22,6 +24,13 @@ import { AuthorDetailsComponent } from './pubsupport/author-details/author-detai
     // FileUploadModule
   ],
   entryComponents: [CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent, AuthorDetailsComponent],
-  providers: [DatePipe]
+  providers: [
+    DatePipe,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MyHttpInterceptor,
+      multi: true
+    }
+  ]
 })
 export class PubsupportModule { }
