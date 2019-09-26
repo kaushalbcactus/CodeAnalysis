@@ -319,7 +319,7 @@ export class BucketMasterdataComponent implements OnInit {
    *
    * @description
    *
-   * This method mark the bucket as inactive so that it is not visible in table.
+   * This method mark the bucket as `IsActive='NO'` in `FocusGroup` list so that it is not visible in table.
    *
    * @param data Pass data as parameter which contains value of bucket row.
    */

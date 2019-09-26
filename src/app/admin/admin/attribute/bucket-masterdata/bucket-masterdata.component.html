@@ -5,7 +5,7 @@
 <div class="clearBoth"></div>
 <div class="tooltip-data-container">
   <p-table #bmd [columns]="bucketDataColumns" [value]="bucketDataRows" exportFilename="Bucket Master Data"
-    [paginator]="true" [rows]="10">
+    [paginator]="true" [rows]="10" class="minFirstLastCol5Per">
     <ng-template pTemplate="header" let-columns>
       <tr>
         <th class="width10Per">Sr.No.</th>

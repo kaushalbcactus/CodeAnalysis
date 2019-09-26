@@ -176,3 +176,15 @@ form{
     .width5Per {
         width: 5%;
     }
+    .ui-dialog-footer button {
+        margin: 0px !important;
+    }
+    .minFirstLastCol5Per .ui-table .ui-table-thead > tr> th:first-child,
+    .minFirstLastCol5Per .ui-table .ui-table-thead > tr> th:last-child,
+    .minFirstLastCol5Per .ui-table .ui-table-tbody > tr> td:first-child,
+    .minFirstLastCol5Per .ui-table .ui-table-tbody > tr> td:last-child {
+     width: 5% !important;
+    } 
+    .minFirstLastCol5Per .ui-table .ui-table-tbody tr> td{
+        word-break: break-all;
+    }

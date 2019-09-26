@@ -207,6 +207,38 @@ export class AdminConstantService {
       orderby: 'Title asc',
       top: 4900
     },
+    GET_SUB_DIVISION_BY_ACTIVE: {
+      select: 'ID,Title,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DistributionList,IsActive,'
+        + 'Modified,Editor/ID,Editor/Title',
+      expand: 'CMLevel1/ID,CMLevel1/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,Editor/ID,Editor/Title',
+      filter: 'IsActive eq \'{{isActive}}\'',
+      orderby: 'Modified desc',
+      top: 4900
+    },
+    GET_SUB_DIVISION_BY_ID: {
+      select: 'ID,Title,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DistributionList,IsActive,'
+        + 'Modified,Editor/ID,Editor/Title',
+      expand: 'CMLevel1/ID,CMLevel1/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,Editor/ID,Editor/Title',
+      filter: 'IsActive eq \'{{isActive}}\' and ID eq \'{{Id}}\'',
+      orderby: 'Modified desc',
+      top: 4900
+    },
+    GET_POC_BY_ACTIVE: {
+      select: 'ID,Title,ClientLegalEntity,FName,LName,EmailAddress,Designation,Phone,Address,FullName,Department,ReferralSource,Status,'
+        + 'RelationshipStrength,EngagementPlan,Comments,ProjectContactsType,Modified,Editor/ID,Editor/Title',
+      filter: 'Status eq \'{{active}}\'',
+      expand: 'Editor/ID,Editor/Title',
+      orderby: 'Modified desc',
+      top: 4900
+    },
+    GET_POC_BY_ID: {
+      select: 'ID,Title,ClientLegalEntity,FName,LName,EmailAddress,Designation,Phone,Address,FullName,Department,ReferralSource,Status,'
+        + 'RelationshipStrength,EngagementPlan,Comments,ProjectContactsType,Modified,Editor/ID,Editor/Title',
+      filter: 'Status eq \'{{active}}\' and ID eq \'{{Id}}\'',
+      expand: 'Editor/ID,Editor/Title',
+      orderby: 'Modified desc',
+      top: 4900
+    }
   };
   public LOGICAL_FIELD = {
     YES: 'Yes',
@@ -219,7 +251,11 @@ export class AdminConstantService {
     POOLED: 'Pooled',
     PRIMARYSKILL: 'PrimarySkill',
     ROLE: 'Role',
-    MARKET: 'Market'
+    MARKET: 'Market',
+    POC_STATUS: 'Status',
+    POC_REFERRAL_SOURCE: 'ReferralSource',
+    POC_PROJECT_CONTACTS_TYPE: 'ProjectContactsType',
+    POC_RELATIONSHIP_STRENGTH: 'RelationshipStrength'
   };
   public ACTION = {
     COPY: 'Copy',
@@ -240,10 +276,16 @@ export class AdminConstantService {
     ALPHA: /^[a-zA-Z]+$/,
     APLHA_NUMERIC: /^[a-zA-Z0-9]+$/
   };
-  public resourCatConstant = {
+  public RESOURCE_CATEGORY_CONSTANT = {
     CMLevel1: 'CM L1',
     CMLevel2: 'CM L2',
     DELIVERY_LEVEL_1: 'Delivery L1',
     DELIVERY_LEVEL_2: 'Delivery L2'
+  };
+  public DELETE_LIST_ITEM = {
+    CLIENT_LEGAL_ENTITY: 'ClientLegalEntity',
+    SUB_DIVISION: 'SubDivision',
+    POINT_OF_CONTACT: 'PointOfContact',
+    PURCHASE_ORDER: 'PurchaseOrder'
   };
 }
