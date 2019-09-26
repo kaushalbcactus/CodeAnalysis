@@ -275,6 +275,7 @@ export class ReviewerDetailViewComponent implements OnInit {
       this.ReviewerDetail.push({
         resource: element.resource ? element.resource : '',
         taskTitle: element.taskTitle ? subMilestones ? element.taskTitle + ' - ' +  subMilestones: element.taskTitle : '',
+        title: element.taskTitle,
         subMilestones,
         taskCompletionDate: this.datepipe.transform(element.taskCompletionDate, 'MMM d, yyyy'),
         docUrlHtmlTag: element.docUrlHtmlTag ? element.docUrlHtmlTag : '',

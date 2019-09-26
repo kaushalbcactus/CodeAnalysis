@@ -139,6 +139,7 @@ export class AdminViewComponent implements OnInit {
     tasks.forEach(element => {
       this.ReviewerDetail.push({
         taskTitle: element.taskTitle ? element.subMilestones ? element.taskTitle + ' - ' +  element.subMilestones: element.taskTitle : '',
+        title: element.taskTitle,
         subMilestones: element.subMilestones,
         taskCompletionDate: this.datepipe.transform(element.taskCompletionDate, 'MMM d, yyyy') ? this.datepipe.transform(element.taskCompletionDate, 'MMM d, yyyy') : '',
         rated: element.rated ? element.rated : '',
