@@ -648,7 +648,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     async uploadFileData(type: string) {
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-        if (res) {
+        if (res.ServerRelativeUrl) {
             this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
             console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
             if (this.fileUploadedUrl) {
@@ -674,6 +674,10 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 }
                 this.submitForm(data, type);
             }
+        } else if (res.hasError) {
+            this.isPSInnerLoaderHidden = true;
+            this.submitBtn.isClicked = false;
+            this.messageService.add({ key: 'pendingExpenseToast', severity: 'error', summary: 'Error message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 })
         }
     }
 

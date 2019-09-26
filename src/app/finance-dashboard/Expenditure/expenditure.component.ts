@@ -793,8 +793,6 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             }
             this.submitForm(data, 'addExpenditure');
         }
-
-
         console.log('finalAddEArray ', this.finalAddEArray);
     }
 
@@ -814,7 +812,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             if (fileName !== sNewFileName) {
                 this.fileInput.nativeElement.value = '';
                 this.addExpenditure_form.get('FileURL').setValue('');
-                this.messageService.add({ key: 'expenseSuccessToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+                this.messageService.add({ key: 'expenseErrorToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
                 return false;
             }
             this.fileReader.readAsArrayBuffer(this.selectedFile);
@@ -837,10 +835,14 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     async uploadFileData() {
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-        console.log('selected File uploaded .', res.ServerRelativeUrl);
-        this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
-        console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
-        this.uploadCAFileData();
+        if (res.ServerRelativeUrl) {
+            this.fileUploadedUrl = res.ServerRelativeUrl;
+            this.uploadCAFileData();
+        } else if (res.hasError) {
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+            this.submitBtn.isClicked = false;
+            this.messageService.add({ key: 'expenseErrorToast', severity: 'error', summary: 'Error message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 })
+        }
     }
 
     // Upload Client Approval File
@@ -858,7 +860,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             if (fileName !== sNewFileName) {
                 this.caFileInput.nativeElement.value = '';
                 this.addExpenditure_form.get('CAFileURL').setValue('');
-                this.messageService.add({ key: 'expenseSuccessToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+                this.messageService.add({ key: 'expenseErrorToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
                 return false;
             }
             this.cafileReader.readAsArrayBuffer(this.selectedCAFile);
@@ -872,9 +874,13 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     async uploadCAFileData() {
         const res = await this.spServices.uploadFile(this.cafilePathUrl, this.cafileReader.result);
-        this.caFileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
-        if (this.caFileUploadedUrl) {
+        if (res.ServerRelativeUrl) {
+            this.caFileUploadedUrl = res.ServerRelativeUrl;
             this.submitExpediture();
+        } else if (res.hasError) {
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+            this.submitBtn.isClicked = false;
+            this.messageService.add({ key: 'expenseErrorToast', severity: 'error', summary: 'Error message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 })
         }
     }
 

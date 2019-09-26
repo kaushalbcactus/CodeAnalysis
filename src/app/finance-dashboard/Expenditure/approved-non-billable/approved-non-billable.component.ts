@@ -508,11 +508,9 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     }
 
     async uploadFileData(type: string) {
-        // this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-        if (res) {
-            this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
-            console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
+        if (res.ServerRelativeUrl) {
+            this.fileUploadedUrl = res.ServerRelativeUrl ;
             if (this.fileUploadedUrl) {
                 let speInfoObj = {
                     // PayingEntity: this.markAsPayment_form.value.PayingEntity.Title,
@@ -536,11 +534,11 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 }
                 this.submitForm(data, type);
             }
-        } else {
+        } else if (res.hasError) {
             this.isPSInnerLoaderHidden = true;
             this.submitBtn.isClicked = false;
+            this.messageService.add({ key: 'approvedToast', severity: 'error', summary: 'Error message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 })
         }
-        // });
     }
 
     batchContents: any = [];
