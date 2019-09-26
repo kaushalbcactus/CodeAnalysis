@@ -5,16 +5,17 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Http, HttpModule } from '@angular/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 // FIle upload
-import { FileUploadModule  } from 'ng2-file-upload';
+import { FileUploadModule } from 'ng2-file-upload';
 import { DataService } from './Services/data.service';
 import { TimelineHistoryComponent } from './timeline/timeline-history/timeline-history.component';
 import { MessageService } from 'primeng/api';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { LoadingScreenComponent } from './loader/loading-screen/loading-screen.component';
+import { MyHttpInterceptor } from './interceptor/my-http-interceptor';
 
 
 @NgModule({
@@ -36,7 +37,13 @@ import { LoadingScreenComponent } from './loader/loading-screen/loading-screen.c
     PageNotFoundComponent,
     LoadingScreenComponent,
   ],
-  providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService],
+  providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MyHttpInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

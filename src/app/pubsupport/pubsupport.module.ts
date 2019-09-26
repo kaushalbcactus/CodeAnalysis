@@ -26,11 +26,7 @@ import { MyHttpInterceptor } from '../interceptor/my-http-interceptor';
   entryComponents: [CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent, AuthorDetailsComponent],
   providers: [
     DatePipe,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: MyHttpInterceptor,
-      multi: true
-    }
+    
   ]
 })
 export class PubsupportModule { }
