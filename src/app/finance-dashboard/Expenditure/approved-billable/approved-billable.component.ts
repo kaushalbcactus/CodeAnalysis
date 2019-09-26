@@ -307,8 +307,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.selectedAllRowsItem = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
-            let rcCreatedItem = this.getCreatedModifiedByFromRC(element.AuthorId);
-            let rcModifiedItem = this.getCreatedModifiedByFromRC(element.EditorId);
+            // let rcCreatedItem = this.getCreatedModifiedByFromRC(element.AuthorId);
+            // let rcModifiedItem = this.getCreatedModifiedByFromRC(element.EditorId);
             let sowCodeFromPI = await this.fdDataShareServie.getSowCodeFromPI(this.projectInfoData, element);
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(sowCodeFromPI.SOWCode);
 
@@ -332,8 +332,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 DateSpend: this.datePipe.transform(element.DateSpend, 'MMM d, y, hh:mm a'),
                 Created: this.datePipe.transform(element.Created, 'MMM d, y, hh:mm a'),
                 Modified: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
-                CreatedBy: rcCreatedItem ? rcCreatedItem.UserName.Title : '',
-                ModifiedBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
+                CreatedBy: element.Author ? element.Author.Title : '',
+                ModifiedBy: element.Editor ? element.Editor.Title : '',
                 // ModifiedDate: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
                 ApproverComments: element.ApproverComments,
                 ApproverFileUrl: element.ApproverFileUrl,
@@ -341,7 +341,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 ClientApprovalFileURL: element.ClientApprovalFileURL,
 
                 VendorFreelancer: element.VendorFreelancer,
-                AuthorId: element.AuthorId,
+                // AuthorId: element.AuthorId,
                 DollarAmount: element.DollarAmount,
                 InvoiceID: element.InvoiceID,
                 POLookup: element.POLookup,
@@ -356,14 +356,14 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
-    getCreatedModifiedByFromRC(id) {
-        let found = this.rcData.find((x) => {
-            if (x.UserName.ID == id) {
-                return x;
-            }
-        })
-        return found ? found : ''
-    }
+    // getCreatedModifiedByFromRC(id) {
+    //     let found = this.rcData.find((x) => {
+    //         if (x.UserName.ID == id) {
+    //             return x;
+    //         }
+    //     })
+    //     return found ? found : ''
+    // }
 
     appBillableColArray = {
         ProjectCode: [],
@@ -736,30 +736,19 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         }
 
         // PF
-        let obj = {
-            filter: this.fdConstantsService.fdComponent.projectFinances.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode),
-            select: this.fdConstantsService.fdComponent.projectFinances.select,
-            top: this.fdConstantsService.fdComponent.projectFinances.top,
-            // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
-        }
-        this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', obj));
+        let pfObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
+        pfObj.filter = pfObj.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode);
+        this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', pfObj));
 
         // PFB
-        let pfbObj = {
-            filter: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode).replace("{{PO}}", this.poItem.Id),
-            select: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.select,
-            top: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.top,
-        }
+        let pfbObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO);
+        pfbObj.filter = pfbObj.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode).replace("{{PO}}", this.poItem.Id);
         this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinanceBreakup.name + '', pfbObj));
 
         // PBB
-        let pbbObj = {
-            filter: this.fdConstantsService.fdComponent.projectBudgetBreakup.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode),
-            select: this.fdConstantsService.fdComponent.projectBudgetBreakup.select,
-            // top: this.fdConstantsService.fdComponent.projectFinanceBreakup.top,
-        }
+        let pbbObj = Object.assign({}, this.fdConstantsService.fdComponent.projectBudgetBreakup);
+        pbbObj.filter = pbbObj.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode);
         this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectBudgetBreakup.name + '', pbbObj));
-
 
         let endPoints = this.hBQuery;
         let userBatchBody = '';
@@ -780,7 +769,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             this.pbbListItem = arrResults[2];
         }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-
     }
 
     getPInfoByPC() {

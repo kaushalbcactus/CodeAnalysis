@@ -221,12 +221,14 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         const batchGuid = this.spServices.generateUUID();
         for (let j = 0; j < this.projectCodes.length; j++) {
             const element = this.projectCodes[j];
-            let obj = {
-                filter: this.fdConstantsService.fdComponent.projectFinances.filter.replace("{{ProjectCode}}", element.ProjectCode),
-                select: this.fdConstantsService.fdComponent.projectFinances.select,
-                top: this.fdConstantsService.fdComponent.projectFinances.top,
-                // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
-            }
+            let obj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
+            obj.filter = obj.filter.replace("{{ProjectCode}}", element.ProjectCode);
+            // let obj1 = {
+            //     filter: this.fdConstantsService.fdComponent.projectFinances.filter.replace("{{ProjectCode}}", element.ProjectCode),
+            //     select: this.fdConstantsService.fdComponent.projectFinances.select,
+            //     top: this.fdConstantsService.fdComponent.projectFinances.top,
+            //     // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
+            // }
             this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', obj));
         }
 

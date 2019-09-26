@@ -3011,12 +3011,8 @@ export class EditorComponent implements OnInit {
         const batchContents = new Array();
         const batchGuid = this.spOperationsServices.generateUUID();
         let invoicesQuery = '';
-        let obj = {
-            filter: this.fdConstantsService.fdComponent.invoiceLineItem.filter.replace("{{ProformaLookup}}", id),
-            select: this.fdConstantsService.fdComponent.invoiceLineItem.select,
-            top: this.fdConstantsService.fdComponent.invoiceLineItem.top,
-            // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
-        }
+        let obj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItem);
+        obj.filter = obj.filter.replace("{{ProformaLookup}}", id);
         invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.InvoiceLineItems.name + '', obj);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
