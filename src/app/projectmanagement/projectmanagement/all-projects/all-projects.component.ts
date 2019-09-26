@@ -155,6 +155,7 @@ export class AllProjectsComponent implements OnInit {
     this.isApprovalAction = true;
     this.reloadAllProject();
   }
+
   navigateToSOW(oProject) {
     this.pmObject.columnFilter.SOWCode = [oProject.SOWCode];
     this.router.navigate(['/projectMgmt/allSOW']);
@@ -162,25 +163,27 @@ export class AllProjectsComponent implements OnInit {
 
   async convertToExcelFile(data) {
 
+    // debugger;
+    // console.log(this.allProjectRef)
 
     this.ExcelDownloadenable = true;
     console.log(data);
-    if (this.firstLoad) {
-      const budgets = await this.pmCommonService.getAllBudget(this.pmObject.allProjectsArray);
-      const AllBudgets = budgets.filter(c => c.retItems[0] !== undefined).map(c => c.retItems[0]);
+    const budgets = await this.pmCommonService.getAllBudget(this.allProjectRef.filteredValue ?
+      this.allProjectRef.filteredValue : this.pmObject.allProjectsArray);
+    const AllBudgets = budgets.filter(c => c.retItems[0] !== undefined).map(c => c.retItems[0]);
 
-      console.log(AllBudgets);
-      this.pmObject.allProjectsArray.forEach(project => {
-        const projBudget = AllBudgets.find(c => c.Title === project.ProjectCode);
-        if (projBudget) {
-          project.RevenueBudget = projBudget.RevenueBudget ? projBudget.RevenueBudget : 0;
-          project.OOPBudget = projBudget.OOPBudget ? projBudget.OOPBudget : 0;
-          project.Currency = projBudget.Currency;
-        }
-      });
-      this.firstLoad = false;
-      data._values = this.pmObject.allProjectsArray;
-    }
+    console.log(AllBudgets);
+    this.pmObject.allProjectsArray.forEach(project => {
+      const projBudget = AllBudgets.find(c => c.Title === project.ProjectCode);
+      if (projBudget) {
+        project.RevenueBudget = projBudget.RevenueBudget ? projBudget.RevenueBudget : 0;
+        project.OOPBudget = projBudget.OOPBudget ? projBudget.OOPBudget : 0;
+        project.Currency = projBudget.Currency;
+      }
+    });
+
+    data._values = this.pmObject.allProjectsArray;
+
 
 
     this.pmCommonService.convertToExcelFile(data);
