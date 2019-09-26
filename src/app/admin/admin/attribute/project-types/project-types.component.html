@@ -2,7 +2,7 @@
   <a (click)="downloadExcel(pt)" class="download-worksheet td-none"><i class="fa fa-download" aria-hidden="true"></i> Download worksheet</a>
 </div>
 <p-table #pt [columns]="projectTypeColumns" [value]="projectTypeRows" exportFilename="Project Type"
-[paginator]="true" [rows]="10">
+[paginator]="true" [rows]="10" class="minFirstLastCol5Per">
   <ng-template pTemplate="header" let-columns>
       <tr>
           <th>Sr.No.</th>

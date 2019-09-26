@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component, OnInit, ApplicationRef, NgZone } from '@angular/core';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { FormBuilder, FormGroup, FormControl, Validators, NgForm, ControlContainer } from '@angular/forms';
-import { MessageService } from 'primeng/api';
+import { MessageService, ConfirmationService } from 'primeng/api';
 import { AdminCommonService } from '../../services/admin-common.service';
 import { AdminConstantService } from '../../services/admin-constant.service';
 import { AdminObjectService } from '../../services/admin-object.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-client-masterdata',
@@ -37,12 +38,15 @@ export class ClientMasterdataComponent implements OnInit {
   POColumns = [];
   PORows = [];
   items = [];
-  items1 = [];
+  subDivisionItems = [];
+  pocItems = [];
   poValue;
   selectedValue: any;
   buttonLabel;
   checkBudgetValue = false;
-
+  currClientObj: any;
+  currSubDivisionObj: any;
+  currPOCObj: any;
   showaddClientModal = false;
   showEditClient = false;
   showSubDivisionDetails = false;
@@ -109,10 +113,9 @@ export class ClientMasterdataComponent implements OnInit {
     LastUpdatedBy: []
   };
   POCColArray = {
-    POC: [],
-    fName: [],
-    lName: [],
-    email: [],
+    FName: [],
+    LName: [],
+    EmailAddress: [],
     LastUpdated: [],
     LastUpdatedBy: []
   };
@@ -145,7 +148,10 @@ export class ClientMasterdataComponent implements OnInit {
     DeliveryLevel2Array: [],
     CurrencyArray: [],
     BucketArray: [],
-    PORequiredArray: []
+    PORequiredArray: [],
+    POCRefferalSourceArray: [],
+    POCRelationshipArray: [],
+    POCProjectContactTypesArray: []
   };
   /**
    * Construct a method to create an instance of required component.
@@ -158,6 +164,12 @@ export class ClientMasterdataComponent implements OnInit {
    * @param adminObject This is instance referance of `AdminObjectService` component.
    * @param constants This is instance referance of `ConstantsService` component.
    * @param spServices This is instance referance of `SPOperationService` component.
+   * @param confirmationService This is instance referance of `ConfirmationService` component.
+   * @param platformLocation This is instance referance of `PlatformLocation` component.
+   * @param locationStrategy This is instance referance of `LocationStrategy` component.
+   * @param router This is instance referance of `Router` component.
+   * @param applicationRef This is instance referance of `ApplicationRef` component.
+   * @param zone This is instance referance of `NgZone` component.
    */
   constructor(
     private datepipe: DatePipe,
@@ -167,7 +179,13 @@ export class ClientMasterdataComponent implements OnInit {
     private adminConstants: AdminConstantService,
     private adminObject: AdminObjectService,
     private constants: ConstantsService,
-    private spServices: SPOperationService
+    private spServices: SPOperationService,
+    private confirmationService: ConfirmationService,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private router: Router,
+    private applicationRef: ApplicationRef,
+    private zone: NgZone
   ) {
     /**
      * This is used to initialize the Client form.
@@ -200,7 +218,7 @@ export class ClientMasterdataComponent implements OnInit {
      * This is used to initialize the subDivision form.
      */
     this.subDivisionform = frmbuilder.group({
-      subDivision_Name: ['', Validators.required],
+      subDivision_Name: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL)]],
       distributionList: [''],
       cmLevel1: [''],
       deliveryLevel1: [''],
@@ -212,7 +230,7 @@ export class ClientMasterdataComponent implements OnInit {
       fname: ['', Validators.required],
       lname: ['', Validators.required],
       designation: ['', Validators.required],
-      email: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
       phone: [''],
       address1: [''],
       address2: [''],
@@ -220,7 +238,6 @@ export class ClientMasterdataComponent implements OnInit {
       address4: [''],
       department: [''],
       referralSource: ['', Validators.required],
-      status: ['', Validators.required],
       relationshipStrength: [''],
       engagementPlan: [''],
       comments: [''],
@@ -228,6 +245,15 @@ export class ClientMasterdataComponent implements OnInit {
     });
     this.initAddPOForm();
     this.initAddBudgetForm();
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+    router.events.subscribe((uri) => {
+      zone.run(() => applicationRef.tick());
+    });
   }
   /**
    * This is used to initialize the PO form.
@@ -276,7 +302,20 @@ export class ClientMasterdataComponent implements OnInit {
       { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
       { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false }
     ];
-
+    this.subDivisionDetailsColumns = [
+      { field: 'SubDivision', header: 'Sub-Division', visibility: true },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
+      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
+      { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false }
+    ];
+    this.POCColumns = [
+      { field: 'FName', header: 'First Name', visibility: true },
+      { field: 'LName', header: 'Last Name', visibility: true },
+      { field: 'EmailAddress', header: 'Email', visibility: true },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
+      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
+      { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false }
+    ];
     // this.clientMasterDataRows = [
     //   {
     //     ClientLegalEntry: 'Test',
@@ -319,11 +358,7 @@ export class ClientMasterdataComponent implements OnInit {
     //   }
     // ];
 
-    // this.subDivisionDetailsColumns = [
-    //   { field: 'SubDivision', header: 'Sub-Division', visibility: true },
-    //   { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
-    //   { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
-    // ];
+
 
     // this.subDivisionDetailsRows = [
     //   {
@@ -332,14 +367,7 @@ export class ClientMasterdataComponent implements OnInit {
     //     LastUpdatedBy: ''
     //   }
     // ];
-    // this.POCColumns = [
-    //   // { field: 'POC', header: 'POC', visibility: true },
-    //   { field: 'fName', header: 'First Name', visibility: true },
-    //   { field: 'lName', header: 'Last Name', visibility: true },
-    //   { field: 'email', header: 'Email', visibility: true },
-    //   { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
-    //   { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
-    // ];
+
 
     // this.POCRows = [
     //   {
@@ -680,29 +708,42 @@ export class ClientMasterdataComponent implements OnInit {
         });
       }
       if (this.resultResponse.ResourceCatArray && this.resultResponse.ResourceCatArray.length) {
-        this.dropdown.CMLevel1Array = [];
-        this.dropdown.CMLevel2Array = [];
-        this.dropdown.DeliveryLevel1Array = [];
-        this.dropdown.DeliveryLevel2Array = [];
-        this.resultResponse.ResourceCatArray.forEach(element => {
-          const role = element.Role;
-          switch (role) {
-            case this.adminConstants.resourCatConstant.CMLevel1:
-              this.dropdown.CMLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
-              break;
-            case this.adminConstants.resourCatConstant.CMLevel2:
-              this.dropdown.CMLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
-              break;
-            case this.adminConstants.resourCatConstant.DELIVERY_LEVEL_1:
-              this.dropdown.DeliveryLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
-              break;
-            case this.adminConstants.resourCatConstant.DELIVERY_LEVEL_2:
-              this.dropdown.DeliveryLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
-              break;
-          }
-        });
+        this.separateResourceCat(this.resultResponse.ResourceCatArray);
       }
     }
+  }
+  /**
+   * Construct a method to separate the user based on thier roles.
+   *
+   * @description
+   *
+   * This method is used seperate the resource categorization user based on thier roles.
+   * It will load the respective dropdown based on role.
+   *
+   * @param array Pass the resource Categorization array results.
+   */
+  separateResourceCat(array) {
+    this.dropdown.CMLevel1Array = [];
+    this.dropdown.CMLevel2Array = [];
+    this.dropdown.DeliveryLevel1Array = [];
+    this.dropdown.DeliveryLevel2Array = [];
+    array.forEach(element => {
+      const role = element.Role;
+      switch (role) {
+        case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel1:
+          this.dropdown.CMLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          break;
+        case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
+          this.dropdown.CMLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          break;
+        case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_1:
+          this.dropdown.DeliveryLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          break;
+        case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
+          this.dropdown.DeliveryLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          break;
+      }
+    });
   }
   /**
    * Construct a funtion to validate the email id.
@@ -726,10 +767,15 @@ export class ClientMasterdataComponent implements OnInit {
       APEmailControl.setValidators([Validators.email]);
       APEmailControl.updateValueAndValidity();
     }
+    if (this.subDivisionform.value.distributionList) {
+      const distributionListControl = this.subDivisionform.get('distributionList');
+      distributionListControl.setValidators([Validators.email]);
+      distributionListControl.updateValueAndValidity();
+    }
   }
   /**
-   * Construct a method to save the client legal entity into `ClientLegalEntity` list.
-   * It will construct a REST-API Call to create item into `ClientLegalEntity` list.
+   * Construct a method to save or update the client legal entity into `ClientLegalEntity` list.
+   * It will construct a REST-API Call to create item or update item into `ClientLegalEntity` list.
    *
    * @description
    *
@@ -746,35 +792,48 @@ export class ClientMasterdataComponent implements OnInit {
   async saveClient() {
     if (this.addClient.valid) {
       console.log(this.addClient.value);
-      if (this.resultResponse.ClientLegalEntityArray.some(a =>
-        a.Title.toLowerCase() === this.addClient.value.name.toLowerCase())) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'This Client is already exist. Please enter another client name.'
-        });
-        return false;
-      }
-      if (this.resultResponse.ClientLegalEntityArray.some(a =>
-        a.Acronym.toLowerCase() === this.addClient.value.acronym.toLowerCase())) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'This Acronym is already exist. Please enter another acronym.'
-        });
-        return false;
+      if (!this.showEditClient) {
+        if (this.resultResponse.ClientLegalEntityArray.some(a =>
+          a.Title.toLowerCase() === this.addClient.value.name.toLowerCase())) {
+          this.messageService.add({
+            key: 'adminCustom', severity: 'error',
+            summary: 'Error Message', detail: 'This Client is already exist. Please enter another client name.'
+          });
+          return false;
+        }
+        if (this.resultResponse.ClientLegalEntityArray.some(a =>
+          a.Acronym.toLowerCase() === this.addClient.value.acronym.toLowerCase())) {
+          this.messageService.add({
+            key: 'adminCustom', severity: 'error',
+            summary: 'Error Message', detail: 'This Acronym is already exist. Please enter another acronym.'
+          });
+          return false;
+        }
       }
       // write the save logic using rest api.
       this.adminObject.isMainLoaderHidden = false;
       const clientData = await this.getClientData();
-      const results = await this.spServices.createItem(this.constants.listNames.ClientLegalEntity.name,
-        clientData, this.constants.listNames.ClientLegalEntity.type);
-      if (!results.hasOwnProperty('hasError') && !results.hasError) {
+      if (!this.showEditClient) {
+        const results = await this.spServices.createItem(this.constants.listNames.ClientLegalEntity.name,
+          clientData, this.constants.listNames.ClientLegalEntity.type);
+        if (!results.hasOwnProperty('hasError') && !results.hasError) {
+          this.messageService.add({
+            key: 'adminCustom', severity: 'success',
+            summary: 'Success Message', detail: 'The Client ' + this.addClient.value.name + ' is created successfully.'
+          });
+          await this.loadRecentRecords(results.ID, this.showEditClient);
+        }
+      }
+      if (this.showEditClient) {
+        const results = await this.spServices.updateItem(this.constants.listNames.ClientLegalEntity.name, this.currClientObj.ID,
+          clientData, this.constants.listNames.ClientLegalEntity.type);
         this.messageService.add({
           key: 'adminCustom', severity: 'success',
-          summary: 'Success Message', detail: 'The Client ' + this.addClient.value.name + ' is created successfully.'
+          summary: 'Success Message', detail: 'The Client ' + this.currClientObj.ClientLegalEntity + ' is updated successfully.'
         });
-        await this.loadRecentRecords(results.ID, false);
-        this.showaddClientModal = false;
+        await this.loadRecentRecords(this.currClientObj.ID, this.showEditClient);
       }
+      this.showaddClientModal = false;
       this.adminObject.isMainLoaderHidden = true;
     } else {
       this.cmObject.isClientFormSubmit = true;
@@ -838,46 +897,231 @@ export class ClientMasterdataComponent implements OnInit {
       }
     }
   }
+  /**
+   * Construct a method to prepare the client legal entity object value.
+   *
+   * @description This method is used to prepare the object of ClientLegalEntity Object.
+   *
+   * @returns It will return an object of `ClientLegalEntity` Object.
+   */
   getClientData() {
     const data: any = {
-      Title: this.addClient.value.name,
       ListName: this.addClient.value.name,
-      Acronym: this.addClient.value.acronym.toUpperCase(),
       ClientGroup: this.addClient.value.group,
       InvoiceName: this.addClient.value.invoiceName,
       Realization: + this.addClient.value.realization,
       Market: this.addClient.value.market,
-      BillingEntity: this.addClient.value.billingEntry,
       PORequired: this.addClient.value.poRequired,
-      TimeZone: + this.addClient.value.timeZone,
       CMLevel1Id: {
         results: this.addClient.value.cmLevel1
       },
       CMLevel2Id: this.addClient.value.cmLevel2,
       DeliveryLevel2Id: this.addClient.value.deliveryLevel2,
-      Currency: this.addClient.value.currency,
       Bucket: this.addClient.value.bucket
     };
-    if (this.addClient.value.distributionList) {
-      data.DistributionList = this.addClient.value.distributionList;
+    if (!this.showEditClient) {
+      data.Title = this.addClient.value.name;
+      data.Acronym = this.addClient.value.acronym.toUpperCase();
+      data.BillingEntity = this.addClient.value.billingEntry;
+      data.TimeZone = + this.addClient.value.timeZone;
+      data.Currency = this.addClient.value.currency;
     }
-    if (this.addClient.value.deliveryLevel1) {
-      data.DeliveryLevel1Id = {
-        results: this.addClient.value.deliveryLevel1
-      };
-    }
-    if (this.addClient.value.APEmail) {
-      data.APEmail = this.addClient.value.APEmail;
-    }
-    if (this.addClient.value.address1 || this.addClient.value.address2 || this.addClient.value.address3 || this.addClient.value.address4) {
-      data.APAddress = this.addClient.value.address1 + ';#' + this.addClient.value.address2 + ';#' + this.addClient.value.address3 +
-        ';#' + this.addClient.value.address4;
-    }
-    if (this.addClient.value.notes) {
-      data.Notes = this.addClient.value.notes;
-    }
+    data.DistributionList = this.addClient.value.distributionList ? this.addClient.value.distributionList : '';
+    data.DeliveryLevel1Id = this.addClient.value.deliveryLevel1 ? {
+      results: this.addClient.value.deliveryLevel1
+    } : [];
+    data.APEmail = this.addClient.value.APEmail ? this.addClient.value.APEmail : [];
+    data.Notes = this.addClient.value.notes ? this.addClient.value.notes : '';
+    const ap1 = this.addClient.value.address1 ? this.addClient.value.address1 : '';
+    const ap2 = this.addClient.value.address2 ? this.addClient.value.address2 : '';
+    const ap3 = this.addClient.value.address3 ? this.addClient.value.address3 : '';
+    const ap4 = this.addClient.value.address4 ? this.addClient.value.address4 : '';
+    data.APAddress = ap1 + ';#' + ap2 + ';#' + ap3 + ';#' + ap4;
     return data;
   }
+  /**
+   * Construct a method to store current selected row data into variable `currClientObj`.
+   *
+   * @description
+   *
+   * This method will trigger when user click on menu option in the table.
+   * It will store the current selected row value into the class variable `currClientObj`.
+   * It will dynamically add the submenu in the table.
+   */
+  openMenuPopup(data) {
+    this.currClientObj = data;
+    console.log(this.currClientObj);
+    this.items = [
+      { label: 'Edit', command: (e) => this.showEditCLientModal() },
+      { label: 'Delete', command: (e) => this.deleteClient() },
+      { label: 'Sub-Division Details', command: (e) => this.showSubDivision() },
+      { label: 'Point of Contact', command: (e) => this.showPOC() },
+      { label: 'Purchase Order', command: (e) => this.showPO() }
+    ];
+  }
+  /**
+   * Construct a method to show the edit form to edit the client legal entity.
+   *
+   * @description
+   *
+   * This method is used to popup the predefined filled form to edit the client legal entity.
+   * If value is present in the dropdown array then it will simply load the dropdown.
+   * If value is not present in the dropdown array then it will make REST call to get the data.
+   *
+   */
+  async showEditCLientModal() {
+    this.cmObject.isClientFormSubmit = false;
+    this.adminObject.isMainLoaderHidden = false;
+    this.buttonLabel = 'Update';
+    this.addClient.controls.name.disable();
+    this.addClient.controls.acronym.disable();
+    this.addClient.controls.currency.disable();
+    this.addClient.controls.billingEntry.disable();
+    this.addClient.controls.timeZone.disable();
+    if (!this.dropdown.ClientGroupArray.length) {
+      await this.loadClientDropdown();
+    }
+    this.addClient.patchValue({
+      name: this.currClientObj.ClientLegalEntity,
+      acronym: this.currClientObj.Acronym,
+      group: this.currClientObj.ClientGroup,
+      distributionList: this.currClientObj.DistributionList ? this.currClientObj.DistributionList : '',
+      invoiceName: this.currClientObj.InvoiceName,
+      realization: this.currClientObj.Realization,
+      market: this.currClientObj.Market,
+      billingEntry: this.currClientObj.BillingEntity,
+      poRequired: this.currClientObj.PORequired,
+      timeZone: this.currClientObj.TimeZone.toString(),
+      cmLevel1: this.adminCommonService.getIds(this.currClientObj.CMLevel1.results),
+      cmLevel2: this.currClientObj.CMLevel2.ID,
+      deliveryLevel1: this.currClientObj.DeliveryLevel1 && this.currClientObj.DeliveryLevel1.hasOwnProperty('results') &&
+        this.currClientObj.DeliveryLevel1.results.length ? this.adminCommonService.getIds(this.currClientObj.DeliveryLevel1.results) : [],
+      deliveryLevel2: this.currClientObj.DeliveryLevel2.ID,
+      currency: this.currClientObj.Currency,
+      APEmail: this.currClientObj.APEmail ? this.currClientObj.APEmail : '',
+      address1: this.currClientObj.APAddress ? this.currClientObj.APAddress.split(';#')[0] : '',
+      address2: this.currClientObj.APAddress ? this.currClientObj.APAddress.split(';#')[1] : '',
+      address3: this.currClientObj.APAddress ? this.currClientObj.APAddress.split(';#')[2] : '',
+      address4: this.currClientObj.APAddress ? this.currClientObj.APAddress.split(';#')[3] : '',
+      notes: this.currClientObj.Notes ? this.currClientObj.Notes : '',
+      bucket: this.currClientObj.Bucket
+    });
+    this.showaddClientModal = true;
+    this.showEditClient = true;
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * Construct a method to remove the item from table.
+   *
+   * @description
+   *
+   * This method mark the Client legal entity as `IsActive='NO'` in `ClientLegalEntity` list so that it is not visible in table.
+   *
+   */
+  deleteClient() {
+    console.log(this.currClientObj);
+    this.confirmationService.confirm({
+      message: 'Do you want to delete this record?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-info-circle',
+      key: 'confirm',
+      accept: () => {
+        const updateData = {
+          IsActive: this.adminConstants.LOGICAL_FIELD.NO
+        };
+        this.confirmUpdate(this.currClientObj, updateData, this.constants.listNames.ClientLegalEntity.name,
+          this.constants.listNames.ClientLegalEntity.type, this.adminConstants.DELETE_LIST_ITEM.CLIENT_LEGAL_ENTITY);
+      },
+    });
+
+  }
+  /**
+   * Construct a method to save the update the data.
+   * @param data Pass data as parameter which have Id in it.
+   * @param updateData Pass the data which wants to update it.
+   * @param listName pass the list name.
+   * @param type pass the list type.
+   * @param itemName pass the item name from which list we want to delete record.
+   */
+  async confirmUpdate(data, updateData, listName, type, itemName) {
+    this.adminObject.isMainLoaderHidden = false;
+    const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
+    switch (itemName) {
+      case this.adminConstants.DELETE_LIST_ITEM.CLIENT_LEGAL_ENTITY:
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success', sticky: true,
+          summary: 'Success Message', detail: 'The client legal entity ' + data.ClientLegalEntity + ' has deleted successfully.'
+        });
+        const clientIndex = this.clientMasterDataRows.findIndex(x => x.ID === data.ID);
+        this.clientMasterDataRows.splice(clientIndex, 1);
+        break;
+      case this.adminConstants.DELETE_LIST_ITEM.SUB_DIVISION:
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success', sticky: true,
+          summary: 'Success Message', detail: 'The sub division ' + data.SubDivision + ' has deleted successfully.'
+        });
+        const subDivisionindex = this.subDivisionDetailsRows.findIndex(x => x.ID === data.ID);
+        this.subDivisionDetailsRows.splice(subDivisionindex, 1);
+        break;
+      case this.adminConstants.DELETE_LIST_ITEM.POINT_OF_CONTACT:
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success', sticky: true,
+          summary: 'Success Message', detail: 'The point of contact ' + data.FullName + ' has deleted successfully.'
+        });
+        const pocindex = this.POCRows.findIndex(x => x.ID === data.ID);
+        this.POCRows.splice(pocindex, 1);
+        break;
+    }
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
+   *
+   * @description
+   *
+   * It will iterate all the response array to cater the request and show into the table.
+   * The table have option for sorting, pagination, edit and delete the Sub Division.
+   *
+   */
+  async showSubDivision() {
+    this.adminObject.isMainLoaderHidden = false;
+    const tempArray = [];
+    const getSubDivisionInfo = Object.assign({}, this.adminConstants.QUERY.GET_SUB_DIVISION_BY_ACTIVE);
+    getSubDivisionInfo.filter = getSubDivisionInfo.filter.replace(/{{isActive}}/gi,
+      this.adminConstants.LOGICAL_FIELD.YES);
+    const results = await this.spServices.readItems(this.constants.listNames.ClientSubdivision.name, getSubDivisionInfo);
+    if (results && results.length) {
+      results.forEach(item => {
+        const obj = Object.assign({}, this.adminObject.subDivisionObj);
+        obj.ID = item.ID;
+        obj.SubDivision = item.Title;
+        obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
+        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+        obj.LastUpdatedBy = item.Editor.Title;
+        obj.IsActive = item.IsActive;
+        obj.CMLevel1 = item.CMLevel1;
+        obj.DeliveryLevel1 = item.DeliveryLevel1;
+        obj.DistributionList = item.DistributionList;
+        obj.ClientLegalEntity = item.ClientLegalEntity;
+        tempArray.push(obj);
+      });
+      this.subDivisionDetailsRows = tempArray;
+      this.subDivisionFilters(this.subDivisionDetailsRows);
+    }
+    this.adminObject.isMainLoaderHidden = true;
+    this.showSubDivisionDetails = true;
+  }
+  /**
+   * Construct a method to map the array values into particular column dropdown.
+   *
+   * @description
+   *
+   * This method will extract the column object value from an array and stores into the column dropdown array and display
+   * the values into the SubDivision,LastUpdated and LastUpdatedBy column dropdown.
+   *
+   * @param colData Pass colData as a parameter which contains an array of column object.
+   *
+   */
   subDivisionFilters(colData) {
     this.subDivisionDetailsColArray.SubDivision = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.SubDivision, value: a.SubDivision }; return b; }));
@@ -886,33 +1130,651 @@ export class ClientMasterdataComponent implements OnInit {
         const b = {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
           // tslint:disable-next-line: align
-          value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
+          value: a.LastUpdated
         };
         return b;
       }));
     this.subDivisionDetailsColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
+  /**
+   * Construct a method show the form to add new sub division.
+   *
+   * @description
+   *
+   * This method is used to show the form to add new Sub Division.
+   *
+   */
+  async showAddSubDivision() {
+    this.adminObject.isMainLoaderHidden = false;
+    this.cmObject.isSubDivisionFormSubmit = false;
+    this.subDivisionform.reset();
+    await this.loadSubDivisionDropdown();
+    this.showeditSubDivision = false;
+    this.buttonLabel = 'Submit';
+    this.showaddSubDivision = true;
+    this.subDivisionform.controls.subDivision_Name.enable();
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * Construct a method to load the sub division dropdown.
+   *
+   * @description
+   *
+   * This method will load the sub division dropdown.
+   *
+   * @Note
+   *
+   * If `dropdown.CMLevel1Array` & `dropdown.DeliveryLevel1Array` is null then it will make a REST call
+   * to `ResourceCategorization` list and iterate the result based on role to load the respective dropdown.
+   */
+  async loadSubDivisionDropdown() {
+    if (!this.dropdown.CMLevel1Array.length || !this.dropdown.DeliveryLevel1Array.length) {
+      const getResourceCat = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME);
+      getResourceCat.filter = getResourceCat.filter.replace(/{{isActive}}/gi,
+        this.adminConstants.LOGICAL_FIELD.YES);
+      const result = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, getResourceCat);
+      this.separateResourceCat(result);
+    }
+  }
+  /**
+   * Construct a method to save or update the sub division into `ClientSubdivision` list.
+   * It will construct a REST-API Call to create item or update item into `ClientSubdivision` list.
+   *
+   * @description
+   *
+   * This method is used to validate and save the sub division item into `ClientSubdivision` list.
+   *
+   * @Note
+   *
+   * 1. Duplicate sub division is not allowed.
+   * 2. Only 2 special character are allowed.
+   * 3. `SubDivisionClient` name cannot start or end with special character.
+   *
+   */
+  async saveSubdivision() {
+    if (this.subDivisionform.valid) {
+      console.log(this.subDivisionform.value);
+      if (!this.showeditSubDivision) {
+        if (this.subDivisionDetailsRows.some(a =>
+          a.SubDivision.toLowerCase() === this.subDivisionform.value.subDivision_Name.toLowerCase())) {
+          this.messageService.add({
+            key: 'adminCustom', severity: 'error',
+            summary: 'Error Message', detail: 'This client sub-division is already exist. Please enter another client sub-division.'
+          });
+          return false;
+        }
+      }
+      // write the save logic using rest api.
+      this.adminObject.isMainLoaderHidden = false;
+      const subDivisionData = await this.getSubDivisionData();
+      if (!this.showeditSubDivision) {
+        const results = await this.spServices.createItem(this.constants.listNames.ClientSubdivision.name,
+          subDivisionData, this.constants.listNames.ClientSubdivision.type);
+        if (!results.hasOwnProperty('hasError') && !results.hasError) {
+          this.messageService.add({
+            key: 'adminCustom', severity: 'success', summary: 'Success Message',
+            detail: 'The subdivision ' + this.subDivisionform.value.subDivision_Name + ' is created successfully.'
+          });
+          await this.loadRecentSubDivisionRecords(results.ID, this.showeditSubDivision);
+        }
+      }
+      if (this.showeditSubDivision) {
+        const results = await this.spServices.updateItem(this.constants.listNames.ClientSubdivision.name, this.currSubDivisionObj.ID,
+          subDivisionData, this.constants.listNames.ClientSubdivision.type);
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success',
+          summary: 'Success Message', detail: 'The subdivision ' + this.currSubDivisionObj.SubDivision + ' is updated successfully.'
+        });
+        await this.loadRecentSubDivisionRecords(this.currSubDivisionObj.ID, this.showeditSubDivision);
+      }
+      this.showaddSubDivision = false;
+      this.adminObject.isMainLoaderHidden = true;
+    } else {
+      this.cmObject.isSubDivisionFormSubmit = true;
+    }
+  }
+  /**
+   * Construct a method to create an object of clientSubsdivision.
+   *
+   * @description
+   *
+   * This method is used to create an object of clientSubDivision.
+   *
+   * @return It will return an object of clientSubDivision.
+   */
+  getSubDivisionData() {
+    const data: any = {};
+    if (!this.showeditSubDivision) {
+      data.Title = this.subDivisionform.value.subDivision_Name;
+      data.ClientLegalEntity = this.currClientObj.ClientLegalEntity;
+    }
+    data.DeliveryLevel1Id = this.subDivisionform.value.deliveryLevel1 ? { results: this.subDivisionform.value.deliveryLevel1 } : [];
+    data.CMLevel1Id = this.subDivisionform.value.cmLevel1 ? { results: this.subDivisionform.value.cmLevel1 } : [];
+    data.DistributionList = this.subDivisionform.value.distributionList ? this.subDivisionform.value.distributionList : '';
+    return data;
+  }
+  /**
+   * Construct a method to load the newly created item into the table without refreshing the whole page.
+   * @param item ID the item which is created or updated recently.
+   *
+   * @param isUpdate Pass the isUpdate as true/false for update and create item respectively.
+   *
+   * @description
+   *
+   * This method will load newly created item or updated item as first row in the table;
+   *  Pass `false` to add the new created item at position 0 in the array.
+   *  Pass `true` to replace the item in the array
+   */
+  async loadRecentSubDivisionRecords(ID, isUpdate) {
+    const subDivisionGet = Object.assign({}, this.adminConstants.QUERY.GET_SUB_DIVISION_BY_ID);
+    subDivisionGet.filter = subDivisionGet.filter.replace(/{{isActive}}/gi,
+      this.adminConstants.LOGICAL_FIELD.YES).replace(/{{Id}}/gi, ID);
+    const result = await this.spServices.readItems(this.constants.listNames.ClientSubdivision.name, subDivisionGet);
+    if (result && result.length) {
+      const item = result[0];
+      const obj = Object.assign({}, this.adminObject.subDivisionObj);
+      obj.ID = item.ID;
+      obj.SubDivision = item.Title;
+      obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
+      obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+      obj.LastUpdatedBy = item.Editor.Title;
+      obj.IsActive = item.IsActive;
+      obj.CMLevel1 = item.CMLevel1;
+      obj.DeliveryLevel1 = item.DeliveryLevel1;
+      obj.DistributionList = item.DistributionList;
+      obj.ClientLegalEntity = item.ClientLegalEntity;
+      // If Create - add the new created item at position 0 in the array.
+      // If Edit - Replace the item in the array
+      if (isUpdate) {
+        const index = this.subDivisionDetailsRows.findIndex(x => x.ID === obj.ID);
+        this.subDivisionDetailsRows.splice(index, 1, obj);
+      } else {
+        this.subDivisionDetailsRows.unshift(obj);
+      }
+    }
+  }
+  /**
+   * Construct a method to store current selected row data into variable `currSubDivisionObj`.
+   *
+   * @description
+   *
+   * This method will trigger when user click on menu option in the table.
+   * It will store the current selected row value into the class variable `currSubDivisionObj`.
+   * It will dynamically add the submenu in the table.
+   */
+  subDivisionMenu(data) {
+    this.currSubDivisionObj = data;
+    this.subDivisionItems = [{ label: 'Edit', command: (e) => this.showEditSubDivision() },
+    { label: 'Delete', command: (e) => this.deleteSubDivision() }];
+  }
+  /**
+   * Construct a method to show the edit form to edit the sub division.
+   *
+   * @description
+   *
+   * This method is used to popup the predefined filled form to edit the sub division.
+   * If value is present in the dropdown array then it will simply load the dropdown.
+   * If value is not present in the dropdown array then it will make REST call to get the data.
+   *
+   */
+  async showEditSubDivision() {
+    this.adminObject.isMainLoaderHidden = false;
+    this.cmObject.isSubDivisionFormSubmit = false;
+    this.buttonLabel = 'Update';
+    this.showaddSubDivision = true;
+    if (!this.dropdown.DeliveryLevel1Array.length || !this.dropdown.CMLevel1Array.length) {
+      await this.loadSubDivisionDropdown();
+    }
+    this.subDivisionform.controls.subDivision_Name.disable();
+    this.subDivisionform.patchValue({
+      subDivision_Name: this.currSubDivisionObj.SubDivision,
+      distributionList: this.currSubDivisionObj.DistributionList ? this.currSubDivisionObj.DistributionList : '',
+      cmLevel1: this.currSubDivisionObj.CMLevel1 && this.currSubDivisionObj.CMLevel1.hasOwnProperty('results') &&
+        this.currSubDivisionObj.CMLevel1.results.length ?
+        this.adminCommonService.getIds(this.currSubDivisionObj.CMLevel1.results) : [],
+      deliveryLevel1: this.currSubDivisionObj.DeliveryLevel1 && this.currSubDivisionObj.DeliveryLevel1.hasOwnProperty('results') &&
+        this.currSubDivisionObj.DeliveryLevel1.results.length ?
+        this.adminCommonService.getIds(this.currSubDivisionObj.DeliveryLevel1.results) : []
+    });
+    this.showeditSubDivision = true;
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * Construct a method to remove the item from table.
+   *
+   * @description
+   *
+   * This method mark the ClientSubDivision as `IsActive='NO'` in `ClientSubDivision` list so that it is not visible in table.
+   *
+   */
+  deleteSubDivision() {
+    console.log(this.currClientObj);
+    this.confirmationService.confirm({
+      message: 'Do you want to delete this record?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-info-circle',
+      key: 'confirm',
+      accept: () => {
+        const updateData = {
+          IsActive: this.adminConstants.LOGICAL_FIELD.NO
+        };
+        this.confirmUpdate(this.currSubDivisionObj, updateData, this.constants.listNames.ClientSubdivision.name,
+          this.constants.listNames.ClientSubdivision.type, this.adminConstants.DELETE_LIST_ITEM.SUB_DIVISION);
+      },
+    });
+  }
+  /**
+   * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
+   *
+   * @description
+   * This method will query `ProjectContacts` list based on `Status='Active'`.
+   * It will iterate all the response array to cater the request and show into the table.
+   * The table have option for sorting, pagination, edit and delete the poc.
+   *
+   */
+  async showPOC() {
+    this.adminObject.isMainLoaderHidden = false;
+    const tempArray = [];
+    const getPocInfo = Object.assign({}, this.adminConstants.QUERY.GET_POC_BY_ACTIVE);
+    getPocInfo.filter = getPocInfo.filter.replace(/{{active}}/gi,
+      this.adminConstants.LOGICAL_FIELD.ACTIVE);
+    const results = await this.spServices.readItems(this.constants.listNames.ProjectContacts.name, getPocInfo);
+    if (results && results.length) {
+      results.forEach(item => {
+        const obj = Object.assign({}, this.adminObject.pocObj);
+        obj.ID = item.ID;
+        obj.Title = item.Title ? item.Title : '';
+        obj.ClientLegalEntity = item.ClientLegalEntity;
+        obj.FName = item.FName;
+        obj.LName = item.LName;
+        obj.EmailAddress = item.EmailAddress;
+        obj.Designation = item.Designation;
+        obj.Phone = item.Phone ? item.Phone : '';
+        obj.Address = obj.Address ? obj.Address : '';
+        obj.FullName = item.FullName ? item.FullName : '';
+        obj.Department = item.Department ? item.Department : '';
+        obj.ReferralSource = item.ReferralSource;
+        obj.Status = item.Status;
+        obj.RelationshipStrength = item.RelationshipStrength ? item.RelationshipStrength : '';
+        obj.EngagementPlan = item.EngagementPlan ? item.EngagementPlan : '';
+        obj.Comments = item.Comments ? item.Comments : '';
+        obj.ProjectContactsType = item.ProjectContactsType;
+        obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
+        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+        obj.LastUpdatedBy = item.Editor.Title;
+        tempArray.push(obj);
+      });
+      this.POCRows = tempArray;
+      this.POCFilters(this.POCRows);
+    }
+    this.adminObject.isMainLoaderHidden = true;
+    this.showPointofContact = true;
+  }
+  /**
+   * Construct a method to map the array values into particular column dropdown.
+   *
+   * @description
+   *
+   * This method will extract the column object value from an array and stores into the column dropdown array and display
+   * the values into the FName,LName,EmailAddress,LastUpdated and LastUpdatedBy column dropdown.
+   *
+   * @param colData Pass colData as a parameter which contains an array of column object.
+   *
+   */
   POCFilters(colData) {
-    // this.POCColArray.POC = this.adminCommonService.uniqueArrayObj(
-    //   colData.map(a => { const b = { label: a.POC, value: a.POC }; return b; }));
-    this.POCColArray.fName = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.fName, value: a.fName }; return b; }));
-    this.POCColArray.lName = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.lName, value: a.lName }; return b; }));
-    this.POCColArray.email = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.email, value: a.email }; return b; }));
+    this.POCColArray.FName = this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.FName, value: a.FName }; return b; }));
+    this.POCColArray.LName = this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.LName, value: a.LName }; return b; }));
+    this.POCColArray.EmailAddress = this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.EmailAddress, value: a.EmailAddress }; return b; }));
     this.POCColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-          // tslint:disable-next-line: align
-          value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
+          value: a.LastUpdated
         };
         return b;
       }));
     this.POCColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
+  }
+  /**
+   * Construct a method show the form to add new Point of Contact.
+   *
+   * @description
+   *
+   * This method is used to show the form to add new Point of Contact.
+   *
+   */
+  async showAddPOC() {
+    this.adminObject.isMainLoaderHidden = false;
+    this.pocForm.reset();
+    await this.loadPOCDropdown();
+    this.showeditPOC = false;
+    this.buttonLabel = 'Submit';
+    this.showaddPOC = true;
+    this.cmObject.isPOCFormSubmit = false;
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * Construct a method to load all the dropdown of Point of Contact form.
+   * @description
+   *
+   * This method will load the Point of Contact dropdown as per following sequences.
+   *  1. RefferalSource        - Get choice field data for `RefferalSource` from `ProjectContacts` list.
+   *  2. Relationship Strength - Get choice field data for `RelationshipStrength` from `ProjectContacts` list.
+   *  3. Project Contact Types - Get choice field data for `ProjectContactsType` from `ProjectContacts` list.
+   * @Note
+   *
+   * If `dropdown.POCRefferalSourceArray`,`dropdown.POCRelationshipArray` & `POCProjectContactTypes` is null
+   * then it will make a REST call to `ProjectContacts` list and iterate the result based on choice field to load the respective dropdown.
+   */
+  async loadPOCDropdown() {
+    if (!this.dropdown.POCRefferalSourceArray.length
+      || !this.dropdown.POCRelationshipArray.length
+      || !this.dropdown.POCProjectContactTypesArray.length) {
+      const sResults = await this.getPOCDropdownRecords();
+      if (sResults && sResults.length) {
+        const referalArray = sResults[0].retItems;
+        const relationshipArray = sResults[1].retItems;
+        const projectContactArray = sResults[2].retItems;
+        if (referalArray && referalArray.length) {
+          const tempArray = referalArray[0].Choices.results;
+          this.dropdown.POCRefferalSourceArray = [];
+          tempArray.forEach(element => {
+            this.dropdown.POCRefferalSourceArray.push({ label: element, value: element });
+          });
+        }
+        if (relationshipArray && relationshipArray.length) {
+          const tempArray = relationshipArray[0].Choices.results;
+          this.dropdown.POCRelationshipArray = [];
+          tempArray.forEach(element => {
+            this.dropdown.POCRelationshipArray.push({ label: element, value: element });
+          });
+        }
+        if (projectContactArray && projectContactArray.length) {
+          const tempArray = projectContactArray[0].Choices.results;
+          this.dropdown.POCProjectContactTypesArray = [];
+          tempArray.forEach(element => {
+            this.dropdown.POCProjectContactTypesArray.push({ label: element, value: element });
+          });
+        }
+      }
+    }
+  }
+  /**
+   * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
+   * This method will prepare the `Batch` request to get the data based on query.
+   * @description
+   *
+   * This method will load the Point of Contact dropdown as per following sequences.
+   *  1. RefferalSource        - Get choice field data for `RefferalSource` from `ProjectContacts` list.
+   *  2. Relationship Strength - Get choice field data for `RelationshipStrength` from `ProjectContacts` list.
+   *  3. Project Contact Types - Get choice field data for `ProjectContactsType` from `ProjectContacts` list.
+   *
+   * @return An Array of the response in `JSON` format in above sequence.
+   */
+  async getPOCDropdownRecords() {
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    // Get RefferalSource from ProjectContacts list ##1
+    const reffereSourceGet = Object.assign({}, options);
+    const reffereSourceFilter = Object.assign({}, this.adminConstants.QUERY.GET_CHOICEFIELD);
+    reffereSourceFilter.filter = reffereSourceFilter.filter.replace(/{{choiceField}}/gi,
+      this.adminConstants.CHOICE_FIELD_NAME.POC_REFERRAL_SOURCE);
+    reffereSourceGet.url = this.spServices.getChoiceFieldUrl(this.constants.listNames.ProjectContacts.name,
+      reffereSourceFilter);
+    reffereSourceGet.type = 'GET';
+    reffereSourceGet.listName = this.constants.listNames.ProjectContacts.name;
+    batchURL.push(reffereSourceGet);
+
+    // Get Relationship Strength from ProjectContacts list ##2
+    const relationShipGet = Object.assign({}, options);
+    const relationShipFilter = Object.assign({}, this.adminConstants.QUERY.GET_CHOICEFIELD);
+    relationShipFilter.filter = relationShipFilter.filter.replace(/{{choiceField}}/gi,
+      this.adminConstants.CHOICE_FIELD_NAME.POC_RELATIONSHIP_STRENGTH);
+    relationShipGet.url = this.spServices.getChoiceFieldUrl(this.constants.listNames.ProjectContacts.name,
+      relationShipFilter);
+    relationShipGet.type = 'GET';
+    relationShipGet.listName = this.constants.listNames.ProjectContacts.name;
+    batchURL.push(relationShipGet);
+
+    // Get  Project Contact Types from ProjectContacts list ##3
+    const projectContactsGet = Object.assign({}, options);
+    const projectContactsFilter = Object.assign({}, this.adminConstants.QUERY.GET_CHOICEFIELD);
+    projectContactsFilter.filter = projectContactsFilter.filter.replace(/{{choiceField}}/gi,
+      this.adminConstants.CHOICE_FIELD_NAME.POC_PROJECT_CONTACTS_TYPE);
+    projectContactsGet.url = this.spServices.getChoiceFieldUrl(this.constants.listNames.ProjectContacts.name,
+      projectContactsFilter);
+    projectContactsGet.type = 'GET';
+    projectContactsGet.listName = this.constants.listNames.ProjectContacts.name;
+    batchURL.push(projectContactsGet);
+    const sResults = await this.spServices.executeBatch(batchURL);
+    return sResults;
+  }
+  /**
+   * Construct a method to store current selected row data into variable `currPOCObj`.
+   *
+   * @description
+   *
+   * This method will trigger when user click on menu option in the table.
+   * It will store the current selected row value into the class variable `currPOCObj`.
+   * It will dynamically add the submenu in the table.
+   */
+  pocMenu(data) {
+    this.currPOCObj = data;
+    this.pocItems = [
+      { label: 'Edit', command: (e) => this.showEditPOC() },
+      { label: 'Delete', command: (e) => this.deletePOC() }];
+  }
+  /**
+   * Construct a method to save or update the point of contact into `ProjectContacts` list.
+   * It will construct a REST-API Call to create item or update item into `ProjectContacts` list.
+   *
+   * @description
+   *
+   * This method is used to validate and save the point of contact item into `ProjectContacts` list.
+   *
+   * @Note
+   *
+   * 1. Duplicate email id is not allowed.
+   *
+   */
+  async savePOC() {
+    if (this.pocForm.valid) {
+      console.log(this.pocForm.value);
+      if (this.POCRows.some(a =>
+        a.EmailAddress.toLowerCase() === this.pocForm.value.email.toLowerCase())) {
+        this.messageService.add({
+          key: 'adminCustom', severity: 'error',
+          summary: 'Error Message', detail: 'This email id is already exist. Please enter another email id.'
+        });
+        return false;
+      }
+      // write the save logic using rest api.
+      this.adminObject.isMainLoaderHidden = false;
+      const pocData = await this.getPOCData();
+      if (!this.showeditPOC) {
+        const results = await this.spServices.createItem(this.constants.listNames.ProjectContacts.name,
+          pocData, this.constants.listNames.ProjectContacts.type);
+        if (!results.hasOwnProperty('hasError') && !results.hasError) {
+          this.messageService.add({
+            key: 'adminCustom', severity: 'success', summary: 'Success Message',
+            detail: 'The Poc ' + this.pocForm.value.fname + ' ' + this.pocForm.value.lname + ' is created successfully.'
+          });
+          await this.loadRecentPOCRecords(results.ID, this.showeditPOC);
+        }
+      }
+      if (this.showeditPOC) {
+        const results = await this.spServices.updateItem(this.constants.listNames.ProjectContacts.name, this.currPOCObj.ID,
+          pocData, this.constants.listNames.ProjectContacts.type);
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success',
+          summary: 'Success Message', detail: 'The Poc ' + this.currPOCObj.FullName + ' is updated successfully.'
+        });
+        await this.loadRecentPOCRecords(this.currPOCObj.ID, this.showeditPOC);
+      }
+      this.showaddPOC = false;
+      this.adminObject.isMainLoaderHidden = true;
+    } else {
+      this.cmObject.isPOCFormSubmit = true;
+    }
+  }
+  /**
+   * Construct a method to create an object of `ProjectContacts`.
+   *
+   * @description
+   *
+   * This method is used to create an object of `ProjectContacts`.
+   *
+   * @return It will return an object of `ProjectContacts`.
+   */
+  getPOCData() {
+    const data: any = {
+      FName: this.pocForm.value.fname,
+      LName: this.pocForm.value.lname,
+      Designation: this.pocForm.value.designation,
+      EmailAddress: this.pocForm.value.email,
+      ReferralSource: this.pocForm.value.referralSource,
+      Status: this.adminConstants.LOGICAL_FIELD.ACTIVE,
+      ProjectContactsType: this.pocForm.value.contactsType,
+      ClientLegalEntity: this.currClientObj.ClientLegalEntity,
+      Title: this.currClientObj.ClientLegalEntity,
+      FullName: this.pocForm.value.fname + ' ' + this.pocForm.value.lname
+    };
+    data.Phone = this.pocForm.value.phone ? this.pocForm.value.phone : '';
+    const ap1 = this.pocForm.value.address1 ? this.pocForm.value.address1 : '';
+    const ap2 = this.pocForm.value.address2 ? this.pocForm.value.address2 : '';
+    const ap3 = this.pocForm.value.address3 ? this.pocForm.value.address3 : '';
+    const ap4 = this.pocForm.value.address4 ? this.pocForm.value.address4 : '';
+    data.Address = ap1 + ';#' + ap2 + ';#' + ap3 + ';#' + ap4;
+    data.Department = this.pocForm.value.department ? this.pocForm.value.department : '';
+    data.RelationshipStrength = this.pocForm.value.relationshipStrength ? this.pocForm.value.relationshipStrength : '';
+    data.EngagementPlan = this.pocForm.value.engagementPlan ? this.pocForm.value.engagementPlan : '';
+    data.Comments = this.pocForm.value.comments ? this.pocForm.value.comments : '';
+    return data;
+  }
+  /**
+   * Construct a method to load the newly created item into the table without refreshing the whole page.
+   * @param item ID the item which is created or updated recently.
+   *
+   * @param isUpdate Pass the isUpdate as true/false for update and create item respectively.
+   *
+   * @description
+   *
+   * This method will load newly created item or updated item as first row in the table;
+   *  Pass `false` to add the new created item at position 0 in the array.
+   *  Pass `true` to replace the item in the array
+   */
+  async loadRecentPOCRecords(ID, isUpdate) {
+    const pocGet = Object.assign({}, this.adminConstants.QUERY.GET_POC_BY_ID);
+    pocGet.filter = pocGet.filter.replace(/{{active}}/gi,
+      this.adminConstants.LOGICAL_FIELD.ACTIVE).replace(/{{Id}}/gi, ID);
+    const result = await this.spServices.readItems(this.constants.listNames.ProjectContacts.name, pocGet);
+    if (result && result.length) {
+      const item = result[0];
+      const obj = Object.assign({}, this.adminObject.pocObj);
+      obj.ID = item.ID;
+      obj.Title = item.Title ? item.Title : '';
+      obj.ClientLegalEntity = item.ClientLegalEntity;
+      obj.FName = item.FName;
+      obj.LName = item.LName;
+      obj.EmailAddress = item.EmailAddress;
+      obj.Designation = item.Designation;
+      obj.Phone = item.Phone ? item.Phone : '';
+      obj.Address = obj.Address ? obj.Address : '';
+      obj.FullName = item.FullName ? item.FullName : '';
+      obj.Department = item.Department ? item.Department : '';
+      obj.ReferralSource = item.ReferralSource;
+      obj.Status = item.Status;
+      obj.RelationshipStrength = item.RelationshipStrength ? item.RelationshipStrength : '';
+      obj.EngagementPlan = item.EngagementPlan ? item.EngagementPlan : '';
+      obj.Comments = item.Comments ? item.Comments : '';
+      obj.ProjectContactsType = item.ProjectContactsType;
+      obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
+      obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+      obj.LastUpdatedBy = item.Editor.Title;
+      // If Create - add the new created item at position 0 in the array.
+      // If Edit - Replace the item in the array
+      if (isUpdate) {
+        const index = this.POCRows.findIndex(x => x.ID === obj.ID);
+        this.POCRows.splice(index, 1, obj);
+      } else {
+        this.POCRows.unshift(obj);
+      }
+    }
+  }
+  /**
+   * Construct a method to show the edit form to edit the point of contacts.
+   *
+   * @description
+   *
+   * This method is used to popup the predefined filled form to edit the point of contacts.
+   * If value is present in the dropdown array then it will simply load the dropdown.
+   * If value is not present in the dropdown array then it will make REST call to get the data.
+   *
+   */
+  async showEditPOC() {
+    this.cmObject.isPOCFormSubmit = false;
+    this.buttonLabel = 'Update';
+    this.adminObject.isMainLoaderHidden = false;
+    if (!this.dropdown.POCProjectContactTypesArray.length
+      || !this.dropdown.POCRefferalSourceArray.length
+      || !this.dropdown.POCRelationshipArray.length) {
+      await this.loadPOCDropdown();
+    }
+    this.pocForm.patchValue({
+      fname: this.currPOCObj.FName,
+      lname: this.currPOCObj.LName,
+      designation: this.currPOCObj.Designation ? this.currPOCObj.Designation : '',
+      email: this.currPOCObj.EmailAddress,
+      phone: this.currPOCObj.Phone ? this.currPOCObj.Phone : '',
+      address1: this.currPOCObj.Address ? this.currPOCObj.Address.split(';#')[0] : '',
+      address2: this.currPOCObj.Address ? this.currPOCObj.Address.split(';#')[1] : '',
+      address3: this.currPOCObj.Address ? this.currPOCObj.Address.split(';#')[2] : '',
+      address4: this.currPOCObj.Address ? this.currPOCObj.Address.split(';#')[3] : '',
+      department: this.currPOCObj.Department ? this.currPOCObj.Department : '',
+      referralSource: this.currPOCObj.ReferralSource ? this.currPOCObj.ReferralSource : '',
+      status: this.currPOCObj.Status ? this.currPOCObj.Status : '',
+      relationshipStrength: this.currPOCObj.RelationshipStrength ? this.currPOCObj.RelationshipStrength : '',
+      engagementPlan: this.currPOCObj.EngagementPlan ? this.currPOCObj.EngagementPlan : '',
+      comments: this.currPOCObj.Comments ? this.currPOCObj.Comments : '',
+      contactsType: this.currPOCObj.ProjectContactsType ? this.currPOCObj.ProjectContactsType : '',
+    });
+    this.showaddPOC = true;
+    this.showeditPOC = true;
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * Construct a method to remove the item from table.
+   *
+   * @description
+   *
+   * This method mark the point of Contact as `Status='Inactive'` in `ProjectContact` list so that it is not visible in table.
+   *
+   */
+  deletePOC() {
+    console.log(this.currPOCObj);
+    this.confirmationService.confirm({
+      message: 'Do you want to delete this record?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-info-circle',
+      key: 'confirm',
+      accept: () => {
+        const updateData = {
+          Status: this.adminConstants.LOGICAL_FIELD.INACTIVE
+        };
+        this.confirmUpdate(this.currPOCObj, updateData, this.constants.listNames.ProjectContacts.name,
+          this.constants.listNames.ProjectContacts.type, this.adminConstants.DELETE_LIST_ITEM.POINT_OF_CONTACT);
+      },
+    });
   }
   POFilters(colData) {
     this.POColArray.PoName = this.adminCommonService.uniqueArrayObj(
@@ -972,52 +1834,16 @@ export class ClientMasterdataComponent implements OnInit {
     this.auditHistorySelectedArray.Details = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
   }
-  openMenuPopup(data) {
-    this.items = [
-      { label: 'Edit', command: (e) => this.showEditCLientModal(data) },
-      { label: 'Delete' },
-      { label: 'Sub-Division Details', command: (e) => this.showSubDivision(data) },
-      { label: 'Point of Contact', command: (e) => this.showPOC(data) },
-      { label: 'Purchase Order', command: (e) => this.showPO(data) }
-    ];
-  }
-  subDivisionMenu(data) {
-    this.items1 = [{ label: 'Edit', command: (e) => this.showEditSubDivision(data) },
-    { label: 'Delete' }];
-  }
-  pocMenu(data) {
-    this.items1 = [{ label: 'Edit', command: (e) => this.showEditPOC(data) },
-    { label: 'Delete' }];
-  }
+
+
+
 
   poMenu(data) {
-    this.items1 = [{ label: 'Change Budget', command: (e) => this.showchangeBudgetModal(data) },
+    this.subDivisionItems = [{ label: 'Change Budget', command: (e) => this.showchangeBudgetModal(data) },
     { label: 'Edit', command: (e) => this.showEditPOModal(data) },
     { label: 'Delete' }];
   }
 
-
-
-  saveSubdivision(subDivisionData) {
-    if (subDivisionData.valid) {
-      console.log(subDivisionData.value);
-    } else {
-      this.cmObject.isSubDivisionFormSubmit = true;
-    }
-  }
-
-  savePOC(pocData) {
-    if (pocData.valid) {
-      console.log(pocData.value);
-      this.POCRows.forEach((e) => {
-        if (e.email === pocData.controls.email.value) {
-          console.log('Email Id Must be Unique');
-        }
-      });
-    } else {
-      this.cmObject.isPOCFormSubmit = true;
-    }
-  }
 
   savePO(poData) {
     if (poData.valid) {
@@ -1136,109 +1962,16 @@ export class ClientMasterdataComponent implements OnInit {
 
 
 
-  showEditCLientModal(data) {
-    this.cmObject.isClientFormSubmit = false;
-    this.showEditClient = true;
-    this.buttonLabel = 'Update';
-    this.addClient.controls.name.disable();
-    this.addClient.controls.acronym.disable();
-    this.addClient.controls.currency.disable();
-    this.addClient.controls.billingEntry.disable();
-    this.addClient.controls.timeZone.disable();
-    this.addClient.patchValue({
-      name: 'Test',
-      acronym: 'test',
-      group: 'option1',
-      distributionList: 'Test',
-      invoiceName: 'Invoice',
-      realization: 'Test',
-      market: 'option1',
-      billingEntry: 'option1',
-      poRequired: 'option1',
-      timeZone: 'option1',
-      cmLevel1: ['option1'],
-      cmLevel2: 'option1',
-      deliveryLevel1: ['option1', 'option2'],
-      deliveryLevel2: 'option1',
-      currency: '',
-      APEmail: 'test',
-      address1: 'hfgsdjgfjsg',
-      address2: 'sdgfasgd',
-      address3: '',
-      address4: '',
-      notes: 'Test',
-      bucket: 'option1'
-    });
-    this.showaddClientModal = true;
-  }
 
-  showSubDivision(data) {
-    this.showSubDivisionDetails = true;
-  }
 
-  showPOC(data) {
-    this.showPointofContact = true;
-  }
 
-  showPO(data) {
+  showPO() {
     this.showPurchaseOrder = true;
   }
 
-  showAddSubDivision() {
-    this.cmObject.isSubDivisionFormSubmit = false;
-    this.subDivisionform.reset();
-    this.showeditSubDivision = false;
-    this.buttonLabel = 'Submit';
-    this.showaddSubDivision = true;
-    this.subDivisionform.controls.subDivision_Name.enable();
-  }
 
-  showEditSubDivision(data) {
-    this.cmObject.isSubDivisionFormSubmit = false;
-    this.showeditSubDivision = true;
-    this.buttonLabel = 'Update';
-    this.showaddSubDivision = true;
-    this.subDivisionform.controls.subDivision_Name.disable();
-    this.subDivisionform.patchValue({
-      subDivision_Name: 'Test',
-      distributionList: 'Test',
-      cmLevel1: ['option1', 'option2'],
-      deliveryLevel1: ['option1'],
-    });
-  }
 
-  showAddPOC() {
-    this.pocForm.reset();
-    this.showeditPOC = false;
-    this.buttonLabel = 'Submit';
-    this.showaddPOC = true;
-    this.cmObject.isPOCFormSubmit = false;
-  }
 
-  showEditPOC(data) {
-    this.cmObject.isPOCFormSubmit = false;
-    this.showeditPOC = true;
-    this.buttonLabel = 'Update';
-    this.showaddPOC = true;
-    this.pocForm.patchValue({
-      fname: 'Test',
-      lname: 'Test',
-      designation: 'Test',
-      email: 'Test',
-      phone: 'Test',
-      address1: 'Test',
-      address2: 'Test',
-      address3: 'Test',
-      address4: 'Test',
-      department: 'Test',
-      referralSource: 'option1',
-      status: 'option1',
-      relationshipStrength: 'Test',
-      engagementPlan: 'Test',
-      comments: 'Test',
-      contactsType: 'option2',
-    });
-  }
 
   showAddPO() {
     this.editPo = true;

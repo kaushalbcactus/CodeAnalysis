@@ -148,9 +148,43 @@ export class AdminObjectService {
     Bucket: '',
     IsCentrallyAllocated: '',
     IsActive: '',
-    CMLevel1: '',
+    CMLevel1: [],
     CMLevel2: '',
-    DeliveryLevel1: '',
+    DeliveryLevel1: [],
     DeliveryLevel2: '',
+  };
+  public subDivisionObj = {
+    ID: 0,
+    SubDivision: '',
+    LastUpdated: new Date(),
+    LastUpdatedBy: '',
+    LastUpdatedFormat: '',
+    ClientLegalEntity: '',
+    CMLevel1: [],
+    DeliveryLevel1: [],
+    DistributionList: '',
+    IsActive: ''
+  };
+  public pocObj = {
+    ID: 0,
+    Title: '',
+    FName: '',
+    LName: '',
+    EmailAddress: '',
+    LastUpdated: new Date(),
+    LastUpdatedBy: '',
+    LastUpdatedFormat: '',
+    ClientLegalEntity: '',
+    Designation: '',
+    Phone: '',
+    Address: '',
+    FullName: '',
+    Department: '',
+    ReferralSource: '',
+    Status: '',
+    RelationshipStrength: '',
+    EngagementPlan: '',
+    Comments: '',
+    ProjectContactsType: ''
   };
 }
