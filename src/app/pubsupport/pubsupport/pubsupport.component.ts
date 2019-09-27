@@ -9,7 +9,7 @@ import { GlobalService } from '../../Services/global.service';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { CreateConferenceComponent } from './create-conference/create-conference.component';
 import { CreateJournalComponent } from './create-journal/create-journal.component';
-import { DatePipe } from '@angular/common';
+import { DatePipe, TitleCasePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { AddAuthorComponent } from './add-author/add-author.component';
 import { AuthorDetailsComponent } from './author-details/author-details.component';
@@ -33,7 +33,8 @@ export class PubsupportComponent implements OnInit {
         private dialogService: DialogService,
         private datePipe: DatePipe,
         private confirmationService: ConfirmationService,
-        private componentFactoryResolver: ComponentFactoryResolver
+        private componentFactoryResolver: ComponentFactoryResolver,
+        private titlecasePipe: TitleCasePipe
     ) {
 
         this.router.routeReuseStrategy.shouldReuseRoute = () => {
@@ -531,7 +532,7 @@ export class PubsupportComponent implements OnInit {
             case 'presented':
             case 'published': {
                 this.items = [
-                    { label: 'Your document is Published.' }
+                    { label: 'Your document is ' + this.titlecasePipe.transform(pubSupportSts) + '.' }
                 ];
                 break;
             }
