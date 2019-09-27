@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, HostListener} from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -30,7 +30,7 @@ export class SendToClientComponent implements OnInit {
     { field: 'Milestone', header: 'Milestone', visibility: true },
     { field: 'PreviousTaskUser', header: 'Previous Task Owner', visibility: true },
     { field: 'PreviousTaskStatus', header: 'Previous Task Status', visibility: true },
-    { field: 'DueDateFormat', header: 'Due Date', visibility: false}];
+    { field: 'DueDateFormat', header: 'Due Date', visibility: false }];
   filterColumns: any[] = [
     { field: 'ProjectCode' },
     { field: 'ClientLegalEntity' },
@@ -345,7 +345,7 @@ export class SendToClientComponent implements OnInit {
       let counter = 0;
       for (const taskItem of tempSendToClientArray) {
         const arrRes = arrResults[counter];
-        counter = counter + 1;
+
         // tslint:disable-next-line:only-arrow-functions
         const prevTask = arrRes.filter((previousTaskElement) => {
           return previousTaskElement.Title === taskItem.PreviousTask;
@@ -354,6 +354,7 @@ export class SendToClientComponent implements OnInit {
         const nextTask = arrRes.filter((nextTaskElement) => {
           return nextTaskElement.Title === taskItem.NextTasks;
         });
+        counter++;
         if (prevTask.length) {
           this.scArrays.previousTaskArray.push(prevTask[0]);
           taskItem.PreviousTaskStatus = prevTask[0].Status;
@@ -411,26 +412,26 @@ export class SendToClientComponent implements OnInit {
     }
   }
   @HostListener('document:click', ['$event'])
-    clickout(event) {
-      if (event.target.className === "pi pi-ellipsis-v") {
-        if (this.tempClick) {
-          this.tempClick.style.display = "none";
-          if(this.tempClick !== event.target.parentElement.children[0].children[0]) {
-            this.tempClick = event.target.parentElement.children[0].children[0];
-            this.tempClick.style.display = "";
-          } else {
-            this.tempClick = undefined;
-          }
-        } else {
+  clickout(event) {
+    if (event.target.className === "pi pi-ellipsis-v") {
+      if (this.tempClick) {
+        this.tempClick.style.display = "none";
+        if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
           this.tempClick = event.target.parentElement.children[0].children[0];
           this.tempClick.style.display = "";
+        } else {
+          this.tempClick = undefined;
         }
-  
       } else {
-        if (this.tempClick) {
-          this.tempClick.style.display = "none";
-          this.tempClick =  undefined;
-        }
+        this.tempClick = event.target.parentElement.children[0].children[0];
+        this.tempClick.style.display = "";
+      }
+
+    } else {
+      if (this.tempClick) {
+        this.tempClick.style.display = "none";
+        this.tempClick = undefined;
       }
     }
+  }
 }
