@@ -16,6 +16,7 @@ import { MessageService } from 'primeng/api';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { LoadingScreenComponent } from './loader/loading-screen/loading-screen.component';
 import { MyHttpInterceptor } from './interceptor/my-http-interceptor';
+import { ErrorInterceptor } from './interceptor/error-interceptor';
 
 
 @NgModule({
@@ -38,11 +39,8 @@ import { MyHttpInterceptor } from './interceptor/my-http-interceptor';
     LoadingScreenComponent,
   ],
   providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: MyHttpInterceptor,
-      multi: true
-    }
+    { provide: HTTP_INTERCEPTORS, useClass: MyHttpInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
   bootstrap: [AppComponent]
 })

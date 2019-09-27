@@ -12,6 +12,9 @@ export class MyHttpInterceptor implements HttpInterceptor {
     }
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+        request = request.clone({
+            withCredentials: true
+        })
         if (this.activeRequests === 0) {
             this.loadingScreenService.startLoading();
         }
