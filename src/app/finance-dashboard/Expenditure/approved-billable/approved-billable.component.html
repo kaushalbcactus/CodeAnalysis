@@ -244,6 +244,18 @@
                 <div class="ui-g-6" style="padding-left:0">
                     <p-dropdown resetFilterOnHide="true" [options]="poNames" filter="true" formControlName="PONumber"
                         placeholder="Select PO Number" optionLabel="Number" (onChange)="poChange($event)">
+                        <ng-template let-item pTemplate="selectedItem">
+                            <span style="vertical-align:middle">{{item.label}}
+                                {{item.value.Name ? ' -- '+ item.value.Name:'' }}
+                            </span>
+                        </ng-template>
+                        <ng-template let-item pTemplate="item">
+                            <div class="ui-helper-clearfix" style="position: relative;">
+                                <div style="font-size:14px;float: left;margin-top:4px;width: 300px;line-height: 20px;">
+                                    {{item.label}} {{item.value.Name ? ' -- '+ item.value.Name:'' }}
+                                </div>
+                            </div>
+                        </ng-template>
                     </p-dropdown>
                     <div *ngIf="formSubmit.isSubmit && isValidScheduleOOPInvoiceForm.PONumber.errors">
                         <div *ngIf="isValidScheduleOOPInvoiceForm.PONumber.errors.required" style="color:red;">Please

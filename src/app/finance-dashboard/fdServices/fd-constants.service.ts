@@ -47,7 +47,7 @@ export class FdConstantsService {
         },
         projectPO: {
             select: "ID,Title,Name,Amount,ClientLegalEntity,Status,POExpiryDate,Currency,AmountRevenue,TotalLinked,RevenueLinked,TotalScheduled,ScheduledRevenue,Number,ScheduledOOP,InvoicedOOP, InvoicedRevenue, AmountOOP, POCLookup, OOPLinked,TotalInvoiced",
-            filter: "Status ne 'Archived' and POCategory ne 'Client PO Pending'",
+            filter: "Status ne 'Archived' and Status ne 'Closed' and POCategory ne 'Client PO Pending'",
             // orderby: 'ProjectCode ',
             top: 4500
         },
