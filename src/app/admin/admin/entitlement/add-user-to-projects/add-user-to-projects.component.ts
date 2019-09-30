@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ApplicationRef, NgZone } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
+import { PlatformLocation } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-user-to-projects',
@@ -41,6 +43,10 @@ export class AddUserToProjectsComponent implements OnInit {
    * @param adminConstants This is instance referance of `AdminConstantService` component.
    * @param constants This is instance referance of `ConstantsService` component.
    * @param adminCommon This is instance referance of `AdminCommonService` component.
+   * @param platformLocation This is instance referance of `PlatformLocation` component.
+   * @param router This is instance referance of `Router` component.
+   * @param applicationRef This is instance referance of `ApplicationRef` component.
+   * @param zone This is instance referance of `NgZone` component.
    */
   constructor(
     private messageService: MessageService,
@@ -48,8 +54,21 @@ export class AddUserToProjectsComponent implements OnInit {
     private adminObject: AdminObjectService,
     private adminConstants: AdminConstantService,
     private constants: ConstantsService,
-    private adminCommon: AdminCommonService
-  ) { }
+    private adminCommon: AdminCommonService,
+    private platformLocation: PlatformLocation,
+    private router: Router,
+    private applicationRef: ApplicationRef,
+    private zone: NgZone
+  ) {
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+    router.events.subscribe((uri) => {
+      zone.run(() => applicationRef.tick());
+    });
+  }
   /**
    * Construct a method to initialize all the data.
    *
@@ -291,7 +310,7 @@ export class AddUserToProjectsComponent implements OnInit {
           } else {
             element.IsUserExistInCMLevel1 = false;
           }
-           // remove the current user if present in DeliveryLevel1.
+          // remove the current user if present in DeliveryLevel1.
           const delIndex = element.DeliveryLevel1IDArray.indexOf(this.selectedUser.UserName.ID);
           if (delIndex > -1) {
             element.IsUserExistInDeliveryLevel1 = true;
@@ -312,14 +331,14 @@ export class AddUserToProjectsComponent implements OnInit {
       });
       console.log(this.selectedProject);
       if (batchURL && batchURL.length) {
-          const updateResult = await this.spServices.executeBatch(batchURL);
-          this.messageService.add({
-            key: 'adminCustom', severity: 'success', sticky: true,
-            summary: 'Success Message', detail: 'The user has been added into the selected Projects.'
-          });
-          setTimeout(() => {
-            this.clientChange();
-          }, 500);
+        const updateResult = await this.spServices.executeBatch(batchURL);
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success', sticky: true,
+          summary: 'Success Message', detail: 'The user has been added into the selected Projects.'
+        });
+        setTimeout(() => {
+          this.clientChange();
+        }, 500);
       }
     }
   }

@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone, ApplicationRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation } from '@angular/common';
 import { PeoplePickerUser } from '../../peoplePickerModel/people-picker.response';
 import { PeoplePickerQuery } from '../../peoplePickerModel/people-picker.query';
 import { AdminCommonService } from '../../services/admin-common.service';
@@ -9,6 +9,7 @@ import { AdminConstantService } from '../../services/admin-constant.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { MessageService } from 'primeng/api';
 import { AdminObjectService } from '../../services/admin-object.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
@@ -138,7 +139,10 @@ export class UserProfileComponent implements OnInit {
    * @param spServices This is instance referance of `SPOperationService` component.
    * @param messageService This is instance referance of `MessageService` component.
    * @param adminObject This is instance referance of `AdminObjectService` component.
-   *
+   * @param platformLocation This is instance referance of `PlatformLocation` component.
+   * @param router This is instance referance of `Router` component.
+   * @param applicationRef This is instance referance of `ApplicationRef` component.
+   * @param zone This is instance referance of `NgZone` component.
    */
   constructor(
     private datePipe: DatePipe,
@@ -148,8 +152,20 @@ export class UserProfileComponent implements OnInit {
     private adminConstants: AdminConstantService,
     private spServices: SPOperationService,
     private messageService: MessageService,
-    private adminObject: AdminObjectService
+    private adminObject: AdminObjectService,
+    private platformLocation: PlatformLocation,
+    private router: Router,
+    private zone: NgZone,
+    private applicationRef: ApplicationRef
   ) {
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+    router.events.subscribe((uri) => {
+      zone.run(() => applicationRef.tick());
+    });
     this.addUser = frmbuilder.group({
       username: ['', Validators.required],
       account: ['', null],
@@ -1134,10 +1150,11 @@ export class UserProfileComponent implements OnInit {
       userObj.DisplayText = item.Manager.Title;
       userObj.DateofExit = item.DateofExit;
       // If Create - add the new created item at position 0 in the array.
-      // If Edit - Replace the item in the array
+      // If Edit - Replace the item in the array and position at 0 in the array.
       if (isUpdate) {
         const index = this.userProfileData.findIndex(x => x.ID === userObj.ID);
-        this.userProfileData.splice(index, 1, userObj);
+        this.userProfileData.splice(index, 1);
+        this.userProfileData.unshift(userObj);
       } else {
         this.userProfileData.unshift(userObj);
       }
@@ -1147,6 +1164,7 @@ export class UserProfileComponent implements OnInit {
         this.userProfileData.splice(index, 1);
       }
     }
+    this.colFilters(this.userProfileData);
   }
   /**
    * Construct a method to execute a batch request for adding the user to Group`SyncUserToUserInformationList`

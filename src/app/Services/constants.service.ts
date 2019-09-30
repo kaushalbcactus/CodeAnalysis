@@ -280,6 +280,10 @@ export class ConstantsService {
     ClientGroup: {
       name: 'ClientGroup',
       type: 'SP.Data.ClientGroupListItem'
+    },
+    POBudgetBreakup: {
+      name: 'POBudgetBreakup',
+      type: 'SP.Data.POBudgetBreakupListItem'
     }
   };
 

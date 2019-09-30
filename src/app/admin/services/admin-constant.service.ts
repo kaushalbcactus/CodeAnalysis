@@ -38,19 +38,19 @@ export class AdminConstantService {
     },
     GET_ACCOUNT: {
       select: 'ID,Title,Acronym,ListName,Market,ClientGroup',
-      orderby: 'Title',
+      orderby: 'Title asc',
       top: 4900
     },
     GET_DELIVERABLE: {
       select: 'ID,Title,Acronym,Active',
       filter: 'Active eq \'{{isActive}}\'',
-      orderby: 'Title',
+      orderby: 'Title asc',
       top: 4900
     },
     GET_TA: {
       select: 'ID,Title',
       filter: 'Active eq \'{{isActive}}\'',
-      orderby: 'Title',
+      orderby: 'Title asc',
       top: 4900
     },
     GET_USER_INFORMATION: {
@@ -87,17 +87,8 @@ export class AdminConstantService {
       filter: 'IsActive eq \'{{isActive}}\' and ID eq \'{{Id}}\''
     },
     GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME: {
-      select: 'ID,Title,Account/ID,Account/Title,Bucket,Categories,Created,DateofExit,DateOfJoining,DeliverableExclusion/ID,'
-        + 'DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,Designation,GoLiveDate,InCapacity,'
-        + 'IsActive,IsLeader,Manager/ID,Manager/Title,Manager/EMail,ManagerEffectiveDate,MaxHrs,Modified,Pooled,Practice_x0020_Area,'
-        + 'PracticeAreaEffectiveDate,PrimarySkill,PrimarySkillEffectiveDate,Ready_x0020_To,Role,SkillLevel/ID,SkillLevel/Title,'
-        + 'SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title,'
-        + 'TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,'
-        + 'Editor/ID,Editor/Title',
-      expand: 'Account/ID,Account/Title,DeliverableExclusion/ID,DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,'
-        + 'Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,'
-        + 'Tasks/Title,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,'
-        + 'Editor/ID,Editor/Title',
+      select: 'ID,Title,Role,UserName/ID,UserName/Title,UserName/EMail',
+      expand: 'UserName/ID,UserName/Title,UserName/EMail',
       filter: 'IsActive eq \'{{isActive}}\'',
       top: 4900,
       orderby: 'UserName/Title asc'
@@ -211,7 +202,7 @@ export class AdminConstantService {
       select: 'ID,Title,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DistributionList,IsActive,'
         + 'Modified,Editor/ID,Editor/Title',
       expand: 'CMLevel1/ID,CMLevel1/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,Editor/ID,Editor/Title',
-      filter: 'IsActive eq \'{{isActive}}\'',
+      filter: 'IsActive eq \'{{isActive}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\'',
       orderby: 'Modified desc',
       top: 4900
     },
@@ -219,14 +210,14 @@ export class AdminConstantService {
       select: 'ID,Title,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DistributionList,IsActive,'
         + 'Modified,Editor/ID,Editor/Title',
       expand: 'CMLevel1/ID,CMLevel1/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,Editor/ID,Editor/Title',
-      filter: 'IsActive eq \'{{isActive}}\' and ID eq \'{{Id}}\'',
+      filter: 'IsActive eq \'{{isActive}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\' and ID eq \'{{Id}}\'',
       orderby: 'Modified desc',
       top: 4900
     },
     GET_POC_BY_ACTIVE: {
       select: 'ID,Title,ClientLegalEntity,FName,LName,EmailAddress,Designation,Phone,Address,FullName,Department,ReferralSource,Status,'
         + 'RelationshipStrength,EngagementPlan,Comments,ProjectContactsType,Modified,Editor/ID,Editor/Title',
-      filter: 'Status eq \'{{active}}\'',
+      filter: 'Status eq \'{{active}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\'',
       expand: 'Editor/ID,Editor/Title',
       orderby: 'Modified desc',
       top: 4900
@@ -234,9 +225,41 @@ export class AdminConstantService {
     GET_POC_BY_ID: {
       select: 'ID,Title,ClientLegalEntity,FName,LName,EmailAddress,Designation,Phone,Address,FullName,Department,ReferralSource,Status,'
         + 'RelationshipStrength,EngagementPlan,Comments,ProjectContactsType,Modified,Editor/ID,Editor/Title',
-      filter: 'Status eq \'{{active}}\' and ID eq \'{{Id}}\'',
+      filter: 'Status eq \'{{active}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\' and ID eq \'{{Id}}\'',
       expand: 'Editor/ID,Editor/Title',
       orderby: 'Modified desc',
+      top: 4900
+    },
+    GET_POC_ORDER_BY_Title: {
+      select: 'ID,FName,LName,FullName',
+      filter: 'Status eq \'{{active}}\'',
+      orderby: 'FName,LName asc',
+      top: 4900
+    },
+    GET_PO_BY_ACTIVE: {
+      select: 'ID,Title,Amount,AmountOOP,AmountRevenue,BillOOPFromRevenue,BuyingEntity,ClientLegalEntity,Currency,InvoicedOOP,'
+        + 'InvoicedRevenue,InvoicedTax,Link,Modified,Molecule,Name,Number,OOPLinked,PO_x0020_Geography,POCategory,POCLookup,'
+        + 'POExpiryDate,PoProposalID,RevenueLinked,ScheduledOOP,ScheduledRevenue,SOWLookup,Status,TA,TaxLinked,TotalInvoiced,'
+        + 'TotalLinked,TotalScheduled,AmountTax,CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title',
+      filter: 'Status eq \'{{active}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\'',
+      expand: 'CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title',
+      orderby: 'Modified desc',
+      top: 4900
+    },
+    GET_PO_BY_ID: {
+      select: 'ID,Title,Amount,AmountOOP,AmountRevenue,BillOOPFromRevenue,BuyingEntity,ClientLegalEntity,Currency,InvoicedOOP,'
+        + 'InvoicedRevenue,InvoicedTax,Link,Modified,Molecule,Name,Number,OOPLinked,PO_x0020_Geography,POCategory,POCLookup,'
+        + 'POExpiryDate,PoProposalID,RevenueLinked,ScheduledOOP,ScheduledRevenue,SOWLookup,Status,TA,TaxLinked,TotalInvoiced,'
+        + 'TotalLinked,TotalScheduled,AmountTax,CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title',
+      filter: 'Status eq \'{{active}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\' and  ID eq \'{{Id}}\'',
+      expand: 'CMLevel2/ID,CMLevel2/Title,Editor/ID,Editor/Title',
+      orderby: 'Modified desc',
+      top: 4900
+    },
+    GET_MOLECULES_ORDER_BY_TITLE: {
+      select: 'ID,Title,IsActive',
+      filter: 'IsActive eq \'{{isActive}}\'',
+      orderby: 'Title asc',
       top: 4900
     }
   };
@@ -255,11 +278,15 @@ export class AdminConstantService {
     POC_STATUS: 'Status',
     POC_REFERRAL_SOURCE: 'ReferralSource',
     POC_PROJECT_CONTACTS_TYPE: 'ProjectContactsType',
-    POC_RELATIONSHIP_STRENGTH: 'RelationshipStrength'
+    POC_RELATIONSHIP_STRENGTH: 'RelationshipStrength',
+    PO_BUYING_ENTITY: 'BuyingEntity'
   };
   public ACTION = {
     COPY: 'Copy',
-    ADD: 'Add'
+    ADD: 'Add',
+    EDIT: 'Edit',
+    DELETE: 'Delete',
+    GET: 'Get'
   };
   public FILTER = {
     CM_LEVEL_1: 'CM L1',
@@ -274,7 +301,8 @@ export class AdminConstantService {
   public REG_EXPRESSION = {
     ALPHA_SPECIAL: /^[a-zA-Z]+(-?[a-zA-Z]+)?(_?[a-zA-Z]+)?$/,
     ALPHA: /^[a-zA-Z]+$/,
-    APLHA_NUMERIC: /^[a-zA-Z0-9]+$/
+    APLHA_NUMERIC: /^[a-zA-Z0-9]+$/,
+    ALPHA_SPECIAL_NUMERIC: /^[a-zA-Z0-9]+(-?[a-zA-Z0-9]+)?(_?[a-zA-Z0-9]+)?$/
   };
   public RESOURCE_CATEGORY_CONSTANT = {
     CMLevel1: 'CM L1',
@@ -287,5 +315,8 @@ export class AdminConstantService {
     SUB_DIVISION: 'SubDivision',
     POINT_OF_CONTACT: 'PointOfContact',
     PURCHASE_ORDER: 'PurchaseOrder'
+  };
+  public FOLDER_LOCATION = {
+    PO: 'Finance/PO'
   };
 }

@@ -8,6 +8,8 @@ import { AdminObjectService } from '../../services/admin-object.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router } from '@angular/router';
+import { removeSummaryDuplicates } from '@angular/compiler';
+import { GlobalService } from 'src/app/Services/global.service';
 
 @Component({
   selector: 'app-client-masterdata',
@@ -37,9 +39,11 @@ export class ClientMasterdataComponent implements OnInit {
   POCRows = [];
   POColumns = [];
   PORows = [];
+  PORightRows = [];
   items = [];
   subDivisionItems = [];
   pocItems = [];
+  poItems = [];
   poValue;
   selectedValue: any;
   buttonLabel;
@@ -47,31 +51,28 @@ export class ClientMasterdataComponent implements OnInit {
   currClientObj: any;
   currSubDivisionObj: any;
   currPOCObj: any;
+  currPOObj: any;
+  selectedFile: any;
+  filePathUrl: any;
   showaddClientModal = false;
   showEditClient = false;
   showSubDivisionDetails = false;
   showaddSubDivision = false;
   showeditSubDivision = false;
-
+  fileReader = new FileReader();
   showPointofContact = false;
   showaddPOC = false;
   showeditPOC = false;
-
+  minDateValue = new Date();
   showPurchaseOrder = false;
   showaddPO = false;
   showeditPO = false;
   showaddBudget = false;
   editPo = false;
-
   budgetType = [
     { label: 'Add', value: 'Add' },
     { label: 'Reduce', value: 'Reduce' },
     { label: 'Restructure', value: 'Restructure' }
-  ];
-  options = [
-    { label: 'option1', value: 'option1' },
-    { label: 'option2', value: 'option2' },
-    { label: 'option3', value: 'option3' }
   ];
   cmObject = {
     isClientFormSubmit: false,
@@ -121,9 +122,9 @@ export class ClientMasterdataComponent implements OnInit {
   };
   POColArray = {
     PoName: [],
-    PoNo: [],
-    Revenue: [],
-    Oop: [],
+    PoNumber: [],
+    AmountRevenue: [],
+    AmountOOP: [],
     LastUpdated: [],
     LastUpdatedBy: []
   };
@@ -151,7 +152,18 @@ export class ClientMasterdataComponent implements OnInit {
     PORequiredArray: [],
     POCRefferalSourceArray: [],
     POCRelationshipArray: [],
-    POCProjectContactTypesArray: []
+    POCProjectContactTypesArray: [],
+    POPointOfContactArray: [],
+    POTAArray: [],
+    POMoleculeArray: [],
+    POBuyingEntityArray: []
+  };
+  po = {
+    total: 0,
+    revenue: 0,
+    oop: 0,
+    tax: 0,
+    isRightVisible: true
   };
   /**
    * Construct a method to create an instance of required component.
@@ -166,10 +178,10 @@ export class ClientMasterdataComponent implements OnInit {
    * @param spServices This is instance referance of `SPOperationService` component.
    * @param confirmationService This is instance referance of `ConfirmationService` component.
    * @param platformLocation This is instance referance of `PlatformLocation` component.
-   * @param locationStrategy This is instance referance of `LocationStrategy` component.
    * @param router This is instance referance of `Router` component.
    * @param applicationRef This is instance referance of `ApplicationRef` component.
    * @param zone This is instance referance of `NgZone` component.
+   * @param globalObject This is instance referance of `GlobalService` component.
    */
   constructor(
     private datepipe: DatePipe,
@@ -182,10 +194,10 @@ export class ClientMasterdataComponent implements OnInit {
     private spServices: SPOperationService,
     private confirmationService: ConfirmationService,
     private platformLocation: PlatformLocation,
-    private locationStrategy: LocationStrategy,
     private router: Router,
     private applicationRef: ApplicationRef,
-    private zone: NgZone
+    private zone: NgZone,
+    private globalObject: GlobalService
   ) {
     /**
      * This is used to initialize the Client form.
@@ -260,8 +272,8 @@ export class ClientMasterdataComponent implements OnInit {
    */
   initAddPOForm() {
     this.PoForm = this.frmbuilder.group({
-      poNumber: ['', Validators.required],
-      poName: ['', Validators.required],
+      poNumber: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_NUMERIC)]],
+      poName: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL)]],
       currency: ['', Validators.required],
       poExpiryDate: ['', Validators.required],
       poc: ['', Validators.required],
@@ -270,10 +282,10 @@ export class ClientMasterdataComponent implements OnInit {
       molecule: ['', Validators.required],
       cmLevel2: ['', Validators.required],
       poBuyingEntity: ['', Validators.required],
-      total: [0, Validators.required],
-      revenue: [0, Validators.required],
-      oop: [0, Validators.required],
-      tax: [0, Validators.required],
+      total: [0, [Validators.required, this.adminCommonService.lessThanZero]],
+      revenue: [0, [Validators.required, this.adminCommonService.checkPositiveNumber]],
+      oop: [0, [Validators.required, this.adminCommonService.checkPositiveNumber]],
+      tax: [0, [Validators.required, this.adminCommonService.checkPositiveNumber]],
     });
   }
   /**
@@ -316,114 +328,16 @@ export class ClientMasterdataComponent implements OnInit {
       { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
       { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false }
     ];
-    // this.clientMasterDataRows = [
-    //   {
-    //     ClientLegalEntry: 'Test',
-    //     LastUpdated: 'Jul 3, 2019',
-    //     LastUpdatedBy: 'Kaushal Bagrodia'
-    //   }
-    // ];
-
-    // this.auditHistoryColumns = [
-    //   { field: 'Action', header: 'Action' },
-    //   { field: 'ActionBy', header: 'Action By' },
-    //   { field: 'Date', header: 'Date' },
-    //   { field: 'Details', header: 'Details' }
-    // ];
-
-    // this.auditHistoryRows = [
-    //   {
-    //     Action: '',
-    //     ActionBy: '',
-    //     Date: '',
-    //     Details: ''
-    //   }
-    // ];
-
-    // this.auditHistorySelectedColumns = [
-    //   { field: 'ClientLegalEntry', header: 'Client Legal Entry' },
-    //   { field: 'Action', header: 'Action' },
-    //   { field: 'ActionBy', header: 'Action By' },
-    //   { field: 'Date', header: 'Date' },
-    //   { field: 'Details', header: 'Details' }
-    // ];
-
-    // this.auditHistorySelectedRows = [
-    //   {
-    //     ClientLegalEntry: 'User Created',
-    //     Action: '',
-    //     ActionBy: '',
-    //     Date: '',
-    //     Details: ''
-    //   }
-    // ];
-
-
-
-    // this.subDivisionDetailsRows = [
-    //   {
-    //     SubDivision: 'Sub-Division',
-    //     LastUpdated: '',
-    //     LastUpdatedBy: ''
-    //   }
-    // ];
-
-
-    // this.POCRows = [
-    //   {
-    //     // POC: 'POC',
-    //     fName: 'Aditya',
-    //     lName: 'Joshi',
-    //     email: 'aditya@gmail.com',
-    //     LastUpdated: 'Sep 3, 2019',
-    //     LastUpdatedBy: 'Aditya Joshi'
-    //   },
-    //   {
-    //     fName: 'Test',
-    //     lName: 'Test',
-    //     email: 'test@gmail.com',
-    //     LastUpdated: 'Sep 5, 2019',
-    //     LastUpdatedBy: 'Test'
-    //   }
-    // ];
-    // this.POColumns = [
-    //   { field: 'poName', header: 'Po Name' , visibility: true},
-    //   { field: 'poNo', header: 'Po Number', visibility: true },
-    //   { field: 'revenue', header: 'Revenue', visibility: true },
-    //   { field: 'oop', header: 'OOP', visibility: true },
-    //   { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
-    //   { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
-    // ];
-
-    // this.PORows = [
-    //   {
-    //     poName: 'PO 1',
-    //     poNo: 'PO-1',
-    //     LastUpdated: '',
-    //     LastUpdatedBy: '',
-    //     total: 1000,
-    //     revenue: 500,
-    //     oop: 500,
-    //     tax: 0
-    //   },
-    //   {
-    //     poName: 'PO 2',
-    //     poNo: 'PO-2',
-    //     LastUpdated: '',
-    //     LastUpdatedBy: '',
-    //     total: 1500,
-    //     revenue: 800,
-    //     oop: 600,
-    //     tax: 100
-    //   }
-    // ];
+    this.POColumns = [
+      { field: 'PoName', header: 'Po Name', visibility: true },
+      { field: 'PoNumber', header: 'Po Number', visibility: true },
+      { field: 'AmountRevenue', header: 'Revenue', visibility: true },
+      { field: 'AmountOOP', header: 'OOP', visibility: true },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
+      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
+      { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false }
+    ];
     this.loadClientTable();
-    // this.colFilters(this.clientMasterDataRows);
-    // this.colFilters1(this.auditHistoryRows);
-    // this.colFilters2(this.auditHistorySelectedRows);
-    // this.subDivisionFilters(this.subDivisionDetailsRows);
-    // this.POCFilters(this.POCRows);
-    // this.POFilters(this.PORows);
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -888,13 +802,15 @@ export class ClientMasterdataComponent implements OnInit {
       obj.DeliveryLevel1 = item.DeliveryLevel1;
       obj.DeliveryLevel2 = item.DeliveryLevel2;
       // If Create - add the new created item at position 0 in the array.
-      // If Edit - Replace the item in the array
+      // If Edit - Replace the item in the array and position at 0 in the array.
       if (isUpdate) {
         const index = this.clientMasterDataRows.findIndex(x => x.ID === obj.ID);
-        this.clientMasterDataRows.splice(index, 1, obj);
+        this.clientMasterDataRows.splice(index, 1);
+        this.clientMasterDataRows.unshift(obj);
       } else {
         this.clientMasterDataRows.unshift(obj);
       }
+      this.colFilters(this.clientMasterDataRows);
     }
   }
   /**
@@ -1054,6 +970,7 @@ export class ClientMasterdataComponent implements OnInit {
         });
         const clientIndex = this.clientMasterDataRows.findIndex(x => x.ID === data.ID);
         this.clientMasterDataRows.splice(clientIndex, 1);
+        this.colFilters(this.clientMasterDataRows);
         break;
       case this.adminConstants.DELETE_LIST_ITEM.SUB_DIVISION:
         this.messageService.add({
@@ -1062,6 +979,7 @@ export class ClientMasterdataComponent implements OnInit {
         });
         const subDivisionindex = this.subDivisionDetailsRows.findIndex(x => x.ID === data.ID);
         this.subDivisionDetailsRows.splice(subDivisionindex, 1);
+        this.subDivisionFilters(this.subDivisionDetailsRows);
         break;
       case this.adminConstants.DELETE_LIST_ITEM.POINT_OF_CONTACT:
         this.messageService.add({
@@ -1070,6 +988,16 @@ export class ClientMasterdataComponent implements OnInit {
         });
         const pocindex = this.POCRows.findIndex(x => x.ID === data.ID);
         this.POCRows.splice(pocindex, 1);
+        this.POCFilters(this.POCRows);
+        break;
+      case this.adminConstants.DELETE_LIST_ITEM.PURCHASE_ORDER:
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success', sticky: true,
+          summary: 'Success Message', detail: 'The po ' + data.PoNumber + ' has deleted successfully.'
+        });
+        const poindex = this.PORows.findIndex(x => x.ID === data.ID);
+        this.PORows.splice(poindex, 1);
+        this.POFilters(this.PORows);
         break;
     }
     this.adminObject.isMainLoaderHidden = true;
@@ -1087,8 +1015,9 @@ export class ClientMasterdataComponent implements OnInit {
     this.adminObject.isMainLoaderHidden = false;
     const tempArray = [];
     const getSubDivisionInfo = Object.assign({}, this.adminConstants.QUERY.GET_SUB_DIVISION_BY_ACTIVE);
-    getSubDivisionInfo.filter = getSubDivisionInfo.filter.replace(/{{isActive}}/gi,
-      this.adminConstants.LOGICAL_FIELD.YES);
+    getSubDivisionInfo.filter = getSubDivisionInfo.filter
+      .replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES)
+      .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity);
     const results = await this.spServices.readItems(this.constants.listNames.ClientSubdivision.name, getSubDivisionInfo);
     if (results && results.length) {
       results.forEach(item => {
@@ -1268,8 +1197,10 @@ export class ClientMasterdataComponent implements OnInit {
    */
   async loadRecentSubDivisionRecords(ID, isUpdate) {
     const subDivisionGet = Object.assign({}, this.adminConstants.QUERY.GET_SUB_DIVISION_BY_ID);
-    subDivisionGet.filter = subDivisionGet.filter.replace(/{{isActive}}/gi,
-      this.adminConstants.LOGICAL_FIELD.YES).replace(/{{Id}}/gi, ID);
+    subDivisionGet.filter = subDivisionGet.filter
+      .replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES)
+      .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
+      .replace(/{{Id}}/gi, ID);
     const result = await this.spServices.readItems(this.constants.listNames.ClientSubdivision.name, subDivisionGet);
     if (result && result.length) {
       const item = result[0];
@@ -1285,13 +1216,15 @@ export class ClientMasterdataComponent implements OnInit {
       obj.DistributionList = item.DistributionList;
       obj.ClientLegalEntity = item.ClientLegalEntity;
       // If Create - add the new created item at position 0 in the array.
-      // If Edit - Replace the item in the array
+      // If Edit - Replace the item in the array and position at 0 in the array.
       if (isUpdate) {
         const index = this.subDivisionDetailsRows.findIndex(x => x.ID === obj.ID);
-        this.subDivisionDetailsRows.splice(index, 1, obj);
+        this.subDivisionDetailsRows.splice(index, 1);
+        this.subDivisionDetailsRows.unshift(obj);
       } else {
         this.subDivisionDetailsRows.unshift(obj);
       }
+      this.subDivisionFilters(this.subDivisionDetailsRows);
     }
   }
   /**
@@ -1377,8 +1310,9 @@ export class ClientMasterdataComponent implements OnInit {
     this.adminObject.isMainLoaderHidden = false;
     const tempArray = [];
     const getPocInfo = Object.assign({}, this.adminConstants.QUERY.GET_POC_BY_ACTIVE);
-    getPocInfo.filter = getPocInfo.filter.replace(/{{active}}/gi,
-      this.adminConstants.LOGICAL_FIELD.ACTIVE);
+    getPocInfo.filter = getPocInfo.filter
+      .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
+      .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity);
     const results = await this.spServices.readItems(this.constants.listNames.ProjectContacts.name, getPocInfo);
     if (results && results.length) {
       results.forEach(item => {
@@ -1675,8 +1609,10 @@ export class ClientMasterdataComponent implements OnInit {
    */
   async loadRecentPOCRecords(ID, isUpdate) {
     const pocGet = Object.assign({}, this.adminConstants.QUERY.GET_POC_BY_ID);
-    pocGet.filter = pocGet.filter.replace(/{{active}}/gi,
-      this.adminConstants.LOGICAL_FIELD.ACTIVE).replace(/{{Id}}/gi, ID);
+    pocGet.filter = pocGet.filter
+      .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
+      .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
+      .replace(/{{Id}}/gi, ID);
     const result = await this.spServices.readItems(this.constants.listNames.ProjectContacts.name, pocGet);
     if (result && result.length) {
       const item = result[0];
@@ -1702,13 +1638,15 @@ export class ClientMasterdataComponent implements OnInit {
       obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
       obj.LastUpdatedBy = item.Editor.Title;
       // If Create - add the new created item at position 0 in the array.
-      // If Edit - Replace the item in the array
+      // If Edit - Replace the item in the array and position at 0 in the array.
       if (isUpdate) {
         const index = this.POCRows.findIndex(x => x.ID === obj.ID);
-        this.POCRows.splice(index, 1, obj);
+        this.POCRows.splice(index, 1);
+        this.POCRows.unshift(obj);
       } else {
         this.POCRows.unshift(obj);
       }
+      this.POCFilters(this.POCRows);
     }
   }
   /**
@@ -1776,83 +1714,667 @@ export class ClientMasterdataComponent implements OnInit {
       },
     });
   }
+  /**
+   * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
+   *
+   * @description
+   *
+   * It will iterate all the response array to cater the request and show into the table.
+   * The table have option for sorting, pagination, edit and delete the po.
+   *
+   */
+  async showPO() {
+    this.adminObject.isMainLoaderHidden = false;
+    const tempArray = [];
+    const getPOInfo = Object.assign({}, this.adminConstants.QUERY.GET_PO_BY_ACTIVE);
+    getPOInfo.filter = getPOInfo.filter
+      .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
+      .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity);
+    const results = await this.spServices.readItems(this.constants.listNames.PO.name, getPOInfo);
+    if (results && results.length) {
+      results.forEach(item => {
+        const obj = Object.assign({}, this.adminObject.poObj);
+        obj.ID = item.ID;
+        obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
+        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+        obj.LastUpdatedBy = item.Editor.Title;
+        obj.ClientLegalEntity = item.ClientLegalEntity;
+        obj.Title = item.Title;
+        obj.Amount = item.Amount;
+        obj.AmountOOP = item.AmountOOP;
+        obj.AmountRevenue = item.AmountRevenue;
+        obj.AmountTax = item.AmountTax;
+        obj.BillOOPFromRevenue = item.BillOOPFromRevenue;
+        obj.BuyingEntity = item.BuyingEntity;
+        obj.Currency = item.Currency;
+        obj.InvoicedOOP = item.InvoicedOOP;
+        obj.InvoicedRevenue = item.InvoicedRevenue;
+        obj.InvoicedTax = item.InvoicedTax;
+        obj.Link = item.Link;
+        obj.Molecule = item.Molecule;
+        obj.PoName = item.Name;
+        obj.PoNumber = item.Number;
+        obj.OOPLinked = item.OOPLinked;
+        obj.PO_x0020_Geography = item.PO_x0020_Geography;
+        obj.POCategory = item.POCategory;
+        obj.POCLookup = item.POCLookup;
+        obj.POExpiryDate = new Date(item.POExpiryDate);
+        obj.PoProposalID = item.PoProposalID;
+        obj.RevenueLinked = item.RevenueLinked;
+        obj.ScheduledOOP = item.ScheduledOOP;
+        obj.ScheduledRevenue = item.ScheduledRevenue;
+        obj.SOWLookup = item.SOWLookup;
+        obj.Status = item.Status;
+        obj.TA = item.TA;
+        obj.TaxLinked = item.TaxLinked;
+        obj.TotalInvoiced = item.TotalInvoiced;
+        obj.TotalLinked = item.TotalLinked;
+        obj.TotalScheduled = item.TotalScheduled;
+        obj.CMLevel2 = item.CMLevel2;
+        tempArray.push(obj);
+      });
+      this.PORows = tempArray;
+      this.POFilters(this.PORows);
+    }
+    this.adminObject.isMainLoaderHidden = true;
+    this.showPurchaseOrder = true;
+  }
+  /**
+   * Construct a method to map the array values into particular column dropdown.
+   *
+   * @description
+   *
+   * This method will extract the column object value from an array and stores into the column dropdown array and display
+   * the values into the PoName,LastUpdated and LastUpdatedBy column dropdown.
+   *
+   * @param colData Pass colData as a parameter which contains an array of column object.
+   *
+   */
   POFilters(colData) {
     this.POColArray.PoName = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.poName, value: a.poName }; return b; }));
-    this.POColArray.PoNo = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.poNo, value: a.poNo }; return b; }));
-    this.POColArray.Revenue = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.revenue, value: a.revenue }; return b; }));
-    this.POColArray.Oop = this.adminCommonService.uniqueArrayObj(colData.map(a => { const b = { label: a.oop, value: a.oop }; return b; }));
+      colData.map(a => { const b = { label: a.PoName, value: a.PoName }; return b; }));
+    this.POColArray.PoNumber = this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.PoNumber, value: a.PoNumber }; return b; }));
+    this.POColArray.AmountRevenue = this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.AmountRevenue, value: a.AmountRevenue }; return b; }));
+    this.POColArray.AmountOOP = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = { label: a.AmountOOP, value: a.AmountOOP };
+      return b;
+    }));
     this.POColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-          // tslint:disable-next-line: align
-          value: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy')
+          value: a.LastUpdated
         };
         return b;
       }));
     this.POColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
   }
-  colFilters1(colData) {
-    this.auditHistoryArray.Action = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.Action, value: a.Action }; return b; }));
-    this.auditHistoryArray.ActionBy = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
-    this.auditHistoryArray.Date = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => {
-        const b = {
-          label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
-          // tslint:disable-next-line: align
-          value: this.datepipe.transform(a.Date, 'MMM d, yyyy')
-        };
-        return b;
-      }));
-    this.auditHistoryArray.Details = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
-
+  /**
+   * Construct a method show the form to add new Purchase Order.
+   *
+   * @description
+   *
+   * This method is used to show the form to add new Purchase Order.
+   *
+   */
+  async showAddPO() {
+    this.adminObject.isMainLoaderHidden = false;
+    this.editPo = true;
+    this.PoForm.controls.poNumber.enable();
+    this.PoForm.controls.currency.enable();
+    this.PoForm.controls.total.disable();
+    this.PoForm.controls.oop.enable();
+    this.PoForm.controls.revenue.enable();
+    this.PoForm.controls.tax.enable();
+    this.buttonLabel = 'Submit';
+    await this.loadPODropdown();
+    this.showaddPO = true;
+    this.showeditPO = false;
+    this.initAddPOForm();
+    this.cmObject.isPOFormSubmit = false;
+    this.adminObject.isMainLoaderHidden = true;
   }
-
-  colFilters2(colData) {
-    this.auditHistorySelectedArray.ClientLegalEntry = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.ClientLegalEntry, value: a.ClientLegalEntry }; return b; }));
-    this.auditHistorySelectedArray.Action = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.Action, value: a.Action }; return b; }));
-    this.auditHistorySelectedArray.ActionBy = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.ActionBy, value: a.ActionBy }; return b; }));
-    this.auditHistorySelectedArray.Date = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => {
-        const b = {
-          label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
-          // tslint:disable-next-line: align
-          value: this.datepipe.transform(a.Date, 'MMM d, yyyy')
-        };
-        return b;
-      }));
-    this.auditHistorySelectedArray.Details = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.Details, value: a.Details }; return b; }));
+  /**
+   * Construct a method to load all the dropdown of purchase order form.
+   * @description
+   *
+   * This method will load the purchase order form dropdown as per following sequences.
+   *  1. POC                   - Get data for `Point of Contact` form `ProjectContact` list.
+   *  2. TA                    - Get data for `TA` from `TA` list.
+   *  3. Molecule              - Get data for `Molecule` from `Molecule` list.
+   *  4. PO Buying Entity      - Get choice field data for `BuyingEntity` from `PO` list.
+   *  5. CM Level 2            - Get data for `CM Level 2` from `ResourceCategorization` list based on filter `Role='CM Level 2'`.
+   *  6. Currency              - Get data for `Currency` from `Currency` list.
+   * @Note
+   * 1. If `dropdown.CurrencyArray` & `dropdown.CMLevel2Array` is not null then it will not query the `Currency` and
+   * `ResourceCategorization` list.
+   *
+   * 2. If `dropdown.CurrencyArray`,`dropdown.CMLevel2Array`,`dropdown.POTAArray`,`dropdown.POMoleculeArray`,
+   * `dropdown.POPointOfContactArray` & `dropdown.POMoleculeArray` is null then it will make a REST call to
+   * respective list and iterate the result to load the respective dropdown.
+   */
+  async loadPODropdown() {
+    if (!this.dropdown.CurrencyArray.length
+      || !this.dropdown.CMLevel2Array.length
+      || !this.dropdown.POTAArray.length
+      || !this.dropdown.POMoleculeArray.length
+      || !this.dropdown.POPointOfContactArray.length
+      || !this.dropdown.POBuyingEntityArray.length) {
+      const sResults = await this.getPODropdownRecords();
+      if (sResults && sResults.length) {
+        const pocArray = sResults[0].retItems;
+        const taArray = sResults[1].retItems;
+        const moleculeArray = sResults[2].retItems;
+        const poBuyingEntityArray = sResults[3].retItems;
+        if (pocArray && pocArray.length) {
+          this.dropdown.POPointOfContactArray = [];
+          pocArray.forEach(element => {
+            this.dropdown.POPointOfContactArray.push({ label: element.FullName, value: element.ID });
+          });
+        }
+        if (taArray && taArray.length) {
+          this.dropdown.POTAArray = [];
+          taArray.forEach(element => {
+            this.dropdown.POTAArray.push({ label: element.Title, value: element.Title });
+          });
+        }
+        if (moleculeArray && moleculeArray.length) {
+          this.dropdown.POMoleculeArray = [];
+          moleculeArray.forEach(element => {
+            this.dropdown.POMoleculeArray.push({ label: element.Title, value: element.Title });
+          });
+        }
+        if (poBuyingEntityArray && poBuyingEntityArray.length) {
+          const tempArray = poBuyingEntityArray[0].Choices.results;
+          this.dropdown.POBuyingEntityArray = [];
+          tempArray.forEach(element => {
+            this.dropdown.POBuyingEntityArray.push({ label: element, value: element });
+          });
+        }
+        if (!this.dropdown.CMLevel2Array.length) {
+          const cmLevelArray = sResults[4].retItems;
+          this.separateResourceCat(cmLevelArray);
+        }
+        if (!this.dropdown.CurrencyArray.length) {
+          const currencyArray = sResults[5].retItems;
+          this.dropdown.CurrencyArray = [];
+          currencyArray.forEach(element => {
+            this.dropdown.CurrencyArray.push({ label: element.Title, value: element.Title });
+          });
+        }
+      }
+    }
   }
+  /**
+   * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
+   * This method will prepare the `Batch` request to get the data based on query.
+   * @description
+   *
+   * 1. POC                   - Get data for `Point of Contact` form `ProjectContact` list.
+   * 2. TA                    - Get data for `TA` from `TA` list.
+   * 3. Molecule              - Get data for `Molecule` from `Molecule` list.
+   * 4. PO Buying Entity      - Get choice field data for `BuyingEntity` from `PO` list.
+   * 5. CM Level 2            - Get data for `CM Level 2` from `ResourceCategorization` list based on filter `Role='CM Level 2'`.
+   * 6. Currency              - Get data for `Currency` from `Currency` list.
+   *
+   * @Note
+   * 1. If data alreay present in `dropdown.CurrencyArray` & `dropdown.CMLevel2Array` then it will not query the `Currency` and
+   * `ResourceCategorization` list again for getting records.
+   *
+   * @return An Array of the response in `JSON` format in above sequence.
+   */
+  async getPODropdownRecords() {
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    // Get POC from ProjectContacts list ##1
+    const pocGet = Object.assign({}, options);
+    const pocFilter = Object.assign({}, this.adminConstants.QUERY.GET_POC_ORDER_BY_Title);
+    pocFilter.filter = pocFilter.filter.replace(/{{active}}/gi,
+      this.adminConstants.LOGICAL_FIELD.ACTIVE);
+    pocGet.url = this.spServices.getReadURL(this.constants.listNames.ProjectContacts.name,
+      pocFilter);
+    pocGet.type = 'GET';
+    pocGet.listName = this.constants.listNames.ProjectContacts.name;
+    batchURL.push(pocGet);
 
+    // Get TA from TA list ##2
+    const taGet = Object.assign({}, options);
+    const taFilter = Object.assign({}, this.adminConstants.QUERY.GET_TA);
+    taFilter.filter = taFilter.filter.replace(/{{isActive}}/gi,
+      this.adminConstants.LOGICAL_FIELD.YES);
+    taGet.url = this.spServices.getReadURL(this.constants.listNames.TA.name,
+      taFilter);
+    taGet.type = 'GET';
+    taGet.listName = this.constants.listNames.TA.name;
+    batchURL.push(taGet);
 
+    // Get Molecule from Molecule list ##3
+    const moleculeGet = Object.assign({}, options);
+    const moleculeFilter = Object.assign({}, this.adminConstants.QUERY.GET_MOLECULES_ORDER_BY_TITLE);
+    moleculeFilter.filter = moleculeFilter.filter.replace(/{{isActive}}/gi,
+      this.adminConstants.LOGICAL_FIELD.YES);
+    moleculeGet.url = this.spServices.getReadURL(this.constants.listNames.Molecules.name,
+      moleculeFilter);
+    moleculeGet.type = 'GET';
+    moleculeGet.listName = this.constants.listNames.Molecules.name;
+    batchURL.push(moleculeGet);
 
-
-  poMenu(data) {
-    this.subDivisionItems = [{ label: 'Change Budget', command: (e) => this.showchangeBudgetModal(data) },
-    { label: 'Edit', command: (e) => this.showEditPOModal(data) },
-    { label: 'Delete' }];
+    // Get PO Buying Entity from PO list ##4
+    const poBuyingEntityGet = Object.assign({}, options);
+    const poBuyingEntityFilter = Object.assign({}, this.adminConstants.QUERY.GET_CHOICEFIELD);
+    poBuyingEntityFilter.filter = poBuyingEntityFilter.filter.replace(/{{choiceField}}/gi,
+      this.adminConstants.CHOICE_FIELD_NAME.PO_BUYING_ENTITY);
+    poBuyingEntityGet.url = this.spServices.getChoiceFieldUrl(this.constants.listNames.PO.name,
+      poBuyingEntityFilter);
+    poBuyingEntityGet.type = 'GET';
+    poBuyingEntityGet.listName = this.constants.listNames.PO.name;
+    batchURL.push(poBuyingEntityGet);
+    if (!this.dropdown.CMLevel2Array.length) {
+      // Get resource from ResourceCategorization list ##5;
+      const resourceGet = Object.assign({}, options);
+      const resourceFilter = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME);
+      resourceFilter.filter = resourceFilter.filter.replace(/{{isActive}}/gi,
+        this.adminConstants.LOGICAL_FIELD.YES);
+      resourceGet.url = this.spServices.getReadURL(this.constants.listNames.ResourceCategorization.name,
+        resourceFilter);
+      resourceGet.type = 'GET';
+      resourceGet.listName = this.constants.listNames.ResourceCategorization.name;
+      batchURL.push(resourceGet);
+    }
+    if (!this.dropdown.CurrencyArray.length) {
+      // Get currency from Currency list ##6;
+      const currencyGet = Object.assign({}, options);
+      const currencyFilter = Object.assign({}, this.adminConstants.QUERY.GET_CURRENCY_BY_ACTIVE);
+      currencyFilter.filter = currencyFilter.filter.replace(/{{isActive}}/gi,
+        this.adminConstants.LOGICAL_FIELD.YES);
+      currencyGet.url = this.spServices.getReadURL(this.constants.listNames.Currency.name,
+        currencyFilter);
+      currencyGet.type = 'GET';
+      currencyGet.listName = this.constants.listNames.Currency.name;
+      batchURL.push(currencyGet);
+    }
+    if (batchURL.length) {
+      const result = await this.spServices.executeBatch(batchURL);
+      return result;
+    } else {
+      return null;
+    }
   }
-
-
-  savePO(poData) {
-    if (poData.valid) {
-      console.log(poData.value);
+  /**
+   * Construct a method to trigger whenever we change the file for file upload.
+   *
+   * @description
+   *
+   * This method will trigger whenever we change the file for file upload and save the file into
+   * `selectedFile` variable.
+   */
+  onFileChange(event) {
+    this.selectedFile = null;
+    this.fileReader = new FileReader();
+    if (event.target.files && event.target.files.length > 0) {
+      this.selectedFile = event.target.files[0];
+      this.fileReader.readAsArrayBuffer(this.selectedFile);
+    }
+  }
+  /**
+   * Construct a method to trigger when revenue, oop or tax field changes to calculate the total amount for PO.
+   *
+   * @description
+   *
+   * This method is called when revenu,oop or tax field changes to calculate the total amount for po.
+   * Once the total amount is calculated it will set the total amount to form field.
+   *
+   */
+  setPOTotal() {
+    this.po.revenue = this.PoForm.value.revenue;
+    this.po.oop = this.PoForm.value.oop ? this.PoForm.value.oop : 0;
+    this.po.tax = this.PoForm.value.tax ? this.PoForm.value.tax : 0;
+    this.po.total = this.po.revenue + this.po.oop + this.po.tax;
+    this.PoForm.get('total').setValue(this.po.total);
+  }
+  /**
+   * Construct a method to save or update the po into `PO` list.
+   * It will construct a REST-API Call to create item or update item into `PO` list.
+   *
+   * @description
+   *
+   * This method is used to validate and save the po into `PO` list.
+   *
+   * @summary
+   * While creating new PO it will create new item into `PO` and `POBudgetBreakup` list.
+   * While updating the PO it will update the item in `PO` list and new item will be created in `POBudgetBreakup` list.
+   *
+   * @Note
+   *
+   * 1. Duplicate PONumber is not allowed.
+   * 2. Only 2 special character are allowed in PoNumber and POName.
+   * 3. `POName` and `PoNumber` name cannot start or end with special character.
+   * 4. `POExpiryDate` cannot have less than today's date.
+   *
+   */
+  async savePO() {
+    if (this.PoForm.valid) {
+      console.log(this.PoForm.value);
+      if (!this.showeditPO) {
+        if (this.PORows.some(a =>
+          a.PoNumber.toLowerCase() === this.PoForm.value.poNumber.toLowerCase())) {
+          this.messageService.add({
+            key: 'adminCustom', severity: 'error',
+            summary: 'Error Message', detail: 'This PO number is already exist. Please enter another PO number.'
+          });
+          return false;
+        }
+      }
+      this.adminObject.isMainLoaderHidden = false;
+      this.minDateValue = new Date(new Date().getDate() + 1);
+      const docFolder = this.adminConstants.FOLDER_LOCATION.PO;
+      const libraryName = this.currClientObj.ListName;
+      const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
+      this.filePathUrl = await this.spServices.getFileUploadUrl(folderPath, this.selectedFile.name, true);
+      const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
+      console.log(res);
+      if (this.selectedFile && !res.hasOwnProperty('hasError')) {
+        // write the logic of create new PO.
+        const poData = await this.getPOData();
+        if (!this.showeditPO) {
+          const results = await this.spServices.createItem(this.constants.listNames.PO.name,
+            poData, this.constants.listNames.PO.type);
+          if (!results.hasOwnProperty('hasError') && !results.hasError) {
+            const poBreakUPData = await this.getPOBudgetBreakUPData(results);
+            const poBreakUPResult = await this.spServices.createItem(this.constants.listNames.POBudgetBreakup.name,
+              poBreakUPData, this.constants.listNames.POBudgetBreakup.type);
+            if (!poBreakUPResult.hasOwnProperty('hasError') && !poBreakUPResult.hasError) {
+              this.messageService.add({
+                key: 'adminCustom', severity: 'success', summary: 'Success Message',
+                detail: 'The Po ' + this.PoForm.value.poNumber + ' is created successfully.'
+              });
+            }
+            await this.loadRecentPORecords(results.ID, this.adminConstants.ACTION.ADD);
+          }
+        }
+        if (this.showeditPO) {
+          const results = await this.spServices.updateItem(this.constants.listNames.PO.name, this.currPOObj.ID,
+            poData, this.constants.listNames.PO.type);
+          this.messageService.add({
+            key: 'adminCustom', severity: 'success',
+            summary: 'Success Message', detail: 'The Po ' + this.currPOObj.PoNumber + ' is updated successfully.'
+          });
+          await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
+        }
+        this.showaddPO = false;
+        this.adminObject.isMainLoaderHidden = true;
+      }
     } else {
       this.cmObject.isPOFormSubmit = true;
     }
   }
-
+  /**
+   * Construct a method to create an object of `PO`.
+   *
+   * @description
+   *
+   * This method is used to create an object of `PO`.
+   *
+   * @return It will return an object of `PO`.
+   */
+  getPOData() {
+    const data: any = {
+      Name: this.PoForm.value.poName,
+      POExpiryDate: this.PoForm.value.poExpiryDate,
+      POCLookup: this.PoForm.value.poc,
+      TA: this.PoForm.value.ta,
+      Molecule: this.PoForm.value.molecule,
+      CMLevel2Id: this.PoForm.value.cmLevel2,
+      BuyingEntity: this.PoForm.value.poBuyingEntity,
+      Link: this.selectedFile.name
+    };
+    if (!this.showeditPO) {
+      data.Currency = this.PoForm.value.currency;
+      data.CreateDate = new Date();
+      data.ClientLegalEntity = this.currClientObj.ClientLegalEntity;
+      data.Number = this.PoForm.value.poNumber;
+      data.Amount = this.po.total;
+      data.AmountRevenue = this.po.revenue;
+      data.AmountOOP = this.po.oop;
+      data.AmountTax = this.po.tax;
+      data.Status = this.adminConstants.LOGICAL_FIELD.ACTIVE;
+      data.POCategory = 'Client PO';
+    }
+    return data;
+  }
+  /**
+   * Construct a method to create an object of `POBudgetBreak`.
+   *
+   * @description
+   *
+   * This method is used to create an object of `POBudgetBreak`.
+   * @param poResult Pass poResult as parameter as it contains the POLookup value.
+   *
+   * @return It will return an object of `POBudgetBreak`.
+   */
+  getPOBudgetBreakUPData(poResult) {
+    const data: any = {
+      POLookup: poResult.ID,
+      Currency: this.showeditPO ? this.currPOObj.Currency : this.PoForm.value.currency,
+      Amount: this.po.total,
+      CreateDate: new Date(),
+      AmountRevenue: this.po.revenue,
+      AmountOOP: this.po.oop,
+      AmountTax: this.po.tax
+    };
+    return data;
+  }
+  /**
+   * Construct a method to store current selected row data into variable `currPOObj`.
+   *
+   * @description
+   *
+   * This method will trigger when user click on menu option in the table.
+   * It will store the current selected row value into the class variable `currPOObj`.
+   * It will dynamically add the submenu in the table.
+   */
+  poMenu(data) {
+    this.currPOObj = data;
+    this.poItems = [
+      { label: 'Change Budget', command: (e) => this.showchangeBudgetModal() },
+      { label: 'Edit', command: (e) => this.showEditPOModal() },
+      { label: 'Delete', command: (e) => this.deletePO() },
+      { label: 'View', command: (e) => this.viewPO() }];
+  }
+  /**
+   * Construct a method to load the newly created item into the table without refreshing the whole page.
+   * @param item ID the item which is created or updated recently.
+   *
+   * @param action Pass the action as parameter to which action should want to execute.
+   *
+   * If `Action = 'Add'`  - It will add the item in the array at first position.
+   * If `Action = 'Edit`  - It will edit the item and place that item at first position in array.
+   * If `Action = 'Get'`  - It will return an array of `PO` object.
+   *
+   * @retrun It will return an array of PO object in case Action is `Get`
+   *
+   * @description
+   *
+   * This method will load newly created item or updated item as first row in the table;
+   *  Pass `false` to add the new created item at position 0 in the array.
+   *  Pass `true` to replace the item in the array
+   */
+  async loadRecentPORecords(ID, action) {
+    const tempArray = [];
+    const poGet = Object.assign({}, this.adminConstants.QUERY.GET_PO_BY_ID);
+    poGet.filter = poGet.filter
+      .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
+      .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
+      .replace(/{{Id}}/gi, ID);
+    const result = await this.spServices.readItems(this.constants.listNames.PO.name, poGet);
+    if (result && result.length) {
+      const item = result[0];
+      const obj = Object.assign({}, this.adminObject.poObj);
+      obj.ID = item.ID;
+      obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
+      obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+      obj.LastUpdatedBy = item.Editor.Title;
+      obj.ClientLegalEntity = item.ClientLegalEntity;
+      obj.Title = item.Title;
+      obj.Amount = item.Amount;
+      obj.AmountOOP = item.AmountOOP;
+      obj.AmountRevenue = item.AmountRevenue;
+      obj.AmountTax = item.AmountTax;
+      obj.BillOOPFromRevenue = item.BillOOPFromRevenue;
+      obj.BuyingEntity = item.BuyingEntity;
+      obj.Currency = item.Currency;
+      obj.InvoicedOOP = item.InvoicedOOP;
+      obj.InvoicedRevenue = item.InvoicedRevenue;
+      obj.InvoicedTax = item.InvoicedTax;
+      obj.Link = item.Link;
+      obj.Molecule = item.Molecule;
+      obj.PoName = item.Name;
+      obj.PoNumber = item.Number;
+      obj.OOPLinked = item.OOPLinked;
+      obj.PO_x0020_Geography = item.PO_x0020_Geography;
+      obj.POCategory = item.POCategory;
+      obj.POCLookup = item.POCLookup;
+      obj.POExpiryDate = new Date(item.POExpiryDate);
+      obj.PoProposalID = item.PoProposalID;
+      obj.RevenueLinked = item.RevenueLinked;
+      obj.ScheduledOOP = item.ScheduledOOP;
+      obj.ScheduledRevenue = item.ScheduledRevenue;
+      obj.SOWLookup = item.SOWLookup;
+      obj.Status = item.Status;
+      obj.TA = item.TA;
+      obj.TaxLinked = item.TaxLinked;
+      obj.TotalInvoiced = item.TotalInvoiced;
+      obj.TotalLinked = item.TotalLinked;
+      obj.TotalScheduled = item.TotalScheduled;
+      obj.CMLevel2 = item.CMLevel2;
+      // If Create - add the new created item at position 0 in the array.
+      // If Edit - Replace the item in the array and position at 0 in the array.
+      switch (action) {
+        case this.adminConstants.ACTION.ADD:
+          this.PORows.unshift(obj);
+          this.POFilters(this.PORows);
+          break;
+        case this.adminConstants.ACTION.EDIT:
+          const index = this.PORows.findIndex(x => x.ID === obj.ID);
+          this.PORows.splice(index, 1);
+          this.PORows.unshift(obj);
+          this.POFilters(this.PORows);
+          break;
+        case this.adminConstants.ACTION.GET:
+          tempArray.push(obj);
+          break;
+      }
+    }
+    if (tempArray.length) {
+      return tempArray;
+    }
+  }
+  /**
+   * Construct a method to show the edit form to edit the po.
+   *
+   * @description
+   *
+   * This method is used to popup the predefined filled form to edit the po.
+   * If value is present in the dropdown array then it will simply load the dropdown.
+   * If value is not present in the dropdown array then it will make REST call to get the data.
+   *
+   * @Note
+   *
+   * 1. PO Number field is disabled.
+   * 2. Currency field is disabled.
+   * 3. Total field is disabled.
+   * 4. OOP field is disabled.
+   * 5. Revenue field is disabled.
+   * 6. Tax field is disabled.
+   *
+   */
+  async showEditPOModal() {
+    this.adminObject.isMainLoaderHidden = false;
+    this.cmObject.isPOFormSubmit = false;
+    this.editPo = false;
+    this.buttonLabel = 'Update';
+    if (!this.dropdown.CurrencyArray.length
+      || !this.dropdown.CMLevel2Array.length
+      || !this.dropdown.POTAArray.length
+      || !this.dropdown.POMoleculeArray.length
+      || !this.dropdown.POPointOfContactArray.length
+      || !this.dropdown.POBuyingEntityArray.length) {
+      await this.loadPODropdown();
+    }
+    this.PoForm.controls.poNumber.disable();
+    this.PoForm.controls.currency.disable();
+    this.PoForm.controls.total.disable();
+    this.PoForm.controls.oop.disable();
+    this.PoForm.controls.revenue.disable();
+    this.PoForm.controls.tax.disable();
+    this.PoForm.patchValue({
+      poNumber: this.currPOObj.PoNumber,
+      poName: this.currPOObj.PoName,
+      currency: this.currPOObj.Currency,
+      poExpiryDate: this.currPOObj.POExpiryDate,
+      poc: this.currPOObj.POCLookup,
+      total: this.currPOObj.Amount,
+      revenue: this.currPOObj.AmountRevenue,
+      oop: this.currPOObj.AmountOOP,
+      tax: this.currPOObj.AmountTax,
+      // poFile: this.globalObject.sharePointPageObject.webRelativeUrl + '/' + this.currClientObj.ClientLegalEntity +
+      //   '/' + this.adminConstants.FOLDER_LOCATION.PO + '/' + this.currPOObj.Link,
+      ta: this.currPOObj.TA,
+      molecule: this.currPOObj.Molecule,
+      cmLevel2: this.currPOObj.CMLevel2.ID,
+      poBuyingEntity: this.currPOObj.BuyingEntity
+    });
+    this.showeditPO = true;
+    this.showaddPO = true;
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * Construct a method to remove the item from table.
+   *
+   * @description
+   *
+   * This method mark the po as `Status='Inactive'` in `PO` list so that it is not visible in table.
+   * @note
+   *
+   * It will first confirm from user to delete or not.
+   */
+  deletePO() {
+    this.confirmationService.confirm({
+      message: 'Do you want to delete this record?',
+      header: 'Delete Confirmation',
+      icon: 'pi pi-info-circle',
+      key: 'confirm',
+      accept: () => {
+        const updateData = {
+          Status: this.adminConstants.LOGICAL_FIELD.INACTIVE
+        };
+        this.confirmUpdate(this.currPOObj, updateData, this.constants.listNames.PO.name,
+          this.constants.listNames.PO.type, this.adminConstants.DELETE_LIST_ITEM.PURCHASE_ORDER);
+      },
+    });
+  }
+  /**
+   * Construct a method to call REST API based on query `ID='this.currPOObj.ID'`to show the all the properties in right overlay.
+   *
+   * @description
+   *
+   * This method is used to show the selected item in right side overlay.
+   *
+   */
+  async viewPO() {
+    this.adminObject.isMainLoaderHidden = false;
+    this.PORightRows = await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.GET);
+    this.po.isRightVisible = true;
+    this.adminObject.isMainLoaderHidden = true;
+  }
   saveBudget(budgetData) {
     if (!this.selectedValue.length) {
       this.checkBudgetValue = true;
@@ -1954,66 +2476,10 @@ export class ClientMasterdataComponent implements OnInit {
   }
 
 
-  onChange() {
-    let total = 0;
-    total = this.changeBudgetForm.get('revenue').value + this.changeBudgetForm.get('oop').value + this.changeBudgetForm.get('tax').value;
-    this.changeBudgetForm.controls.total.setValue(total);
-  }
-
-
-
-
-
-
-  showPO() {
-    this.showPurchaseOrder = true;
-  }
-
-
-
-
-
-  showAddPO() {
-    this.editPo = true;
-    this.PoForm.controls.poNumber.enable();
-    this.PoForm.controls.currency.enable();
-    this.buttonLabel = 'Submit';
-    this.showaddPO = true;
-    this.showeditPO = false;
-    this.initAddPOForm();
-    this.cmObject.isPOFormSubmit = false;
-  }
-
-  showEditPOModal(data) {
-    this.cmObject.isPOFormSubmit = false;
-    this.editPo = false;
-    this.buttonLabel = 'Update';
-    this.showeditPO = true;
-    this.showaddPO = true;
-    this.PoForm.controls.poNumber.disable();
-    this.PoForm.controls.currency.disable();
-    this.PoForm.patchValue({
-      poNumber: data.poNo,
-      poName: data.poName,
-      currency: 'option2',
-      poExpiryDate: new Date(),
-      poc: 'option2',
-      total: data.total,
-      revenue: data.revenue,
-      oop: data.oop,
-      tax: data.tax,
-      // poFile: 'Purchase Order.csv',
-      ta: 'option2',
-      molecule: 'option2',
-      cmLevel2: 'option2',
-      poBuyingEntity: 'option2'
-    });
-  }
-
-  showchangeBudgetModal(data) {
+  showchangeBudgetModal() {
     this.selectedValue = [];
     this.checkBudgetValue = false;
-    this.poValue = data;
+    // this.poValue = data;
     this.changeBudgetForm.controls.total.disable();
     this.initAddBudgetForm();
     this.showaddBudget = true;

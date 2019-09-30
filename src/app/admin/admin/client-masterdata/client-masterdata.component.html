@@ -186,7 +186,7 @@
 </p-table> -->
 
 <p-dialog [(visible)]="showaddClientModal" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
-    [style]="{width: '60%'}">
+    [style]="{width: '90%'}">
     <p-header *ngIf="!showEditClient">
         Add Client Legal Entry
     </p-header>
@@ -261,7 +261,7 @@
                     <div *ngIf="addClient.controls.realization.errors.required">
                         Realization is required</div>
                     <div *ngIf="addClient.controls.realization.errors.positiveNumber">
-                        Positive number only allowed.</div>
+                        Only postive numbers are allowed.</div>
                 </div>
             </div>
         </div>
@@ -408,7 +408,7 @@
 <!-- Sub-Division Dialog -->
 
 <p-dialog [(visible)]="showSubDivisionDetails" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
-    [style]="{width: '60%'}">
+    [style]="{width: '90%'}">
     <div>
         <a (click)="downloadExcel(sd)" class="download-worksheet td-none"><i class="fa fa-download"
                 aria-hidden="true"></i>
@@ -418,7 +418,7 @@
         Sub-Division Details
     </p-header>
     <p-table #sd [columns]="subDivisionDetailsColumns" [value]="subDivisionDetailsRows"
-        exportFilename="Sub Division Details" class="minFirstLastCol5Per">
+        exportFilename="Sub Division Details" class="minFirstLastCol5Per" [paginator]="true" [rows]="10">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th>Sr.No.</th>
@@ -547,7 +547,7 @@
 <!-- POC Dialog -->
 
 <p-dialog [(visible)]="showPointofContact" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
-    [style]="{width: '60%'}">
+    [style]="{width: '90%'}">
     <div>
         <a (click)="downloadExcel(poc)" class="download-worksheet td-none"><i class="fa fa-download"
                 aria-hidden="true"></i>
@@ -556,7 +556,8 @@
     <p-header>
         Point of Contact
     </p-header>
-    <p-table #poc [columns]="POCColumns" [value]="POCRows" class="minFirstLastCol5Per" exportFilename="Point of Contact">
+    <p-table #poc [columns]="POCColumns" [value]="POCRows" class="minFirstLastCol5Per" exportFilename="Point of Contact"
+        [paginator]="true" [rows]="10">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th>Sr.No.</th>
@@ -637,7 +638,7 @@
 </p-dialog>
 
 <p-dialog [(visible)]="showaddPOC" [modal]="true" appendTo="body" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
-[style]="{width: '60%'}">
+    [style]="{width: '90%'}">
     <p-header *ngIf="!showeditPOC">
         Add Point Of Contact
     </p-header>
@@ -761,13 +762,14 @@
         </div>
     </form>
     <p-footer>
-        <button pButton label="{{buttonLabel}}" type="button" (click)="savePOC(pocForm)"></button>
+        <button pButton label="{{buttonLabel}}" type="button" (click)="savePOC()"></button>
     </p-footer>
 </p-dialog>
 
 <!-- PO Dialog -->
 
-<p-dialog [(visible)]="showPurchaseOrder" [modal]="true" [style]="{width: '1200px', height: '500px'}">
+<p-dialog [(visible)]="showPurchaseOrder" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
+    [style]="{width: '90%'}">
     <div>
         <a (click)="downloadExcel(po)" class="download-worksheet td-none"><i class="fa fa-download"
                 aria-hidden="true"></i>
@@ -776,7 +778,8 @@
     <p-header>
         Purchase Order
     </p-header>
-    <p-table #po [columns]="POColumns" [value]="PORows" exportFilename="Purchase Order">
+    <p-table #po [columns]="POColumns" [value]="PORows" exportFilename="Purchase Order" class="minFirstLastCol5Per"
+        [paginator]="true" [rows]="10">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th>Sr.No.</th>
@@ -792,23 +795,23 @@
             <tr>
                 <th></th>
                 <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
-                    <p-multiSelect *ngSwitchCase="'poName'" [style]="{'width':'100%'}" appendTo="body"
+                    <p-multiSelect *ngSwitchCase="'PoName'" [style]="{'width':'100%'}" appendTo="body"
                         [options]="POColArray.PoName" defaultLabel="Po Name"
                         (onChange)="po.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
                         filter="true" resetFilterOnHide="true">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'poNo'" [style]="{'width':'100%'}" appendTo="body"
-                        [options]="POColArray.PoNo" defaultLabel="Po Number"
+                    <p-multiSelect *ngSwitchCase="'PoNumber'" [style]="{'width':'100%'}" appendTo="body"
+                        [options]="POColArray.PoNumber" defaultLabel="Po Number"
                         (onChange)="po.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
                         filter="true" resetFilterOnHide="true">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'revenue'" [style]="{'width':'100%'}" appendTo="body"
-                        [options]="POColArray.Revenue" defaultLabel="Revenue"
+                    <p-multiSelect *ngSwitchCase="'AmountRevenue'" [style]="{'width':'100%'}" appendTo="body"
+                        [options]="POColArray.AmountRevenue" defaultLabel="Revenue"
                         (onChange)="po.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
                         filter="true" resetFilterOnHide="true">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'oop'" [style]="{'width':'100%'}" appendTo="body"
-                        [options]="POColArray.Oop" defaultLabel="OOP"
+                    <p-multiSelect *ngSwitchCase="'AmountOOP'" [style]="{'width':'100%'}" appendTo="body"
+                        [options]="POColArray.AmountOOP" defaultLabel="OOP"
                         (onChange)="po.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
                         filter="true" resetFilterOnHide="true">
                     </p-multiSelect>
@@ -828,27 +831,27 @@
             <tr>
                 <td>{{ rowIndex+1 }}</td>
                 <td>
-                    {{rowData.poName}}
+                    {{rowData.PoName}}
                 </td>
                 <td>
-                    {{rowData.poNo}}
+                    {{rowData.PoNumber}}
                 </td>
                 <td>
-                    {{rowData.revenue}}
+                    {{rowData.AmountRevenue}}
                 </td>
                 <td>
-                    {{rowData.oop}}
+                    {{rowData.AmountOOP}}
                 </td>
                 <td>
-                    {{rowData.LastUpdated}}
+                    {{rowData.LastUpdated | date:'MMM dd, yyyy'}}
                 </td>
                 <td>
                     {{rowData.LastUpdatedBy}}
                 </td>
                 <td>
-                    <p-menu #menu [popup]="true" appendTo="body" [model]="items1" styleClass="borderMenu"></p-menu>
+                    <p-menu #menu [popup]="true" appendTo="body" [model]="poItems" styleClass="borderMenu"></p-menu>
                     <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                        (click)="menu.toggle($event);poMenu(rowData)"></i>
+                        (click)="poMenu(rowData); menu.toggle($event);"></i>
                 </td>
             </tr>
         </ng-template>
@@ -860,14 +863,16 @@
             </tr>
         </ng-template>
     </p-table>
-
-    <div class="addNewBtn">
-        <p-button type="button" icon="pi pi-plus-circle" label="Add New Purchase Order" (click)="showAddPO()">
-        </p-button>
-    </div>
+    <p-footer>
+        <div class="addNewBtn">
+            <p-button type="button" icon="pi pi-plus-circle" label="Add New Purchase Order" (click)="showAddPO()">
+            </p-button>
+        </div>
+    </p-footer>
 </p-dialog>
 
-<p-dialog [(visible)]="showaddBudget" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
+<p-dialog [(visible)]="showaddBudget" [modal]="true" appendTo="body"
+    [contentStyle]="{'max-height':'500px', 'top':'0px'}" [style]="{width: '90%'}">
     <p-header>
         Change Budget
     </p-header>
@@ -941,6 +946,9 @@
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poNumber.errors">
                     <div *ngIf="PoForm.controls.poNumber.errors.required">
                         Po Number is required</div>
+                    <div *ngIf="PoForm.controls.poNumber.errors.pattern">
+                        Special characters are allowed between alphabets. Allowed special characters are '-' and '_'.
+                    </div>
                 </div>
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>PO Name</div>
@@ -949,6 +957,9 @@
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poName.errors">
                     <div *ngIf="PoForm.controls.poName.errors.required">
                         PO Name is required</div>
+                    <div *ngIf="PoForm.controls.poName.errors.pattern">
+                        Special characters are allowed between alphabets. Allowed special characters are '-' and '_'.
+                    </div>
                 </div>
             </div>
         </div>
@@ -960,14 +971,18 @@
                         pInputText>
                     <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.total.errors">
                         <div *ngIf="PoForm.controls.total.errors.required">Total Amount is required</div>
+                        <div *ngIf="PoForm.controls.total.errors.nonZeroNumber">
+                            Total cannot be less than equal to zero</div>
                     </div>
                 </div>
                 <div class="p-col-2 "><span class="compulsory">*</span>Revenue</div>
                 <div class="p-col-4">
                     <input class="mr-5" type="number" size="30" formControlName="revenue" placeholder="Revenue"
-                        (input)="onChange()" pInputText>
+                    (change)="setPOTotal()" pInputText>
                     <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.revenue.errors">
                         <div *ngIf="PoForm.controls.revenue.errors.required">Revenue is required</div>
+                        <div *ngIf="PoForm.controls.revenue.errors.positiveNumber">
+                            Revenue cannot be less than zero</div>
                     </div>
                 </div>
             </div>
@@ -975,17 +990,21 @@
                 <div class="p-col-2 "><span class="compulsory">*</span>OOP</div>
                 <div class="p-col-4">
                     <input class="mr-5" type="number" size="30" formControlName="oop" placeholder="OOP"
-                        (input)="onChange()" pInputText>
+                    (change)="setPOTotal()" pInputText>
                     <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.oop.errors">
                         <div *ngIf="PoForm.controls.oop.errors.required">OOP is required</div>
+                        <div *ngIf="PoForm.controls.oop.errors.positiveNumber">
+                            OOP cannot be less than zero.</div>
                     </div>
                 </div>
                 <div class="p-col-2 "><span class="compulsory">*</span>Tax</div>
                 <div class="p-col-4">
                     <input class="mr-5" type="number" size="30" formControlName="tax" placeholder="Tax"
-                        (input)="onChange()" pInputText>
+                    (change)="setPOTotal()" pInputText>
                     <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.tax.errors">
                         <div *ngIf="PoForm.controls.tax.errors.required">Tax is required</div>
+                        <div *ngIf="PoForm.controls.tax.errors.positiveNumber">
+                            Tax cannot be less than zero.</div>
                     </div>
                 </div>
             </div>
@@ -993,7 +1012,8 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>Currency</div>
             <div class="p-col-4">
-                <p-dropdown [options]="options" placeholder="Select Currency" formControlName="currency" filter="true">
+                <p-dropdown [options]="dropdown.CurrencyArray" placeholder="Select Currency" formControlName="currency"
+                    filter="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.currency.errors">
                     <div *ngIf="PoForm.controls.currency.errors.required">
@@ -1002,7 +1022,7 @@
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>PO Expiry Date</div>
             <div class="p-col-4">
-                <p-calendar formControlName="poExpiryDate"></p-calendar>
+                <p-calendar formControlName="poExpiryDate" [minDate]="minDateValue" [showIcon]="true"   [showOnFocus]="false"   [monthNavigator]="true" [readonlyInput]="true"></p-calendar>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poExpiryDate.errors">
                     <div *ngIf="PoForm.controls.poExpiryDate.errors.required">
                         PO Expiry Date is required</div>
@@ -1012,8 +1032,8 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>Point of Contact</div>
             <div class="p-col-4">
-                <p-dropdown [options]="options" placeholder="Select Point of Contact" formControlName="poc"
-                    filter="true">
+                <p-dropdown [options]="dropdown.POPointOfContactArray" placeholder="Select Point of Contact"
+                    formControlName="poc" filter="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poc.errors">
                     <div *ngIf="PoForm.controls.poc.errors.required">
@@ -1022,7 +1042,7 @@
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>PO File</div>
             <div class="p-col-4">
-                <input type="file" formControlName="poFile" pInputText>
+                <input type="file" formControlName="poFile" (change)="onFileChange($event)" pInputText>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poFile.errors">
                     <div *ngIf="PoForm.controls.poFile.errors.required">
                         PO File is required</div>
@@ -1032,7 +1052,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>TA</div>
             <div class="p-col-4">
-                <p-dropdown [options]="options" placeholder="Select TA" formControlName="ta" filter="true">
+                <p-dropdown [options]="dropdown.POTAArray" placeholder="Select TA" formControlName="ta" filter="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.ta.errors">
                     <div *ngIf="PoForm.controls.ta.errors.required">
@@ -1041,7 +1061,8 @@
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>Molecule</div>
             <div class="p-col-4">
-                <p-dropdown [options]="options" placeholder="Select Molecule" formControlName="molecule" filter="true">
+                <p-dropdown [options]="dropdown.POMoleculeArray" placeholder="Select Molecule"
+                    formControlName="molecule" filter="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.molecule.errors">
                     <div *ngIf="PoForm.controls.molecule.errors.required">
@@ -1052,8 +1073,8 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>CM Level 2</div>
             <div class="p-col-4">
-                <p-dropdown [options]="options" placeholder="Select CM Level 2" formControlName="cmLevel2"
-                    filter="true">
+                <p-dropdown [options]="dropdown.CMLevel2Array" placeholder="Select CM Level 2"
+                    formControlName="cmLevel2" filter="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.cmLevel2.errors">
                     <div *ngIf="PoForm.controls.cmLevel2.errors.required">
@@ -1062,8 +1083,8 @@
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>PO Buying Entity</div>
             <div class="p-col-4">
-                <p-dropdown [options]="options" placeholder="Select PO Buying Entity" formControlName="poBuyingEntity"
-                    filter="true">
+                <p-dropdown [options]="dropdown.POBuyingEntityArray" placeholder="Select PO Buying Entity"
+                    formControlName="poBuyingEntity" filter="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poBuyingEntity.errors">
                     <div *ngIf="PoForm.controls.poBuyingEntity.errors.required">
@@ -1073,6 +1094,43 @@
         </div>
     </form>
     <p-footer>
-        <button pButton label="{{buttonLabel}}" type="button" (click)="savePO(PoForm)"></button>
+        <button pButton label="{{buttonLabel}}" type="button" (click)="savePO()"></button>
     </p-footer>
 </p-dialog>
+<div *ngIf="po.isRightVisible" class="ng-right-side-overlay">
+    <p-sidebar [(visible)]="po.isRightVisible" position="right" styleClass="ui-sidebar-md">
+        <p-table [value]="PORightRows">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-task style="overflow: auto">
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">SOW ID</td>
+                    <td>{{task.ID}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" [ngStyle]="{'color':'#d7181f'}">Budget</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Total</td>
+                    <td>{{task.Amount}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Net</td>
+                    <td>{{task.AmountRevenue}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">OOP</td>
+                    <td>{{task.AmountOOP}}</td>
+                </tr>
+                <tr>
+                    <td [ngStyle]="{'color':'#d7181f'}">Tax</td>
+                    <td>{{task.AmountTax}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </p-sidebar>
+</div>

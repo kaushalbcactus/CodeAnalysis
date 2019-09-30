@@ -222,4 +222,17 @@ export class AdminCommonService {
     }
     return null;
   }
+  /**
+   * This method is used to validate the number.
+   *
+   * @param control Pass the form control.
+   *
+   * @returns `positiveNumber` if conditions fails else `null`
+   */
+  lessThanZero(control: ControlContainer): { [key: string]: boolean; } | null {
+    if (isNaN(control.value) || Number(control.value) <= 0) {
+      return { nonZeroNumber: true };
+    }
+    return null;
+  }
 }
