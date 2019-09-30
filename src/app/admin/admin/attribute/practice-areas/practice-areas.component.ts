@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component, OnInit, ApplicationRef, NgZone } from '@angular/core';
+import { DatePipe, PlatformLocation } from '@angular/common';
 import { MessageService, Message, ConfirmationService } from 'primeng/api';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-practice-areas',
@@ -55,6 +56,10 @@ export class PracticeAreasComponent implements OnInit {
    * @param spServices This is instance referance of `SPOperationService` component.
    * @param constants This is instance referance of `ConstantsService` component.
    * @param adminConstants This is instance referance of `AdminConstantService` component.
+   * @param platformLocation This is instance referance of `PlatformLocation` component.
+   * @param router This is instance referance of `Router` component.
+   * @param applicationRef This is instance referance of `ApplicationRef` component.
+   * @param zone This is instance referance of `NgZone` component.
    */
   constructor(
     private datepipe: DatePipe,
@@ -64,8 +69,21 @@ export class PracticeAreasComponent implements OnInit {
     private adminObject: AdminObjectService,
     private spServices: SPOperationService,
     private constants: ConstantsService,
-    private adminConstants: AdminConstantService
-  ) { }
+    private adminConstants: AdminConstantService,
+    private platformLocation: PlatformLocation,
+    private router: Router,
+    private applicationRef: ApplicationRef,
+    private zone: NgZone
+  ) {
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+    router.events.subscribe((uri) => {
+      zone.run(() => applicationRef.tick());
+    });
+  }
   /**
    * Construct a method to initialize all the data.
    *

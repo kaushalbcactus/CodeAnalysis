@@ -5,7 +5,6 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
-import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-user-role-mapping',
@@ -28,8 +27,7 @@ export class UserRoleMappingComponent implements OnInit {
   {label: 'User 4' , value: 'User 4'},
   {label: 'User 5' , value: 'User 5'}];
   selectedUser: any;
-  selectedRoles: string[] = [];
-  userExistGroupArray: string[] = [];
+  selectedRoles: any;
   userRoleColArray = {
     User: [],
     Role: [],
@@ -44,8 +42,7 @@ export class UserRoleMappingComponent implements OnInit {
     private constants: ConstantsService,
     private adminConstants: AdminConstantService,
     private adminObject: AdminObjectService,
-    private adminService: AdminCommonService,
-    private messageService: MessageService
+    private adminService: AdminCommonService
   ) { }
   ngOnInit() {
     this.userRoleColumns = [
@@ -91,10 +88,6 @@ export class UserRoleMappingComponent implements OnInit {
       }
       // load groups
       this.groups = results[1].retItems;
-      // assign the value to global array.
-
-      this.adminObject.resourceCatArray = userResults;
-      this.adminObject.groupArray = this.groups;
     }
     this.adminObject.isMainLoaderHidden = true;
   }
@@ -148,37 +141,16 @@ export class UserRoleMappingComponent implements OnInit {
    *
    */
   async onUserChange() {
-    this.messageService.clear();
-    this.adminObject.isMainLoaderHidden = false;
     const currentUserId = this.selectedUser.value.ID;
-    await this.highlightGroups(currentUserId);
-    this.adminObject.isMainLoaderHidden = true;
-  }
-  /**
-   * construct a method to pre-select the checkbox based on userId.
-   *
-   * @description
-   * It will highlight the group in which user is already presents.
-   *
-   * @param userId Pass userId as parameter to get the information.
-   *
-   * @return It will return the group of array in which user is present.
-   *
-   */
-  async highlightGroups(userId) {
-    this.userInfo = await this.spServices.getUserInfo(userId);
-    this.userExistGroupArray = [];
+    this.userInfo = await this.spServices.getUserInfo(currentUserId);
+    console.log(this.userInfo);
+    let groupArray = [];
     if (this.userInfo && this.userInfo.hasOwnProperty('Groups')) {
       if (this.userInfo.Groups && this.userInfo.Groups.results && this.userInfo.Groups.results.length) {
-        this.userExistGroupArray = this.userInfo.Groups.results.map(x => x.Title);
-      } else {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'User does not exist in any groups.'
-        });
+        groupArray = this.userInfo.Groups.results.map(x => x.Title);
       }
     }
-    return this.selectedRoles = this.userExistGroupArray;
+    this.selectedRoles = groupArray;
   }
   colFilters(colData) {
     this.userRoleColArray.User = this.uniqueArrayObj(colData.map(a => { const b = { label: a.User, value: a.User }; return b; }));
@@ -204,75 +176,15 @@ export class UserRoleMappingComponent implements OnInit {
       };
     });
   }
-  /**
-   * construct a method to add/remove the user from the selected/unselected group.
-   *
-   * @description
-   * This method will get all the information about user.
-   * It will highlight the group in which user is already presents.
-   *
-   */
-  async save() {
-    if (!this.selectedUser) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select user.'
-      });
-      return false;
-    }
-    const removeGroups = this.userExistGroupArray.filter(x => !this.selectedRoles.includes(x));
-    const groups = this.selectedRoles;
-    if (!groups.length && !removeGroups.length) {
-      this.messageService.add({
-        key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select any one group.'
-      });
-      return false;
-    }
-    this.adminObject.isMainLoaderHidden = false;
-    const batchURL = [];
-    const options = {
-      data: null,
-      url: '',
-      type: '',
-      listName: ''
-    };
-    groups.forEach(element => {
-      const userData = {
-        __metadata: { type: 'SP.User' },
-        LoginName: this.userInfo.LoginName
-      };
-      const userCreate = Object.assign({}, options);
-      userCreate.url = this.spServices.getGroupUrl(element, null);
-      userCreate.data = userData;
-      userCreate.type = 'POST';
-      userCreate.listName = element;
-      batchURL.push(userCreate);
-    });
-    removeGroups.forEach(element => {
-      const userData = {
-        loginName: this.userInfo.LoginName
-      };
-      const userRemove = Object.assign({}, options);
-      userRemove.url = this.spServices.removeUserFromGroupByLoginName(element);
-      userRemove.data = userData;
-      userRemove.type = 'POST';
-      userRemove.listName = element;
-      batchURL.push(userRemove);
-    });
-    if (batchURL.length) {
-      const sResult = await this.spServices.executeBatch(batchURL);
-      if (sResult && sResult.length) {
-        this.adminObject.isMainLoaderHidden = true;
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'User - ' + this.userInfo.Title + ' has been updated sucessfully'
-        });
-      }
-    }
-    this.adminObject.isMainLoaderHidden = true;
-    this.highlightGroups(this.userInfo.Id);
+
+  userChange() {
+    this.selectedRoles = ['Role 1',
+      'Role 2'];
+  }
+
+  save() {
+    console.log(this.selectedUser);
+    console.log(this.selectedRoles);
   }
 }
-
 

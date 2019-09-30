@@ -1,10 +1,12 @@
-import { Component, OnInit, OnChanges, SimpleChange } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChange, ApplicationRef, NgZone } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
+import { PlatformLocation } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-user-to-sow',
@@ -41,6 +43,10 @@ export class AddUserToSowComponent implements OnInit {
    * @param adminConstants This is instance referance of `AdminConstantService` component.
    * @param constants This is instance referance of `ConstantsService` component.
    * @param adminCommon This is instance referance of `AdminCommonService` component.
+   * @param platformLocation This is instance referance of `PlatformLocation` component.
+   * @param router This is instance referance of `Router` component.
+   * @param applicationRef This is instance referance of `ApplicationRef` component.
+   * @param zone This is instance referance of `NgZone` component.
    */
   constructor(
     private messageService: MessageService,
@@ -48,8 +54,21 @@ export class AddUserToSowComponent implements OnInit {
     private adminObject: AdminObjectService,
     private adminConstants: AdminConstantService,
     private constants: ConstantsService,
-    private adminCommon: AdminCommonService
-  ) { }
+    private adminCommon: AdminCommonService,
+    private platformLocation: PlatformLocation,
+    private router: Router,
+    private applicationRef: ApplicationRef,
+    private zone: NgZone
+  ) {
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+    router.events.subscribe((uri) => {
+      zone.run(() => applicationRef.tick());
+    });
+  }
   /**
    * Construct a method to initialize all the data.
    *
@@ -142,10 +161,10 @@ export class AddUserToSowComponent implements OnInit {
       sResult.forEach(item => {
         const obj = Object.assign({}, this.adminObject.sowObj);
         obj.CMLevel1 = item.CMLevel1 && item.CMLevel1.results && item.CMLevel1.results.length ?
-        item.CMLevel1.results : [];
+          item.CMLevel1.results : [];
         obj.CMLevel2 = item.CMLevel2 && item.CMLevel2.hasOwnProperty('ID') ? item.CMLevel2 : '';
         obj.DeliveryLevel1 = item.DeliveryLevel1 && item.DeliveryLevel1.results && item.DeliveryLevel1.results.length ?
-        item.DeliveryLevel1.results : [];
+          item.DeliveryLevel1.results : [];
         obj.DeliveryLevel2 = item.DeliveryLevel2 && item.DeliveryLevel2.hasOwnProperty('ID') ? item.DeliveryLevel2 : '';
         obj.ClientLegalEntity = item.ClientLegalEntity ? item.ClientLegalEntity : '';
         obj.ID = item.ID;
