@@ -18,6 +18,7 @@ import { AuthorDetailsComponent } from './author-details/author-details.componen
     selector: 'app-pubsupport',
     templateUrl: './pubsupport.component.html',
     styleUrls: ['./pubsupport.component.css'],
+    encapsulation: ViewEncapsulation.None
 })
 // tslint: disable
 export class PubsupportComponent implements OnInit {
