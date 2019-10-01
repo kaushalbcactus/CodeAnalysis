@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component, OnInit, ApplicationRef, NgZone } from '@angular/core';
+import { DatePipe, PlatformLocation } from '@angular/common';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { AdminObjectService } from 'src/app/admin/services/admin-object.service';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
+import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-role-mapping',
@@ -21,13 +23,11 @@ import { AdminCommonService } from 'src/app/admin/services/admin-common.service'
 export class UserRoleMappingComponent implements OnInit {
   userRoleColumns = [];
   userRoleRows = [];
-  users = [{label: 'User 1' , value: 'User 1'},
-  {label: 'User 2' , value: 'User 2'},
-  {label: 'User 3' , value: 'User 3'},
-  {label: 'User 4' , value: 'User 4'},
-  {label: 'User 5' , value: 'User 5'}];
+  users = [];
+  groups = [];
   selectedUser: any;
-  selectedRoles: any;
+  selectedRoles: string[] = [];
+  userExistGroupArray: string[] = [];
   userRoleColArray = {
     User: [],
     Role: [],
@@ -36,14 +36,51 @@ export class UserRoleMappingComponent implements OnInit {
     Date: []
   };
   userInfo;
+  /**
+   * Construct a method to create an instance of required component.
+   *
+   * @param datepipe This is instance referance of `DatePipe` component.
+   * @param spServices This is instance referance of `SPOperationService` component.
+   * @param constants This is instance referance of `ConstantsService` component.
+   * @param adminConstants This is instance referance of `AdminConstantService` component.
+   * @param adminObject This is instance referance of `AdminObjectService` component.
+   * @param messageService This is instance referance of `MessageService` component.
+   * @param adminCommonService This is instance referance of `AdminCommonService` component.
+   * @param platformLocation This is instance referance of `PlatformLocation` component.
+   * @param router This is instance referance of `Router` component.
+   * @param applicationRef This is instance referance of `ApplicationRef` component.
+   * @param zone This is instance referance of `NgZone` component.
+   */
   constructor(
     private datepipe: DatePipe,
     private spServices: SPOperationService,
     private constants: ConstantsService,
     private adminConstants: AdminConstantService,
     private adminObject: AdminObjectService,
-    private adminService: AdminCommonService
-  ) { }
+    private messageService: MessageService,
+    private adminCommonService: AdminCommonService,
+    private platformLocation: PlatformLocation,
+    private router: Router,
+    private applicationRef: ApplicationRef,
+    private zone: NgZone
+  ) {
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+    router.events.subscribe((uri) => {
+      zone.run(() => applicationRef.tick());
+    });
+  }
+  /**
+   * Construct a method to initialize all the data.
+   *
+   * @description
+   *
+   * This is the entry point in this class which jobs is to initialize and load the required data.
+   *
+   */
   ngOnInit() {
     this.userRoleColumns = [
       { field: 'User', header: 'User' },
@@ -88,6 +125,10 @@ export class UserRoleMappingComponent implements OnInit {
       }
       // load groups
       this.groups = results[1].retItems;
+      // assign the value to global array.
+
+      this.adminObject.resourceCatArray = userResults;
+      this.adminObject.groupArray = this.groups;
     }
     this.adminObject.isMainLoaderHidden = true;
   }
@@ -141,23 +182,75 @@ export class UserRoleMappingComponent implements OnInit {
    *
    */
   async onUserChange() {
+    this.messageService.clear();
+    this.adminObject.isMainLoaderHidden = false;
     const currentUserId = this.selectedUser.value.ID;
-    this.userInfo = await this.spServices.getUserInfo(currentUserId);
-    console.log(this.userInfo);
-    let groupArray = [];
+    await this.highlightGroups(currentUserId);
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * construct a method to pre-select the checkbox based on userId.
+   *
+   * @description
+   * It will highlight the group in which user is already presents.
+   *
+   * @param userId Pass userId as parameter to get the information.
+   *
+   * @return It will return the group of array in which user is present.
+   *
+   */
+  async highlightGroups(userId) {
+    this.userInfo = await this.spServices.getUserInfo(userId);
+    this.userExistGroupArray = [];
     if (this.userInfo && this.userInfo.hasOwnProperty('Groups')) {
       if (this.userInfo.Groups && this.userInfo.Groups.results && this.userInfo.Groups.results.length) {
-        groupArray = this.userInfo.Groups.results.map(x => x.Title);
+        this.userExistGroupArray = this.userInfo.Groups.results.map(x => x.Title);
+      } else {
+        this.messageService.add({
+          key: 'adminCustom', severity: 'error',
+          summary: 'Error Message', detail: 'User does not exist in any groups.'
+        });
       }
     }
-    this.selectedRoles = groupArray;
+    return this.selectedRoles = this.userExistGroupArray;
   }
+  /**
+   * Construct a method to map the array values into particular column dropdown.
+   *
+   * @description
+   *
+   * This method will extract the column object value from an array and stores into the column dropdown array and display
+   * the values into the User,Role,Action,By and Date column dropdown.
+   *
+   * @param colData Pass colData as a parameter which contains an array of column object.
+   *
+   */
   colFilters(colData) {
-    this.userRoleColArray.User = this.uniqueArrayObj(colData.map(a => { const b = { label: a.User, value: a.User }; return b; }));
-    this.userRoleColArray.Role = this.uniqueArrayObj(colData.map(a => { const b = { label: a.Role, value: a.Role }; return b; }));
-    this.userRoleColArray.Action = this.uniqueArrayObj(colData.map(a => { const b = { label: a.Action, value: a.Action }; return b; }));
-    this.userRoleColArray.By = this.uniqueArrayObj(colData.map(a => { const b = { label: a.By, value: a.By }; return b; }));
-    this.userRoleColArray.Date = this.uniqueArrayObj(
+    this.userRoleColArray.User = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = {
+        label: a.User, value: a.User
+      };
+      return b;
+    }));
+    this.userRoleColArray.Role = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = {
+        label: a.Role, value: a.Role
+      };
+      return b;
+    }));
+    this.userRoleColArray.Action = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = {
+        label: a.Action, value: a.Action
+      };
+      return b;
+    }));
+    this.userRoleColArray.By = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = {
+        label: a.By, value: a.By
+      };
+      return b;
+    }));
+    this.userRoleColArray.Date = this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
           label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
@@ -166,25 +259,73 @@ export class UserRoleMappingComponent implements OnInit {
         return b;
       }));
   }
-
-  uniqueArrayObj(array: any) {
-    let sts: any = '';
-    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-      return {
-        label: label1,
-        value: array.find(s => s.label === label1).value
+  /**
+   * construct a method to add/remove the user from the selected/unselected group.
+   *
+   * @description
+   * This method will get all the information about user.
+   * It will highlight the group in which user is already presents.
+   *
+   */
+  async save() {
+    if (!this.selectedUser) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error', sticky: true,
+        summary: 'Error Message', detail: 'Please select user.'
+      });
+      return false;
+    }
+    const removeGroups = this.userExistGroupArray.filter(x => !this.selectedRoles.includes(x));
+    const groups = this.selectedRoles;
+    if (!groups.length && !removeGroups.length) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error', sticky: true,
+        summary: 'Error Message', detail: 'Please select any one group.'
+      });
+      return false;
+    }
+    this.adminObject.isMainLoaderHidden = false;
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    groups.forEach(element => {
+      const userData = {
+        __metadata: { type: 'SP.User' },
+        LoginName: this.userInfo.LoginName
       };
+      const userCreate = Object.assign({}, options);
+      userCreate.url = this.spServices.getGroupUrl(element, null);
+      userCreate.data = userData;
+      userCreate.type = 'POST';
+      userCreate.listName = element;
+      batchURL.push(userCreate);
     });
-  }
-
-  userChange() {
-    this.selectedRoles = ['Role 1',
-      'Role 2'];
-  }
-
-  save() {
-    console.log(this.selectedUser);
-    console.log(this.selectedRoles);
+    removeGroups.forEach(element => {
+      const userData = {
+        loginName: this.userInfo.LoginName
+      };
+      const userRemove = Object.assign({}, options);
+      userRemove.url = this.spServices.removeUserFromGroupByLoginName(element);
+      userRemove.data = userData;
+      userRemove.type = 'POST';
+      userRemove.listName = element;
+      batchURL.push(userRemove);
+    });
+    if (batchURL.length) {
+      const sResult = await this.spServices.executeBatch(batchURL);
+      if (sResult && sResult.length) {
+        this.adminObject.isMainLoaderHidden = true;
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success', sticky: true,
+          summary: 'Success Message', detail: 'User - ' + this.userInfo.Title + ' has been updated sucessfully'
+        });
+      }
+    }
+    this.adminObject.isMainLoaderHidden = true;
+    this.highlightGroups(this.userInfo.Id);
   }
 }
-
