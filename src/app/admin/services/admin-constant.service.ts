@@ -286,7 +286,9 @@ export class AdminConstantService {
     ADD: 'Add',
     EDIT: 'Edit',
     DELETE: 'Delete',
-    GET: 'Get'
+    GET: 'Get',
+    REDUCE: 'Reduce',
+    RESTRUCTURE: 'Restructure'
   };
   public FILTER = {
     CM_LEVEL_1: 'CM L1',

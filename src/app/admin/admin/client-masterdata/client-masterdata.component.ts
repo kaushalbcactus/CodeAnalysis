@@ -70,9 +70,9 @@ export class ClientMasterdataComponent implements OnInit {
   showaddBudget = false;
   editPo = false;
   budgetType = [
-    { label: 'Add', value: 'Add' },
-    { label: 'Reduce', value: 'Reduce' },
-    { label: 'Restructure', value: 'Restructure' }
+    { label: this.adminConstants.ACTION.ADD, value: this.adminConstants.ACTION.ADD },
+    { label: this.adminConstants.ACTION.REDUCE, value: this.adminConstants.ACTION.REDUCE },
+    { label: this.adminConstants.ACTION.RESTRUCTURE, value: this.adminConstants.ACTION.RESTRUCTURE }
   ];
   cmObject = {
     isClientFormSubmit: false,
@@ -163,7 +163,26 @@ export class ClientMasterdataComponent implements OnInit {
     revenue: 0,
     oop: 0,
     tax: 0,
-    isRightVisible: true
+    isRightVisible: false
+  };
+  oldBudget = {
+    Amount: 0,
+    AmountRevenue: 0,
+    AmountTax: 0,
+    AmountOOP: 0,
+    LastUpdated: new Date()
+  };
+  newBudget = {
+    Amount: 0,
+    AmountRevenue: 0,
+    AmountTax: 0,
+    AmountOOP: 0
+  };
+  finalBudget = {
+    Amount: 0,
+    AmountRevenue: 0,
+    AmountTax: 0,
+    AmountOOP: 0
   };
   /**
    * Construct a method to create an instance of required component.
@@ -2034,11 +2053,24 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   setPOTotal() {
-    this.po.revenue = this.PoForm.value.revenue;
-    this.po.oop = this.PoForm.value.oop ? this.PoForm.value.oop : 0;
-    this.po.tax = this.PoForm.value.tax ? this.PoForm.value.tax : 0;
-    this.po.total = this.po.revenue + this.po.oop + this.po.tax;
-    this.PoForm.get('total').setValue(this.po.total);
+    this.po.revenue = 0;
+    this.po.oop = 0;
+    this.po.tax = 0;
+    this.po.total = 0;
+    if (!this.showaddBudget) {
+      this.po.revenue = this.PoForm.value.revenue;
+      this.po.oop = this.PoForm.value.oop ? this.PoForm.value.oop : 0;
+      this.po.tax = this.PoForm.value.tax ? this.PoForm.value.tax : 0;
+      this.po.total = this.po.revenue + this.po.oop + this.po.tax;
+      this.PoForm.get('total').setValue(this.po.total);
+    }
+    if (this.showaddBudget) {
+      this.po.revenue = this.changeBudgetForm.value.revenue;
+      this.po.oop = this.changeBudgetForm.value.oop ? this.changeBudgetForm.value.oop : 0;
+      this.po.tax = this.changeBudgetForm.value.tax ? this.changeBudgetForm.value.tax : 0;
+      this.po.total = this.po.revenue + this.po.oop + this.po.tax;
+      this.changeBudgetForm.get('total').setValue(this.po.total);
+    }
   }
   /**
    * Construct a method to save or update the po into `PO` list.
@@ -2371,121 +2403,273 @@ export class ClientMasterdataComponent implements OnInit {
    */
   async viewPO() {
     this.adminObject.isMainLoaderHidden = false;
-    this.PORightRows = await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.GET);
+    this.PORightRows = [this.currPOObj];
     this.po.isRightVisible = true;
     this.adminObject.isMainLoaderHidden = true;
   }
-  saveBudget(budgetData) {
+  /**
+   * Construct a function to open the form to add, subtract and restructure the amount.
+   *
+   * @description
+   *
+   * This method is used to open the form to perform an action like add, subtract and restructure the amount.
+   *
+   */
+  showchangeBudgetModal() {
+    this.adminObject.isMainLoaderHidden = false;
+    this.selectedValue = [];
+    this.checkBudgetValue = false;
+    this.oldBudget.Amount = this.currPOObj.Amount;
+    this.oldBudget.AmountRevenue = this.currPOObj.AmountRevenue;
+    this.oldBudget.AmountOOP = this.currPOObj.AmountOOP;
+    this.oldBudget.AmountTax = this.currPOObj.AmountTax;
+    this.oldBudget.LastUpdated = this.currPOObj.LastUpdated;
+    this.changeBudgetForm.controls.total.disable();
+    this.initAddBudgetForm();
+    this.showaddBudget = true;
+    this.cmObject.isBudgetFormSubmit = false;
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  /**
+   * Construct a method to save the budget in `PO` and `POBudgetBreakup` list.
+   *
+   * @description
+   *
+   * This method is used to save the data based on action in `PO` and `POBudgetBreakup` list.
+   *
+   * @Note
+   *
+   * 1. User should select the action need to perform.
+   * 2. If `Action='Add'` it will add budget to the existing budget.
+   * 3. If `Action='Reduce'` it will subtract budget from the existing budget.
+   * 4. If `Action='Restructure'` it will adjust budget from one category to another category with total as zero.
+   */
+  async saveBudget() {
     if (!this.selectedValue.length) {
       this.checkBudgetValue = true;
     } else {
       this.checkBudgetValue = false;
     }
-    if (budgetData.valid) {
-      switch (this.selectedValue) {
-        case 'Add':
-          this.addBudget();
-          break;
-        case 'Reduce':
-          this.reduceBudget(budgetData);
-          break;
-        case 'Restructure':
-          this.restructureBudget();
-          break;
+    if (this.selectedValue.length) {
+      if (this.changeBudgetForm.valid) {
+        this.adminObject.isMainLoaderHidden = false;
+        switch (this.selectedValue) {
+          case this.adminConstants.ACTION.ADD:
+            await this.addBudget();
+            this.adminObject.isMainLoaderHidden = true;
+            break;
+          case this.adminConstants.ACTION.REDUCE:
+            await this.reduceBudget();
+            this.adminObject.isMainLoaderHidden = true;
+            break;
+          case this.adminConstants.ACTION.RESTRUCTURE:
+            await this.restructureBudget();
+            this.adminObject.isMainLoaderHidden = true;
+            break;
+        }
+
+      } else {
+        this.cmObject.isBudgetFormSubmit = true;
       }
-    } else {
-      this.cmObject.isBudgetFormSubmit = true;
     }
   }
-  addBudget() {
-    if (this.changeBudgetForm.controls.revenue.value < 0 ||
-      this.changeBudgetForm.controls.oop.value < 0 || this.changeBudgetForm.controls.tax.value < 0) {
+  async addBudget() {
+    this.oldBudget.Amount = this.currPOObj.Amount;
+    this.oldBudget.AmountRevenue = this.currPOObj.AmountRevenue;
+    this.oldBudget.AmountOOP = this.currPOObj.AmountOOP;
+    this.oldBudget.AmountTax = this.currPOObj.AmountTax;
+    this.newBudget.Amount = this.changeBudgetForm.controls.total.value;
+    this.newBudget.AmountRevenue = this.changeBudgetForm.controls.revenue.value;
+    this.newBudget.AmountOOP = this.changeBudgetForm.controls.oop.value;
+    this.newBudget.AmountTax = this.changeBudgetForm.controls.tax.value;
+    if (this.newBudget.AmountRevenue < 0 ||
+      this.newBudget.AmountOOP < 0 || this.newBudget.AmountTax < 0) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Values should be Positve Number'
+        detail: 'Revenue should be Positve Number'
       });
-    } else {
-      if (this.changeBudgetForm.controls.total.value < 0) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error', summary: 'Error Message',
-          detail: 'Total should be in Positve Number'
-        });
-      } else {
-        console.log(this.changeBudgetForm.value);
-        // console.log(this.changeBudgetForm.getRawValue());
-      }
+      return false;
     }
-  }
-
-  reduceBudget(data) {
-    console.log(data);
-    const total = Math.abs(this.changeBudgetForm.controls.total.value);
-    const revenue = Math.abs(this.changeBudgetForm.controls.revenue.value);
-    const oop = Math.abs(this.changeBudgetForm.controls.oop.value);
-    const tax = Math.abs(this.changeBudgetForm.controls.tax.value);
-    if (this.changeBudgetForm.controls.revenue.value > 0 ||
-      this.changeBudgetForm.controls.oop.value > 0 || this.changeBudgetForm.controls.tax.value > 0) {
+    if (this.newBudget.Amount < 0) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Values should be Negative Number'
+        detail: 'Total should be in Positve Number'
       });
-    } else {
-      if (this.changeBudgetForm.controls.total.value > 0) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error', summary: 'Error Message',
-          detail: 'Total should be in Negative Number'
-        });
-      } else if (total > this.poValue.total) {
-        this.messageService.add({
-          key: 'adminCustom',
-          severity: 'error', summary: 'Error Message',
-          detail: 'Total Amount must be less than or equal to existing Total'
-        });
-      } else if (revenue > this.poValue.revenue) {
-        this.messageService.add({
-          key: 'adminCustom',
-          severity: 'error', summary: 'Error Message',
-          detail: 'Revenue must be less than or equal to existing Revenue'
-        });
-      } else if (oop > this.poValue.oop) {
-        this.messageService.add({
-          key: 'adminCustom',
-          severity: 'error', summary: 'Error Message',
-          detail: 'OOP must be less than or equal to existing OOP Value'
-        });
-      } else if (tax > this.poValue.tax) {
-        this.messageService.add({
-          key: 'adminCustom',
-          severity: 'error', summary: 'Error Message',
-          detail: 'Tax Amount must be less than or equal to existing Tax'
-        });
-      } else {
-        console.log(this.changeBudgetForm.value);
-        // console.log(this.changeBudgetForm.getRawValue());
-      }
+      return false;
     }
+    await this.confirmBudgetUpdate();
+    this.showaddBudget = false;
+    await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
+    this.adminObject.isMainLoaderHidden = true;
   }
+  async confirmBudgetUpdate() {
+    this.finalBudget.Amount = this.oldBudget.Amount + this.newBudget.Amount;
+    this.finalBudget.AmountRevenue = this.oldBudget.AmountRevenue + this.newBudget.AmountRevenue;
+    this.finalBudget.AmountOOP = this.oldBudget.AmountOOP + this.newBudget.AmountOOP;
+    this.finalBudget.AmountTax = this.oldBudget.AmountTax + this.newBudget.AmountTax;
+    const poData = {
+      __metadata: { type: this.constants.listNames.PO.type },
+      Amount: this.finalBudget.Amount,
+      AmountRevenue: this.finalBudget.AmountRevenue,
+      AmountOOP: this.finalBudget.AmountOOP,
+      AmountTax: this.finalBudget.AmountTax,
+    };
+    const poBudgetBreakupData = {
+      __metadata: { type: this.constants.listNames.POBudgetBreakup.type },
+      POLookup: this.currPOObj.ID,
+      Currency: this.currPOObj.Currency,
+      CreateDate: new Date(),
+      Amount: this.newBudget.Amount,
+      AmountRevenue: this.newBudget.AmountRevenue,
+      AmountOOP: this.newBudget.AmountOOP,
+      AmountTax: this.newBudget.AmountTax
+    };
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const updatePOData = Object.assign({}, options);
+    updatePOData.data = poData;
+    updatePOData.listName = this.constants.listNames.PO.name;
+    updatePOData.type = 'PATCH';
+    updatePOData.url = this.spServices.getItemURL(this.constants.listNames.PO.name, this.currPOObj.ID);
+    batchURL.push(updatePOData);
 
-  restructureBudget() {
-    if (this.changeBudgetForm.controls.total.value !== 0) {
+    const createPOBudgetBreakupObj = Object.assign({}, options);
+    createPOBudgetBreakupObj.url = this.spServices.getReadURL(this.constants.listNames.POBudgetBreakup.name, null);
+    createPOBudgetBreakupObj.data = poBudgetBreakupData;
+    createPOBudgetBreakupObj.type = 'POST';
+    createPOBudgetBreakupObj.listName = this.constants.listNames.POBudgetBreakup.name;
+    batchURL.push(createPOBudgetBreakupObj);
+    await this.spServices.executeBatch(batchURL);
+  }
+  async reduceBudget() {
+    this.oldBudget.Amount = this.currPOObj.Amount;
+    this.oldBudget.AmountRevenue = this.currPOObj.AmountRevenue;
+    this.oldBudget.AmountOOP = this.currPOObj.AmountOOP;
+    this.oldBudget.AmountTax = this.currPOObj.AmountTax;
+    this.newBudget.Amount = this.changeBudgetForm.controls.total.value;
+    this.newBudget.AmountRevenue = this.changeBudgetForm.controls.revenue.value;
+    this.newBudget.AmountOOP = this.changeBudgetForm.controls.oop.value;
+    this.newBudget.AmountTax = this.changeBudgetForm.controls.tax.value;
+    if (this.newBudget.AmountRevenue > 0) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error', summary: 'Error Message',
+        detail: 'Revenue amount should be negative number'
+      });
+      return false;
+    }
+    if (this.newBudget.AmountOOP > 0) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error', summary: 'Error Message',
+        detail: 'OOP amount should be negative Number'
+      });
+      return false;
+    }
+    if (this.newBudget.AmountTax > 0) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error', summary: 'Error Message',
+        detail: 'Tax amount should be negative Number'
+      });
+      return false;
+    }
+    if (this.newBudget.Amount > 0) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error', summary: 'Error Message',
+        detail: 'Total should be in Negative Number'
+      });
+      return false;
+    }
+    if (Math.abs(this.newBudget.Amount) > this.oldBudget.Amount) {
+      this.messageService.add({
+        key: 'adminCustom',
+        severity: 'error', summary: 'Error Message',
+        detail: 'Total Amount must be less than or equal to existing Total'
+      });
+      return false;
+    }
+    if (Math.abs(this.newBudget.AmountRevenue) > this.oldBudget.AmountRevenue) {
+      this.messageService.add({
+        key: 'adminCustom',
+        severity: 'error', summary: 'Error Message',
+        detail: 'Revenue must be less than or equal to existing Revenue'
+      });
+      return false;
+    }
+    if (Math.abs(this.newBudget.AmountOOP) > this.oldBudget.AmountOOP) {
+      this.messageService.add({
+        key: 'adminCustom',
+        severity: 'error', summary: 'Error Message',
+        detail: 'OOP must be less than or equal to existing OOP Value'
+      });
+      return false;
+    }
+    if (Math.abs(this.newBudget.AmountTax) > this.oldBudget.AmountTax) {
+      this.messageService.add({
+        key: 'adminCustom',
+        severity: 'error', summary: 'Error Message',
+        detail: 'Tax Amount must be less than or equal to existing Tax'
+      });
+      return false;
+    }
+    await this.confirmBudgetUpdate();
+    this.showaddBudget = false;
+    await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
+    this.adminObject.isMainLoaderHidden = true;
+  }
+  async restructureBudget() {
+    this.oldBudget.Amount = this.currPOObj.Amount;
+    this.oldBudget.AmountRevenue = this.currPOObj.AmountRevenue;
+    this.oldBudget.AmountOOP = this.currPOObj.AmountOOP;
+    this.oldBudget.AmountTax = this.currPOObj.AmountTax;
+    this.newBudget.Amount = this.changeBudgetForm.controls.total.value;
+    this.newBudget.AmountRevenue = this.changeBudgetForm.controls.revenue.value;
+    this.newBudget.AmountOOP = this.changeBudgetForm.controls.oop.value;
+    this.newBudget.AmountTax = this.changeBudgetForm.controls.tax.value;
+    if (Math.abs(this.newBudget.Amount) > this.oldBudget.Amount) {
+      this.messageService.add({
+        key: 'adminCustom',
+        severity: 'error', summary: 'Error Message',
+        detail: 'Total Amount must be less than or equal to existing Total'
+      });
+      return false;
+    }
+    if (Math.abs(this.newBudget.AmountRevenue) > this.oldBudget.AmountRevenue) {
+      this.messageService.add({
+        key: 'adminCustom',
+        severity: 'error', summary: 'Error Message',
+        detail: 'Revenue must be less than or equal to existing Revenue'
+      });
+      return false;
+    }
+    if (Math.abs(this.newBudget.AmountOOP) > this.oldBudget.AmountOOP) {
+      this.messageService.add({
+        key: 'adminCustom',
+        severity: 'error', summary: 'Error Message',
+        detail: 'OOP must be less than or equal to existing OOP Value'
+      });
+      return false;
+    }
+    if (Math.abs(this.newBudget.AmountTax) > this.oldBudget.AmountTax) {
+      this.messageService.add({
+        key: 'adminCustom',
+        severity: 'error', summary: 'Error Message',
+        detail: 'Tax Amount must be less than or equal to existing Tax'
+      });
+      return false;
+    }
+    if (this.newBudget.Amount !== 0) {
       this.messageService.add({ key: 'adminCustom', severity: 'error', summary: 'Error Message', detail: 'Total Should be Zero' });
-    } else {
-      console.log(this.changeBudgetForm.value);
-      // console.log(this.changeBudgetForm.getRawValue());
+      return false;
     }
+    await this.confirmBudgetUpdate();
+    this.showaddBudget = false;
+    await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
+    this.adminObject.isMainLoaderHidden = true;
   }
-
-
-  showchangeBudgetModal() {
-    this.selectedValue = [];
-    this.checkBudgetValue = false;
-    // this.poValue = data;
-    this.changeBudgetForm.controls.total.disable();
-    this.initAddBudgetForm();
-    this.showaddBudget = true;
-    this.cmObject.isBudgetFormSubmit = false;
-  }
-
   downloadExcel(cmd) {
     cmd.exportCSV();
   }
