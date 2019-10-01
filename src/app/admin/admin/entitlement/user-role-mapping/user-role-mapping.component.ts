@@ -329,3 +329,5 @@ export class UserRoleMappingComponent implements OnInit {
     this.highlightGroups(this.userInfo.Id);
   }
 }
+
+
