@@ -12,13 +12,13 @@ export class ConstantsService {
   constructor(public globalService: GlobalService) { }
   loader = {
     isPSInnerLoaderHidden: false
-  }
+  };
   public userPermission = {
     isFdUserManager: false,
     isFdUserExpenseApprover: false,
     isFDUserAdmin: true,
     userPermissionMsg: false,
-  }
+  };
 
   public listNames = {
     ProjectRelatedInvoices: {
@@ -328,7 +328,21 @@ export class ConstantsService {
     SOW_CREATION_MANAGERS: 'SOW Creation Managers',
     SYNC_USER_TO_USER_INFORMATION_LIST: 'SyncUserToUserInformationList'
   };
+  public cdStatus = {
+    Created: 'Created',
+    Deleted: 'Deleted',
+    ValidationPending: 'Validation Pending',
+    Closed: 'Closed',
+    Rejected: 'Rejected',
+    Valid: 'Valid',
+    InValid: 'InValid'
+  };
 
+  public pfStatus = {
+    Pending: 'Pending',
+    Accepted: 'Accepted',
+    Rejected: 'Rejected'
+  };
   public FeedbackType = {
     taskRating: 'Task Feedback',
     qualitative: 'Qualitative'

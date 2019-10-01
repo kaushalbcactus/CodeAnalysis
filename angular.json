@@ -38,10 +38,12 @@
                     },
                     "configurations": {
                         "production": {
-                            "fileReplacements": [{
-                                "replace": "src/environments/environment.ts",
-                                "with": "src/environments/environment.prod.ts"
-                            }],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
                             "optimization": true,
                             "outputHashing": "none",
                             "sourceMap": false,
@@ -52,17 +54,21 @@
                             "vendorChunk": false,
                             "buildOptimizer": true,
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/SPA/",
-                            "budgets": [{
-                                "type": "initial",
-                                "maximumWarning": "2mb",
-                                "maximumError": "5mb"
-                            }]
+                            "budgets": [
+                                {
+                                    "type": "initial",
+                                    "maximumWarning": "2mb",
+                                    "maximumError": "5mb"
+                                }
+                            ]
                         },
                         "production-dev": {
-                            "fileReplacements": [{
-                                "replace": "src/environments/environment.ts",
-                                "with": "src/environments/environment.prod.ts"
-                            }],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
                             "optimization": true,
                             "outputHashing": "none",
                             "sourceMap": true,
@@ -223,10 +229,12 @@
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomUAT/AngularModules/PM/"
                         },
                         "prodFD": {
-                            "fileReplacements": [{
-                                "replace": "src/environments/environment.ts",
-                                "with": "src/environments/environment.prod.ts"
-                            }],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
                             "optimization": true,
                             "outputHashing": "bundles",
                             "sourceMap": false,
@@ -239,10 +247,12 @@
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/FD/"
                         },
                         "prodmydashboard": {
-                            "fileReplacements": [{
-                                "replace": "src/environments/environment.ts",
-                                "with": "src/environments/environment.prod.ts"
-                            }],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
                             "optimization": true,
                             "outputHashing": "bundles",
                             "sourceMap": false,
@@ -255,10 +265,12 @@
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/MyDashboard/"
                         },
                         "prodmydashboardsanity": {
-                            "fileReplacements": [{
-                                "replace": "src/environments/environment.ts",
-                                "with": "src/environments/environment.prod.ts"
-                            }],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
                             "optimization": true,
                             "outputHashing": "bundles",
                             "sourceMap": false,
@@ -271,10 +283,12 @@
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/MyDashboardSanity/"
                         },
                         "prodAllocation": {
-                            "fileReplacements": [{
-                                "replace": "src/environments/environment.ts",
-                                "with": "src/environments/environment.prod.ts"
-                            }],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
                             "optimization": true,
                             "outputHashing": "bundles",
                             "sourceMap": false,
@@ -287,10 +301,12 @@
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/Allocation/"
                         },
                         "prodAllocationsanity": {
-                            "fileReplacements": [{
-                                "replace": "src/environments/environment.ts",
-                                "with": "src/environments/environment.prod.ts"
-                            }],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
                             "optimization": true,
                             "outputHashing": "bundles",
                             "sourceMap": false,
@@ -303,10 +319,12 @@
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/AllocationSanity/"
                         },
                         "prodPM": {
-                            "fileReplacements": [{
-                                "replace": "src/environments/environment.ts",
-                                "with": "src/environments/environment.prod.ts"
-                            }],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
                             "optimization": true,
                             "outputHashing": "bundles",
                             "sourceMap": false,
@@ -319,10 +337,12 @@
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/PM/"
                         },
                         "prodPMSanity": {
-                            "fileReplacements": [{
-                                "replace": "src/environments/environment.ts",
-                                "with": "src/environments/environment.prod.ts"
-                            }],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
                             "optimization": true,
                             "outputHashing": "bundles",
                             "sourceMap": false,
@@ -347,10 +367,12 @@
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomUAT/AngularModules/QMSNew/"
                         },
                         "prodQMS": {
-                            "fileReplacements": [{
-                                "replace": "src/environments/environment.ts",
-                                "with": "src/environments/environment.prod.ts"
-                            }],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
                             "optimization": true,
                             "outputHashing": "bundles",
                             "sourceMap": false,
@@ -395,10 +417,12 @@
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomQA/AngularModules/CA/"
                         },
                         "prodCA": {
-                            "fileReplacements": [{
-                                "replace": "src/environments/environment.ts",
-                                "with": "src/environments/environment.prod.ts"
-                            }],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
+                                }
+                            ],
                             "optimization": true,
                             "outputHashing": "bundles",
                             "sourceMap": false,
@@ -425,6 +449,22 @@
                         "devQMS": {
                             "outputHashing": "none",
                             "deployUrl": "https://cactusglobal.sharepoint.com/sites/medcomdev/SiteAssets/CustomAssets/AngularModules/QMS/"
+                        },
+                        "qaAdmin": {
+                            "optimization": true,
+                            "outputHashing": "bundles",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "aot": true,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/Medcomqa/AngularModules/Admin/"
+                        },
+                        "devAdmin": {
+                            "outputHashing": "none",
+                            "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/medcomdev/AngularModules/Admin/"
                         }
                     }
                 },
