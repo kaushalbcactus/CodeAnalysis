@@ -188,3 +188,26 @@ form{
     .minFirstLastCol5Per .ui-table .ui-table-tbody tr> td{
         word-break: break-all;
     }
+    .card-section .card {
+        border-radius: 6px;
+        box-shadow: 0 2px 2px rgba(204, 197, 185, 0.5);
+        background-color: #FFFFFF;
+        color: #252422;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+    }
+    .card-section .card .content {
+        padding: 15px 15px 10px 15px;
+    }
+    .card-section .card .footer {
+        padding: 0;
+        line-height: 30px;
+    }
+    .card-section .card .stats {
+        color: #a9a9a9;
+        font-weight: 300;
+    }
+    .card-section .card .footer div {
+        display: inline-block;
+    }

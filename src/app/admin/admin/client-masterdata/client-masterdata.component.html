@@ -886,8 +886,110 @@
 
     <form [formGroup]='changeBudgetForm'>
         <div class="p-grid mt-20">
-            <div class="p-col-2 ">Total Amount</div>
-            <div class="p-col-4">
+            <div *ngIf="oldBudget" class="p-col-2 card-section">
+                <div class="card">
+                    <div class="content">
+                        <div class="p-grid">
+                            <div class="p-col-5">
+                                <div class="icon-big icon-warning text-center">
+                                    <i class="pi pi-dollar"></i>
+                                </div>
+                            </div>
+                            <div class="p-col-7">
+                                <div class="numbers">
+                                    <p>Total</p>
+                                    <span class="brandColor">{{oldBudget.Amount}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr>
+                            <div class="stats">
+                                <i class="pi pi-clock"></i> {{oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="oldBudget" class="p-col-2 card-section">
+                <div class="card">
+                    <div class="content">
+                        <div class="p-grid">
+                            <div class="p-col-5">
+                                <div class="icon-big icon-warning text-center">
+                                    <i class="pi pi-dollar"></i>
+                                </div>
+                            </div>
+                            <div class="p-col-7">
+                                <div class="numbers">
+                                    <p>Revenue</p>
+                                    <span class="brandColor">{{oldBudget.AmountRevenue}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr>
+                            <div class="stats">
+                                <i class="pi pi-clock"></i> {{oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="oldBudget" class="p-col-2 card-section">
+                <div class="card">
+                    <div class="content">
+                        <div class="p-grid">
+                            <div class="p-col-5">
+                                <div class="icon-big icon-warning text-center">
+                                    <i class="pi pi-dollar"></i>
+                                </div>
+                            </div>
+                            <div class="p-col-7">
+                                <div class="numbers">
+                                    <p>OOP</p>
+                                    <span class="brandColor">{{oldBudget.AmountOOP}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr>
+                            <div class="stats">
+                                <i class="pi pi-clock"></i> {{oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="oldBudget" class="p-col-2 card-section">
+                <div class="card">
+                    <div class="content">
+                        <div class="p-grid">
+                            <div class="p-col-5">
+                                <div class="icon-big icon-warning text-center">
+                                    <i class="pi pi-dollar"></i>
+                                </div>
+                            </div>
+                            <div class="p-col-7">
+                                <div class="numbers">
+                                    <p>Tax</p>
+                                    <span class="brandColor">{{oldBudget.AmountTax}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr>
+                            <div class="stats">
+                                <i class="pi pi-clock"></i> {{oldBudget.LastUpdated | date:'MMM dd, yyyy'}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="p-grid mt-20">
+            <div class="p-col-2">Total Amount</div>
+            <div class="p-col-2">
                 <input class="mr-5" type="number" size="30" formControlName="total" placeholder="Total Amount"
                     pInputText>
                 <div class="error" *ngIf="cmObject.isBudgetFormSubmit && changeBudgetForm.controls.total.errors">
@@ -899,7 +1001,7 @@
             <div class="p-col-2 ">Revenue</div>
             <div class="p-col-4">
                 <input class="mr-5" type="number" size="30" formControlName="revenue" placeholder="Revenue"
-                    (input)="onChange()" pInputText>
+                (change)="setPOTotal()" pInputText>
                 <div class="error" *ngIf="cmObject.isBudgetFormSubmit && changeBudgetForm.controls.revenue.errors">
                     <div *ngIf="changeBudgetForm.controls.revenue.errors.required">Revenue is required</div>
                 </div>
@@ -908,8 +1010,8 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 ">OOP</div>
             <div class="p-col-4">
-                <input class="mr-5" type="number" size="30" formControlName="oop" placeholder="OOP" (input)="onChange()"
-                    pInputText>
+                <input class="mr-5" type="number" size="30" formControlName="oop" placeholder="OOP"
+                (change)="setPOTotal()" pInputText>
                 <div class="error" *ngIf="cmObject.isBudgetFormSubmit && changeBudgetForm.controls.oop.errors">
                     <div *ngIf="changeBudgetForm.controls.oop.errors.required">OOP is required</div>
                 </div>
@@ -918,8 +1020,8 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 ">Tax</div>
             <div class="p-col-4">
-                <input class="mr-5" type="number" size="30" formControlName="tax" placeholder="Tax" (input)="onChange()"
-                    pInputText>
+                <input class="mr-5" type="number" size="30" formControlName="tax" placeholder="Tax" 
+                (change)="setPOTotal()">
                 <div class="error" *ngIf="cmObject.isBudgetFormSubmit && changeBudgetForm.controls.tax.errors">
                     <div *ngIf="changeBudgetForm.controls.tax.errors.required">Tax is required</div>
                 </div>
@@ -927,7 +1029,7 @@
         </div>
     </form>
     <p-footer>
-        <button pButton label="Submit" type="button" (click)="saveBudget(changeBudgetForm)"></button>
+        <button pButton label="Submit" type="button" (click)="saveBudget()"></button>
     </p-footer>
 </p-dialog>
 
@@ -978,7 +1080,7 @@
                 <div class="p-col-2 "><span class="compulsory">*</span>Revenue</div>
                 <div class="p-col-4">
                     <input class="mr-5" type="number" size="30" formControlName="revenue" placeholder="Revenue"
-                    (change)="setPOTotal()" pInputText>
+                        (change)="setPOTotal()" pInputText>
                     <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.revenue.errors">
                         <div *ngIf="PoForm.controls.revenue.errors.required">Revenue is required</div>
                         <div *ngIf="PoForm.controls.revenue.errors.positiveNumber">
@@ -990,7 +1092,7 @@
                 <div class="p-col-2 "><span class="compulsory">*</span>OOP</div>
                 <div class="p-col-4">
                     <input class="mr-5" type="number" size="30" formControlName="oop" placeholder="OOP"
-                    (change)="setPOTotal()" pInputText>
+                        (change)="setPOTotal()" pInputText>
                     <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.oop.errors">
                         <div *ngIf="PoForm.controls.oop.errors.required">OOP is required</div>
                         <div *ngIf="PoForm.controls.oop.errors.positiveNumber">
@@ -1000,7 +1102,7 @@
                 <div class="p-col-2 "><span class="compulsory">*</span>Tax</div>
                 <div class="p-col-4">
                     <input class="mr-5" type="number" size="30" formControlName="tax" placeholder="Tax"
-                    (change)="setPOTotal()" pInputText>
+                        (change)="setPOTotal()" pInputText>
                     <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.tax.errors">
                         <div *ngIf="PoForm.controls.tax.errors.required">Tax is required</div>
                         <div *ngIf="PoForm.controls.tax.errors.positiveNumber">
@@ -1022,7 +1124,8 @@
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>PO Expiry Date</div>
             <div class="p-col-4">
-                <p-calendar formControlName="poExpiryDate" [minDate]="minDateValue" [showIcon]="true"   [showOnFocus]="false"   [monthNavigator]="true" [readonlyInput]="true"></p-calendar>
+                <p-calendar formControlName="poExpiryDate" [minDate]="minDateValue" [showIcon]="true"  
+                    [showOnFocus]="false"   [monthNavigator]="true" [readonlyInput]="true"></p-calendar>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poExpiryDate.errors">
                     <div *ngIf="PoForm.controls.poExpiryDate.errors.required">
                         PO Expiry Date is required</div>
