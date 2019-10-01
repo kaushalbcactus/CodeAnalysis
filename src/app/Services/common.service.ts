@@ -776,7 +776,7 @@ export class CommonService {
 
     async getProjectResources(projectCode, bFirstCall, bSaveRes) {
 
-         
+
         this.batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
         let projectResource = '';
@@ -824,16 +824,16 @@ export class CommonService {
 
         if (this.response.length > 0) {
 
-        
-            this.sharedTaskAllocateObj.oResources = this.response.length > 2 ? this.response[2]:this.sharedTaskAllocateObj.oResources;
-            this.sharedTaskAllocateObj.oCentralGroup = this.response.length > 2 ? this.response[3]: this.sharedTaskAllocateObj.oCentralGroup;
-            console.log("Central group");
-            
-            console.log(this.sharedTaskAllocateObj.oCentralGroup);
-            
-            
 
-          
+            this.sharedTaskAllocateObj.oResources = this.response.length > 2 ? this.response[2] : this.sharedTaskAllocateObj.oResources;
+            this.sharedTaskAllocateObj.oCentralGroup = this.response.length > 2 ? this.response[3] : this.sharedTaskAllocateObj.oCentralGroup;
+            console.log("Central group");
+
+            console.log(this.sharedTaskAllocateObj.oCentralGroup);
+
+
+
+
             const project = this.response[0] !== "" ? this.response[0].length > 0 ? this.setLevel1Email(this.response[0][0]) : [] : [];
             if (project.length > 0) {
                 const returnedProject = project[0];
@@ -896,7 +896,7 @@ export class CommonService {
     // ***********************************************************************************************************************************
 
     public setLevel1Email(prjObj) {
-        
+
         if (prjObj.CMLevel1.results) {
             prjObj.CMLevel1.results = prjObj.CMLevel1.results.map(cmL1 => {
                 var cm = this.sharedTaskAllocateObj.oResources.filter(user => user.UserName.ID === cmL1.ID).map(u => u.UserName.EMail);
@@ -957,7 +957,6 @@ export class CommonService {
             .map(reverseDateRepresentation)
             .sort()
             .map(reverseDateRepresentation);
-        console.log(sortedDates);
         return sortedDates;
     }
 

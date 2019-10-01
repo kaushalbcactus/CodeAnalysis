@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ElementRef, TemplateRef } from '@angular/core';
 import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
-import { Calendar } from 'primeng/primeng';
+import { Calendar, DataTable } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -67,6 +67,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
     @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
 
+    @ViewChild('pfc', { static: false }) eleRef: DataTable;
+
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
 
@@ -84,7 +86,15 @@ export class ProformaComponent implements OnInit, OnDestroy {
         private commonService: CommonService,
     ) { }
 
+    testObj: any = {}
+
     async ngOnInit() {
+        this.testObj = {};
+        if (Object.entries(this.testObj).length === 0 && this.testObj.constructor === Object) {
+            console.log('Object is empty');
+        } else {
+            console.log('this.testObj ', this.testObj)
+        }
 
         // Create FOrm Field
         this.createProformaFormField();
@@ -401,7 +411,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         }
         this.proformaRes = [...this.proformaRes];
         this.isPSInnerLoaderHidden = true;
-        this.createColFieldValues();
+        this.createColFieldValues(this.proformaRes);
     }
 
     // Project PO
@@ -434,17 +444,17 @@ export class ProformaComponent implements OnInit, OnDestroy {
         Status: []
     }
 
-    createColFieldValues() {
-        this.proformaColArray.ProformaNumber = this.commonService.sortData(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
-        this.proformaColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
-        const proformaDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: this.datePipe.transform(a.ProformaDate, "MMM dd, yyyy"), value: a.ProformaDate }; return b; }).filter(ele => ele.label)));
+    createColFieldValues(resArray) {
+        this.proformaColArray.ProformaNumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
+        this.proformaColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
+        const proformaDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ProformaDate, "MMM dd, yyyy"), value: a.ProformaDate }; return b; }).filter(ele => ele.label)));
         this.proformaColArray.ProformaDate = proformaDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        this.proformaColArray.ProformaType = this.commonService.sortData(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.ProformaType, value: a.ProformaType }; return b; }).filter(ele => ele.label)));
-        this.proformaColArray.Status = this.commonService.sortData(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
-        const amount = this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
+        this.proformaColArray.ProformaType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaType, value: a.ProformaType }; return b; }).filter(ele => ele.label)));
+        this.proformaColArray.Status = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
+        const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
         this.proformaColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label')
-        this.proformaColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.proformaColArray.POC = this.commonService.sortData(this.uniqueArrayObj(this.proformaRes.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
+        this.proformaColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+        this.proformaColArray.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
     }
 
     uniqueArrayObj(array: any) {
@@ -1605,6 +1615,65 @@ export class ProformaComponent implements OnInit, OnDestroy {
             }
         }
     }
+
+    filteredArray: any;
+    ngAfterViewChecked() {
+        this.filteredArray = this.eleRef;
+        if (this.filteredArray.filteredValue) {
+            console.log('Object.entries(this.filteredArray.filters).length ', Object.entries(this.filteredArray.filters).length);
+            if (Object.entries(this.filteredArray.filters).length === 0 && this.filteredArray.filters.constructor === Object) {
+                console.log('Object is empty');
+            } else if (Object.entries(this.filteredArray.filters).length === 1) {
+                this.isEmpty(this.proformaColArray, this.filteredArray.filters);
+            } else {
+                console.log('this.testObj ', this.testObj)
+            }
+            console.log('in ngAfterViewChecked this.proformaRes ', this.filteredArray);
+            // this.createColFieldValues(this.filteredArray.filteredValue);
+
+        } else if (this.filteredArray.filteredValue === null) {
+            this.createColFieldValues(this.proformaRes);
+        }
+    }
+
+    isEmpty(obj, firstColFilter) {
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop) && firstColFilter[prop]) {
+                console.log(obj.hasOwnProperty(prop) && firstColFilter[prop]);
+            } else {
+                this.firstFilterCol(this.filteredArray.filteredValue, prop);
+            }
+        }
+    }
+
+    firstFilterCol(array, colName) {
+        this.proformaColArray[colName] = [];
+        let totalArr = array.map(item => item[colName]);
+        if (colName.toLowerCase().includes("date")) {
+            totalArr = this.commonService.sortDateArray(this.uniqueArrayObj(totalArr.map(a => { let b = { label: this.datePipe.transform(a, "MMM dd, yyyy"), value: a }; return b; }).filter(ele => ele.label)));
+        }
+        console.log(totalArr);
+        // const uniqueTotalArr = totalArr.filter((item, index) => totalArr.indexOf(item) === index);
+        const uniqueTotalArr = Array.from(new Set(totalArr));
+        for (let i = 0; i < uniqueTotalArr.length; i++) {
+            const element = uniqueTotalArr[i];
+            if (colName.toLowerCase().includes("date")) {
+                this.proformaColArray[colName].push({ label: this.datePipe.transform(element, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(element, 'MMM dd, yyyy')) });
+            } else {
+                this.proformaColArray[colName].push({ label: element, value: element });
+            }
+        }
+    }
+
+    // customColFilter(val, col, type) {
+    //     console.log('eleRef ', this.eleRef);
+    //     if (this.eleRef.filteredValue) {
+    //         console.log('in ngAfterViewChecked this.proformaRes ', this.eleRef);
+    //         this.createColFieldValues(this.eleRef.filteredValue);
+    //     } else if (this.eleRef.filteredValue === null) {
+    //         this.createColFieldValues(this.proformaRes);
+    //     }
+    // }
 
     ngOnDestroy() {
         // this.subscriptionPE.unsubscribe();
