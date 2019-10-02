@@ -2473,6 +2473,29 @@ export class ClientMasterdataComponent implements OnInit {
       }
     }
   }
+  /**
+   * Construct a method to add budget to existing budget.
+   *
+   * @description
+   *
+   * This method is used to add the budget to existing budget.
+   * It will make one entry in `PO`list and another one in `POBudgetBreakup` list.
+   *
+   *  @Note
+   *
+   * 1. Revenue should be positive number.
+   * 2. OOP should be positive number.
+   * 3. Tax should be positive number.
+   * 4. Total should not be less than zero.
+   *
+   * @example
+   *
+   * It will add Amount to Amount, AmountRevenue to AmountRevenue, AmountOOP to AmountOOP and AmountTax
+   *  to AmountTax column in `PO` and `POBudgetBreakup` list.
+   * Total = AmountRevenue + AmountOOP + AmountTax;
+   *
+   * @returns  It will return false if validation fails.
+   */
   async addBudget() {
     this.oldBudget.Amount = this.currPOObj.Amount;
     this.oldBudget.AmountRevenue = this.currPOObj.AmountRevenue;
@@ -2502,6 +2525,21 @@ export class ClientMasterdataComponent implements OnInit {
     await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
     this.adminObject.isMainLoaderHidden = true;
   }
+  /**
+   * Construct a method to execute the `BATCH` request using SharePoint REST-API to add/update the
+   * data into `PO` and `POBudgetBreakup` list.
+   *
+   * @description
+   *
+   * This method is used to add/update record into `PO` and `POBudgetBreakup` list using REST-API call.
+   * It will update the current item in `PO` list and add item into `POBudgetBreakup` list.
+   *
+   * @Note
+   *
+   * 1. If `Action='Add'` it will add budget to the existing budget.
+   * 2. If `Action='Reduce'` it will subtract budget from the existing budget.
+   * 3. If `Action='Restructure'` it will adjust budget from one category to another category with total as zero.
+   */
   async confirmBudgetUpdate() {
     this.finalBudget.Amount = this.oldBudget.Amount + this.newBudget.Amount;
     this.finalBudget.AmountRevenue = this.oldBudget.AmountRevenue + this.newBudget.AmountRevenue;
@@ -2546,6 +2584,34 @@ export class ClientMasterdataComponent implements OnInit {
     batchURL.push(createPOBudgetBreakupObj);
     await this.spServices.executeBatch(batchURL);
   }
+  /**
+   * Construct a method to subtract the budget from existing budget.
+   *
+   * @description
+   *
+   * This method is used to subtract the budget from existing budget.
+   * It will make update the item in `PO`list and create one item in `POBudgetBreakup` list with `-` sign.
+   *
+   * @Note
+   *
+   * 1. Revenue amount should be negative number.
+   * 2. OOP amount should be negative number.
+   * 3. Tax amount should be negative number.
+   * 4. Total should be in negative number.
+   * 5. Total Amount must be less than or equal to existing Total.
+   * 6. Revenue must be less than or equal to existing Revenue
+   * 7. OOP must be less than or equal to existing OOP Value.
+   * 8. Tax Amount must be less than or equal to existing Tax
+   *
+   * @example
+   *
+   * Let say existing revenue is $100 so user cannot subtract -101 from revenu budget which is same for
+   * Total, OOP and Tax.
+   *
+   * Total = AmountRevenue - AmountOOP - AmountTax;
+   *
+   * @returns  It will return false if validation fails.
+   */
   async reduceBudget() {
     this.oldBudget.Amount = this.currPOObj.Amount;
     this.oldBudget.AmountRevenue = this.currPOObj.AmountRevenue;
@@ -2565,21 +2631,21 @@ export class ClientMasterdataComponent implements OnInit {
     if (this.newBudget.AmountOOP > 0) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'OOP amount should be negative Number'
+        detail: 'OOP amount should be negative number'
       });
       return false;
     }
     if (this.newBudget.AmountTax > 0) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Tax amount should be negative Number'
+        detail: 'Tax amount should be negative number'
       });
       return false;
     }
     if (this.newBudget.Amount > 0) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Total should be in Negative Number'
+        detail: 'Total should be in negative number'
       });
       return false;
     }
@@ -2620,6 +2686,47 @@ export class ClientMasterdataComponent implements OnInit {
     await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
     this.adminObject.isMainLoaderHidden = true;
   }
+  /**
+   * Construct a method to add budget from one category to another category without affecting the total budget.
+   *
+   * @description
+   *
+   * This method is used to transfer the amount form one category to another category without changing the total amount.
+   * It will make update the item in `PO`list and create one item in `POBudgetBreakup` list with
+   * one of the column with positive amount and another with negative amount.
+   *
+   * @Note
+   *
+   * 1. Total amount should be zero.
+   * 2. Total Amount must be less than or equal to existing Total.
+   * 3. Revenue must be less than or equal to existing Revenue
+   * 4. OOP must be less than or equal to existing OOP Value.
+   * 5. Tax Amount must be less than or equal to existing Tax
+   *
+   * @example
+   *
+   * Possible transfer bugdget case is
+   *
+   * 1. Revenue to OOP.
+   * 2. Revenue to Tax.
+   * 3. OOP to Revenue.
+   * 4. OOP to Tax.
+   * 5. Tax to Revenue.
+   * 6. Tax to OOP.
+   *
+   * Case1:
+   *
+   * Let assume, I want to transfer $50 from existing $100 from revenue to OOP.
+   * Then,
+   * Revenue will have -50 and
+   * OOP will have +50
+   * Here I cannot add more than $100 because existing revenue is only $100.
+   * Above example is applies to each category if they want to tranfer the amount.
+   *
+   * Total = +-AmountRevenue +- AmountOOP +- AmountTax;
+   *
+   * @returns  It will return false if validation fails.
+   */
   async restructureBudget() {
     this.oldBudget.Amount = this.currPOObj.Amount;
     this.oldBudget.AmountRevenue = this.currPOObj.AmountRevenue;
