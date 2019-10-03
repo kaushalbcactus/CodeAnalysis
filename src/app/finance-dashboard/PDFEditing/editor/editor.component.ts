@@ -670,7 +670,7 @@ export class EditorComponent implements OnInit {
                     <p>[[InvoiceDate]]</p>
                 </td>
                 <td>
-                    <p>Consumption Tax @ 8%</p>
+                    <p>Consumption Tax @ 10%</p>
                 </td>
                 <td>
                     <p>[[CurrencySymbol]] [[ConsumptionTax]]</p>
@@ -873,7 +873,7 @@ export class EditorComponent implements OnInit {
                 <p style="text-align: center;font-size: 16px;margin: 15px 0;">[[InvoiceDate]]</p>
             </td>
             <td>
-                <p style="padding-left: 15px;font-size: 16px;">Consumption Tax @ 8%</p>
+                <p style="padding-left: 15px;font-size: 16px;">Consumption Tax @ 10%</p>
             </td>
             <td>
                 <p style="font-size: 16px;text-align: center;font-weight: bold;">[[CurrencySymbol]] [[ConsumptionTax]]</p>

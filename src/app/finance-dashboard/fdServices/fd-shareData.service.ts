@@ -465,7 +465,7 @@ export class FDDataShareService {
             addressArr = ['', '', '', ''];
         }
         let val = '';
-        let tax1 = oProformaObj.Template === "India" ? (parseFloat(oProformaObj.Amount) * 18 / 100).toFixed(2) : (oProformaObj.Template === "Japan" ? (parseFloat(oProformaObj.Amount) * 8 / 100).toFixed(2) : '0');
+        let tax1 = oProformaObj.Template === "India" ? (parseFloat(oProformaObj.Amount) * 18 / 100).toFixed(2) : (oProformaObj.Template === "Japan" ? (parseFloat(oProformaObj.Amount) * 10 / 100).toFixed(2) : '0');
         let tax = parseFloat(tax1.toString());
         let total = '';
         let taxString = '';
