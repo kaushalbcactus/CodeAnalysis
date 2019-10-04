@@ -422,7 +422,7 @@
 
 </p-dialog>
 
-<p-dialog header="Edit {{heading}}" [draggable]="false" appendTo='body' [modal]="true" [(visible)]="editor"
+<p-dialog header="Edit {{heading}}" [draggable]="true" appendTo='body' [modal]="true" [(visible)]="editor"
     (onHide)="close()" [style]="{width: '1200px', top:'0px'}">
     <app-section-editor *ngIf="editor" [editableData]="data" (editdata)="getData($event)"></app-section-editor>
 </p-dialog>
@@ -433,8 +433,8 @@
 <!--  -->
 
 <p-dialog header="Define width to Appendix table column" [(visible)]="widthDefineModal" [modal]="true"
-    [draggable]="false" [contentStyle]="{'min-height':'150px','max-height':'450px'}" [responsive]="true"
-    [style]="{'width': '75%'}">
+    [closable]="false" [draggable]="true" [contentStyle]="{'min-height':'150px','max-height':'450px'}"
+    [responsive]="true" [style]="{'width': '75%'}">
 
     <form id="myform">
         <div class="ui-g">
@@ -447,7 +447,7 @@
                 <div class="col-lg-4">
                     <div *ngFor="let body of appendixEditTbbody" style="margin: 1px;">
                         <input type="text" name="width" placeholder="Define width" [(ngModel)]="body.width"
-                            (keypress)="enterValue($event)" style="width: 100%;">
+                            (blur)="getVal()" (keypress)="enterValue($event)" style="width: 100%;">
                     </div>
                     <div *ngIf="errMsg">
                         <span style="color: red;">{{errMsg}}</span>
@@ -476,10 +476,20 @@
                     </table>
                 </div>
             </div>
+            <div class="row container">
+                <div class="col-lg-3">
+                    Total
+                </div>
+                <div class="col-lg-4">
+                    <span>{{definedColWidth}}</span>
+                </div>
+            </div>
         </div>
     </form>
     <p-footer>
-        <button pButton type="button" label="Set" (click)="setWidth()"></button>
+        <button pButton type="button" label="Cancel" (click)="cancel()"></button>
+        <button pButton type="button" label="Save" (click)="setWidth('close')"></button>
+        <button pButton type="button" label="Apply" (click)="setWidth('apply')"></button>
     </p-footer>
 </p-dialog>
 

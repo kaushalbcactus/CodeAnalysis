@@ -2701,7 +2701,8 @@ export class EditorComponent implements OnInit {
         this.appendixEditTbbody = tableRowData;
     }
     errMsg: string;
-    setWidth() {
+    definedColWidth: number = 0;
+    setWidth(type: string) {
         this.errMsg = '';
         let sum = 0;
         this.appendixEditTbbody.forEach((ele) => {
@@ -2725,7 +2726,10 @@ export class EditorComponent implements OnInit {
                 th[i].style.width = ele.width + '%';
                 if (sum === 100) {
                     this.errMsg = '';
-                    this.widthDefineModal = false;
+                    if (type === "close") {
+                        this.widthDefineModal = false;
+                        this.definedColWidth = 0;
+                    }
                 }
             });
         }
@@ -2739,6 +2743,29 @@ export class EditorComponent implements OnInit {
         }
         this.errMsg = '';
         return true;
+    }
+
+    getVal() {
+        this.definedColWidth = 0;
+        this.appendixEditTbbody.forEach((ele) => {
+            if (ele.width.includes('%')) {
+                let newVal = ele.width.slice('%', -1);
+                ele.width = newVal;
+            }
+            if (parseInt(ele.width)) {
+                this.definedColWidth += parseInt(ele.width);
+            }
+        });
+
+    }
+
+    cancel() {
+        const th = document.getElementById(this.elementId).querySelector('table').querySelectorAll('th');
+        this.appendixEditTbbody.forEach((ele, i) => {
+            th[i].style.width = 0 + '%';
+        });
+        this.definedColWidth = 0;
+        this.widthDefineModal = false;
     }
 
     disableButton() {
