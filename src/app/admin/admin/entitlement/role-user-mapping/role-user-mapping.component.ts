@@ -74,24 +74,6 @@ export class RoleUserMappingComponent implements OnInit {
    *
    */
   ngOnInit() {
-    this.roleUserColumns = [
-      { field: 'User', header: 'User' },
-      { field: 'Role', header: 'Role' },
-      { field: 'Action', header: 'Action' },
-      { field: 'By', header: 'By' },
-      { field: 'Date', header: 'Date' }
-    ];
-
-    this.roleUserRows = [
-      {
-        User: 'Test',
-        Role: 'Task Feedback',
-        Action: 'Kaushal Bagrodia',
-        By: 'Kaushal Bagrodia',
-        Date: 'Jul 3, 2019'
-      }
-    ];
-    this.colFilters(this.roleUserRows);
     this.loadGroups();
   }
   /**
@@ -263,7 +245,7 @@ export class RoleUserMappingComponent implements OnInit {
     this.roleUserColArray.Date = this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
-          label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
+          label: this.datepipe.transform(a.Date, 'MMM dd, yyyy'),
           value: this.datepipe.transform(a.Date)
         };
         return b;

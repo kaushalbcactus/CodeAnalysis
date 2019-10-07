@@ -10,6 +10,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router } from '@angular/router';
 import { removeSummaryDuplicates } from '@angular/compiler';
 import { GlobalService } from 'src/app/Services/global.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-client-masterdata',
@@ -201,6 +202,7 @@ export class ClientMasterdataComponent implements OnInit {
    * @param applicationRef This is instance referance of `ApplicationRef` component.
    * @param zone This is instance referance of `NgZone` component.
    * @param globalObject This is instance referance of `GlobalService` component.
+   * @param common This is instance referance of `CommonService` component.
    */
   constructor(
     private datepipe: DatePipe,
@@ -216,7 +218,8 @@ export class ClientMasterdataComponent implements OnInit {
     private router: Router,
     private applicationRef: ApplicationRef,
     private zone: NgZone,
-    private globalObject: GlobalService
+    private globalObject: GlobalService,
+    private common: CommonService
   ) {
     /**
      * This is used to initialize the Client form.
@@ -425,19 +428,25 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   colFilters(colData) {
-    this.clientMasterDataColArray.ClientLegalEntity = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }));
-    this.clientMasterDataColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
+    this.clientMasterDataColArray.ClientLegalEntity = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; })));
+    const lastUpdatedArray = this.common.sortDateArray(this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
-          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-          // tslint:disable-next-line: align
+          label: this.datepipe.transform(a.LastUpdated, 'MMM dd, yyyy'),
           value: a.LastUpdated
         };
         return b;
-      }));
-    this.clientMasterDataColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
+      })));
+    this.clientMasterDataColArray.LastUpdated = lastUpdatedArray.map(a => {
+      const b = {
+        label: this.datepipe.transform(a, 'MMM dd, yyyy'),
+        value: new Date(new Date(a).toDateString())
+      };
+      return b;
+    });
+    this.clientMasterDataColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; })));
   }
   /**
    * Construct a method to show the add client legal entity form.
@@ -1071,19 +1080,25 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   subDivisionFilters(colData) {
-    this.subDivisionDetailsColArray.SubDivision = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.SubDivision, value: a.SubDivision }; return b; }));
-    this.subDivisionDetailsColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
+    this.subDivisionDetailsColArray.SubDivision = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.SubDivision, value: a.SubDivision }; return b; })));
+    const lastUpdatedArray = this.common.sortDateArray(this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
-          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
-          // tslint:disable-next-line: align
+          label: this.datepipe.transform(a.LastUpdated, 'MMM dd, yyyy'),
           value: a.LastUpdated
         };
         return b;
-      }));
-    this.subDivisionDetailsColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
+      })));
+    this.subDivisionDetailsColArray.LastUpdated = lastUpdatedArray.map(a => {
+      const b = {
+        label: this.datepipe.transform(a, 'MMM dd, yyyy'),
+        value: new Date(new Date(a).toDateString())
+      };
+      return b;
+    });
+    this.subDivisionDetailsColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; })));
   }
   /**
    * Construct a method show the form to add new sub division.
@@ -1376,22 +1391,29 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   POCFilters(colData) {
-    this.POCColArray.FName = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.FName, value: a.FName }; return b; }));
-    this.POCColArray.LName = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.LName, value: a.LName }; return b; }));
-    this.POCColArray.EmailAddress = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.EmailAddress, value: a.EmailAddress }; return b; }));
-    this.POCColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
+    this.POCColArray.FName = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.FName, value: a.FName }; return b; })));
+    this.POCColArray.LName = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.LName, value: a.LName }; return b; })));
+    this.POCColArray.EmailAddress = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.EmailAddress, value: a.EmailAddress }; return b; })));
+    const lastUpdatedArray = this.common.sortDateArray(this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
-          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
+          label: this.datepipe.transform(a.LastUpdated, 'MMM dd, yyyy'),
           value: a.LastUpdated
         };
         return b;
-      }));
-    this.POCColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
+      })));
+    this.POCColArray.LastUpdated = lastUpdatedArray.map(a => {
+      const b = {
+        label: this.datepipe.transform(a, 'MMM dd, yyyy'),
+        value: new Date(new Date(a).toDateString())
+      };
+      return b;
+    });
+    this.POCColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; })));
   }
   /**
    * Construct a method show the form to add new Point of Contact.
@@ -1810,26 +1832,33 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   POFilters(colData) {
-    this.POColArray.PoName = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.PoName, value: a.PoName }; return b; }));
-    this.POColArray.PoNumber = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.PoNumber, value: a.PoNumber }; return b; }));
-    this.POColArray.AmountRevenue = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.AmountRevenue, value: a.AmountRevenue }; return b; }));
-    this.POColArray.AmountOOP = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+    this.POColArray.PoName = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.PoName, value: a.PoName }; return b; })));
+    this.POColArray.PoNumber = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.PoNumber, value: a.PoNumber }; return b; })));
+    this.POColArray.AmountRevenue = this.common.sortNumberArray(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.AmountRevenue, value: a.AmountRevenue }; return b; })));
+    this.POColArray.AmountOOP = this.common.sortNumberArray(this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = { label: a.AmountOOP, value: a.AmountOOP };
       return b;
-    }));
-    this.POColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
+    })));
+    const lastUpdatedArray = this.common.sortDateArray(this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
-          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
+          label: this.datepipe.transform(a.LastUpdated, 'MMM dd, yyyy'),
           value: a.LastUpdated
         };
         return b;
-      }));
-    this.POColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
+      })));
+    this.POColArray.LastUpdated = lastUpdatedArray.map(a => {
+      const b = {
+        label: this.datepipe.transform(a, 'MMM dd, yyyy'),
+        value: new Date(new Date(a).toDateString())
+      };
+      return b;
+    });
+    this.POColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; })));
   }
   /**
    * Construct a method show the form to add new Purchase Order.

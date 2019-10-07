@@ -17,6 +17,7 @@ import { ReferenceDataComponent } from './admin/reference-data/reference-data.co
 import { CopyPermissionComponent } from './admin/entitlement/copy-permission/copy-permission.component';
 import { AddUserToProjectsComponent } from './admin/entitlement/add-user-to-projects/add-user-to-projects.component';
 import { AddUserToSowComponent } from './admin/entitlement/add-user-to-sow/add-user-to-sow.component';
+import { GroupDescriptionComponent } from './admin/entitlement/group-description/group-description.component';
 
 const routes: Routes = [
   {
@@ -46,7 +47,8 @@ const routes: Routes = [
           { path: 'roleUserMapping', component: RoleUserMappingComponent, runGuardsAndResolvers: 'always' },
           { path: 'copyPermission', component: CopyPermissionComponent, runGuardsAndResolvers: 'always' },
           { path: 'addUserToSow', component: AddUserToSowComponent, runGuardsAndResolvers: 'always' },
-          { path: 'addUserToProjects', component: AddUserToProjectsComponent, runGuardsAndResolvers: 'always' }
+          { path: 'addUserToProjects', component: AddUserToProjectsComponent, runGuardsAndResolvers: 'always' },
+          { path: 'addGroupDescription', component: GroupDescriptionComponent, runGuardsAndResolvers: 'always' }
         ]
       },
       { path: 'clientMasterData', component: ClientMasterdataComponent, runGuardsAndResolvers: 'always' },

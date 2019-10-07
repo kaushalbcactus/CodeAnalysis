@@ -67,7 +67,8 @@ export class AdminObjectService {
     ClientLegalEntity: '',
     AccessType: '',
     SOWCode: '',
-    IsCheckBoxChecked: false
+    IsCheckBoxChecked: false,
+    CurrentAccess: ''
   };
   public projObj = {
     CMLevel1: [],
@@ -81,7 +82,8 @@ export class AdminObjectService {
     AccessType: '',
     ProjectCode: '',
     SOWCode: '',
-    WBJID: ''
+    WBJID: '',
+    CurrentAccess: ''
   };
   public bucketObj = {
     ID: 0,

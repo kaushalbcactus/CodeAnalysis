@@ -7,7 +7,7 @@ import { Component, OnInit , ViewEncapsulation} from '@angular/core';
   encapsulation: ViewEncapsulation.None
 })
 export class AttributeComponent implements OnInit {
-  public navLinks = [ {routerLink: ['/admin/attribute/bucketMasterData'], label: 'Bucket Master Data', value: 'BucketMasterData'},
+  public navLinks = [ {routerLink: ['/admin/attribute/bucketMasterData'], label: 'Bucket', value: 'BucketMasterData'},
   {routerLink: ['/admin/attribute/projectTypes'], label: 'Project Types', value: 'ProjectTypes'},
   {routerLink: ['/admin/attribute/deliverableTypes'], label: 'Deliverable Types', value: 'DeliverableTypes'},
   {routerLink: ['/admin/attribute/therapeuticAreas'], label: 'Therapeutic Areas (TA)', value: 'TherapeuticAreas'},

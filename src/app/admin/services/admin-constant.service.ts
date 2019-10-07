@@ -298,10 +298,12 @@ export class AdminConstantService {
   };
   public ACCESS_TYPE = {
     ACCESS: 'Access',
-    ACCOUNTABLE: 'Accountable'
+    ACCOUNTABLE: 'Accountable',
+    NO_ACCESS: 'No Access'
   };
   public REG_EXPRESSION = {
     ALPHA_SPECIAL: /^[a-zA-Z]+(-?[a-zA-Z]+)?(_?[a-zA-Z]+)?$/,
+    ALPHA_SPECIAL_WITHSPACE: /^[a-z A-Z]+(-?[a-zA-Z]+)?(_?[a-zA-Z]+)?$/,
     ALPHA: /^[a-zA-Z]+$/,
     APLHA_NUMERIC: /^[a-zA-Z0-9]+$/,
     ALPHA_SPECIAL_NUMERIC: /^[a-zA-Z0-9]+(-?[a-zA-Z0-9]+)?(_?[a-zA-Z0-9]+)?$/
@@ -320,5 +322,8 @@ export class AdminConstantService {
   };
   public FOLDER_LOCATION = {
     PO: 'Finance/PO'
+  };
+  public GROUP_CONSTANT_TEXT = {
+    SP_TEAM: '-Managed By SPTeam'
   };
 }

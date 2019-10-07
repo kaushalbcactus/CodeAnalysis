@@ -177,9 +177,16 @@ export class AddUserToSowComponent implements OnInit {
           && userObj.UserName.ID === item.DeliveryLevel2.ID) {
           obj.IsTypeChangedDisabled = true;
           obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
-        } else {
+          obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
+        } else if (item.CMLevel1 && item.CMLevel1.hasOwnProperty('results') && item.CMLevel1.results.length
+           && item.CMLevel1.results.some(a => a.ID === userObj.UserName.ID) ||
+          item.DeliveryLevel1 && item.DeliveryLevel1.hasOwnProperty('results') && item.DeliveryLevel1.results.length
+          && item.DeliveryLevel1.results.some(a => a.ID === userObj.UserName.ID)) {
           obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCESS;
           obj.IsTypeChangedDisabled = false;
+          obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.ACCESS;
+        } else {
+          obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.NO_ACCESS;
         }
         tempArray.push(obj);
       });

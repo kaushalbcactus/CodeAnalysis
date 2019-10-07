@@ -1,67 +1,69 @@
 <div>
     <a (click)="downloadExcel(dt)" class="download-worksheet td-none"><i class="fa fa-download" aria-hidden="true"></i>
-        Download worksheet</a>
+    </a>
 </div>
-<p-table #dt [columns]="deliverableTypesColumns" [value]="deliverableTypesRows" exportFilename="Deliverable Types"
-    [paginator]="true" [rows]="10" class="minFirstLastCol5Per">
-    <ng-template pTemplate="header" let-columns>
-        <tr>
-            <th>Sr.No.</th>
-            <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                {{col.header}}
-                <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort"
-                    ariaLabelDesc="Activate to sort in descending order"
-                    ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-            </th>
-            <th></th>
-        </tr>
-        <tr>
-            <th></th>
-            <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility">
-                <p-multiSelect *ngSwitchCase="'DeliverableType'" [style]="{'width':'100%'}" appendTo="body"
-                    [options]="deliverableTypesColArray.DeliverableType" defaultLabel="Deliverable Type"
-                    (onChange)="dt.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                    filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'Acronym'" [style]="{'width':'100%'}" appendTo="body"
-                    [options]="deliverableTypesColArray.Acronym" defaultLabel="Acronym"
-                    (onChange)="dt.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                    filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body"
-                    [options]="deliverableTypesColArray.LastUpdated" defaultLabel="LastUpdated"
-                    (onChange)="dt.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                    filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body"
-                    [options]="deliverableTypesColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
-                    (onChange)="dt.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                    filter="true" resetFilterOnHide="true"></p-multiSelect>
-            </th>
-            <th></th>
-        </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
-        <tr>
-            <td>{{ rowIndex+1 }}</td>
-            <td>{{rowData.DeliverableType}}</td>
-            <td>{{rowData.Acronym}}</td>
-            <td>{{rowData.LastUpdated | date:'MMM dd, yyyy'}}</td>
-            <td>{{rowData.LastUpdatedBy}}</td>
-            <td>
-                <p-menu #menu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
-                <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                    (click)="storeRowData(rowData);menu.toggle($event);"></i>
-            </td>
-        </tr>
-    </ng-template>
-    <ng-template pTemplate="emptymessage" let-columns>
-        <tr>
-            <td [attr.colspan]="!deliverableTypesRows.length">
-                No Data found
-            </td>
-        </tr>
-    </ng-template>
-</p-table>
-
-
+<div class="adminTable">
+    <p-table #dt [columns]="deliverableTypesColumns" [value]="deliverableTypesRows" exportFilename="Deliverable Types"
+        [paginator]="true" [rows]="10" class="minFirstLastCol5Per">
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th>Sr.No.</th>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
+                    {{col.header}}
+                    <p-sortIcon [hidden]="!col.visibility" [field]="col.field" ariaLabel="Activate to sort"
+                        ariaLabelDesc="Activate to sort in descending order"
+                        ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                </th>
+                <th></th>
+            </tr>
+            <tr>
+                <th></th>
+                <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility">
+                    <p-multiSelect *ngSwitchCase="'DeliverableType'" [style]="{'width':'100%'}" 
+                        [options]="deliverableTypesColArray.DeliverableType" defaultLabel="Deliverable Type"
+                        (onChange)="dt.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                        filter="true" resetFilterOnHide="true"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Acronym'" [style]="{'width':'100%'}" 
+                        [options]="deliverableTypesColArray.Acronym" defaultLabel="Acronym"
+                        (onChange)="dt.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                        filter="true" resetFilterOnHide="true"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" 
+                        [options]="deliverableTypesColArray.LastUpdated" defaultLabel="LastUpdated"
+                        (onChange)="dt.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                        filter="true" resetFilterOnHide="true"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
+                        [options]="deliverableTypesColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
+                        (onChange)="dt.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                        filter="true" resetFilterOnHide="true"></p-multiSelect>
+                </th>
+                <th></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+            <tr>
+                <td>{{ rowIndex+1 }}</td>
+                <td>{{rowData.DeliverableType}}</td>
+                <td>{{rowData.Acronym}}</td>
+                <td>{{rowData.LastUpdated | date:'MMM dd, yyyy'}}</td>
+                <td>{{rowData.LastUpdatedBy}}</td>
+                <td>
+                    <div>
+                        <p-menu #menu [popup]="true" [model]="items" styleClass="borderMenu"></p-menu>
+                        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                            (click)="storeRowData(rowData);menu.toggle($event);"></i>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td [attr.colspan]="!deliverableTypesRows.length">
+                    No Data found
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
 <div>
     <div class="p-grid addNew">
         <div class="p-col-12">

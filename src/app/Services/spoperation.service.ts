@@ -27,7 +27,7 @@ export class SPOperationService {
   currentUser: string;
   login: string;
   constructor(private http: Http, private globalServices: GlobalService,
-              private httpClient: HttpClient, private constants: ConstantsService) { this.setBaseUrl(null); }
+    private httpClient: HttpClient, private constants: ConstantsService) { this.setBaseUrl(null); }
 
   setBaseUrl(webUrl?: string) {
     if (webUrl) {
@@ -207,6 +207,11 @@ export class SPOperationService {
   // READ entire list - needs $http factory and SharePoint list name
   getAllGroupUrl() {
     const url = this.baseUrl + '/_api/web/sitegroups';
+    return url;
+  }
+  getGroupByName(groupName: any) {
+    const groupURl = this.baseUrl + '/_api/web/sitegroups/getbyname(\'{groupName}\')';
+    const url = groupURl.replace('{groupName}', groupName);
     return url;
   }
   getGroupUrl(groupName: any, options?: any) {
@@ -396,6 +401,28 @@ export class SPOperationService {
     }
     const data = JSON.stringify(jsonBody);
     const url = this.getItemURL(listName, id);
+    const httpOptions = {
+      headers: new HttpHeaders(localOptions)
+    };
+    await this.httpClient.post(url, data, httpOptions).toPromise().catch((err: HttpErrorResponse) => {
+      const error = err.error;
+      return error;
+    });
+  }
+  async updateGroupItem(groupName: string, jsonBody: any) {
+    // Append HTTP header MERGE for UPDATE scenario
+    const localOptions = this.getHeaders(true, false);
+    localOptions['X-HTTP-Method'] = 'MERGE';
+    localOptions['If-Match'] = '*';
+    // Append metadata
+    if (!jsonBody.__metadata) {
+      jsonBody.__metadata = {
+        // tslint:disable-next-line:object-literal-key-quotes
+        'type': 'SP.Group'
+      };
+    }
+    const data = JSON.stringify(jsonBody);
+    const url = this.getGroupByName(groupName);
     const httpOptions = {
       headers: new HttpHeaders(localOptions)
     };
@@ -1308,7 +1335,7 @@ export class SPOperationService {
     this.sendEmail(fromEmail, arrayTo, mailBody, mailSubject, errorDetail, cc);
   }
 
-  
+
   getBatchBodyPost1(batchBody, batchGuid, changeSetId) {
     const batchContents = new Array();
     batchContents.push('--batch_' + batchGuid);

@@ -31,7 +31,7 @@
 }
 .addNew{
     width:38%;
-    margin: 15px auto;
+    margin: 15px auto !important;
 }
 
 
@@ -110,6 +110,7 @@ form{
     }
     .ng-right-side-overlay .ui-sidebar {
         overflow-x: auto !important; 
+        cursor: pointer;
     }
     .top-right-title {
         float: right;     
@@ -211,3 +212,41 @@ form{
     .card-section .card .footer div {
         display: inline-block;
     }
+    /* Css for fixing scroll menu */
+    .ui-table-scrollable-header {
+        overflow: visible!important;
+    }
+    
+    .ui-table.ui-widget {
+        margin-top: 0px;
+    }
+    
+    .ui-table-resizable .ui-table-thead>tr>th {
+        overflow: visible!important;
+    }
+    
+    .adminTable div.ui-table-wrapper {
+        overflow: visible!important;
+    }
+    
+    .adminTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
+        overflow: visible;
+    }
+    
+    .adminTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
+        position: relative;
+    }
+    
+    .adminTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div>i {
+        top: 0px !important;
+    }
+    
+    .adminTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+        top: 0px !important;
+        left: inherit !important;
+        right: 40px !important;
+    }
+    .ui-datepicker:not(.ui-datepicker-inline) {
+        top: 0px !important;
+    }
+    /* Css for fixing scroll menu end here */

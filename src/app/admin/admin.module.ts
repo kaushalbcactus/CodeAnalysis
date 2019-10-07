@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { PrimengModule } from '../primeng/primeng.module';
-import { FormsModule , ReactiveFormsModule} from '@angular/forms';
-import { DatePipe} from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin/admin.component';
 import { UserProfileComponent } from './admin/user-profile/user-profile.component';
@@ -23,8 +23,7 @@ import { AddUserToProjectsComponent } from './admin/entitlement/add-user-to-proj
 import { ReferenceDataComponent } from './admin/reference-data/reference-data.component';
 import { RulesComponent } from './admin/rules/rules.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
-
+import { GroupDescriptionComponent } from './admin/entitlement/group-description/group-description.component';
 @NgModule({
   declarations: [
     AdminComponent,
@@ -43,7 +42,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     RulesComponent,
     CopyPermissionComponent,
     AddUserToSowComponent,
-    AddUserToProjectsComponent],
+    AddUserToProjectsComponent,
+    GroupDescriptionComponent],
   imports: [
     CommonModule,
     AdminRoutingModule,

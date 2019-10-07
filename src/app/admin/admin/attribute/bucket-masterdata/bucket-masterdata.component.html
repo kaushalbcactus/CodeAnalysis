@@ -1,9 +1,9 @@
 <div>
   <a (click)="downloadExcel(bmd)" class="download-worksheet td-none"><i class="fa fa-download" aria-hidden="true"></i>
-    Download worksheet</a>
+  </a>
 </div>
 <div class="clearBoth"></div>
-<div class="tooltip-data-container">
+<div class="tooltip-data-container adminTable">
   <p-table #bmd [columns]="bucketDataColumns" [value]="bucketDataRows" exportFilename="Bucket Master Data"
     [paginator]="true" [rows]="10" class="minFirstLastCol5Per">
     <ng-template pTemplate="header" let-columns>
@@ -20,19 +20,19 @@
       <tr>
         <th></th>
         <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility">
-          <p-multiSelect *ngSwitchCase="'Bucket'" [style]="{'width':'100%'}" appendTo="body"
+          <p-multiSelect *ngSwitchCase="'Bucket'" [style]="{'width':'100%'}"
             [options]="bucketDataColArray.Bucket" defaultLabel="Bucket"
             (onChange)="bmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
             filter="true" resetFilterOnHide="true"></p-multiSelect>
-          <p-multiSelect *ngSwitchCase="'Client'" [style]="{'width':'100%'}" appendTo="body"
+          <p-multiSelect *ngSwitchCase="'Client'" [style]="{'width':'100%'}"
             [options]="bucketDataColArray.Client" defaultLabel="Client"
             (onChange)="bmd.filter($event.value, col.field, 'contains')" (keydown.enter)="$event.preventDefault()"
             filter="true" resetFilterOnHide="true"></p-multiSelect>
-          <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" appendTo="body"
+          <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
             [options]="bucketDataColArray.LastUpdated" defaultLabel="LastUpdated"
             (onChange)="bmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
             filter="true" resetFilterOnHide="true"></p-multiSelect>
-          <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" appendTo="body"
+          <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
             [options]="bucketDataColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
             (onChange)="bmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
             filter="true" resetFilterOnHide="true"></p-multiSelect>
@@ -56,9 +56,11 @@
           {{rowData.LastUpdatedBy}}
         </td>
         <td>
-          <p-menu #menu [popup]="true" appendTo="body" [model]="items" styleClass="borderMenu"></p-menu>
-          <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-            (click)="menu.toggle($event);bucketMenu(rowData)"></i>
+          <div>
+            <p-menu #menu [popup]="true" [model]="items" styleClass="borderMenu"></p-menu>
+            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+              (click)="menu.toggle($event);bucketMenu(rowData)"></i>
+          </div>
         </td>
       </tr>
     </ng-template>
@@ -151,8 +153,7 @@
   <p-header>
     Edit Client
   </p-header>
-  <p-table  [value]="clientList" [(selection)]="selectedClient" dataKey="ID" [scrollable]="true"
-    scrollHeight="400px">
+  <p-table [value]="clientList" [(selection)]="selectedClient" dataKey="ID" [scrollable]="true" scrollHeight="400px">
     <ng-template pTemplate="header" let-columns>
       <tr>
         <th class="width10Per">

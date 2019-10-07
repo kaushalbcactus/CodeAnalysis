@@ -66,6 +66,7 @@ export class BucketMasterdataComponent implements OnInit {
    * @param router This is instance referance of `Router` component.
    * @param applicationRef This is instance referance of `ApplicationRef` component.
    * @param zone This is instance referance of `NgZone` component.
+   * @common zone This is instance referance of `CommonService` component.
    *
    */
   constructor(
@@ -80,7 +81,8 @@ export class BucketMasterdataComponent implements OnInit {
     private platformLocation: PlatformLocation,
     private router: Router,
     private applicationRef: ApplicationRef,
-    private zone: NgZone
+    private zone: NgZone,
+    private common: CommonService
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -216,26 +218,33 @@ export class BucketMasterdataComponent implements OnInit {
    *
    */
   colFilters(colData) {
-    this.bucketDataColArray.Bucket = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+    this.bucketDataColArray.Bucket = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = {
         label: a.Bucket, value: a.Bucket
       };
       return b;
-    }));
-    this.bucketDataColArray.Client = this.adminCommonService.uniqueArrayObj(this.clientList.map(a => {
+    })));
+    this.bucketDataColArray.Client = this.common.sortData(this.adminCommonService.uniqueArrayObj(this.clientList.map(a => {
       const b = { label: a.Title, value: a.Title };
       return b;
-    }));
-    this.bucketDataColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
+    })));
+    const lastUpdatedArray = this.common.sortDateArray(this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
-          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
+          label: this.datepipe.transform(a.LastUpdated, 'MMM dd, yyyy'),
           value: a.LastUpdated
         };
         return b;
-      }));
-    this.bucketDataColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(
-      colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; }));
+      })));
+    this.bucketDataColArray.LastUpdated = lastUpdatedArray.map(a => {
+      const b = {
+        label: this.datepipe.transform(a, 'MMM dd, yyyy'),
+        value: new Date(new Date(a).toDateString())
+      };
+      return b;
+    });
+    this.bucketDataColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; })));
   }
   /**
    * Construct a method to append the menu in bucket table.

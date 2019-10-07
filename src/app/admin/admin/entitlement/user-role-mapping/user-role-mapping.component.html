@@ -29,7 +29,7 @@
             <div class="ui-g-3" *ngFor="let group of groups">
                 <p-card>
                     <p-checkbox name="{{group.Title}}" value="{{group.Title}}" label="{{group.Title}}"
-                        [(ngModel)]="selectedRoles" inputId="r1">
+                        [(ngModel)]="selectedRoles" inputId="r1" pTooltip="{{group.Description}}" tooltipPosition="top">
                     </p-checkbox>
                 </p-card>
             </div>

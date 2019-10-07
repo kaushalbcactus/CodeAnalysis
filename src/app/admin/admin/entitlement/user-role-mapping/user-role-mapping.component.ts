@@ -81,26 +81,8 @@ export class UserRoleMappingComponent implements OnInit {
    * This is the entry point in this class which jobs is to initialize and load the required data.
    *
    */
-  ngOnInit() {
-    this.userRoleColumns = [
-      { field: 'User', header: 'User' },
-      { field: 'Role', header: 'Role' },
-      { field: 'Action', header: 'Action' },
-      { field: 'By', header: 'By' },
-      { field: 'Date', header: 'Date' }
-    ];
-
-    this.userRoleRows = [
-      {
-        User: 'Test',
-        Role: 'Task Feedback',
-        Action: 'Kaushal Bagrodia',
-        By: 'Kaushal Bagrodia',
-        Date: 'Jul 3, 2019'
-      }
-    ];
+  async ngOnInit() {
     this.loadUsersAndGroups();
-    this.colFilters(this.userRoleRows);
   }
   /**
    * Construct a request for calling the batches request and load the dropdown and groups values.
@@ -124,9 +106,13 @@ export class UserRoleMappingComponent implements OnInit {
         });
       }
       // load groups
-      this.groups = results[1].retItems;
+      results[1].retItems.forEach(element => {
+        if (element.Description && element.Description.indexOf(this.adminConstants.GROUP_CONSTANT_TEXT.SP_TEAM) > -1) {
+          element.Description = element.Description.replace(this.adminConstants.GROUP_CONSTANT_TEXT.SP_TEAM, '');
+          this.groups.push(element);
+        }
+      });
       // assign the value to global array.
-
       this.adminObject.resourceCatArray = userResults;
       this.adminObject.groupArray = this.groups;
     }
@@ -253,7 +239,7 @@ export class UserRoleMappingComponent implements OnInit {
     this.userRoleColArray.Date = this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
-          label: this.datepipe.transform(a.Date, 'MMM d, yyyy'),
+          label: this.datepipe.transform(a.Date, 'MMM dd, yyyy'),
           value: a.Date
         };
         return b;

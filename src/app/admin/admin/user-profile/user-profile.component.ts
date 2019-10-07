@@ -10,6 +10,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { MessageService } from 'primeng/api';
 import { AdminObjectService } from '../../services/admin-object.service';
 import { Router } from '@angular/router';
+import { CommonService } from 'src/app/Services/common.service';
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
@@ -143,6 +144,7 @@ export class UserProfileComponent implements OnInit {
    * @param router This is instance referance of `Router` component.
    * @param applicationRef This is instance referance of `ApplicationRef` component.
    * @param zone This is instance referance of `NgZone` component.
+   * @param common This is instance referance of `CommonService` component.
    */
   constructor(
     private datePipe: DatePipe,
@@ -156,7 +158,8 @@ export class UserProfileComponent implements OnInit {
     private platformLocation: PlatformLocation,
     private router: Router,
     private zone: NgZone,
-    private applicationRef: ApplicationRef
+    private applicationRef: ApplicationRef,
+    private common: CommonService
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -338,7 +341,7 @@ export class UserProfileComponent implements OnInit {
         userObj.ID = item.ID;
         userObj.Manager = item.Manager.Title;
         userObj.User = item.UserName.Title;
-        userObj.LastUpdated = item.Modified;
+        userObj.LastUpdated = new Date(new Date(item.Modified).toDateString());
         userObj.LastUpdatedFormat = this.datePipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
         userObj.LastUpdatedBy = item.Editor.Title;
         userObj.IsActive = item.IsActive;
@@ -395,6 +398,7 @@ export class UserProfileComponent implements OnInit {
         }
         tempResult.push(userObj);
       }
+      this.addUser.get('isActive').enable();
     }
     this.userProfileData = tempResult;
     this.adminObject.isMainLoaderHidden = true;
@@ -691,6 +695,9 @@ export class UserProfileComponent implements OnInit {
             userObj.TaskText = tasks.results.map(x => x.Title).join(', ');
           }
         }
+        if (userObj.IsActive === this.adminConstants.LOGICAL_FIELD.NO) {
+          this.addUser.get('isActive').disable();
+        }
         tempResult.push(userObj);
       }
     }
@@ -881,21 +888,30 @@ export class UserProfileComponent implements OnInit {
    * @param colData The colData parameters contains table array which is required to prefill the multiselect dropdown with unique values.
    */
   colFilters(colData) {
-    this.userProfileColArray.User = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+    this.userProfileColArray.User = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = {
         label: a.User, value: a.User
       };
       return b;
-    }));
-    this.userProfileColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+    })));
+    const lastUpdatedArray = this.common.sortDateArray(this.adminCommonService.uniqueArrayObj(
+      colData.map(a => {
+        const b = {
+          label: this.datePipe.transform(a.LastUpdated, 'MMM dd, yyyy'),
+          value: a.LastUpdated
+        };
+        return b;
+      })));
+    this.userProfileColArray.LastUpdated = lastUpdatedArray.map(a => {
       const b = {
-        label: this.datePipe.transform(a.LastUpdated, 'MMM d, yyyy'), value: a.LastUpdated
+        label: this.datePipe.transform(a, 'MMM dd, yyyy'),
+        value: new Date(new Date(a).toDateString())
       };
       return b;
-    }));
-    this.userProfileColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+    });
+    this.userProfileColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b;
-    }));
+    })));
   }
   colFilters1(colData) {
     this.auditHistoryArray.User = this.adminCommonService.uniqueArrayObj(colData.map(a => {
@@ -906,8 +922,8 @@ export class UserProfileComponent implements OnInit {
     }));
     this.auditHistoryArray.ActionDate = this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = {
-        label: this.datePipe.transform(a.ActionDate, 'MMM d, yyyy'),
-        value: this.datePipe.transform(a.ActionDate, 'MMM d, yyyy')
+        label: this.datePipe.transform(a.ActionDate, 'MMM dd, yyyy'),
+        value: this.datePipe.transform(a.ActionDate, 'MMM dd, yyyy')
       };
       return b;
     }));
@@ -955,11 +971,11 @@ export class UserProfileComponent implements OnInit {
           summary: 'Error Message', detail: 'Please select proper manager name.'
         });
         return false;
-      } else if (this.datePipe.transform(new Date(addUserForm.value.dateofjoin), 'MMM dd yyyy') >
-        this.datePipe.transform(new Date(addUserForm.value.liveDate), 'MMM dd yyyy')) {
+      } else if (new Date(addUserForm.value.dateofjoin) >
+        new Date(addUserForm.value.liveDate)) {
         this.messageService.add({
           key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'Go live date cannot be less than date of joining.'
+          summary: 'Error Message', detail: 'Date of joining cannot be greater than go live date.'
         });
         return false;
       } else {
@@ -1136,8 +1152,8 @@ export class UserProfileComponent implements OnInit {
       userObj.DeliverableExclusion = item.DeliverableExclusion;
       userObj.TA = item.TA;
       userObj.TAExclusion = item.TAExclusion;
-      userObj.PracticeAreaEffectiveDate = item.PracticeAreaEffectiveDate,
-        userObj.TimeZoneEffectiveDate = item.TimeZoneEffectiveDate;
+      userObj.PracticeAreaEffectiveDate = item.PracticeAreaEffectiveDate;
+      userObj.TimeZoneEffectiveDate = item.TimeZoneEffectiveDate;
       userObj.ManagerEffectiveDate = item.ManagerEffectiveDate;
       userObj.PrimarySkillEffectiveDate = item.PrimarySkillEffectiveDate;
       userObj.SkillLevelEffectiveDate = item.SkillLevelEffectiveDate;
@@ -1149,6 +1165,56 @@ export class UserProfileComponent implements OnInit {
       userObj.IsActive = item.IsActive;
       userObj.DisplayText = item.Manager.Title;
       userObj.DateofExit = item.DateofExit;
+      // Add the text of below item.
+      if (userObj.Task) {
+        const tasks: any = userObj.Task;
+        if (tasks.results && tasks.results.length) {
+          userObj.TaskText = tasks.results.map(x => x.Title).join(', ');
+        }
+      }
+      // Add the text of below item.
+      if (userObj.Account) {
+        const account: any = userObj.Account;
+        if (account.results && account.results.length) {
+          userObj.AccountText = account.results.map(x => x.Title).join(', ');
+        }
+      }
+      // Add the text of below item.
+      if (userObj.Deliverable) {
+        const deliverable: any = userObj.Deliverable;
+        if (deliverable.results && deliverable.results.length) {
+          userObj.DeliverableText = deliverable.results.map(x => x.Title).join(', ');
+        }
+      }
+      // Add the text of below item.
+      if (userObj.DeliverableExclusion) {
+        const deliverableEx: any = userObj.DeliverableExclusion;
+        if (deliverableEx.results && deliverableEx.results.length) {
+          userObj.DeliverableExclusionText = deliverableEx.results.map(x => x.Title).join(', ');
+        }
+      }
+      // Add the text of below item.
+      if (userObj.TA) {
+        const ta: any = userObj.TA;
+        if (ta.results && ta.results.length) {
+          userObj.TAText = ta.results.map(x => x.Title).join(', ');
+        }
+      }
+      // Add the text of below item.
+      if (userObj.TAExclusion) {
+        const taExclusion: any = userObj.TAExclusion;
+        if (taExclusion.results && taExclusion.results.length) {
+          userObj.TAExclusionText = taExclusion.results.map(x => x.Title).join(', ');
+        }
+      }
+      // Add the text of below item.
+      if (userObj.Task) {
+        const tasks: any = userObj.Task;
+        if (tasks.results && tasks.results.length) {
+          userObj.TaskText = tasks.results.map(x => x.Title).join(', ');
+        }
+      }
+      this.addUser.get('isActive').enable();
       // If Create - add the new created item at position 0 in the array.
       // If Edit - Replace the item in the array and position at 0 in the array.
       if (isUpdate) {

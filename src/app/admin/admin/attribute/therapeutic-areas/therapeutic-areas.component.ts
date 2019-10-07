@@ -7,6 +7,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 import { Router } from '@angular/router';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-therapeutic-areas',
@@ -59,6 +60,7 @@ export class TherapeuticAreasComponent implements OnInit {
    * @param router This is instance referance of `Router` component.
    * @param applicationRef This is instance referance of `ApplicationRef` component.
    * @param zone This is instance referance of `NgZone` component.
+   * @param common This is instance referance of `CommonService` component.
    */
   constructor(
     private datepipe: DatePipe,
@@ -72,7 +74,8 @@ export class TherapeuticAreasComponent implements OnInit {
     private platformLocation: PlatformLocation,
     private router: Router,
     private applicationRef: ApplicationRef,
-    private zone: NgZone
+    private zone: NgZone,
+    private common: CommonService
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -82,7 +85,7 @@ export class TherapeuticAreasComponent implements OnInit {
     router.events.subscribe((uri) => {
       zone.run(() => applicationRef.tick());
     });
-   }
+  }
   /**
    * Construct a method to initialize all the data.
    *
@@ -143,26 +146,33 @@ export class TherapeuticAreasComponent implements OnInit {
    *
    */
   colFilters(colData) {
-    this.therapeuticAreaColArray.TherapeuticArea = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+    this.therapeuticAreaColArray.TherapeuticArea = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = {
         label: a.TherapeuticArea, value: a.TherapeuticArea
       };
       return b;
-    }));
-    this.therapeuticAreaColArray.LastUpdated = this.adminCommonService.uniqueArrayObj(
+    })));
+    const lastUpdatedArray = this.common.sortDateArray(this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
-          label: this.datepipe.transform(a.LastUpdated, 'MMM d, yyyy'),
+          label: this.datepipe.transform(a.LastUpdated, 'MMM dd, yyyy'),
           value: a.LastUpdated
         };
         return b;
-      }));
-    this.therapeuticAreaColArray.LastUpdatedBy = this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      })));
+    this.therapeuticAreaColArray.LastUpdated = lastUpdatedArray.map(a => {
+      const b = {
+        label: this.datepipe.transform(a, 'MMM dd, yyyy'),
+        value: new Date(new Date(a).toDateString())
+      };
+      return b;
+    });
+    this.therapeuticAreaColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = {
         label: a.LastUpdatedBy, value: a.LastUpdatedBy
       };
       return b;
-    }));
+    })));
   }
   /**
    * Construct a method to add the new ta into `TA` list.
@@ -179,7 +189,7 @@ export class TherapeuticAreasComponent implements OnInit {
    *
    */
   async addTherapeuticArea() {
-    const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL;
+    const alphaExp = this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE;
     this.messageService.clear();
     if (!this.therapeuticArea) {
       this.messageService.add({
