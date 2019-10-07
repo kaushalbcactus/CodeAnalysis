@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
-import { Calendar } from 'primeng/primeng';
+import { Calendar, DataTable } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -64,6 +64,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
     @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
 
+    @ViewChild('cnf', { static: false }) confirmTable: DataTable;
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
 
@@ -79,7 +80,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
-        private router: Router
+        private router: Router,
+        private cdr: ChangeDetectorRef,
     ) { }
 
     async ngOnInit() {
@@ -457,7 +459,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 ModifiedBy: element.Editor ? element.Editor.Title : ''
             })
         }
-        this.createColFieldValues();
+        this.createColFieldValues(this.confirmedRes);
     }
 
     getProject(pc: any) {
@@ -551,22 +553,22 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         POCName: []
     }
 
-    createColFieldValues() {
-        this.confirmedInColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.confirmedInColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
-        this.confirmedInColArray.ProjectMileStone = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label));
-        this.confirmedInColArray.POName = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label));
-        this.confirmedInColArray.ClientLegalEntity = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label));
-        this.confirmedInColArray.PONumber = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label));
+    createColFieldValues(resArray) {
+        this.confirmedInColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.confirmedInColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
+        this.confirmedInColArray.ProjectMileStone = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label));
+        this.confirmedInColArray.POName = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label));
+        this.confirmedInColArray.ClientLegalEntity = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label));
+        this.confirmedInColArray.PONumber = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label));
 
-        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
+        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
         this.confirmedInColArray.ScheduledDate = scheduledDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
 
-        this.confirmedInColArray.ScheduleType = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ScheduleType, value: a.ScheduleType }; return b; }).filter(ele => ele.label)));
-        const amount = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: parseFloat(a.Amount), value: a.Amount }; return b; }).filter(ele => ele.label));
+        this.confirmedInColArray.ScheduleType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ScheduleType, value: a.ScheduleType }; return b; }).filter(ele => ele.label)));
+        const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: parseFloat(a.Amount), value: a.Amount }; return b; }).filter(ele => ele.label));
         this.confirmedInColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
-        this.confirmedInColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.confirmedInColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
+        this.confirmedInColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+        this.confirmedInColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
     }
 
     uniqueArrayObj(array: any) {
@@ -1201,6 +1203,21 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 this.tempClick.style.display = "none";
                 this.tempClick = undefined;
             }
+        }
+    }
+
+    ngAfterViewChecked() {
+        let obj = {
+            tableData: this.confirmTable,
+            colFields: this.confirmedInColArray,
+            // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+        }
+        if (obj.tableData.filteredValue) {
+            this.commonService.updateOptionValues(obj);
+            this.cdr.detectChanges();
+        } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+            this.createColFieldValues(obj.tableData.value);
+            this.cdr.detectChanges();
         }
     }
 

@@ -41,21 +41,21 @@
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                     <ng-container *ngIf="col.field">
                         <td></td>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ProformaNumber'" [options]="proformaColArray.ProformaNumber" defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ProformaNumber'" [options]="proformaColArray.ProformaNumber" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'PONumber'" [options]="proformaColArray.PONumber" defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'PONumber'" [options]="proformaColArray.PONumber" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ProformaDate'" [options]="proformaColArray.ProformaDate" defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ProformaDate'" [options]="proformaColArray.ProformaDate" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ProformaType'" [options]="proformaColArray.ProformaType" defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ProformaType'" [options]="proformaColArray.ProformaType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Amount'" [options]="proformaColArray.Amount" defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Amount'" [options]="proformaColArray.Amount" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Currency'" [options]="proformaColArray.Currency" defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Currency'" [options]="proformaColArray.Currency" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'POC'" [options]="proformaColArray.POC" defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'POC'" [options]="proformaColArray.POC" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Status'" [options]="proformaColArray.Status" defaultLabel="All" (onChange)="pfc.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Status'" [options]="proformaColArray.Status" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="pfc.filter($event.value, col.field, 'in')">
                         </p-multiSelect>
                     </ng-container>
                 </th>

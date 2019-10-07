@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
@@ -10,6 +10,7 @@ import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { DatePipe } from '@angular/common';
 import { NodeService } from '../../../node.service';
 import { Subscription } from 'rxjs';
+import { DataTable } from 'primeng/primeng';
 
 @Component({
     selector: 'app-approved-billable',
@@ -56,6 +57,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
 
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
+    @ViewChild('ab', { static: false }) approvedBTable: DataTable;
 
     constructor(
         private messageService: MessageService,
@@ -67,7 +69,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         private commonService: CommonService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private nodeService: NodeService) {
+        private cdr: ChangeDetectorRef,
+    ) {
         this.subscription.add(this.fdDataShareServie.getDateRange().subscribe(date => {
             this.DateRange = date;
             console.log('this.DateRange ', this.DateRange);
@@ -352,7 +355,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         }
         this.approvedBillableRes = [...this.approvedBillableRes];
         this.isPSInnerLoaderHidden = true;
-        this.createColFieldValues();
+        this.createColFieldValues(this.approvedBillableRes);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -386,31 +389,31 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         Status: [],
     }
 
-    createColFieldValues() {
+    createColFieldValues(resArray) {
 
-        this.appBillableColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.appBillableColArray.Category = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
-        this.appBillableColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
-        const clientAmount = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
+        this.appBillableColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.Category = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
+        const clientAmount = this.uniqueArrayObj(resArray.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
         this.appBillableColArray.ClientAmount = this.fdDataShareServie.customSort(clientAmount, 1, 'label');
-        this.appBillableColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
 
-        this.appBillableColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
-        this.appBillableColArray.RequestType = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.RequestType, value: a.RequestType }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.RequestType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.RequestType, value: a.RequestType }; return b; }).filter(ele => ele.label)));
 
-        this.appBillableColArray.PaymentMode = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.PaymentMode, value: a.PaymentMode }; return b; }).filter(ele => ele.label)));
-        this.appBillableColArray.PayingEntity = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.PayingEntity, value: a.PayingEntity }; return b; }).filter(ele => ele.label)));
-        this.appBillableColArray.Status = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.PaymentMode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PaymentMode, value: a.PaymentMode }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.PayingEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PayingEntity, value: a.PayingEntity }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.Status = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
 
-        this.appBillableColArray.Number = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Number, value: a.Number }; return b; }).filter(ele => ele.label)));
-        this.appBillableColArray.PaymentDate = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }).filter(ele => ele.label));
-        this.appBillableColArray.Modified = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }).filter(ele => ele.label));
-        this.appBillableColArray.Created = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Created, value: a.Created }; return b; }).filter(ele => ele.label));
+        this.appBillableColArray.Number = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Number, value: a.Number }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.PaymentDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }).filter(ele => ele.label));
+        this.appBillableColArray.Modified = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }).filter(ele => ele.label));
+        this.appBillableColArray.Created = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Created, value: a.Created }; return b; }).filter(ele => ele.label));
 
-        this.appBillableColArray.SOWCode = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label));
-        // this.appBillableColArray.DateCreated = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.DateCreated, value: a.DateCreated }; return b; }).filter(ele => ele.label));
-        // this.appBillableColArray.ModifiedDate = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
-        // this.appBillableColArray.ModifiedDate = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
+        this.appBillableColArray.SOWCode = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label));
+        // this.appBillableColArray.DateCreated = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DateCreated, value: a.DateCreated }; return b; }).filter(ele => ele.label));
+        // this.appBillableColArray.ModifiedDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
+        // this.appBillableColArray.ModifiedDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
     }
 
     uniqueArrayObj(array: any) {
@@ -1135,6 +1138,22 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 this.tempClick.style.display = "none";
                 this.tempClick = undefined;
             }
+        }
+    }
+
+
+    ngAfterViewChecked() {
+        let obj = {
+            tableData: this.approvedBTable,
+            colFields: this.appBillableColArray,
+            // colFieldsArray: this.createColFieldValues(this.canRejExpenseTable.value)
+        }
+        if (obj.tableData.filteredValue) {
+            this.commonService.updateOptionValues(obj);
+            this.cdr.detectChanges();
+        } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+            this.createColFieldValues(obj.tableData.value);
+            this.cdr.detectChanges();
         }
     }
 

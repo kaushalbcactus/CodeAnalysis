@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, MessageService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -11,6 +11,7 @@ import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/edi
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
+import { DataTable } from 'primeng/primeng';
 
 @Component({
     selector: 'app-outstanding-invoices',
@@ -62,6 +63,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
     @ViewChild('replaceInvoiceFile', { static: false }) replaceInvoiceFile: ElementRef;
     @ViewChild('paymentResolvedFile', { static: false }) paymentResolvedFile: ElementRef;
+    @ViewChild('outi', { static: false }) outInvTable: DataTable;
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
@@ -77,6 +79,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
+        private cdr: ChangeDetectorRef,
     ) { }
 
     ngOnInit() {
@@ -350,7 +353,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         }
         this.outstandingInvoicesRes = [...this.outstandingInvoicesRes];
         this.isPSInnerLoaderHidden = true;
-        this.createColFieldValues();
+        this.createColFieldValues(this.outstandingInvoicesRes);
     }
 
     // Project PO
@@ -393,19 +396,18 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         ModifiedBy: [],
     }
 
-    createColFieldValues() {
-        this.outInvoiceColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.InvoiceStatus = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.InvoiceNumber = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.POName = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label)));
-        console.log(this.outInvoiceColArray.POName);
-        this.outInvoiceColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.POC = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.ModifiedBy = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label)));
-        const invoiceDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: this.datePipe.transform(a.InvoiceDate, 'MMM dd, yyyy'), value: a.InvoiceDate }; return b; }).filter(ele => ele.label)));
+    createColFieldValues(resArray) {
+        this.outInvoiceColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.InvoiceStatus = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.InvoiceNumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.POName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.ModifiedBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label)));
+        const invoiceDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.InvoiceDate, 'MMM dd, yyyy'), value: a.InvoiceDate }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.InvoiceDate = invoiceDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        const amount = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
+        const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
         this.outInvoiceColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
     }
 
@@ -962,6 +964,20 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 this.tempClick.style.display = "none";
                 this.tempClick = undefined;
             }
+        }
+    }
+
+    ngAfterViewChecked() {
+        let obj = {
+            tableData: this.outInvTable,
+            colFields: this.outInvoiceColArray
+        }
+        if (obj.tableData.filteredValue) {
+            this.commonService.updateOptionValues(obj);
+            this.cdr.detectChanges();
+        } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+            this.createColFieldValues(obj.tableData.value);
+            this.cdr.detectChanges();
         }
     }
 

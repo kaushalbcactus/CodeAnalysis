@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -10,6 +10,7 @@ import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { DatePipe } from '@angular/common';
 import { NodeService } from '../../../node.service';
 import { Subscription } from 'rxjs';
+import { DataTable } from 'primeng/primeng';
 
 @Component({
     selector: 'app-approved-non-billable',
@@ -52,6 +53,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
 
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
+    @ViewChild('anb', { static: false }) approvedNBTable: DataTable;
 
     constructor(
         private messageService: MessageService,
@@ -63,7 +65,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         private commonService: CommonService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private nodeService: NodeService
+        private cdr: ChangeDetectorRef,
     ) {
         this.subscription.add(this.fdDataShareServie.getDateRange().subscribe(date => {
             this.DateRange = date;
@@ -160,7 +162,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             { field: 'Status', header: 'Status', visibility: true },
             { field: 'ApproverComments', header: 'Approver Comments', visibility: true },
             { field: 'ModifiedDateFormat', header: 'Approval / Billable Date', visibility: false },
-            { field: 'Modified', header: 'Approval / Billable Date', visibility: true, exportable: false },
+            { field: 'ModifiedDate', header: 'Approval / Billable Date', visibility: true, exportable: false },
 
             { field: 'Category', header: 'Category', visibility: false },
             { field: 'RequestType', header: 'Request Type', visibility: false },
@@ -247,7 +249,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 DateCreated: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
                 Notes: element.Notes,
                 Created: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
-                Modified: new Date(this.datePipe.transform(element.Modified, 'MMM dd, yyyy')), // 
+                ModifiedDate: new Date(this.datePipe.transform(element.Modified, 'MMM dd, yyyy')), // 
                 ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
                 CreatedBy: element.Author ? element.Author.Title : '',
                 ModifiedBy: element.Editor ? element.Editor.Title : '',
@@ -274,7 +276,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         }
         this.approvedNonBillableRes = [...this.approvedNonBillableRes];
         this.isPSInnerLoaderHidden = true;
-        this.createColFieldValues();
+        this.createColFieldValues(this.approvedNonBillableRes);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -316,26 +318,26 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         Status: [],
     }
 
-    createColFieldValues() {
-        this.anonBillableColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.Category = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
-        const clientAmount = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
+    createColFieldValues(resArray) {
+        this.anonBillableColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.Category = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
+        const clientAmount = this.uniqueArrayObj(resArray.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
         this.anonBillableColArray.ClientAmount = this.fdDataShareServie.customSort(clientAmount, 1, 'label');
-        this.anonBillableColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.PaymentMode = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.PaymentMode, value: a.PaymentMode }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.PayingEntity = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.PayingEntity, value: a.PayingEntity }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.Status = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.Number = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Number, value: a.Number }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.PaymentDate = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }).filter(ele => ele.label));
-        const modified = this.commonService.sortDateArray(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.Modified = modified.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        this.anonBillableColArray.Created = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Created, value: a.Created }; return b; }).filter(ele => ele.label));
-        // this.anonBillableColArray.SOWCode = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label));
-        // this.anonBillableColArray.DateCreated = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.DateCreated, value: a.DateCreated }; return b; }).filter(ele => ele.label));
-        // this.anonBillableColArray.ModifiedDate = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
-        // this.anonBillableColArray.ModifiedDate = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
+        this.anonBillableColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.PaymentMode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PaymentMode, value: a.PaymentMode }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.PayingEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PayingEntity, value: a.PayingEntity }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.Status = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.Number = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Number, value: a.Number }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.PaymentDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }).filter(ele => ele.label));
+        const modified = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ModifiedDate, 'MMM dd, yyyy'), value: a.ModifiedDate }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.ModifiedDate = modified.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
+        this.anonBillableColArray.Created = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Created, value: a.Created }; return b; }).filter(ele => ele.label));
+        // this.anonBillableColArray.SOWCode = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label));
+        // this.anonBillableColArray.DateCreated = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DateCreated, value: a.DateCreated }; return b; }).filter(ele => ele.label));
+        // this.anonBillableColArray.ModifiedDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
+        // this.anonBillableColArray.ModifiedDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
     }
 
     uniqueArrayObj(array: any) {
@@ -603,6 +605,21 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 this.tempClick.style.display = "none";
                 this.tempClick = undefined;
             }
+        }
+    }
+
+    ngAfterViewChecked() {
+        let obj = {
+            tableData: this.approvedNBTable,
+            colFields: this.anonBillableColArray,
+            // colFieldsArray: this.createColFieldValues(this.canRejExpenseTable.value)
+        }
+        if (obj.tableData.filteredValue) {
+            this.commonService.updateOptionValues(obj);
+            this.cdr.detectChanges();
+        } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+            this.createColFieldValues(obj.tableData.value);
+            this.cdr.detectChanges();
         }
     }
 

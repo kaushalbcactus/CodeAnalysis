@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { SelectItem, MessageService } from 'primeng/api';
 import { SPOperationService } from '../../../Services/spoperation.service';
@@ -10,6 +10,7 @@ import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { DataTable } from 'primeng/primeng';
 
 @Component({
     selector: 'app-pending-expense',
@@ -76,7 +77,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
-
+    @ViewChild('pendingExpense', { static: false }) pendingEnpenseTable: DataTable;
     constructor(
         private messageService: MessageService,
         private fb: FormBuilder,
@@ -88,6 +89,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
         private route: ActivatedRoute,
+        private cdr: ChangeDetectorRef,
     ) {
         this.subscription.add(this.fdDataShareServie.getAddExpenseSuccess().subscribe(date => {
             this.isExpenseCreate = true;
@@ -219,7 +221,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             { field: 'ExpenseType', header: 'Expense Type', visibility: true },
             { field: 'ClientAmount', header: 'Client Amount', visibility: true },
             { field: 'ClientCurrency', header: 'Client Currency', visibility: true },
-            { field: 'Created', header: 'Date Created', visibility: true, exportable: false },
+            { field: 'CreatedDate', header: 'Date Created', visibility: true, exportable: false },
             { field: 'CreatedDateFormat', header: 'Date Created', visibility: false },
             { field: 'CreatedBy', header: 'Created By', visibility: true },
             { field: 'Modified', header: 'Modified Date', visibility: false, exportable: false },
@@ -362,7 +364,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 ExpenseType: element.SpendType,
                 ClientAmount: parseFloat(element.ClientAmount ? element.ClientAmount : 0).toFixed(2),
                 ClientCurrency: element.ClientCurrency,
-                Created: new Date(this.datePipe.transform(element.Created, 'MMM dd, yyyy')),
+                CreatedDate: new Date(this.datePipe.transform(element.Created, 'MMM dd, yyyy')),
                 CreatedDateFormat: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
                 CreatedBy: element.Author ? element.Author.Title : '',
                 ModifiedBy: element.Editor ? element.Editor.Title : '',
@@ -393,7 +395,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         }
         this.pendingExpenses = [...this.pendingExpenses];
         this.isPSInnerLoaderHidden = true;
-        this.createColFieldValues();
+        this.createColFieldValues(this.pendingExpenses);
     }
 
     getSowTitle(pi: any) {
@@ -441,30 +443,30 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         ExpenseType: [],
         ClientAmount: [],
         ClientCurrency: [],
-        Created: [],
+        CreatedDate: [],
         CreatedBy: [],
         ModifiedBy: [],
         ModifiedDate: [],
         VendorName: [],
     }
 
-    createColFieldValues() {
+    createColFieldValues(resArray) {
 
-        this.pendinExpenseColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.RequestType = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.RequestType, value: a.RequestType }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.Category = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
-        const ClientAmount = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
+        this.pendinExpenseColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.RequestType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.RequestType, value: a.RequestType }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.Category = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
+        const ClientAmount = this.uniqueArrayObj(resArray.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
         this.pendinExpenseColArray.ClientAmount = this.fdDataShareServie.customSort(ClientAmount, 1, 'label');
-        this.pendinExpenseColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
-        const Created = this.commonService.sortDateArray(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: this.datePipe.transform(a.Created, 'MMM dd, yyyy'), value: a.Created }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.Created = Created.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        this.pendinExpenseColArray.CreatedBy = this.commonService.sortData(this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.ModifiedBy = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label));
-        this.pendinExpenseColArray.ModifiedDate = this.uniqueArrayObj(this.pendingExpenses.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b; }).filter(ele => ele.label));
+        this.pendinExpenseColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
+        const Created = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.CreatedDate, 'MMM dd, yyyy'), value: a.CreatedDate }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.CreatedDate = Created.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
+        this.pendinExpenseColArray.CreatedBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.ModifiedBy = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label));
+        this.pendinExpenseColArray.ModifiedDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b; }).filter(ele => ele.label));
     }
 
     uniqueArrayObj(array: any) {
@@ -1041,6 +1043,22 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 this.tempClick.style.display = "none";
                 this.tempClick = undefined;
             }
+        }
+    }
+
+    
+    ngAfterViewChecked() {
+        let obj = {
+            tableData: this.pendingEnpenseTable,
+            colFields: this.pendinExpenseColArray,
+            // colFieldsArray: this.createColFieldValues(this.pendingEnpenseTable.value)
+        }
+        if (obj.tableData.filteredValue) {
+            this.commonService.updateOptionValues(obj);
+            this.cdr.detectChanges();
+        } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+            this.createColFieldValues(obj.tableData.value);
+            this.cdr.detectChanges();
         }
     }
 

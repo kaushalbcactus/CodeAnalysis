@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ElementRef, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ElementRef, TemplateRef, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { Calendar, DataTable } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
@@ -67,7 +67,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
 
-    @ViewChild('pfc', { static: false }) eleRef: DataTable;
+    @ViewChild('pfc', { static: false }) proformaTable: DataTable;
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
@@ -84,18 +84,10 @@ export class ProformaComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
+        private cdr: ChangeDetectorRef,
     ) { }
 
-    testObj: any = {}
-
     async ngOnInit() {
-        this.testObj = {};
-        if (Object.entries(this.testObj).length === 0 && this.testObj.constructor === Object) {
-            console.log('Object is empty');
-        } else {
-            console.log('this.testObj ', this.testObj)
-        }
-
         // Create FOrm Field
         this.createProformaFormField();
         this.createRepProFormField()
@@ -479,13 +471,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
 
     convertToExcelFile(cnf1) {
-        console.log('cnf ', cnf1);
-        // cnf1.columns = [
-        //   {
-        //     field: 'id',
-        //     header: 'id'
-        //   }
-        // ]
         cnf1.exportCSV();
     }
 
@@ -1616,32 +1601,52 @@ export class ProformaComponent implements OnInit, OnDestroy {
         }
     }
 
-    filteredArray: any;
     ngAfterViewChecked() {
-        this.filteredArray = this.eleRef;
-        if (this.filteredArray.filteredValue) {
-            console.log('Object.entries(this.filteredArray.filters).length ', Object.entries(this.filteredArray.filters).length);
-            if (Object.entries(this.filteredArray.filters).length === 0 && this.filteredArray.filters.constructor === Object) {
-                console.log('Object is empty');
-            } else if (Object.entries(this.filteredArray.filters).length === 1) {
-                this.isEmpty(this.proformaColArray, this.filteredArray.filters);
-            } else {
-                console.log('this.testObj ', this.testObj)
-            }
-            console.log('in ngAfterViewChecked this.proformaRes ', this.filteredArray);
-            // this.createColFieldValues(this.filteredArray.filteredValue);
+        console.log('this.proformaTable ', this.proformaTable);
+        let obj = {
+            tableData: this.proformaTable,
+            colFields: this.proformaColArray,
+            // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+        }
+        if (obj.tableData.filteredValue) {
+            this.commonService.updateOptionValues(obj);
+            this.cdr.detectChanges();
+        } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+            this.createColFieldValues(obj.tableData.value);
+            this.cdr.detectChanges();
+        }
+    }
 
-        } else if (this.filteredArray.filteredValue === null) {
+    // proformaTable: any;
+    ngAfterViewChecked1() {
+        // this.proformaTable = this.proformaTable;
+        if (this.proformaTable.filteredValue) {
+            // console.log('Object.entries(this.proformaTable.filters).length ', Object.entries(this.proformaTable.filters).length);
+            // if (Object.entries(this.proformaTable.filters).length === 0 && this.proformaTable.filters.constructor === Object) {
+            //     // console.log('Object is empty');
+            // } else 
+            if (Object.entries(this.proformaTable.filters).length >= 1) {
+                this.isEmpty(this.proformaColArray, this.proformaTable.filters);
+            }
+            // else {
+            //     // console.log('this.proformaTable ', this.proformaTable)
+            // }
+            // console.log('in ngAfterViewChecked this.proformaRes ', this.proformaTable);
+            // this.createColFieldValues(this.proformaTable.filteredValue);
+
+        } else if (this.proformaTable.filteredValue === null || this.proformaTable.filteredValue === undefined) {
             this.createColFieldValues(this.proformaRes);
+        } else {
+            console.log('this.proformaTable ->  ', this.proformaTable);
         }
     }
 
     isEmpty(obj, firstColFilter) {
         for (var prop in obj) {
             if (obj.hasOwnProperty(prop) && firstColFilter[prop]) {
-                console.log(obj.hasOwnProperty(prop) && firstColFilter[prop]);
+                console.log(this.proformaColArray[prop]);
             } else {
-                this.firstFilterCol(this.filteredArray.filteredValue, prop);
+                this.firstFilterCol(this.proformaTable.filteredValue, prop);
             }
         }
     }
@@ -1652,28 +1657,21 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (colName.toLowerCase().includes("date")) {
             totalArr = this.commonService.sortDateArray(this.uniqueArrayObj(totalArr.map(a => { let b = { label: this.datePipe.transform(a, "MMM dd, yyyy"), value: a }; return b; }).filter(ele => ele.label)));
         }
-        console.log(totalArr);
+
         // const uniqueTotalArr = totalArr.filter((item, index) => totalArr.indexOf(item) === index);
         const uniqueTotalArr = Array.from(new Set(totalArr));
+        let tempArr = [];
         for (let i = 0; i < uniqueTotalArr.length; i++) {
             const element = uniqueTotalArr[i];
             if (colName.toLowerCase().includes("date")) {
-                this.proformaColArray[colName].push({ label: this.datePipe.transform(element, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(element, 'MMM dd, yyyy')) });
+                tempArr.push({ label: this.datePipe.transform(element, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(element, 'MMM dd, yyyy')) });
             } else {
-                this.proformaColArray[colName].push({ label: element, value: element });
+                tempArr.push({ label: element, value: element });
             }
         }
+        console.log(tempArr);
+        this.proformaColArray[colName] = [...tempArr];
     }
-
-    // customColFilter(val, col, type) {
-    //     console.log('eleRef ', this.eleRef);
-    //     if (this.eleRef.filteredValue) {
-    //         console.log('in ngAfterViewChecked this.proformaRes ', this.eleRef);
-    //         this.createColFieldValues(this.eleRef.filteredValue);
-    //     } else if (this.eleRef.filteredValue === null) {
-    //         this.createColFieldValues(this.proformaRes);
-    //     }
-    // }
 
     ngOnDestroy() {
         // this.subscriptionPE.unsubscribe();

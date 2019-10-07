@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, MessageService } from 'primeng/api';
-import { Calendar } from 'primeng/primeng';
+import { Calendar, DataTable } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -56,6 +56,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
     minScheduleDate: Date = new Date();
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+    @ViewChild('hb', { static: false }) hourlyTable: DataTable;
     constructor(
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
@@ -67,6 +68,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
+        private cdr: ChangeDetectorRef,
     ) { }
 
     async ngOnInit() {
@@ -303,8 +305,8 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         }
         this.hourlyBasedRes = [...this.hourlyBasedRes];
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-        console.log('hourlyBasedRes data ', this.hourlyBasedRes);
-        this.createColFieldValues();
+        // console.log('hourlyBasedRes data ', this.hourlyBasedRes);
+        this.createColFieldValues(this.hourlyBasedRes);
     }
 
     updateTotal(rate, hrs) {
@@ -371,7 +373,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
     hourlyBasedColArray = {
         ProjectCode: [],
-        SOWCode: [],
+        SOWValue: [],
         ProjectMileStone: [],
         ClientLegalEntity: [],
         PONumber: [],
@@ -383,21 +385,21 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         TotalInvoice: []
     }
 
-    createColFieldValues() {
-        this.hourlyBasedColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.hourlyBasedColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
-        this.hourlyBasedColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
-        this.hourlyBasedColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
-        this.hourlyBasedColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
-        this.hourlyBasedColArray.POName = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label)));
-        this.hourlyBasedColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.hourlyBasedColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
+    createColFieldValues(resArray) {
+        this.hourlyBasedColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.hourlyBasedColArray.SOWValue = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
+        this.hourlyBasedColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
+        this.hourlyBasedColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+        this.hourlyBasedColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
+        this.hourlyBasedColArray.POName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label)));
+        this.hourlyBasedColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+        this.hourlyBasedColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
 
-        const rate = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: parseFloat(a.Rate), value: a.Rate }; return b; }).filter(ele => ele.label));
+        const rate = this.uniqueArrayObj(resArray.map(a => { let b = { label: parseFloat(a.Rate), value: a.Rate }; return b; }).filter(ele => ele.label));
         this.hourlyBasedColArray.Rate = this.fdDataShareServie.customSort(rate, 1, 'label');
-        const hoursSpent = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.HoursSpent, value: a.HoursSpent }; return b; }).filter(ele => ele.label));
+        const hoursSpent = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.HoursSpent, value: a.HoursSpent }; return b; }).filter(ele => ele.label));
         this.hourlyBasedColArray.HoursSpent = this.fdDataShareServie.customSort(hoursSpent, 1, 'label');
-        const totalInvoice = this.uniqueArrayObj(this.hourlyBasedRes.map(a => { let b = { label: a.TotalInvoice, value: a.TotalInvoice }; return b; }).filter(ele => ele.label));
+        const totalInvoice = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.TotalInvoice, value: a.TotalInvoice }; return b; }).filter(ele => ele.label));
         this.hourlyBasedColArray.TotalInvoice = this.fdDataShareServie.customSort(totalInvoice, 1, 'label');
     }
 
@@ -1158,6 +1160,21 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 this.tempClick.style.display = "none";
                 this.tempClick = undefined;
             }
+        }
+    }
+
+    ngAfterViewChecked() {
+        let obj = {
+            tableData: this.hourlyTable,
+            colFields: this.hourlyBasedColArray,
+            // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+        }
+        if (obj.tableData.filteredValue) {
+            this.commonService.updateOptionValues(obj);
+            this.cdr.detectChanges();
+        } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+            this.createColFieldValues(obj.tableData.value);
+            this.cdr.detectChanges();
         }
     }
 

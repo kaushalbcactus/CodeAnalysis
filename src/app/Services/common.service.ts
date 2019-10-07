@@ -960,6 +960,56 @@ export class CommonService {
         return sortedDates;
     }
 
+    public tableObj: any;
+    // Filter multiselct option
+    updateOptionValues(obj) {
+        this.tableObj = obj;
+        if (obj.tableData.filteredValue) {
+            if (Object.entries(obj.tableData.filters).length >= 1) {
+                this.isEmpty(obj.colFields, obj.tableData.filters);
+            }
+        }
+    }
+
+    isEmpty(obj, firstColFilter) {
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop) && !firstColFilter[prop]) {
+                this.firstFilterCol(this.tableObj.tableData.filteredValue, prop);
+            }
+        }
+    }
+
+    firstFilterCol(array, colName) {
+        this.tableObj.colFields[colName] = [];
+        let totalArr = array.map(item => item[colName]);
+        if (colName.toLowerCase().includes("date")) {
+            totalArr = this.sortDateArray(this.uniqueArrayObj(totalArr.map(a => { let b = { label: this.datePipe.transform(a, "MMM dd, yyyy"), value: a }; return b; }).filter(ele => ele.label)));
+        }
+        // const uniqueTotalArr = totalArr.filter((item, index) => totalArr.indexOf(item) === index);
+        const uniqueTotalArr = Array.from(new Set(totalArr));
+        let tempArr = [];
+        for (let i = 0; i < uniqueTotalArr.length; i++) {
+            const element = uniqueTotalArr[i];
+            if (colName.toLowerCase().includes("date")) {
+                tempArr.push({ label: this.datePipe.transform(element, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(element, 'MMM dd, yyyy')) });
+            } else {
+                tempArr.push({ label: element, value: element });
+            }
+        }
+        // console.log(tempArr);
+        this.tableObj.colFields[colName] = [...tempArr];
+    }
+
+    uniqueArrayObj(array: any) {
+        let sts: any = '';
+        return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
+            return {
+                label: label1,
+                value: array.find(s => s.label === label1).value
+            }
+        })
+    }
+
 
 
 }

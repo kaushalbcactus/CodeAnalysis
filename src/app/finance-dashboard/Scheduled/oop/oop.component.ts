@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, SelectItem, MessageService } from 'primeng/api';
-import { Calendar } from 'primeng/primeng';
+import { Calendar, DataTable } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { formatDate, DatePipe } from '@angular/common';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
@@ -60,6 +60,7 @@ export class OopComponent implements OnInit, OnDestroy {
     };
 
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+    @ViewChild('oop', { static: false }) oopTable: DataTable;
     constructor(
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
@@ -72,6 +73,7 @@ export class OopComponent implements OnInit, OnDestroy {
         private messageService: MessageService,
         private commonService: CommonService,
         private spOperationsService: SPOperationService,
+        private cdr: ChangeDetectorRef,
     ) {
         this.subscription.add(this.fdDataShareServie.getScheduleDateRange().subscribe(date => {
             this.DateRange = date;
@@ -339,7 +341,7 @@ export class OopComponent implements OnInit, OnDestroy {
             })
         }
         this.oopBasedRes = [...this.oopBasedRes];
-        this.createColFieldValues();
+        this.createColFieldValues(this.oopBasedRes);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -409,9 +411,9 @@ export class OopComponent implements OnInit, OnDestroy {
 
     oopColArray = {
         ProjectCode: [],
-        SOWCode: [],
+        SOWValue: [],
         ProjectMileStone: [],
-        PONumber: [],
+        POValues: [],
         ClientName: [],
         ScheduledDate: [],
         Amount: [],
@@ -419,17 +421,17 @@ export class OopComponent implements OnInit, OnDestroy {
         POC: [],
     }
 
-    createColFieldValues() {
-        this.oopColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.oopColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
-        this.oopColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
-        this.oopColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
-        this.oopColArray.ClientName = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }).filter(ele => ele.label)));
-        this.oopColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.oopColArray.POC = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
-        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
+    createColFieldValues(resArray) {
+        this.oopColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.SOWValue = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.ClientName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
+        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
         this.oopColArray.ScheduledDate = scheduledDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        const amount = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
+        const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
         this.oopColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label')
     }
 
@@ -870,4 +872,20 @@ export class OopComponent implements OnInit, OnDestroy {
             }
         }
     }
+
+    ngAfterViewChecked() {
+        let obj = {
+            tableData: this.oopTable,
+            colFields: this.oopColArray,
+            // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+        }
+        if (obj.tableData.filteredValue) {
+            this.commonService.updateOptionValues(obj);
+            this.cdr.detectChanges();
+        } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+            this.createColFieldValues(obj.tableData.value);
+            this.cdr.detectChanges();
+        }
+    }
+
 }

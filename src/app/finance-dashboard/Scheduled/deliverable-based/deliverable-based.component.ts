@@ -1,7 +1,7 @@
 
-import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
 import { MessageService, Message, SelectItem } from 'primeng/api';
-import { Calendar } from 'primeng/primeng';
+import { Calendar, DataTable } from 'primeng/primeng';
 import { ConfirmationService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -65,6 +65,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
 
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+    @ViewChild('db', { static: false }) deliverableTable: DataTable;
     constructor(
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
@@ -76,6 +77,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
+        private cdr: ChangeDetectorRef,
     ) {
         this.subscription.add(this.fdDataShareServie.getScheduleDateRange().subscribe(date => {
             this.DateRange = date;
@@ -357,7 +359,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         }
         this.deliverableBasedRes = [...this.deliverableBasedRes];
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-        this.createColFieldValues();
+        this.createColFieldValues(this.deliverableBasedRes);
     }
 
     // Project PO
@@ -424,7 +426,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     deliverableBasedColArray = {
         ProjectCode: [],
-        SOWCode: [],
+        SOWValue: [],
         ProjectMileStone: [],
         POValues: [],
         ClientName: [],
@@ -434,18 +436,18 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         POCName: []
     }
 
-    createColFieldValues() {
-        this.deliverableBasedColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.ClientName = this.commonService.sortData(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
+    createColFieldValues(resArray) {
+        this.deliverableBasedColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.SOWValue = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.ClientName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
 
-        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
+        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
         this.deliverableBasedColArray.ScheduledDate = scheduledDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        const amount = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
+        const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
         this.deliverableBasedColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label')
     }
 
@@ -904,6 +906,21 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 this.tempClick.style.display = "none";
                 this.tempClick = undefined;
             }
+        }
+    }
+
+    ngAfterViewChecked() {
+        let obj = {
+            tableData: this.deliverableTable,
+            colFields: this.deliverableBasedColArray,
+            // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+        }
+        if (obj.tableData.filteredValue) {
+            this.commonService.updateOptionValues(obj);
+            this.cdr.detectChanges();
+        } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+            this.createColFieldValues(obj.tableData.value);
+            this.cdr.detectChanges();
         }
     }
 
