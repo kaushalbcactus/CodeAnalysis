@@ -40,6 +40,7 @@ export class ReviewerDetailViewComponent implements OnInit {
     type: '',
     listName: ''
   };
+  navigationSubscription;
   constructor(private spService: SPOperationService, private globalConstant: ConstantsService,
     public global: GlobalService, private datepipe: DatePipe, private qmsConstant: QMSConstantsService,
     private common: CommonService, private qmsCommon: QMSCommonService, private messageService: MessageService,
@@ -56,11 +57,17 @@ export class ReviewerDetailViewComponent implements OnInit {
       history.pushState(null, null, window.location.href);
     });
 
-    _router.events.subscribe((uri) => {
+    this.navigationSubscription = _router.events.subscribe((uri) => {
       zone.run(() => _applicationRef.tick());
     });
 
   }
+  ngOnDestroy() {
+    if (this.navigationSubscription) {
+      this.navigationSubscription.unsubscribe();
+    }
+  }
+
   //#endregion of Initialisation
   /**
    * Initial function

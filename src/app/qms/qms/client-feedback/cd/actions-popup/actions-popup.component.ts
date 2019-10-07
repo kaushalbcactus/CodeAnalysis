@@ -105,23 +105,23 @@ export class ActionsPopupComponent implements OnInit {
   public hideResourceLoader = true;
   constructor(private globalConstant: ConstantsService, private spService: SPOperationService,
     private global: GlobalService, private qmsConstant: QMSConstantsService, private messageService: MessageService,
-    private platformLocation: PlatformLocation,
-    private locationStrategy: LocationStrategy,
-    private readonly _router: Router,
+    // private platformLocation: PlatformLocation,
+    // private locationStrategy: LocationStrategy,
+    // private readonly _router: Router,
     _applicationRef: ApplicationRef,
     zone: NgZone
   ) {
 
 
-    // Browser back button disabled & bookmark issue solution
-    history.pushState(null, null, window.location.href);
-    platformLocation.onPopState(() => {
-      history.pushState(null, null, window.location.href);
-    });
+    // // Browser back button disabled & bookmark issue solution
+    // history.pushState(null, null, window.location.href);
+    // platformLocation.onPopState(() => {
+    //   history.pushState(null, null, window.location.href);
+    // });
 
-    _router.events.subscribe((uri) => {
-      zone.run(() => _applicationRef.tick());
-    });
+    // _router.events.subscribe((uri) => {
+    //   zone.run(() => _applicationRef.tick());
+    // });
 
 
   }

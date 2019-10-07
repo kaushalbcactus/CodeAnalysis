@@ -88,31 +88,54 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     private readonly _router: Router,
     _applicationRef: ApplicationRef,
     zone: NgZone
-    ) {
-    this.navigationSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.initialiseManagerView();
-      }
-    });
+  ) {
+    this.router.routeReuseStrategy.shouldReuseRoute = function () {
+      return false;
+    }
+    // this.navigationSubscription = this.router.events.subscribe((e: any) => {
+    //   // If it is a NavigationEnd event re-initalise the component
+    //   if (e instanceof NavigationEnd) {
+    //     this.initialiseManagerView();
+    //   }
+    // });
 
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
     platformLocation.onPopState(() => {
       history.pushState(null, null, window.location.href);
     });
-
-    _router.events.subscribe((uri) => {
+    this.navigationSubscription = this.router.events.subscribe((e: any) => {
       zone.run(() => _applicationRef.tick());
     });
-
   }
 
+  async ngOnInit() {
+    this.initialiseManagerView();
+  }
+  
   ngOnChanges(changes: SimpleChange) {
     console.log(changes);
   }
 
   initialiseManagerView() {
+    this.feedbacksColumns = [
+      { field: 'userName', header: 'Resource', visibility: true },
+    ];
+    this.feedbacksTableColumns = [
+      { field: 'userName', header: 'Resource', visibility: true, exportable: true },
+      { field: 'averageRating', header: 'Average Rating', visibility: true, exportable: true },
+    ];
+
+    this.innerTable = [
+      { field: 'userFeedback', header: 'Date', subfield: 'Date', exportable: true },
+      { field: 'userFeedback', header: 'Task', subfield: 'Task', exportable: true },
+      { field: 'userFeedback', header: 'Type', subfield: 'Type', exportable: true },
+      { field: 'userFeedback', header: 'Feedback By', subfield: 'Feedbackby', exportable: true },
+      { field: 'userFeedback', header: 'Rating', subfield: 'Rating', exportable: true },
+      { field: 'userFeedback', header: 'Comments', subfield: 'Comments', exportable: true },
+      { field: 'Parameters', header: 'Parameters', visibility: false, exportable: true },
+      { field: 'Score', header: 'Score', visibility: false, exportable: true }
+    ];
     // Set default values and re-fetch any data you need.
     this.showLoader();
     setTimeout(async () => {
@@ -258,26 +281,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     return await this.getResourceObject(updatedResources);
   }
 
-  async ngOnInit() {
-    this.feedbacksColumns = [
-      { field: 'userName', header: 'Resource', visibility: true },
-    ];
-    this.feedbacksTableColumns = [
-      { field: 'userName', header: 'Resource', visibility: true, exportable: true },
-      { field: 'averageRating', header: 'Average Rating', visibility: true, exportable: true },
-    ];
-
-    this.innerTable = [
-      { field: 'userFeedback', header: 'Date', subfield: 'Date', exportable: true },
-      { field: 'userFeedback', header: 'Task', subfield: 'Task', exportable: true },
-      { field: 'userFeedback', header: 'Type', subfield: 'Type', exportable: true },
-      { field: 'userFeedback', header: 'Feedback By', subfield: 'Feedbackby', exportable: true },
-      { field: 'userFeedback', header: 'Rating', subfield: 'Rating', exportable: true },
-      { field: 'userFeedback', header: 'Comments', subfield: 'Comments', exportable: true },
-      { field: 'Parameters', header: 'Parameters', visibility: false, exportable: true },
-      { field: 'Score', header: 'Score', visibility: false, exportable: true }
-    ];
-  }
+  
 
   getScorecard(assignedToID, topCount, startDate, endDate) {
     const batchURL = [];

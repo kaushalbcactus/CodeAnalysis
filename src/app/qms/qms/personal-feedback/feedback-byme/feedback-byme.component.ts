@@ -43,30 +43,32 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
     private qmsCommon: QMSCommonService,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
-    private readonly _router: Router,
+    // private readonly _router: Router,
     _applicationRef: ApplicationRef,
     zone: NgZone
-    ) {
-    this.feedbackByMeNavSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.initialiseFeedback();
-      }
-    });
-
+  ) {
+    this.router.routeReuseStrategy.shouldReuseRoute = function () {
+      return false;
+    }
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
     platformLocation.onPopState(() => {
       history.pushState(null, null, window.location.href);
     });
-
-    _router.events.subscribe((uri) => {
+    this.feedbackByMeNavSubscription = this.router.events.subscribe((e: any) => {
       zone.run(() => _applicationRef.tick());
     });
+    // _router.events.subscribe((uri) => {
+    //   zone.run(() => _applicationRef.tick());
+    // });
 
   }
 
   ngOnInit() {
+   this.initialiseFeedback();
+  }
+
+  protected async initialiseFeedback() {
     this.feedbackColumns = [
       { field: 'Date', header: 'Date', visibility: false },
       { field: 'Task', header: 'Task', visibility: false },
@@ -79,13 +81,12 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
       { field: 'Score', header: 'Score', visibility: true }
     ];
     this.hideDetail = false;
-  }
-
-  protected async initialiseFeedback() {
     this.feedbackRows = [];
     this.showLoader();
+    setTimeout(async () => {
     this.data.filterObj.subscribe(filter => this.filterObj = filter);
     this.applyFilters(this.filterObj);
+    }, 500);
   }
 
   ngOnDestroy() {
@@ -100,21 +101,25 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
   colFilters(colData) {
     // tslint:disable: max-line-length
     this.FBColArray.Date = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = { label: this.datepipe.transform(a.Created, 'MMM d, yyyy'),
-                  value: this.datepipe.transform(a.Created, 'MMM d, yyyy') ?  this.datepipe.transform(a.Created, 'MMM d, yyyy') : '',
-                  filterValue: new Date(a.Created) }; return b;
-    }));
-    this.FBColArray.Task =  this.FBColArray.Task = this.qmsCommon.uniqueArrayObj(colData.map(a => {
       const b = {
-        label: a.Title ? a.SubMilestones ? a.Title + ' - ' +  a.SubMilestones : a.Title + ' - Default' : '',
-        value: a.Title ? a.SubMilestones ? a.Title + ' - ' +  a.SubMilestones : a.Title + ' - Default' : '',
-        filterValue: a.Title};
-      return b; }));
-    this.FBColArray.Type = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.FeedbackType, value: a.FeedbackType, filterValue: a.FeedbackType}; return b; }));
+        label: this.datepipe.transform(a.Created, 'MMM d, yyyy'),
+        value: this.datepipe.transform(a.Created, 'MMM d, yyyy') ? this.datepipe.transform(a.Created, 'MMM d, yyyy') : '',
+        filterValue: new Date(a.Created)
+      }; return b;
+    }));
+    this.FBColArray.Task = this.FBColArray.Task = this.qmsCommon.uniqueArrayObj(colData.map(a => {
+      const b = {
+        label: a.Title ? a.SubMilestones ? a.Title + ' - ' + a.SubMilestones : a.Title + ' - Default' : '',
+        value: a.Title ? a.SubMilestones ? a.Title + ' - ' + a.SubMilestones : a.Title + ' - Default' : '',
+        filterValue: a.Title
+      };
+      return b;
+    }));
+    this.FBColArray.Type = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.FeedbackType, value: a.FeedbackType, filterValue: a.FeedbackType }; return b; }));
     this.FBColArray.Feedbackfor = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AssignedTo.Title, value: a.AssignedTo.Title, filterValue: a.AssignedTo.Title }; return b; }));
     this.FBColArray.FeedbackBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Author.Title, value: a.Author.Title, filterValue: a.Author.Title }; return b; }));
-    this.FBColArray.Rating = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AverageRating, value: a.AverageRating, filterValue: +a.AverageRating}; return b; }));
-    this.FBColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Comments, value: a.Comments, filterValue: a.Comments}; return b; }));
+    this.FBColArray.Rating = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AverageRating, value: a.AverageRating, filterValue: +a.AverageRating }; return b; }));
+    this.FBColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Comments, value: a.Comments, filterValue: a.Comments }; return b; }));
   }
 
   downloadExcel(fb) {
@@ -221,7 +226,7 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
         Feedbackfor: element.AssignedTo.Title ? element.AssignedTo.Title : '',
         FeedbackBy: element.Author.Title ? element.Author.Title : '',
         Date: this.datepipe.transform(element.Created, 'MMM d, yyyy'),
-        Task:  element.Title ? element.SubMilestones ? element.Title + ' - ' +  element.SubMilestones : element.Title + ' - Default' : '',
+        Task: element.Title ? element.SubMilestones ? element.Title + ' - ' + element.SubMilestones : element.Title + ' - Default' : '',
         Type: element.FeedbackType,
         Feedbackby: element.Author.Title,
         Rating: element.AverageRating ? element.AverageRating : '',

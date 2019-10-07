@@ -46,26 +46,23 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     _applicationRef: ApplicationRef,
     zone: NgZone
     ) {
-    this.cfPFNavigationSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.initialiseCFPositive();
+      this.router.routeReuseStrategy.shouldReuseRoute = function () {
+        return false;
       }
-    });
-
+    
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
     platformLocation.onPopState(() => {
       history.pushState(null, null, window.location.href);
     });
 
-    _router.events.subscribe((uri) => {
+    this.cfPFNavigationSubscription = this.router.events.subscribe((e: any) => {
       zone.run(() => _applicationRef.tick());
     });
-
   }
 
   async ngOnInit() {
+    this.initialiseCFPositive();
   }
 
 

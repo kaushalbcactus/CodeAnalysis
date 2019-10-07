@@ -28,22 +28,17 @@ export class InternalComponent implements OnInit, OnDestroy {
     _applicationRef: ApplicationRef,
     zone: NgZone
   ) {
-    this.navigationSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.initialisePFInternal();
-      }
-    });
-
+    this.router.routeReuseStrategy.shouldReuseRoute = function () {
+      return false;
+    }
     history.pushState(null, null, window.location.href);  
     platformLocation.onPopState(() => {
         history.pushState(null, null, window.location.href);
     });
 
-    _router.events.subscribe((uri) => {
+    this.navigationSubscription = this.router.events.subscribe((e: any) => {
       zone.run(() => _applicationRef.tick());
     });
-    
   }
 
   initialisePFInternal() {
@@ -67,6 +62,7 @@ export class InternalComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.initialisePFInternal();
   }
 
   /**

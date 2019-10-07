@@ -46,26 +46,24 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
     _applicationRef: ApplicationRef,
     zone: NgZone
   ) {
-    this.extPFNavigationSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.initialisePFPositive();
-      }
-    });
-
+    this.router.routeReuseStrategy.shouldReuseRoute = function () {
+      return false;
+    }
+    
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
     platformLocation.onPopState(() => {
       history.pushState(null, null, window.location.href);
     });
 
-    _router.events.subscribe((uri) => {
+    this.extPFNavigationSubscription = this.router.events.subscribe((e: any) => {
       zone.run(() => _applicationRef.tick());
     });
 
   }
 
   ngOnInit() {
+    this.initialisePFPositive();
   }
 
   ngOnDestroy() {

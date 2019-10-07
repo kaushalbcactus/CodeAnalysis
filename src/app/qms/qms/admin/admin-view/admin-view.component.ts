@@ -23,6 +23,7 @@ export class AdminViewComponent implements OnInit {
   ];
   ReviewerDetailColumns = [];
   ReviewerDetail = [];
+  navigationSubscription;
   // public successMessage: string;
   // public alertMessage: string;
   // private success = new Subject<string>();
@@ -81,10 +82,15 @@ export class AdminViewComponent implements OnInit {
       history.pushState(null, null, window.location.href);
     });
 
-    _router.events.subscribe((uri) => {
+    this.navigationSubscription = _router.events.subscribe((uri) => {
       zone.run(() => _applicationRef.tick());
     });
 
+  }
+  ngOnDestroy() {
+    if (this.navigationSubscription) {
+      this.navigationSubscription.unsubscribe();
+    }
   }
 
   async ngOnInit() {

@@ -59,6 +59,7 @@ export class ScorecardsComponent implements OnInit {
   };
   resourceRows: [];
   resourceColumns: [{}];
+  navigationSubscription;
   value: Date[] = [new Date(new Date().setMonth(new Date().getMonth() - 6)), new Date()];
   @ViewChild(FeedbackBymeComponent, { static: true }) feedbackTable: FeedbackBymeComponent;
   constructor(private qmsConstant: QMSConstantsService, private globalConstant: ConstantsService,
@@ -76,12 +77,17 @@ export class ScorecardsComponent implements OnInit {
       history.pushState(null, null, window.location.href);
     });
 
-    _router.events.subscribe((uri) => {
+    this.navigationSubscription = _router.events.subscribe((uri) => {
       zone.run(() => _applicationRef.tick());
     });
     
   }
 
+  ngOnDestroy() {
+    if (this.navigationSubscription) {
+      this.navigationSubscription.unsubscribe();
+    }
+  }
 
   async ngOnInit() {
     if (!this.global.currentUser.groups.length) {

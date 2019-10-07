@@ -64,25 +64,21 @@ export class CDComponent implements OnInit, OnDestroy {
     _applicationRef: ApplicationRef,
     zone: NgZone
   ) {
-    this.extNavigationSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.initialiseCFDissatisfaction();
-      }
-    });
-
+   
+    this.router.routeReuseStrategy.shouldReuseRoute = function () {
+      return false;
+    }
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
     platformLocation.onPopState(() => {
       history.pushState(null, null, window.location.href);
     });
-
-    _router.events.subscribe((uri) => {
+    this.extNavigationSubscription = this.router.events.subscribe((e: any) => {
       zone.run(() => _applicationRef.tick());
     });
-
   }
   async ngOnInit() {
+    this.initialiseCFDissatisfaction();
   }
 
   protected initialiseCFDissatisfaction() {
