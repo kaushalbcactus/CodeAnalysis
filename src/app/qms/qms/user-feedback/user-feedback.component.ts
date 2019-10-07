@@ -182,7 +182,7 @@ export class UserFeedbackComponent implements OnInit {
         Feedbackby: element.Author.Title ? element.Author.Title : '',
         Rating: element.AverageRating ? element.AverageRating : '',
         Comments: element.Comments ? element.Comments : '',
-        Parameters: element.ParameterRating ? element.Comments : '',
+        Parameters: element.ParameterRating ? element.ParameterRating : '',
         Score: element.Value ? element.Value : ''
       });
     });

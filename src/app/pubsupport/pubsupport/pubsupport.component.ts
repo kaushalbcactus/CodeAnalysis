@@ -554,9 +554,10 @@ export class PubsupportComponent implements OnInit {
 
     setJCDetails(data) {
         const form = this.journal_Conference_Edit_Detail_form;
-        const journalConfItem = this.jcListArray.find(j => j.ID === data.element.JournalConferenceId);
+        // const journalConfItem = this.jcListArray.find(j => j.ID === data.element.JournalConferenceId);
         if (data.element) {
             form.get('Name').setValue(data.element.Name);
+            form.get('jcLineItemName').setValue(data.element.Name);
             form.get('EntryType').setValue(data.element.EntryType);
             form.get('Milestone').setValue(data.element.Milestone);
             form.get('UserName').setValue(data.element.UserName);
@@ -564,13 +565,13 @@ export class PubsupportComponent implements OnInit {
             form.get('Comments').setValue(data.element.Comments);
             if (data.element.EntryType === 'journal') {
                 // Set New Values
-                form.get('jcLineItemName').setValue(journalConfItem.JournalName);
+                // form.get('jcLineItemName').setValue(journalConfItem.JournalName);
                 form.get('ExpectedReviewPeriod').setValue(data.element.ExpectedReviewPeriod);
                 form.get('IF').setValue(data.element.IF);
                 form.get('RejectionRate').setValue(data.element.RejectionRate);
                 form.get('JournalEditorInfo').setValue(data.element.JournalEditorInfo);
             } else {
-                form.get('jcLineItemName').setValue(journalConfItem.ConferenceName);
+                // form.get('jcLineItemName').setValue(journalConfItem.ConferenceName);
                 form.get('CongressDate').setValue(this.datePipe.transform(new Date(data.element.CongressDate), 'MMM dd, yyyy'));
                 form.get('AbstractSubmissionDeadline').setValue(this.datePipe.transform(new Date(data.element.AbstractSubmissionDeadline), 'MMM dd, yyyy'));
                 form.get('Comments').setValue(data.element.Comments);
