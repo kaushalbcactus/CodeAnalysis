@@ -619,7 +619,7 @@ export class PubsupportComponent implements OnInit {
         } else if (this.selectedModal === 'Edit Journal conference') {
             await this.getJCDetails(data);
             await this.getJCList(this.journal_Conf_data[0].element.EntryType);
-            this.addJCControls(this.journal_Conference_Edit_Detail_form, this.journal_Conf_data[0].element.EntryType)
+            this.addJCControls(this.journal_Conference_Edit_Detail_form, this.journal_Conf_data[0].element.EntryType,'Edit')
             this.setJCDetails(this.journal_Conf_data[0]);
             this.editJCDetailsModal = true;
             this.formatMilestone(this.milestonesList);
@@ -1087,9 +1087,9 @@ export class PubsupportComponent implements OnInit {
     //     })
     // }
 
-    addJCControls(form: any, type: string) {
-        form.addControl('UserName', new FormControl('', [Validators.required]));
-        form.addControl('Password', new FormControl('', [Validators.required]));
+    addJCControls(form: any, type: string, actionType: string) {
+        actionType === 'Add' ? form.addControl('UserName', new FormControl('')) : form.addControl('UserName', new FormControl([''], Validators.required));
+        actionType === 'Add' ? form.addControl('Password', new FormControl('')) : form.addControl('Password', new FormControl([''], Validators.required));
         if (type === 'journal') {
             // tslint:disable-next-line: max-line-length
             form.addControl('ExpectedReviewPeriod', new FormControl([''], Validators.required));
@@ -1135,7 +1135,7 @@ export class PubsupportComponent implements OnInit {
     }
 
     onChangeSelectedJCItem(item: any, type: string) {
-        this.addJCControls(this.journal_Conference_Detail_form, type);
+        this.addJCControls(this.journal_Conference_Detail_form, type, 'Add');
         this.setJCValue(this.journal_Conference_Detail_form, item, type);
     }
 
