@@ -212,11 +212,19 @@ export class SPOperationService {
     url = this.readBuilder(url, options);
     return url;
   }
+
+  getReadURLWithId(listName: string, id: string, options?: any) {
+    let url = this.apiUrl.replace('{0}', listName) + '(' + id + ')';
+    url = this.readBuilder(url, options);
+    return url;
+  }
+
   getReadURLArchive(listName: string, options?: any) {
     let url = this.apiArchiveUrl.replace('{0}', listName);
     url = this.readBuilder(url, options);
     return url;
   }
+
   getEmailURL() {
     return this.baseUrl + '/_api/SP.Utilities.Utility.SendEmail';
   }
@@ -224,6 +232,7 @@ export class SPOperationService {
   getFolderCreationURL() {
     return this.baseUrl + '/_api/web/folders';
   }
+
   getFileUploadUrl(folderUrl: string, fileName: string, override: any) {
     return this.baseUrl + '/_api/web/GetFolderByServerRelativeUrl(\''
       + folderUrl + '\')/files/add(overwrite=' + override + ', url=\'' + fileName + '\')?$expand=ListItemAllFields';
@@ -303,6 +312,7 @@ export class SPOperationService {
     });
     return this.parseRetMultiple(res);
   }
+
   // READ single item - SharePoint list name, and item ID number
   async readItem(listName: string, id: any, options?: any) {
     const url = this.getItemURL(listName, id, options);
@@ -313,6 +323,7 @@ export class SPOperationService {
     });
     return this.parseRetSingle(res);
   }
+  
   async createItem(listName: string, jsonBody: any, type: string) {
     const url = this.getReadURL(listName, null);
     // append metadata
@@ -328,6 +339,43 @@ export class SPOperationService {
       return error;
     });
     return this.parseRetSingle(res);
+  }
+
+  async createItemAndMove(listName: string, jsonBody: any, type: string, folderUrl: string): Promise<any> {
+    const url = this.getReadURL(listName, null);
+    // append metadata
+    if (!jsonBody.__metadata) {
+      jsonBody.__metadata = {
+        // tslint:disable-next-line:object-literal-key-quotes
+        'type': type
+      };
+    }
+    const data = JSON.stringify(jsonBody);
+    const res = await this.httpClient.post(url, data, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+      const error = err.error;
+      return error;
+    });
+
+    if (res) {
+      const urlobj = {
+        select: 'FileDirRef,FileRef'
+      }
+      var urlRef = this.getReadURLWithId(this.constants.listNames.Schedules.name, res.d.ID, urlobj);
+      var currentRef: any = await this.httpClient.get(urlRef, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+        const error = err.error;
+        return error;
+      });
+      if (currentRef) {
+        var fileUrl = currentRef.d.FileRef;
+        var fileDirRef = currentRef.d.FileDirRef;
+        var moveFileUrl = fileUrl.replace(fileDirRef, folderUrl);
+        var urlMove = this.baseUrl + "/_api/web/getfilebyserverrelativeurl('" + fileUrl + "')/moveto(newurl='" + moveFileUrl + "',flags=1)";
+        await this.httpClient.post(urlMove, null, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+          const error = err.error;
+          return error;
+        });
+      }
+    }
   }
 
   /// UPDATE item - SharePoint list name, item ID number, and JS object to stringify for save
@@ -1006,49 +1054,6 @@ export class SPOperationService {
     return await this.http.post(url, data, options).toPromise().then(function (res: Response) {
       return res.json();
     }).catch(this.handleError);
-  }
-
-  async createAndMove(listName: string, jsonBody: any, folderUrl): Promise<any> {
-    const url = this.apiUrl.replace('{0}', listName);
-    // append metadata
-    const data = JSON.stringify(jsonBody);
-    let headers = new Headers();
-    headers.append('Content-Type', this.jsonHeader);
-    headers.append('Accept', this.jsonHeader);
-    if ($('#__REQUESTDIGEST').val()) {
-      headers.append('X-RequestDigest', $('#__REQUESTDIGEST').val());
-    }
-
-    const options = new RequestOptions({ headers: headers });
-    var response = await this.http.post(url, data, options).toPromise().then(function (res: Response) {
-      return res.json();
-    }).catch(this.handleError);
-
-    if (response) {
-      const urlobj = {
-        select: 'FileDirRef,FileRef'
-      }
-
-      var urlRef = this.getReadURLWithId(this.constants.listNames.Schedules.name, response.d.ID, urlobj);
-      var currentRef: any = await this.http.get(urlRef, options).toPromise().then(function (res: Response) {
-        return res.json();
-      }).catch(this.handleError);
-      if (currentRef) {
-        var fileUrl = currentRef.d.FileRef;
-        var fileDirRef = currentRef.d.FileDirRef;
-        var moveFileUrl = fileUrl.replace(fileDirRef, folderUrl);
-        var urlMove = this.baseUrl + "/_api/web/getfilebyserverrelativeurl('" + fileUrl + "')/moveto(newurl='" + moveFileUrl + "',flags=1)";
-        await this.http.post(urlMove, null, options).toPromise().then(function (res: Response) {
-          return res.json();
-        }).catch(this.handleError);
-      }
-    }
-  }
-
-  getReadURLWithId(listName: string, id: string, options?: any) {
-    let url = this.apiUrl.replace('{0}', listName) + '(' + id + ')';
-    url = this.readBuilder(url, options);
-    return url;
   }
 
   read(listName: string, options?: any): Promise<any> {

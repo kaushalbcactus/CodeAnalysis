@@ -29,6 +29,18 @@ export class MyDashboardConstantsService {
 
   mydashboardComponent = {
 
+    common : {
+      getAllResource: {
+        select: 'ID,UserName/ID,UserName/EMail,UserName/Title,UserName/Name,TimeZone/Title,Designation, Manager/ID, Manager/Title, Tasks/ID, Tasks/Title',
+        expand: 'UserName,TimeZone,Manager,Tasks',
+        filter: "IsActive eq 'Yes'",
+        top: '4500'
+      },
+      getMailTemplate: {
+        select: 'Content',
+        filter: "Title eq '{{templateName}}'"
+      }
+    },
     MyTasks: {
 
       select: 'ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones, IsCentrallyAllocated,AssignedTo/Title,AssignedTo/EMail',
@@ -257,20 +269,10 @@ export class MyDashboardConstantsService {
 
   async getPrevTaskStatus(task) {
     var status = '';
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
-
-    // let previousTask = Object.assign({}, this.mydashboardComponent.previousTaskStatus);
-    // previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
-
-    // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
-
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    const previousTask = Object.assign({}, this.mydashboardComponent.previousTaskStatus);
-    previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
-    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousTask);
-    this.asyncForEach(this.response, async (element) => {
+    const currentTask = Object.assign({}, this.mydashboardComponent.previousTaskStatus);
+    currentTask.filter = currentTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, currentTask);
+      for(const element of this.response) {
       if (element.AllowCompletion === 'No') {
         let previousTaskFilter = '';
         if (element.PrevTasks) {
@@ -279,24 +281,19 @@ export class MyDashboardConstantsService {
             previousTaskFilter += '(Title eq \'' + value + '\')';
             previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
           });
-
           const previousTask = Object.assign({}, this.mydashboardComponent.taskStatus);
           previousTask.filter = previousTaskFilter;
           const prevTaskResponse = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousTask);
-          this.asyncForEach(prevTaskResponse, async(element) => {
-            status = element.Status;
-          });
-          // prevTaskResponse.forEach(element => {
-          //   status = element.Status;
-          // });
-
+          for(const obj of prevTaskResponse) {
+            status = obj.Status;
+          }
         } else {
           status = 'AllowCompletion';
         }
       } else {
         status = 'AllowCompletion';
       }
-    });
+    }
     return status;
   }
 
@@ -310,13 +307,11 @@ export class MyDashboardConstantsService {
     var response;
     this.projectInfo = await this.getCurrentTaskProjectInformation(task.ProjectCode);
     this.NextPreviousTask = await this.getNextPreviousTask(task);
-    if (task.Task == 'Galley' || task.Task == 'Submission Pkg'
-      || task.Task == 'Submit' || task.Task == 'Journal Selection'
-      || task.Task == 'Journal Requirement') {
+    const allowedTasks = ['Galley', 'Submission Pkg', 'Submit', 'Journal Selection', 'Journal Requirement'];
+    if(allowedTasks.includes(task.Task)) {
       await this.GetAllDocuments(task);
       var isJcIdFound = await this.getJCIDS(task);
       if (!isJcIdFound) {
-        // this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: task.Task + "task can't be closed as no submission details are found." });
         response = "Task can't be closed as no submission details are found."
         return response;
       }
@@ -692,15 +687,20 @@ export class MyDashboardConstantsService {
   // Get Email Template  
   // *************************************************************************************************************************************
   async getEmailTemplate() {
-    var Url = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/_api/web/lists/GetByTitle('" + this.constants.listNames.MailContent.name + "')/items?$select=Content&$filter=Title eq 'NextTaskTemplate'";
-    const batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // var Url = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/_api/web/lists/GetByTitle('" + this.constants.listNames.MailContent.name + "')/items?$select=Content&$filter=Title eq 'NextTaskTemplate'";
+    // const batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
 
-    this.spServices.getBatchBodyGet(batchContents, batchGuid, Url);
-    var response = await this.spServices.getDataByApi(batchGuid, batchContents);
+    // this.spServices.getBatchBodyGet(batchContents, batchGuid, Url);
+    // var response = await this.spServices.getDataByApi(batchGuid, batchContents);
 
-    this.Emailtemplate = response[0][0];
+    // this.Emailtemplate = response[0][0];
 
+    const common = this.mydashboardComponent.common;
+    common.getMailTemplate.filter = common.getMailTemplate.filter.replace('{{templateName}}', 'NextTaskTemplate');
+    const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
+      common.getMailTemplate);
+    this.Emailtemplate = templateData.length > 0 ? templateData[0] : [];
   }
 
 

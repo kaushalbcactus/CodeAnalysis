@@ -341,8 +341,8 @@ export class CACommonService {
     scTempArrays.taskTempArray.push({ label: scObj.task, value: scObj.task });
     scTempArrays.deliveryTypeTempArray.push({ label: scObj.deliveryType, value: scObj.deliveryType });
     scTempArrays.allocatedTempArray.push({ label: scObj.estimatedTime, value: scObj.estimatedTime });
-    scTempArrays.startTimeTempArray.push({ label: scObj.startDateText, value: scObj.startDateText });
-    scTempArrays.endTimeTempArray.push({ label: scObj.dueDateText, value: scObj.dueDateText });
+    scTempArrays.startTimeTempArray.push({ label: scObj.startDateText, value: scObj.startDate });
+    scTempArrays.endTimeTempArray.push({ label: scObj.dueDateText, value: scObj.dueDate });
     const resExt = $.extend(true, [], resPool);
     for (const retRes of resExt) {
       retRes.timeAvailable = 0;

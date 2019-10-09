@@ -53,6 +53,12 @@ export class MyTimelineComponent implements OnInit {
   toolData: any;
   displayleave = false;
   leave: any;
+  public queryConfig = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
   constructor(private myDashboardConstantsService: MyDashboardConstantsService,
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -251,40 +257,45 @@ export class MyTimelineComponent implements OnInit {
     }
 
     filterDates = await this.getStartEndDates(startDate, endDate);
-    const batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
-
-
+    const batchURL = [];   
 
     //***********************************************************************************************
     // Get Tasks
     //**************************************************************************************************
 
-
-    let MyTimeline = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimeline);
-    MyTimeline.filter = MyTimeline.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
-    MyTimeline.filter += this.selectedType.name === 'Completed' ? MyTimeline.filterCompleted : this.selectedType.name === 'Not Completed' ? MyTimeline.filterNotCompleted : this.selectedType.name === 'Planned' ? MyTimeline.filterPlanned : this.selectedType.name === 'Adhoc' ? MyTimeline.filterAdhoc : MyTimeline.filterAll;
+    let MyTimelineObj = Object.assign({}, this.queryConfig);
+    let MyTimelineUrl = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimeline);
+    MyTimelineUrl.filter = MyTimelineUrl.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
+    MyTimelineUrl.filter += this.selectedType.name === 'Completed' ? MyTimelineUrl.filterCompleted : this.selectedType.name === 'Not Completed' ?
+                             MyTimelineUrl.filterNotCompleted : this.selectedType.name === 'Planned' ? MyTimelineUrl.filterPlanned : this.selectedType.name === 'Adhoc' ?
+                             MyTimelineUrl.filterAdhoc : MyTimelineUrl.filterAll;
     //  MyTimeline.filter.substring(0, MyTimeline.filter.lastIndexOf("and"));
-    MyTimeline.filter += MyTimeline.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
-    const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', MyTimeline);
-    this.spServices.getBatchBodyGet(batchContents, batchGuid, myTaskUrl);
+    MyTimelineUrl.filter += MyTimelineUrl.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
+    MyTimelineObj.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name, MyTimelineUrl);
+    MyTimelineObj.listName = this.constants.listNames.Schedules.name;
+    MyTimelineObj.type = 'GET';
+    batchURL.push(MyTimelineObj);
+    // this.spServices.getBatchBodyGet(batchContents, batchGuid, myTaskUrl);
 
     //***********************************************************************************************
     // Get Leaves
     //**************************************************************************************************
 
+    let myLeavesObj = Object.assign({}, this.queryConfig);
+    let MyLeavesUrl = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
+    MyLeavesUrl.filter = MyLeavesUrl.filter.replace(/{{currentUser}}/gi, this.sharedObject.sharePointPageObject.userId.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
 
-    let MyLeaves = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
-    MyLeaves.filter = MyLeaves.filter.replace(/{{currentUser}}/gi, this.sharedObject.sharePointPageObject.userId.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
+    myLeavesObj.url =  this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name, MyLeavesUrl);
+    myLeavesObj.listName = this.constants.listNames.LeaveCalendar.name;
+    myLeavesObj.type = 'GET';
+    batchURL.push(myLeavesObj);
+    // this.spServices.getBatchBodyGet(batchContents, batchGuid, myLeavesUrl);
+    this.response = await this.spServices.executeBatch(batchURL);
 
-    const myLeavesUrl = this.spServices.getReadURL('' + this.constants.listNames.LeaveCalendar.name + '', MyLeaves);
-    this.spServices.getBatchBodyGet(batchContents, batchGuid, myLeavesUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, batchContents);
+    this.allTasks = this.response.length ? this.response[0].retItems : [];
 
-
-    this.response = await this.spServices.getDataByApi(batchGuid, batchContents);
-    this.allTasks = this.response[0] !== "" ? this.response[0] : [];
-
-    this.allLeaves = this.response[1] !== "" ? this.response[1] : [];
+    this.allLeaves = this.response.length > 1 ? this.response[1].retItems : [];
     this.events = [];
 
     this.allTasks.forEach(element => {
@@ -394,17 +405,12 @@ export class MyTimelineComponent implements OnInit {
     this.step = index;
     if (this.step === 0) {
       this.modalloaderenable = true;
-      this.batchContents = new Array();
-      const batchGuid = this.spServices.generateUUID();
 
       let TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
       TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, this.task.ID);
-
-      const TaskDetailsUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TaskDetails);
-      this.spServices.getBatchBodyGet(this.batchContents, batchGuid, TaskDetailsUrl);
-      this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-      this.task = this.response[0][0];
+  
+      this.response  = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
+      this.task = this.response.length ? this.response[0] : {};
       this.task.AssignedTo = this.sharedObject.currentUser.title;
       this.task.TimeSpent = this.task.TimeSpent === null ? "00:00" : this.task.TimeSpent.replace('.', ':');
       var data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === this.task.ProjectCode);
@@ -443,56 +449,6 @@ export class MyTimelineComponent implements OnInit {
 
   }
 
-
-
-  // *************************************************************************************************************************************
-  // Get Next Previous task from current task 
-  // *************************************************************************************************************************************
-  // async getNextPreviousTask(task) {
-
-  //   var nextTaskFilter = '';
-  //   var previousTaskFilter = '';
-  //   if (task.NextTasks) {
-  //     var nextTasks = task.NextTasks.split(";#");
-  //     nextTasks.forEach(function (value, i) {
-  //       nextTaskFilter += "(Title eq '" + value + "')";
-  //       nextTaskFilter += i < nextTasks.length - 1 ? " or " : '';
-  //     });
-  //   }
-  //   if (task.PrevTasks) {
-  //     var previousTasks = task.PrevTasks.split(";#");
-  //     previousTasks.forEach(function (value, i) {
-  //       previousTaskFilter += "(Title eq '" + value + "')";
-  //       previousTaskFilter += i < previousTasks.length - 1 ? " or " : '';
-  //     });
-  //   }
-
-  //   var taskFilter = (nextTaskFilter !== '' && previousTaskFilter !== '') ? nextTaskFilter + " or " + previousTaskFilter : (nextTaskFilter === '' && previousTaskFilter !== '') ? previousTaskFilter : (nextTaskFilter !== '' && previousTaskFilter === '') ? nextTaskFilter : '';
-
-  //   this.batchContents = new Array();
-  //   const batchGuid = this.spServices.generateUUID();
-
-  //   let previousNextTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTask);
-  //   previousNextTask.filter = taskFilter;
-
-  //   const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules + '', previousNextTask);
-  //   this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
-
-  //   this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-  //   this.tasks = this.response[0] !== "" ? this.response[0] : [];
-
-
-  //   if (task.NextTasks)
-  //     this.tasks.filter(c => nextTasks.includes(c.Title)).map(c => c.TaskType = "Next Task");
-  //   if (task.PrevTasks)
-  //     this.tasks.filter(c => previousTasks.includes(c.Title)).map(c => c.TaskType = "Previous Task");
-
-  //   this.modalloaderenable = false;
-  // }
-  // *************************************************************************************************************************************
-  // Get  data on task type change (dropdown)
-  // *************************************************************************************************************************************
-
   onTaskTypeChange() {
     this.CalendarLoader = true;
     this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start, this.fullCalendar.calendar.state.dateProfile.currentRange.end);
@@ -522,13 +478,13 @@ export class MyTimelineComponent implements OnInit {
           // update leaves table based on leaves 
           const dbAvailableHours = await this.getAvailableHours(blockTimeobj);
 
-          // await this.spServices.create(this.constants.listNames.LeaveCalendar.name, blockTimeobj, '');
+          await this.spServices.createItem(this.constants.listNames.LeaveCalendar.name, blockTimeobj, this.constants.listNames.LeaveCalendar.type);
           this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Leave created successfully.' });
         }
         else {
           if (task === undefined) {
             const folderUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/Lists/Schedules/AdhocTasks";
-            await this.spServices.createAndMove(this.constants.listNames.Schedules.name, blockTimeobj, folderUrl);
+            await this.spServices.createItemAndMove(this.constants.listNames.Schedules.name, blockTimeobj, this.constants.listNames.Schedules.type, folderUrl);
 
             this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time Booking created successfully.' });
           }
@@ -540,7 +496,7 @@ export class MyTimelineComponent implements OnInit {
             }
             else {
 
-              await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, blockTimeobj, "SP.Data.SchedulesListItem");
+              await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, blockTimeobj, this.constants.listNames.Schedules.type);
 
               this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time Booking updated successfully.' });
             }
@@ -564,7 +520,7 @@ export class MyTimelineComponent implements OnInit {
       Status: 'Deleted'
     }
 
-    await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.task.ID, data, "SP.Data.SchedulesListItem");
+    await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.task.ID, data, this.constants.listNames.Schedules.type);
 
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Adhoc  deleted successfully' });
 
@@ -583,19 +539,24 @@ export class MyTimelineComponent implements OnInit {
 
     this.CalendarLoader = true;
     if (this.step !== 0) {
-      this.batchContents = new Array();
-      const batchGuid = this.spServices.generateUUID();
-
       let TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
       TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, this.task.ID);
+  
+      this.response  = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
 
-      const TaskDetailsUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TaskDetails);
-      this.spServices.getBatchBodyGet(this.batchContents, batchGuid, TaskDetailsUrl);
-      this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+      // this.batchContents = new Array();
+      // const batchGuid = this.spServices.generateUUID();
 
-      this.task = this.response[0][0];
+      // let TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
+      // TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, this.task.ID);
+
+      // const TaskDetailsUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TaskDetails);
+      // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, TaskDetailsUrl);
+      // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+
+      this.task = this.response.length ? this.response[0] : {};
       this.task.AssignedTo = this.sharedObject.currentUser.title;
-      this.task.TimeSpent = this.task.TimeSpent === null ? "00:00" : this.task.TimeSpent.replace('.', ':');
+      this.task.TimeSpent = this.task.TimeSpent ? "00:00" : this.task.TimeSpent.replace('.', ':');
       var data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === this.task.ProjectCode);
 
       if (data !== undefined) {
@@ -611,14 +572,12 @@ export class MyTimelineComponent implements OnInit {
     const earlierStaus = task.Status;
     task.Status = this.SelectedStatus;
     var stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
-
-    if (stval === "Completed" || stval === "AllowCompletion" || stval === "Auto Closed") {
-
+    const allowedStatus = ["Completed", "AllowCompletion", "Auto Closed"];
+    if(allowedStatus.includes(stval)) {
       if (task.Status === 'Completed' && !task.FinalDocSubmit) {
         this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'No Final Document Found' });
         task.Status = earlierStaus;
         this.CalendarLoader = false;
-
         return false;
       }
       else {

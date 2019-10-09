@@ -695,28 +695,36 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
 
   async checkCompleteTask(task) {
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
 
+    const allowedStatus= ['Completed', 'AllowCompletion', 'Auto Closed'];
     const TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
     TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, task.ID);
+    
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
 
-    const TaskDetailsUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TaskDetails);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, TaskDetailsUrl);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+
+    // const TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
+    // TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, task.ID);
+
+    // const TaskDetailsUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TaskDetails);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, TaskDetailsUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
 
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
 
-    task.TaskComments = this.response[0][0].TaskComments;
+    task.TaskComments = this.response.length ? this.response[0].TaskComments: '';
 
-    if (stval === 'Completed' || stval === 'AllowCompletion' || stval === 'Auto Closed') {
-
+    // if (stval === 'Completed' || stval === 'AllowCompletion' || stval === 'Auto Closed') {
+      if(allowedStatus.includes(stval)) {
       if (!task.FinalDocSubmit) {
         this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'No Final Document Found' });
         return false;
       }
-      if (this.response[0][0].TaskComments) {
+      if (task.TaskComments) {
 
         this.confirmationService.confirm({
           message: 'Are you sure that you want to proceed?',

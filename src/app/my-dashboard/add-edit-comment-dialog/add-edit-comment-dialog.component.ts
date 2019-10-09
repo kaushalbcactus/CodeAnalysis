@@ -69,12 +69,7 @@ export class AddEditCommentComponent implements OnInit {
         const toolbarContainer = document.querySelector('#toolbar-container');
         toolbarContainer.appendChild(editor.ui.view.toolbar.element);
         editor.model.document.on('change', () => {
-          if (this.editor.getData() === '') {
-            this.disableComment = false;
-          }
-          else {
-            this.disableComment = true;
-          }
+          this.disableComment = this.editor.getData() === '' ? false : true;
         });
       })
       .catch(error => {
@@ -129,13 +124,11 @@ export class AddEditCommentComponent implements OnInit {
   //  Cancel task comment
   //*********************************************************************************************************
   cancelComment() {
-
     this.editor.setData('');
     if (this.config.data !== undefined) {
       this.ref.close();
       this.commentsdb = [];
     }
-
   }
 
   //*********************************************************************************************************
