@@ -169,17 +169,21 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.sowDropDown.CMLevel1.push({ label: element.Title, value: element.ID });
     });
     this.pmObject.oProjectCreation.Resources.cmLevel2.forEach(element => {
+      this.sowDropDown.CMLevel1.push({ label: element.Title, value: element.ID });
       this.sowDropDown.CMLevel2.push({ label: element.Title, value: element.ID });
     });
     this.pmObject.oProjectCreation.Resources.deliveryLevel1.forEach(element => {
       this.sowDropDown.Delivery.push({ label: element.Title, value: element.ID });
     });
     this.pmObject.oProjectCreation.Resources.deliveryLevel2.forEach(element => {
+      this.sowDropDown.Delivery.push({ label: element.Title, value: element.ID });
       this.sowDropDown.DeliveryOptional.push({ label: element.Title, value: element.ID });
     });
     this.pmObject.oProjectCreation.Resources.businessDevelopment.forEach(element => {
       this.sowDropDown.SowOwner.push({ label: element.Title, value: element.ID });
     });
+    this.sowDropDown.CMLevel1.sort((a, b) => (a.label > b.label) ? 1 : -1);
+    this.sowDropDown.Delivery.sort((a, b) => (a.label > b.label) ? 1 : -1);
   }
   /**
    * This method is called when client legal entity value is changed.
@@ -246,8 +250,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       status: [null],
       sowDocuments: [null],
       comments: [null],
-      total: [0, [Validators.required, Validators.min(1)]],
-      net: [0, [Validators.required, Validators.min(1)]],
+      total: [0, [Validators.required, Validators.min(0)]],
+      net: [0, [Validators.required, Validators.min(0)]],
       oop: [0, [Validators.required, Validators.min(0)]],
       tax: [0, [Validators.required, Validators.min(0)]],
       cm: ['', Validators.required],
@@ -257,8 +261,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       sowOwner: ['', Validators.required]
     });
     this.addAdditionalBudgetForm = this.frmbuilder.group({
-      addTotal: [0, [Validators.required, Validators.min(1)]],
-      addNet: [0, [Validators.required, Validators.min(1)]],
+      addTotal: [0, [Validators.required, Validators.min(0)]],
+      addNet: [0, [Validators.required, Validators.min(0)]],
       addOOP: [0, [Validators.required, Validators.min(0)]],
       addTax: [0, [Validators.required, Validators.min(0)]],
       sowDocumentsAdd: [null],
