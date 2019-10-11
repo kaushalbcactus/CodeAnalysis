@@ -603,6 +603,7 @@ export class StandardprojectComponent implements OnInit {
    * This method generate the milestone.
    */
   private async generateSkillMilestones() {
+    this.pmObject.addProject.Timeline.Standard.Milestones = '';
     let startDate = this.calcBusinessNextDate(new Date(), 1);
     if (this.ngStandardProposedStartDate) {
       startDate = this.ngStandardProposedStartDate;
