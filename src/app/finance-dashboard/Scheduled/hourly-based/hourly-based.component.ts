@@ -718,7 +718,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                     NetBudget: totalVal,
                     Status: 'Approved',
                     ApprovalDate: this.confirmHourlybased_form.value.approvalDate,
-                    BudgetHours: this.confirmHourlybased_form.value.BudgetHrs
+                    BudgetHours: hrs
                 }
                 pbbObj['__metadata'] = { type: 'SP.Data.ProjectBudgetBreakupListItem' };
                 const pbbEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectBudgetBreakup.update.replace("{{Id}}", this.projectBudgetBreakupData.ID);
@@ -756,7 +756,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 let pfObj = {
                     ApprovedBudget: totalVal,
                     ScheduledRevenue: totalVal,
-                    BudgetHrs: this.selectedRowItem.BudgetHrs,
+                    BudgetHrs: hrs,
                     InvoicesScheduled: totalVal
                 }
                 pfObj['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };

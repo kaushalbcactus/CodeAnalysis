@@ -596,9 +596,9 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         let totalAmt = 0;
         for (let j = 0; j < this.totalLineItems.length; j++) {
             const element = this.totalLineItems[j];
-            totalAmt += parseInt(element.AmountPerProject ? element.AmountPerProject : 0)
+            totalAmt += parseFloat(element.AmountPerProject ? element.AmountPerProject : 0)
         }
-        let expenditureAmt = parseInt(this.addExpenditure_form.value.Amount);
+        let expenditureAmt = parseFloat(this.addExpenditure_form.value.Amount);
         // let amt = parseInt(val);
         this.projectClientIsEmpty = this.isEmpty(this.totalLineItems);
         if (totalAmt <= expenditureAmt) {
@@ -703,6 +703,11 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                 return;
             }
 
+            if (!this.addSts) {
+                // this.totalLineItems[index].AmountPerProject = '';
+                this.messageService.add({ key: 'expenseInfoToast', severity: 'info', summary: 'Info message', detail: 'Your entered amount is less than actual Amount.', life: 4000 });
+                return;
+            }
             console.log('form is submitting ..... this.addExpenditure_form ', this.addExpenditure_form.value);
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
             this.uploadFileData();
