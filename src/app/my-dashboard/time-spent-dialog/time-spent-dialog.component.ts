@@ -90,17 +90,18 @@ export class TimeSpentDialogComponent implements OnInit {
     // var previousStatus =  this.data.status;
     // if (previousStatus === "Completed" || previousStatus === "AllowCompletion" || previousStatus === "Auto Closed") {
 
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
 
     let TimeSpent = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TimeSpent);
     TimeSpent.filter = TimeSpent.filter.replace(/{{taskId}}/gi, task.ID);
 
-    const myTimeSpentUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TimeSpent);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTimeSpentUrl);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    // const myTimeSpentUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TimeSpent);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTimeSpentUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.response = this.spServices.readItems(this.constants.listNames.Schedules.name, TimeSpent);
 
-    this.currentTaskTimeSpent = this.response[0];
+    this.currentTaskTimeSpent = this.response.length > 0 ? this.response : [];
     this.dateArray = [];
     var todayDate = new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
     var startDate = new Date(this.datePipe.transform(task.StartDate, 'MMM d, y'));
