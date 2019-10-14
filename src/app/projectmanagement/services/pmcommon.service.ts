@@ -790,7 +790,6 @@ export class PMCommonService {
       sowItem.BD.hasOwnProperty('ID') ? this.extractNameFromId([sowItem.BD.ID]).join(', ') : '' : '';
   }
   convertToExcelFile(cnf1) {
-
     if (Array.isArray(cnf1._selection)) {
       if (cnf1._selection.length) {
         cnf1.exportCSV({ selectionOnly: true });

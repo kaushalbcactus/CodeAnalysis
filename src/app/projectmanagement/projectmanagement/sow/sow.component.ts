@@ -287,7 +287,6 @@ export class SOWComponent implements OnInit, OnDestroy {
       const tempAllSOWArray = [];
       for (const task of this.pmObject.allSOWItems) {
         const sowObj = $.extend(true, {}, this.pmObject.allSOW);
-    
         sowObj.ID = task.ID;
         sowObj.SOWCode = task.SOWCode;
         sowObj.ShortTitle = task.Title;

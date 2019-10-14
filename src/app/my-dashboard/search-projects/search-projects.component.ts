@@ -77,7 +77,12 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     account: [],
   };
   tempClick: any;
-
+  public queryConfig = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
 
   constructor(
     public messageService: MessageService,
@@ -258,8 +263,8 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
       });
     } else {
       this.loaderenable = true;
-      this.batchContents = new Array();
-      const batchGuid = this.spServices.generateUUID();
+      // this.batchContents = new Array();
+      // const batchGuid = this.spServices.generateUUID();
       let Project;
       if (this.ProjectCode !== '') {
         Project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformation);
@@ -272,12 +277,12 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
         Project.filter = Project.filterByTitle;
       }
 
-      const ProjectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', Project);
-      this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectUrl);
-      this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-      if (this.response[0].length > 0) {
-        this.ProjectList = this.response[0];
+      // const ProjectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', Project);
+      // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectUrl);
+      // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+      this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, Project);
+      if (this.response.length > 0) {
+        this.ProjectList = this.response;
 
         this.ProjectList.map(c => c.Created = new Date(c.Created));
 
@@ -350,26 +355,42 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   // **************************************************************************************************
 
   async GetProjectResources() {
+    const batchUrl = [];
+    this.response = [];
+    const ProjectInfoResources = Object.assign({},this.queryConfig);
+    ProjectInfoResources.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name, this.myDashboardConstantsService.mydashboardComponent.ProjectInfoResources);
+    ProjectInfoResources.url =  ProjectInfoResources.url.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
+    ProjectInfoResources.listName = this.constants.listNames.ProjectInformation.name;
+    ProjectInfoResources.type = 'GET';
+    batchUrl.push(ProjectInfoResources);
 
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+    // const ProjectInfoResources = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInfoResources);
+    // ProjectInfoResources.filter = ProjectInfoResources.filter.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
+    // const ProjectInfoResourcesUrl = this.spServices.getReadURL('' +
+    //   this.constants.listNames.ProjectInformation.name + '', ProjectInfoResources);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectInfoResourcesUrl);
 
+    // const ProjectResources = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectResource);
+    // ProjectResources.filter = ProjectResources.filter.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
+    // const ProjectResourcesUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', ProjectResources);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectResourcesUrl);
 
-    const ProjectInfoResources = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInfoResources);
-    ProjectInfoResources.filter = ProjectInfoResources.filter.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
-    const ProjectInfoResourcesUrl = this.spServices.getReadURL('' +
-      this.constants.listNames.ProjectInformation.name + '', ProjectInfoResources);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectInfoResourcesUrl);
+    const ProjectResources = Object.assign({},this.queryConfig);
+    ProjectResources.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name, this.myDashboardConstantsService.mydashboardComponent.ProjectResource);
+    ProjectResources.url =  ProjectResources.url.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
+    ProjectResources.listName = this.constants.listNames.ProjectInformation.name;
+    ProjectResources.type = 'GET';
+    batchUrl.push(ProjectResources);
 
-
-    const ProjectResources = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectResource);
-    ProjectResources.filter = ProjectResources.filter.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
-    const ProjectResourcesUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', ProjectResources);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectResourcesUrl);
-
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    const result = await this.spServices.executeBatch(batchUrl);
+    const prjResInfo = result.length > 0 ? result[0].retItems : [];
+    const prjResReponse = result.length > 1 ? result[1].retItems : [];  
+    this.response.push(prjResInfo);
+    this.response.push(prjResReponse);  
     this.ProjectDetails.cmLevel1 = this.response[1][0].CMLevel1;
-
 
     this.projectResource.CMMembers = this.response[1].map(c => c).map(c => c.CMLevel1)[0].results ?
       this.response[1].map(c => c).map(c => c.CMLevel1).map(c => c.results)[0].map(c => c.Title) + ', '

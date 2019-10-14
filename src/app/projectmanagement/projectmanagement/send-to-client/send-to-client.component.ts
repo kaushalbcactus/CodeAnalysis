@@ -159,7 +159,6 @@ export class SendToClientComponent implements OnInit {
   }
   async closeTaskWithStatus(task, options, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
-  
     if (isActionRequired) {
       await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
       const projectInfoOptions = { Status: 'Author Review' };
