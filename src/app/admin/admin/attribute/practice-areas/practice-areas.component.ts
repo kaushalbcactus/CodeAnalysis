@@ -100,6 +100,7 @@ export class PracticeAreasComponent implements OnInit {
       // { field: 'Sr', header: 'Sr.No.' },
       { field: 'PracticeArea', header: 'Practice Area', visibility: true },
       { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
+      { field: 'LastUpdatedFormat', header: 'Last Updated', visibility: false },
       { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
     ];
     this.loadPractiveArea();

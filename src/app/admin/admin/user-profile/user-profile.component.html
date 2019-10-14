@@ -1,4 +1,4 @@
-<div class="top-right-title pr-20">
+<div class="top-right-title">
   <a (click)="downloadExcel(up)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
       aria-hidden="true"></i>
   </a>
@@ -596,6 +596,32 @@
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.dateofexit.errors">
             <div *ngIf="addUser.controls.dateofexit.errors.required">Date of Exit is required</div>
           </div>
+        </div>
+      </div>
+      <div class="p-grid mt-20">
+        <div class="p-col-3">
+          Define your work week
+        </div>
+        <div class="p-col-1">
+            <p-checkbox name="workWeek" label="Sun" formControlName="workSunday" binary="true"></p-checkbox>
+        </div>
+        <div class="p-col-1">
+            <p-checkbox name="workWeek" label="Mon" formControlName="workMonday" binary="true"></p-checkbox>
+        </div>
+        <div class="p-col-1">
+            <p-checkbox name="workWeek" label="Tue" formControlName="workTuesday" binary="true"></p-checkbox>
+        </div>
+        <div class="p-col-1">
+            <p-checkbox name="workWeek" label="Wed" formControlName="workWednessday" binary="true"></p-checkbox>
+        </div>
+        <div class="p-col-1">
+            <p-checkbox name="workWeek" label="Thu" formControlName="workThursday" binary="true"></p-checkbox>
+        </div>
+        <div class="p-col-1">
+            <p-checkbox name="workWeek" label="Fri" formControlName="workFriday" binary="true"></p-checkbox>
+        </div>
+        <div class="p-col-1">
+            <p-checkbox name="workWeek" label="Sat" formControlName="workSaturday" binary="true"></p-checkbox>
         </div>
       </div>
     </div>

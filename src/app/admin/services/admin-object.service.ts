@@ -51,7 +51,14 @@ export class AdminObjectService {
     Manager: '',
     IsActive: 'Yes',
     DisplayText: '',
-    DateofExit: new Date()
+    DateofExit: new Date(),
+    WorkingFriday: false,
+    WorkingMonday: false,
+    WorkingSaturday: false,
+    WorkingSunday: false,
+    WorkingThursday: false,
+    WorkingTuesday: false,
+    WorkingWednesday: false
   };
   public isMainLoaderHidden = true;
   public resourceCatArray = [];

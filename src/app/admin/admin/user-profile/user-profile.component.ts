@@ -193,7 +193,14 @@ export class UserProfileComponent implements OnInit {
       practiceAreaEffectiveDate: ['', null],
       timeZoneEffectiveDate: ['', null],
       primarySkillEffectiveDate: ['', null],
-      skillLevelEffectiveDate: ['', null]
+      skillLevelEffectiveDate: ['', null],
+      workSunday: ['', null],
+      workMonday: ['', null],
+      workTuesday: ['', null],
+      workWednessday: ['', null],
+      workThursday: ['', null],
+      workFriday: ['', null],
+      workSaturday: ['', null]
     });
   }
   /**
@@ -344,6 +351,13 @@ export class UserProfileComponent implements OnInit {
         userObj.IsActive = item.IsActive;
         userObj.DisplayText = item.Manager.Title;
         userObj.DateofExit = item.DateofExit;
+        userObj.WorkingSunday = item.WorkingSunday;
+        userObj.WorkingMonday = item.WorkingMonday;
+        userObj.WorkingTuesday = item.WorkingTuesday;
+        userObj.WorkingWednesday = item.WorkingWednesday;
+        userObj.WorkingThursday = item.WorkingThursday;
+        userObj.WorkingFriday = item.WorkingFriday;
+        userObj.WorkingSaturday = item.WorkingSaturday;
         // Add the text of below item.
         if (userObj.Task) {
           const tasks: any = userObj.Task;
@@ -643,6 +657,13 @@ export class UserProfileComponent implements OnInit {
         userObj.IsActive = item.IsActive;
         userObj.DisplayText = item.Manager.Title;
         userObj.DateofExit = item.DateofExit;
+        userObj.WorkingSunday = item.WorkingSunday;
+        userObj.WorkingMonday = item.WorkingMonday;
+        userObj.WorkingTuesday = item.WorkingTuesday;
+        userObj.WorkingWednesday = item.WorkingWednesday;
+        userObj.WorkingThursday = item.WorkingThursday;
+        userObj.WorkingFriday = item.WorkingFriday;
+        userObj.WorkingSaturday = item.WorkingSaturday;
         // Add the text of below item.
         if (userObj.Task) {
           const tasks: any = userObj.Task;
@@ -962,106 +983,107 @@ export class UserProfileComponent implements OnInit {
           summary: 'Error Message', detail: 'Please select proper username name.'
         });
         return false;
-      } else if (addUserForm.value.manager && !addUserForm.value.manager.hasOwnProperty('EntityData')) {
+      }
+      if (addUserForm.value.manager && !addUserForm.value.manager.hasOwnProperty('EntityData')) {
         this.messageService.add({
           key: 'adminCustom', severity: 'error',
           summary: 'Error Message', detail: 'Please select proper manager name.'
         });
         return false;
-      } else if (new Date(addUserForm.value.dateofjoin) >
+      }
+      if (new Date(addUserForm.value.dateofjoin) >
         new Date(addUserForm.value.liveDate)) {
         this.messageService.add({
           key: 'adminCustom', severity: 'error',
           summary: 'Error Message', detail: 'Date of joining cannot be greater than go live date.'
         });
         return false;
-      } else {
-        this.adminObject.isMainLoaderHidden = false;
-        // This method is used to save all the addform value into global object.
-        this.setValueInGlobalObject(addUserForm.value, true);
-        /**
-         * @description
-         * Add logic of save the data to Resource Categerization list.
-         * In order to add username and manager name to `Resource Categerization list`, we should have
-         * userId and manager Id.
-         * To get the manager and userId we have to make rest call.
-         */
-        let IdResults = [];
-        const batchURL = [];
-        const options = {
-          data: null,
-          url: '',
-          type: '',
-          listName: ''
-        };
-        // Not required to get the username Id in case of Edit user
+      }
+      this.adminObject.isMainLoaderHidden = false;
+      // This method is used to save all the addform value into global object.
+      this.setValueInGlobalObject(addUserForm.value, true);
+      /**
+       * @description
+       * Add logic of save the data to Resource Categerization list.
+       * In order to add username and manager name to `Resource Categerization list`, we should have
+       * userId and manager Id.
+       * To get the manager and userId we have to make rest call.
+       */
+      let IdResults = [];
+      const batchURL = [];
+      const options = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
+      // Not required to get the username Id in case of Edit user
+      if (!this.showeditUser) {
+        const userEmailId = addUserForm.value.username.EntityData.Email;
+        this.adminObject.addUser.UserNameEmail = userEmailId;
+        // Get userId from  UserInformationList based on filter EMail eq \'{{emailId}}\' ##0;
+        const userIdGet = Object.assign({}, options);
+        const userIdFilter = Object.assign({}, this.adminConstants.QUERY.GET_USER_INFORMATION);
+        userIdFilter.filter = userIdFilter.filter.replace(/{{emailId}}/gi,
+          userEmailId);
+        userIdGet.url = this.spServices.getReadURL(this.constants.listNames.UserInformationList.name,
+          userIdFilter);
+        userIdGet.type = 'GET';
+        userIdGet.listName = this.constants.listNames.UserInformationList.name;
+        batchURL.push(userIdGet);
+      }
+      // If Manager is not changed no need to get the ID of manager.
+      if (!addUserForm.value.manager.EntityData.hasOwnProperty('ID')) {
+        const managerEmailId = addUserForm.value.manager.EntityData.Email;
+        // Get managerId from  UserInformationList based on filter EMail eq \'{{emailId}}\' ##1;
+        const managerIdGet = Object.assign({}, options);
+        const managerIdFilter = Object.assign({}, this.adminConstants.QUERY.GET_USER_INFORMATION);
+        managerIdFilter.filter = managerIdFilter.filter.replace(/{{emailId}}/gi,
+          managerEmailId);
+        managerIdGet.url = this.spServices.getReadURL(this.constants.listNames.UserInformationList.name,
+          managerIdFilter);
+        managerIdGet.type = 'GET';
+        managerIdGet.listName = this.constants.listNames.UserInformationList.name;
+        batchURL.push(managerIdGet);
+      }
+      if (batchURL.length) {
+        IdResults = await this.spServices.executeBatch(batchURL);
+      }
+      if (IdResults && IdResults.length) {
         if (!this.showeditUser) {
-          const userEmailId = addUserForm.value.username.EntityData.Email;
-          this.adminObject.addUser.UserNameEmail = userEmailId;
-          // Get userId from  UserInformationList based on filter EMail eq \'{{emailId}}\' ##0;
-          const userIdGet = Object.assign({}, options);
-          const userIdFilter = Object.assign({}, this.adminConstants.QUERY.GET_USER_INFORMATION);
-          userIdFilter.filter = userIdFilter.filter.replace(/{{emailId}}/gi,
-            userEmailId);
-          userIdGet.url = this.spServices.getReadURL(this.constants.listNames.UserInformationList.name,
-            userIdFilter);
-          userIdGet.type = 'GET';
-          userIdGet.listName = this.constants.listNames.UserInformationList.name;
-          batchURL.push(userIdGet);
-        }
-        // If Manager is not changed no need to get the ID of manager.
-        if (!addUserForm.value.manager.EntityData.hasOwnProperty('ID')) {
-          const managerEmailId = addUserForm.value.manager.EntityData.Email;
-          // Get managerId from  UserInformationList based on filter EMail eq \'{{emailId}}\' ##1;
-          const managerIdGet = Object.assign({}, options);
-          const managerIdFilter = Object.assign({}, this.adminConstants.QUERY.GET_USER_INFORMATION);
-          managerIdFilter.filter = managerIdFilter.filter.replace(/{{emailId}}/gi,
-            managerEmailId);
-          managerIdGet.url = this.spServices.getReadURL(this.constants.listNames.UserInformationList.name,
-            managerIdFilter);
-          managerIdGet.type = 'GET';
-          managerIdGet.listName = this.constants.listNames.UserInformationList.name;
-          batchURL.push(managerIdGet);
-        }
-        if (batchURL.length) {
-          IdResults = await this.spServices.executeBatch(batchURL);
-        }
-        if (IdResults && IdResults.length) {
-          if (!this.showeditUser) {
-            // We need to check if UserNameId and ManagerId return from `User List Information`.
-            // If we not add them to temporary group `SyncUserToUserInfomartionList` to get thier Id.
-            if (IdResults[0] && IdResults[0].retItems.length && IdResults[1] && IdResults[1].retItems.length) {
+          // We need to check if UserNameId and ManagerId return from `User List Information`.
+          // If we not add them to temporary group `SyncUserToUserInfomartionList` to get thier Id.
+          if (IdResults[0] && IdResults[0].retItems.length && IdResults[1] && IdResults[1].retItems.length) {
+            await this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser);
+          } else {
+            const sResult = await this.addUserToGroup(addUserForm.value.username.Key, addUserForm.value.manager.Key);
+            if (sResult && sResult.length) {
+              const userId = sResult[0].retItems.Id;
+              const managerId = sResult[1].retItems.Id;
+              addUserForm.value.username.EntityData.ID = userId;
+              addUserForm.value.manager.EntityData.ID = managerId;
               await this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser);
-            } else {
-              const sResult = await this.addUserToGroup(addUserForm.value.username.Key, addUserForm.value.manager.Key);
-              if (sResult && sResult.length) {
-                const userId = sResult[0].retItems.Id;
-                const managerId = sResult[1].retItems.Id;
-                addUserForm.value.username.EntityData.ID = userId;
-                addUserForm.value.manager.EntityData.ID = managerId;
-                await this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser);
-              }
             }
           }
-          // We need to check if ManagerId return from `User List Information`.
-          // This will get called when user update the manager name.
-          if (this.showeditUser) {
-            if (IdResults[0] && IdResults[0].retItems.length) {
-              this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser);
-            } else {
-              const sResult = await this.addUserToGroup(null, addUserForm.value.manager.Key);
-              if (sResult && sResult.length) {
-                const managerId = sResult[0].retItems.Id;
-                addUserForm.value.manager.EntityData.ID = managerId;
-                await this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser);
-              }
-            }
-          }
-        } else {
-          // This will get called when user doesn't update the manager name.
-          if (this.showeditUser) {
+        }
+        // We need to check if ManagerId return from `User List Information`.
+        // This will get called when user update the manager name.
+        if (this.showeditUser) {
+          if (IdResults[0] && IdResults[0].retItems.length) {
             this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser);
+          } else {
+            const sResult = await this.addUserToGroup(null, addUserForm.value.manager.Key);
+            if (sResult && sResult.length) {
+              const managerId = sResult[0].retItems.Id;
+              addUserForm.value.manager.EntityData.ID = managerId;
+              await this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser);
+            }
           }
+        }
+      } else {
+        // This will get called when user doesn't update the manager name.
+        if (this.showeditUser) {
+          this.createOrUpdateItem(addUserForm.value, IdResults, this.showeditUser);
         }
       }
     } else {
@@ -1162,6 +1184,13 @@ export class UserProfileComponent implements OnInit {
       userObj.IsActive = item.IsActive;
       userObj.DisplayText = item.Manager.Title;
       userObj.DateofExit = item.DateofExit;
+      userObj.WorkingSunday = item.WorkingSunday;
+      userObj.WorkingMonday = item.WorkingMonday;
+      userObj.WorkingTuesday = item.WorkingTuesday;
+      userObj.WorkingWednesday = item.WorkingWednesday;
+      userObj.WorkingThursday = item.WorkingThursday;
+      userObj.WorkingFriday = item.WorkingFriday;
+      userObj.WorkingSaturday = item.WorkingSaturday;
       // Add the text of below item.
       if (userObj.Task) {
         const tasks: any = userObj.Task;
@@ -1373,7 +1402,14 @@ export class UserProfileComponent implements OnInit {
       SkillLevelId: formObj.skillLevel,
       TasksId: {
         results: formObj.task
-      }
+      },
+      WorkingSunday: formObj.workSunday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
+      WorkingMonday: formObj.workMonday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
+      WorkingTuesday: formObj.workTuesday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
+      WorkingWednesday: formObj.workWednessday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
+      WorkingThursday: formObj.workThursday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
+      WorkingFriday: formObj.workFriday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
+      WorkingSaturday: formObj.workSaturday ? this.adminConstants.LOGICAL_FIELD.YES : this.adminConstants.LOGICAL_FIELD.NO,
     };
     if (formObj.role) {
       data.Role = formObj.role;
@@ -1642,6 +1678,11 @@ export class UserProfileComponent implements OnInit {
     this.date.isPrimarySkillEffectiveDateActive = false;
     this.date.isSkillLevelEffectiveDateActive = false;
     this.date.isTimeZoneEffectiveDateActive = false;
+    this.addUser.get('workMonday').setValue(true);
+    this.addUser.get('workTuesday').setValue(true);
+    this.addUser.get('workWednessday').setValue(true);
+    this.addUser.get('workThursday').setValue(true);
+    this.addUser.get('workFriday').setValue(true);
     this.upObject.isFormSubmit = false;
     this.showeditUser = false;
     this.customLabel = 'Submit';
@@ -1780,9 +1821,31 @@ export class UserProfileComponent implements OnInit {
       this.date.isDateExit = true;
       this.addUser.get('dateofexit').setValue(new Date(userObj.DateofExit));
     }
+    if (userObj.WorkingSunday === this.adminConstants.LOGICAL_FIELD.YES) {
+      this.addUser.get('workSunday').setValue(true);
+    }
+    if (userObj.WorkingMonday === this.adminConstants.LOGICAL_FIELD.YES) {
+      this.addUser.get('workMonday').setValue(true);
+    }
+    if (userObj.WorkingTuesday === this.adminConstants.LOGICAL_FIELD.YES) {
+      this.addUser.get('workTuesday').setValue(true);
+    }
+    if (userObj.WorkingWednesday === this.adminConstants.LOGICAL_FIELD.YES) {
+      this.addUser.get('workWednessday').setValue(true);
+    }
+    if (userObj.WorkingThursday === this.adminConstants.LOGICAL_FIELD.YES) {
+      this.addUser.get('workThursday').setValue(true);
+    }
+    if (userObj.WorkingFriday === this.adminConstants.LOGICAL_FIELD.YES) {
+      this.addUser.get('workFriday').setValue(true);
+    }
+    if (userObj.WorkingSaturday === this.adminConstants.LOGICAL_FIELD.YES) {
+      this.addUser.get('workSaturday').setValue(true);
+    }
   }
   /**
-   * Construct a method to show the user details in righ overlay panel.
+   * Construct a method to show the user details in
+   *  righ overlay panel.
    */
   showRightViewUserModal() {
     this.userProfileViewDataArray = [];
