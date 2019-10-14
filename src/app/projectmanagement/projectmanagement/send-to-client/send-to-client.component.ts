@@ -358,7 +358,7 @@ export class SendToClientComponent implements OnInit {
       let counter = 0;
       for (const taskItem of tempSendToClientArray) {
         const arrRes = arrResults[counter];
-        counter = counter + 1;
+
         // tslint:disable-next-line:only-arrow-functions
         const prevTask = arrRes.filter((previousTaskElement) => {
           return previousTaskElement.Title === taskItem.PreviousTask;
@@ -367,6 +367,7 @@ export class SendToClientComponent implements OnInit {
         const nextTask = arrRes.filter((nextTaskElement) => {
           return nextTaskElement.Title === taskItem.NextTasks;
         });
+        counter++;
         if (prevTask.length) {
           this.scArrays.previousTaskArray.push(prevTask[0]);
           taskItem.PreviousTaskStatus = prevTask[0].Status;
@@ -432,6 +433,7 @@ export class SendToClientComponent implements OnInit {
         if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
           this.tempClick = event.target.parentElement.children[0].children[0];
           this.tempClick.style.display = '';
+
         } else {
           this.tempClick = undefined;
         }
@@ -442,6 +444,7 @@ export class SendToClientComponent implements OnInit {
     } else {
       if (this.tempClick) {
         this.tempClick.style.display = 'none';
+
         this.tempClick = undefined;
       }
     }

@@ -60,6 +60,7 @@ export class CreateJournalComponent implements OnInit {
             RejectionRate: ['', Validators.required],
             Comments: [''],
             JournalEditorInfo: ['', Validators.required],
+            IsActive: ['Yes']
         });
     }
 

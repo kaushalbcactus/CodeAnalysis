@@ -40,7 +40,7 @@ export class AppComponent {
     this.globalService.sharePointPageObject.serverRelativeUrl = this.globalService.sharePointPageObject.webRelativeUrl;
     this.globalService.sharePointPageObject.rootsite = window.origin;
     // tslint:disable:no-string-literal
-    window['angularComponentReference'] = { component: this, zone: this._ngZone, loadPubSupport: () => this.goToPubSupport(), };
+    window['pubSupportComponentReference'] = { component: this, zone: this._ngZone, loadPubSupport: () => this.goToPubSupport(), };
     window['qmsComponentReference'] = { component: this, zone: this._ngZone, loadQMS: () => this.goToQMS(), };
     window['fdComponentReference'] = { component: this, zone: this._ngZone, loadFD: () => this.goToFD(), };
     // tslint:disable-next-line: no-string-literal

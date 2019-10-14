@@ -346,7 +346,7 @@ export class FeedbackPopupComponent implements OnInit {
     this.display = true;
     this.popupByJS = false;
     this.getTemplates();
-    this.global.templateMatrix.task = element.taskTitle;
+    this.global.templateMatrix.task = element.title  ? element.title : element.taskTitle;
     this.global.templateMatrix.submilestones = element.subMilestones;
     this.global.templateMatrix.taskID = element.taskID;
     this.global.templateMatrix.assignedToID = element.resourceID;
