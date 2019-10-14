@@ -153,7 +153,7 @@ export class AdminObjectService {
     CMLevel1: [],
     CMLevel2: '',
     DeliveryLevel1: [],
-    DeliveryLevel2: '',
+    DeliveryLevel2: ''
   };
   public subDivisionObj = {
     ID: 0,

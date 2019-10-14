@@ -307,7 +307,7 @@ export class UserRoleMappingComponent implements OnInit {
         this.adminObject.isMainLoaderHidden = true;
         this.messageService.add({
           key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'User - ' + this.userInfo.Title + ' has been updated sucessfully'
+          summary: 'Success Message', detail: 'User - ' + this.userInfo.Title + ' has been updated successfully'
         });
       }
     }

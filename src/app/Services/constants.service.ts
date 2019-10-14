@@ -294,6 +294,10 @@ export class ConstantsService {
     POBudgetBreakup: {
       name: 'POBudgetBreakup',
       type: 'SP.Data.POBudgetBreakupListItem'
+    },
+    CLEBucketMapping: {
+      name: 'CLEBucketMapping',
+      type: 'SP.Data.CLEBucketMappingListItem'
     }
   };
 
@@ -608,8 +612,8 @@ export class ConstantsService {
   };
 
   public userType = {
-    BEST_FIT : 'Best Fit',
-    RECOMMENDED : 'Recommended'
+    BEST_FIT: 'Best Fit',
+    RECOMMENDED: 'Recommended'
   };
 
 }

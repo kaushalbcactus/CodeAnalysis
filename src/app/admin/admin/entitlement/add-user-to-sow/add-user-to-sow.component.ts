@@ -25,6 +25,7 @@ export class AddUserToSowComponent implements OnInit {
   isTypeDisabled: any = [];
   users = [];
   clients: any = [];
+  disableTableHeader = false;
   accessType = [
     { label: this.adminConstants.ACCESS_TYPE.ACCESS, value: this.adminConstants.ACCESS_TYPE.ACCESS },
     { label: this.adminConstants.ACCESS_TYPE.ACCOUNTABLE, value: this.adminConstants.ACCESS_TYPE.ACCOUNTABLE }
@@ -158,6 +159,7 @@ export class AddUserToSowComponent implements OnInit {
       this.selectedClient);
     const sResult = await this.spServices.readItems(this.constants.listNames.SOW.name, getSOW);
     if (sResult && sResult.length) {
+      let disableCount = 0;
       sResult.forEach(item => {
         const obj = Object.assign({}, this.adminObject.sowObj);
         obj.CMLevel1 = item.CMLevel1 && item.CMLevel1.results && item.CMLevel1.results.length ?
@@ -176,21 +178,29 @@ export class AddUserToSowComponent implements OnInit {
           item.DeliveryLevel2 && item.DeliveryLevel2.hasOwnProperty('ID')
           && userObj.UserName.ID === item.DeliveryLevel2.ID) {
           obj.IsTypeChangedDisabled = true;
+          disableCount++;
           obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
         } else if (item.CMLevel1 && item.CMLevel1.hasOwnProperty('results') && item.CMLevel1.results.length
-           && item.CMLevel1.results.some(a => a.ID === userObj.UserName.ID) ||
+          && item.CMLevel1.results.some(a => a.ID === userObj.UserName.ID) ||
           item.DeliveryLevel1 && item.DeliveryLevel1.hasOwnProperty('results') && item.DeliveryLevel1.results.length
           && item.DeliveryLevel1.results.some(a => a.ID === userObj.UserName.ID)) {
           obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCESS;
           obj.IsTypeChangedDisabled = false;
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.ACCESS;
         } else {
+          obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCESS;
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.NO_ACCESS;
+          obj.IsTypeChangedDisabled = false;
         }
         tempArray.push(obj);
       });
       this.sowList = tempArray;
+      if (disableCount === sResult.length) {
+        this.disableTableHeader = true;
+      } else {
+        this.disableTableHeader = false;
+      }
     }
     this.adminObject.isMainLoaderHidden = true;
   }
@@ -317,13 +327,16 @@ export class AddUserToSowComponent implements OnInit {
           } else {
             element.IsUserExistInCMLevel1 = false;
           }
+          // This is non mandatory field so first check whether records present in DeliveryLevel1
           // remove the current user if present in DeliveryLevel1.
-          const delIndex = element.DeliveryLevel1IDArray.indexOf(this.selectedUser.UserName.ID);
-          if (delIndex > -1) {
-            element.IsUserExistInDeliveryLevel1 = true;
-            element.DeliveryLevel1IDArray.splice(delIndex, 1);
-          } else {
-            element.IsUserExistInDeliveryLevel1 = false;
+          if (element.DeliveryLevel1IDArray && element.DeliveryLevel1IDArray.length) {
+            const delIndex = element.DeliveryLevel1IDArray.indexOf(this.selectedUser.UserName.ID);
+            if (delIndex > -1) {
+              element.IsUserExistInDeliveryLevel1 = true;
+              element.DeliveryLevel1IDArray.splice(delIndex, 1);
+            } else {
+              element.IsUserExistInDeliveryLevel1 = false;
+            }
           }
         }
         if (!element.IsTypeChangedDisabled) {

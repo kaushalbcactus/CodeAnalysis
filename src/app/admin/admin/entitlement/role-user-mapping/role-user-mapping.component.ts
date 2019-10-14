@@ -202,7 +202,7 @@ export class RoleUserMappingComponent implements OnInit {
         this.adminObject.isMainLoaderHidden = true;
         this.messageService.add({
           key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'Selected User has been removed from \'' + groupName + '\' group  sucessfully.'
+          summary: 'Success Message', detail: 'Selected User has been removed from \'' + groupName + '\' group  successfully.'
         });
         this.onGroupsChange();
       }

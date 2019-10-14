@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, ApplicationRef } from '@angular/core';
+import { Component, OnInit, NgZone, ApplicationRef, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { DatePipe, PlatformLocation } from '@angular/common';
 import { PeoplePickerUser } from '../../peoplePickerModel/people-picker.response';
@@ -14,7 +14,8 @@ import { CommonService } from 'src/app/Services/common.service';
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
-  styleUrls: ['./user-profile.component.css']
+  styleUrls: ['./user-profile.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 
 /**
@@ -31,6 +32,7 @@ export class UserProfileComponent implements OnInit {
   auditHistoryColumns = [];
   auditHistoryRows = [];
   userProfileViewDataArray = [];
+  minPastMonth;
   showModal = false;
   showeditUser = false;
   isUserProfileRightSideVisible = false;
@@ -39,13 +41,7 @@ export class UserProfileComponent implements OnInit {
   showUserInput = false;
   providedUser = '';
   selectedOption = '';
-  /**
-   * This pMenuItems will be displayed as menu, while clicking on 3(...) dots in each rows.
-   */
-  pMenuItems = [
-    { label: 'Edit', command: (e) => this.showEditUserModal() },
-    { label: 'view', command: (e) => this.showRightViewUserModal() }
-  ];
+  pMenuItems = [];
   upObject = {
     isFormSubmit: false,
     isEditFormSubmit: false
@@ -209,6 +205,7 @@ export class UserProfileComponent implements OnInit {
    *
    */
   async ngOnInit() {
+    this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
     this.userProfileColumns = [
       { field: 'User', header: 'User', visibility: true },
       { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
@@ -1085,7 +1082,7 @@ export class UserProfileComponent implements OnInit {
       this.adminObject.isMainLoaderHidden = true;
       this.messageService.add({
         key: 'adminCustom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: 'User - ' + this.currUserObj.User + ' has updated sucessfully'
+        summary: 'Success Message', detail: 'User - ' + this.currUserObj.User + ' has updated successfully'
       });
       await this.loadRecentRecords(this.currUserObj.ID, this.showeditUser);
       this.showModal = false;
@@ -1103,7 +1100,7 @@ export class UserProfileComponent implements OnInit {
         this.showModal = false;
         this.messageService.add({
           key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'User - ' + formValue.username.DisplayText + ' has added sucessfully'
+          summary: 'Success Message', detail: 'User - ' + formValue.username.DisplayText + ' has added successfully'
         });
         await this.loadRecentRecords(result.ID, this.showeditUser);
       }
@@ -1427,17 +1424,13 @@ export class UserProfileComponent implements OnInit {
       }
     }
     if (isEdit) {
-      if (formObj.isActive === this.adminConstants.LOGICAL_FIELD.NO) {
-        data.IsActive = formObj.isActive;
-        if (formObj.dateofexit) {
-          data.DateofExit = formObj.dateofexit;
-        }
-      }
       if (formObj.dateofexit) {
         const dateOfExit = this.datePipe.transform(new Date(formObj.dateofexit), 'MMM dd yyyy');
         const todayDate = this.datePipe.transform(new Date(), 'MMM dd yyyy');
-        if (dateOfExit <= todayDate) {
-          data.IsActive = 'No';
+        if (dateOfExit <= todayDate && formObj.isActive === this.adminConstants.LOGICAL_FIELD.NO) {
+          data.IsActive = this.adminConstants.LOGICAL_FIELD.NO;
+        } else {
+          data.IsActive = this.adminConstants.LOGICAL_FIELD.YES;
         }
         data.DateofExit = formObj.dateofexit;
       }
@@ -1666,6 +1659,10 @@ export class UserProfileComponent implements OnInit {
    */
   storeRowData(rowData) {
     this.currUserObj = rowData;
+    this.pMenuItems = [
+      { label: 'Edit', command: (e) => this.showEditUserModal() },
+      { label: 'view', command: (e) => this.showRightViewUserModal() }
+    ];
     console.log(rowData);
   }
   /**
@@ -1683,6 +1680,11 @@ export class UserProfileComponent implements OnInit {
    */
   async showEditUserModal() {
     this.addUser.reset();
+    this.date.isManagerEffectiveDateActive = false;
+    this.date.isPracticeEffectiveDateActive = false;
+    this.date.isPrimarySkillEffectiveDateActive = false;
+    this.date.isSkillLevelEffectiveDateActive = false;
+    this.date.isTimeZoneEffectiveDateActive = false;
     const userObj = this.currUserObj;
     this.customLabel = 'Update';
     this.addUser.controls.username.disable();

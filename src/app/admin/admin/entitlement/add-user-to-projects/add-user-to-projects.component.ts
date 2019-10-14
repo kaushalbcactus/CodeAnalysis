@@ -25,6 +25,7 @@ export class AddUserToProjectsComponent implements OnInit {
   clients: any = [];
   cols;
   isTypeDisabled: any = [];
+  disableTableHeader = false;
   users = [];
   accessType = [
     { label: this.adminConstants.ACCESS_TYPE.ACCESS, value: this.adminConstants.ACCESS_TYPE.ACCESS },
@@ -159,6 +160,7 @@ export class AddUserToProjectsComponent implements OnInit {
       this.selectedClient);
     const sResult = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, getProjInfo);
     if (sResult && sResult.length) {
+      let disableCount = 0;
       sResult.forEach(item => {
         const obj = Object.assign({}, this.adminObject.projObj);
         obj.CMLevel1 = item.CMLevel1 && item.CMLevel1.results && item.CMLevel1.results.length ? item.CMLevel1.results : [];
@@ -177,6 +179,7 @@ export class AddUserToProjectsComponent implements OnInit {
           item.DeliveryLevel2 && item.DeliveryLevel2.hasOwnProperty('ID')
           && userObj.UserName.ID === item.DeliveryLevel2.ID) {
           obj.IsTypeChangedDisabled = true;
+          disableCount ++;
           obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
         } else if (item.CMLevel1 && item.CMLevel1.hasOwnProperty('results') && item.CMLevel1.results.length
@@ -188,10 +191,16 @@ export class AddUserToProjectsComponent implements OnInit {
           obj.IsTypeChangedDisabled = false;
         } else {
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.NO_ACCESS;
+          obj.IsTypeChangedDisabled = false;
         }
         tempArray.push(obj);
       });
       this.projectList = tempArray;
+      if (disableCount === sResult.length) {
+        this.disableTableHeader = true;
+      } else {
+        this.disableTableHeader = false;
+      }
     }
     this.adminObject.isMainLoaderHidden = true;
   }
@@ -292,7 +301,7 @@ export class AddUserToProjectsComponent implements OnInit {
     if (!this.selectedProject.length) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error', sticky: true,
-        summary: 'Error Message', detail: 'Please select atleast one SOW.'
+        summary: 'Error Message', detail: 'Please select atleast one project.'
       });
       return false;
     }

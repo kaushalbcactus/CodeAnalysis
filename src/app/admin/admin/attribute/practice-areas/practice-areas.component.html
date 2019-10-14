@@ -1,7 +1,22 @@
-<div class="pr-20">
-    <a (click)="downloadExcel(pa)" class="download-worksheet td-none"><i class="fa fa-download" aria-hidden="true"></i>
+<div class="mt-20">
+    <div class="p-grid addNew">
+        <div class="p-col-2">
+            <span class="ui-float-label">
+                <input id="float-input" type="text" [(ngModel)]="practiceArea" pInputText />
+                <label for="float-input">Practice Area</label>
+            </span>
+        </div>
+        <div class="p-col-2">
+            <p-button label="Add" type="button" (click)="addPracticeArea()"></p-button>
+        </div>
+    </div>
+</div>
+<div>
+    <a (click)="downloadExcel(pa)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
+            aria-hidden="true"></i>
     </a>
 </div>
+<div class="clearBoth"></div>
 <div class="adminTable">
     <p-table #pa [columns]="practiceAreaColumns" [value]="practiceAreaRows" exportFilename="Practice Area"
         [paginator]="true" [rows]="10" class="minFirstLastCol5Per">
@@ -59,17 +74,7 @@
         </ng-template>
     </p-table>
 </div>
-<div>
-    <div class="p-grid addNew">
-        <div class="p-col-4">
-            <h5>Add Practice Area</h5>
-        </div>
-        <div class="p-col">
-            <input type="text" [(ngModel)]="practiceArea" pInputText />
-            <p-button label="Add" type="button" (click)="addPracticeArea()"></p-button>
-        </div>
-    </div>
-</div>
+
 
 <!-- <h3 style="text-align: center;">Audit History</h3>
 <p-table #ah [columns]="auditHistoryColumns" [value]="auditHistoryRows" exportFilename="Audit History">

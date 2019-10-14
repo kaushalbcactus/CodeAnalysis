@@ -49,6 +49,9 @@
       </ng-template>
     </p-table>
   </div>
+  <div class="ui-g-4 brandColor" *ngIf="!viewArray.sourceGroupsArray.length">
+    No Permission in source groups
+  </div>
   <div class="ui-g-4" *ngIf="viewArray.destinationGroupsArray.length">
     <p-table #destinationTable [value]="viewArray.destinationGroupsArray" [scrollable]="true" scrollHeight="400px">
       <ng-template pTemplate="header">
@@ -72,6 +75,9 @@
       </ng-template>
     </p-table>
   </div>
+  <div class="ui-g-4 brandColor" *ngIf="!viewArray.destinationGroupsArray.length">
+    No Permission in destination groups
+  </div>
   <div class="ui-g-4" *ngIf="viewArray.finalResultArray.length">
     <p-table #resultTable [value]="viewArray.finalResultArray" [scrollable]="true" scrollHeight="400px">
       <ng-template pTemplate="header">
@@ -94,5 +100,8 @@
         </p-card>
       </ng-template>
     </p-table>
+  </div>
+  <div class="ui-g-4 brandColor" *ngIf="!viewArray.finalResultArray.length">
+    No Results
   </div>
 </div>

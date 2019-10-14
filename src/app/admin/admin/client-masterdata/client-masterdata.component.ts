@@ -1,4 +1,4 @@
-import { Component, OnInit, ApplicationRef, NgZone } from '@angular/core';
+import { Component, OnInit, ApplicationRef, NgZone, ViewEncapsulation } from '@angular/core';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { FormBuilder, FormGroup, FormControl, Validators, NgForm, ControlContainer } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -15,7 +15,8 @@ import { CommonService } from 'src/app/Services/common.service';
 @Component({
   selector: 'app-client-masterdata',
   templateUrl: './client-masterdata.component.html',
-  styleUrls: ['./client-masterdata.component.css']
+  styleUrls: ['./client-masterdata.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 /**
  * A class that uses ngPrime to display the data in table.
@@ -28,6 +29,7 @@ import { CommonService } from 'src/app/Services/common.service';
  */
 export class ClientMasterdataComponent implements OnInit {
   clientList = [];
+  isBucketEffectiveDateActive = false;
   clientMasterDataColumns = [];
   clientMasterDataRows = [];
   auditHistoryColumns = [];
@@ -225,11 +227,12 @@ export class ClientMasterdataComponent implements OnInit {
      * This is used to initialize the Client form.
      */
     this.addClient = frmbuilder.group({
-      name: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL)]],
-      acronym: ['', [Validators.required, Validators.maxLength(5), Validators.pattern(this.adminConstants.REG_EXPRESSION.APLHA_NUMERIC)]],
+      name: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
+      acronym: ['', [Validators.required, Validators.maxLength(5),
+      Validators.pattern(this.adminConstants.REG_EXPRESSION.THREE_UPPERCASE_TWO_NUMBER)]],
       group: ['', Validators.required],
       distributionList: [''],
-      invoiceName: ['', Validators.required],
+      invoiceName: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
       realization: ['', [Validators.required, this.adminCommonService.checkPositiveNumber]],
       market: ['', Validators.required],
       billingEntry: ['', Validators.required],
@@ -246,7 +249,8 @@ export class ClientMasterdataComponent implements OnInit {
       address3: [''],
       address4: [''],
       notes: [''],
-      bucket: ['', Validators.required]
+      bucket: ['', Validators.required],
+      bucketEffectiveDate: ['']
     });
     /**
      * This is used to initialize the subDivision form.
@@ -295,7 +299,7 @@ export class ClientMasterdataComponent implements OnInit {
   initAddPOForm() {
     this.PoForm = this.frmbuilder.group({
       poNumber: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_NUMERIC)]],
-      poName: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL)]],
+      poName: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
       currency: ['', Validators.required],
       poExpiryDate: ['', Validators.required],
       poc: ['', Validators.required],
@@ -716,6 +720,24 @@ export class ClientMasterdataComponent implements OnInit {
     }
   }
   /**
+   * Construct a method to trigger when bucket values changes.
+   *
+   * @description
+   *
+   * This method will trigger when bucket value changes and make bucketEffectiveDate field mandatory.
+   */
+  onBucketChange() {
+    const bucketEffectiveDateControl = this.addClient.get('bucketEffectiveDate');
+    if (this.showEditClient && this.currClientObj.Bucket !== this.addClient.value.bucket) {
+      bucketEffectiveDateControl.setValidators([Validators.required]);
+      bucketEffectiveDateControl.updateValueAndValidity();
+      this.isBucketEffectiveDateActive = true;
+    } else {
+      bucketEffectiveDateControl.clearValidators();
+      this.isBucketEffectiveDateActive = false;
+    }
+  }
+  /**
    * Construct a method to save or update the client legal entity into `ClientLegalEntity` list.
    * It will construct a REST-API Call to create item or update item into `ClientLegalEntity` list.
    *
@@ -736,7 +758,7 @@ export class ClientMasterdataComponent implements OnInit {
       console.log(this.addClient.value);
       if (!this.showEditClient) {
         if (this.resultResponse.ClientLegalEntityArray.some(a =>
-          a.Title.toLowerCase() === this.addClient.value.name.toLowerCase())) {
+          a.Title && a.Title.toLowerCase() === this.addClient.value.name.toLowerCase())) {
           this.messageService.add({
             key: 'adminCustom', severity: 'error',
             summary: 'Error Message', detail: 'This Client is already exist. Please enter another client name.'
@@ -744,7 +766,7 @@ export class ClientMasterdataComponent implements OnInit {
           return false;
         }
         if (this.resultResponse.ClientLegalEntityArray.some(a =>
-          a.Acronym.toLowerCase() === this.addClient.value.acronym.toLowerCase())) {
+          a.Acronym && a.Acronym.toLowerCase() === this.addClient.value.acronym.toLowerCase())) {
           this.messageService.add({
             key: 'adminCustom', severity: 'error',
             summary: 'Error Message', detail: 'This Acronym is already exist. Please enter another acronym.'
@@ -759,6 +781,7 @@ export class ClientMasterdataComponent implements OnInit {
         const results = await this.spServices.createItem(this.constants.listNames.ClientLegalEntity.name,
           clientData, this.constants.listNames.ClientLegalEntity.type);
         if (!results.hasOwnProperty('hasError') && !results.hasError) {
+          await this.createCLEMapping();
           this.messageService.add({
             key: 'adminCustom', severity: 'success',
             summary: 'Success Message', detail: 'The Client ' + this.addClient.value.name + ' is created successfully.'
@@ -769,6 +792,9 @@ export class ClientMasterdataComponent implements OnInit {
       if (this.showEditClient) {
         const results = await this.spServices.updateItem(this.constants.listNames.ClientLegalEntity.name, this.currClientObj.ID,
           clientData, this.constants.listNames.ClientLegalEntity.type);
+        if (this.currClientObj.Bucket !== this.addClient.value.bucket) {
+          await this.updateCLEMapping();
+        }
         this.messageService.add({
           key: 'adminCustom', severity: 'success',
           summary: 'Success Message', detail: 'The Client ' + this.currClientObj.ClientLegalEntity + ' is updated successfully.'
@@ -779,6 +805,56 @@ export class ClientMasterdataComponent implements OnInit {
       this.adminObject.isMainLoaderHidden = true;
     } else {
       this.cmObject.isClientFormSubmit = true;
+    }
+  }
+  /**
+   * Construct a method to add item into `CLEBucketMapping` list.
+   *
+   * @description
+   *
+   * This method will add item into `CLEBucketMapping` list.
+   *
+   * @note
+   *
+   * It will call both time while creating and updating the client legal entity.
+   *
+   * If Create - Start Date will be today's date.
+   *
+   * If update - Start Date will be the value `bucketEffictiveDate` field.
+   */
+  async createCLEMapping() {
+    const data = {
+      Title: !this.showEditClient ? this.addClient.value.name : this.currClientObj.ClientLegalEntity,
+      CLEName: !this.showEditClient ? this.addClient.value.name : this.currClientObj.ClientLegalEntity,
+      Bucket: !this.showEditClient ? this.addClient.value.bucket : this.currClientObj.Bucket,
+      StartDate: !this.showEditClient ? new Date() : this.addClient.value.bucketEffectiveDate
+    };
+    const results = await this.spServices.createItem(this.constants.listNames.CLEBucketMapping.name,
+      data, this.constants.listNames.CLEBucketMapping.type);
+  }
+  /**
+   * Construct a method is to update item in `CLEBucketMapping` list.
+   *
+   * @description
+   *
+   * This method is used to update the item in `CLEBucketMapping` list.
+   *
+   * @note
+   *
+   * This method only calls when bucket value changes.
+   */
+  async updateCLEMapping() {
+    const cleMappingGet = Object.assign({}, this.adminConstants.QUERY.GET_CLE_MAPPING_BY_ID);
+    cleMappingGet.filter = cleMappingGet.filter.replace(/{{clientLegalEntity}}/gi,
+      this.currClientObj.ClientLegalEntity);
+    const result = await this.spServices.readItems(this.constants.listNames.CLEBucketMapping.name, cleMappingGet);
+    if (result && result.length) {
+      const updateItem = {
+        EndDate: this.addClient.value.bucketEffectiveDate
+      };
+      const updateResult = await this.spServices.updateItem(this.constants.listNames.CLEBucketMapping.name, result[0].ID,
+        updateItem, this.constants.listNames.CLEBucketMapping.type);
+      this.createCLEMapping();
     }
   }
   /**
@@ -871,10 +947,12 @@ export class ClientMasterdataComponent implements OnInit {
       data.Currency = this.addClient.value.currency;
     }
     data.DistributionList = this.addClient.value.distributionList ? this.addClient.value.distributionList : '';
-    data.DeliveryLevel1Id = this.addClient.value.deliveryLevel1 ? {
-      results: this.addClient.value.deliveryLevel1
-    } : [];
-    data.APEmail = this.addClient.value.APEmail ? this.addClient.value.APEmail : [];
+    if (this.addClient.value.deliveryLevel1) {
+      data.DeliveryLevel1Id = {
+        results: this.addClient.value.deliveryLevel1
+      };
+    }
+    data.APEmail = this.addClient.value.APEmail ? this.addClient.value.APEmail : '';
     data.Notes = this.addClient.value.notes ? this.addClient.value.notes : '';
     const ap1 = this.addClient.value.address1 ? this.addClient.value.address1 : '';
     const ap2 = this.addClient.value.address2 ? this.addClient.value.address2 : '';
@@ -922,6 +1000,7 @@ export class ClientMasterdataComponent implements OnInit {
     this.addClient.controls.currency.disable();
     this.addClient.controls.billingEntry.disable();
     this.addClient.controls.timeZone.disable();
+    this.isBucketEffectiveDateActive = false;
     if (!this.dropdown.ClientGroupArray.length) {
       await this.loadClientDropdown();
     }
@@ -948,7 +1027,8 @@ export class ClientMasterdataComponent implements OnInit {
       address3: this.currClientObj.APAddress ? this.currClientObj.APAddress.split(';#')[2] : '',
       address4: this.currClientObj.APAddress ? this.currClientObj.APAddress.split(';#')[3] : '',
       notes: this.currClientObj.Notes ? this.currClientObj.Notes : '',
-      bucket: this.currClientObj.Bucket
+      bucket: this.currClientObj.Bucket,
+      bucketEffectiveDate: null
     });
     this.showaddClientModal = true;
     this.showEditClient = true;
@@ -2135,7 +2215,7 @@ export class ClientMasterdataComponent implements OnInit {
         }
       }
       this.adminObject.isMainLoaderHidden = false;
-      this.minDateValue = new Date(new Date().getDate() + 1);
+      this.minDateValue = new Date(new Date().setDate(new Date().getDate() + 1));
       const docFolder = this.adminConstants.FOLDER_LOCATION.PO;
       const libraryName = this.currClientObj.ListName;
       const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;

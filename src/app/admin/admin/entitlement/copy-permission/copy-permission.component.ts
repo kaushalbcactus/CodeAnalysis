@@ -166,6 +166,10 @@ export class CopyPermissionComponent implements OnInit {
    */
   async onSourceUsersChange() {
     this.adminObject.isMainLoaderHidden = false;
+    this.viewArray.destinationGroupsArray = [];
+    this.viewArray.finalResultArray = [];
+    this.destinationUsersArray = [];
+    this.destinationUser = null;
     const selectedUsersArray = this.sourceUsers;
     if (selectedUsersArray && selectedUsersArray.length === 1) {
       const filterDestinationArray = this.sourceUsersArray.filter(x => !selectedUsersArray.includes(x.value));
@@ -192,6 +196,7 @@ export class CopyPermissionComponent implements OnInit {
   async onDestinationUserChange() {
     this.adminObject.isMainLoaderHidden = false;
     const destinationUserId = this.destinationUser;
+    this.viewArray.finalResultArray = [];
     const result = await this.getDestinationUserGroups(destinationUserId);
     if (result && result.length) {
       this.viewArray.destinationGroupsArray = result;
@@ -284,7 +289,7 @@ export class CopyPermissionComponent implements OnInit {
     this.permission.sourceGroups = [];
     this.permission.destinationGroups = [];
     const actionResult = await this.getAddCopyGroups(action);
-    if (!actionResult) {
+    if (!actionResult.length) {
       this.adminObject.isMainLoaderHidden = true;
       this.messageService.add({
         key: 'adminCustom', severity: 'error', sticky: true,
@@ -292,7 +297,7 @@ export class CopyPermissionComponent implements OnInit {
       });
       return false;
     }
-    if (actionResult) {
+    if (actionResult.length) {
       const destinationUser: any = this.permission.user;
       const addGroups = this.permission.addGroups;
       const removeGroups = this.permission.removeGroups;
@@ -337,14 +342,14 @@ export class CopyPermissionComponent implements OnInit {
           this.viewArray.finalResultArray = this.permission.addGroups.concat(this.permission.destinationGroups);
           this.messageService.add({
             key: 'adminCustom', severity: 'success', sticky: true,
-            summary: 'Success Message', detail: 'The permission has added sucessfully to the user - ' + destinationUser.Title + '.'
+            summary: 'Success Message', detail: 'The permission has added successfully to the user - ' + destinationUser.Title + '.'
           });
         }
         if (result && result.length && action === this.adminConstants.ACTION.COPY) {
           this.viewArray.finalResultArray = this.permission.addGroups;
           this.messageService.add({
             key: 'adminCustom', severity: 'success', sticky: true,
-            summary: 'Success Message', detail: 'The permission has copied sucessfully to the user - ' + destinationUser.Title + '.'
+            summary: 'Success Message', detail: 'The permission has copied successfully to the user - ' + destinationUser.Title + '.'
           });
         }
       }
@@ -379,8 +384,12 @@ export class CopyPermissionComponent implements OnInit {
       const retDestinationGroups = this.permission.destinationGroups;
       // remove the group in which user alreay present.
       if (action === this.adminConstants.ACTION.ADD) {
-        const diffrenceGroups = retSourceGroups.filter(x => !retDestinationGroups.includes(x));
-        this.permission.addGroups = diffrenceGroups;
+        if (retDestinationGroups && retDestinationGroups.length) {
+          const diffrenceGroups = retSourceGroups.filter(x => retDestinationGroups && !retDestinationGroups.includes(x));
+          this.permission.addGroups = diffrenceGroups;
+        } else {
+          this.permission.addGroups = retSourceGroups;
+        }
         this.permission.removeGroups = [];
       }
       if (action === this.adminConstants.ACTION.COPY) {
@@ -391,8 +400,12 @@ export class CopyPermissionComponent implements OnInit {
       const retSourceGroups = await this.getSourceUsersGroups(sourceUserIdArray);
       const retDestinationGroups = await this.getDestinationUserGroups(destinationUserId);
       if (action === this.adminConstants.ACTION.ADD) {
-        const diffrenceGroups = retSourceGroups.filter(x => !retDestinationGroups.includes(x));
-        this.permission.addGroups = diffrenceGroups;
+        if (retDestinationGroups && retDestinationGroups.length) {
+          const diffrenceGroups = retSourceGroups.filter(x => retDestinationGroups && !retDestinationGroups.includes(x));
+          this.permission.addGroups = diffrenceGroups;
+        } else {
+          this.permission.addGroups = retSourceGroups;
+        }
         this.permission.removeGroups = [];
       }
       if (action === this.adminConstants.ACTION.COPY) {
@@ -402,71 +415,10 @@ export class CopyPermissionComponent implements OnInit {
     }
     if (this.permission.addGroups && this.permission.addGroups.length ||
       this.permission.removeGroups && this.permission.removeGroups.length) {
-      return this.permission;
+      return this.permission.addGroups;
     } else {
-      return false;
+      return null;
     }
-    // const retSourceGroups = [];
-    // const retDestinationGroups = [];
-    // if (sourceUserIdArray && sourceUserIdArray.length) {
-    //   // Get all Groups for source users ##1
-    //   sourceUserIdArray.forEach(element => {
-    //     const sourceGet = Object.assign({}, options);
-    //     sourceGet.url = this.spServices.getUserURL(element);
-    //     sourceGet.type = 'GET';
-    //     sourceGet.listName = 'Groups- ' + element;
-    //     batchURL.push(sourceGet);
-    //   });
-    // }
-    // if (destinationUserId) {
-    //   // Get all Groups for destion users ##1
-    //   const destGroupGet = Object.assign({}, options);
-    //   destGroupGet.url = this.spServices.getUserURL(destinationUserId);
-    //   destGroupGet.type = 'GET';
-    //   destGroupGet.listName = 'Groups- ' + destinationUserId;
-    //   batchURL.push(destGroupGet);
-    // }
-    // if (batchURL && batchURL.length) {
-    //   const sResults = await this.spServices.executeBatch(batchURL);
-    //   if (sResults && sResults.length) {
-    //     sResults.forEach((element, index) => {
-    //       // Iterate the groups and push into retSourceGroups &  retDestinationGroups Array.
-    //       if (element.retItems && element.retItems.hasOwnProperty('Groups')
-    //         && element.retItems.Groups.results && element.retItems.Groups.results.length) {
-    //         const tempGroups = element.retItems.Groups.results;
-    //         if (destinationUserId && index === sResults.length - 1) {
-    //           this.permission.user = element.retItems;
-    //         }
-    //         tempGroups.forEach(group => {
-    //           // store last item into retDestinationGroups
-    //           if (destinationUserId && index === sResults.length - 1) {
-    //             retDestinationGroups.push(group.Title);
-    //           } else { // store into retSourceGroups
-    //             if (retSourceGroups.findIndex(x => x === group.Title) === -1) {
-    //               retSourceGroups.push(group.Title);
-    //             }
-    //           }
-    //         });
-    //       }
-    //     });
-    //   }
-    // }
-    // if (retSourceGroups.length) {
-    //   this.permission.sourceGroups = retSourceGroups;
-    //   this.permission.destinationGroups = retDestinationGroups;
-    //   if (action === this.adminConstants.ACTION.ADD) {
-    //     const diffrenceGroups = retSourceGroups.filter(x => !retDestinationGroups.includes(x));
-    //     this.permission.addGroups = diffrenceGroups;
-    //     this.permission.removeGroups = [];
-    //   }
-    //   if (action === this.adminConstants.ACTION.COPY) {
-    //     this.permission.addGroups = retSourceGroups;
-    //     this.permission.removeGroups = retDestinationGroups;
-    //   }
-    //   return this.permission;
-    // } else {
-    //   return null;
-    // }
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -550,9 +502,11 @@ export class CopyPermissionComponent implements OnInit {
     const tempSourceArray = [];
     const result = await this.spServices.getUserInfo(destinationUserId);
     console.log(result);
+    if (result && result.hasOwnProperty('LoginName')) {
+      this.permission.user = result;
+    }
     if (result && result.hasOwnProperty('Groups') &&
       result.Groups.results && result.Groups.results.length) {
-      this.permission.user = result;
       const tempGroups = result.Groups.results;
       tempGroups.forEach(group => {
         // store into retSourceGroups

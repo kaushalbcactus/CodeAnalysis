@@ -261,6 +261,11 @@ export class AdminConstantService {
       filter: 'IsActive eq \'{{isActive}}\'',
       orderby: 'Title asc',
       top: 4900
+    },
+    GET_CLE_MAPPING_BY_ID: {
+      select: 'ID',
+      filter: 'CLEName eq \'{{clientLegalEntity}}\' and EndDate eq null',
+      orderby: 'ID asc'
     }
   };
   public LOGICAL_FIELD = {
@@ -302,11 +307,12 @@ export class AdminConstantService {
     NO_ACCESS: 'No Access'
   };
   public REG_EXPRESSION = {
-    ALPHA_SPECIAL: /^[a-zA-Z]+(-?[a-zA-Z]+)?(_?[a-zA-Z]+)?$/,
-    ALPHA_SPECIAL_WITHSPACE: /^[a-z A-Z]+(-?[a-zA-Z]+)?(_?[a-zA-Z]+)?$/,
+    ALPHA_SPECIAL: /^[a-zA-Z]+((-?[a-zA-Z]+)*(_?[a-zA-Z]+)*)*((_?[a-zA-Z]+)*(-?[a-zA-Z]+)*)*$/,
+    ALPHA_SPECIAL_WITHSPACE: /^[a-z A-Z]+((-?[a-zA-Z]+)*(_?[a-zA-Z]+)*)*((_?[a-zA-Z]+)*(-?[a-zA-Z]+)*)*$/,
     ALPHA: /^[a-zA-Z]+$/,
     APLHA_NUMERIC: /^[a-zA-Z0-9]+$/,
-    ALPHA_SPECIAL_NUMERIC: /^[a-zA-Z0-9]+(-?[a-zA-Z0-9]+)?(_?[a-zA-Z0-9]+)?$/
+    ALPHA_SPECIAL_NUMERIC: /^[a-zA-Z0-9]+((-?[a-zA-Z]+)*(_?[a-zA-Z]+)*)*((_?[a-zA-Z]+)*(-?[a-zA-Z]+)*)*$/,
+    THREE_UPPERCASE_TWO_NUMBER: /^(?=(?:\D*\d){2}\D*$)(?:[^A-Z]*[A-Z]){3}[^A-Z]*$/
   };
   public RESOURCE_CATEGORY_CONSTANT = {
     CMLevel1: 'CM L1',

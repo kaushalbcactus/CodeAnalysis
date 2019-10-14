@@ -1,5 +1,5 @@
 .mt-20 {
-    margin-top: 20px;
+    margin-top: 20px !important;
 }
 .mt-10 {
     margin-top: 10px;
@@ -16,22 +16,25 @@
 .error, .compulsory{
     color: red;
 }
-
+.icon-big{
+    font-size: 1.8em !important;
+}
 /* form {
     width: 70%;
     margin: 0 auto;
 } */
 
 .ui-dialog-content {
-    overflow: scroll;
-    height: 500px;
+    overflow-y:auto;
+    max-height: 500px;
 }
 .ui-dialog{
     max-height: 500px !important;
 }
 .addNew{
-    width:38%;
-    margin: 15px auto !important;
+    width:100% !important;
+    margin-left: 5px;
+    float: left;
 }
 
 
@@ -47,7 +50,7 @@ form{
 
 .download-worksheet {
     color: #B71C1C !important;
-    font-size: 16px;
+    font-size: 1.8em !important;
     float: right;
     cursor: pointer;
 }
@@ -177,9 +180,6 @@ form{
     .width5Per {
         width: 5%;
     }
-    .ui-dialog-footer button {
-        margin: 0px !important;
-    }
     .minFirstLastCol5Per .ui-table .ui-table-thead > tr> th:first-child,
     .minFirstLastCol5Per .ui-table .ui-table-thead > tr> th:last-child,
     .minFirstLastCol5Per .ui-table .ui-table-tbody > tr> td:first-child,
@@ -253,3 +253,25 @@ form{
     .pr-20 {
         padding-right: 20px;
     }
+    .ui-tooltip{
+        max-width: 50%;
+    }
+    .ui-tooltip .ui-tooltip-text {
+        background-color:  #B71C1C !important;
+    }
+    .ui-tooltip.ui-tooltip-top .ui-tooltip-arrow{
+        border-top-color: #B71C1C !important;
+    }
+    .ui-tooltip.ui-tooltip-left .ui-tooltip-arrow {
+        border-left-color: #B71C1C !important
+    }
+    .ui-tooltip.ui-tooltip-right .ui-tooltip-arrow{
+        border-right-color: #B71C1C !important;
+    }
+    .ui-tooltip.ui-tooltip-bottom .ui-tooltip-arrow{
+        border-bottom-color: #B71C1C !important;
+    }
+    .ui-dialog .ui-dialog-footer button {
+        margin: 0 0.5em 0 0 !important;
+        width: auto;
+      }

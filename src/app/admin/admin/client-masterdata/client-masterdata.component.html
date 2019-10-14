@@ -1,7 +1,14 @@
-<div class="pr-20">
-    <a (click)="downloadExcel(cmd)" class="download-worksheet td-none"><i class="fa fa-download" aria-hidden="true"></i>
-    </a>
+<div class="mt-20">
+    <div>
+        <a (click)="downloadExcel(cmd)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
+                aria-hidden="true"></i>
+        </a>
+    </div>
+    <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New Client Form"
+        (click)="showAddClientModal()">
+    </p-button>
 </div>
+<div class="clearBoth"></div>
 <div class="adminTable">
     <p-table #cmd [columns]="clientMasterDataColumns" [value]="clientMasterDataRows" exportFilename="Client Master Data"
         [paginator]="true" [rows]="10" class="minFirstLastCol5Per">
@@ -65,10 +72,7 @@
         </ng-template>
     </p-table>
 </div>
-<div class="addNewBtn">
-    <p-button type="button" icon="pi pi-plus-circle" label="Add New Client Form" (click)="showAddClientModal()">
-    </p-button>
-</div>
+
 
 <!-- Audit History -->
 <!-- <div style="margin-top: 10px;">
@@ -190,10 +194,10 @@
 <p-dialog [(visible)]="showaddClientModal" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
     [style]="{width: '90%'}">
     <p-header *ngIf="!showEditClient">
-        Add Client Legal Entry
+        Add Client Legal Entity
     </p-header>
     <p-header *ngIf="showEditClient">
-        Edit Client Legal Entry
+        Edit Client Legal Entity
     </p-header>
     <form [formGroup]='addClient'>
         <div class="p-grid mt-20">
@@ -215,10 +219,10 @@
                     <div *ngIf="addClient.controls.acronym.errors.required">
                         Acronym is required</div>
                     <div *ngIf="addClient.controls.acronym.errors.maxlength">
-                        Acronym can be max 5 aplhanumberic long.
+                            Acronym can be maximum 5 characters.
                     </div>
                     <div *ngIf="addClient.controls.acronym.errors.pattern">
-                        Only aplhanumberic allowed.
+                            Acronym can have exactly 3 UpperCase letters and 2 number.
                     </div>
                 </div>
             </div>
@@ -253,6 +257,9 @@
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.invoiceName.errors">
                     <div *ngIf="addClient.controls.invoiceName.errors.required">
                         Invoice Name is required</div>
+                    <div *ngIf="addClient.controls.invoiceName.errors.pattern">
+                        Special characters are allowed between alphabets. Allowed special characters are '-' and '_'.
+                    </div>
                 </div>
             </div>
             <div class="p-col-2 "><span class="compulsory">*</span>Realization</div>
@@ -263,7 +270,7 @@
                     <div *ngIf="addClient.controls.realization.errors.required">
                         Realization is required</div>
                     <div *ngIf="addClient.controls.realization.errors.positiveNumber">
-                        Only postive numbers are allowed.</div>
+                        Only positive numbers are allowed.</div>
                 </div>
             </div>
         </div>
@@ -393,11 +400,21 @@
             <div class="p-col-2 "><span class="compulsory">*</span>Bucket</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.BucketArray" placeholder="Select Bucket" formControlName="bucket"
-                    filter="true">
+                    filter="true" (onChange)="onBucketChange()">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.bucket.errors">
                     <div *ngIf="addClient.controls.bucket.errors.required">
                         Bucket is required</div>
+                </div>
+            </div>
+            <div class="p-col-2" *ngIf="isBucketEffectiveDateActive"><span class="compulsory">*</span>Bucket Effective
+                Date</div>
+            <div class="p-col-4" *ngIf="isBucketEffectiveDateActive">
+                <p-calendar formControlName="bucketEffectiveDate" [minDate]="minDateValue" [showIcon]="true"  
+                    [showOnFocus]="false"   [monthNavigator]="true" [readonlyInput]="true"></p-calendar>
+                <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.bucketEffectiveDate.errors">
+                    <div *ngIf="addClient.controls.bucketEffectiveDate.errors.required">
+                        Bucket Effective Date is required</div>
                 </div>
             </div>
         </div>
@@ -412,10 +429,14 @@
 <p-dialog [(visible)]="showSubDivisionDetails" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
     [style]="{width: '90%'}">
     <div class="pr-20">
-        <a (click)="downloadExcel(sd)" class="download-worksheet td-none"><i class="fa fa-download"
+        <a (click)="downloadExcel(sd)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
+        <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New Sub-Division"
+            (click)="showAddSubDivision()">
+        </p-button>
     </div>
+    <div class="clearBoth"></div>
     <p-header>
         Sub-Division Details
     </p-header>
@@ -487,13 +508,6 @@
             </ng-template>
         </p-table>
     </div>
-    <p-footer>
-        <div class="addNewBtn">
-            <p-button type="button" icon="pi pi-plus-circle" label="Add New Sub-Division"
-                (click)="showAddSubDivision()">
-            </p-button>
-        </div>
-    </p-footer>
 </p-dialog>
 
 <p-dialog [(visible)]="showaddSubDivision" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
@@ -558,10 +572,13 @@
 <p-dialog [(visible)]="showPointofContact" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
     [style]="{width: '90%'}">
     <div class="pr-20">
-        <a (click)="downloadExcel(poc)" class="download-worksheet td-none"><i class="fa fa-download"
+        <a (click)="downloadExcel(poc)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
+        <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New POC"
+            (click)="showAddPOC()"></p-button>
     </div>
+    <div class="clearBoth"></div>
     <p-header>
         Point of Contact
     </p-header>
@@ -647,12 +664,6 @@
             </ng-template>
         </p-table>
     </div>
-
-    <p-footer>
-        <div class="addNewBtn">
-            <p-button type="button" icon="pi pi-plus-circle" label="Add New POC" (click)="showAddPOC()"></p-button>
-        </div>
-    </p-footer>
 </p-dialog>
 
 <p-dialog [(visible)]="showaddPOC" [modal]="true" appendTo="body" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
@@ -789,10 +800,14 @@
 <p-dialog [(visible)]="showPurchaseOrder" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
     [style]="{width: '90%'}">
     <div class="pr-20">
-        <a (click)="downloadExcel(po)" class="download-worksheet td-none"><i class="fa fa-download"
+        <a (click)="downloadExcel(po)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
+        <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New Purchase Order"
+            (click)="showAddPO()">
+        </p-button>
     </div>
+    <div class="clearBoth"></div>
     <p-header>
         Purchase Order
     </p-header>
@@ -887,12 +902,6 @@
             </ng-template>
         </p-table>
     </div>
-    <p-footer>
-        <div class="addNewBtn">
-            <p-button type="button" icon="pi pi-plus-circle" label="Add New Purchase Order" (click)="showAddPO()">
-            </p-button>
-        </div>
-    </p-footer>
 </p-dialog>
 
 <p-dialog [(visible)]="showaddBudget" [modal]="true" appendTo="body"
@@ -916,7 +925,7 @@
                         <div class="p-grid">
                             <div class="p-col-5">
                                 <div class="icon-big icon-warning text-center">
-                                    <i class="pi pi-dollar"></i>
+                                    <i class="fa fa-money"></i>
                                 </div>
                             </div>
                             <div class="p-col-7">
@@ -941,7 +950,7 @@
                         <div class="p-grid">
                             <div class="p-col-5">
                                 <div class="icon-big icon-warning text-center">
-                                    <i class="pi pi-dollar"></i>
+                                    <i class="fa fa-money"></i>
                                 </div>
                             </div>
                             <div class="p-col-7">
@@ -966,7 +975,7 @@
                         <div class="p-grid">
                             <div class="p-col-5">
                                 <div class="icon-big icon-warning text-center">
-                                    <i class="pi pi-dollar"></i>
+                                    <i class="fa fa-money"></i>
                                 </div>
                             </div>
                             <div class="p-col-7">
@@ -991,7 +1000,7 @@
                         <div class="p-grid">
                             <div class="p-col-5">
                                 <div class="icon-big icon-warning text-center">
-                                    <i class="pi pi-dollar"></i>
+                                    <i class="fa fa-money"></i>
                                 </div>
                             </div>
                             <div class="p-col-7">
@@ -1260,4 +1269,4 @@
             </ng-template>
         </p-table>
     </p-sidebar>
-</div> 
+</div>
