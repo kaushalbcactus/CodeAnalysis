@@ -158,27 +158,27 @@
                     <div class="ui-g-2"> <span class="compulsory">*</span> Budget</div>
                     <div class="ui-g-2  mr-5">
                         <input formControlName="total" type="number" [attr.disabled]="true" placeholder="Total" pInputText>
-                        <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['total'].disabled && !addSowForm.controls['total'].valid">
+                        <!-- <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['total'].disabled && !addSowForm.controls['total'].valid">
                             Total is required
-                        </div>
+                        </div> -->
                     </div>
                     <div class="ui-g-2  mr-5">
                         <input formControlName="net" value="0" min="0" type="number" (change)="setSOWTotal()" placeholder="Net" pInputText>
-                        <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['net'].disabled && !addSowForm.controls['net'].valid">
+                        <!-- <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['net'].disabled && !addSowForm.controls['net'].valid">
                             Net is required
-                        </div>
+                        </div> -->
                     </div>
                     <div class="ui-g-2  mr-5">
                         <input formControlName="oop" value="0" min="0" type="number" (change)="setSOWTotal()" placeholder="OOP" pInputText>
-                        <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['oop'].disabled && !addSowForm.controls['oop'].valid">
+                        <!-- <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['oop'].disabled && !addSowForm.controls['oop'].valid">
                             OOP is required
-                        </div>
+                        </div> -->
                     </div>
                     <div class="ui-g-2">
                         <input formControlName="tax" value="0" min="0" type="number" (change)="setSOWTotal()" placeholder="Tax" pInputText>
-                        <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['tax'].disabled && !addSowForm.controls['tax'].valid">
+                        <!-- <div class="error" *ngIf="pmObject.isSOWFormSubmit && !addSowForm.controls['tax'].disabled && !addSowForm.controls['tax'].valid">
                             TAX is required
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <h3 class="center">2. Assign User Access</h3>
