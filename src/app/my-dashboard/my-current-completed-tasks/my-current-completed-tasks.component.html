@@ -68,7 +68,7 @@
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th style="width: 4em;">No.</th>
-                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility" [ngStyle]="{'width': (col.field === 'ExpectedTime' || col.field === 'TimeSpent' ) ? '7em': (col.field === 'StartDate' || col.field === 'DueDate'|| col.field === 'MainStatus' || col.field === 'Status') ? '10em' : '25em' }"
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility" [ngStyle]="{'width': (col.field === 'ExpectedTime' || col.field === 'TimeSpent' ) ? '7em': (col.field === 'StartDate' || col.field === 'DueDate'|| col.field === 'MainStatus' || col.field === 'TaskStatus') ? '10em' : '25em' }"
                     pResizableColumn pReorderableColumn>
                     {{col.header}}
                     <p-sortIcon *ngIf="col.header != '' " [field]="col.field"></p-sortIcon>
@@ -81,12 +81,12 @@
                 <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field" class="ui-fluid" style="overflow: visible;">
                     <ng-container *ngIf="col.field">
 
-                        <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" [disabled]="TabName ==='MyCompletedTask'" filter="true" *ngSwitchCase="'MainStatus'" [options]="AllTaskColArray.Status" defaultLabel="All" (onChange)="taskId.filter($event.value, col.field, 'in')"></p-multiSelect>
-                        <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" *ngSwitchCase="'Status'" filter="true" [options]="AllTaskColArray.TaskStatus" defaultLabel="All" (onChange)="taskId.filter($event.value, col.field, 'in')"></p-multiSelect>
-                        <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'DisplayTitle'" [options]="AllTaskColArray.TaskName" defaultLabel="All" (onChange)="taskId.filter($event.value, col.field, 'in')"></p-multiSelect>
-                        <p-multiSelect filter="true" *ngSwitchCase="'StartDate'" [options]="AllTaskColArray.StartDate" defaultLabel="All" (onChange)="taskId.filter($event.value, col.field, 'in')"></p-multiSelect>
+                        <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" [disabled]="TabName ==='MyCompletedTask'" filter="true" *ngSwitchCase="'MainStatus'" [options]="AllTaskColArray.MainStatus" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskId.filter($event.value, col.field, 'in')"></p-multiSelect>
+                        <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" *ngSwitchCase="'TaskStatus'" filter="true" [options]="AllTaskColArray.TaskStatus" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskId.filter($event.value, col.field, 'in')"></p-multiSelect>
+                        <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'TaskName'" [options]="AllTaskColArray.TaskName" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskId.filter($event.value, col.field, 'in')"></p-multiSelect>
+                        <p-multiSelect filter="true" *ngSwitchCase="'StartDate'" [options]="AllTaskColArray.StartDate" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskId.filter($event.value, col.field, 'in')"></p-multiSelect>
 
-                        <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'DueDate'" [options]="AllTaskColArray.DueDate" defaultLabel="All" (onChange)="taskId.filter($event.value, col.field, 'in')"></p-multiSelect>
+                        <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'DueDate'" [options]="AllTaskColArray.DueDate" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskId.filter($event.value, col.field, 'in')"></p-multiSelect>
                     </ng-container>
                 </th>
                 <th></th>
@@ -102,18 +102,18 @@
                 </td>
                 <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility">
 
-                    <span *ngIf="col.field !== 'DisplayTitle' && col.field !=='TimeSpent' && col.field !=='StartDate' && col.field !=='DueDate' ">
+                    <span *ngIf="col.field !== 'TaskName' && col.field !=='TimeSpent' && col.field !=='StartDate' && col.field !=='DueDate' ">
                         {{rowData[col.field]}}</span>
                     <span *ngIf="col.field ==='StartDate' || col.field ==='DueDate' ">
                         {{rowData[col.field] | date:' MMM d, y, h:mm a'}}</span>
 
                     <span *ngIf="( col.field ==='TimeSpent' && rowData.MainStatus ==='Planned')">
                         {{rowData[col.field]}}</span>
-                    <span *ngIf="col.field === 'DisplayTitle' || (col.field ==='TimeSpent' && rowData.MainStatus !=='Planned')" (click)="showDialog(rowData,col.field,rowIndex)" style="cursor: pointer;color:#C53E3E;">
+                    <span *ngIf="col.field === 'TaskName' || (col.field ==='TimeSpent' && rowData.MainStatus !=='Planned')" (click)="showDialog(rowData,col.field,rowIndex)" style="cursor: pointer;color:#C53E3E;">
                         {{rowData[col.field]}} <div
-                            *ngIf="col.field === 'DisplayTitle' && tableloaderenable && rowIndex === selectedindex"
+                            *ngIf="col.field === 'TaskName' && tableloaderenable && rowIndex === selectedindex"
                             id="scTableInnerLoader"></div>
-                        <div *ngIf="col.field === 'DisplayTitle' && rowData.Comments">[{{rowData.Comments}}]</div> </span>
+                        <div *ngIf="col.field === 'TaskName' && rowData.Comments">[{{rowData.Comments}}]</div> </span>
                 </td>
                 <td>
                     <div *ngIf="rowData.MainStatus !=='Planned'">

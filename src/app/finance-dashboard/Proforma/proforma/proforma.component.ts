@@ -1602,7 +1602,6 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
 
     ngAfterViewChecked() {
-        console.log('this.proformaTable ', this.proformaTable);
         let obj = {
             tableData: this.proformaTable,
             colFields: this.proformaColArray,

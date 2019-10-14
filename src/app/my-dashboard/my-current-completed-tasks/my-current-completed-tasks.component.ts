@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewEncapsulation, TemplateRef, ViewChild, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation, TemplateRef, ViewChild, HostListener, ElementRef, ChangeDetectorRef, AfterViewChecked } from '@angular/core';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -14,6 +14,12 @@ import { PreviosNextTasksDialogComponent } from '../previos-next-tasks-dialog/pr
 import { Table } from 'primeng/table';
 import { FeedbackPopupComponent } from '../../qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
+import { DataTable } from 'primeng/primeng';
+
+interface DateObj {
+  label: string;
+  value: string;
+}
 
 @Component({
   selector: 'app-my-current-completed-tasks',
@@ -22,6 +28,7 @@ import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-do
   providers: [DatePipe, MessageService, FeedbackPopupComponent],
 
 })
+
 export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   selectedDueDate: DateObj;
@@ -30,7 +37,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
   public loderenable = false;
 
   @ViewChild('feedbackPopup', { static: true }) feedbackPopupComponent: FeedbackPopupComponent;
-  @ViewChild('taskId', { static: true }) taskId: Table;
+  @ViewChild('taskId', { static: false }) taskId: Table;
   showCalender: boolean;
   selectedDate: any;
   rangeDates: Date[];
@@ -82,13 +89,15 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     public dialogService: DialogService,
     private confirmationService: ConfirmationService,
-    public spOperations: SPOperationService) { }
+    public spOperations: SPOperationService,
+    private cdr: ChangeDetectorRef,
+  ) { }
 
   ngOnInit() {
     this.cols = [
       { field: 'MainStatus', header: 'Status', visibility: true, exportable: true },
-      { field: 'Status', header: 'Task Status', visibility: true, exportable: true },
-      { field: 'DisplayTitle', header: 'Task Name', visibility: true, exportable: true },
+      { field: 'TaskStatus', header: 'Task Status', visibility: true, exportable: true },
+      { field: 'TaskName', header: 'Task Name', visibility: true, exportable: true },
       { field: 'ExportStartDate', header: 'Start Date', visibility: false, exportable: true },
       { field: 'ExportDueDate', header: 'End Date', visibility: false, exportable: true },
       { field: 'StartDate', header: 'Start Date', visibility: true, exportable: false },
@@ -98,8 +107,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     ];
     this.myDashboardConstantsService.getEmailTemplate();
 
-  }
-  ngOnDestroy() {
   }
 
 
@@ -262,68 +269,113 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', mytasks);
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
 
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    this.allTasks = this.response.length ? this.response : [];
+    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    const res = this.response[0] !== '' ? this.response[0] : [];
 
-    if (this.allTasks.length > 0) {
+    if (res.length > 0) {
+      let data = [];
+      res.forEach(task => {
 
-      this.allTasks.map(c => c.TimeSpent = c.TimeSpent === null ? 0 : c.TimeSpent.replace('.', ':'));
-
-      this.allTasks.map(c => c.StartDate = new Date(this.datePipe.transform(c.StartDate, 'MMM d, y, h:mm a')));
-      this.allTasks.map(c => c.DueDate = new Date(this.datePipe.transform(c.DueDate, 'MMM d, y, h:mm a')));
-
-      this.allTasks.map(c => c.ExportStartDate = this.datePipe.transform(c.StartDate, 'MMM d, y, h:mm a'));
-
-      this.allTasks.map(c => c.ExportDueDate = this.datePipe.transform(c.DueDate, 'MMM d, y, h:mm a'));
-
-
-
-      if (this.TabName === 'MyCompletedTask') {
-        this.allTasks.filter(c => c.Status === 'Completed' || c.Status === 'Auto Closed').map(c => c.MainStatus = 'Closed');
-
-      } else {
-        this.allTasks.filter(c => c.Status === 'Not Started' || c.Status === 'In Progress').map(c => c.MainStatus = 'Not Completed');
-        this.allTasks.filter(c => c.Status === 'Not Confirmed').map(c => c.MainStatus = 'Planned');
-      }
-      if (this.sharedObject.DashboardData.ProjectCodes.length > 0) {
-        this.allTasks.forEach(element => {
-
-          const data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === element.ProjectCode);
-
-          if (data !== undefined) {
-            if (element.SubMilestones) {
-
-              if (element.SubMilestones === 'Default') {
-                element.DisplayTitle = element.Title + ' ( ' + data.WBJID + ')';
-              } else {
-                element.DisplayTitle = element.Title + ' - ' + element.SubMilestones + ' ( ' + data.WBJID + ')';
-              }
+        const TaskProject = this.sharedObject.DashboardData.ProjectCodes ? this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === task.ProjectCode) : null;
+        let DisplayTitle;
+        if (TaskProject !== undefined) {
+          if (task.SubMilestones) {
+            if (task.SubMilestones === 'Default') {
+              DisplayTitle = task.Title + ' ( ' + TaskProject.WBJID + ')';
             } else {
-              element.DisplayTitle = element.Title + ' (' + data.WBJID + ')';
+              DisplayTitle = task.Title + ' - ' + task.SubMilestones + ' ( ' + TaskProject.WBJID + ')';
             }
           } else {
-            if (element.SubMilestones) {
-              if (element.SubMilestones === 'Default') {
-                element.DisplayTitle = element.Title;
-              } else {
-                element.DisplayTitle = element.Title + ' - ' + element.SubMilestones;
-              }
-            } else {
-              element.DisplayTitle = element.Title;
-            }
+            DisplayTitle = task.Title + ' (' + TaskProject.WBJID + ')';
           }
-        });
-      }
+        } else {
+          if (task.SubMilestones) {
+            if (task.SubMilestones === 'Default') {
+              DisplayTitle = task.Title;
+            } else {
+              DisplayTitle = task.Title + ' - ' + task.SubMilestones;
+            }
+          } else {
+            DisplayTitle = task.Title;
+          }
+        }
 
-      this.AllTaskColArray = this.route.snapshot.data.type === 'MyCompletedTask' ?
-        { Status: [{ label: 'Closed', value: 'Closed' }], TaskStatus: [], TaskName: [], StartDate: [], DueDate: [] } :
-        { Status: [], TaskStatus: [], TaskName: [], StartDate: [], DueDate: [] };
-      this.createColFieldValues();
+        data.push({
+          Id: task.Id,
+          StartDate: new Date(this.datePipe.transform(task.StartDate, 'MMM d, y, h:mm a')),
+          DueDate: new Date(this.datePipe.transform(task.DueDate, 'MMM d, y, h:mm a')),
+          ExportStartDate: new Date(this.datePipe.transform(task.StartDate, 'MMM d, y, h:mm a')),
+          ExportDueDate: new Date(this.datePipe.transform(task.DueDate, 'MMM d, y, h:mm a')),
+          TimeSpent: task.TimeSpent === null ? 0 : task.TimeSpent.replace('.', ':'),
+          TaskStatus: task.Status,
+          ExpectedTime: task.ExpectedTime,
+          MainStatus: task.Status === 'Completed' || task.Status === 'Auto Closed' ? 'Closed' : task.Status === 'Not Started' || task.Status === 'In Progress' ? 'Not Completed' : task.Status === 'Not Confirmed' ? 'Planned' : '',
+          DisplayTitle: DisplayTitle,
+          TaskName: DisplayTitle
+        })
+      });
+      this.allTasks = data;
+
+      // this.allTasks.map(c => c.TimeSpent = c.TimeSpent === null ? 0 : c.TimeSpent.replace('.', ':'));
+
+      // this.allTasks.map(c => c.StartDate = new Date(this.datePipe.transform(c.StartDate, 'MMM d, y, h:mm a')));
+      // this.allTasks.map(c => c.DueDate = new Date(this.datePipe.transform(c.DueDate, 'MMM d, y, h:mm a')));
+
+      // this.allTasks.map(c => c.ExportStartDate = this.datePipe.transform(c.StartDate, 'MMM d, y, h:mm a'));
+
+      // this.allTasks.map(c => c.ExportDueDate = this.datePipe.transform(c.DueDate, 'MMM d, y, h:mm a'));
+
+
+
+      // if (this.TabName === 'MyCompletedTask') {
+      //   this.allTasks.filter(c => c.Status === 'Completed' || c.Status === 'Auto Closed').map(c => c.MainStatus = 'Closed');
+
+      // } else {
+      //   this.allTasks.filter(c => c.Status === 'Not Started' || c.Status === 'In Progress').map(c => c.MainStatus = 'Not Completed');
+      //   this.allTasks.filter(c => c.Status === 'Not Confirmed').map(c => c.MainStatus = 'Planned');
+      // }
+      // if (this.sharedObject.DashboardData.ProjectCodes.length > 0) {
+      //   this.allTasks.forEach(element => {
+
+      //     const data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === element.ProjectCode);
+
+      //     if (data !== undefined) {
+      //       if (element.SubMilestones) {
+      //         task
+      //         if (element.SubMilestones === 'Default') {
+      //           element.DisplayTitle = element.Title + ' ( ' + data.WBJID + ')';
+      //         } else {
+      //           element.DisplayTitle = element.Title + ' - ' + element.SubMilestones + ' ( ' + data.WBJID + ')';
+      //         }
+      //       } else {
+      //         element.DisplayTitle = element.Title + ' (' + data.WBJID + ')';
+      //       }
+      //     } else {
+      //       if (element.SubMilestones) {
+      //         if (element.SubMilestones === 'Default') {
+      //           element.DisplayTitle = element.Title;
+      //         } else {
+      //           element.DisplayTitle = element.Title + ' - ' + element.SubMilestones;
+      //         }
+      //       } else {
+      //         element.DisplayTitle = element.Title;
+      //       }
+      //     }
+      //   });
+      // }
+      this.initializeTableOptions();
 
     } else if (this.allTasks.length === 0) {
       this.loaderenable = false;
       this.thenBlock = this.taskId;
     }
+  }
+
+  initializeTableOptions() {
+    this.AllTaskColArray = this.route.snapshot.data.type === 'MyCompletedTask' ?
+      { MainStatus: [{ label: 'Closed', value: 'Closed' }], TaskStatus: [], TaskName: [], StartDate: [], DueDate: [] } :
+      { MainStatus: [], TaskStatus: [], TaskName: [], StartDate: [], DueDate: [] };
+    this.createColFieldValues(this.allTasks);
   }
 
   // *************************************************************************************************************************************
@@ -333,45 +385,42 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
 
 
-  createColFieldValues() {
-
-
+  createColFieldValues(resArray) {
     this.AllTaskColArray.TaskStatus = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj
-      (this.allTasks.map(a => { const b = { label: a.Status, value: a.Status }; return b; })));
+      (resArray.map(a => { const b = { label: a.TaskStatus, value: a.TaskStatus }; return b; })));
+
     this.AllTaskColArray.TaskName = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = {
           label:
             a.DisplayTitle, value: a.DisplayTitle
           // tslint:disable-next-line: align
         }; return b;
       })));
-    this.AllTaskColArray.Status = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => {
+    this.AllTaskColArray.MainStatus = this.commonService.sortData
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = {
           label:
             a.MainStatus, value: a.MainStatus
           // tslint:disable-next-line: align
         }; return b;
       })));
-    this.AllTaskColArray.StartDate.push.apply(this.AllTaskColArray.StartDate,
-      this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => {
-        const b = {
-          label:
-            // tslint:disable-next-line: align
-            this.datePipe.transform(a.StartDate, 'MMM d, y, h:mm a'), value: a.StartDate
+    this.AllTaskColArray.StartDate = this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
+      const b = {
+        label:
           // tslint:disable-next-line: align
-        }; return b;
-      })));
-    this.AllTaskColArray.DueDate.push.apply(this.AllTaskColArray.DueDate,
-      this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => {
-        const b = {
-          label:
-            // tslint:disable-next-line: align
-            this.datePipe.transform(a.DueDate, 'MMM d, y, h:mm a'), value: a.DueDate
+          this.datePipe.transform(a.StartDate, 'MMM d, y, h:mm a'), value: a.StartDate
+        // tslint:disable-next-line: align
+      }; return b;
+    }));
+    this.AllTaskColArray.DueDate = this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
+      const b = {
+        label:
           // tslint:disable-next-line: align
-        }; return b;
-      })));
+          this.datePipe.transform(a.DueDate, 'MMM d, y, h:mm a'), value: a.DueDate
+        // tslint:disable-next-line: align
+      }; return b;
+    }));
 
     this.AllTaskColArray.StartDate = this.AllTaskColArray.StartDate.sort((a, b) =>
       new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
@@ -771,13 +820,30 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     }
 
   }
+
+  ngAfterViewChecked() {
+    if (this.allTasks.length) {
+      let obj = {
+        tableData: this.taskId,
+        colFields: this.AllTaskColArray,
+        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+        this.cdr.detectChanges();
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.createColFieldValues(obj.tableData.value);
+        this.cdr.detectChanges();
+      }
+    } else {
+      this.initializeTableOptions();
+    }
+    this.cdr.detectChanges();
+  }
+
+  ngOnDestroy() {
+
+  }
+
+
 }
-
-
-interface DateObj {
-  label: string;
-  value: string;
-}
-
-
-
