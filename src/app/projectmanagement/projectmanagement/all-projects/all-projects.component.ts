@@ -1080,7 +1080,7 @@ export class AllProjectsComponent implements OnInit {
           },
           ProjectLookup: element.ProjectLookup,
           ProjectCode: element.ProjectCode,
-          ApprovalDate: new Date(element.ApprovalDate),
+          ApprovalDate: new Date(),
           Status: element.Status,
           OriginalBudget: element.OriginalBudget * -1,
           NetBudget: element.NetBudget * -1,

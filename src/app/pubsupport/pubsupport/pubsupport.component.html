@@ -13,8 +13,9 @@
     <div class="ui-g-6">
         <p-dropdown [options]="overAllValues" [(ngModel)]="selectedOption" styleClass="custom-dropDown"
             optionLabel="name" (onChange)="onChangeSelect($event)"></p-dropdown>
-        <input type="text" (change)="searchClosedProject($event)" *ngIf="showProjectInput" id="projectCodeSelect"
-            placeholder="Project Code" pInputText [(ngModel)]="providedProjectCode" />
+        <input type="text" (change)="searchClosedProject($event)" (keydown.enter)="enterEvent($event)"
+            *ngIf="showProjectInput" id="projectCodeSelect" placeholder="Project Code" pInputText
+            [(ngModel)]="providedProjectCode" />
         <a href="https://tableau.cactusmum.com/#/views/PublishPaper/PublishPaperDump?:iid=1 "
             style="color: red;float: right;padding: 5px 20px;" target="_blank">Published paper report</a>
     </div>
@@ -727,7 +728,8 @@
             *ngIf="(journal_Conference_Detail_form.value.EntryType === 'journal' || journal_Conference_Detail_form.value.EntryType === 'conference') && journal_Conference_Detail_form.value.jcLineItem">
             <div class="ui-g">
                 <div class="p-col-12 p-md-6 p-lg-2">
-                    User Name <span style="color:red">*</span>
+                    User Name 
+                    <!-- <span style="color:red">*</span> -->
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <input type="text" pInputText maxlength="100" formControlName="UserName" style="width: 100%;"
@@ -739,7 +741,9 @@
                 </div>
 
                 <div class="p-col-12 p-md-6 p-lg-2" style="padding: 0.5rem!important;">
-                    <div class="box">Password <span style="color:red">*</span></div>
+                    <div class="box">Password
+                         <!-- <span style="color:red">*</span> -->
+                    </div>
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <input type="text" pInputText maxlength="100" formControlName="Password" style="width: 100%;"
@@ -772,7 +776,7 @@
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
-                        <input type="text" pInputText maxlength="25" formControlName="ExpectedReviewPeriod"
+                        <input type="text" pInputText maxlength="100" formControlName="ExpectedReviewPeriod"
                             placeholder="12 Months">
                         <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.ExpectedReviewPeriod.errors">
                             <div *ngIf="isValidAddUpdateJCDetailsForm.ExpectedReviewPeriod.errors.required"
@@ -819,7 +823,7 @@
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
                         <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
-                            maxlength="100"></textarea>
+                            maxlength="2000"></textarea>
 
                     </div>
                 </div>
@@ -830,7 +834,7 @@
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
                         <textarea rows="5" cols="30" pInputTextarea formControlName="JournalEditorInfo"
-                            maxlength="100"></textarea>
+                            maxlength="2000"></textarea>
                         <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.JournalEditorInfo.errors">
                             <div *ngIf="isValidAddUpdateJCDetailsForm.JournalEditorInfo.errors.required"
                                 style="color:red;">
@@ -903,7 +907,7 @@
                 <div class="p-col-12 p-md-6 p-lg-10">
                     <div class="box">
                         <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
-                            maxlength="100"></textarea>
+                            maxlength="2000"></textarea>
                         <div *ngIf="formSubmit.isSubmit && isValidAddUpdateJCDetailsForm.Comments.errors">
                             <div *ngIf="isValidAddUpdateJCDetailsForm.Comments.errors.required" style="color:red;">
                                 Please provide Comments.</div>
@@ -1015,7 +1019,7 @@
                 </div>
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
-                        <input type="text" pInputText maxlength="25" formControlName="ExpectedReviewPeriod"
+                        <input type="text" pInputText maxlength="100" formControlName="ExpectedReviewPeriod"
                             placeholder="12 Months">
                         <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.ExpectedReviewPeriod.errors">
                             <div *ngIf="isValidEditJCDetailsForm.ExpectedReviewPeriod.errors.required"
@@ -1062,7 +1066,7 @@
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
                         <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
-                            maxlength="100"></textarea>
+                            maxlength="2000"></textarea>
                     </div>
                 </div>
 
@@ -1072,7 +1076,7 @@
                 <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                     <div class="box">
                         <textarea rows="5" cols="30" pInputTextarea formControlName="JournalEditorInfo"
-                            maxlength="100"></textarea>
+                            maxlength="2000"></textarea>
                         <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.JournalEditorInfo.errors">
                             <div *ngIf="isValidEditJCDetailsForm.JournalEditorInfo.errors.required" style="color:red;">
                                 Journal Editor Info is required.
@@ -1143,7 +1147,7 @@
                 <div class="p-col-12 p-md-6 p-lg-10">
                     <div class="box">
                         <textarea rows="5" cols="30" pInputTextarea formControlName="Comments"
-                            maxlength="100"></textarea>
+                            maxlength="2000"></textarea>
                         <div *ngIf="formSubmit.isSubmit && isValidEditJCDetailsForm.Comments.errors">
                             <div *ngIf="isValidEditJCDetailsForm.Comments.errors.required" style="color:red;">
                                 Please provide Comments.</div>
