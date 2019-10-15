@@ -31,7 +31,7 @@ export class MyDashboardConstantsService {
 
     MyTasks: {
 
-      select: 'ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones, IsCentrallyAllocated',
+      select: 'ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones, IsCentrallyAllocated,AssignedTo/Title,AssignedTo/EMail',
       orderby: 'DueDate asc',
       filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and (Task ne 'Time Booking') and",
       filterStatus: "(Status ne 'Completed') and (Status ne 'Auto Closed')  and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
@@ -39,6 +39,7 @@ export class MyDashboardConstantsService {
       // filterPlanned:"(Status eq 'Not Confirmed')",
       filterCompleted: "(Status eq 'Completed' or Status eq 'Auto Closed') and (Task ne 'Adhoc')",
       filterDate: "and((StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}') or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}') or (StartDate le '{{startDateString}}' and DueDate ge '{{endDateString}}'))",
+      expand: "AssignedTo/Title"
 
     },
     ClientLegalEntitys: {

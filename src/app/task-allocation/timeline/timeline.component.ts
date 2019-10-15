@@ -2028,7 +2028,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     });
   }
 
-  async cascadeNextNodes(previousNode, subMilestonePosition, selectedMil) {
+   cascadeNextNodes(previousNode, subMilestonePosition, selectedMil) {
 
     
     var nextNode = [];
@@ -2138,47 +2138,47 @@ export class TimelineComponent implements OnInit, OnDestroy {
       if (new Date(prevNodeData.pEnd) > new Date(nodeData.pStart) && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
 
         //alert('next task');
-        if (nodeData.itemType === 'Send to client') {
+        // if (nodeData.itemType === 'Send to client') {
          
-          await this.confirmationService.confirm({
-            message: 'Are you sure that you want to proceed?' + nodeData.pName,
-            header: 'Confirmation',
-            icon: 'pi pi-exclamation-triangle',
-            accept: async () => {
+        //    this.confirmationService.confirm({
+        //     message: 'Are you sure that you want to proceed?' + nodeData.pName,
+        //     header: 'Confirmation',
+        //     icon: 'pi pi-exclamation-triangle',
+        //     accept:  () => {
 
-             setTimeout(async () => {
-              await this.cascadeNode(previousNode, nodeData);
-              await this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
+        //      setTimeout( () => {
+        //        this.cascadeNode(previousNode, nodeData);
+        //        this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
 
-             }, 3000);
+        //      }, 3000);
 
              
 
-            },
-            reject: () => {
-              return false;
-            }
-          });
+        //     },
+        //     reject: () => {
+        //       return false;
+        //     }
+        //   });
 
-        }
-        else {
-          await this.cascadeNode(previousNode, nodeData);
-          await this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
+        // }
+        // else {
+           this.cascadeNode(previousNode, nodeData);
+           this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
 
-        }
+        // }
 
       }
       else if (new Date(prevNodeData.pEnd).getTime() === new Date(nodeData.pStart).getTime() && prevNodeData.itemType === 'Client Review' && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
-        await this.cascadeNode(previousNode, nodeData);
-        await this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
+         this.cascadeNode(previousNode, nodeData);
+         this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
       }
     }
     else if (nodeData.type === 'task' && nodeData.itemType === 'Client Review') {
       if (new Date(prevNodeData.pEnd) >= new Date(nodeData.pStart) && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
         //alert('next CR');
         //this.setStartAndEnd(previousNode);
-        await this.cascadeNode(previousNode, nodeData);
-         await this.cascadeNextNodes(nodeData, 0, selectedMil + 1);
+         this.cascadeNode(previousNode, nodeData);
+          this.cascadeNextNodes(nodeData, 0, selectedMil + 1);
       }
     }
     else if (nodeData.type === 'submilestone') {
@@ -2190,7 +2190,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         });
         allParallelTasks.forEach(async element => {
           if (element.DisableCascade !== 'Yes') {
-            await  this.cascadeNextTask(previousNode, element.data, parseInt(nodeData.position), selectedMil);
+              this.cascadeNextTask(previousNode, element.data, parseInt(nodeData.position), selectedMil);
           }
         });
       }
@@ -2217,7 +2217,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
         allParallelTasks.forEach(async element => {
           if (element.DisableCascade !== 'Yes') {
-           await this.cascadeNextTask(previousNode, element, element.submilestone ? 1 : 0, selectedMil + 1);
+            this.cascadeNextTask(previousNode, element, element.submilestone ? 1 : 0, selectedMil + 1);
           }
         });
       }
