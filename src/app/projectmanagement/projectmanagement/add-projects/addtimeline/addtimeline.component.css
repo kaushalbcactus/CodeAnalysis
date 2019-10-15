@@ -1,48 +1,62 @@
 @import "~@ng-select/ng-select/themes/default.theme.css";
-.infoSection #standardTimelineCapacity,  #standardTimelineGenerate,#standardTimelineConfirm {
- margin-left: 10px !important;
+.infoSection #standardTimelineCapacity,
+#standardTimelineGenerate,
+#standardTimelineConfirm {
+    margin-left: 10px !important;
 }
-[id^=tab]:checked + label {
+
+[id^=tab]:checked+label {
     background: #D7181F;
     color: white;
     top: -4px !important;
     padding: 10px 20px;
 }
-.timeline-radiobutton-section input[type=radio]{
+
+.timeline-radiobutton-section input[type=radio] {
     position: relative !important;
     left: 0px;
-    top:0px;
+    top: 0px;
 }
-.task-hours-section input[type="text"]{
+
+.task-hours-section input[type="text"] {
     width: 50px !important;
 }
-.timeline-generatortab .tab-content{
-    min-height:500px;
+
+.timeline-generatortab .tab-content {
+    min-height: 500px;
 }
-.timeline-standard-section{
+
+.timeline-standard-section {
     width: 100%;
 }
 
-.margin-top25{
+.margin-top25 {
     margin-top: 25px;
 }
 
-.timeline-radiobutton-section{
+.timeline-radiobutton-section {
     padding-left: 15px !important;
 }
-.timeline-generatortab [id^=tab]:checked + label {
+
+.timeline-generatortab [id^=tab]:checked+label {
     padding: 12px 20px 8px 20px;
 }
-#ProjectCtrl .disableTab > label, .disableTab > label:hover {
+
+#ProjectCtrl .disableTab>label,
+.disableTab>label:hover {
     top: 0px !important;
 }
+
 .tabs label {
-    top:0px !important;
+    top: 0px !important;
 }
+
 .tabs label:hover {
-    top:-4px !important;
+    top: -4px !important;
 }
-#standardMainLoader, #standardLoader, #nonStandardLoader{
+
+#standardLoader,
+#nonStandardLoader {
     border: 10px solid #f3f3f3;
     border-radius: 50%;
     border-top: 10px solid red;
@@ -56,7 +70,9 @@
     transform: translateY(-50%);
     margin-top: 2%;
 }
-#standardMainLoaderText, #standardLoaderText, #nonStandardLoaderText{
+
+#standardLoaderText,
+#nonStandardLoaderText {
     animation: loading-text-opacity 2s linear 0s infinite normal;
     color: black;
     font-size: 10px;
@@ -66,52 +82,73 @@
     text-transform: uppercase;
     top: 0;
 }
-body, .ms-core-defaultFont, #pageStatusBar, .ms-status-msg, .js-callout-body {
-    font-family: "Segoe UI","Segoe",Tahoma,Helvetica,Arial,sans-serif !important;
+
+body,
+.ms-core-defaultFont,
+#pageStatusBar,
+.ms-status-msg,
+.js-callout-body {
+    font-family: "Segoe UI", "Segoe", Tahoma, Helvetica, Arial, sans-serif !important;
     font-size: 11px !important;
 }
 
-.milestoneBody{
- background : #6A8a82  !important;
- color:#fff !important;
+.milestoneBody {
+    background: #6A8a82 !important;
+    color: #fff !important;
 }
-#standardMilestoneTaskTbl{
- color:#fff !important;
-background:#A37c27 !important;
-} 
-.tableHeader{
+
+#standardMilestoneTaskTbl {
+    color: #fff !important;
+    background: #A37c27 !important;
+}
+
+.tableHeader {
     background: #A7414A !important;
-    color: #fff !important;   
+    color: #fff !important;
 }
-#standardMilestoneTbl .tableHeader tr:first-child td{
+
+#standardMilestoneTbl .tableHeader tr:first-child td {
     padding: 7px;
 }
-.table-bordered td, .table-bordered th{
+
+.table-bordered td,
+.table-bordered th {
     padding: 7px !important;
 }
 
-.milestoneTaskBody > tr > td:nth-child(3),.milestoneTaskBody >tr > td:nth-child(4){
+.milestoneTaskBody>tr>td:nth-child(3),
+.milestoneTaskBody>tr>td:nth-child(4) {
     width: 270px !important;
-} 
+}
+
+
 /* .milestoneTaskBody tr td:nth-child(5) input,
 .milestoneTaskBody tr td:nth-child(6),
 .milestoneTaskBody tr td:nth-child(7),
 .milestoneTaskBody tr td:nth-child(8){
     width: 70px !important;
 }  */
-.tableHeader{
+
+.tableHeader {
     font-weight: inherit !important;
 }
+
+
 /* #capacityTable{
     height: 172px !important;
 } */
-.capacityBody #TasksPerDay > thead > tr > td, #capacityTable > thead > tr > td, table#milestoneTasks thead td{
+
+.capacityBody #TasksPerDay>thead>tr>td,
+#capacityTable>thead>tr>td,
+table#milestoneTasks thead td {
     font-weight: inherit !important;
 }
-.capacityBody td{
+
+.capacityBody td {
     padding: 0px !important;
 }
-my-date-picker > div * {
+
+my-date-picker>div * {
     min-width: 0px !important;
     margin: 0px !important;
 }
@@ -120,22 +157,29 @@ my-date-picker > div * {
     padding: 3px !important;
     border-bottom: 0px;
 }
+
 .container {
     padding: 0px !important;
 }
-#standardMilestoneTbl > thead > tr > td:last-child, #standardMilestoneTbl > tbody > tr > td:last-child {
-    width: 250px !important;
-} 
 
-#standardMilestoneTbl > thead > tr > td:nth-child(6), #standardMilestoneTbl > tbody > tr > td:nth-child(6) {
+#standardMilestoneTbl>thead>tr>td:last-child,
+#standardMilestoneTbl>tbody>tr>td:last-child {
     width: 250px !important;
 }
-#standardMilestoneTaskTbl > thead > tr > td:last-child, #standardMilestoneTaskTbl > tbody  > tr > td:last-child {
-width: 70px
+
+#standardMilestoneTbl>thead>tr>td:nth-child(6),
+#standardMilestoneTbl>tbody>tr>td:nth-child(6) {
+    width: 250px !important;
 }
 
-.standardMilestoneTaskRow > td, .userCapacity > td {
- padding: 0px !important;
+#standardMilestoneTaskTbl>thead>tr>td:last-child,
+#standardMilestoneTaskTbl>tbody>tr>td:last-child {
+    width: 70px
+}
+
+.standardMilestoneTaskRow>td,
+.userCapacity>td {
+    padding: 0px !important;
 }
 
 .tableHeader {
@@ -145,71 +189,79 @@ width: 70px
 
 .milestoneBody {
     background: #90CCF4 !important;
-    color: rgb(58,94,120)!important;
+    color: rgb(58, 94, 120)!important;
 }
 
 #capacityTable .tableHeader {
-    background-color: rgb(227,227,227) !important;
+    background-color: rgb(227, 227, 227) !important;
     color: rgb(68, 68, 68) !important;
 }
 
 table#capacityTable {
-    color: rgb(68,68,68) !important;
+    color: rgb(68, 68, 68) !important;
 }
 
 #standardMilestoneTaskTbl {
     color: #fff !important;
     background: #5da2df !important;
 }
-#standardMilestoneTaskTbl>thead>tr>td{
+
+#standardMilestoneTaskTbl>thead>tr>td {
     color: #987E32 !important;
     background-color: #F3D250 !important;
 }
+
 .ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
     white-space: inherit !important;
 }
-.gmainleft{
+
+.gmainleft {
     width: 100%;
 }
+
 .gmainright {
     display: none !important;
 }
-.ui-treetable-wrapper .ui-treetable-table .ui-treetable-thead > tr > th:nth-child(2),
-.ui-treetable-wrapper .ui-treetable-table .ui-treetable-thead > tr > th:nth-child(3),
-.ui-treetable-wrapper .ui-treetable-table .ui-treetable-thead > tr > th:nth-child(6),
-.ui-treetable-wrapper .ui-treetable-table .ui-treetable-tbody > tr > td:nth-child(2),
-.ui-treetable-wrapper .ui-treetable-table .ui-treetable-tbody > tr > td:nth-child(3),
-.ui-treetable-wrapper .ui-treetable-table .ui-treetable-tbody > tr > td:nth-child(6)
-{
-    width: 80px;
-} 
 
-.ui-treetable-wrapper .ui-treetable-table .ui-treetable-thead > tr > th:nth-child(4),
-.ui-treetable-wrapper .ui-treetable-table .ui-treetable-thead > tr > th:nth-child(5),
-.ui-treetable-wrapper .ui-treetable-table .ui-treetable-tbody > tr > td:nth-child(4),
-.ui-treetable-wrapper .ui-treetable-table .ui-treetable-tbody > tr > td:nth-child(5)
-{
+.ui-treetable-wrapper .ui-treetable-table .ui-treetable-thead>tr>th:nth-child(2),
+.ui-treetable-wrapper .ui-treetable-table .ui-treetable-thead>tr>th:nth-child(3),
+.ui-treetable-wrapper .ui-treetable-table .ui-treetable-thead>tr>th:nth-child(6),
+.ui-treetable-wrapper .ui-treetable-table .ui-treetable-tbody>tr>td:nth-child(2),
+.ui-treetable-wrapper .ui-treetable-table .ui-treetable-tbody>tr>td:nth-child(3),
+.ui-treetable-wrapper .ui-treetable-table .ui-treetable-tbody>tr>td:nth-child(6) {
+    width: 100px;
+}
+
+.ui-treetable-wrapper .ui-treetable-table .ui-treetable-thead>tr>th:nth-child(4),
+.ui-treetable-wrapper .ui-treetable-table .ui-treetable-thead>tr>th:nth-child(5),
+.ui-treetable-wrapper .ui-treetable-table .ui-treetable-tbody>tr>td:nth-child(4),
+.ui-treetable-wrapper .ui-treetable-table .ui-treetable-tbody>tr>td:nth-child(5) {
     width: 225px;
-} 
-.ui-treetable-wrapper .ui-treetable-table .ui-treetable-thead > tr > th:nth-child(7),
-.ui-treetable-wrapper .ui-treetable-table .ui-treetable-tbody > tr > td:nth-child(7)
-{
-    width: 95px
 }
-.ui-treetable-wrapper .ui-treetable-table .ui-treetable-thead > tr > th:nth-child(1),
-.ui-treetable-wrapper .ui-treetable-table .ui-treetable-tbody > tr > td:nth-child(1){
-    width: 320px;
+
+.ui-treetable-wrapper .ui-treetable-table .ui-treetable-thead>tr>th:nth-child(7),
+.ui-treetable-wrapper .ui-treetable-table .ui-treetable-tbody>tr>td:nth-child(7) {
+    width: 100px
 }
-.ui-treetable .ui-treetable-thead > tr > th {
-    padding: .25em .5em !important;    
+
+.ui-treetable-wrapper .ui-treetable-table .ui-treetable-thead>tr>th:nth-child(1),
+.ui-treetable-wrapper .ui-treetable-table .ui-treetable-tbody>tr>td:nth-child(1) {
+    width: 350px;
+}
+
+.ui-treetable .ui-treetable-thead>tr>th {
+    padding: .25em .5em !important;
 }
 
 .ui-treetable-wrapper {
     padding-top: 15px;
 }
-.UserTasksRow{
+
+
+/* .UserTasksRow{
     width: 1107px !important;
-}
+} */
+
 .animated {
     -webkit-animation-duration: 1s;
     -moz-animation-duration: 1s;
@@ -220,6 +272,7 @@ table#capacityTable {
     -o-animation-fill-mode: both;
     animation-fill-mode: both;
 }
+
 @-webkit-keyframes spin {
     0% {
         -webkit-transform: rotate(0deg);
@@ -241,8 +294,8 @@ table#capacityTable {
 .ui-treetable table {
     width: auto !important;
 }
-    
-.pcalendarClass >span>button {
+
+.pcalendarClass>span>button {
     margin: 0;
     color: #000;
     background-color: #fff;
@@ -250,21 +303,25 @@ table#capacityTable {
     font-size: 12px !important;
     transition: background-color 0.2s, box-shadow 0.2s;
 }
-.timeline-radiobutton-section input[type=radio]{
+
+.timeline-radiobutton-section input[type=radio] {
     position: relative !important;
     left: 0px;
-    top:0px;
+    top: 0px;
 }
-.timeline-standard-section .container, .timeline-non-standard-section .container {
-    padding-left: 0px !important; 
+
+.timeline-standard-section .container,
+.timeline-non-standard-section .container {
+    padding-left: 0px !important;
     width: 100%;
 }
-.margin-top25{
+
+.margin-top25 {
     margin-top: 25px;
 }
+
 .ngPrime-red {
     background-color: red;
     border: 1px solid red;
     font-size: 18px;
 }
-

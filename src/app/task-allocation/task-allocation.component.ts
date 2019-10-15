@@ -115,7 +115,6 @@ export class TaskAllocationComponent implements OnInit {
 
   private async getProjectDetails() {
 
-    debugger;
     this.errormessage = '';
     this.loaderenable = true;
     this.SearchView = false;

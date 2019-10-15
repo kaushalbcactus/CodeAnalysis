@@ -159,7 +159,7 @@ export class SendToClientComponent implements OnInit {
   }
   async closeTaskWithStatus(task, options, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
-    debugger;
+  
     if (isActionRequired) {
       await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
       const projectInfoOptions = { Status: 'Author Review' };
@@ -358,7 +358,7 @@ export class SendToClientComponent implements OnInit {
       let counter = 0;
       for (const taskItem of tempSendToClientArray) {
         const arrRes = arrResults[counter];
-        counter = counter + 1;
+
         // tslint:disable-next-line:only-arrow-functions
         const prevTask = arrRes.filter((previousTaskElement) => {
           return previousTaskElement.Title === taskItem.PreviousTask;
@@ -367,6 +367,7 @@ export class SendToClientComponent implements OnInit {
         const nextTask = arrRes.filter((nextTaskElement) => {
           return nextTaskElement.Title === taskItem.NextTasks;
         });
+        counter++;
         if (prevTask.length) {
           this.scArrays.previousTaskArray.push(prevTask[0]);
           taskItem.PreviousTaskStatus = prevTask[0].Status;

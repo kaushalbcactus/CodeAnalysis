@@ -377,7 +377,6 @@ export class AllProjectsComponent implements OnInit {
       for (const task of this.pmObject.allProjectItems) {
 
         const projObj = $.extend(true, {}, this.pmObject.allProject);
-        debugger;
         projObj.ID = task.ID;
         projObj.Title = task.Title;
         projObj.SOWCode = task.SOWCode;
@@ -2261,7 +2260,6 @@ export class AllProjectsComponent implements OnInit {
     projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi,
       projectCode);
 
-    debugger
     const results = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInfoFilter);
     if (results && results.length) {
       this.pmObject.allProjectItems = results;

@@ -33,7 +33,7 @@ import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.com
   ],
   declarations: [
     AppComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
   ],
   providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService],
   bootstrap: [AppComponent]

@@ -1140,53 +1140,55 @@ export class DragDropComponent implements OnInit {
 
   loadLinks(event, links) {
 
+    debugger;
+    if (event.itemType !== "Client Review") {
+      var preTasks = event.previousTask !== undefined && event.previousTask !== null ? event.previousTask.split(';') : [];
+      var nextTasks = event.nextTask !== undefined && event.nextTask !== null ? event.nextTask.split(';') : [];
 
-    var preTasks = event.previousTask !== undefined && event.previousTask !== null ? event.previousTask.split(';') : [];
-    var nextTasks = event.nextTask !== undefined && event.nextTask !== null ? event.nextTask.split(';') : [];
+      var nodes = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes;
 
-    var nodes = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes;
-
-    var currentNode = nodes.find(e => e.label === event.pName);
-    preTasks.forEach(element => {
-      var prevNode = nodes.find(e => e.label === element);
-      if (prevNode) {
-        links.push({
-          source: prevNode.id,
-          target: currentNode.id
-        })
-      }
-    });
-    nextTasks.forEach(element => {
-      var nextNode = nodes.find(e => e.label === element);
-      if (nextNode) {
-        links.push({
-          source: currentNode.id,
-          target: nextNode.id
-        })
-      }
-
-    });
-
-    var resArr = [];
-    if (nodes.length > 1) {
-      links.filter(function (item) {
-        var i = resArr.findIndex(x => (x.source === item.source && x.target === item.target));
-        if (i <= -1) {
-          resArr.push({ source: item.source, target: item.target });
+      var currentNode = nodes.find(e => e.label === event.pName);
+      preTasks.forEach(element => {
+        var prevNode = nodes.find(e => e.label === element);
+        if (prevNode) {
+          links.push({
+            source: prevNode.id,
+            target: currentNode.id
+          })
         }
-        return null;
+      });
+      nextTasks.forEach(element => {
+        var nextNode = nodes.find(e => e.label === element);
+        if (nextNode) {
+          links.push({
+            source: currentNode.id,
+            target: nextNode.id
+          })
+        }
       });
 
-      links = resArr.splice(0);
-    }
-    else {
-      links = [];
+      var resArr = [];
+      if (nodes.length > 1) {
+        links.filter(function (item) {
+          var i = resArr.findIndex(x => (x.source === item.source && x.target === item.target));
+          if (i <= -1) {
+            resArr.push({ source: item.source, target: item.target });
+          }
+          return null;
+        });
+
+        links = resArr.splice(0);
+      }
+      else {
+        links = [];
+      }
     }
     return links;
   }
   onPageLoad(event) {
 
     var MilTask = undefined;
+
     if (this.sharedObject.oTaskAllocation.arrTasks !== undefined) {
       MilTask = this.sharedObject.oTaskAllocation.arrTasks.find(c => c === event.taskType);
     }
@@ -1313,29 +1315,30 @@ export class DragDropComponent implements OnInit {
           else {
             this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Send to client can have only one incoming path' });
           }
-          if (submilestone.task.links.find(c => c.source === link.source) === undefined) {
-            if (this.taskUp.taskType === 'Client Review') {
-              submilestone.task.links.push(link);
-            }
-            else {
-              this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Send to client can have only connect to Clint Review' });
-            }
-          }
-          else {
-            if (submilestone.task.links.filter(c => c.source === link.source).length > 1)
-              this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Send to client can have only one outgoing path' });
-          }
+          // if (submilestone.task.links.find(c => c.source === link.source) === undefined) {
+          //   if (this.taskUp.taskType === 'Client Review') {
+          //     submilestone.task.links.push(link);
+          //   }
+          //   else {
+          //     this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Send to client can have only connect to Clint Review' });
+          //   }
+          // }
+          // else {
+          //   if (submilestone.task.links.filter(c => c.source === link.source).length > 1)
+          //     this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Send to client can have only one outgoing path' });
+          // }
         }
         else if (this.taskUp.taskType === 'Client Review') {
-          if (this.taskDown.taskType !== 'Send to client') {
-            this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Client Review can only have Send to client as previous task' });
-          }
-          else if (submilestone.task.links.find(c => c.target === link.target) !== undefined) {
-            this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Client Review can only have one previous task' });
-          }
-          else {
-            submilestone.task.links.push(link);
-          }
+
+          // if (this.taskDown.taskType !== 'Send to client') {
+          //   this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Client Review can only have Send to client as previous task' });
+          // }
+          // else if (submilestone.task.links.find(c => c.target === link.target) !== undefined) {
+          //   this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Client Review can only have one previous task' });
+          // }
+          // else {
+          //   submilestone.task.links.push(link);
+          // }
         }
         else if (this.taskDown.taskType !== 'Client Review') {
           submilestone.task.links.push(link);
@@ -1360,7 +1363,7 @@ export class DragDropComponent implements OnInit {
       this.GraphResize();
     }
     else {
-      if (node.taskType !== 'Client Review') {
+      if (node.taskType !== 'Client Review' && node.taskType !== 'Send to client') {
         this.NodePosition();
         node.color = '#d26767';
         this.taskDown = node;

@@ -52,7 +52,7 @@ export class TaskAllocationConstantsService {
             top: 4500
         },
         milestone: {
-            select: 'ID,Title,Task,SkillLevel,TATStatus,Comments,Status,AllowCompletion,NextTasks,FileSystemObjectType,ExpectedTime,PrevTasks,Milestone,SubMilestones,TimeSpent,StartDate,DueDate,PreviousTaskClosureDate,IsCentrallyAllocated,CentralAllocationDone,Actual_x0020_End_x0020_Date,Actual_x0020_Start_x0020_Date,TaskPosition,AssignedTo/ID,AssignedTo/Name,AssignedTo/Title,AssignedTo/EMail, ActiveCA',
+            select: 'ID,Title,Task,SkillLevel,TATStatus,Comments,Status,AllowCompletion,NextTasks,FileSystemObjectType,ExpectedTime,PrevTasks,Milestone,SubMilestones,TimeSpent,StartDate,DueDate,PreviousTaskClosureDate,IsCentrallyAllocated,CentralAllocationDone,Actual_x0020_End_x0020_Date,Actual_x0020_Start_x0020_Date,TaskPosition,AssignedTo/ID,AssignedTo/Name,AssignedTo/Title,AssignedTo/EMail, ActiveCA,DisableCascade',
             orderby: 'StartDate asc',
             expand: 'AssignedTo/ID,AssignedTo/Name,AssignedTo/Title,AssignedTo/EMail',
             filter: "ProjectCode eq '{{projectCode}}'",
