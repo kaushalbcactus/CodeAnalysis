@@ -732,18 +732,7 @@ export class SPOperationService {
       success: function (data) {
         if (data.d.results.length > 0) {
           for (var index in data.d.results) {
-            tempObject = data.d.results[index];
-            // var user;
-            // var arrUser = arrUsers.filter(function (obj) {
-            //     return obj.Id === tempObject.ListItemAllFields.EditorId;
-            // });
-            // if(arrUser.length){
-            //     user = arrUser[0];
-            // }
-            // else{
-            //     user = this.getUser(tempObject.ListItemAllFields.EditorId);
-            //     arrUsers.push(user);
-            // }                           
+            tempObject = data.d.results[index];                    
             tempObject.fileUrl = tempObject.ServerRelativeUrl;
             tempObject.status = tempObject.ListItemAllFields.Status != null ? tempObject.ListItemAllFields.Status : "";
             tempObject.taskName = tempObject.ListItemAllFields.TaskName != null ? tempObject.ListItemAllFields.TaskName : "";

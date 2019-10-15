@@ -107,8 +107,8 @@ export class MyDashboardComponent implements OnInit {
 
     this.firstload = false;
 
-    const batchGuid = this.spServices.generateUUID();
-    this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
 
     const batchUrl = [];
     // **************************************************************************************************************************************

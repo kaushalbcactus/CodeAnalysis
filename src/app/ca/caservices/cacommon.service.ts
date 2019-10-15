@@ -10,8 +10,13 @@ import { GlobalService } from 'src/app/Services/global.service';
   providedIn: 'root'
 })
 export class CACommonService {
-  constructor(
-    private caConstantService: CAConstantService,
+  public queryConfig = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
+  constructor(private caConstantService: CAConstantService,
     private globalConstantService: ConstantsService,
     private spServices: SPOperationService,
     private datePipe: DatePipe,
@@ -238,35 +243,57 @@ export class CACommonService {
    * @param scheduleList 
    * @param scheduleQueryOptions 
    */
-  async getItems(resourceCategorizationList, projectInformationList, scheduleList, scheduleQueryOptions) {
-    const batchGuid = this.spServices.generateUUID();
-    const batchContents = new Array();
-    const resourceEndPoint = this.spServices.getReadURL('' + resourceCategorizationList + '', this.caConstantService.resourceQueryOptions);
-    this.spServices.getBatchBodyGet(batchContents, batchGuid, resourceEndPoint);
-    const projectEndPoint = this.spServices.getReadURL('' + projectInformationList + '', this.caConstantService.projectOnLoad);
-    this.spServices.getBatchBodyGet(batchContents, batchGuid, projectEndPoint);
-    let schedulesItemEndPoint = this.spServices.getReadURL('' + scheduleList + '', scheduleQueryOptions);
-    this.spServices.getBatchBodyGet(batchContents, batchGuid, schedulesItemEndPoint);
-    batchContents.push('--batch_' + batchGuid + '--');
-    const userBatchBody = batchContents.join('\r\n');
-    const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
+  async getItems(scheduleQueryOptions) {
+    // const batchGuid = this.spServices.generateUUID();
+    // const batchContents = new Array();
+    const batchUrl = [];
+    let resourceObj = Object.assign({}, this.queryConfig);
+    resourceObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.ResourceCategorization.name, this.caConstantService.resourceQueryOptions);
+    resourceObj.listName = this.globalConstantService.listNames.ResourceCategorization.name;
+    resourceObj.type = 'GET';
+    batchUrl.push(resourceObj);
+    // const resourceEndPoint = this.spServices.getReadURL('' + resourceCategorizationList + '', this.caConstantService.resourceQueryOptions);
+    // this.spServices.getBatchBodyGet(batchContents, batchGuid, resourceEndPoint);
+    // const projectEndPoint = this.spServices.getReadURL('' + projectInformationList + '', this.caConstantService.projectOnLoad);
+    // this.spServices.getBatchBodyGet(batchContents, batchGuid, projectEndPoint);
+
+    let projectInformationObj = Object.assign({}, this.queryConfig);
+    projectInformationObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.ProjectInformation.name, this.caConstantService.projectOnLoad);
+    projectInformationObj.listName = this.globalConstantService.listNames.ProjectInformation.name;
+    projectInformationObj.type = 'GET';
+    batchUrl.push(projectInformationObj);
+
+    // let schedulesItemEndPoint = this.spServices.getReadURL('' + scheduleList + '', scheduleQueryOptions);
+    // this.spServices.getBatchBodyGet(batchContents, batchGuid, schedulesItemEndPoint);
+
+    let taskObj = Object.assign({}, this.queryConfig);
+    taskObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.Schedules.name, scheduleQueryOptions);
+    taskObj.listName = this.globalConstantService.listNames.ProjectInformation.name;
+    taskObj.type = 'GET';
+    batchUrl.push(taskObj);
+
+    // batchContents.push('--batch_' + batchGuid + '--');
+    // const userBatchBody = batchContents.join('\r\n');
+    // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
+    let arrResults = await this.spServices.executeBatch(batchUrl);
+    arrResults = arrResults.map(a => a.retItems);
     return arrResults;
   }
 
 
   async getProjectDetailsByCode(projectInformationList, projectCode) {
-    const batchGuid = this.spServices.generateUUID();
-    const batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+    // const batchContents = new Array();
     const Project = Object.assign({}, this.caConstantService.projectQueryOptions);
     Project.filterByCode = Project.filterByCode.replace(/{{projectCode}}/gi, projectCode);
     Project.filter = Project.filterByCode;
-
-    const projectEndPoint = this.spServices.getReadURL('' + projectInformationList + '', Project);
-    this.spServices.getBatchBodyGet(batchContents, batchGuid, projectEndPoint);
-    batchContents.push('--batch_' + batchGuid + '--');
-    const userBatchBody = batchContents.join('\r\n');
-    const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
-    return arrResults[0][0];
+    const arrResults = await this.spServices.readItems(this.globalConstantService.listNames.ProjectInformation.name, Project);
+    // const projectEndPoint = this.spServices.getReadURL('' + projectInformationList + '', Project);
+    // this.spServices.getBatchBodyGet(batchContents, batchGuid, projectEndPoint);
+    // batchContents.push('--batch_' + batchGuid + '--');
+    // const userBatchBody = batchContents.join('\r\n');
+    // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
+    return arrResults.length > 0 ? arrResults : {};
   }
   /**
    * This method will create and object for unallocated and allocated task and assigned the value to it.
@@ -357,18 +384,27 @@ export class CACommonService {
    * @param arrTasks 
    */
   public async getMilestoneSchedules(scheduleList, arrTasks) {
-    const schedulesItemEndPoint = this.spServices.getReadURL('' + scheduleList + '', this.caConstantService.scheduleMilestoneQueryOptions);
-    const batchGuid = this.spServices.generateUUID();
-    const batchContents = new Array();
+    const batchUrl = [];
+   
+    // const schedulesItemEndPoint = this.spServices.getReadURL('' + scheduleList + '', this.caConstantService.scheduleMilestoneQueryOptions);
+    // const batchGuid = this.spServices.generateUUID();
+    // const batchContents = new Array();
     for (const task of arrTasks) {
-      const schedulesItemEndPointUpdated = schedulesItemEndPoint.replace('{0}', task.projectCode).replace('{1}', task.milestone).replace('{2}', task.projectCode);
-      this.spServices.getBatchBodyGet(batchContents, batchGuid, schedulesItemEndPointUpdated);
+      const taskObj = Object.assign({}, this.queryConfig);
+      taskObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.Schedules.name, this.caConstantService.scheduleMilestoneQueryOptions);
+      taskObj.url = taskObj.url.replace('{0}', task.projectCode).replace('{1}', task.milestone).replace('{2}', task.projectCode);
+      taskObj.listName = this.globalConstantService.listNames.Schedules.name;
+      taskObj.type = 'GET';
+      batchUrl.push(taskObj);
+      // const schedulesItemEndPointUpdated = schedulesItemEndPoint.replace('{0}', task.projectCode).replace('{1}', task.milestone).replace('{2}', task.projectCode);
+      // this.spServices.getBatchBodyGet(batchContents, batchGuid, schedulesItemEndPointUpdated);
     }
-    batchContents.push('--batch_' + batchGuid + '--');
-    const userBatchBody = batchContents.join('\r\n');
-    const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
+    // batchContents.push('--batch_' + batchGuid + '--');
+    // const userBatchBody = batchContents.join('\r\n');
+    // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
+    const arrResults = await this.spServices.executeBatch(batchUrl);
     for (const count in arrTasks) {
-      arrTasks[count].MilestoneTasks = arrResults[count];
+      arrTasks[count].MilestoneTasks = arrResults[count].length > 0 ? arrResults[count].retItems : [];
     }
     return arrTasks;
   }
@@ -805,22 +841,28 @@ export class CACommonService {
   // added by Maxwell
   async ResourceAllocation(task, projectInformationList) {
 
-    const project = await this.getProjectDetailsByCode(projectInformationList, task.projectCode);
+    const projectObj = Object.assign({}, this.caConstantService.projectQueryOptions);
+    projectObj.filterByCode = projectObj.filterByCode.replace(/{{projectCode}}/gi,  task.projectCode);
+    projectObj.filter = projectObj.filterByCode;
+    const arrResults = await this.spServices.readItems(this.globalConstantService.listNames.ProjectInformation.name, projectObj);
+    const project = arrResults.length > 0 ? arrResults[0] : {}
+    // const project = await this.getProjectDetailsByCode(projectInformationList, task.projectCode);
 
-    let writers = [], arrWriterIDs = [],
-      //arrWriterNames = [],
-      qualityChecker = [],
-      arrQualityCheckerIds = [],
-      //arrQCNames = [],
-      editors = [], arrEditorsIds = [],
-      //arrEditorsNames = [],
-      graphics = [], arrGraphicsIds = [],
-      //arrGraphicsNames = [],
-      pubSupport = [], arrPubSupportIds = [],
-      //arrPubSupportNames = [],
-      reviewers = [], arrReviewers = [],
-      //arrReviewesNames = [],
-      arrPrimaryResourcesIds = [];
+    let  arrWriterIDs = [], arrQualityCheckerIds = [], arrEditorsIds = [], arrGraphicsIds = [], arrPubSupportIds = [], arrReviewers = [];
+    //  writers = [],
+    //   arrWriterNames = [],
+    //   qualityChecker = [],
+      
+    //   arrQCNames = [],
+    //   editors = [], 
+    //   arrEditorsNames = [],
+    //   graphics = [], 
+    //   arrGraphicsNames = [],
+    //   pubSupport = [], 
+    //   arrPubSupportNames = [],
+    //   reviewers = [], 
+    //   arrReviewesNames = [],
+    let arrPrimaryResourcesIds = [];
 
     arrWriterIDs = this.getIDFromItem(project.Writers);
     arrReviewers = this.getIDFromItem(project.Reviewers);

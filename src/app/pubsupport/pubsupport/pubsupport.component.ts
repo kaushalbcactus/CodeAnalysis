@@ -806,7 +806,7 @@ export class PubsupportComponent implements OnInit {
         }
         this.fileSourcePath = [];
         this.fileDestinationPath = [];
-        this.batchContents = [];
+        // this.batchContents = [];
         if (data) {
             const projectCodeData: any = data;
             const fileEndPoint = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + projectCodeData.ClientLegalEntity + '/' + projectCodeData.ProjectCode + '/Publication Support/Forms/';

@@ -21,7 +21,12 @@ declare var $;
 })
 export class ClientReviewComponent implements OnInit {
   tempClick: any;
-
+  private options = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
   displayedColumns: any[] = [
     { field: 'SLA', header: 'SLA', visibility: true },
     { field: 'ProjectCode', header: 'Project Code', visibility: true },
@@ -192,7 +197,7 @@ export class ClientReviewComponent implements OnInit {
       filter: currentFilter,
       top: 4200
     };
-    this.crArrays.taskItems = await this.spServices.read('' + this.Constant.listNames.Schedules.name + '', queryOptions);
+    this.crArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
     const clientLegalEntityTempArray = [];
@@ -213,9 +218,11 @@ export class ClientReviewComponent implements OnInit {
       this.pmObject.tabMenuItems[3].label = 'Client Review (' + this.pmObject.countObj.crCount + ')';
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       const tempCRArray = [];
-      const batchContents = new Array();
-      const batchGuid = this.spServices.generateUUID();
+      const batchUrl = [];
+      // const batchContents = new Array();
+      // const batchGuid = this.spServices.generateUUID();
       // Iterate each CR Task
+
       for (const task of this.crArrays.taskItems) {
         const crObj: any = $.extend(true, {}, this.pmObject.clientReviewObj);
 
@@ -268,15 +275,24 @@ export class ClientReviewComponent implements OnInit {
         deliveryTypeTempArray.push({ label: crObj.DeliverableType, value: crObj.DeliverableType });
         dueDateTempArray.push({ label: crObj.DueDate, value: crObj.DueDate });
         milestoneTempArray.push({ label: crObj.Milestone, value: crObj.Milestone });
-        const previousTaskEndPoint = this.spServices.getReadURL('' + this.Constant.listNames.Schedules.name + '',
-          this.pmConstant.crTaskOptions);
-        const previousTaskUpdatedEndPoint = previousTaskEndPoint.replace('{0}', crObj.PreviousTask);
-        this.spServices.getBatchBodyGet(batchContents, batchGuid, previousTaskUpdatedEndPoint);
+
+        const preTaskObj = Object.assign({}, this.options);
+        preTaskObj.url = this.spServices.getReadURL(this.Constant.listNames.Schedules.name, this.pmConstant.crTaskOptions);
+        preTaskObj.url =  preTaskObj.url.replace('{0}', crObj.PreviousTask);
+        preTaskObj.listName = this.Constant.listNames.Schedules.name;
+        preTaskObj.type = 'GET';
+        batchUrl.push(preTaskObj);
+        // const previousTaskEndPoint = this.spServices.getReadURL('' + this.Constant.listNames.Schedules.name + '',
+        //   this.pmConstant.crTaskOptions);
+        // const previousTaskUpdatedEndPoint = previousTaskEndPoint.replace('{0}', crObj.PreviousTask);
+        // this.spServices.getBatchBodyGet(batchContents, batchGuid, previousTaskUpdatedEndPoint);
         tempCRArray.push(crObj);
       }
-      batchContents.push('--batch_' + batchGuid + '--');
-      const userBatchBody = batchContents.join('\r\n');
-      const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
+      // batchContents.push('--batch_' + batchGuid + '--');
+      // const userBatchBody = batchContents.join('\r\n');
+      // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
+      let arrResults = await this.spServices.executeBatch(batchUrl);
+      arrResults = arrResults.length > 0 ? arrResults.map(a => a.retItems) : [];
       for (const taskItem of tempCRArray) {
         // tslint:disable-next-line:only-arrow-functions
         const prevTask = arrResults.filter((previousTaskElement) => {

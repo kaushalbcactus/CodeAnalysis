@@ -20,6 +20,12 @@ declare var $;
 })
 export class SendToClientComponent implements OnInit {
   tempClick: any;
+  private options = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
   displayedColumns: any[] = [
     { field: 'SLA', header: 'SLA', visibility: true },
     { field: 'ProjectCode', header: 'Project Code', visibility: true },
@@ -271,7 +277,7 @@ export class SendToClientComponent implements OnInit {
     };
 
 
-    this.scArrays.taskItems = await this.spServices.read('' + this.Constant.listNames.Schedules.name + '', queryOptions);
+    this.scArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
     const clientLegalEntityTempArray = [];
@@ -293,9 +299,9 @@ export class SendToClientComponent implements OnInit {
       this.pmObject.tabMenuItems[2].label = 'Send to Client (' + this.pmObject.countObj.scCount + ')';
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       const tempSendToClientArray = [];
-      const batchContents = new Array();
-      const batchGuid = this.spServices.generateUUID();
-
+      // const batchContents = new Array();
+      // const batchGuid = this.spServices.generateUUID();
+      const batchUrl = [];
       for (const task of this.scArrays.taskItems) {
         const scObj: any = $.extend(true, {}, this.pmObject.sendToClient);
         scObj.ID = task.ID;
@@ -345,16 +351,26 @@ export class SendToClientComponent implements OnInit {
         deliveryTypeTempArray.push({ label: scObj.DeliverableType, value: scObj.DeliverableType });
         dueDateTempArray.push({ label: scObj.DueDate, value: scObj.DueDate });
         milestoneTempArray.push({ label: scObj.Milestone, value: scObj.Milestone });
-        const previousTaskEndPoint = this.spServices.getReadURL('' + this.Constant.listNames.Schedules.name + '',
-          this.pmConstant.previousTaskOptions);
-        const previousTaskUpdatedEndPoint = previousTaskEndPoint.replace('{0}', scObj.PreviousTask).replace('{1}', scObj.NextTasks);
-        this.spServices.getBatchBodyGet(batchContents, batchGuid, previousTaskUpdatedEndPoint);
+
+        const preTaskObj = Object.assign({}, this.options);
+        preTaskObj.url = this.spServices.getReadURL(this.Constant.listNames.Schedules.name, this.pmConstant.previousTaskOptions);
+        preTaskObj.url =  preTaskObj.url.replace('{0}', scObj.PreviousTask).replace('{1}', scObj.NextTasks);
+        preTaskObj.listName = this.Constant.listNames.Schedules.name;
+        preTaskObj.type = 'GET';
+        batchUrl.push(preTaskObj);
+
+        // const previousTaskEndPoint = this.spServices.getReadURL('' + this.Constant.listNames.Schedules.name + '',
+        //   this.pmConstant.previousTaskOptions);
+        // const previousTaskUpdatedEndPoint = previousTaskEndPoint.replace('{0}', scObj.PreviousTask).replace('{1}', scObj.NextTasks);
+        // this.spServices.getBatchBodyGet(batchContents, batchGuid, previousTaskUpdatedEndPoint);
         tempSendToClientArray.push(scObj);
       }
-      batchContents.push('--batch_' + batchGuid + '--');
-      const userBatchBody = batchContents.join('\r\n');
-      const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
+      // batchContents.push('--batch_' + batchGuid + '--');
+      // const userBatchBody = batchContents.join('\r\n');
+      // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
       let counter = 0;
+      let arrResults = await this.spServices.executeBatch(batchUrl);
+      arrResults = arrResults.length > 0 ? arrResults.map(a => a.retItems) : [];
       for (const taskItem of tempSendToClientArray) {
         const arrRes = arrResults[counter];
 
