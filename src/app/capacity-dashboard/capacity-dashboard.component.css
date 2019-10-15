@@ -1,0 +1,67 @@
+::ng-deep .mainlable {
+    font-size: 18px !important;
+    color: #c72e2e !important;
+}
+
+::ng-deep .ui-float-label {
+    float: left !important;
+}
+
+::ng-deep .ui-button-danger {
+    margin: 8px 0px 0px 0px !important;
+}
+
+::ng-deep .ui-datepicker table td>a.ui-state-active,
+::ng-deep .ui-datepicker table td>span.ui-state-active,
+::ng-deep .ui-calendar-button,
+ ::ng-deep body .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight,
+ ::ng-deep body .ui-chkbox .ui-chkbox-box.ui-state-active {
+    background-color: #C53E3E !important;
+    color: #ffffff !important;
+    border: 1px solid #C53E3E !important;
+}
+
+::ng-deep button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable {
+    padding: 7px !important;
+}
+
+::ng-deep body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover {
+    border-color: #8c4141 !important;
+    background-color: #8c4141 !important;
+}
+
+.input-color {
+    position: relative;
+    float: left;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.input-color label {
+    padding-left: 40px;
+    margin-bottom: 0.3rem;
+}
+
+.input-color .color-box {
+    width: 30px;
+    height: 20px;
+    display: inline-block;
+    background-color: #ccc;
+    position: absolute;
+    left: 5px;
+}
+
+#scInnerLoader {
+    border: 5px solid #f3f3f3 !important;
+    border-radius: 50% !important;
+    border-top: 5px solid red !important;
+    border-bottom: 5px solid red !important;
+    width: 70px !important;
+    height: 70px !important;
+}
+
+
+/* 
+::ng-deep #capacityTable {
+    width: 100% !important;
+} */

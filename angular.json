@@ -398,6 +398,10 @@
                             "outputHashing": "none",
                             "deployUrl": "https://cactusglobal.sharepoint.com/sites/medcomdev/SiteAssets/CustomAssets/AngularModules/Allocation/"
                         },
+                        "devCapacityDashboard": {
+                            "outputHashing": "none",
+                            "deployUrl": "https://cactusglobal.sharepoint.com/sites/medcomdev/SiteAssets/CustomAssets/AngularModules/CapacityDashboard/"
+                        },
                         "qaCA": {
                             "optimization": true,
                             "outputHashing": "bundles",

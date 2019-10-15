@@ -26,7 +26,7 @@ export class AppComponent {
   ngOnInit() {
     // tslint:disable-next-line: only-arrow-functions
     this.constantsService.loader.isPSInnerLoaderHidden = true;
-    if (environment.production) { if (window) { window.console.log = function() { }; } }
+    if (environment.production) { if (window) { window.console.log = function () { }; } }
     this.globalService.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
     this.globalService.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
@@ -57,8 +57,19 @@ export class AppComponent {
       loadAccessLevelDashboard: () => this.goToAccessLevelDashboard(),
     };
     // tslint:disable-next-line: no-string-literal
-    window['caComponentReference'] = { component: this, zone: this._ngZone,
-      loadCA: () => this.goToCA(), };
+    window['caComponentReference'] = {
+      component: this, zone: this._ngZone,
+      loadCA: () => this.goToCA(),
+    };
+    window['capacityComponentReference'] = {
+      component: this, zone: this._ngZone,
+      loadCapacityDashboard: () => this.goToCapacityDashboard(),
+    };
+
+    window['leaveCalendarComponentReference'] = {
+      component: this, zone: this._ngZone,
+      loadLeaveCalendar: () => this.goToLeaveCalendar(),
+    };
 
 
   }
@@ -108,6 +119,18 @@ export class AppComponent {
 
   }
 
+  goToCapacityDashboard() {
+    if (!window.location.href.includes('capacityDashboard')) {
+      this.router.navigate(['/capacityDashboard']);
+    }
+  }
+
+  goToLeaveCalendar() {
+    if (!window.location.href.includes('leaveCalendar')) {
+      this.router.navigate(['/leaveCalendar']);
+    }
+  }
+
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnDestroy() {
     // tslint:disable-next-line:no-string-literal
@@ -123,6 +146,8 @@ export class AppComponent {
     window['qmsComponentReference'] = null;
     window['accessLecelDashboardComponentReference'] = null;
     window['caComponentReference'] = null;
-    
+    window['capacityComponentReference'] = null;
+    window['leaveCalendarComponentReference'] = null;
+
   }
 }

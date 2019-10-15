@@ -791,7 +791,6 @@ export class PMCommonService {
   }
   convertToExcelFile(cnf1) {
 
-    debugger;
     if (Array.isArray(cnf1._selection)) {
       if (cnf1._selection.length) {
         cnf1.exportCSV({ selectionOnly: true });

@@ -1,0 +1,13 @@
+::ng-deep body .fc .fc-toolbar .fc-button,
+#saveTime {
+    background-color: #C53E3E !important;
+    border: 1px solid #C53E3E !important;
+    color: #ffffff !important;
+}
+
+::ng-deep .fc-center,
+::ng-deep .fc-left,
+ ::ng-deep .fc-right {
+    display: -webkit-inline-box !important;
+    display: inline-flex !important;
+}

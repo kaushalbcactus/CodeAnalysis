@@ -2285,7 +2285,6 @@ export class AllProjectsComponent implements OnInit {
     projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi,
       projectCode);
 
-    debugger
     const results = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInfoFilter);
     if (results && results.length) {
       this.pmObject.allProjectItems = results;

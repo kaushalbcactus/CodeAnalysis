@@ -4,6 +4,7 @@
 </div>
 
 
+<p-toast [style]="{marginTop: '80px'}" position="top-center" key="tc" [modal]="true" [baseZIndex]="5000" closable="false"></p-toast>
 
 <div fxLayout="row" fxLayoutAlign="start center" style="width:100%;">
 
@@ -138,6 +139,7 @@
                         <th style="width:4%">TAT</th>
                         <th style="width:15%">Assign To</th>
                         <th style="width:5%">Allow Start</th>
+                        <th style="width:5%">Cascade</th>
                         <th style="width:3%"> </th>
                     </tr>
                 </ng-template>
@@ -229,7 +231,7 @@
                         <!-- TaT -->
                         <td style="text-align: center">
                             <span *ngIf="rowData.type ==='milestone' || rowData.type ==='submilestone'">{{rowData.tatVal}}</span>
-                            <span *ngIf="!rowData.editMode && rowData.type ==='task'">{{rowData.tat === true ? rowData.tatVal :'No'}}</span>
+                            <span *ngIf="!rowData.editMode && rowData.type ==='task'">{{rowData.tat === true ? 'Yes' :'No'}}</span>
                             <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task'" [disabled]=" rowData.pName ==='Client Review'" (onChange)="ChangeEndDate($event, rowData)" [(ngModel)]="rowData.pName ==='Client Review' ? 'Yes' : rowData.tat" binary="true"></p-checkbox>
                         </td>
 
@@ -243,6 +245,11 @@
                         <td>
                             <span *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone') ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
                             <p-checkbox *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.pName !=='Client Review' && rowData.pName !=='SC')" [(ngModel)]="rowData.allowStart" binary="true"></p-checkbox>
+                        </td>
+
+
+                        <td>
+                            <span *ngIf="rowData.type==='task'"> {{rowData.DisableCascade === 'Yes' ? 'No':'Yes'}}</span>
                         </td>
 
                         <!-- Menu option -->

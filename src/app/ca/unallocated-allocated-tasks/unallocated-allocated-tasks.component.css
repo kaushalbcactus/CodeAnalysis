@@ -1,0 +1,42 @@
+::ng-deep body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active,
+ ::ng-deep body .ui-table .ui-sortable-column.ui-state-highlight,
+::ng-deep body .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight,
+::ng-deep body .ui-chkbox .ui-chkbox-box.ui-state-active {
+    background-color: #C53E3E !important;
+    border: #C53E3E !important;
+}
+
+::ng-deep body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover {
+    background-color: #e28080 !important;
+}
+
+::ng-deep .ui-menu.ui-menu-dynamic {
+    position: fixed;
+}
+
+::ng-deep .ng-dropdown-panel {
+    width: 400px !important;
+    left: auto !important;
+    right: 0px !important;
+    padding-left: 0px !important;
+}
+
+::ng-deep .ng-dropdown-panel .templateOption {
+    width: 200px !important;
+    float: left !important;
+}
+
+::ng-deep .ng-dropdown-panel-items {
+    position: fixed !important;
+    background: #ffffff !important;
+    border: 1px solid #e6e6e6 !important;
+}
+
+ ::ng-deep .ui-widget-overlay {
+    z-index: 6001 !important;
+}
+
+::ng-deep .ui-dynamicdialog,
+::ng-deep .ScopeComment {
+    z-index: 7001 !important;
+}

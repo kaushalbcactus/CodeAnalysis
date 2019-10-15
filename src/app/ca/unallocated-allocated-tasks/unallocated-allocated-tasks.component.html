@@ -1,0 +1,135 @@
+<!-- *****************************************************************************************************
+                                                         loader enable 
+***************************************************************************************************** -->
+<!-- <div class="p-dir-col p-align-center" style="padding-top: 10vw;" [hidden]="!loaderenable">
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div> -->
+
+
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
+
+<p-toast [style]="{marginTop: '80px'}" position="top-center" key="tc" [modal]="true" [baseZIndex]="5000" closable="false"></p-toast>
+<!-- **************************************************************************************************
+                                                        Table View Data
+**************************************************************************************************** -->
+
+<div class="MyCurrentCompletedTable" [hidden]='loderenable' style="padding-top: 5px;">
+    <p-table #taskTable [columns]="displayedColumns" [value]="caGlobal.dataSource" [paginator]="true" [rows]="30" [lazy]="true" [scrollable]="true" scrollHeight="600px" (onLazyLoad)="lazyLoadTask($event)" [loading]="caGlobal.loading" [style]="{'font-size':'13px'}"
+        [lazyLoadOnInit]="false" [totalRecords]="caGlobal.totalRecords">
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                    {{ col.header }}
+                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                </th>
+                <th>Next Task Start</th>
+                <th>Last Task End </th>
+                <th>SC Date</th>
+                <th [pSortableColumn]="'assignedTo'">Allocated To
+                    <p-sortIcon [field]="'assignedTo'"></p-sortIcon>
+                </th>
+                <th style="width: 3%;"></th>
+            </tr>
+            <tr>
+                <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
+                    <p-multiSelect *ngSwitchCase="'clientName'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.clientLegalEntityArray" defaultLabel="All" class="clientName" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'projectCode'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.projectCodeArray" defaultLabel="All" class="projectCode" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'milestone'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.milestoneArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'taskName'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.taskArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'deliveryType'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.deliveryTypeArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'estimatedTime'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.allocatedArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'startDateText'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.startTimeArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'dueDateText'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.endTimeArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                </th>
+                <th colspan="5">
+                    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                    <input type="text" pInputText size="50" placeholder="Global Filter" (keydown.enter)="onEnterKey($event)" (keydown.enter)="$event.preventDefault()" (input)="taskTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                </th>
+
+
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-task>
+            <tr>
+                <td>{{task.clientName}}</td>
+                <td><a style="color:#C53E3E;" href="{{globalService.sharePointPageObject.webAbsoluteUrl}}/allocation#/taskAllocation?ProjectCode={{task.projectCode}}" target="_blank">{{task.projectCode}}</a> <br /> ({{task.projectName}}) </td>
+                <td> {{task.milestone}} <span *ngIf="task.SubMilestones && task.SubMilestones !=='Default'"> -  {{task.SubMilestones}}</span></td>
+                <td>{{task.taskName}}</td>
+                <td>{{task.deliveryType}}</td>
+                <td>{{task.estimatedTime}}</td>
+                <td>{{task.startTime | date : 'd MMM, yyyy, hh:mm a'}}</td>
+                <td>{{task.endTime | date : 'd MMM, yyyy, hh:mm a'}}</td>
+                <td>{{task.nextTaskStartDateText}}</td>
+                <td>{{task.lastTaskEndDateText}}</td>
+                <td>{{task.sendToClientDateText}}</td>
+                <td *ngIf="selectedTab ==='allocated'">
+                    <ng-select #allocateResource id="allocateResource" [items]="task.selectedResources" [hidden]="task.isAllocatedSelectHidden" bindLabel="Title" bindValue="UserName.ID" groupBy="userType" placeholder="Select Resource" (open)="fetchResources(task, allocateResource)"
+                        (close)="saveTask(task,taskTable)" (clear)="onClear(task)" [(ngModel)]="task.allocatedResource" required>
+                        <ng-template ng-option-tmp let-item="item" let-index="index">
+                            <div class="templateOption" [style.color]="item.Color">{{item.Title}} ({{item.timeAvailable}})</div>
+                            <button (click)="showCapacityPopup(task,item,allocateResource)" class="allocate-btn" type="button">View Schedule</button>
+                        </ng-template>
+                    </ng-select>
+                    <span [hidden]="task.isAssignedToHidden">{{task.assignedTo}} </span>
+                </td>
+                <td *ngIf="selectedTab !=='allocated'">
+                    <ng-select #allocateResource id="allocateResource" [items]="task.selectedResources" bindLabel="Title" bindValue="UserName.ID" groupBy="userType" placeholder="Select Resource" (open)="fetchResources(task, allocateResource)" (clear)="onClear(task)" (close)="saveTask($event, task, unallocatedTable)"
+                        [(ngModel)]="task.allocatedResource" required>
+                        <ng-template ng-option-tmp let-item="item" let-index="index">
+                            <div class="templateOption" [style.color]="item.Color">{{item.Title}} ({{item.timeAvailable}})</div>
+                            <button (click)="showCapacityPopup(task,item,allocateResource)" class="allocate-btn" type="button">View Schedule</button>
+                        </ng-template>
+                    </ng-select>
+                </td>
+                <td style="width: 3%;">
+                    <p-menu #popupMenu [style]="{'width': '16em'}" [popup]="true" [model]="taskMenu"></p-menu>
+
+                    <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(task, popupMenu);popupMenu.show($event);"></i>
+
+                    <!-- <div class="hide taskID">
+                        {{task.id}}
+                    </div> -->
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td [attr.colspan]="columns.length" style="text-align: center;font-size: 1.5em;font-weight: 600;">
+                    No Data found
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+
+<!-- **************************************************************************************************
+                                show Previous Task  Comment and task scop on popup 
+**************************************************************************************************** -->
+
+<p-dialog header="{{taskTitle}}" [closable]="false" [modal]="true" styleClass="ScopeComment" [style]="{width: '700px', minWidth: '600px'}" [(visible)]="displayCommentenable">
+
+    <div [hidden]="modalloaderenable" class="p-grid p-dir-col p-justify-between">
+        <p-card class="p-col">
+            <p-header style="padding: 0.5em;font-size: 1.2em;color: #af0b14;font-weight: 600; width: 100%;"><i class="fa fa-commenting" aria-hidden="true"></i>&nbsp;&nbsp; Task Previous Comments</p-header>
+            <div>
+                <span *ngIf="!caGlobal.taskPreviousComment" style="color: #c53e3e;font-size: 1em;">* No comments present for task.         
+           </span>
+                <span *ngIf="caGlobal.taskPreviousComment" [innerHTML]="caGlobal.taskPreviousComment"> 
+          </span>
+            </div>
+        </p-card>
+        <p-card class="p-col">
+            <p-header style="padding: 0.5em;font-size: 1.2em;color: #af0b14;font-weight: 600;"><i class="fa fa-comments" aria-hidden="true"></i>&nbsp;&nbsp; Scope</p-header>
+
+            <div>
+                <textarea rows="7" cols="30" style="width: 100%;" placeholder="Leave Scope" [(ngModel)]="caGlobal.taskScope" pInputTextarea></textarea>
+            </div>
+        </p-card>
+    </div>
+    <p-footer>
+        <button type="button" pButton icon="pi pi-check" style="background-color: #af0b14;border-color:#af0b14;" (click)="saveTaskScope(caGlobal.curTaskScope, caGlobal.taskScope); displayCommentenable=false" label="Save"></button>
+        <button type="button" pButton icon="pi pi-times" (click)="displayCommentenable=false" label="Cancel" class="ui-button-secondary"></button>
+    </p-footer>
+</p-dialog>
