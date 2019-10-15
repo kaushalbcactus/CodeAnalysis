@@ -1337,7 +1337,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (data.type === 'task' && data.milestoneStatus !== 'Completed' &&
       (data.status !== 'Completed' && data.status !== 'Abandon' && data.status !== 'Auto Closed'
         && data.status !== 'Hold')) {
-      debugger;
+  
       this.taskMenu = [
         { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(data, rowNode) },
         {
@@ -2042,7 +2042,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   async cascadeNextNodes(previousNode, subMilestonePosition, selectedMil) {
 
-    debugger;
+    
     var nextNode = [];
     let sentPrevNode = undefined;
     if (previousNode.nextTask && previousNode.nextTask.indexOf('Client Review') === -1) {
@@ -2151,18 +2151,20 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
         //alert('next task');
         if (nodeData.itemType === 'Send to client') {
-
+         
           await this.confirmationService.confirm({
-            message: 'Are you sure that you want to proceed?',
+            message: 'Are you sure that you want to proceed?' + nodeData.pName,
             header: 'Confirmation',
             icon: 'pi pi-exclamation-triangle',
             accept: async () => {
 
-
-
+             setTimeout(async () => {
               await this.cascadeNode(previousNode, nodeData);
               await this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
 
+             }, 3000);
+
+             
 
             },
             reject: () => {
