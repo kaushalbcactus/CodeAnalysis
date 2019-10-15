@@ -591,7 +591,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
     const previousTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousTaskStatus);
     previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi,
-    this.sharedObject.sharePointPageObject.userId.toString());
+      this.sharedObject.sharePointPageObject.userId.toString());
 
     const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
@@ -644,13 +644,17 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   async getAddUpdateDocument(task) {
 
-
-    //  var status = await this.getPrevTaskStatus(task);
+    let NextTasks;
+    const enableEmail = await this.checkEmailNotificationEnable(task);
+    if (enableEmail === false) {
+      NextTasks = await this.getNextPreviousTask(task);
+    }
 
     const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
       data: {
         task,
-        //  status:status,
+        emailNotificationEnable: enableEmail,
+        nextTasks: NextTasks ? NextTasks.filter(c => c.TaskType === 'Next Task') : []
       },
       header: task.DisplayTitle,
       width: '80vw',
@@ -663,6 +667,26 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
     });
   }
+
+  async checkEmailNotificationEnable(task) {
+    let EnableNotification = false;
+    if (task.Status === 'Completed' || task.Status === 'Auto Closed') {
+
+      let PastDate = await this.RemoveBusinessDays(new Date(), 2);
+
+      PastDate = new Date(PastDate.getFullYear(), PastDate.getMonth(), PastDate.getDate());
+
+      let TaskEndDate = task.Actual_x0020_End_x0020_Date ? new Date(task.Actual_x0020_End_x0020_Date) : new Date(task.DueDate);
+
+      TaskEndDate = new Date(TaskEndDate.getFullYear(), TaskEndDate.getMonth(), TaskEndDate.getDate());
+
+      EnableNotification = PastDate.getTime() <= TaskEndDate.getTime() ? true : false;
+
+    }
+    return EnableNotification;
+  }
+
+
 
 
   // *************************************************************************************************************************************
@@ -728,8 +752,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
       this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
 
     } else {
-      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message',
-      detail: task.Title + 'Task Updated Successfully.' });
+      this.messageService.add({
+        key: 'custom', severity: 'success', summary: 'Success Message',
+        detail: task.Title + 'Task Updated Successfully.'
+      });
       this.GetDatabyDateSelection(this.selectedTab, this.days);
       if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
         this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);

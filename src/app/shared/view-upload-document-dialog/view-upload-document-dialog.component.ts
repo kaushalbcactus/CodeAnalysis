@@ -33,6 +33,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   uploadedFiles: any[] = [];
   fileReader = new FileReader();
   prevTask: string;
+  enableNotification = false;
   @Input() taskData: any;
   constructor(
     public config: DynamicDialogConfig,
@@ -53,7 +54,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.DocumentArray = [];
     this.data = this.config.data === undefined ? this.taskData : this.config.data;
     this.status = this.data.Status;
-
+    this.enableNotification = this.data.emailNotificationEnable ? this.data.emailNotificationEnable : false;
     this.selectedTask = this.config.data ? this.data.task ? this.data.task : this.data : this.taskData;
 
     if (this.selectedTask.PrevTasks) {
@@ -387,6 +388,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
         const responseInLines = response.split('\n');
         this.selectedDocuments = [];
+        if (this.enableNotification) {
+          this.SendEmailNotification(this.selectedTask.task);
+        }
         this.loadDraftDocs(this.selectedTab);
 
       }
@@ -566,4 +570,38 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
   }
 
+
+
+  SendEmailNotification(task) {
+    const mailSubject = 'New File Uploaded.';
+    const objEmailBody = [];
+    // objEmailBody.push({
+    //   'key': '@@Val3@@',
+    //   'value': this.resourceList[indexRes].UserName.Title
+    // });
+    // objEmailBody.push({
+    //   'key': '@@Val1@@', // Project Code
+    //   'value': task.projectCode
+    // });
+    // objEmailBody.push({
+    //   'key': '@@Val2@@', // Task Name
+    //   'value': task.SubMilestones && task.SubMilestones !== 'Default' ? task.title + ' - ' + task.SubMilestones : task.title
+    // });
+    // objEmailBody.push({
+    //   'key': '@@Val4@@', // Task Type
+    //   'value': task.task
+    // });
+    // objEmailBody.push({
+    //   'key': '@@Val5@@', // Milestone
+    //   'value': task.milestone
+    // });
+
+    // objEmailBody.push({
+    //   'key': '@@Val9@@', // Scope
+    //   'value': task.taskScope ? task.taskScope : ''
+    // });
+    // //// Send allocation email
+    // this.spOperations.triggerMail(this.resourceList[indexRes].UserName.EMail, this.sharedObject.sharePointPageObject.email,
+    //   '', 'New File Uploaded', objEmailBody, mailSubject);
+  }
 }
