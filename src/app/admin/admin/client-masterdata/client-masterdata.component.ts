@@ -67,6 +67,7 @@ export class ClientMasterdataComponent implements OnInit {
   showaddPOC = false;
   showeditPOC = false;
   minDateValue = new Date();
+  min30Days = new Date();
   showPurchaseOrder = false;
   showaddPO = false;
   showeditPO = false;
@@ -256,7 +257,7 @@ export class ClientMasterdataComponent implements OnInit {
      * This is used to initialize the subDivision form.
      */
     this.subDivisionform = frmbuilder.group({
-      subDivision_Name: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL)]],
+      subDivision_Name: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
       distributionList: [''],
       cmLevel1: [''],
       deliveryLevel1: [''],
@@ -757,15 +758,15 @@ export class ClientMasterdataComponent implements OnInit {
     if (this.addClient.valid) {
       console.log(this.addClient.value);
       if (!this.showEditClient) {
-        if (this.resultResponse.ClientLegalEntityArray.some(a =>
-          a.Title && a.Title.toLowerCase() === this.addClient.value.name.toLowerCase())) {
+        if (this.clientMasterDataRows.some(a =>
+          a.ClientLegalEntity && a.ClientLegalEntity.toLowerCase() === this.addClient.value.name.toLowerCase())) {
           this.messageService.add({
             key: 'adminCustom', severity: 'error',
             summary: 'Error Message', detail: 'This Client is already exist. Please enter another client name.'
           });
           return false;
         }
-        if (this.resultResponse.ClientLegalEntityArray.some(a =>
+        if (this.clientMasterDataRows.some(a =>
           a.Acronym && a.Acronym.toLowerCase() === this.addClient.value.acronym.toLowerCase())) {
           this.messageService.add({
             key: 'adminCustom', severity: 'error',
@@ -826,7 +827,7 @@ export class ClientMasterdataComponent implements OnInit {
     const data = {
       Title: !this.showEditClient ? this.addClient.value.name : this.currClientObj.ClientLegalEntity,
       CLEName: !this.showEditClient ? this.addClient.value.name : this.currClientObj.ClientLegalEntity,
-      Bucket: !this.showEditClient ? this.addClient.value.bucket : this.currClientObj.Bucket,
+      Bucket: this.addClient.value.bucket,
       StartDate: !this.showEditClient ? new Date() : this.addClient.value.bucketEffectiveDate
     };
     const results = await this.spServices.createItem(this.constants.listNames.CLEBucketMapping.name,
@@ -849,8 +850,9 @@ export class ClientMasterdataComponent implements OnInit {
       this.currClientObj.ClientLegalEntity);
     const result = await this.spServices.readItems(this.constants.listNames.CLEBucketMapping.name, cleMappingGet);
     if (result && result.length) {
+      const tempDate = this.addClient.value.bucketEffectiveDate;
       const updateItem = {
-        EndDate: this.addClient.value.bucketEffectiveDate
+        EndDate: new Date(new Date(tempDate).setDate(new Date(tempDate).getDate() - 1))
       };
       const updateResult = await this.spServices.updateItem(this.constants.listNames.CLEBucketMapping.name, result[0].ID,
         updateItem, this.constants.listNames.CLEBucketMapping.type);
@@ -1001,6 +1003,7 @@ export class ClientMasterdataComponent implements OnInit {
     this.addClient.controls.billingEntry.disable();
     this.addClient.controls.timeZone.disable();
     this.isBucketEffectiveDateActive = false;
+    this.min30Days = new Date(new Date().setDate(new Date().getDate() - 30));
     if (!this.dropdown.ClientGroupArray.length) {
       await this.loadClientDropdown();
     }

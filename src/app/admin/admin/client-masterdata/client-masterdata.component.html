@@ -222,7 +222,7 @@
                             Acronym can be maximum 5 characters.
                     </div>
                     <div *ngIf="addClient.controls.acronym.errors.pattern">
-                            Acronym can have exactly 3 UpperCase letters and 2 number.
+                            Acronym can have exactly 3 UpperCase letters followed by 2 number.
                     </div>
                 </div>
             </div>
@@ -410,7 +410,7 @@
             <div class="p-col-2" *ngIf="isBucketEffectiveDateActive"><span class="compulsory">*</span>Bucket Effective
                 Date</div>
             <div class="p-col-4" *ngIf="isBucketEffectiveDateActive">
-                <p-calendar formControlName="bucketEffectiveDate" [minDate]="minDateValue" [showIcon]="true"  
+                <p-calendar formControlName="bucketEffectiveDate" [minDate]="min30Days" [showIcon]="true" [maxDate]="minDateValue" 
                     [showOnFocus]="false"   [monthNavigator]="true" [readonlyInput]="true"></p-calendar>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.bucketEffectiveDate.errors">
                     <div *ngIf="addClient.controls.bucketEffectiveDate.errors.required">

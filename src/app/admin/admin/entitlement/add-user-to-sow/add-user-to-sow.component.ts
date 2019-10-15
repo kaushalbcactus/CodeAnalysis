@@ -339,7 +339,8 @@ export class AddUserToSowComponent implements OnInit {
             }
           }
         }
-        if (!element.IsTypeChangedDisabled) {
+        if (!element.IsTypeChangedDisabled &&
+          element.CurrentAccess !== element.AccessType) {
           const sowUpdateData = this.adminCommon.getListData(this.constants.listNames.SOW.type, this.selectedUser, element);
           const sowUpdate = Object.assign({}, options);
           sowUpdate.url = this.spServices.getItemURL(this.constants.listNames.SOW.name, element.ID);
@@ -351,14 +352,14 @@ export class AddUserToSowComponent implements OnInit {
       });
       if (batchURL && batchURL.length) {
         const updateResult = await this.spServices.executeBatch(batchURL);
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'The user has been added into the selected SOW\'s\.'
-        });
-        setTimeout(() => {
-          this.clientChange();
-        }, 500);
       }
+      this.messageService.add({
+        key: 'adminCustom', severity: 'success', sticky: true,
+        summary: 'Success Message', detail: 'The user has been added into the selected SOW\'s\.'
+      });
+      setTimeout(() => {
+        this.clientChange();
+      }, 500);
     }
   }
 }

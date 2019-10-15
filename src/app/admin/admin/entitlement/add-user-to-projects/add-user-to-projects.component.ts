@@ -179,7 +179,7 @@ export class AddUserToProjectsComponent implements OnInit {
           item.DeliveryLevel2 && item.DeliveryLevel2.hasOwnProperty('ID')
           && userObj.UserName.ID === item.DeliveryLevel2.ID) {
           obj.IsTypeChangedDisabled = true;
-          disableCount ++;
+          disableCount++;
           obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.ACCOUNTABLE;
         } else if (item.CMLevel1 && item.CMLevel1.hasOwnProperty('results') && item.CMLevel1.results.length
@@ -190,6 +190,7 @@ export class AddUserToProjectsComponent implements OnInit {
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.ACCESS;
           obj.IsTypeChangedDisabled = false;
         } else {
+          obj.AccessType = this.adminConstants.ACCESS_TYPE.ACCESS;
           obj.CurrentAccess = this.adminConstants.ACCESS_TYPE.NO_ACCESS;
           obj.IsTypeChangedDisabled = false;
         }
@@ -335,7 +336,8 @@ export class AddUserToProjectsComponent implements OnInit {
             element.IsUserExistInDeliveryLevel1 = false;
           }
         }
-        if (!element.IsTypeChangedDisabled) {
+        if (!element.IsTypeChangedDisabled &&
+          element.CurrentAccess !== element.AccessType) {
           const sowUpdateData = this.adminCommon.getListData(this.constants.listNames.ProjectInformation.type, this.selectedUser, element);
           const sowUpdate = Object.assign({}, options);
           sowUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, element.ID);
@@ -348,14 +350,14 @@ export class AddUserToProjectsComponent implements OnInit {
       console.log(this.selectedProject);
       if (batchURL && batchURL.length) {
         const updateResult = await this.spServices.executeBatch(batchURL);
-        this.messageService.add({
-          key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'The user has been added into the selected Projects.'
-        });
-        setTimeout(() => {
-          this.clientChange();
-        }, 500);
       }
+      this.messageService.add({
+        key: 'adminCustom', severity: 'success', sticky: true,
+        summary: 'Success Message', detail: 'The user has been added into the selected Projects.'
+      });
+      setTimeout(() => {
+        this.clientChange();
+      }, 500);
     }
   }
 }

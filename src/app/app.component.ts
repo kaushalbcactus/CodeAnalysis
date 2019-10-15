@@ -25,7 +25,7 @@ export class AppComponent {
   ngOnInit() {
     // tslint:disable-next-line: only-arrow-functions
     this.constantsService.loader.isPSInnerLoaderHidden = true;
-    if (environment.production) { if (window) { window.console.log = function() { }; } }
+    if (environment.production) { if (window) { window.console.log = () => { }; } }
     this.globalService.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
     this.globalService.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';

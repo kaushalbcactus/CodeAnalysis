@@ -5,6 +5,7 @@ import { AdminObjectService } from 'src/app/admin/services/admin-object.service'
 import { MessageService } from 'primeng/api';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { Router } from '@angular/router';
+import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
 
 @Component({
   selector: 'app-role-user-mapping',
@@ -31,6 +32,7 @@ export class RoleUserMappingComponent implements OnInit {
    * @param router This is instance referance of `Router` component.
    * @param applicationRef This is instance referance of `ApplicationRef` component.
    * @param zone This is instance referance of `NgZone` component.
+   * @param adminConstants This is instance referance of `AdminConstantService` component.
    */
   constructor(
     private datepipe: DatePipe,
@@ -41,7 +43,8 @@ export class RoleUserMappingComponent implements OnInit {
     private platformLocation: PlatformLocation,
     private router: Router,
     private applicationRef: ApplicationRef,
-    private zone: NgZone
+    private zone: NgZone,
+    private adminConstants: AdminConstantService
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -93,7 +96,10 @@ export class RoleUserMappingComponent implements OnInit {
         this.adminObject.groupArray : results[0].retItems;
       if (groupResults && groupResults.length) {
         groupResults.forEach(element => {
-          this.groupsArray.push({ label: element.Title, value: element.Title });
+          if (element.Description && element.Description.indexOf(this.adminConstants.GROUP_CONSTANT_TEXT.SP_TEAM) > -1) {
+            element.Description = element.Description.replace(this.adminConstants.GROUP_CONSTANT_TEXT.SP_TEAM, '');
+            this.groupsArray.push({ label: element.Title, value: element.Title });
+          }
         });
       }
     }
@@ -198,14 +204,14 @@ export class RoleUserMappingComponent implements OnInit {
     });
     if (batchURL.length) {
       const sResult = await this.spServices.executeBatch(batchURL);
-      if (sResult && sResult.length) {
-        this.adminObject.isMainLoaderHidden = true;
+      this.adminObject.isMainLoaderHidden = true;
+      setTimeout(() => {
         this.messageService.add({
           key: 'adminCustom', severity: 'success', sticky: true,
           summary: 'Success Message', detail: 'Selected User has been removed from \'' + groupName + '\' group  successfully.'
         });
-        this.onGroupsChange();
-      }
+      }, 500);
+      this.onGroupsChange();
     }
   }
   /**

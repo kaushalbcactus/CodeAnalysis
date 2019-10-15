@@ -1463,7 +1463,7 @@ export class UserProfileComponent implements OnInit {
       if (formObj.dateofexit) {
         const dateOfExit = this.datePipe.transform(new Date(formObj.dateofexit), 'MMM dd yyyy');
         const todayDate = this.datePipe.transform(new Date(), 'MMM dd yyyy');
-        if (dateOfExit <= todayDate && formObj.isActive === this.adminConstants.LOGICAL_FIELD.NO) {
+        if (dateOfExit <= todayDate) {
           data.IsActive = this.adminConstants.LOGICAL_FIELD.NO;
         } else {
           data.IsActive = this.adminConstants.LOGICAL_FIELD.YES;
