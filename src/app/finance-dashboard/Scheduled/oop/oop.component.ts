@@ -548,8 +548,8 @@ export class OopComponent implements OnInit, OnDestroy {
     // Go to Project Details Page
     goToProjectDetails(data: any) {
         console.log(data);
-        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/project-mgmt?ProjectCode=' + data.ProjectCode);
-        // this.router.navigate([this.globalObject.sharePointPageObject.webAbsoluteUrl + '//project-mgmt?ProjectCode=' + data.ProjectCode]);
+        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/projectmanagement?ProjectCode=' + data.ProjectCode);
+        
     }
 
     // Update Form
