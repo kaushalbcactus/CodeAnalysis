@@ -219,10 +219,10 @@
                     <div *ngIf="addClient.controls.acronym.errors.required">
                         Acronym is required</div>
                     <div *ngIf="addClient.controls.acronym.errors.maxlength">
-                            Acronym can be maximum 5 characters.
+                        Acronym can be maximum 5 characters.
                     </div>
                     <div *ngIf="addClient.controls.acronym.errors.pattern">
-                            Acronym can have exactly 3 UpperCase letters followed by 2 number.
+                        Acronym can have exactly 3 UpperCase letters followed by 2 number.
                     </div>
                 </div>
             </div>
@@ -231,7 +231,7 @@
             <div class="p-col-2"><span class="compulsory">*</span>Group</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.ClientGroupArray" placeholder="Select Group" formControlName="group"
-                    filter="true">
+                    filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.group.errors">
                     <div *ngIf="addClient.controls.group.errors.required">
@@ -278,7 +278,7 @@
             <div class="p-col-2 "><span class="compulsory">*</span>Market</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.MarketArray" placeholder="Select Market" formControlName="market"
-                    filter="true">
+                    filter="true" resetFilterOnHide="true">
                 </p-dropdown>
 
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.market.errors">
@@ -289,7 +289,7 @@
             <div class="p-col-2 "><span class="compulsory">*</span>Billing Entity</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.BillingEntityArray" placeholder="Select Billing Entry"
-                    formControlName="billingEntry" filter="true">
+                    formControlName="billingEntry" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
 
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.billingEntry.errors">
@@ -313,7 +313,7 @@
             <div class="p-col-2 "><span class="compulsory">*</span>Time Zone</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.TimeZonesArray" placeholder="Select Time Zone"
-                    formControlName="timeZone" filter="true">
+                    formControlName="timeZone" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
 
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.timeZone.errors">
@@ -336,7 +336,7 @@
             <div class="p-col-2 "><span class="compulsory">*</span>CM Level 2</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.CMLevel2Array" placeholder="Select CM Level 2"
-                    formControlName="cmLevel2" filter="true"></p-dropdown>
+                    formControlName="cmLevel2" filter="true" resetFilterOnHide="true"></p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.cmLevel2.errors">
                     <div *ngIf="addClient.controls.cmLevel2.errors.required">
                         CM Level 2 is required</div>
@@ -353,7 +353,7 @@
             <div class="p-col-2 "><span class="compulsory">*</span>Delivery Level 2</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.DeliveryLevel2Array" placeholder="Delivery Level 2"
-                    formControlName="deliveryLevel2" filter="true">
+                    formControlName="deliveryLevel2" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.deliveryLevel2.errors">
                     <div *ngIf="addClient.controls.deliveryLevel2.errors.required">
@@ -365,7 +365,7 @@
             <div class="p-col-2 "><span class="compulsory">*</span>Currency</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.CurrencyArray" placeholder="Select Currency" formControlName="currency"
-                    filter="true">
+                    filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.currency.errors">
                     <div *ngIf="addClient.controls.currency.errors.required">
@@ -400,7 +400,7 @@
             <div class="p-col-2 "><span class="compulsory">*</span>Bucket</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.BucketArray" placeholder="Select Bucket" formControlName="bucket"
-                    filter="true" (onChange)="onBucketChange()">
+                    filter="true" (onChange)="onBucketChange()" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.bucket.errors">
                     <div *ngIf="addClient.controls.bucket.errors.required">
@@ -410,8 +410,9 @@
             <div class="p-col-2" *ngIf="isBucketEffectiveDateActive"><span class="compulsory">*</span>Bucket Effective
                 Date</div>
             <div class="p-col-4" *ngIf="isBucketEffectiveDateActive">
-                <p-calendar formControlName="bucketEffectiveDate" [minDate]="min30Days" [showIcon]="true" [maxDate]="minDateValue" 
-                    [showOnFocus]="false"   [monthNavigator]="true" [readonlyInput]="true"></p-calendar>
+                <p-calendar formControlName="bucketEffectiveDate" [minDate]="min30Days" [showIcon]="true"
+                    [maxDate]="minDateValue"   [showOnFocus]="false"   [monthNavigator]="true" [readonlyInput]="true">
+                </p-calendar>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.bucketEffectiveDate.errors">
                     <div *ngIf="addClient.controls.bucketEffectiveDate.errors.required">
                         Bucket Effective Date is required</div>
@@ -748,7 +749,7 @@
             <div class="p-col-3 mr-10"><span class="compulsory">*</span>Referral Source</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.POCRefferalSourceArray" placeholder="Select Referral Source"
-                    formControlName="referralSource" filter="true">
+                    formControlName="referralSource" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.referralSource.errors">
                     <div *ngIf="pocForm.controls.referralSource.errors.required">
@@ -760,7 +761,7 @@
             <div class="p-col-3 mr-10">Relationship Strength</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.POCRelationshipArray" placeholder="Select Relationship"
-                    formControlName="relationshipStrength" filter="true">
+                    formControlName="relationshipStrength" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
             </div>
         </div>
@@ -782,7 +783,7 @@
             <div class="p-col-3 mr-10"><span class="compulsory">*</span>Project Contacts Type</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.POCProjectContactTypesArray" placeholder="Select Project Contacts Type"
-                    formControlName="contactsType"></p-dropdown>
+                    formControlName="contactsType" resetFilterOnHide="true" filter="true"></p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOCFormSubmit && pocForm.controls.contactsType.errors">
                     <div *ngIf="pocForm.controls.contactsType.errors.required">
                         Project Contacts Type is required</div>
@@ -910,7 +911,7 @@
         Change Budget
     </p-header>
 
-    <p-dropdown [options]="budgetType" placeholder="Select Value" [(ngModel)]="selectedValue" filter="true">
+    <p-dropdown [options]="budgetType" placeholder="Select Value" [(ngModel)]="selectedValue" filter="true" resetFilterOnHide="true">
     </p-dropdown>
 
     <div class="ui-g" *ngIf="checkBudgetValue">
@@ -1148,7 +1149,7 @@
             <div class="p-col-2 "><span class="compulsory">*</span>Currency</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.CurrencyArray" placeholder="Select Currency" formControlName="currency"
-                    filter="true">
+                    filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.currency.errors">
                     <div *ngIf="PoForm.controls.currency.errors.required">
@@ -1169,7 +1170,7 @@
             <div class="p-col-2 "><span class="compulsory">*</span>Point of Contact</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.POPointOfContactArray" placeholder="Select Point of Contact"
-                    formControlName="poc" filter="true">
+                    formControlName="poc" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poc.errors">
                     <div *ngIf="PoForm.controls.poc.errors.required">
@@ -1188,7 +1189,7 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>TA</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.POTAArray" placeholder="Select TA" formControlName="ta" filter="true">
+                <p-dropdown [options]="dropdown.POTAArray" placeholder="Select TA" formControlName="ta" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.ta.errors">
                     <div *ngIf="PoForm.controls.ta.errors.required">
@@ -1198,7 +1199,7 @@
             <div class="p-col-2 "><span class="compulsory">*</span>Molecule</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.POMoleculeArray" placeholder="Select Molecule"
-                    formControlName="molecule" filter="true">
+                    formControlName="molecule" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.molecule.errors">
                     <div *ngIf="PoForm.controls.molecule.errors.required">
@@ -1210,7 +1211,7 @@
             <div class="p-col-2 "><span class="compulsory">*</span>CM Level 2</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.CMLevel2Array" placeholder="Select CM Level 2"
-                    formControlName="cmLevel2" filter="true">
+                    formControlName="cmLevel2" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.cmLevel2.errors">
                     <div *ngIf="PoForm.controls.cmLevel2.errors.required">
@@ -1220,7 +1221,7 @@
             <div class="p-col-2 "><span class="compulsory">*</span>PO Buying Entity</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.POBuyingEntityArray" placeholder="Select PO Buying Entity"
-                    formControlName="poBuyingEntity" filter="true">
+                    formControlName="poBuyingEntity" filter="true" resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.poBuyingEntity.errors">
                     <div *ngIf="PoForm.controls.poBuyingEntity.errors.required">

@@ -2863,7 +2863,7 @@ export class ClientMasterdataComponent implements OnInit {
       });
       return false;
     }
-    if (Math.abs(this.newBudget.AmountRevenue) > this.oldBudget.AmountRevenue) {
+    if (this.newBudget.AmountRevenue < 0 && Math.abs(this.newBudget.AmountRevenue) > this.oldBudget.AmountRevenue) {
       this.messageService.add({
         key: 'adminCustom',
         severity: 'error', summary: 'Error Message',
@@ -2871,7 +2871,7 @@ export class ClientMasterdataComponent implements OnInit {
       });
       return false;
     }
-    if (Math.abs(this.newBudget.AmountOOP) > this.oldBudget.AmountOOP) {
+    if (this.newBudget.AmountOOP < 0 && Math.abs(this.newBudget.AmountOOP) > this.oldBudget.AmountOOP) {
       this.messageService.add({
         key: 'adminCustom',
         severity: 'error', summary: 'Error Message',
@@ -2879,7 +2879,7 @@ export class ClientMasterdataComponent implements OnInit {
       });
       return false;
     }
-    if (Math.abs(this.newBudget.AmountTax) > this.oldBudget.AmountTax) {
+    if (this.newBudget.AmountTax < 0 && Math.abs(this.newBudget.AmountTax) > this.oldBudget.AmountTax) {
       this.messageService.add({
         key: 'adminCustom',
         severity: 'error', summary: 'Error Message',

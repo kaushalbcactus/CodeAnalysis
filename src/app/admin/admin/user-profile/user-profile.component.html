@@ -9,7 +9,7 @@
   <input *ngIf="showUserInput" class="mr-5" type="text" (keydown.enter)="searchInactiveUser(); $event.preventDefault()"
     (change)="searchInactiveUser()" id="userSelect" placeholder="User" pInputText [(ngModel)]="providedUser" />
   <p-dropdown [options]="userFilterOptions" [(ngModel)]="selectedOption" styleClass="custom-dropDown"
-    (onChange)="onChangeSelect()"></p-dropdown>
+    (onChange)="onChangeSelect()" resetFilterOnHide="true" filter="true"></p-dropdown>
   <div style="float: left;" class="pr-20">
     <p-button icon="pi pi-plus-circle" label="Add New User" type="button" (click)="showAddUserModal()"></p-button>
   </div>
@@ -385,7 +385,7 @@
       <div class="p-grid mt-20">
         <div class="p-col-2"><span class="compulsory">*</span>Bucket</div>
         <div class="p-col-4">
-          <p-dropdown placeholder="Select Bucket" [options]="adminDropDown.bucketArray" formControlName="bucket">
+          <p-dropdown placeholder="Select Bucket" [options]="adminDropDown.bucketArray" formControlName="bucket" filter="true" resetFilterOnHide="true">
           </p-dropdown>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.bucket.errors">
             <div *ngIf="addUser.controls.bucket.errors.required">Bucket is required</div>
@@ -395,7 +395,7 @@
         <div class="p-col-4">
           <p-dropdown placeholder="Select Practice Area" [options]="adminDropDown.practiceAreaArray"
             formControlName="practiceArea" [ngClass]="{'form-submitted': upObject.isFormSubmit}"
-            (onChange)="onPracticeAreaChange()">
+            (onChange)="onPracticeAreaChange()" filter="true" resetFilterOnHide="true">
           </p-dropdown>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.practiceArea.errors">
             <div *ngIf="addUser.controls.practiceArea.errors.required">Practice Area is required</div>
@@ -414,7 +414,7 @@
         <div class="p-col-2"><span class="compulsory">*</span>Time Zone</div>
         <div class="p-col-4">
           <p-dropdown placeholder="Select Time Zone" [options]="adminDropDown.timeZoneArray" formControlName="timeZone"
-            (onChange)="onTimezoneChange()" filter="true">
+            (onChange)="onTimezoneChange()" filter="true" resetFilterOnHide="true">
           </p-dropdown>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.timeZone.errors">
             <div *ngIf="addUser.controls.timeZone.errors.required">Time Zone is required</div>
@@ -487,7 +487,7 @@
         <div class="p-col-2"><span class="compulsory">*</span>Primary Skill</div>
         <div class="p-col-4">
           <p-dropdown placeholder="Select Primary Skill" [options]="adminDropDown.primarySkillArray"
-            formControlName="primarySkill" (onChange)="onPrimarySkillChange()">
+            formControlName="primarySkill" (onChange)="onPrimarySkillChange()" filter="true" resetFilterOnHide="true">
           </p-dropdown>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.primarySkill.errors">
             <div *ngIf="addUser.controls.primarySkill.errors.required"> Primary Skill is required</div>
@@ -506,7 +506,7 @@
         <div class="p-col-2"><span class="compulsory">*</span>Skill Level</div>
         <div class="p-col-4">
           <p-dropdown placeholder="Select Skill Level" [options]="adminDropDown.skillLevelArray"
-            formControlName="skillLevel" (onChange)="onSkillLevelChange()" filter="true">
+            formControlName="skillLevel" resetFilterOnHide="true" (onChange)="onSkillLevelChange()" filter="true">
           </p-dropdown>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.skillLevel.errors">
             <div *ngIf="addUser.controls.skillLevel.errors.required">Skill Level is required</div>
@@ -522,7 +522,7 @@
         </div>
         <div class="p-col-2">Role</div>
         <div class="p-col-4">
-          <p-dropdown placeholder="Select Role" [options]="adminDropDown.roleArray" formControlName="role"></p-dropdown>
+          <p-dropdown placeholder="Select Role" [options]="adminDropDown.roleArray" formControlName="role" filter="true" resetFilterOnHide="true"></p-dropdown>
         </div>
       </div>
       <div class="p-grid mt-20">

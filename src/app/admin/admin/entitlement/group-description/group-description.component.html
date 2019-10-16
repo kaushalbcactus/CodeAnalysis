@@ -2,7 +2,7 @@
   <div class="p-grid mt-20">
     <div class="p-col-2"><span class="compulsory">*</span>Groups</div>
     <div class="p-col-3">
-      <p-dropdown placeholder="Select Group" [options]="groupsArray" [(ngModel)]="selectedGroup">
+      <p-dropdown placeholder="Select Group" [options]="groupsArray" [(ngModel)]="selectedGroup" filter="true" resetFilterOnHide="true">
       </p-dropdown>
     </div>
     <div class="p-col-2"><span class="compulsory">*</span>Description</div>

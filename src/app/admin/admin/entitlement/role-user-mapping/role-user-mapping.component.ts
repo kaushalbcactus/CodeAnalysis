@@ -87,13 +87,11 @@ export class RoleUserMappingComponent implements OnInit {
    */
   async loadGroups() {
     this.adminObject.isMainLoaderHidden = false;
-    const results = this.adminObject.groupArray && this.adminObject.groupArray.length ?
-      this.adminObject.groupArray : await this.getInitData();
+    const results = await this.getInitData();
     if (results && results.length) {
       this.groupsArray = [];
       // load Users dropdown.
-      const groupResults = this.adminObject.groupArray && this.adminObject.groupArray.length ?
-        this.adminObject.groupArray : results[0].retItems;
+      const groupResults = results[0].retItems;
       if (groupResults && groupResults.length) {
         groupResults.forEach(element => {
           if (element.Description && element.Description.indexOf(this.adminConstants.GROUP_CONSTANT_TEXT.SP_TEAM) > -1) {
