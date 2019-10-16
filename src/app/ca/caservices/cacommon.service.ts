@@ -789,9 +789,10 @@ export class CACommonService {
    * @param task 
    * @param comments 
    */
-  saveTaskScopeComments(task, comments) {
+  async saveTaskScopeComments(task, comments) {
     const options = { 'Comments': comments };
-    this.spServices.update(this.globalConstantService.listNames.Schedules.name, task.id, options, 'SP.Data.SchedulesListItem');
+    // this.spServices.update(this.globalConstantService.listNames.Schedules.name, task.id, options, 'SP.Data.SchedulesListItem');
+    await this.spServices.updateItem(this.globalConstantService.listNames.Schedules.name, task.id, options, this.globalConstantService.listNames.Schedules.type);
   }
   /**
    * This method is used to sort the array using multiple properties.
@@ -912,7 +913,8 @@ export class CACommonService {
       QCId: { results: updatedResources.qualityChecker.results },
       GraphicsMembersId: { results: updatedResources.graphicsMembers.results },
     };
-    this.spServices.update(projectInformationList, project.ID, updateProjectRes, 'SP.Data.ProjectInformationListItem');
+    // this.spServices.update(projectInformationList, project.ID, updateProjectRes, 'SP.Data.ProjectInformationListItem');
+    await this.spServices.updateItem(this.globalConstantService.listNames.ProjectInformation.name, project.ID, updateProjectRes, this.globalConstantService.listNames.ProjectInformation.type);
   }
 
 

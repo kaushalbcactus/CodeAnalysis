@@ -9,6 +9,12 @@ export class TaskAllocationConstantsService {
 
     constructor(private constantService: ConstantsService, private globalObject: GlobalService) { }
     // tslint:disable
+    common = {
+        getMailTemplate: {
+            select: 'Content',
+            filter: "Title eq '{{templateName}}'"
+        }
+    };
     taskallocationComponent = {
         projectResources: {
             select: 'ID,ProjectCode,Milestone,Status,PrevStatus,WBJID,ProjectFolder,Milestones,TA,DeliverableType,ClientLegalEntity, Writers/ID,Writers/Name,Writers/Title,Reviewers/ID,Reviewers/Name,Reviewers/Title,QC/ID,QC/Name,QC/Title, Editors/ID,Editors/Name,Editors/Title,PSMembers/ID,PSMembers/Name,PSMembers/Title, GraphicsMembers/ID,GraphicsMembers/Name,GraphicsMembers/Title, PrimaryResMembers/ID,PrimaryResMembers/Name,PrimaryResMembers/Title, AllDeliveryResources/ID, AllDeliveryResources/Name, AllDeliveryResources/Title,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail',

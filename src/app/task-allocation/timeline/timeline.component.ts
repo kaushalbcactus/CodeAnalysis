@@ -2813,19 +2813,21 @@ export class TimelineComponent implements OnInit, OnDestroy {
   //  Send Email On Task
   // **************************************************************************************************
 
-  sendMail(projectDetails, milestoneTask, callDetail) {
+  async sendMail(projectDetails, milestoneTask, callDetail) {
     if (milestoneTask.AssignedTo && milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID !== -1) {
       const fromUser = this.sharedObject.currentUser;
       const user = milestoneTask.AssignedTo;
       const mailSubject = projectDetails.projectCode + '(' + projectDetails.wbjid + ')' + ': Task created';
-      const objEmailBody = this.getsendEmailObjBody(milestoneTask, projectDetails, 'Email');
+      const objEmailBody = await this.getsendEmailObjBody(milestoneTask, projectDetails, 'Email', 'TaskCreation');
       const arrayTo = [];
-      const errorDetail = callDetail;
+      // const errorDetail = callDetail;
+
       if (user !== 'SelectOne' && user !== '' && user != null) {
         const userEmail = user.UserName ? user.UserName.EMail : user.EMail;
         arrayTo.push(userEmail);
       }
-      this.spServices.triggerMail(fromUser.email, 'TaskCreation', objEmailBody, mailSubject, arrayTo, errorDetail);
+      this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody, fromUser.email);
+      // this.spServices.triggerMail(fromUser.email, 'TaskCreation', objEmailBody, mailSubject, arrayTo, errorDetail);
     }
   }
 
@@ -2833,17 +2835,18 @@ export class TimelineComponent implements OnInit, OnDestroy {
   //  Send Email On Central Task
   // **************************************************************************************************
 
-  sendCentralTaskMail(projectDetails, milestoneTask, callDetail, subjectLine) {
+  async sendCentralTaskMail(projectDetails, milestoneTask, callDetail, subjectLine) {
 
     const fromUser = this.sharedObject.currentUser;
     const mailSubject = projectDetails.projectCode + '(' + projectDetails.wbjid + ')' + ': ' + subjectLine;
-    const objEmailBody = this.getsendEmailObjBody(milestoneTask, projectDetails, 'CentralTaskMail');
+    const objEmailBody = await this.getsendEmailObjBody(milestoneTask, projectDetails, 'CentralTaskMail', 'CentralTaskCreation');
     const arrayTo = [];
     const users = this.sharedObject.oTaskAllocation.oCentralGroup;
     for (const user of users) {
       arrayTo.push(user.Email);
     }
-    this.spServices.triggerMail(fromUser.email, 'CentralTaskCreation', objEmailBody, mailSubject, arrayTo, callDetail);
+    this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody, fromUser.email);
+    // this.spServices.triggerMail(fromUser.email, 'CentralTaskCreation', objEmailBody, mailSubject, arrayTo, callDetail);
 
   }
 
@@ -2851,42 +2854,25 @@ export class TimelineComponent implements OnInit, OnDestroy {
   //  Get Email Body
   // **************************************************************************************************
 
-  getsendEmailObjBody(milestoneTask, projectDetails, EmailType) {
-    const objEmailBody = [];
-    objEmailBody.push({
-      'key': '@@Val3@@',
-      'value': EmailType === 'Email' ? milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title : undefined : 'Team'
-    });
-    objEmailBody.push({
-      'key': '@@Val1@@', // Project Code
-      'value': projectDetails.projectCode
-    });
-    objEmailBody.push({
-      'key': '@@Val2@@', // Task Name
-      'value': milestoneTask.submilestone && milestoneTask.submilestone !== 'Default' ? projectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.pName + ' - ' + milestoneTask.submilestone : projectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.pName
-    });
-    objEmailBody.push({
-      'key': '@@Val4@@', // Task Type
-      'value': milestoneTask.itemType
-    });
-    objEmailBody.push({
-      'key': '@@Val5@@', // Milestone
-      'value': milestoneTask.milestone
-    });
-    objEmailBody.push({
-      'key': '@@Val6@@', // Start Date
-      'value': this.datepipe.transform(milestoneTask.pStart, 'MMM dd yyyy hh:mm:ss a') // Yes
-    });
-    objEmailBody.push({
-      'key': '@@Val7@@', // End Date
-      'value': this.datepipe.transform(milestoneTask.pEnd, 'MMM dd yyyy hh:mm:ss a') // Yes
-    });
-    objEmailBody.push({
-      'key': '@@Val9@@', // Scope
-      'value': milestoneTask.scope ? milestoneTask.scope : ''
-    });
-
-    return objEmailBody;
+  async getsendEmailObjBody(milestoneTask, projectDetails, EmailType, templateName) {
+    const mailObj = this.taskAllocationService.common.getMailTemplate;
+    mailObj.filter = mailObj.filter.replace('{{templateName}}', templateName);
+    const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
+      mailObj);
+    let mailContent = templateData.length > 0 ? templateData[0] : [];
+    mailContent = this.replaceContent(mailContent, "@@Val3@@", EmailType === 'Email' ? milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title : undefined : 'Team');
+    mailContent = this.replaceContent(mailContent, "@@Val1@@", projectDetails.projectCode);
+    mailContent = this.replaceContent(mailContent, "@@Val2@@", milestoneTask.submilestone && milestoneTask.submilestone !== 'Default' ? projectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.pName + ' - ' + milestoneTask.submilestone : projectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.pName);
+    mailContent = this.replaceContent(mailContent, "@@Val4@@", milestoneTask.itemType);
+    mailContent = this.replaceContent(mailContent, "@@Val5@@",  milestoneTask.milestone);
+    mailContent = this.replaceContent(mailContent, "@@Val6@@", this.datepipe.transform(milestoneTask.pStart, 'MMM dd yyyy hh:mm:ss a'));
+    mailContent = this.replaceContent(mailContent, "@@Val7@@", this.datepipe.transform(milestoneTask.pEnd, 'MMM dd yyyy hh:mm:ss a'));
+    mailContent = this.replaceContent(mailContent, "@@Val9@@", milestoneTask.scope ? milestoneTask.scope : '');
+    return mailContent;
+  }
+  
+  replaceContent(mailContent, key, value) {
+    return mailContent.replace(new RegExp(key, 'g'), value);
   }
 
   public generateSaveTasks() {

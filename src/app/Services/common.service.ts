@@ -393,15 +393,9 @@ export class CommonService {
             return result;
         });
     }
-    getTaskDocument(folderUrl, documentUrl, previousTask) {
-        var documents = [];
-        var completeFolderRelativeUrl = folderUrl + documentUrl;
-        var Url = "/_api/web/getfolderbyserverrelativeurl('" + completeFolderRelativeUrl + "')/Files?$expand=ListItemAllFields";
-        if (previousTask) {
-            documents = this.spServices.fetchTaskDocumentsByRestAPI(Url, previousTask);
-        } else {
-            documents = this.spServices.fetchTaskDocumentsByRestAPI(Url, null);
-        }
+    async getTaskDocument(folderUrl, documentUrl) {
+        let completeFolderRelativeUrl = folderUrl + documentUrl;
+        let documents = await this.spServices.readFiles(completeFolderRelativeUrl);
         if (documents.length) {
             documents = documents.sort(function (a, b) {
                 return new Date(a.modified) < new Date(b.modified) ? -1 : 1;

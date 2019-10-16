@@ -101,7 +101,7 @@ export class FDDataShareService {
     }
 
     async getITInfo() {
-        return await this.spServices.getITGroupInfo('Invoice_Team');
+        return await this.spServices.getGroupInfo('Invoice_Team');
     }
 
     // Export to Excel

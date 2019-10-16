@@ -83,8 +83,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit() {
+        const currentUserId = this.globalService.sharePointPageObject.userId;
         //Get  User Info 
-        this.currentUserInfo();
+        this.currentUserInfo(currentUserId);
 
         // POC & PO Number
         this.projectContacts();
@@ -250,23 +251,17 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     // Logged In user Info
     loggedInUserInfo: any = [];
     loggedInUserGroup: any = [];
-    async currentUserInfo() {
+    async currentUserInfo(userId) {
         this.loggedInUserInfo = [];
         this.loggedInUserGroup = [];
-        let curruentUsrInfo = await this.spServices.getCurrentUser();
-        this.loggedInUserInfo = curruentUsrInfo.d.Groups.results;
-        console.log('loggedInUserInfo ', this.loggedInUserInfo);
-
+        //let curruentUsrInfo = await this.spServices.getCurrentUser();
+        let currentUsrInfo = await this.spServices.getUserInfo(userId);
+        this.loggedInUserInfo = currentUsrInfo.Groups.results;
         this.loggedInUserInfo.forEach(element => {
             if (element) {
                 this.loggedInUserGroup.push(element.LoginName);
             }
         });
-        if (this.loggedInUserGroup.findIndex(c => (c === "Managers" || c === 'Project-FullAccess')) != -1) {
-            // this.getProjectInfoData(true);
-        } else {
-            // this.getProjectInfoData(false);
-        }
     }
 
     // Get Proformas InvoiceItemList

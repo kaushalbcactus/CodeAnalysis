@@ -126,24 +126,38 @@ export class SendToClientComponent implements OnInit {
   public changeErrorMessage(message) {
     this._error.next(message);
   }
-  downloadTask(task) {
+  async downloadTask(task) {
     // setTimeout(() => {
     const tempArray = [];
     const documentsUrl = '/Drafts/Internal/' + task.Milestone;
-    const documents = this.commonService.getTaskDocument(task.ProjectFolder, documentsUrl, task.PreviousTask);
-    for (const document in documents) {
-      if (documents[document].visiblePrevTaskDoc === true) {
+    const documents = await this.commonService.getTaskDocument(task.ProjectFolder, documentsUrl);
+    documents.forEach(document => {
+
+      if (task.PreviousTask.indexOf(document.ListItemAllFields.TaskName) > -1 && document.ListItemAllFields.Status.indexOf('Complete') > -1) {
         const docObj = {
           url: '',
           fileName: ''
         };
-        docObj.url = documents[document].fileUrl;
-        docObj.fileName = documents[document].fileName;
+        docObj.url = document.ServerRelativeUrl;
+        docObj.fileName = document.Name;
         tempArray.push(docObj);
       }
-    }
+    });
+    // for (const document in documents) {
+    //   // if (documents[document].visiblePrevTaskDoc === true) {
+    //   if (task.PreviousTask.indexOf(documents[document].taskName) > -1 && documents[document].status.indexOf('Complete') > -1) {
+    //   const docObj = {
+    //       url: '',
+    //       fileName: ''
+    //     };
+    //     docObj.url = documents[document].fileUrl;
+    //     docObj.fileName = documents[document].fileName;
+    //     tempArray.push(docObj);
+    //   }
+    // }
     const fileName = task.ProjectCode + ' - ' + task.Milestone;
-    this.spServices.downloadMultipleFiles(tempArray, fileName);
+    // this.spServices.downloadMultipleFiles(tempArray, fileName);
+    this.spServices.createZip(tempArray, fileName);
     // }, 500);
   }
   goToAllocationPage(task) {

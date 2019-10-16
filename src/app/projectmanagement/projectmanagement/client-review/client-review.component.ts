@@ -332,22 +332,26 @@ export class ClientReviewComponent implements OnInit {
     }
     this.commonService.setIframeHeight();
   }
-  downloadTask(task) {
+  async downloadTask(task) {
     console.log(task);
     const tempArray = [];
     const documentsUrl = '/Drafts/Internal/' + task.Milestone;
-    const documents = this.commonService.getTaskDocument(task.ProjectFolder, documentsUrl, task.PreviousTask);
-    for (const document in documents) {
-      if (documents[document].visiblePrevTaskDoc === true) {
+    const documents = await this.commonService.getTaskDocument(task.ProjectFolder, documentsUrl);
+    documents.forEach(document => {
+      if (task.PreviousTask.indexOf(document.ListItemAllFields.TaskName) > -1 && document.ListItemAllFields.Status.indexOf('Complete') > -1) {
         const docObj = {
           url: '',
           fileName: ''
         };
-        docObj.url = documents[document].fileUrl;
-        docObj.fileName = documents[document].fileName;
+        docObj.url = document.ServerRelativeUrl;
+        docObj.fileName = document.Name;
         tempArray.push(docObj);
       }
-    }
+    });
+    // for (const document in documents) {
+    //   // if (documents[document].visiblePrevTaskDoc === true) {
+       
+    // }
   }
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
