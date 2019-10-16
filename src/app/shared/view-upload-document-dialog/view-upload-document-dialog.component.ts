@@ -9,6 +9,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 
 
+
 @Component({
   selector: 'app-view-upload-document-dialog',
   templateUrl: './view-upload-document-dialog.component.html',
@@ -34,6 +35,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   fileReader = new FileReader();
   prevTask: string;
   enableNotification = false;
+  Emailtemplate: any;
   @Input() taskData: any;
   constructor(
     public config: DynamicDialogConfig,
@@ -55,6 +57,11 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.data = this.config.data === undefined ? this.taskData : this.config.data;
     this.status = this.data.Status;
     this.enableNotification = this.data.emailNotificationEnable ? this.data.emailNotificationEnable : false;
+
+    debugger;
+    if (this.enableNotification) {
+      this.getEmailTemplate();
+    }
     this.selectedTask = this.config.data ? this.data.task ? this.data.task : this.data : this.taskData;
 
     if (this.selectedTask.PrevTasks) {
@@ -389,7 +396,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         const responseInLines = response.split('\n');
         this.selectedDocuments = [];
         if (this.enableNotification) {
-          this.SendEmailNotification(this.selectedTask.task);
+          this.SendEmailNotification(this.selectedTask);
         }
         this.loadDraftDocs(this.selectedTab);
 
@@ -573,35 +580,74 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
 
   SendEmailNotification(task) {
-    const mailSubject = 'New File Uploaded.';
-    const objEmailBody = [];
-    // objEmailBody.push({
-    //   'key': '@@Val3@@',
-    //   'value': this.resourceList[indexRes].UserName.Title
-    // });
-    // objEmailBody.push({
-    //   'key': '@@Val1@@', // Project Code
-    //   'value': task.projectCode
-    // });
-    // objEmailBody.push({
-    //   'key': '@@Val2@@', // Task Name
-    //   'value': task.SubMilestones && task.SubMilestones !== 'Default' ? task.title + ' - ' + task.SubMilestones : task.title
-    // });
-    // objEmailBody.push({
-    //   'key': '@@Val4@@', // Task Type
-    //   'value': task.task
-    // });
-    // objEmailBody.push({
-    //   'key': '@@Val5@@', // Milestone
-    //   'value': task.milestone
-    // });
 
-    // objEmailBody.push({
-    //   'key': '@@Val9@@', // Scope
-    //   'value': task.taskScope ? task.taskScope : ''
-    // });
-    // //// Send allocation email
-    // this.spOperations.triggerMail(this.resourceList[indexRes].UserName.EMail, this.sharedObject.sharePointPageObject.email,
-    //   '', 'New File Uploaded', objEmailBody, mailSubject);
+    const mailSubject = 'New File Uploaded.';
+
+    // ClosedTaskNotification
+
+    this.data.nextTasks.forEach(nextTask => {
+      const ArrayTo = [];
+      const objEmailBody = [];
+      objEmailBody.push({
+        'key': '@@Val1@@', //  Next  Task Assign To
+        'value': nextTask.AssignedTo ? nextTask.AssignedTo.Title : ''
+      });
+      objEmailBody.push({
+        'key': '@@Val2@@', // Current Task Name
+        'value': task.Title
+      });
+      objEmailBody.push({
+        'key': '@@Val21@@', // Current Task Assign To
+        'value': task.AssignedTo ? task.AssignedTo.Title : ''
+      });
+      objEmailBody.push({
+        'key': '@@Val3@@', // Next Task Name
+        'value': nextTask.Title
+      });
+      objEmailBody.push({
+        'key': '@@Val31@@', //  Next  Task Assign To
+        'value': nextTask.AssignedTo ? nextTask.AssignedTo.Title : ''
+      });
+
+      let mailBody = this.Emailtemplate;
+
+      for (const data of objEmailBody) {
+        mailBody = mailBody.replace(RegExp(data.key, 'gi'), data.value);
+      }
+
+      // Send  email
+      this.spServices.sendMail(nextTask.AssignedTo.EMail, task.AssignedTo.EMail, mailSubject, mailBody, task.AssignedTo.EMail);
+
+    });
+
+  }
+
+  async getEmailTemplate() {
+
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const mailQueryOptions = {
+      select: 'Content',
+      // tslint:disable-next-line: quotemark
+      filter: "Title eq 'ClosedTaskNotification'",
+
+    };
+    const mailTemplateGet = Object.assign({}, options);
+    mailTemplateGet.url = this.spServices.getReadURL('' + this.constants.listNames.MailContent.name + '', mailQueryOptions);
+    mailTemplateGet.type = 'GET';
+    mailTemplateGet.listName = this.constants.listNames.MailContent.name;
+    batchURL.push(mailTemplateGet);
+
+    const arrResults = await this.spServices.executeBatch(batchURL);
+
+    if (arrResults[0].retItems) {
+      this.Emailtemplate = arrResults[0].retItems[0].Content;
+      console.log(this.Emailtemplate);
+    }
   }
 }

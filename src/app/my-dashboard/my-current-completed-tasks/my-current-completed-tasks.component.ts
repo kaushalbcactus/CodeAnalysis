@@ -646,7 +646,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
     let NextTasks;
     const enableEmail = await this.checkEmailNotificationEnable(task);
-    if (enableEmail === false) {
+    if (enableEmail) {
       NextTasks = await this.getNextPreviousTask(task);
     }
 
