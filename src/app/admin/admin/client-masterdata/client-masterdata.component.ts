@@ -1125,6 +1125,7 @@ export class ClientMasterdataComponent implements OnInit {
   async showSubDivision() {
     this.adminObject.isMainLoaderHidden = false;
     const tempArray = [];
+    this.subDivisionDetailsRows = [];
     const getSubDivisionInfo = Object.assign({}, this.adminConstants.QUERY.GET_SUB_DIVISION_BY_ACTIVE);
     getSubDivisionInfo.filter = getSubDivisionInfo.filter
       .replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES)
@@ -1295,8 +1296,9 @@ export class ClientMasterdataComponent implements OnInit {
       data.Title = this.subDivisionform.value.subDivision_Name;
       data.ClientLegalEntity = this.currClientObj.ClientLegalEntity;
     }
-    data.DeliveryLevel1Id = this.subDivisionform.value.deliveryLevel1 ? { results: this.subDivisionform.value.deliveryLevel1 } : [];
-    data.CMLevel1Id = this.subDivisionform.value.cmLevel1 ? { results: this.subDivisionform.value.cmLevel1 } : [];
+    data.DeliveryLevel1Id = this.subDivisionform.value.deliveryLevel1 ? { results: this.subDivisionform.value.deliveryLevel1 } :
+      { results: [] };
+    data.CMLevel1Id = this.subDivisionform.value.cmLevel1 ? { results: this.subDivisionform.value.cmLevel1 } : { results: [] };
     data.DistributionList = this.subDivisionform.value.distributionList ? this.subDivisionform.value.distributionList : '';
     return data;
   }
@@ -1426,6 +1428,7 @@ export class ClientMasterdataComponent implements OnInit {
   async showPOC() {
     this.adminObject.isMainLoaderHidden = false;
     const tempArray = [];
+    this.POCRows = [];
     const getPocInfo = Object.assign({}, this.adminConstants.QUERY.GET_POC_BY_ACTIVE);
     getPocInfo.filter = getPocInfo.filter
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
@@ -1442,7 +1445,7 @@ export class ClientMasterdataComponent implements OnInit {
         obj.EmailAddress = item.EmailAddress;
         obj.Designation = item.Designation;
         obj.Phone = item.Phone ? item.Phone : '';
-        obj.Address = obj.Address ? obj.Address : '';
+        obj.Address = item.Address ? item.Address : '';
         obj.FullName = item.FullName ? item.FullName : '';
         obj.Department = item.Department ? item.Department : '';
         obj.ReferralSource = item.ReferralSource;
@@ -1648,13 +1651,15 @@ export class ClientMasterdataComponent implements OnInit {
   async savePOC() {
     if (this.pocForm.valid) {
       console.log(this.pocForm.value);
-      if (this.POCRows.some(a =>
-        a.EmailAddress.toLowerCase() === this.pocForm.value.email.toLowerCase())) {
-        this.messageService.add({
-          key: 'adminCustom', severity: 'error',
-          summary: 'Error Message', detail: 'This email id is already exist. Please enter another email id.'
-        });
-        return false;
+      if (!this.showeditPOC) {
+        if (this.POCRows.some(a =>
+          a.EmailAddress.toLowerCase() === this.pocForm.value.email.toLowerCase())) {
+          this.messageService.add({
+            key: 'adminCustom', severity: 'error',
+            summary: 'Error Message', detail: 'This email id is already exist. Please enter another email id.'
+          });
+          return false;
+        }
       }
       // write the save logic using rest api.
       this.adminObject.isMainLoaderHidden = false;
@@ -1675,7 +1680,8 @@ export class ClientMasterdataComponent implements OnInit {
           pocData, this.constants.listNames.ProjectContacts.type);
         this.messageService.add({
           key: 'adminCustom', severity: 'success',
-          summary: 'Success Message', detail: 'The Poc ' + this.currPOCObj.FullName + ' is updated successfully.'
+          summary: 'Success Message', detail: 'The Poc ' + this.pocForm.value.fname + ' ' + this.pocForm.value.lname +
+            ' is updated successfully.'
         });
         await this.loadRecentPOCRecords(this.currPOCObj.ID, this.showeditPOC);
       }
@@ -1749,7 +1755,7 @@ export class ClientMasterdataComponent implements OnInit {
       obj.EmailAddress = item.EmailAddress;
       obj.Designation = item.Designation;
       obj.Phone = item.Phone ? item.Phone : '';
-      obj.Address = obj.Address ? obj.Address : '';
+      obj.Address = item.Address ? item.Address : '';
       obj.FullName = item.FullName ? item.FullName : '';
       obj.Department = item.Department ? item.Department : '';
       obj.ReferralSource = item.ReferralSource;
@@ -1850,6 +1856,7 @@ export class ClientMasterdataComponent implements OnInit {
   async showPO() {
     this.adminObject.isMainLoaderHidden = false;
     const tempArray = [];
+    this.PORows = [];
     const getPOInfo = Object.assign({}, this.adminConstants.QUERY.GET_PO_BY_ACTIVE);
     getPOInfo.filter = getPOInfo.filter
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)

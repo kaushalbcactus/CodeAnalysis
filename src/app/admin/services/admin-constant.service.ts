@@ -313,7 +313,7 @@ export class AdminConstantService {
     ALPHA_SPECIAL_WITHSPACE: /^[a-z A-Z]+((-?[a-z A-Z]+)*(_?[a-z A-Z]+)*)*((_?[a-z A-Z]+)*(-?[a-z A-Z]+)*)*$/,
     ALPHA: /^[a-zA-Z]+$/,
     APLHA_NUMERIC: /^[a-zA-Z0-9]+$/,
-    ALPHA_SPECIAL_NUMERIC: /^[a-zA-Z0-9]+((-?[a-zA-Z]+)*(_?[a-zA-Z]+)*)*((_?[a-zA-Z]+)*(-?[a-zA-Z]+)*)*$/,
+    ALPHA_SPECIAL_NUMERIC: /^[a-zA-Z0-9]+((-?[a-zA-Z0-9]+)*(_?[a-zA-Z0-9]+)*)*((_?[a-zA-Z0-9]+)*(-?[a-zA-Z0-9]+)*)*$/,
     THREE_UPPERCASE_TWO_NUMBER: /^[A-Z]{3}[0-9]{2}$/
   };
   public RESOURCE_CATEGORY_CONSTANT = {
