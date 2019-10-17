@@ -147,7 +147,14 @@ export class MyDashboardConstantsService {
     LeaveCalendar: {
 
       select: 'ID,EventDate,EndDate,IsHalfDay,Title',
-      filter: "(Author/Id eq {{currentUser}})and((EventDate ge '{{startDateString}}' and EventDate le '{{endDateString}}') or (EndDate ge '{{startDateString}}' and EndDate le '{{endDateString}}') or (EventDate le '{{startDateString}}' and EndDate ge '{{endDateString}}'))",
+      filter: "(UserName/Id eq {{currentUser}} and IsActive eq 'Yes' ) and ((EventDate ge '{{startDateString}}' and EventDate le '{{endDateString}}') or (EndDate ge '{{startDateString}}' and EndDate le '{{endDateString}}') or (EventDate le '{{startDateString}}' and EndDate ge '{{endDateString}}'))",
+      orderby: 'Created',
+      top: 4500
+    },
+    AvailableHours: {
+      // tslint:disable-next-line: max-line-length
+      select: 'ID,WeekStartDate,WeekEndDate,ResourceID,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday,MondayLeave,TuesdayLeave,WednesdayLeave,ThursdayLeave,FridayLeave',
+      filter: "ResourceID eq {{resourceId}}  and ((WeekStartDate ge '{{startDateString}}' and WeekStartDate le '{{endDateString}}') or (WeekEndDate ge '{{startDateString}}' and WeekEndDate le '{{endDateString}}') or (WeekStartDate le '{{startDateString}}' and WeekEndDate ge '{{endDateString}}'))",
       orderby: 'Created',
       top: 4500
     },
@@ -472,7 +479,7 @@ export class MyDashboardConstantsService {
       Status: task.Status,
       TaskComments: task.TaskComments,
     };
-    const newdata = task.IsCentrallyAllocated === 'Yes' ? {...data, ActiveCA: 'No'} : {...data};
+    const newdata = task.IsCentrallyAllocated === 'Yes' ? { ...data, ActiveCA: 'No' } : { ...data };
     const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(task.ID) + ")";
     this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(newdata), false);
 
@@ -871,7 +878,7 @@ export class MyDashboardConstantsService {
         reviewTaskDocUrl: [],
         taskTitle: '',
         taskID: 0,
-        subMilestones : ''
+        subMilestones: ''
       }
       obj.documentURL = tempArray;
       obj.resourceID = previousItems[0].AssignedTo.Id;

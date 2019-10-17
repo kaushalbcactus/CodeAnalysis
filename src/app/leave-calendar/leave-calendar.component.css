@@ -11,3 +11,192 @@
     display: -webkit-inline-box !important;
     display: inline-flex !important;
 }
+
+.input-color {
+    position: relative !important;
+    float: left !important;
+}
+
+.input-color label {
+    padding: 0px 5px 0px 25px !important;
+    margin-bottom: 0px !important;
+}
+
+.input-color .color-box {
+    width: 20px !important;
+    height: 20px !important;
+    margin: -20px 0px 0px 0px !important;
+    position: absolute !important;
+}
+
+::ng-deep .fc-toolbar.fc-header-toolbar {
+    margin-bottom: 0.5em !important;
+}
+
+:host ::ng-deep #CalendarInnerLoader {
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid red;
+    border-bottom: 10px solid red;
+    width: 100px;
+    height: 100px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    position: absolute;
+    z-index: 999999;
+    margin: 20vw 0vw 0vw 46.5vw;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+:host ::ng-deep #CalendarInnerLoaderText {
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, "Helvetica", ""arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
+    margin: 26vw 0vw 0vw 47.8vw;
+    position: absolute;
+    z-index: 99999;
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg)
+    }
+    100% {
+        -webkit-transform: rotate(360deg)
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg)
+    }
+    100% {
+        transform: rotate(360deg)
+    }
+}
+
+::ng-deep .popper,
+::ng-deep .tooltip {
+    position: absolute !important;
+    z-index: 9999 !important;
+    background: #ffffa9 !important;
+    color: black !important;
+    width: 150px !important;
+    border-radius: 3px !important;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.5) !important;
+    padding: 10px !important;
+    text-align: center !important;
+    opacity: 1 !important;
+}
+
+::ng-deep .style5 .tooltip {
+    /* background: #1E252B  !important; */
+    /* color: #FFFFFF  !important; */
+    max-width: 200px !important;
+    width: auto !important;
+    font-size: .8rem !important;
+    padding: .5em 1em !important;
+}
+
+::ng-deep .tooltip-inner {
+    background-color: #ffffa9 !important;
+    color: black !important;
+}
+
+::ng-deep .popper .popper__arrow,
+::ng-deep .tooltip .tooltip-arrow {
+    width: 0 !important;
+    height: 0 !important;
+    border-style: solid !important;
+    position: absolute !important;
+    margin: 5px !important;
+}
+
+::ng-deep .tooltip .tooltip-arrow,
+::ng-deep .popper .popper__arrow {
+    border-color: #ffffa9 !important;
+}
+
+::ng-deep .style5 .tooltip .tooltip-arrow {
+    border-color: #1E252B !important;
+}
+
+::ng-deep .popper[x-placement^="top"],
+::ng-deep .tooltip[x-placement^="top"] {
+    margin-bottom: 5px !important;
+}
+
+::ng-deep .popper[x-placement^="top"] .popper__arrow,
+::ng-deep .tooltip[x-placement^="top"] .tooltip-arrow {
+    border-width: 5px 5px 0 5px !important;
+    border-left-color: transparent !important;
+    border-right-color: transparent !important;
+    border-bottom-color: transparent !important;
+    bottom: -5px !important;
+    left: calc(50% - 5px) !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+::ng-deep .popper[x-placement^="bottom"],
+::ng-deep .tooltip[x-placement^="bottom"] {
+    margin-top: 5px !important;
+}
+
+::ng-deep .tooltip[x-placement^="bottom"] .tooltip-arrow,
+::ng-deep .popper[x-placement^="bottom"] .popper__arrow {
+    border-width: 0 5px 5px 5px !important;
+    border-left-color: transparent !important;
+    border-right-color: transparent !important;
+    border-top-color: transparent !important;
+    top: -5px !important;
+    left: calc(50% - 5px) !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+::ng-deep .tooltip[x-placement^="right"],
+::ng-deep .popper[x-placement^="right"] {
+    margin-left: 5px !important;
+}
+
+::ng-deep .popper[x-placement^="right"] .popper__arrow,
+::ng-deep .tooltip[x-placement^="right"] .tooltip-arrow {
+    border-width: 5px 5px 5px 0 !important;
+    border-left-color: transparent !important;
+    border-top-color: transparent !important;
+    border-bottom-color: transparent !important;
+    left: -5px !important;
+    top: calc(50% - 5px) !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+::ng-deep .popper[x-placement^="left"],
+::ng-deep .tooltip[x-placement^="left"] {
+    margin-right: 5px !important;
+}
+
+::ng-deep .popper[x-placement^="left"] .popper__arrow,
+::ng-deep .tooltip[x-placement^="left"] .tooltip-arrow {
+    border-width: 5px 0 5px 5px !important;
+    border-top-color: transparent !important;
+    border-right-color: transparent !important;
+    border-bottom-color: transparent !important;
+    right: -5px !important;
+    top: calc(50% - 5px) !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+::ng-deep .fc-more-popover {
+    width: 25% !important;
+}

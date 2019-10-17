@@ -60,7 +60,7 @@ export class BlockTimeDialogComponent implements OnInit {
 
   async ngOnInit() {
 
-    
+
     this.data = this.config.data;
     this.getMaxDate();
     if (this.data.task !== undefined) {
@@ -79,13 +79,15 @@ export class BlockTimeDialogComponent implements OnInit {
       if (this.data.timeblockType !== 'Leave') {
         this.minDateValue = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3);
       } else {
-        const date = new Date();
-        this.minDateValue = new Date(date.setDate(new Date().getDate() + 1));
+        const WeekDate = new Date(new Date().getTime() - 60 * 60 * 24 * 14 * 1000);
+        const day = WeekDate.getDay();
+        const monday = (WeekDate.getDate() - day + (day === 0 ? -6 : 1)) - 1;
+        const tempdate = new Date(WeekDate.setDate(monday));
+        const newDate = new Date(tempdate.getTime());
+        this.minDateValue = new Date(newDate.setDate(newDate.getDate() + 1));
       }
-
     }
     this.mode = this.data.mode;
-
 
     if (this.data.timeblockType !== 'Admin' && this.data.timeblockType !== 'Leave') {
       this.modalloaderenable = true;
@@ -247,10 +249,57 @@ export class BlockTimeDialogComponent implements OnInit {
         EndDate: new Date(this.datePipe.transform(this.eventEndDate, 'yyyy-MM-dd') + 'T19:00:00.000'),
         Description: this.commment,
         IsHalfDay: this.IsHalfDay,
-
+        IsActive: 'Yes',
+        UserNameId: this.sharedObject.sharePointPageObject.userId
       };
-      this.ref.close(obj);
+      debugger;
+      const validation = await this.validateLeave(this.datePipe.transform(this.eventDate, 'yyyy-MM-dd')
+        + 'T09:00:00.000', this.datePipe.transform(this.eventEndDate, 'yyyy-MM-dd') + 'T19:00:00.000');
+      if (validation) {
+        this.ref.close(obj);
+      } else {
+
+        this.messageService.add({
+          key: 'custom', severity: 'warn', summary: 'Warning Message',
+          detail: 'Leave already exist between ' +
+            this.datePipe.transform(this.eventDate, 'MMM dd, yyyy') + ' and ' + this.datePipe.transform(this.eventEndDate, 'MMM dd, yyyy')
+        });
+
+      }
+
     }
+  }
+
+  async validateLeave(EventDate, EndDate) {
+    let validation = true;
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+
+    const leavesGet = Object.assign({}, options);
+    const leavesQuery = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
+    leavesGet.url = this.spServices.getReadURL('' + this.constants.listNames.LeaveCalendar.name +
+      '', leavesQuery);
+    leavesGet.url = leavesGet.url.replace(/{{currentUser}}/gi,
+      this.sharedObject.sharePointPageObject.userId.toString()).replace(/{{startDateString}}/gi,
+        EventDate).replace(/{{endDateString}}/gi, EndDate);
+    leavesGet.type = 'GET';
+    leavesGet.listName = this.constants.listNames.LeaveCalendar.name;
+    batchURL.push(leavesGet);
+
+    const arrResults = await this.spServices.executeBatch(batchURL);
+
+    if (arrResults) {
+      if (arrResults[0].retItems.length > 0) {
+        validation = false;
+      }
+    }
+    console.log(arrResults);
+    return validation;
   }
 
   // *************************************************************************************************
@@ -302,7 +351,7 @@ export class BlockTimeDialogComponent implements OnInit {
     const currentDate = new Date();
     const tempdate = new Date(currentDate.setDate(currentDate.getDate() + (3 * 7)));
     const lastday = tempdate.getDate() - (tempdate.getDay() - 1) + 4;
-    this.maxDate = this.data.timeblockType === 'Admin' ? new Date()  :  new Date(tempdate.setDate(lastday));
+    this.maxDate = this.data.timeblockType === 'Admin' ? new Date() : new Date(tempdate.setDate(lastday));
   }
 
   // *************************************************************************************************
