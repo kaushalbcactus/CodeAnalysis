@@ -2075,8 +2075,9 @@ export class ClientMasterdataComponent implements OnInit {
     // Get POC from ProjectContacts list ##1
     const pocGet = Object.assign({}, options);
     const pocFilter = Object.assign({}, this.adminConstants.QUERY.GET_POC_ORDER_BY_Title);
-    pocFilter.filter = pocFilter.filter.replace(/{{active}}/gi,
-      this.adminConstants.LOGICAL_FIELD.ACTIVE);
+    pocFilter.filter = pocFilter.filter
+      .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
+      .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity);
     pocGet.url = this.spServices.getReadURL(this.constants.listNames.ProjectContacts.name,
       pocFilter);
     pocGet.type = 'GET';
@@ -2180,14 +2181,14 @@ export class ClientMasterdataComponent implements OnInit {
       this.po.revenue = this.PoForm.value.revenue;
       this.po.oop = this.PoForm.value.oop ? this.PoForm.value.oop : 0;
       this.po.tax = this.PoForm.value.tax ? this.PoForm.value.tax : 0;
-      this.po.total = this.po.revenue + this.po.oop + this.po.tax;
+      this.po.total = +(this.po.revenue + this.po.oop + this.po.tax).toFixed(2);
       this.PoForm.get('total').setValue(this.po.total);
     }
     if (this.showaddBudget) {
       this.po.revenue = this.changeBudgetForm.value.revenue;
       this.po.oop = this.changeBudgetForm.value.oop ? this.changeBudgetForm.value.oop : 0;
       this.po.tax = this.changeBudgetForm.value.tax ? this.changeBudgetForm.value.tax : 0;
-      this.po.total = this.po.revenue + this.po.oop + this.po.tax;
+      this.po.total = +(this.po.revenue + this.po.oop + this.po.tax).toFixed(2);
       this.changeBudgetForm.get('total').setValue(this.po.total);
     }
   }
@@ -2225,7 +2226,6 @@ export class ClientMasterdataComponent implements OnInit {
         }
       }
       this.adminObject.isMainLoaderHidden = false;
-      this.minDateValue = new Date(new Date().setDate(new Date().getDate() + 1));
       const docFolder = this.adminConstants.FOLDER_LOCATION.PO;
       const libraryName = this.currClientObj.ListName;
       const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
@@ -2628,14 +2628,14 @@ export class ClientMasterdataComponent implements OnInit {
       this.newBudget.AmountOOP < 0 || this.newBudget.AmountTax < 0) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Revenue should be Positve Number'
+        detail: 'Revenue should be Positive Number'
       });
       return false;
     }
     if (this.newBudget.Amount < 0) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Total should be in Positve Number'
+        detail: 'Total should be in Positive Number'
       });
       return false;
     }

@@ -234,7 +234,7 @@ export class AdminConstantService {
     },
     GET_POC_ORDER_BY_Title: {
       select: 'ID,FName,LName,FullName',
-      filter: 'Status eq \'{{active}}\'',
+      filter: 'Status eq \'{{active}}\' and ClientLegalEntity eq \'{{clientLegalEntity}}\'',
       orderby: 'FName,LName asc',
       top: 4900
     },
