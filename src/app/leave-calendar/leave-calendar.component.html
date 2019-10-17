@@ -1,2 +1,20 @@
-<p-fullCalendar #calendar [ngStyle]="{'margin':'1em;'}" [events]="events" [options]="options">
+<div *ngIf="CalendarLoader">
+    <div id="CalendarInnerLoader"></div>
+    <div id="CalendarInnerLoaderText">Loading...</div>
+</div>
+
+
+<div style=" position: absolute !important; right:200px; margin-top:5px;">
+    <div class="input-color">
+        <label>Full Day Leave</label>
+        <div class="color-box" style="background-color:#e60000;"></div>
+    </div>
+    <div class="input-color">
+        <label>Half Day Leave</label>
+        <div class="color-box" style="background-color:#808080;"></div>
+    </div>
+</div>
+
+
+<p-fullCalendar #calendar [ngStyle]="{'margin':'1em;'}" [events]="leaves" [options]="options">
 </p-fullCalendar>

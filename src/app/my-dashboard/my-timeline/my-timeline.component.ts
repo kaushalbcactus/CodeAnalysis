@@ -51,6 +51,8 @@ export class MyTimelineComponent implements OnInit {
   allLeaves: any;
   EnableEditDate: any;
   toolData: any;
+  displayleave = false;
+  leave: any;
   constructor(private myDashboardConstantsService: MyDashboardConstantsService,
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -59,7 +61,7 @@ export class MyTimelineComponent implements OnInit {
     public dialogService: DialogService,
     private confirmationService: ConfirmationService,
     private datePipe: DatePipe,
-    public spOperations: SPOperationService,
+
   ) { }
 
   ngAfterViewInit() {
@@ -151,7 +153,7 @@ export class MyTimelineComponent implements OnInit {
       },
 
       eventClick: async function (eventInfo) {
-
+        debugger;
         self.EnableEditDate = self.EnableEditDate === undefined ? await self.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3) : self.EnableEditDate;
         if (eventInfo.event.backgroundColor !== '#D6CFC7') {
           self.modalloaderenable = true;
@@ -203,11 +205,17 @@ export class MyTimelineComponent implements OnInit {
             self.task.ProjectName = self.task.ProjectCode;
           }
         }
+        else {
+          // tslint:disable-next-line: radix
+          self.leave = self.allLeaves.find(c => c.Id === parseInt(eventInfo.event.id));
+          self.displayleave = true;
+
+        }
       },
       customButtons: {
 
         AddnewEvent: {
-          click: function () {
+          click: () => {
             document.getElementById('hiddenButton').click();
           }
         }
@@ -511,8 +519,10 @@ export class MyTimelineComponent implements OnInit {
 
         this.CalendarLoader = true;
         if (event === 'Leave') {
+          debugger;
+          const dbAvailableHours = await this.getAvailableHours(blockTimeobj);
 
-          await this.spServices.create(this.constants.listNames.LeaveCalendar.name, blockTimeobj, '');
+          // await this.spServices.create(this.constants.listNames.LeaveCalendar.name, blockTimeobj, '');
           this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Leave created successfully.' });
         }
         else {
@@ -530,7 +540,7 @@ export class MyTimelineComponent implements OnInit {
             }
             else {
 
-              await this.spOperations.updateItem(this.constants.listNames.Schedules.name, task.ID, blockTimeobj, "SP.Data.SchedulesListItem");
+              await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, blockTimeobj, "SP.Data.SchedulesListItem");
 
               this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time Booking updated successfully.' });
             }
@@ -554,7 +564,7 @@ export class MyTimelineComponent implements OnInit {
       Status: 'Deleted'
     }
 
-    await this.spOperations.updateItem(this.constants.listNames.Schedules.name, this.task.ID, data, "SP.Data.SchedulesListItem");
+    await this.spServices.updateItem(this.constants.listNames.Schedules.name, this.task.ID, data, "SP.Data.SchedulesListItem");
 
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Adhoc  deleted successfully' });
 
@@ -649,7 +659,7 @@ export class MyTimelineComponent implements OnInit {
             Actual_x0020_Start_x0020_Date: task.Actual_x0020_Start_x0020_Date !== null ? task.Actual_x0020_Start_x0020_Date : new Date(),
             Status: task.Status,
           };
-          await this.spOperations.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, "SP.Data.SchedulesListItem");
+          await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, "SP.Data.SchedulesListItem");
           this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task updated successfully.' });
           this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start, this.fullCalendar.calendar.state.dateProfile.currentRange.end);
         }
@@ -661,6 +671,44 @@ export class MyTimelineComponent implements OnInit {
       task.Status = earlierStaus;
       this.CalendarLoader = false;
     }
-  };
+  }
+
+  async getAvailableHours(blockTimeobj) {
+
+    let dbRecords = [];
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+
+    const ResourceId = this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserName.ID
+      === this.sharedObject.sharePointPageObject.userId) ?
+      this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserName.ID ===
+        this.sharedObject.sharePointPageObject.userId).ID : 0;
+    const AvailableHoursGet = Object.assign({}, options);
+    const AvailableHoursQuery = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.AvailableHours);
+    AvailableHoursGet.url = this.spServices.getReadURL('' + this.constants.listNames.AvailableHours.name +
+      '', AvailableHoursQuery);
+    AvailableHoursGet.url = AvailableHoursGet.url.replace(/{{resourceId}}/gi,
+      ResourceId).replace(/{{startDateString}}/gi,
+        this.datePipe.transform(blockTimeobj.EventDate, 'yyyy-MM-dd')).replace(/{{endDateString}}/gi,
+          this.datePipe.transform(blockTimeobj.EndDate, 'yyyy-MM-dd'));
+    AvailableHoursGet.type = 'GET';
+    AvailableHoursGet.listName = this.constants.listNames.AvailableHours.name;
+    batchURL.push(AvailableHoursGet);
+
+    const arrResults = await this.spServices.executeBatch(batchURL);
+
+    if (arrResults) {
+      if (arrResults[0].retItems.length > 0) {
+        dbRecords = arrResults[0].retItems;
+      }
+    }
+
+    return dbRecords;
+  }
 }
 

@@ -190,7 +190,7 @@ export class UsercapacityComponent implements OnInit {
     const leaveCalendar = {
       // tslint:disable 
       select: "ID,EventDate,EndDate,IsHalfDay",
-      filter: "(Author/Id eq {{userId}} )and((EventDate ge '{{startDateString}}' and EventDate le '{{endDateString}}') or (EndDate ge '{{startDateString}}' and EndDate le '{{endDateString}}') or (EventDate le '{{startDateString}}' and EndDate ge '{{endDateString}}'))",
+      filter: "(UserName/Id eq {{userId}} and IsActive eq 'Yes' ) and((EventDate ge '{{startDateString}}' and EventDate le '{{endDateString}}') or (EndDate ge '{{startDateString}}' and EndDate le '{{endDateString}}') or (EventDate le '{{startDateString}}' and EndDate ge '{{endDateString}}'))",
       orderby: "Created",
       top: 4500
       // tslint:enable
