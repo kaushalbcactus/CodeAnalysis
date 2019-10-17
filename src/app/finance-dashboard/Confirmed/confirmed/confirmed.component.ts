@@ -42,23 +42,24 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
     formSubmit: any = {
         isSubmit: false
-    }
+    };
     submitBtn: any = {
         isClicked: false
-    }
+    };
 
     // PoBalance Obj
     po: any = {
         oopBalance: '',
         revenuBalance: ''
-    }
+    };
 
     // Loader
     isPSInnerLoaderHidden: boolean = true;
 
     // Right side bar
     rightSideBar: boolean = false;
-
+    confirmedILIarray: any = [];
+    usStatesData: any = [];
     selectedPurchaseNumber: any;
     minProformaDate: Date = new Date();
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
@@ -165,7 +166,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     // US States
-    usStatesData: any = [];
+   
     usStatesInfo() {
         this.usStatesData = [];
         this.subscription.add(this.fdDataShareServie.defaultUSSData.subscribe((res) => {
@@ -278,30 +279,32 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     // Get Confirmed InvoiceItemList
-    confirmedILIarray: any = [];
+    
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         this.confirmedRes = [];
         this.po = {};
         this.selectedAllRowData = [];
         this.selectedTotalAmt = 0;
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', this.fdConstantsService.fdComponent.invoiceLineItems);
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        // const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '',
+        // this.fdConstantsService.fdComponent.invoiceLineItems);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
-
-        let endPoints = [invoicesQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        console.log('REs in Confirmed Invoice ', res);
-        arrResults = res;
+        const invoiceObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItems);
+        const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, invoiceObj);
+        // let endPoints = [invoicesQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        // console.log('REs in Confirmed Invoice ', res);
+        const arrResults = res.length ? res : [];
         if (arrResults.length) {
             // this.formatData(arrResults);
             this.getPOListItems(arrResults[0]);

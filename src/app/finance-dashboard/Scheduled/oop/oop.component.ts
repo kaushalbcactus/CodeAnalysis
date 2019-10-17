@@ -226,36 +226,37 @@ export class OopComponent implements OnInit, OnDestroy {
 
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
 
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
         let isManager = false;
         if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1) {
             isManager = true;
         }
-        let obj = Object.assign({}, isManager ? this.fdConstantsService.fdComponent.invoicesOOP : this.fdConstantsService.fdComponent.invoicesOOPCS);
+        const obj = Object.assign({}, isManager ? this.fdConstantsService.fdComponent.invoicesOOP :
+                                                this.fdConstantsService.fdComponent.invoicesOOPCS);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
         if (!isManager) {
-            obj.filter = obj.filter.replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
+            obj.filter = obj.filter.replace('{{UserID}}', this.globalService.sharePointPageObject.userId.toString());
         }
-
+        const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, obj);
         // let obj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesOOP);
         // obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
-        const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);
-        // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
+        // const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);
+        // // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
-        let endPoints = [invoicesQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        arrResults = res;
+        // let endPoints = [invoicesQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        const arrResults = res.length ? res : [];
         if (arrResults.length) {
             for (let j = 0; j < arrResults.length; j++) {
                 const element = arrResults[j];

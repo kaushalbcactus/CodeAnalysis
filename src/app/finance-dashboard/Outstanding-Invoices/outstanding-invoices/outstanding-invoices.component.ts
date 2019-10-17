@@ -42,11 +42,11 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
     formSubmit: any = {
         isSubmit: false
-    }
+    };
     submitBtn: any = {
         isClicked: false
-    }
-
+    };
+    outstandingInv: any = [];
     // Purchase Order Number
     selectedPurchaseNumber: any;
 
@@ -265,33 +265,36 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     }
 
     // Get Proformas InvoiceItemList
-    outstandingInv: any = [];
+   
     async getRequiredData() {
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        let invoicesQuery = '';
-        if (true) {
-            invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name + '', this.fdConstantsService.fdComponent.invoicesForMangerIT);
-        } else {
-            invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name + '', this.fdConstantsService.fdComponent.invoicesForNonManger);
-        }
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        // let invoicesQuery = '';
+        // if (true) {
+        //     invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name + '',
+        //      this.fdConstantsService.fdComponent.invoicesForMangerIT);
+        // } else {
+        //     invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name +
+        //      '', this.fdConstantsService.fdComponent.invoicesForNonManger);
+        // }
+        const outInvObj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesForMangerIT);
+        const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, outInvObj);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
-        let endPoints = [invoicesQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        console.log('REs in Outstanding Invoice ', res);
-        arrResults = res;
+        // let endPoints = [invoicesQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        // console.log('REs in Outstanding Invoice ', res);
+        const arrResults = res.length ? res : [];
         if (arrResults.length) {
             this.formatData(arrResults[0]);
-            console.log(arrResults);
         }
         this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;

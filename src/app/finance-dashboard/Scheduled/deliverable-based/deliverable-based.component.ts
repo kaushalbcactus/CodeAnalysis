@@ -246,37 +246,39 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         this.deliverableBasedRes = [];
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
         let isManager = false;
         if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1) {
             isManager = true;
         }
-        let obj = Object.assign({}, isManager ? this.fdConstantsService.fdComponent.invoicesDel : this.fdConstantsService.fdComponent.invoicesDelCS);
+        const obj = Object.assign({}, isManager ? this.fdConstantsService.fdComponent.invoicesDel :
+                                                this.fdConstantsService.fdComponent.invoicesDelCS);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
         if (!isManager) {
-            obj.filter = obj.filter.replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
+            obj.filter = obj.filter.replace('{{UserID}}', this.globalService.sharePointPageObject.userId.toString());
         }
-        const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);
-        // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
+        const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, obj);
+        // const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);
+        // // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
-        let endPoints = [invoicesQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        console.log('REs in deliverable based ', res);
-        arrResults = res;
+        // let endPoints = [invoicesQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        // console.log('REs in deliverable based ', res);
+        const arrResults = res.length ? res : [];
         if (arrResults.length) {
             for (let j = 0; j < arrResults.length; j++) {
                 const element = arrResults[j];
-                console.log('-- deliverable based ', element);
+                // console.log('-- deliverable based ', element);
                 this.formatData(element);
             }
         }
@@ -285,7 +287,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     showMenu(element) {
         const project = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == element.Title) {
+            if (x.ProjectCode === element.Title) {
                 return x;
             }
         })

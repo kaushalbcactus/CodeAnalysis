@@ -52,7 +52,12 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     };
 
     freelancerVendersRes: any = [];
-
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
 
@@ -259,36 +264,37 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     // On load get Required Data
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
 
         // let obj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForBillable);
         // obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
 
-        let speInfoObj
+        let speInfoObj;
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
         if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('ExpenseApprovers') > -1) {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForBillable);
-            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
-        }
-        else {
+            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
+                                                 .replace('{{EndDate}}', this.DateRange.endDate);
+        } else {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForBillableCS);
-            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate).replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
+            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
+                                                 .replace('{{EndDate}}', this.DateRange.endDate)
+                                                 .replace('{{UserID}}', this.globalService.sharePointPageObject.userId.toString());
         }
+        const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
+        // const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
+        // let endPoints = [sinfoEndpoint];
+        // let userBatchBody;
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
 
-        const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
-        let endPoints = [sinfoEndpoint];
-        let userBatchBody;
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        const arrResults = res;
-        console.log('--oo ', arrResults);
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        const arrResults = res.length ? res : [];
         this.formatData(arrResults[0]);
         this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
@@ -717,8 +723,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     async getPfPfb() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         this.hBQuery = [];
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
+        const batchUrl = [];
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
 
         this.projectInfoLineItem = this.getPInfoByPC();
         this.pcmLevels = [];
@@ -728,38 +735,72 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 this.pcmLevels.push(element);
             }
             this.pcmLevels.push(this.projectInfoLineItem.CMLevel2);
-            console.log('this.pcmLevels ', this.pcmLevels);
+            // console.log('this.pcmLevels ', this.pcmLevels);
         }
 
         // PF
-        let pfObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
-        pfObj.filter = pfObj.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode);
-        this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', pfObj));
+        const pfObj = Object.assign({}, this.queryConfig);
+        pfObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name,
+                                               this.fdConstantsService.fdComponent.projectFinances);
+        pfObj.url = pfObj.url.replace('{{ProjectCode}}', this.scheduleOopInvoice_form.getRawValue().ProjectCode);
+        pfObj.listName = this.constantService.listNames.ProjectFinances.name;
+        pfObj.type = this.constantService.listNames.ProjectFinances.type;
+        batchUrl.push(pfObj);
+        // let obj = {
+        //     filter: this.fdConstantsService.fdComponent.projectFinances.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode),
+        //     select: this.fdConstantsService.fdComponent.projectFinances.select,
+        //     top: this.fdConstantsService.fdComponent.projectFinances.top,
+        //     // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
+        // }
+        // this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', obj));
 
         // PFB
-        let pfbObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO);
-        pfbObj.filter = pfbObj.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode).replace("{{PO}}", this.poItem.Id);
-        this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinanceBreakup.name + '', pfbObj));
+        const pfbObj = Object.assign({}, this.queryConfig);
+        pfbObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinanceBreakup.name,
+                                               this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO);
+        pfbObj.url = pfbObj.url.replace('{{ProjectCode}}', this.scheduleOopInvoice_form.getRawValue().ProjectCode)
+                             .replace('{{PO}}', this.poItem.Id);
+        pfbObj.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
+        pfbObj.type = this.constantService.listNames.ProjectFinanceBreakup.type;
+        batchUrl.push(pfbObj);
+        // let pfbObj = {
+        //     filter: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode).replace("{{PO}}", this.poItem.Id),
+        //     select: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.select,
+        //     top: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.top,
+        // }
+        // this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinanceBreakup.name + '', pfbObj));
 
         // PBB
-        let pbbObj = Object.assign({}, this.fdConstantsService.fdComponent.projectBudgetBreakup);
-        pbbObj.filter = pbbObj.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode);
-        this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectBudgetBreakup.name + '', pbbObj));
+        const pbbObj = Object.assign({}, this.queryConfig);
+        pbbObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectBudgetBreakup.name,
+                                               this.fdConstantsService.fdComponent.projectBudgetBreakup);
+        pbbObj.url = pbbObj.url.replace('{{ProjectCode}}', this.scheduleOopInvoice_form.getRawValue().ProjectCode);
+        pbbObj.listName = this.constantService.listNames.ProjectBudgetBreakup.name;
+        pbbObj.type = this.constantService.listNames.ProjectBudgetBreakup.type;
+        batchUrl.push(pbbObj);
 
-        let endPoints = this.hBQuery;
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
+        // let pbbObj = {
+        //     filter: this.fdConstantsService.fdComponent.projectBudgetBreakup.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode),
+        //     select: this.fdConstantsService.fdComponent.projectBudgetBreakup.select,
+        //     // top: this.fdConstantsService.fdComponent.projectFinanceBreakup.top,
+        // }
+        // this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectBudgetBreakup.name + '', pbbObj));
 
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        arrResults = res;
+
+        // let endPoints = this.hBQuery;
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        const res = await this.spServices.executeBatch(batchUrl);
+        const arrResults = res.length ? res.map(a => a.retItems) : [];
         if (arrResults.length) {
-            console.log('arrResults ', arrResults);
             this.pfListItem = arrResults[0];
             this.pfbListItem = arrResults[1];
             this.pbbListItem = arrResults[2];

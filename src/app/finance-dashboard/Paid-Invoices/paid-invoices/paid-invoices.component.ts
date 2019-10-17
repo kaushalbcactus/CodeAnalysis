@@ -334,25 +334,26 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
     outstandingInv: any = [];
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        let invoicesQuery = '';
-        let obj = Object.assign({}, this.fdConstantsService.fdComponent.paidInvoices);
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        // let invoicesQuery = '';
+        const obj = Object.assign({}, this.fdConstantsService.fdComponent.paidInvoices);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
-        invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name + '', obj);
+        const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, obj);
+        // invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name + '', obj);
 
-        let endPoints = [invoicesQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        console.log('REs in Paid Invoice ', res);
-        arrResults = res;
+        // let endPoints = [invoicesQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        // console.log('REs in Paid Invoice ', res);
+        const arrResults = res.length ? res : [];
         if (arrResults.length) {
             this.formatData(arrResults[0]);
             console.log(arrResults);

@@ -305,34 +305,34 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             this.freelancerVendersRes = await this.fdDataShareServie.getVendorFreelanceData();
         }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
 
-        let speInfoObj
+        let speInfoObj;
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
         if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('ExpenseApprovers') > -1) {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfo);
-            speInfoObj.filter = speInfoObj.filter.replace("{{Status}}", "Created");
-            speInfoObj.orderby = speInfoObj.orderby.replace("{{Status}}", "Created");
-        }
-        else {
+            speInfoObj.filter = speInfoObj.filter.replace('{{Status}}', 'Created');
+            speInfoObj.orderby = speInfoObj.orderby.replace('{{Status}}', 'Created');
+        } else {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoCS);
-            speInfoObj.filter = speInfoObj.filter.replace("{{Status}}", "Created").replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
-            speInfoObj.orderby = speInfoObj.orderby.replace("{{Status}}", "Created");
+            speInfoObj.filter = speInfoObj.filter.replace('{{Status}}', 'Created')
+                                                 .replace('{{UserID}}', this.globalService.sharePointPageObject.userId.toString());
+            speInfoObj.orderby = speInfoObj.orderby.replace('{{Status}}', 'Created');
         }
+        const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
+        // const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
+        // let endPoints = [sinfoEndpoint];
+        // let userBatchBody;
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
 
-        const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
-        let endPoints = [sinfoEndpoint];
-        let userBatchBody;
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        const arrResults = res;
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        const arrResults = res.length ? res : [];
         console.log('--oo ', arrResults);
         this.formatData(arrResults[0]);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;

@@ -50,7 +50,13 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     currentUserInfoData: any;
     groupInfo: any;
     groupITInfo: any;
-
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+    };
+    hBQuery: any = [];
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
 
@@ -215,37 +221,45 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         }
     }
 
-    hBQuery: any = [];
+    
     async getRequiredData() {
         this.hourlyBasedRes = [];
         this.hBQuery = [];
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        for (let j = 0; j < this.projectCodes.length; j++) {
-            const element = this.projectCodes[j];
-            let obj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
-            obj.filter = obj.filter.replace("{{ProjectCode}}", element.ProjectCode);
-            // let obj1 = {
-            //     filter: this.fdConstantsService.fdComponent.projectFinances.filter.replace("{{ProjectCode}}", element.ProjectCode),
-            //     select: this.fdConstantsService.fdComponent.projectFinances.select,
-            //     top: this.fdConstantsService.fdComponent.projectFinances.top,
-            //     // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
-            // }
-            this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', obj));
-        }
+        const batchUrl = [];
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        // for (let j = 0; j < this.projectCodes.length; j++) {
+        //     const element = this.projectCodes[j];
+        // let obj = {
+        //     filter: this.fdConstantsService.fdComponent.projectFinances.filter.replace("{{ProjectCode}}", element.ProjectCode),
+        //     select: this.fdConstantsService.fdComponent.projectFinances.select,
+        //     top: this.fdConstantsService.fdComponent.projectFinances.top,
+        //     // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
+        // }
+        // this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', obj));
+        // }
+        this.projectCodes.forEach(element => {
+            const prjObj = Object.assign({}, this.queryConfig);
+            prjObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name,
+                                                    this.fdConstantsService.fdComponent.projectFinances);
+            prjObj.url = prjObj.url.replace('{{ProjectCode}}', element.ProjectCode);
+            prjObj.listName = this.constantService.listNames.ProjectFinances.name;
+            prjObj.type = this.constantService.listNames.ProjectFinances.type;
+            batchUrl.push(prjObj);
+        });
+        // let endPoints = this.hBQuery;
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
 
-        let endPoints = this.hBQuery;
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        arrResults = res;
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        const res = await this.spServices.executeBatch(batchUrl);
+        const arrResults = res.length ? res.map(a => a.retItems) : [];
         if (arrResults.length) {
             this.formatData(arrResults);
         }

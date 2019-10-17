@@ -54,8 +54,14 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     // MenuList
     expenditureMenuList: any = [];
+    hBQuery: any = [];
     // hideDatesSectiuon: boolean = false;
-
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
 
     @ViewChild("target", { static: true }) MyProp: ElementRef;
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
@@ -350,24 +356,28 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     freelancerVendersRes: any = [];
     async getVendorFreelanceData() {
-        let data = [
-            { query: this.spServices.getReadURL('' + this.constantService.listNames.VendorFreelancer.name + '', this.fdConstantsService.fdComponent.addUpdateFreelancer) },
-        ]
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        // let vfQuery = this.spServices.getReadURL('' + this.constantService.listNames.VendorFreelancer.name + '', this.fdConstantsService.fdComponent.addUpdateFreelancer);
+        // let data = [
+        //     { query: this.spServices.getReadURL('' + this.constantService.listNames.VendorFreelancer.name + 
+        //     '', this.fdConstantsService.fdComponent.addUpdateFreelancer) },
+        // ]
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        // // let vfQuery = this.spServices.getReadURL('' + this.constantService.listNames.VendorFreelancer.name +
+        //    '', this.fdConstantsService.fdComponent.addUpdateFreelancer);
 
-        let endPoints = data;
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element.query);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody);
-        arrResults = res;
+        // let endPoints = data;
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element.query);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody);
+        const vendorObj = Object.assign({}, this.fdConstantsService.fdComponent.addUpdateFreelancer);
+        const res = await this.spServices.readItems(this.constantService.listNames.VendorFreelancer.name, vendorObj);
+        const arrResults = res.length ? res : [];
         if (arrResults.length) {
             // console.log(arrResults);
             this.freelancerVendersRes = arrResults[0];
@@ -511,34 +521,38 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     }
 
 
-    hBQuery: any = [];
+   
     async getPFByTitle(ProjectCode: any, index: number) {
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        let obj = {
-            filter: this.fdConstantsService.fdComponent.projectFinances.filter.replace("{{ProjectCode}}", ProjectCode),
-            select: this.fdConstantsService.fdComponent.projectFinances.select,
-            top: this.fdConstantsService.fdComponent.projectFinances.top,
-            // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
-        }
-        const pfQuery = this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', obj);
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        const pfObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
+        pfObj.filter = pfObj.filter.replace("{{ProjectCode}}", ProjectCode);
+        const res = await this.spServices.readItems(this.constantService.listNames.ProjectFinances.name, pfObj);
+        // let obj = {
+        //     filter: this.fdConstantsService.fdComponent.projectFinances.filter.replace("{{ProjectCode}}", ProjectCode),
+        //     select: this.fdConstantsService.fdComponent.projectFinances.select,
+        //     top: this.fdConstantsService.fdComponent.projectFinances.top,
+        //     // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
+        // }
+        // const pfQuery = this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', obj);
 
-        let endPoints = [pfQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
+        // let endPoints = [pfQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
 
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody) //.subscribe(res => {
-        arrResults = res;
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody) //.subscribe(res => {
+        const arrResults = res.length ? res : [];
         if (arrResults.length) {
             console.log(arrResults[0]);
             if (!arrResults[0].length) {
-                this.messageService.add({ key: 'expenseInfoToast', severity: 'info', summary: 'Info message', detail: 'Currency not found for selected project / client.', life: 4000 });
+                this.messageService.add({ key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
+                                          detail: 'Currency not found for selected project / client.', life: 4000 });
                 this.totalLineItems[index] = {};
                 this.selectedPCArrays[index].ProjectCode = '';
                 this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
