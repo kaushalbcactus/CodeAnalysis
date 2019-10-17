@@ -1409,6 +1409,15 @@ export class TimelineComponent implements OnInit, OnDestroy {
     });
   }
 
+  sortByDate(array, prop) {
+    array.sort(function (a, b) {
+      a = new Date(a.data[prop]).getTime();
+      b = new Date(b.data[prop]).getTime();
+      return a - b;
+    });
+    return array;
+  }
+
 
   // **************************************************************************************************
   // Get  Milestone Data After Restructure (Drag & Drop)
@@ -1582,6 +1591,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             submile.forEach(element => {
               expand = expand === false ? (element.data.status === 'Not Saved' ? true : false) : true;
               if (element.children !== undefined) {
+                element.children = this.sortByDate(element.children,'pStart');
                 element.children.forEach(task => {
                   element.expanded = element.expanded === false ? (task.data.status === 'Not Saved' ? true : false) : true;
                 });
@@ -1651,6 +1661,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               }
             });
             let mileexpand = false;
+            temptasks = this.sortByDate(temptasks,'pStart');
             temptasks.forEach(element => {
               mileexpand = mileexpand == false ? (element.data.status === 'Not Saved' ? true : false) : true;
             });
@@ -1974,12 +1985,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.errorMessageCount = 0;
     AllTasks.forEach(task => {
 
-
-      if (task.nextTask) {
+      if (task.nextTask && task.status !== 'Completed'
+      && task.status !== 'Auto Closed' && task.status !== 'Deleted') {
         const nextTasks = task.nextTask.split(';');
         const AllNextTasks = AllTasks.filter(c => (nextTasks.indexOf(c.pName) > -1));
 
-        const SDTask = AllNextTasks.find(c => c.pStart < task.pEnd);
+        const SDTask = AllNextTasks.find(c => c.pStart < task.pEnd && c.status !== 'Completed' 
+        && c.status !== 'Auto Closed' && c.status !== 'Deleted'  && c.allowStart === false);
         if (SDTask) {
           this.errorMessageCount++;
           this.messageService.add({
@@ -2538,8 +2550,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
 
     if (milestoneTask.IsCentrallyAllocated === 'Yes' && milestoneTask.status === 'Not Started') {
+      milestoneTask.ActiveCA = 'Yes';
       if (bAdd) {
-        milestoneTask.ActiveCA = 'Yes';
         //// send task creation email
         this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, 'New central task created'
           + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'New central task created');
@@ -2605,7 +2617,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           SkillLevel: milestoneTask.skillLevel,
           IsCentrallyAllocated: milestoneTask.IsCentrallyAllocated,
           CentralAllocationDone: milestoneTask.CentralAllocationDone,
-          // ActiveCA: milestoneTask.ActiveCA
+          ActiveCA: milestoneTask.ActiveCA
         }
     );
     return {
@@ -3592,7 +3604,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           }
         }
 
-        if (previousNode !== undefined && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart)) {
+        if (previousNode !== undefined && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart) && milestone.data.allowStart === false) {
           let errormessage = 'Previous Client Review';
           if (previousNode.pName !== 'Client Review') {
             errormessage = previousNode.pName;

@@ -568,13 +568,13 @@ export class PMCommonService {
     addObj.ProjectAttributes.ActiveCM1 = addObj.ProjectAttributes.ActiveCM1.filter(function (el) {
       return el != null;
     });
-    addObj.ProjectAttributes.ActiveDelivery1 = addObj.ProjectAttributes.ActiveDelivery1.filter(function (el) {
-      return el != null;
-    });
     addObj.ProjectAttributes.ActiveCM1.forEach(element => {
       allOperationId.push(element);
     });
     if (addObj.ProjectAttributes.ActiveDelivery1 && addObj.ProjectAttributes.ActiveDelivery1.length) {
+      addObj.ProjectAttributes.ActiveDelivery1 = addObj.ProjectAttributes.ActiveDelivery1.filter(function (el) {
+        return el != null;
+      });
       addObj.ProjectAttributes.ActiveDelivery1.forEach(element => {
         allOperationId.push(element);
       });
