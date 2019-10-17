@@ -102,7 +102,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
     deliverable: [],
     account: [],
   };
-
+  public queryConfig = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
   selected: any;
   private contextMenuOptions: MenuItem[];
   milestoneData: TreeNode[] = [];
@@ -229,14 +234,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
     let milestoneSubmilestones = [];
     let milestoneCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.milestone);
     milestoneCall.filter = milestoneCall.filter.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode);
-    const milestoneUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', milestoneCall);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, milestoneUrl);
-
+    // const milestoneUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', milestoneCall);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, milestoneUrl);
+    const response = await this.spServices.readItems(this.constants.listNames.Schedules.name, milestoneCall);
+    this.allTasks = response.length ? response : [];
     let allRetrievedTasks = [];
     this.milestoneData = [];
-    this.allTasks = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-    console.log(this.allTasks);
+    // this.allTasks = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     if (this.allTasks.length > 0) {
 
       if (this.allTasks[0].length > 0) {
@@ -2533,7 +2537,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     updatedCurrentMilestone = mile && mile.length && task && task.length ? true : false;
 
-    const responseInLines = this.updateProjectInformation(updatedCurrentMilestone, restructureMilstoneStr, updatedResources, batchContents, changeSetId, batchGuid);
+    const responseInLines = await this.updateProjectInformation(updatedCurrentMilestone, restructureMilstoneStr, updatedResources, batchContents, changeSetId, batchGuid);
     if (responseInLines.length > 0) {
       let arrResponse = [];
       const batchGuid = this.spServices.generateUUID();
@@ -2774,7 +2778,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     };
   }
 
-  updateProjectInformation(currentMilestoneUpdated, restructureMilstoneStr, updatedResources, batchContents, changeSetId, batchGuid) {
+  async updateProjectInformation(currentMilestoneUpdated, restructureMilstoneStr, updatedResources, batchContents, changeSetId, batchGuid) {
     let updateProjectRes = {};
     const projectID = this.oProjectDetails.projectID;
     const currentMilestone = this.oProjectDetails.currentMilestone;
@@ -2794,18 +2798,18 @@ export class TimelineComponent implements OnInit, OnDestroy {
       PrevStatus: currentMilestoneUpdated ? this.sharedObject.oTaskAllocation.oProjectDetails.status : this.sharedObject.oTaskAllocation.oProjectDetails.prevstatus
     };
 
+    const response = await this.spServices.updateItem(this.constants.listNames.ProjectInformation.name, +projectID, updateProjectRes, this.constants.listNames.ProjectInformation.type);
+    // const projectInfoEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" +
+    //   this.constants.listNames.ProjectInformation.name + "')/items(" + +(projectID) + ")";
 
-    const projectInfoEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" +
-      this.constants.listNames.ProjectInformation.name + "')/items(" + +(projectID) + ")";
-
-    this.spServices.getChangeSetBodySC(batchContents, changeSetId, projectInfoEndpoint, JSON.stringify(updateProjectRes), false);
-    batchContents.push('--changeset_' + changeSetId + '--');
-    const batchBody = batchContents.join('\r\n');
-    const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-    batchBodyContent.push('--batch_' + batchGuid + '--');
-    const batchBodyContents = batchBodyContent.join('\r\n');
-    const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
-    const responseInLines = response.split('\n');
+    // this.spServices.getChangeSetBodySC(batchContents, changeSetId, projectInfoEndpoint, JSON.stringify(updateProjectRes), false);
+    // batchContents.push('--changeset_' + changeSetId + '--');
+    // const batchBody = batchContents.join('\r\n');
+    // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+    // batchBodyContent.push('--batch_' + batchGuid + '--');
+    // const batchBodyContents = batchBodyContent.join('\r\n');
+    // const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
+    const responseInLines = response[0].split('\n');
     return responseInLines;
   }
 
@@ -3236,23 +3240,30 @@ export class TimelineComponent implements OnInit, OnDestroy {
     });
     // tslint:disable-next-line
 
-    const batchGuid = this.spServices.generateUUID();
-    const batchContents = new Array();
-    const changeSetId = this.spServices.generateUUID();
+    // const batchGuid = this.spServices.generateUUID();
+    // const batchContents = new Array();
+    // const changeSetId = this.spServices.generateUUID();
+    const batchUrl = [];
     /// Body for project information update
     // tslint:disable
 
     if (!submilePresentInCurrent) {
-      const endpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.ProjectInformation.name + "')" +
-        "/items(" + +(projectID) + ")";
-      // tslint:enable
+      // const endpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.ProjectInformation.name + "')" +
+      //   "/items(" + +(projectID) + ")";
+      // // tslint:enable
       const updateProjectBody = JSON.stringify({
         __metadata: { type: 'SP.Data.ProjectInformationListItem' },
         Milestone: newCurrentMilestoneText,
         Status: 'In Progress',
         PrevStatus: this.sharedObject.oTaskAllocation.oProjectDetails.status
       });
-      this.spServices.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateProjectBody, false);
+      const taskObj = Object.assign({}, this.queryConfig);
+      taskObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +projectID);
+      taskObj.data = updateProjectBody;
+      taskObj.listName = this.constants.listNames.ProjectInformation.name;
+      taskObj.type = this.constants.listNames.ProjectInformation.type;
+      batchUrl.push(taskObj);
+      // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateProjectBody, false);
     }
 
 
@@ -3279,34 +3290,32 @@ export class TimelineComponent implements OnInit, OnDestroy {
           prevMilestoneTasks = prevMilestoneTasks.filter((objt) => {
             return objt.status !== 'Deleted' && objt.status !== 'Abandon' && objt.status !== 'Completed';
           });
-
+          let milestoneID = -1;
           if (submilePresentInCurrent) {
-
+            milestoneID = +element.data.pID;
             const subMileStatus = prevMilestoneTasks.filter(c => c.itemType !== 'Client Review').every(this.checkStatus);
-
             element.data.status = subMileStatus ? 'Deleted' : 'Completed';
-            pMilestoneEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(element.data.pID) + ")";
-
             updatePMilestoneBody = JSON.stringify({
               __metadata: { type: 'SP.Data.SchedulesListItem' },
               Status: subMileStatus ? 'Deleted' : 'Completed'
             });
-
           }
           else {
-            pMilestoneEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(element.pID) + ")";
-
-
-
+            milestoneID = +element.pID;
             updatePMilestoneBody = JSON.stringify({
               __metadata: { type: 'SP.Data.SchedulesListItem' },
               Status: 'Completed',
               SubMilestones: this.getSubMilestoneStatus(currentMilestone[0], 'Completed').join(';#')
             });
           }
-
+          const milestoneObj = Object.assign({}, this.queryConfig);
+          milestoneObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +milestoneID);
+          milestoneObj.data = updatePMilestoneBody;
+          milestoneObj.listName = this.constants.listNames.Schedules.name;
+          milestoneObj.type = this.constants.listNames.Schedules.type;
+          batchUrl.push(milestoneObj);
           // tslint:enable
-          this.spServices.getChangeSetBodySC(batchContents, changeSetId, pMilestoneEndpoint, updatePMilestoneBody, false);
+          // this.spServices.getChangeSetBodySC(batchContents, changeSetId, pMilestoneEndpoint, updatePMilestoneBody, false);
           for (const task of prevMilestoneTasks) {
             if (task.status === 'Not Confirmed') {
               if (task.itemType !== 'Client Review') {
@@ -3324,7 +3333,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             task.ActiveCA = 'No';
             // task.allowStart =  true;
             // tslint:disable
-            const endpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(task.pID) + ")";
+            // const endpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(task.pID) + ")";
             // tslint:enable
             const updateSchedulesBody = JSON.stringify({
               __metadata: { type: 'SP.Data.SchedulesListItem' },
@@ -3332,7 +3341,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
               AllowCompletion: 'Yes',
               ActiveCA: task.ActiveCA
             });
-            this.spServices.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateSchedulesBody, false);
+            const taskUpdateObj = Object.assign({}, this.queryConfig);
+            taskUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +task.pID);
+            taskUpdateObj.data = updateSchedulesBody;
+            taskUpdateObj.listName = this.constants.listNames.Schedules.name;
+            taskUpdateObj.type = this.constants.listNames.Schedules.type;
+            batchUrl.push(taskUpdateObj);
+            // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateSchedulesBody, false);
           }
         });
       }
@@ -3398,26 +3413,34 @@ export class TimelineComponent implements OnInit, OnDestroy {
           Status: element.status,
           ActiveCA: element.ActiveCA
         });
-        spservice.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateSchedulesBody, false);
+        const taskCAUpdateObj = Object.assign({}, this.queryConfig);
+        taskCAUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +element.pID);
+        taskCAUpdateObj.data = updateSchedulesBody;
+        taskCAUpdateObj.listName = this.constants.listNames.Schedules.name;
+        taskCAUpdateObj.type = this.constants.listNames.Schedules.type;
+        batchUrl.push(taskCAUpdateObj);
+        // spservice.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateSchedulesBody, false);
       }
     });
-    let cMilestoneEndpoint;
+    const cMilestoneEndpoint = '';
     let updateCMilestoneBody;
-
+    let curMilestoneID = -1;
     if (submilePresentInCurrent) {
+      curMilestoneID = +currentMilestone[0].data.pID;
       // tslint:disable
-      cMilestoneEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl +
-        "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name +
-        "')/items(" + (currentMilestone[0].data.pID) + ")";
-      // tslint:enable
+      // cMilestoneEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl +
+      //   "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name +
+      //   "')/items(" + (currentMilestone[0].data.pID) + ")";
+      // // tslint:enable
       updateCMilestoneBody = JSON.stringify({
         __metadata: { type: 'SP.Data.SchedulesListItem' },
         Status: 'In Progress',
         SubMilestones: this.getSubMilestoneStatus(currentMilestone[0], '').join(';#')
       });
     } else {
+      curMilestoneID = +newCurrentMilestone[0].data.pID;
       // tslint:disable
-      cMilestoneEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + (newCurrentMilestone[0].data.pID) + ")";
+      // cMilestoneEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + (newCurrentMilestone[0].data.pID) + ")";
       // tslint:enable
       updateCMilestoneBody = JSON.stringify({
         __metadata: { type: 'SP.Data.SchedulesListItem' },
@@ -3426,18 +3449,24 @@ export class TimelineComponent implements OnInit, OnDestroy {
       });
     }
     // tslint:disable
-
-    this.spServices.getChangeSetBodySC(batchContents, changeSetId, cMilestoneEndpoint, updateCMilestoneBody, false);
+    const taskCMUpdateObj = Object.assign({}, this.queryConfig);
+    taskCMUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, curMilestoneID);
+    taskCMUpdateObj.data = updateCMilestoneBody;
+    taskCMUpdateObj.listName = this.constants.listNames.Schedules.name;
+    taskCMUpdateObj.type = this.constants.listNames.Schedules.type;
+    batchUrl.push(taskCMUpdateObj);
+    // this.spServices.getChangeSetBodySC(batchContents, changeSetId, cMilestoneEndpoint, updateCMilestoneBody, false);
 
     // updated by Maxwell end
-    batchContents.push('--changeset_' + changeSetId + '--');
-    const batchBody = batchContents.join('\r\n');
-    const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-    batchBodyContent.push('--batch_' + batchGuid + '--');
-    const batchBodyContents = batchBodyContent.join('\r\n');
-    const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
-    const responseInLines = response.split('\n');
-    if (responseInLines.length > 0) {
+    // batchContents.push('--changeset_' + changeSetId + '--');
+    // const batchBody = batchContents.join('\r\n');
+    // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+    // batchBodyContent.push('--batch_' + batchGuid + '--');
+    // const batchBodyContents = batchBodyContent.join('\r\n');
+    // const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
+    // const responseInLines = response.split('\n');
+    const response = await this.spServices.executeBatch(batchUrl);
+    if (response.length > 0) {
       // this.callReloadRes();
       await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
       this.getMilestones(false);

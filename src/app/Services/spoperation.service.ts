@@ -705,37 +705,37 @@ export class SPOperationService {
 
 
   // added function From old sharepoint service
-  async getDataByApi(batchGuid, batchBody) {
+  // async getDataByApi(batchGuid, batchBody) {
 
 
-    batchBody.push('--batch_' + batchGuid + '--');
-    const userBatchBody = batchBody.join('\r\n');
-    const arrResults = [];
+  //   batchBody.push('--batch_' + batchGuid + '--');
+  //   const userBatchBody = batchBody.join('\r\n');
+  //   const arrResults = [];
 
 
-    let headers = new Headers();
-    headers.append('Content-Type', 'multipart/mixed; boundary="batch_' + batchGuid + '"');
-    headers.append('X-RequestDigest', $('#__REQUESTDIGEST').val());
-    let options = new RequestOptions({ headers: headers });
+  //   let headers = new Headers();
+  //   headers.append('Content-Type', 'multipart/mixed; boundary="batch_' + batchGuid + '"');
+  //   headers.append('X-RequestDigest', $('#__REQUESTDIGEST').val());
+  //   let options = new RequestOptions({ headers: headers });
 
-    let apiURL = this.globalServices.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
-    const res = await this.http.post(apiURL, userBatchBody, options).toPromise();
+  //   let apiURL = this.globalServices.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
+  //   const res = await this.http.post(apiURL, userBatchBody, options).toPromise();
 
 
-    if (res["_body"]) {
-      const responseInLines = res["_body"].split('\r\n');
-      //   console.log(responseInLines);
-      for (let currentLine = 0; currentLine < responseInLines.length; currentLine++) {
-        try {
-          const tryParseJson = JSON.parse(responseInLines[currentLine]);
-          arrResults.push(tryParseJson.d.hasOwnProperty('results') ? tryParseJson.d.results : tryParseJson.d);
-        } catch (e) {
-        }
-      }
+  //   if (res["_body"]) {
+  //     const responseInLines = res["_body"].split('\r\n');
+  //     //   console.log(responseInLines);
+  //     for (let currentLine = 0; currentLine < responseInLines.length; currentLine++) {
+  //       try {
+  //         const tryParseJson = JSON.parse(responseInLines[currentLine]);
+  //         arrResults.push(tryParseJson.d.hasOwnProperty('results') ? tryParseJson.d.results : tryParseJson.d);
+  //       } catch (e) {
+  //       }
+  //     }
 
-    }
-    return arrResults;
-  }
+  //   }
+  //   return arrResults;
+  // }
   executeBatchPostRequestByRestAPI(batchGuid, batchBody) {
     // this.getData(batchGuid, batchBody);
     let resp = '';

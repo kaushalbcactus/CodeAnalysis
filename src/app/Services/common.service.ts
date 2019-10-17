@@ -14,6 +14,12 @@ declare var $;
 // tslint:disable
 export class CommonService {
     response;
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+    };
     batchContents = new Array();
     public sharedTaskAllocateObj = this.sharedObject.oTaskAllocation;
     constructor(private pmObject: PMObjectService,
@@ -771,63 +777,75 @@ export class CommonService {
     async getProjectResources(projectCode, bFirstCall, bSaveRes) {
 
 
-        this.batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        let projectResource = '';
-
+        // this.batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        // let projectResource = '';
+        const batchUrl = [];
 
         // ***********************************************************************************************************************************
         // Project Information
         // ***********************************************************************************************************************************
 
-
-        let projectResourcesCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.projectResources);
-        projectResourcesCall.filter = projectResourcesCall.filter.replace(/{{ProjectCode}}/gi, projectCode);
-        projectResource = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', projectResourcesCall);
-        this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectResource);
+        let prjResObj = Object.assign({}, this.queryConfig);
+        prjResObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name, this.taskAllocationService.taskallocationComponent.projectResources);
+        prjResObj.url = prjResObj.url.replace(/{{ProjectCode}}/gi, projectCode);
+        prjResObj.listName = this.constants.listNames.ProjectInformation.name;
+        prjResObj.type = this.constants.listNames.ProjectInformation.type;
+        batchUrl.push(prjResObj);
+        // let projectResourcesCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.projectResources);
+        // projectResourcesCall.filter = projectResourcesCall.filter.replace(/{{ProjectCode}}/gi, projectCode);
+        // projectResource = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', projectResourcesCall);
+        // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectResource);
 
         // ***********************************************************************************************************************************
         // Budget Hours 
         // ***********************************************************************************************************************************
-        let budgetsCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.Budgets);
-        budgetsCall.filter = budgetsCall.filter.replace(/{{ProjectCode}}/gi, projectCode);
-        const budgetHours = this.spServices.getReadURL('' + this.constants.listNames.ProjectFinances.name + '', budgetsCall);
-        this.spServices.getBatchBodyGet(this.batchContents, batchGuid, budgetHours);
+        // let budgetsCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.Budgets);
+        // budgetsCall.filter = budgetsCall.filter.replace(/{{ProjectCode}}/gi, projectCode);
+        // const budgetHours = this.spServices.getReadURL('' + this.constants.listNames.ProjectFinances.name + '', budgetsCall);
+        // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, budgetHours);
 
+        let budgetObj = Object.assign({}, this.queryConfig);
+        budgetObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectFinances.name, this.taskAllocationService.taskallocationComponent.Budgets);
+        budgetObj.url = budgetObj.url.replace(/{{ProjectCode}}/gi, projectCode);
+        budgetObj.listName = this.constants.listNames.ProjectFinances.name;
+        budgetObj.type = this.constants.listNames.ProjectFinances.type;
+        batchUrl.push(budgetObj);
         if (bFirstCall) {
-
-
 
             // ***********************************************************************************************************************************
             // Resources
             // ***********************************************************************************************************************************
-            let resourceCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.Resources);
-            resourceCall.filter = resourceCall.filter.replace(/{{enable}}/gi, 'Yes');
-            const Resources = this.spServices.getReadURL('' + this.constants.listNames.ResourceCategorization.name + '', resourceCall);
-            this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Resources);
+            // let resourceCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.Resources);
+            // resourceCall.filter = resourceCall.filter.replace(/{{enable}}/gi, 'Yes');
+            // const Resources = this.spServices.getReadURL('' + this.constants.listNames.ResourceCategorization.name + '', resourceCall);
+            // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Resources);
+
+            let resourceObj = Object.assign({}, this.queryConfig);
+            resourceObj.url = this.spServices.getReadURL(this.constants.listNames.ResourceCategorization.name, this.taskAllocationService.taskallocationComponent.Resources);
+            resourceObj.url = resourceObj.url.replace(/{{enable}}/gi, 'Yes');
+            resourceObj.listName = this.constants.listNames.ResourceCategorization.name;
+            resourceObj.type = this.constants.listNames.ResourceCategorization.type;
+            batchUrl.push(resourceObj);
 
             // ***********************************************************************************************************************************
             // Central Group
             // ***********************************************************************************************************************************
-            let cgCall = this.taskAllocationService.taskallocationComponent.getUserFromGroup.UserFromGroup;
-            const CentralGroup = cgCall.replace("{{groupName}}", 'CA_Admin');
-            this.spServices.getBatchBodyGet(this.batchContents, batchGuid, CentralGroup);
+            // let cgCall = this.taskAllocationService.taskallocationComponent.getUserFromGroup.UserFromGroup;
+            // const CentralGroup = cgCall.replace("{{groupName}}", 'CA_Admin');
+            // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, CentralGroup);
+            let grpResourceObj = Object.assign({}, this.queryConfig);
+            grpResourceObj.url = this.spServices.getGroupURL(this.constants.Groups.CDAdmin);
+            grpResourceObj.listName = this.constants.Groups.CDAdmin;
+            batchUrl.push(grpResourceObj);
         }
 
-        this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
+        // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+           const arrResult = await this.spServices.executeBatch(batchUrl);
+           this.response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
         if (this.response.length > 0) {
-
-
             this.sharedTaskAllocateObj.oResources = this.response.length > 2 ? this.response[2] : this.sharedTaskAllocateObj.oResources;
             this.sharedTaskAllocateObj.oCentralGroup = this.response.length > 2 ? this.response[3] : this.sharedTaskAllocateObj.oCentralGroup;
-            console.log("Central group");
-
-            console.log(this.sharedTaskAllocateObj.oCentralGroup);
-
-
-
-
             const project = this.response[0] !== "" ? this.response[0].length > 0 ? this.setLevel1Email(this.response[0][0]) : [] : [];
             if (project.length > 0) {
                 const returnedProject = project[0];
@@ -865,12 +883,12 @@ export class CommonService {
                     this.batchContents = new Array();
                     let clCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.ClientLegal);
                     clCall.filter = clCall.filter.replace(/{{ProjectDetailsaccount}}/gi, this.sharedTaskAllocateObj.oProjectDetails.account);
-                    const clientLegalurl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', clCall);
-                    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, clientLegalurl);
-
-                    var Data = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-                    if (Data.length > 0) {
-                        this.sharedTaskAllocateObj.oLegalEntity = Data[0];
+                    // const clientLegalurl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', clCall);
+                    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, clientLegalurl);
+                    // var Data = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+                    const data = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, clCall);
+                    if (data.length > 0) {
+                        this.sharedTaskAllocateObj.oLegalEntity = data[0];
                     }
                     return project;
                 }

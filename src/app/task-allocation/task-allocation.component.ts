@@ -172,18 +172,17 @@ export class TaskAllocationComponent implements OnInit {
   // Central Group
   // ***********************************************************************************************************************************
   public async checkIfAccessAllowedToUser(code) {
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
     const checkAccessCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.checkAccess);
     checkAccessCall.filter = checkAccessCall.filter.replace(/{{code}}/gi, code);
-    const checkAccessUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', checkAccessCall);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, checkAccessUrl);
+    // const checkAccessUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', checkAccessCall);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, checkAccessUrl);
+    // const project = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    const project = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name,  checkAccessCall);
     let arrayOperationResources;
-
-    const project = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
     if (project.length > 0) {
-      arrayOperationResources = project[0][0].AllOperationresources.results != null ? project[0][0].AllOperationresources.results : '';
+      arrayOperationResources = project[0].AllOperationresources.results != null ? project[0].AllOperationresources.results : '';
       const operationalResouce = arrayOperationResources.length > 0 ? (arrayOperationResources.find
         (c => c.ID === this.globalObject.sharePointPageObject.userId) !== undefined ?
         arrayOperationResources.find(c => c.ID === this.globalObject.sharePointPageObject.userId) : '') : '';
