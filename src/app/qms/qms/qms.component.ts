@@ -29,7 +29,7 @@ export class QMSComponent implements OnInit {
     listName: ''
   };
   constructor(private global: GlobalService, private globalConstant: ConstantsService,
-              private spService: SPOperationService, private spcommon: SPCommonService, private qmsConstant: QMSConstantsService) { }
+    private spService: SPOperationService, private spcommon: SPCommonService, private qmsConstant: QMSConstantsService) { }
 
   ngOnInit() {
     this.initialize();
@@ -54,10 +54,10 @@ export class QMSComponent implements OnInit {
     this.hideReviewerTaskPending = result[1].retItems.length ? false : true;
     // this.hideCD = result[2].retItems.length ? false : true;
     this.global.currentUser.groups = result[2].retItems ? result[2].retItems.Groups.results ? result[2].retItems.Groups.results : [] : [];
-    this.hideCD = this.displayCFTab();
+    // this.hideCD = this.displayCFTab();
     this.displayManagerTab();
     this.displayAdminView();
-    this.global.viewTabsPermission.hideAdmin = this.hideAdmin;   
+    this.global.viewTabsPermission.hideAdmin = this.hideAdmin;
     resource = this.global.allResources.length > 0 ?
       this.global.allResources.filter(u => u.UserName.ID === this.global.sharePointPageObject.userId) : [];
     if (resource && resource.length > 0) {
@@ -70,9 +70,9 @@ export class QMSComponent implements OnInit {
     if (!this.hideReviewerTaskPending) {
       this.navLinks.push({ routerLink: ['/qms/pendingFeedback'], label: 'Pending Feedback', value: 'PendingFeedback' });
     }
-    if (!this.hideCD) {
-      this.navLinks.push({ routerLink: ['/qms/clientFeedback'], label: 'Client Feedback', value: 'clientFeedback' });
-    }
+    // if (!this.hideCD) {
+    this.navLinks.push({ routerLink: ['/qms/clientFeedback'], label: 'Client Feedback', value: 'clientFeedback' });
+    // }
   }
   /**
    * Get all resources from resource categorization list
@@ -138,32 +138,32 @@ export class QMSComponent implements OnInit {
     batchURL.push(getResourceData);
     return batchURL;
   }
-  
+
   /**
    *  Display Client feedback tab if current user have atleast 1 CD as ASD/TL(Delivery Lead)
    */
-  displayCFTab() {
-    const isCDAdmin = this.global.currentUser.groups.filter(u => u.Title === this.globalConstant.Groups.CDAdmin);
-    const isPFAdmin = this.global.currentUser.groups.filter(u => u.Title === this.globalConstant.Groups.PFAdmin);
-    return isCDAdmin.length || isPFAdmin.length ? false : true;
-    // const cdComponent = this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent;
-    // const batchURL = [];
-    // const previousYear = new Date().getFullYear() - 2;
-    // const startDate = new Date(previousYear, 11, 31).toISOString();
-    // const endDate = new Date().toISOString();
-    // // REST API url in contants file
+  // displayCFTab() {
+  //   const isCDAdmin = this.global.currentUser.groups.filter(u => u.Title === this.globalConstant.Groups.CDAdmin);
+  //   const isPFAdmin = this.global.currentUser.groups.filter(u => u.Title === this.globalConstant.Groups.PFAdmin);
+  //   return isCDAdmin.length || isPFAdmin.length ? false : true;
+  //   // const cdComponent = this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent;
+  //   // const batchURL = [];
+  //   // const previousYear = new Date().getFullYear() - 2;
+  //   // const startDate = new Date(previousYear, 11, 31).toISOString();
+  //   // const endDate = new Date().toISOString();
+  //   // // REST API url in contants file
 
-    // const getQCData = Object.assign({}, this.options);
-    // getQCData.url = this.spService.getReadURL(this.globalConstant.listNames.QualityComplaints.name, cdComponent.getQC);
-    // getQCData.url = getQCData.url.replace('{{startDate}}', startDate)
-    //   .replace('{{endDate}}', endDate)
-    //   .replace('{{TopCount}}', '' + itemCount)
-    //   .replace('{{statusFilter}}', '');
-    // getQCData.listName = this.globalConstant.listNames.QualityComplaints.name;
-    // getQCData.type = 'GET';
-    // batchURL.push(getQCData);
-    // return batchURL;
-  }
+  //   // const getQCData = Object.assign({}, this.options);
+  //   // getQCData.url = this.spService.getReadURL(this.globalConstant.listNames.QualityComplaints.name, cdComponent.getQC);
+  //   // getQCData.url = getQCData.url.replace('{{startDate}}', startDate)
+  //   //   .replace('{{endDate}}', endDate)
+  //   //   .replace('{{TopCount}}', '' + itemCount)
+  //   //   .replace('{{statusFilter}}', '');
+  //   // getQCData.listName = this.globalConstant.listNames.QualityComplaints.name;
+  //   // getQCData.type = 'GET';
+  //   // batchURL.push(getQCData);
+  //   // return batchURL;
+  // }
 
   /**
    * Display admin tab if user present in QMS_Admin(Retrospective Feedback) or QMS_ViewScorecard group(Scorecard)
