@@ -51,7 +51,12 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
-
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
     @ViewChild('anb', { static: false }) approvedNBTable: DataTable;
 
@@ -229,12 +234,12 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('ExpenseApprovers') > -1) {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForNonBillable);
             speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
-                                                 .replace('{{EndDate}}', this.DateRange.endDate);
+                .replace('{{EndDate}}', this.DateRange.endDate);
         } else {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForNonBillableCS);
             speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
-                                                 .replace('{{EndDate}}', this.DateRange.endDate)
-                                                 .replace('{{UserID}}', this.globalService.sharePointPageObject.userId.toString());
+                .replace('{{EndDate}}', this.DateRange.endDate)
+                .replace('{{UserID}}', this.globalService.sharePointPageObject.userId.toString());
         }
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
         const arrResults = res.length ? res : [];
@@ -531,11 +536,16 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     }
 
     async uploadFileData(type: string) {
+       
+        // this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-        if (res.ServerRelativeUrl) {
-            this.fileUploadedUrl = res.ServerRelativeUrl ;
+        if (res) {
+            this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
+            // console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
             if (this.fileUploadedUrl) {
-                let speInfoObj = {
+                const batchUrl = [];
+                const speInfoData = {
+                    __metadata : {type : this.constantService.listNames.SpendingInfo.type},
                     // PayingEntity: this.markAsPayment_form.value.PayingEntity.Title,
                     Number: this.markAsPayment_form.value.Number,
                     DateSpend: this.markAsPayment_form.value.DateSpend,
@@ -543,19 +553,27 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                     // ApproverComments: this.markAsPayment_form.value.ApproverComments,
                     ApproverFileUrl: this.fileUploadedUrl,
                     Status: 'Approved'
-                }
-                speInfoObj["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
-                let data = [];
-                for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
-                    const element = this.selectedAllRowsItem[j];
-                    const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);;
-                    data.push({
-                        objData: speInfoObj,
-                        endpoint: spEndpoint,
-                        requestPost: false
-                    })
-                }
-                this.submitForm(data, type);
+                };
+                // speInfoData['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
+                // let data = [];
+                this.selectedAllRowsItem.forEach(element => {
+                    const spendingInfoObj = Object.assign({}, this.queryConfig);
+                    spendingInfoObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, element.Id);
+                    spendingInfoObj.listName = this.constantService.listNames.SpendingInfo.name;
+                    spendingInfoObj.type = 'PATCH';
+                    spendingInfoObj.data = speInfoData;
+                    batchUrl.push(spendingInfoObj);
+                });
+                // for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
+                //     const element = this.selectedAllRowsItem[j];
+                //     const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);
+                //     data.push({
+                //         objData: speInfoObj,
+                //         endpoint: spEndpoint,
+                //         requestPost: false
+                //     })
+                // }
+                this.submitForm(batchUrl, type);
             }
         } else if (res.hasError) {
             this.isPSInnerLoaderHidden = true;
@@ -564,29 +582,32 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         }
     }
 
-    batchContents: any = [];
-    async submitForm(dataEndpointArray, type: string) {
-        console.log('Form is submitting');
-        this.batchContents = [];
-        const batchGuid = this.spServices.generateUUID();
-        const changeSetId = this.spServices.generateUUID();
+    // batchContents: any = [];
+    async submitForm(batchUrl, type: string) {
+        // console.log('Form is submitting');
+        // this.batchContents = [];
+        // const batchGuid = this.spServices.generateUUID();
+        // const changeSetId = this.spServices.generateUUID();
         // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        console.log(' dataEndpointArray ', dataEndpointArray);
-        dataEndpointArray.forEach(element => {
-            if (element)
-                this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        });
+        // console.log(' dataEndpointArray ', dataEndpointArray);
+        // dataEndpointArray.forEach(element => {
+        //     if (element)
+        //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId,
+        //       element.endpoint, JSON.stringify(element.objData), element.requestPost)];
+        // });
 
-        this.batchContents.push('--changeset_' + changeSetId + '--');
-        const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        batchBodyContent.push('--batch_' + batchGuid + '--');
-        const sBatchData = batchBodyContent.join('\r\n');
-        const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
-        const arrResults = res;
-        console.log('--oo ', arrResults);
+        // this.batchContents.push('--changeset_' + changeSetId + '--');
+        // const batchBody = this.batchContents.join('\r\n');
+        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+        // batchBodyContent.push('--batch_' + batchGuid + '--');
+        // const sBatchData = batchBodyContent.join('\r\n');
+        // const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
+        await this.spServices.executeBatch(batchUrl);
+        // const arrResults = res;
+        // console.log('--oo ', arrResults);
         if (type === 'markAsPayment_form') {
-            this.messageService.add({ key: 'approvedNonBToast', severity: 'success', summary: 'Success message', detail: 'Payment marked.', life: 2000 });
+            this.messageService.add({ key: 'approvedNonBToast', severity: 'success', summary: 'Success message',
+                                     detail: 'Payment marked.', life: 2000 });
             this.markAsPaymentModal = false;
             this.reFetchData();
         }

@@ -62,6 +62,12 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     usStatesData: any = [];
     selectedPurchaseNumber: any;
     minProformaDate: Date = new Date();
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
     @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
 
@@ -496,7 +502,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
     // Project Client
     getCLEObj(cle: any) {
-        let found = this.cleData.find((x) => { return x.Title == cle });
+        const found = this.cleData.find((x) => x.Title === cle);
         return found ? found : '';
     }
 
@@ -863,87 +869,119 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     getPIByPC(pc) {
-        let found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == pc.ProjectCode) {
+        const found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode === pc.ProjectCode) {
                 return x;
             }
-        })
+        });
         return found ? found : '';
     }
 
     async getPFByPC() {
-        let pfobj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
+        const pfobj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
         pfobj.filter = pfobj.filter.replace('{{ProjectCode}}', this.selectedRowItem.ProjectCode);
-        let obj = [{
-            url: this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name, pfobj),
-            type: 'GET',
-            listName: this.constantService.listNames.ProjectFinances
-        }]
-        const res = await this.spServices.executeBatch(obj);
-        return res[0].retItems[0];
+        let response = await this.spServices.readItems(this.constantService.listNames.ProjectFinances.name, pfobj);
+        response = response.length ? response : [];
+        // let obj = [{
+        //     url: this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name, pfobj),
+        //     type: 'GET',
+        //     listName: this.constantService.listNames.ProjectFinances
+        // }]
+        // const res = await this.spServices.executeBatch(obj);
+        return response;
     }
 
     async onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
         if (type === 'revertInvoice') {
-            let data = [];
+            // const data = [];
+            const batchUrl = [];
             this.isPSInnerLoaderHidden = false;
             this.revertInvModal = false;
-            console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
-            let obj = {
+            // console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
+            const iliData = {
                 Status: 'Scheduled'
-            }
-            obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);
+                };
+            // obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            // tslint:disable-next-line: max-line-length
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);
+            const iliObj = Object.assign({}, this.queryConfig);
+            iliObj.url = this.spServices.getReadURL(this.constantService.listNames.InvoiceLineItems.name,
+                                                    this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem);
+            iliObj.url =  iliObj.url.replace('{{Id}}', this.selectedRowItem.Id);
+            iliObj.listName = this.constantService.listNames.InvoiceLineItems.name;
+            iliObj.type = this.constantService.listNames.InvoiceLineItems.type;
+            iliObj.data = iliData;
+            batchUrl.push(iliObj);
+
             if (this.isHourlyProject) {
-                let pInfo = this.getPIByPC(this.selectedRowItem);
+                const pInfo = this.getPIByPC(this.selectedRowItem);
                 // Update PI
-                let piObj = {
-                    ProjectType: "Deliverable-Writing",
-                    IsApproved: "No"
-                }
-                piObj['__metadata'] = { type: 'SP.Data.ProjectInformationListItem' };
-                const piEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectInformation.update.replace("{{Id}}", pInfo.Id);
-                data.push({
-                    objData: piObj,
-                    endpoint: piEndpoint,
-                    requestPost: false
-                });
+                const piData = {
+                    ProjectType: 'Deliverable-Writing',
+                    IsApproved: 'No'
+                };
+                // piObj['__metadata'] = { type: 'SP.Data.ProjectInformationListItem' };
+                // const piEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectInformation.update.replace("{{Id}}", pInfo.Id);
+
+                const piObj = Object.assign({}, this.queryConfig);
+                piObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name,
+                                                        this.fdConstantsService.fdComponent.addUpdateProjectInformation);
+                piObj.url =  piObj.url.replace('{{Id}}', pInfo.Id);
+                piObj.listName = this.constantService.listNames.ProjectInformation.name;
+                piObj.type = this.constantService.listNames.ProjectInformation.type;
+                piObj.data = piData;
+                batchUrl.push(iliObj);
+
+                // data.push({
+                //     objData: piObj,
+                //     endpoint: piEndpoint,
+                //     requestPost: false
+                // });
 
                 // Update PF
-                let pf = await this.getPFByPC();
-                console.log('pf ', pf);
-                if (pf) {
-                    let pfObj = {
+                const pf = await this.getPFByPC();
+                // console.log('pf ', pf);
+                if (pf.length) {
+                    const pfData = {
                         Budget: this.selectedRowItem.Amount,
                         RevenueBudget: this.selectedRowItem.Amount
-                    }
-                    pfObj['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
-                    const pfEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinances.update.replace("{{Id}}", pf.Id);
-                    data.push({
-                        objData: pfObj,
-                        endpoint: pfEndpoint,
-                        requestPost: false
-                    });
+                    };
+                    // pfObj['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
+                    // const pfEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinances.update.replace('{{Id}}', pf.Id);
+
+                    const pfObj = Object.assign({}, this.queryConfig);
+                    pfObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name,  pf.Id);
+                    pfObj.listName = this.constantService.listNames.ProjectFinances.name;
+                    pfObj.type = this.constantService.listNames.ProjectFinances.type;
+                    pfObj.data = pfData;
+
+                    batchUrl.push(iliObj);
+                    // data.push({
+                    //     objData: pfObj,
+                    //     endpoint: pfEndpoint,
+                    //     requestPost: false
+                    // });
                 }
 
             }
-            data.push({
-                objData: obj,
-                endpoint: endpoint,
-                requestPost: false
-            })
-            this.submitForm(data, type);
+            // data.push({
+            //     objData: obj,
+            //     endpoint: endpoint,
+            //     requestPost: false
+            // })
+            this.submitForm(batchUrl, type);
 
         } else if (type === 'add2Proforma') {
+            const batchUrl = [];
             if (this.addToProforma_form.invalid) {
                 return;
             }
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
-            console.log('form is submitting ..... & Form data is ', this.addToProforma_form.getRawValue());
-            let obj: any = {};
-            obj = {
+            // console.log('form is submitting ..... & Form data is ', this.addToProforma_form.getRawValue());
+            // let obj: any = {};
+            const prfData = {
                 ClientLegalEntity: this.addToProforma_form.getRawValue().ClientLegalEntity,
                 PO: this.selectedPurchaseNumber.ID, // this.addToProforma_form.value.POName.Id,
                 MainPOC: this.addToProforma_form.value.POCName.ID,
@@ -958,33 +996,44 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 AdditionalInfo: this.addToProforma_form.value.AdditionalComments,
                 ProformaDate: this.addToProforma_form.value.ProformaDate,
                 Status: 'Created'
-            }
-            console.log('obj ', obj);
-            obj['__metadata'] = { type: 'SP.Data.ProformaListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateProforma.createProforma;
-
+            };
+            // console.log('obj ', obj);
+            // obj['__metadata'] = { type: 'SP.Data.ProformaListItem' };
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateProforma.createProforma;
+            const proformaObj = Object.assign({}, this.queryConfig);
+            proformaObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name);
+            proformaObj.listName = this.constantService.listNames.ProjectFinances.name;
+            proformaObj.type = this.constantService.listNames.ProjectFinances.type;
+            proformaObj.data = prfData;
+            batchUrl.push(proformaObj);
             // Get Cle
-            let currentCle = this.getCLEObj(obj.ClientLegalEntity);
-            let cleObj = {
+            const currentCle = this.getCLEObj(prfData.ClientLegalEntity);
+            const cleData = {
                 ID: currentCle.Id,
                 ProformaCounter: currentCle.ProformaCounter ? currentCle.ProformaCounter + 1 : 1
-            }
-            cleObj['__metadata'] = { type: 'SP.Data.ClientLegalEntityListItem' };
-            const cleEndpoint = this.fdConstantsService.fdComponent.addUpdateClientLegalEntity.update.replace('{{Id}}', currentCle.Id);
+            };
+            // cleObj['__metadata'] = { type: 'SP.Data.ClientLegalEntityListItem' };
+            // const cleEndpoint = this.fdConstantsService.fdComponent.addUpdateClientLegalEntity.update.replace('{{Id}}', currentCle.Id);
 
-            let data = [
-                {
-                    objData: obj,
-                    endpoint: endpoint,
-                    requestPost: true
-                },
-                {
-                    objData: cleObj,
-                    endpoint: cleEndpoint,
-                    requestPost: false
-                }
-            ];
-            this.submitForm(data, type);
+            const cleObj = Object.assign({}, this.queryConfig);
+            cleObj.url = this.spServices.getItemURL(this.constantService.listNames.ClientLegalEntity.name, currentCle.Id);
+            cleObj.listName = this.constantService.listNames.ClientLegalEntity.name;
+            cleObj.type = this.constantService.listNames.ClientLegalEntity.type;
+            cleObj.data = cleData;
+            batchUrl.push(cleObj);
+            // let data = [
+            //     {
+            //         objData: obj,
+            //         endpoint: endpoint,
+            //         requestPost: true
+            //     },
+            //     {
+            //         objData: cleObj,
+            //         endpoint: cleEndpoint,
+            //         requestPost: false
+            //     }
+            // ];
+            this.submitForm(batchUrl, type);
             // setInterval(() => {
             //     this.isPSInnerLoaderHidden = true;
             // }, 5000);
@@ -992,80 +1041,95 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     batchContents: any = [];
-    async submitForm(dataEndpointArray, type: string) {
+    async submitForm(batchUrl, type: string) {
         console.log('Form is submitting');
 
-        this.batchContents = [];
-        const batchGuid = this.spServices.generateUUID();
-        const changeSetId = this.spServices.generateUUID();
+        // this.batchContents = [];
+        // const batchGuid = this.spServices.generateUUID();
+        // const changeSetId = this.spServices.generateUUID();
 
         // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        console.log(' dataEndpointArray ', dataEndpointArray);
-        dataEndpointArray.forEach(element => {
-            if (element)
-                this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        });
+        // console.log(' dataEndpointArray ', dataEndpointArray);
+        // dataEndpointArray.forEach(element => {
+        //     if (element)
+        //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
+        // });
 
-        console.log("this.batchContents ", JSON.stringify(this.batchContents));
+        // console.log("this.batchContents ", JSON.stringify(this.batchContents));
 
-        this.batchContents.push('--changeset_' + changeSetId + '--');
-        const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        batchBodyContent.push('--batch_' + batchGuid + '--');
-        const sBatchData = batchBodyContent.join('\r\n');
+        // this.batchContents.push('--changeset_' + changeSetId + '--');
+        // const batchBody = this.batchContents.join('\r\n');
+        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+        // batchBodyContent.push('--batch_' + batchGuid + '--');
+        // const sBatchData = batchBodyContent.join('\r\n');
 
         if (type === 'add2Proforma') {
-            var retCall = await this.spServices.getFDData(batchGuid, sBatchData);
-            var lineItemArray = []
+            // var retCall = await this.spServices.getFDData(batchGuid, sBatchData);
+            let retCall = await this.spServices.executeBatch(batchUrl);
+            retCall = retCall.length ? retCall.map(a => a.retItems) : [];
+            // const lineItemArray = [];
+            const innerBatchUrl = [];
             this.selectedAllRowData.forEach(element => {
-                let obj = {
+                
+                const prfData = {
                     Status: 'Proforma Created',
                     ProformaLookup: retCall[0].ID
-                }
-                obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-                const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", element.Id);
-                lineItemArray.push(
-                    {
-                        objData: obj,
-                        endpoint: endpoint,
-                        requestPost: false
-                    }
-                )
+                };
+                // obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+                // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", element.Id);
+                // lineItemArray.push(
+                //     {
+                //         objData: obj,
+                //         endpoint: endpoint,
+                //         requestPost: false
+                //     }
+                // )
+                const prfObj = Object.assign({}, this.queryConfig);
+                prfObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, element.Id);
+                prfObj.listName = this.constantService.listNames.InvoiceLineItems.name;
+                prfObj.type = this.constantService.listNames.InvoiceLineItems.type;
+                prfObj.data = prfData;
+                innerBatchUrl.push(prfObj);
             });
 
-            this.batchContents = [];
-            const batchGuidNew = this.spServices.generateUUID();
-            const changeSetId = this.spServices.generateUUID();
-            lineItemArray.forEach(element => {
-                if (element)
-                    this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-            });
+            // this.batchContents = [];
+            // const batchGuidNew = this.spServices.generateUUID();
+            // const changeSetId = this.spServices.generateUUID();
+            // lineItemArray.forEach(element => {
+            //     if (element)
+            //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
+            // });
 
-            console.log("this.batchContents ", JSON.stringify(this.batchContents));
+            // console.log("this.batchContents ", JSON.stringify(this.batchContents));
 
-            this.batchContents.push('--changeset_' + changeSetId + '--');
-            const batchBody = this.batchContents.join('\r\n');
-            const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuidNew, changeSetId);
-            batchBodyContent.push('--batch_' + batchGuidNew + '--');
-            const sBatchDataNew = batchBodyContent.join('\r\n');
-            await this.spServices.getFDData(batchGuidNew, sBatchDataNew);
+            // this.batchContents.push('--changeset_' + changeSetId + '--');
+            // const batchBody = this.batchContents.join('\r\n');
+            // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuidNew, changeSetId);
+            // batchBodyContent.push('--batch_' + batchGuidNew + '--');
+            // const sBatchDataNew = batchBodyContent.join('\r\n');
+            // await this.spServices.getFDData(batchGuidNew, sBatchDataNew);
+            await this.spServices.executeBatch(innerBatchUrl);
             const projectAppendix = await this.createProjectAppendix(this.selectedAllRowData);
-            await this.fdDataShareServie.callProformaCreation(retCall[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, projectAppendix);
+            await this.fdDataShareServie.callProformaCreation(retCall[0], this.cleData, this.projectContactsData,
+                                                              this.purchaseOrdersList, this.editorRef, projectAppendix);
             this.proformaModal = false;
             this.isPSInnerLoaderHidden = true;
             this.reFetchData();
-            // this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Proforma added.', detail: '', life: 2000 });
-            this.messageService.add({ key: 'custom', sticky: true, severity: 'success', summary: 'Proforma Added', detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber });
+            this.messageService.add({ key: 'custom', sticky: true, severity: 'success', summary: 'Proforma Added',
+                                      detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber });
 
         } else {
-            const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
-            const arrResults = res;
-            console.log('--oo ', arrResults);
-            if (type === "revertInvoice") {
-                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message', detail: 'Reverted the invoice from Confirmed to Scheduled.', life: 2000 });
+            // const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
+            await this.spServices.executeBatch(batchUrl);
+            // const arrResults = res;
+            // console.log('--oo ', arrResults);
+            if (type === 'revertInvoice') {
+                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
+                                          detail: 'Reverted the invoice from Confirmed to Scheduled.', life: 2000 });
                 this.reFetchData();
-            } else if (type === "editInvoice") {
-                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice Updated.', life: 2000 });
+            } else if (type === 'editInvoice') {
+                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
+                                          detail: 'Invoice Updated.', life: 2000 });
                 this.reFetchData();
             }
             this.isPSInnerLoaderHidden = true;
@@ -1088,8 +1152,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 if (project) {
                     projects.push(project);
                     projectProcessed.push(project.ProjectCode);
-                }
-                else {
+                } else {
                     callProjects.push(element.ProjectCode);
                 }
             }
@@ -1106,12 +1169,12 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
             callProjects.forEach(element => {
                 var getPIData = Object.assign({}, options);
-                getPIData.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfoCode);
-                getPIData.url = getPIData.url.replace("{{ProjectCode}}", element);
+                getPIData.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name,
+                                                           this.fdConstantsService.fdComponent.projectInfoCode);
+                getPIData.url = getPIData.url.replace('{{ProjectCode}}', element);
                 getPIData.listName = this.constantService.listNames.ProjectInformation.name;
-                getPIData.type = "GET";
+                getPIData.type = 'GET';
                 batchURL.push(getPIData);
-
             });
 
             retProjects = await this.spServices.executeBatch(batchURL);

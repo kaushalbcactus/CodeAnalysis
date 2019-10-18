@@ -202,9 +202,6 @@ export class SPOperationService {
     return url;
   }
 
-  // READ entire list - needs $http factory and SharePoint list name
-
-
   getReadURL(listName: string, options?: any) {
     let url = this.apiUrl.replace('{0}', listName);
     url = this.readBuilder(url, options);
@@ -264,6 +261,11 @@ export class SPOperationService {
   getCopyFileURL(sourceUrl: string, destinationUrl: string) {
     // tslint:disable-next-line:max-line-length
     return this.baseUrl + '/_api/web/getfilebyserverrelativeurl(\'' + sourceUrl + '\')/copyto(strnewurl=\'' + destinationUrl + '\',boverwrite=true)';
+  }
+
+  getMoveURL(sourceUrl: string, destinationUrl: string) {
+    // tslint:disable-next-line:max-line-length
+    return this.baseUrl + '/_api/web/getfilebyserverrelativeurl(\'' + sourceUrl + '\')/moveto(newurl=\'' + destinationUrl + '\' flags=1)';
   }
 
   getFilesFromFoldersURL(folderName: string) {
@@ -357,17 +359,19 @@ export class SPOperationService {
     if (res) {
       const urlobj = {
         select: 'FileDirRef,FileRef'
-      }
-      var urlRef = this.getReadURLWithId(this.constants.listNames.Schedules.name, res.d.ID, urlobj);
-      var currentRef: any = await this.httpClient.get(urlRef, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+      };
+      const urlRef = this.getReadURLWithId(this.constants.listNames.Schedules.name, res.d.ID, urlobj);
+      const currentRef: any = await this.httpClient.get(urlRef, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
         const error = err.error;
         return error;
       });
       if (currentRef) {
-        var fileUrl = currentRef.d.FileRef;
-        var fileDirRef = currentRef.d.FileDirRef;
-        var moveFileUrl = fileUrl.replace(fileDirRef, folderUrl);
-        var urlMove = this.baseUrl + "/_api/web/getfilebyserverrelativeurl('" + fileUrl + "')/moveto(newurl='" + moveFileUrl + "',flags=1)";
+        const fileUrl = currentRef.d.FileRef;
+        const fileDirRef = currentRef.d.FileDirRef;
+        const moveFileUrl = fileUrl.replace(fileDirRef, folderUrl);
+        // tslint:disable: quotemark
+        // tslint:disable-next-line: max-line-length
+        const urlMove = this.baseUrl + "/_api/web/getfilebyserverrelativeurl('" + fileUrl + "')/moveto(newurl='" + moveFileUrl + "',flags=1)";
         await this.httpClient.post(urlMove, null, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
           const error = err.error;
           return error;
@@ -705,6 +709,8 @@ export class SPOperationService {
 
 
   // added function From old sharepoint service
+
+
   // async getDataByApi(batchGuid, batchBody) {
 
 
@@ -736,35 +742,35 @@ export class SPOperationService {
   //   }
   //   return arrResults;
   // }
-  executeBatchPostRequestByRestAPI(batchGuid, batchBody) {
-    // this.getData(batchGuid, batchBody);
-    let resp = '';
-    // create the request endpoint
-    const endpoint = this.globalServices.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
+  // executeBatchPostRequestByRestAPI(batchGuid, batchBody) {
+  //   // this.getData(batchGuid, batchBody);
+  //   let resp = '';
+  //   // create the request endpoint
+  //   const endpoint = this.globalServices.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
 
-    // batches need a specific header
-    const batchRequestHeader = {
-      'X-RequestDigest': $('#__REQUESTDIGEST').val(),
-      'Content-Type': 'multipart/mixed; boundary="batch_' + batchGuid + '"'
-    };
+  //   // batches need a specific header
+  //   const batchRequestHeader = {
+  //     'X-RequestDigest': $('#__REQUESTDIGEST').val(),
+  //     'Content-Type': 'multipart/mixed; boundary="batch_' + batchGuid + '"'
+  //   };
 
-    // create request
-    $.ajax({
-      url: endpoint,
-      type: 'POST',
-      async: false,
-      headers: batchRequestHeader,
-      data: batchBody,
-      // tslint:disable
-      success: function (response) {
-        resp = response;
-      },
-      fail: function (error) {
-      }
-      // tslint:enable
-    });
-    return resp;
-  }
+  //   // create request
+  //   $.ajax({
+  //     url: endpoint,
+  //     type: 'POST',
+  //     async: false,
+  //     headers: batchRequestHeader,
+  //     data: batchBody,
+  //     // tslint:disable
+  //     success: function (response) {
+  //       resp = response;
+  //     },
+  //     fail: function (error) {
+  //     }
+  //     // tslint:enable
+  //   });
+  //   return resp;
+  // }
 
   async getFDData(batchGuid, batchBody): Promise<any> {
     // const arrResults = [];
@@ -818,16 +824,16 @@ export class SPOperationService {
     batchContents.push(data);
     batchContents.push('');
   }
-  getChangeSetBodyMove(batchContents, changeSetId, endPoint) {
-    batchContents.push('--changeset_' + changeSetId);
-    batchContents.push('Content-Type: application/http');
-    batchContents.push('Content-Transfer-Encoding: binary');
-    batchContents.push('');
-    batchContents.push('POST ' + endPoint + ' HTTP/1.1');
-    batchContents.push('Content-Type: application/json;odata=verbose');
-    batchContents.push('Accept: application/json;odata=verbose');
-    batchContents.push('');
-  }
+  // getChangeSetBodyMove(batchContents, changeSetId, endPoint) {
+  //   batchContents.push('--changeset_' + changeSetId);
+  //   batchContents.push('Content-Type: application/http');
+  //   batchContents.push('Content-Transfer-Encoding: binary');
+  //   batchContents.push('');
+  //   batchContents.push('POST ' + endPoint + ' HTTP/1.1');
+  //   batchContents.push('Content-Type: application/json;odata=verbose');
+  //   batchContents.push('Accept: application/json;odata=verbose');
+  //   batchContents.push('');
+  // }
   getBatchBodyPost1(batchBody, batchGuid, changeSetId) {
     const batchContents = new Array();
     batchContents.push('--batch_' + batchGuid);
