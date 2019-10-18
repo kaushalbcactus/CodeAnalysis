@@ -2178,16 +2178,16 @@ export class ClientMasterdataComponent implements OnInit {
     this.po.tax = 0;
     this.po.total = 0;
     if (!this.showaddBudget) {
-      this.po.revenue = this.PoForm.value.revenue;
-      this.po.oop = this.PoForm.value.oop ? this.PoForm.value.oop : 0;
-      this.po.tax = this.PoForm.value.tax ? this.PoForm.value.tax : 0;
+      this.po.revenue = +(this.PoForm.value.revenue).toFixed(2);
+      this.po.oop = this.PoForm.value.oop ? +(this.PoForm.value.oop).toFixed(2) : 0;
+      this.po.tax = this.PoForm.value.tax ? +(this.PoForm.value.tax).toFixed(2) : 0;
       this.po.total = +(this.po.revenue + this.po.oop + this.po.tax).toFixed(2);
       this.PoForm.get('total').setValue(this.po.total);
     }
     if (this.showaddBudget) {
-      this.po.revenue = this.changeBudgetForm.value.revenue;
-      this.po.oop = this.changeBudgetForm.value.oop ? this.changeBudgetForm.value.oop : 0;
-      this.po.tax = this.changeBudgetForm.value.tax ? this.changeBudgetForm.value.tax : 0;
+      this.po.revenue = +(this.changeBudgetForm.value.revenue).toFixed(2);
+      this.po.oop = this.changeBudgetForm.value.oop ? +(this.changeBudgetForm.value.oop).toFixed(2) : 0;
+      this.po.tax = this.changeBudgetForm.value.tax ? +(this.changeBudgetForm.value.tax).toFixed(2) : 0;
       this.po.total = +(this.po.revenue + this.po.oop + this.po.tax).toFixed(2);
       this.changeBudgetForm.get('total').setValue(this.po.total);
     }
@@ -2624,11 +2624,24 @@ export class ClientMasterdataComponent implements OnInit {
     this.newBudget.AmountRevenue = this.changeBudgetForm.controls.revenue.value;
     this.newBudget.AmountOOP = this.changeBudgetForm.controls.oop.value;
     this.newBudget.AmountTax = this.changeBudgetForm.controls.tax.value;
-    if (this.newBudget.AmountRevenue < 0 ||
-      this.newBudget.AmountOOP < 0 || this.newBudget.AmountTax < 0) {
+    if (this.newBudget.AmountRevenue < 0) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error', summary: 'Error Message',
         detail: 'Revenue should be Positive Number'
+      });
+      return false;
+    }
+    if (this.newBudget.AmountOOP < 0) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error', summary: 'Error Message',
+        detail: 'OOP should be in Positive Number'
+      });
+      return false;
+    }
+    if (this.newBudget.AmountTax < 0) {
+      this.messageService.add({
+        key: 'adminCustom', severity: 'error', summary: 'Error Message',
+        detail: 'Tax should be in Positive Number'
       });
       return false;
     }
