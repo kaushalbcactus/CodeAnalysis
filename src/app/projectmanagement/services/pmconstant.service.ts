@@ -502,7 +502,7 @@ export class PmconstantService {
       filter: 'ID eq \'{{proformaLookup}}\''
     },
     SCHEDULE_LIST_BY_PROJECTCODE: {
-      select: 'ID, Title, Status',
+      select: 'ID, Title, Status,TimeSpent',
       filter: 'ProjectCode eq \'{{projectCode}}\'',
       top: 4900
     },
