@@ -596,9 +596,9 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         let totalAmt = 0;
         for (let j = 0; j < this.totalLineItems.length; j++) {
             const element = this.totalLineItems[j];
-            totalAmt += parseInt(element.AmountPerProject ? element.AmountPerProject : 0)
+            totalAmt += parseFloat(element.AmountPerProject ? element.AmountPerProject : 0)
         }
-        let expenditureAmt = parseInt(this.addExpenditure_form.value.Amount);
+        let expenditureAmt = parseFloat(this.addExpenditure_form.value.Amount);
         // let amt = parseInt(val);
         this.projectClientIsEmpty = this.isEmpty(this.totalLineItems);
         if (totalAmt <= expenditureAmt) {
@@ -703,6 +703,11 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                 return;
             }
 
+            if (!this.addSts) {
+                // this.totalLineItems[index].AmountPerProject = '';
+                this.messageService.add({ key: 'expenseInfoToast', severity: 'info', summary: 'Info message', detail: 'Your entered amount is less than actual Amount.', life: 4000 });
+                return;
+            }
             console.log('form is submitting ..... this.addExpenditure_form ', this.addExpenditure_form.value);
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
             this.uploadFileData();
@@ -793,8 +798,6 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             }
             this.submitForm(data, 'addExpenditure');
         }
-
-
         console.log('finalAddEArray ', this.finalAddEArray);
     }
 
@@ -814,7 +817,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             if (fileName !== sNewFileName) {
                 this.fileInput.nativeElement.value = '';
                 this.addExpenditure_form.get('FileURL').setValue('');
-                this.messageService.add({ key: 'expenseSuccessToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+                this.messageService.add({ key: 'expenseErrorToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
                 return false;
             }
             this.fileReader.readAsArrayBuffer(this.selectedFile);
@@ -837,10 +840,14 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     async uploadFileData() {
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-        console.log('selected File uploaded .', res.ServerRelativeUrl);
-        this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
-        console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
-        this.uploadCAFileData();
+        if (res.ServerRelativeUrl) {
+            this.fileUploadedUrl = res.ServerRelativeUrl;
+            this.uploadCAFileData();
+        } else if (res.hasError) {
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+            this.submitBtn.isClicked = false;
+            this.messageService.add({ key: 'expenseErrorToast', severity: 'error', summary: 'Error message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 })
+        }
     }
 
     // Upload Client Approval File
@@ -858,7 +865,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             if (fileName !== sNewFileName) {
                 this.caFileInput.nativeElement.value = '';
                 this.addExpenditure_form.get('CAFileURL').setValue('');
-                this.messageService.add({ key: 'expenseSuccessToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
+                this.messageService.add({ key: 'expenseErrorToast', severity: 'error', summary: 'Error message', detail: 'Special characters are found in file name. Please rename it. List of special characters ~ # % & * { } \ : / + < > ? " @ \'', life: 3000 });
                 return false;
             }
             this.cafileReader.readAsArrayBuffer(this.selectedCAFile);
@@ -872,9 +879,13 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     async uploadCAFileData() {
         const res = await this.spServices.uploadFile(this.cafilePathUrl, this.cafileReader.result);
-        this.caFileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
-        if (this.caFileUploadedUrl) {
+        if (res.ServerRelativeUrl) {
+            this.caFileUploadedUrl = res.ServerRelativeUrl;
             this.submitExpediture();
+        } else if (res.hasError) {
+            this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
+            this.submitBtn.isClicked = false;
+            this.messageService.add({ key: 'expenseErrorToast', severity: 'error', summary: 'Error message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 })
         }
     }
 

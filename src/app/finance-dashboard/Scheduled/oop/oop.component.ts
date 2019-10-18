@@ -281,10 +281,10 @@ export class OopComponent implements OnInit, OnDestroy {
         this.selectedAllRowsItem = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
-            let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
-            if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
-                resCInfo = resCInfo.UserName.Title
-            }
+            // let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
+            // if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
+            //     resCInfo = resCInfo.UserName.Title
+            // }
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
             let sowCode = element.SOWCode ? element.SOWCode : '';
             let sowName = sowItem.Title ? sowItem.Title : '';
@@ -335,7 +335,7 @@ export class OopComponent implements OnInit, OnDestroy {
                 InvoiceLookup: element.InvoiceLookup,
                 Template: element.Template,
                 Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyyy'),
-                ModifiedBy: resCInfo,
+                ModifiedBy: element.Editor ? element.Editor.Title : ''
             })
         }
         this.oopBasedRes = [...this.oopBasedRes];
@@ -548,8 +548,8 @@ export class OopComponent implements OnInit, OnDestroy {
     // Go to Project Details Page
     goToProjectDetails(data: any) {
         console.log(data);
-        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/project-mgmt?ProjectCode=' + data.ProjectCode);
-        // this.router.navigate([this.globalObject.sharePointPageObject.webAbsoluteUrl + '//project-mgmt?ProjectCode=' + data.ProjectCode]);
+        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
+        
     }
 
     // Update Form

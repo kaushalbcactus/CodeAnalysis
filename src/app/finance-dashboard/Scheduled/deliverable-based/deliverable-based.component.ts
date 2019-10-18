@@ -300,10 +300,10 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let piInfo = await this.getMilestones(element);
-            let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
-            if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
-                resCInfo = resCInfo.UserName.Title
-            }
+            // let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
+            // if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
+            //     resCInfo = resCInfo.UserName.Title
+            // }
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
             let sowCode = element.SOWCode ? element.SOWCode : '';
             let sowName = sowItem.Title ? sowItem.Title : '';
@@ -352,7 +352,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 InvoiceLookup: element.InvoiceLookup,
                 Template: element.Template,
                 Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyyy'),
-                ModifiedBy: resCInfo,
+                ModifiedBy: element.Editor ? element.Editor.Title : ''
             })
         }
         this.deliverableBasedRes = [...this.deliverableBasedRes];
@@ -558,7 +558,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     // Go to Project Details Page
     goToProjectDetails(data: any) {
         console.log(data);
-        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/project-mgmt?ProjectCode=' + data.ProjectCode);
+        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
     }
 
     updateInvoice() {

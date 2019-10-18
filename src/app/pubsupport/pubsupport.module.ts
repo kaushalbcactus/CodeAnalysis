@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule, DatePipe, TitleCasePipe } from '@angular/common';
 import { PubsupportRoutingModule } from './pubsupport-routing.module';
 import { PubsupportComponent } from './pubsupport/pubsupport.component';
 import { PrimengModule } from '../primeng/primeng.module';
@@ -22,6 +22,6 @@ import { AuthorDetailsComponent } from './pubsupport/author-details/author-detai
     // FileUploadModule
   ],
   entryComponents: [CreateConferenceComponent, CreateJournalComponent, AddAuthorComponent, AuthorDetailsComponent],
-  providers: [DatePipe]
+  providers: [DatePipe, TitleCasePipe]
 })
 export class PubsupportModule { }

@@ -307,8 +307,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.selectedAllRowsItem = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
-            let rcCreatedItem = this.getCreatedModifiedByFromRC(element.AuthorId);
-            let rcModifiedItem = this.getCreatedModifiedByFromRC(element.EditorId);
+            // let rcCreatedItem = this.getCreatedModifiedByFromRC(element.AuthorId);
+            // let rcModifiedItem = this.getCreatedModifiedByFromRC(element.EditorId);
             let sowCodeFromPI = await this.fdDataShareServie.getSowCodeFromPI(this.projectInfoData, element);
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(sowCodeFromPI.SOWCode);
 
@@ -332,8 +332,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 DateSpend: this.datePipe.transform(element.DateSpend, 'MMM d, y, hh:mm a'),
                 Created: this.datePipe.transform(element.Created, 'MMM d, y, hh:mm a'),
                 Modified: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
-                CreatedBy: rcCreatedItem ? rcCreatedItem.UserName.Title : '',
-                ModifiedBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
+                CreatedBy: element.Author ? element.Author.Title : '',
+                ModifiedBy: element.Editor ? element.Editor.Title : '',
                 // ModifiedDate: this.datePipe.transform(element.Modified, 'MMM d, y, hh:mm a'),
                 ApproverComments: element.ApproverComments,
                 ApproverFileUrl: element.ApproverFileUrl,
@@ -341,7 +341,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 ClientApprovalFileURL: element.ClientApprovalFileURL,
 
                 VendorFreelancer: element.VendorFreelancer,
-                AuthorId: element.AuthorId,
+                // AuthorId: element.AuthorId,
                 DollarAmount: element.DollarAmount,
                 InvoiceID: element.InvoiceID,
                 POLookup: element.POLookup,
@@ -356,14 +356,14 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
-    getCreatedModifiedByFromRC(id) {
-        let found = this.rcData.find((x) => {
-            if (x.UserName.ID == id) {
-                return x;
-            }
-        })
-        return found ? found : ''
-    }
+    // getCreatedModifiedByFromRC(id) {
+    //     let found = this.rcData.find((x) => {
+    //         if (x.UserName.ID == id) {
+    //             return x;
+    //         }
+    //     })
+    //     return found ? found : ''
+    // }
 
     appBillableColArray = {
         ProjectCode: [],
@@ -651,22 +651,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         }
     }
 
-
-
-    updateSchedulteOopInvoice() {
-        // this.scheduleOopInvoice_form.get('ProjectCode').setValue(this.selectedRowItem.data.ProjectCode);
-        // this.scheduleOopInvoice_form.get('PONumber').setValue(this.selectedRowItem.data.PONumber);
-        // this.scheduleOopInvoice_form.get('ScheduledType').setValue('revenue');
-        // this.scheduleOopInvoice_form.get('Amount').setValue(this.selectedRowItem.data.Amount);
-        // this.scheduleOopInvoice_form.get('Currency').setValue(this.selectedRowItem.data.Currency);
-        // const format = 'dd MMM , yyyy';
-        // const myDate = new Date(this.selectedRowItem.data.ScheduledDate);
-        // const locale = 'en-IN';
-        // const formattedDate = formatDate(myDate, format, locale);
-        // console.log('formatted Date ', formattedDate);
-        // this.scheduleOopInvoice_form.get('ScheduledDate').setValue(formattedDate);
-    }
-
     cancelFormSub(type) {
         this.formSubmit.isSubmit = false;
         this.submitBtn.isClicked = false;
@@ -696,6 +680,15 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         if (this.poItem) {
             this.oopBalance = (this.poItem.AmountOOP ? this.poItem.AmountOOP - this.poItem.OOPLinked : 0 - (this.poItem.OOPLinked ? this.poItem.OOPLinked : 0));
             this.oopBalance = parseFloat(this.oopBalance.toFixed(2));
+            const defaultPOC = this.listOfPOCs.filter(item => item.Id === this.poItem.POCLookup);
+            if (defaultPOC.length) {
+                this.scheduleOopInvoice_form.patchValue({
+                    POCName: defaultPOC[0]
+                })
+                this.pocItem = defaultPOC[0];
+            } else {
+                this.scheduleOopInvoice_form.controls['POCName'].setValue(null);
+            }
         }
         if (this.oopBalance >= this.scheduleOopInvoice_form.getRawValue().Amount) {
             await this.getPfPfb();
@@ -736,30 +729,19 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         }
 
         // PF
-        let obj = {
-            filter: this.fdConstantsService.fdComponent.projectFinances.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode),
-            select: this.fdConstantsService.fdComponent.projectFinances.select,
-            top: this.fdConstantsService.fdComponent.projectFinances.top,
-            // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
-        }
-        this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', obj));
+        let pfObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
+        pfObj.filter = pfObj.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode);
+        this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', pfObj));
 
         // PFB
-        let pfbObj = {
-            filter: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode).replace("{{PO}}", this.poItem.Id),
-            select: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.select,
-            top: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.top,
-        }
+        let pfbObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO);
+        pfbObj.filter = pfbObj.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode).replace("{{PO}}", this.poItem.Id);
         this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinanceBreakup.name + '', pfbObj));
 
         // PBB
-        let pbbObj = {
-            filter: this.fdConstantsService.fdComponent.projectBudgetBreakup.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode),
-            select: this.fdConstantsService.fdComponent.projectBudgetBreakup.select,
-            // top: this.fdConstantsService.fdComponent.projectFinanceBreakup.top,
-        }
+        let pbbObj = Object.assign({}, this.fdConstantsService.fdComponent.projectBudgetBreakup);
+        pbbObj.filter = pbbObj.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode);
         this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectBudgetBreakup.name + '', pbbObj));
-
 
         let endPoints = this.hBQuery;
         let userBatchBody = '';
@@ -780,7 +762,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             this.pbbListItem = arrResults[2];
         }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-
     }
 
     getPInfoByPC() {
@@ -930,11 +911,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     }
 
     async uploadFileData(type: string) {
-        // this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-        if (res) {
-            this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
-            console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
+        if (res.ServerRelativeUrl) {
+            this.fileUploadedUrl = res.ServerRelativeUrl;
             if (this.fileUploadedUrl) {
                 let data = [];
                 for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
@@ -959,8 +938,11 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 }
                 this.submitForm(data, type);
             }
+        } else if (res.hasError) {
+            this.isPSInnerLoaderHidden = true;
+            this.submitBtn.isClicked = false;
+            this.messageService.add({ key: 'approvedToast', severity: 'error', summary: 'Error message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 })
         }
-        // });
     }
 
     onSubmit(type: string) {

@@ -205,7 +205,6 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate).replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
         }
 
-
         const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
         let endPoints = [sinfoEndpoint];
         let userBatchBody;
@@ -215,7 +214,6 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         }
         batchContents.push('--batch_' + batchGuid + '--');
         userBatchBody = batchContents.join('\r\n');
-
         const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
         const arrResults = res;
         console.log('--oo ', arrResults);
@@ -230,8 +228,8 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         this.selectedAllRowsItem = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
-            let rcCreatedItem = this.getCreatedModifiedByFromRC(element.AuthorId);
-            let rcModifiedItem = this.getCreatedModifiedByFromRC(element.EditorId);
+            // let rcCreatedItem = this.getCreatedModifiedByFromRC(element.AuthorId);
+            // let rcModifiedItem = this.getCreatedModifiedByFromRC(element.EditorId);
             let sowCodeFromPI = await this.fdDataShareServie.getSowCodeFromPI(this.projectInfoData, element);
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(sowCodeFromPI.SOWCode);
 
@@ -251,8 +249,8 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 Created: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
                 Modified: new Date(this.datePipe.transform(element.Modified, 'MMM dd, yyyy')), // 
                 ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
-                CreatedBy: rcCreatedItem ? rcCreatedItem.UserName.Title : '',
-                ModifiedBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
+                CreatedBy: element.Author ? element.Author.Title : '',
+                ModifiedBy: element.Editor ? element.Editor.Title : '',
                 // ModifiedDate: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
                 RequestType: element.RequestType,
                 PaymentMode: element.PaymentMode,
@@ -289,14 +287,14 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         return found ? found.Title : ''
     }
 
-    getCreatedModifiedByFromRC(id) {
-        let found = this.rcData.find((x) => {
-            if (x.UserName.ID == id) {
-                return x;
-            }
-        })
-        return found ? found : ''
-    }
+    // getCreatedModifiedByFromRC(id) {
+    //     let found = this.rcData.find((x) => {
+    //         if (x.UserName.ID == id) {
+    //             return x;
+    //         }
+    //     })
+    //     return found ? found : ''
+    // }
 
     anonBillableColArray = {
         ProjectCode: [],
@@ -510,11 +508,9 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     }
 
     async uploadFileData(type: string) {
-        // this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-        if (res) {
-            this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
-            console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
+        if (res.ServerRelativeUrl) {
+            this.fileUploadedUrl = res.ServerRelativeUrl ;
             if (this.fileUploadedUrl) {
                 let speInfoObj = {
                     // PayingEntity: this.markAsPayment_form.value.PayingEntity.Title,
@@ -538,11 +534,11 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 }
                 this.submitForm(data, type);
             }
-        } else {
+        } else if (res.hasError) {
             this.isPSInnerLoaderHidden = true;
             this.submitBtn.isClicked = false;
+            this.messageService.add({ key: 'approvedToast', severity: 'error', summary: 'Error message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 })
         }
-        // });
     }
 
     batchContents: any = [];

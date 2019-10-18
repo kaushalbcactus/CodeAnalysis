@@ -106,6 +106,7 @@ export class AllProjectsComponent implements OnInit {
   subscription;
   isApprovalAction = false;
   showNavigateSOW = false;
+  hideExcelWithBudget = false;
   showFilterOptions = false;
   overAllValues: any;
   selectedOption: any = '';
@@ -148,13 +149,16 @@ export class AllProjectsComponent implements OnInit {
     this.providedProjectCode = '';
     if (this.router.url.indexOf('myDashboard') > -1) {
       this.showNavigateSOW = false;
+      this.hideExcelWithBudget = true;
     } else {
       this.showNavigateSOW = true;
+      this.hideExcelWithBudget = false;
     }
 
     this.isApprovalAction = true;
     this.reloadAllProject();
   }
+
   navigateToSOW(oProject) {
     this.pmObject.columnFilter.SOWCode = [oProject.SOWCode];
     this.router.navigate(['/projectMgmt/allSOW']);
@@ -162,25 +166,27 @@ export class AllProjectsComponent implements OnInit {
 
   async convertToExcelFile(data) {
 
+    // debugger;
+    // console.log(this.allProjectRef)
 
     this.ExcelDownloadenable = true;
     console.log(data);
-    if (this.firstLoad) {
-      const budgets = await this.pmCommonService.getAllBudget(this.pmObject.allProjectsArray);
-      const AllBudgets = budgets.filter(c => c.retItems[0] !== undefined).map(c => c.retItems[0]);
+    const budgets = await this.pmCommonService.getAllBudget(this.allProjectRef.filteredValue ?
+      this.allProjectRef.filteredValue : this.pmObject.allProjectsArray);
+    const AllBudgets = budgets.filter(c => c.retItems[0] !== undefined).map(c => c.retItems[0]);
 
-      console.log(AllBudgets);
-      this.pmObject.allProjectsArray.forEach(project => {
-        const projBudget = AllBudgets.find(c => c.Title === project.ProjectCode);
-        if (projBudget) {
-          project.RevenueBudget = projBudget.RevenueBudget ? projBudget.RevenueBudget : 0;
-          project.OOPBudget = projBudget.OOPBudget ? projBudget.OOPBudget : 0;
-          project.Currency = projBudget.Currency;
-        }
-      });
-      this.firstLoad = false;
-      data._values = this.pmObject.allProjectsArray;
-    }
+    console.log(AllBudgets);
+    this.pmObject.allProjectsArray.forEach(project => {
+      const projBudget = AllBudgets.find(c => c.Title === project.ProjectCode);
+      if (projBudget) {
+        project.RevenueBudget = projBudget.RevenueBudget ? projBudget.RevenueBudget : 0;
+        project.OOPBudget = projBudget.OOPBudget ? projBudget.OOPBudget : 0;
+        project.Currency = projBudget.Currency;
+      }
+    });
+
+    data._values = this.pmObject.allProjectsArray;
+
 
 
     this.pmCommonService.convertToExcelFile(data);
@@ -394,7 +400,8 @@ export class AllProjectsComponent implements OnInit {
         projObj.CreatedDateFormat = this.datePipe.transform(new Date(projObj.CreatedDate), 'MMM dd yyyy hh:mm:ss aa');
         projObj.ModifiedBy = task.Editor ? task.Editor.Title : '';
         projObj.ModifiedDate = task.Modified;
-        projObj.ModifiedDateFormat = this.datePipe.transform(new Date(projObj.ModifiedDate), 'MMM dd yyyy hh:mm:ss aa');
+        projObj.ModifiedDateFormat = projObj.ModifiedDate ? this.datePipe.transform(new Date
+          (projObj.ModifiedDate), 'MMM dd yyyy hh:mm:ss aa') : null;
         projObj.PrimaryPOC = task.PrimaryPOC;
         projObj.PrimaryPOCText = this.pmCommonService.extractNamefromPOC([projObj.PrimaryPOC]);
         projObj.POC = projObj.PrimaryPOCText;
@@ -774,6 +781,8 @@ export class AllProjectsComponent implements OnInit {
    */
   async changeProjectStatus(selectedProjectObj, projectAction) {
     const result = await this.getGetIds(selectedProjectObj, projectAction);
+
+
     if (result && result.length) {
       switch (projectAction) {
         case this.pmConstant.ACTION.CONFIRM_PROJECT:
@@ -841,6 +850,8 @@ export class AllProjectsComponent implements OnInit {
           inoviceGet.listName = this.constants.listNames.InvoiceLineItems.name;
           batchURL.push(inoviceGet);
           const sResult = await this.spServices.executeBatch(batchURL);
+          const scheduleItems = result.find(c => c.listName === 'Schedules') ? result.find(c =>
+            c.listName === 'Schedules').retItems : [];
           if (sResult && sResult.length) {
             const invoiceItems = sResult[0].retItems;
             for (const item of invoiceItems) {
@@ -852,6 +863,20 @@ export class AllProjectsComponent implements OnInit {
                 return;
               }
             }
+          } else if (scheduleItems) {
+
+            const SpentHours = scheduleItems.filter(c => parseFloat(c.TimeSpent)).map(c => parseFloat
+              (c.TimeSpent)) ? scheduleItems.filter(c => parseFloat(c.TimeSpent)).map(c => parseFloat
+                (c.TimeSpent)).reduce((a, b) => a + b, 0) : 0;
+
+            if (SpentHours > 0) {
+              this.messageService.add({
+                key: 'custom', severity: 'error', summary: 'Error Message', sticky: true,
+                detail: 'Cancellation not allowed as there is spent hours on the project .'
+              });
+              return;
+            }
+
           }
           this.loadReasonDropDown();
           this.pmObject.isReasonSectionVisible = true;
@@ -1074,7 +1099,7 @@ export class AllProjectsComponent implements OnInit {
           },
           ProjectLookup: element.ProjectLookup,
           ProjectCode: element.ProjectCode,
-          ApprovalDate: new Date(element.ApprovalDate),
+          ApprovalDate: new Date(),
           Status: element.Status,
           OriginalBudget: element.OriginalBudget * -1,
           NetBudget: element.NetBudget * -1,

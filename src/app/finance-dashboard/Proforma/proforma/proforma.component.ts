@@ -365,10 +365,10 @@ export class ProformaComponent implements OnInit, OnDestroy {
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
             let poItem = this.getPONumber(element)
-            let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
-            if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
-                resCInfo = resCInfo.UserName.Title
-            }
+            // let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
+            // if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
+            //     resCInfo = resCInfo.UserName.Title
+            // }
             this.proformaRes.push({
                 Id: element.ID,
                 ProformaNumber: element.Title,
@@ -396,7 +396,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 Reason: element.Reason,
                 State: element.State,
                 Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
-                ModifiedBy: resCInfo
+                ModifiedBy: element.Editor ? element.Editor.Title : ''
             })
         }
         this.proformaRes = [...this.proformaRes];
@@ -708,15 +708,9 @@ export class ProformaComponent implements OnInit, OnDestroy {
         const batchContents = new Array();
         const batchGuid = this.spServices.generateUUID();
         let invoicesQuery = '';
-        let obj = {
-            filter: this.fdConstantsService.fdComponent.invoiceLineItem.filter.replace("{{ProformaLookup}}", this.selectedRowItem.Id),
-            select: this.fdConstantsService.fdComponent.invoiceLineItem.select,
-            top: this.fdConstantsService.fdComponent.invoiceLineItem.top,
-            // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
-        }
+        let obj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItem);
+        obj.filter = obj.filter.replace("{{ProformaLookup}}", this.selectedRowItem.Id);
         invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);
-        // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
-
         let endPoints = [invoicesQuery];
         let userBatchBody = '';
         for (let i = 0; i < endPoints.length; i++) {

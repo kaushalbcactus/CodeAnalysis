@@ -190,8 +190,8 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
         this.rejectExpenses = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
-            let rcCreatedItem = this.getCreatedModifiedByFromRC(element.AuthorId);
-            let rcModifiedItem = this.getCreatedModifiedByFromRC(element.EditorId);
+            // let rcCreatedItem = this.getCreatedModifiedByFromRC(element.AuthorId);
+            // let rcModifiedItem = this.getCreatedModifiedByFromRC(element.EditorId);
             let sowCodeFromPI = await this.fdDataShareServie.getSowCodeFromPI(this.projectInfoData, element);
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(sowCodeFromPI.SOWCode);
             this.rejectExpenses.push({
@@ -206,14 +206,14 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
                 ClientAmount: element.Amount,
                 ClientCurrency: element.ClientCurrency,
                 Created: this.datePipe.transform(element.Created, 'MMM dd, yyy, hh:mm a'),
-                CreatedBy: rcCreatedItem ? rcCreatedItem.UserName.Title : '',
-                ModifiedBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
+                CreatedBy: element.Author ? element.Author.Title : '',
+                ModifiedBy: element.Editor ? element.Editor.Title : '',
                 Notes: element.Notes,
                 ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyy, hh:mm a'),
                 RequestType: element.RequestType,
                 ApproverComments: element.ApproverComments,
                 Status: element.Status,
-                ActionBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
+                ActionBy: element.Editor ? element.Editor.Title : '',
                 Modified: new Date(this.datePipe.transform(element.Modified, 'MMM dd, yyyy')),  // this.datePipe.transform(element.Modified, 'MMM dd, yyy, hh:mm a'),
 
                 FileURL: element.FileURL,

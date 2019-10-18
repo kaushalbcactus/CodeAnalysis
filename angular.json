@@ -238,6 +238,22 @@
                             "buildOptimizer": true,
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/FD/"
                         },
+                        "prodFDSanity": {
+                            "fileReplacements": [{
+                                "replace": "src/environments/environment.ts",
+                                "with": "src/environments/environment.prod.ts"
+                            }],
+                            "optimization": true,
+                            "outputHashing": "bundles",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "aot": true,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/FDSanity/"
+                        },
                         "prodmydashboard": {
                             "fileReplacements": [{
                                 "replace": "src/environments/environment.ts",
@@ -254,6 +270,54 @@
                             "buildOptimizer": true,
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/MyDashboard/"
                         },
+                        "prodmydashboardsanity": {
+                            "fileReplacements": [{
+                                "replace": "src/environments/environment.ts",
+                                "with": "src/environments/environment.prod.ts"
+                            }],
+                            "optimization": true,
+                            "outputHashing": "bundles",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "aot": true,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/MyDashboardSanity/"
+                        },
+                        "prodAllocation": {
+                            "fileReplacements": [{
+                                "replace": "src/environments/environment.ts",
+                                "with": "src/environments/environment.prod.ts"
+                            }],
+                            "optimization": true,
+                            "outputHashing": "bundles",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "aot": true,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/AllocationNew/"
+                        },
+                        "prodAllocationsanity": {
+                            "fileReplacements": [{
+                                "replace": "src/environments/environment.ts",
+                                "with": "src/environments/environment.prod.ts"
+                            }],
+                            "optimization": true,
+                            "outputHashing": "bundles",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "aot": true,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/AllocationSanity/"
+                        },
                         "prodPM": {
                             "fileReplacements": [{
                                 "replace": "src/environments/environment.ts",
@@ -269,6 +333,22 @@
                             "vendorChunk": false,
                             "buildOptimizer": true,
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/PM/"
+                        },
+                        "prodPMSanity": {
+                            "fileReplacements": [{
+                                "replace": "src/environments/environment.ts",
+                                "with": "src/environments/environment.prod.ts"
+                            }],
+                            "optimization": true,
+                            "outputHashing": "bundles",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "aot": true,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/PMSanity/"
                         },
                         "uatQMS": {
                             "optimization": true,
@@ -296,7 +376,7 @@
                             "extractLicenses": true,
                             "vendorChunk": false,
                             "buildOptimizer": true,
-                            "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/QMSNew/"
+                            "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/QMS/"
                         },
                         "uatPS": {
                             "optimization": true,
@@ -349,6 +429,22 @@
                             "vendorChunk": false,
                             "buildOptimizer": true,
                             "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/CA/"
+                        },
+                        "prodCASanity": {
+                            "fileReplacements": [{
+                                "replace": "src/environments/environment.ts",
+                                "with": "src/environments/environment.prod.ts"
+                            }],
+                            "optimization": true,
+                            "outputHashing": "bundles",
+                            "sourceMap": false,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "aot": true,
+                            "extractLicenses": true,
+                            "vendorChunk": false,
+                            "buildOptimizer": true,
+                            "deployUrl": "https://publiccdn.sharepointonline.com/cactusglobal.sharepoint.com/sites/medcomcdn/MedcomPROD/AngularModules/Prod/CentralAllocationSanity/"
                         },
                         "uatCA": {
                             "optimization": true,

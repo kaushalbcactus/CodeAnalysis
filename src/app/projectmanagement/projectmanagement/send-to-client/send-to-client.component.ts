@@ -433,6 +433,7 @@ export class SendToClientComponent implements OnInit {
         if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
           this.tempClick = event.target.parentElement.children[0].children[0];
           this.tempClick.style.display = '';
+
         } else {
           this.tempClick = undefined;
         }
@@ -443,6 +444,7 @@ export class SendToClientComponent implements OnInit {
     } else {
       if (this.tempClick) {
         this.tempClick.style.display = 'none';
+
         this.tempClick = undefined;
       }
     }

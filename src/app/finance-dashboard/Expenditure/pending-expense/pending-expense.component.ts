@@ -346,8 +346,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             let cleName = this.getPIFromPC(element);
             let cname = cleName ? ' / ' + cleName : '';
 
-            let rcCreatedItem = this.getCreatedModifiedByFromRC(element.AuthorId);
-            let rcModifiedItem = this.getCreatedModifiedByFromRC(element.EditorId);
+            // let rcCreatedItem = this.getCreatedModifiedByFromRC(element.AuthorId);
+            // let rcModifiedItem = this.getCreatedModifiedByFromRC(element.EditorId);
             let sowCodeFromPI = await this.fdDataShareServie.getSowCodeFromPI(this.projectInfoData, element);
             let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(sowCodeFromPI.SOWCode);
 
@@ -364,8 +364,9 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 ClientCurrency: element.ClientCurrency,
                 Created: new Date(this.datePipe.transform(element.Created, 'MMM dd, yyyy')),
                 CreatedDateFormat: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
-                CreatedBy: rcCreatedItem ? rcCreatedItem.UserName.Title : '',
-                ModifiedBy: rcModifiedItem ? rcModifiedItem.UserName.Title : '',
+                CreatedBy: element.Author ? element.Author.Title : '',
+                ModifiedBy: element.Editor ? element.Editor.Title : '',
+
                 Notes: element.Notes,
                 Modified: new Date(this.datePipe.transform(element.Modified, 'MMM dd, yyyy')),
                 ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
@@ -422,14 +423,14 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         return found ? found.Title : ''
     }
 
-    getCreatedModifiedByFromRC(id) {
-        let found = this.rcData.find((x) => {
-            if (x.UserName.ID == id) {
-                return x;
-            }
-        })
-        return found ? found : ''
-    }
+    // getCreatedModifiedByFromRC(id) {
+    //     let found = this.rcData.find((x) => {
+    //         if (x.UserName.ID == id) {
+    //             return x;
+    //         }
+    //     })
+    //     return found ? found : ''
+    // }
 
     pendinExpenseColArray = {
         ProjectCode: [],
@@ -647,7 +648,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     async uploadFileData(type: string) {
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-        if (res) {
+        if (res.ServerRelativeUrl) {
             this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
             console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
             if (this.fileUploadedUrl) {
@@ -673,6 +674,10 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 }
                 this.submitForm(data, type);
             }
+        } else if (res.hasError) {
+            this.isPSInnerLoaderHidden = true;
+            this.submitBtn.isClicked = false;
+            this.messageService.add({ key: 'pendingExpenseToast', severity: 'error', summary: 'Error message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 })
         }
     }
 

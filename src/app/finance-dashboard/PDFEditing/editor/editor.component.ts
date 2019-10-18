@@ -676,7 +676,7 @@ export class EditorComponent implements OnInit {
                     <p>[[InvoiceDate]]</p>
                 </td>
                 <td>
-                    <p>Consumption Tax @ 8%</p>
+                    <p>Consumption Tax @ 10%</p>
                 </td>
                 <td>
                     <p>[[CurrencySymbol]] [[ConsumptionTax]]</p>
@@ -879,7 +879,7 @@ export class EditorComponent implements OnInit {
                 <p style="text-align: center;font-size: 16px;margin: 15px 0;">[[InvoiceDate]]</p>
             </td>
             <td>
-                <p style="padding-left: 15px;font-size: 16px;">Consumption Tax @ 8%</p>
+                <p style="padding-left: 15px;font-size: 16px;">Consumption Tax @ 10%</p>
             </td>
             <td>
                 <p style="font-size: 16px;text-align: center;font-weight: bold;">[[CurrencySymbol]] [[ConsumptionTax]]</p>
@@ -2701,7 +2701,8 @@ export class EditorComponent implements OnInit {
         this.appendixEditTbbody = tableRowData;
     }
     errMsg: string;
-    setWidth() {
+    definedColWidth: number = 0;
+    setWidth(type: string) {
         this.errMsg = '';
         let sum = 0;
         this.appendixEditTbbody.forEach((ele) => {
@@ -2725,7 +2726,10 @@ export class EditorComponent implements OnInit {
                 th[i].style.width = ele.width + '%';
                 if (sum === 100) {
                     this.errMsg = '';
-                    this.widthDefineModal = false;
+                    if (type === "close") {
+                        this.widthDefineModal = false;
+                        this.definedColWidth = 0;
+                    }
                 }
             });
         }
@@ -2739,6 +2743,29 @@ export class EditorComponent implements OnInit {
         }
         this.errMsg = '';
         return true;
+    }
+
+    getVal() {
+        this.definedColWidth = 0;
+        this.appendixEditTbbody.forEach((ele) => {
+            if (ele.width.includes('%')) {
+                let newVal = ele.width.slice('%', -1);
+                ele.width = newVal;
+            }
+            if (parseInt(ele.width)) {
+                this.definedColWidth += parseInt(ele.width);
+            }
+        });
+
+    }
+
+    cancel() {
+        const th = document.getElementById(this.elementId).querySelector('table').querySelectorAll('th');
+        this.appendixEditTbbody.forEach((ele, i) => {
+            th[i].style.width = 0 + '%';
+        });
+        this.definedColWidth = 0;
+        this.widthDefineModal = false;
     }
 
     disableButton() {
@@ -3011,12 +3038,8 @@ export class EditorComponent implements OnInit {
         const batchContents = new Array();
         const batchGuid = this.spOperationsServices.generateUUID();
         let invoicesQuery = '';
-        let obj = {
-            filter: this.fdConstantsService.fdComponent.invoiceLineItem.filter.replace("{{ProformaLookup}}", id),
-            select: this.fdConstantsService.fdComponent.invoiceLineItem.select,
-            top: this.fdConstantsService.fdComponent.invoiceLineItem.top,
-            // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
-        }
+        let obj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItem);
+        obj.filter = obj.filter.replace("{{ProformaLookup}}", id);
         invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.InvoiceLineItems.name + '', obj);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 

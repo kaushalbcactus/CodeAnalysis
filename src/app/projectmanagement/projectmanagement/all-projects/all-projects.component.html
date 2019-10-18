@@ -1,7 +1,7 @@
 <div class="box excelIcon" style="margin-top: 1px !important;">
-    <mat-icon style="font-size: 2.8em;
+    <mat-icon style="font-size: 2.8em; 
     cursor: pointer;
-    margin: 0px 15px 0px 0px;" title="Export To Excel with Budget & Currency" (click)="convertToExcelFile(allProjectRef)"> local_atm</mat-icon>
+    margin: 0px 15px 0px 0px;" [hidden]="hideExcelWithBudget" title="Export To Excel with Budget & Currency" (click)="convertToExcelFile(allProjectRef)"> local_atm</mat-icon>
     <!-- <i style="font-size: 1.8em;cursor: pointer;padding: 0px 15px 0px 0px;" (click)="pmCommonService.convertToExcelFile(allProjectRef)" title="Export To Excel with Budget & Currency" class="fa fa-file-text-o"></i> -->
     <i style="font-size: 1.8em;cursor: pointer;vertical-align: top;
     margin: 7px 15px 0px 0px;" (click)="pmCommonService.convertToExcelFile(allProjectRef)" title="Export To Excel" class="fa fa-fw fa-file-excel-o"></i>

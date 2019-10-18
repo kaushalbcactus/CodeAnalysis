@@ -9,7 +9,7 @@ import { GlobalService } from '../../Services/global.service';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { CreateConferenceComponent } from './create-conference/create-conference.component';
 import { CreateJournalComponent } from './create-journal/create-journal.component';
-import { DatePipe } from '@angular/common';
+import { DatePipe, TitleCasePipe } from '@angular/common';
 import { Subject } from 'rxjs';
 import { AddAuthorComponent } from './add-author/add-author.component';
 import { AuthorDetailsComponent } from './author-details/author-details.component';
@@ -18,6 +18,7 @@ import { AuthorDetailsComponent } from './author-details/author-details.componen
     selector: 'app-pubsupport',
     templateUrl: './pubsupport.component.html',
     styleUrls: ['./pubsupport.component.css'],
+    encapsulation: ViewEncapsulation.None
 })
 // tslint: disable
 export class PubsupportComponent implements OnInit {
@@ -33,7 +34,8 @@ export class PubsupportComponent implements OnInit {
         private dialogService: DialogService,
         private datePipe: DatePipe,
         private confirmationService: ConfirmationService,
-        private componentFactoryResolver: ComponentFactoryResolver
+        private componentFactoryResolver: ComponentFactoryResolver,
+        private titlecasePipe: TitleCasePipe
     ) {
 
         this.router.routeReuseStrategy.shouldReuseRoute = () => {
@@ -531,7 +533,7 @@ export class PubsupportComponent implements OnInit {
             case 'presented':
             case 'published': {
                 this.items = [
-                    { label: 'Your document is Published.' }
+                    { label: 'Your document is ' + this.titlecasePipe.transform(pubSupportSts) + '.' }
                 ];
                 break;
             }
@@ -553,9 +555,10 @@ export class PubsupportComponent implements OnInit {
 
     setJCDetails(data) {
         const form = this.journal_Conference_Edit_Detail_form;
-        const journalConfItem = this.jcListArray.find(j => j.ID === data.element.JournalConferenceId);
+        // const journalConfItem = this.jcListArray.find(j => j.ID === data.element.JournalConferenceId);
         if (data.element) {
             form.get('Name').setValue(data.element.Name);
+            form.get('jcLineItemName').setValue(data.element.Name);
             form.get('EntryType').setValue(data.element.EntryType);
             form.get('Milestone').setValue(data.element.Milestone);
             form.get('UserName').setValue(data.element.UserName);
@@ -563,13 +566,13 @@ export class PubsupportComponent implements OnInit {
             form.get('Comments').setValue(data.element.Comments);
             if (data.element.EntryType === 'journal') {
                 // Set New Values
-                form.get('jcLineItemName').setValue(journalConfItem.JournalName);
+                // form.get('jcLineItemName').setValue(journalConfItem.JournalName);
                 form.get('ExpectedReviewPeriod').setValue(data.element.ExpectedReviewPeriod);
                 form.get('IF').setValue(data.element.IF);
                 form.get('RejectionRate').setValue(data.element.RejectionRate);
                 form.get('JournalEditorInfo').setValue(data.element.JournalEditorInfo);
             } else {
-                form.get('jcLineItemName').setValue(journalConfItem.ConferenceName);
+                // form.get('jcLineItemName').setValue(journalConfItem.ConferenceName);
                 form.get('CongressDate').setValue(this.datePipe.transform(new Date(data.element.CongressDate), 'MMM dd, yyyy'));
                 form.get('AbstractSubmissionDeadline').setValue(this.datePipe.transform(new Date(data.element.AbstractSubmissionDeadline), 'MMM dd, yyyy'));
                 form.get('Comments').setValue(data.element.Comments);
@@ -617,7 +620,7 @@ export class PubsupportComponent implements OnInit {
         } else if (this.selectedModal === 'Edit Journal conference') {
             await this.getJCDetails(data);
             await this.getJCList(this.journal_Conf_data[0].element.EntryType);
-            this.addJCControls(this.journal_Conference_Edit_Detail_form, this.journal_Conf_data[0].element.EntryType)
+            this.addJCControls(this.journal_Conference_Edit_Detail_form, this.journal_Conf_data[0].element.EntryType,'Edit')
             this.setJCDetails(this.journal_Conf_data[0]);
             this.editJCDetailsModal = true;
             this.formatMilestone(this.milestonesList);
@@ -1085,9 +1088,9 @@ export class PubsupportComponent implements OnInit {
     //     })
     // }
 
-    addJCControls(form: any, type: string) {
-        form.addControl('UserName', new FormControl('', [Validators.required]));
-        form.addControl('Password', new FormControl('', [Validators.required]));
+    addJCControls(form: any, type: string, actionType: string) {
+        actionType === 'Add' ? form.addControl('UserName', new FormControl('')) : form.addControl('UserName', new FormControl([''], Validators.required));
+        actionType === 'Add' ? form.addControl('Password', new FormControl('')) : form.addControl('Password', new FormControl([''], Validators.required));
         if (type === 'journal') {
             // tslint:disable-next-line: max-line-length
             form.addControl('ExpectedReviewPeriod', new FormControl([''], Validators.required));
@@ -1133,7 +1136,7 @@ export class PubsupportComponent implements OnInit {
     }
 
     onChangeSelectedJCItem(item: any, type: string) {
-        this.addJCControls(this.journal_Conference_Detail_form, type);
+        this.addJCControls(this.journal_Conference_Detail_form, type, 'Add');
         this.setJCValue(this.journal_Conference_Detail_form, item, type);
     }
 
@@ -1854,18 +1857,33 @@ export class PubsupportComponent implements OnInit {
             this.showProjectInput = false;
             this.callGetProjects(false);
         } else {
+            this.closedProjectCode = '';
             this.showProjectInput = true;
             this.pubSupportProjectInfoData = [];
             this.providedProjectCode = '';
         }
     }
 
+    closedProjectCode: string;
     searchClosedProject(event) {
-        // const projectCode = this.providedProjectCode;
-        // alert(projectCode);
+        let checkPC = this.providedProjectCode;
+        if (checkPC !== this.closedProjectCode) {
+            this.getClosedProject();
+        }
+    }
+    enterEvent(event) {
+        this.closedProjectCode = this.providedProjectCode;
+        this.getClosedProject();
+        if (event.keyCode === 13) {
+            event.preventDefault();
+        }
+    }
+
+    getClosedProject() {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         this.callGetProjects(true);
     }
+
     @HostListener('document:click', ['$event'])
     clickout(event) {
         if (event.target.className === 'pi pi-ellipsis-v') {

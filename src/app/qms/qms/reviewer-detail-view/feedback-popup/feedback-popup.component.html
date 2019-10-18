@@ -43,7 +43,10 @@
           </tr>
           <tr>
             <td >Task</td>
-            <td>
+            <td *ngIf="global.templateMatrix.submilestones !== ''">
+              {{global.templateMatrix.task}} - {{global.templateMatrix.submilestones}}
+            </td>
+            <td *ngIf="global.templateMatrix.submilestones === ''">
               {{global.templateMatrix.task}}
             </td>
           </tr>
