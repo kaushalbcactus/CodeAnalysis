@@ -269,7 +269,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', mytasks);
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
 
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     const res = this.response[0] !== '' ? this.response[0] : [];
 
     if (res.length > 0) {

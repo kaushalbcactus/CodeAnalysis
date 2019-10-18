@@ -7,6 +7,7 @@ import { DynamicDialogConfig, MessageService } from 'primeng/api';
 import { CAGlobalService } from 'src/app/ca/caservices/caglobal.service';
 import { CACommonService } from 'src/app/ca/caservices/cacommon.service';
 import { Alert } from 'selenium-webdriver';
+import { SharedConstantsService } from '../services/shared-constants.service';
 
 @Component({
   selector: 'app-usercapacity',
@@ -28,6 +29,12 @@ export class UsercapacityComponent implements OnInit {
   dynamicload = false;
   width: any;
   pageWidth: any;
+  public queryConfig = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
   constructor(
     public datepipe: DatePipe, public config: DynamicDialogConfig,
     private spService: SPOperationService,
@@ -36,7 +43,8 @@ export class UsercapacityComponent implements OnInit {
     private commonservice: CACommonService,
     elRef: ElementRef,
     private globalService: GlobalService,
-    private messageService: MessageService) {
+    private messageService: MessageService,
+    private sharedConstant: SharedConstantsService) {
     this.elRef = elRef;
   }
 
@@ -148,6 +156,7 @@ export class UsercapacityComponent implements OnInit {
     oCapacity.arrDateFormat = obj.arrDateFormat;
     const batchGuid = this.spService.generateUUID();
     let batchContents = new Array();
+    let batchUrl = [];
     for (const userIndex in selectedUsers) {
       if (selectedUsers.hasOwnProperty(userIndex)) {
         if (selectedUsers[userIndex]) {
@@ -167,16 +176,17 @@ export class UsercapacityComponent implements OnInit {
             oUser.uid = userDetail[0].UserName.ID ? userDetail[0].UserName.ID : userDetail[0].UserName.Id;
             oUser.userName = userDetail[0].UserName.Title;
             oUser.maxHrs = userDetail[0].UserName.MaxHrs ? userDetail[0].UserName.MaxHrs : userDetail[0].MaxHrs;
-            batchContents = this.fetchData(oUser, startDateString, endDateString, batchGuid, batchContents);
+            const taskBatchUrl = this.fetchData(oUser, startDateString, endDateString, batchUrl);
+            batchUrl = [...batchUrl, ...taskBatchUrl];
             oCapacity.arrUserDetails.push(oUser);
           }
         }
       }
     }
 
-    batchContents.push('--batch_' + batchGuid + '--');
-    const userBatchBody = batchContents.join('\r\n');
-    const arruserResults = this.executeBatchRequest(batchGuid, userBatchBody);
+    // batchContents.push('--batch_' + batchGuid + '--');
+    // const userBatchBody = batchContents.join('\r\n');
+    const arruserResults = this.executeBatchRequest(batchUrl);
     // const batchContentsLeaves = new Array();
 
     const batchURL = [];
@@ -319,30 +329,41 @@ export class UsercapacityComponent implements OnInit {
 
     this.calc(this.oCapacity);
   }
-  fetchData(oUser, startDateString, endDateString, batchGuid, batchContents) {
+  fetchData(oUser, startDateString, endDateString, batchUrl) {
 
     const selectedUserID = oUser.uid;
     // tslint:disable
-    const endpoint = this.globalService.sharePointPageObject.webAbsoluteUrl
-      + "/_api/web/lists/getbytitle('" + this.Schedules + "')/items?$select=ID,Milestone,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone&$top=4500&$filter=(AssignedTo/Id eq " + selectedUserID + ") and(" +
-      "(StartDate ge '" + startDateString + "' and StartDate le '" + endDateString + "') or (DueDate ge '" + startDateString + "' and DueDate le '" + endDateString + "') or (StartDate le '" + startDateString + "' and DueDate ge '" + endDateString + "')" +
-      ") and Status ne 'Abandon' and Status ne 'Deleted'&$orderby=StartDate";
+    // const endpoint = this.globalService.sharePointPageObject.webAbsoluteUrl
+    //   + "/_api/web/lists/getbytitle('" + this.Schedules + "')/items?$select=ID,Milestone,SubMilestones,Task,Status,Title,TimeSpent,ExpectedTime,StartDate,DueDate,TimeZone&$top=4500&$filter=(AssignedTo/Id eq " + selectedUserID + ") and(" +
+    //   "(StartDate ge '" + startDateString + "' and StartDate le '" + endDateString + "') or (DueDate ge '" + startDateString + "' and DueDate le '" + endDateString + "') or (StartDate le '" + startDateString + "' and DueDate ge '" + endDateString + "')" +
+    //   ") and Status ne 'Abandon' and Status ne 'Deleted'&$orderby=StartDate";
     // tslint:enable
-    return this.spService.getBatchBodyGet(batchContents, batchGuid, endpoint);
+    const invObj = Object.assign({}, this.queryConfig);
+    // tslint:disable-next-line: max-line-length
+    invObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name, this.sharedConstant.userCapacity.fetchTasks);
+    invObj.url = invObj.url.replace('{{userID}}', selectedUserID).replace('/{{startDateString}}/g', startDateString)
+                           .replace('/{{endDateString}}/g', endDateString)
+    invObj.listName = this.globalConstantService.listNames.Schedules.name;
+    invObj.type = 'GET';
+    batchUrl.push(invObj);
+    return batchUrl;
+    // return this.spService.getBatchBodyGet(batchContents, batchGuid, endpoint);
   }
 
-  executeBatchRequest(batchGuid, sBatchData) {
-    const arrResults = [];
-    const response = this.spService.executeBatchPostRequestByRestAPI(batchGuid, sBatchData);
-    const responseInLines = response.split('\n');
-    for (let currentLine = 0; currentLine < responseInLines.length; currentLine++) {
-      try {
-        const tryParseJson = JSON.parse(responseInLines[currentLine]);
-        arrResults.push(tryParseJson.d.results);
-      } catch (e) {
+  async executeBatchRequest(batchUrl) {
+    // const arrResults = [];
+    // const response = this.spService.executeBatchPostRequestByRestAPI(batchGuid, sBatchData);
+    const response = await this.spService.executeBatch(batchUrl);
+    const arrResults = response.length ? response.map(a => a.retItems) : [];
+    // const responseInLines = response.split('\n');
+    // for (let currentLine = 0; currentLine < responseInLines.length; currentLine++) {
+    //   try {
+    //     const tryParseJson = JSON.parse(responseInLines[currentLine]);
+    //     arrResults.push(tryParseJson.d.results);
+    //   } catch (e) {
 
-      }
-    }
+    //   }
+    // }
     return arrResults;
   }
   // tslint:disable
@@ -618,7 +639,7 @@ export class UsercapacityComponent implements OnInit {
       if (batchContents.length) {
         batchContents.push('--batch_' + batchGuid + '--');
         const sBatchData = batchContents.join('\r\n');
-        const arrResults = this.executeBatchRequest(batchGuid, sBatchData);
+        const arrResults = this.executeBatchRequest(batchGuid); /// , sBatchData code fix pending by kaushal
         let nCount = 0;
         for (const i in tasks) {
           if (tasks.hasOwnProperty(i)) {
