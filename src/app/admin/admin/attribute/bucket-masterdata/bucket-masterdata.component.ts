@@ -481,6 +481,7 @@ export class BucketMasterdataComponent implements OnInit {
     this.selectedClient.forEach(element => {
       if (!element.isCheckboxDisabled) {
         const data = {
+          __metadata: { type: this.constants.listNames.CLEBucketMapping.type },
           Title: element.Title,
           CLEName: element.Title,
           Bucket: element.Bucket,
@@ -490,11 +491,13 @@ export class BucketMasterdataComponent implements OnInit {
         createCleMapping.data = data;
         createCleMapping.listName = this.constants.listNames.CLEBucketMapping.name;
         createCleMapping.type = 'POST';
-        createCleMapping.url = this.spServices.getItemURL(this.constants.listNames.CLEBucketMapping.name, null);
+        createCleMapping.url = this.spServices.getReadURL(this.constants.listNames.CLEBucketMapping.name, null);
         batchURL.push(createCleMapping);
       }
     });
-    const results = await this.spServices.executeBatch(batchURL);
+    if (batchURL.length) {
+      const results = await this.spServices.executeBatch(batchURL);
+    }
   }
   /**
    * Construct a method is to update item in `CLEBucketMapping` list.
@@ -533,24 +536,25 @@ export class BucketMasterdataComponent implements OnInit {
       console.log(getCLEResults);
       batchURL = [];
       if (getCLEResults && getCLEResults.length) {
-        // this.createCLEMapping();
         getCLEResults.forEach(element => {
           if (element.retItems && element.retItems.length) {
-            const Id = element.retItems[0];
-            const tempDate = this.selectedClient.filter(a => a.Title === element.CLEName);
+            const cleObj = element.retItems[0];
+            const tempDate = this.selectedClient.filter(a => a.Title === cleObj.CLEName);
             const updateData = {
-              EndDate: new Date(new Date(tempDate[0]).setDate(new Date(tempDate[0]).getDate() - 1))
+              __metadata: { type: this.constants.listNames.CLEBucketMapping.type },
+              EndDate: new Date(new Date(tempDate[0].EffectiveDate).setDate(new Date(tempDate[0].EffectiveDate).getDate() - 1))
             };
             const updateCleMapping = Object.assign({}, options);
             updateCleMapping.data = updateData;
             updateCleMapping.listName = this.constants.listNames.CLEBucketMapping.name;
             updateCleMapping.type = 'PATCH';
-            updateCleMapping.url = this.spServices.getItemURL(this.constants.listNames.CLEBucketMapping.name, Id);
+            updateCleMapping.url = this.spServices.getItemURL(this.constants.listNames.CLEBucketMapping.name, cleObj.ID);
             batchURL.push(updateCleMapping);
           }
         });
         if (batchURL.length) {
           const updateResult = await this.spServices.executeBatch(batchURL);
+          await this.createCLEMapping();
         }
       }
     }
