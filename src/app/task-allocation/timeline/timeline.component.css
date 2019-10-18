@@ -535,3 +535,7 @@ body .ui-treetable .ui-treetable-tbody>tr>td:last-child {
     text-transform: uppercase;
     top: 0;
 }
+
+body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider {
+    background-color: #db1721 !important;
+}
