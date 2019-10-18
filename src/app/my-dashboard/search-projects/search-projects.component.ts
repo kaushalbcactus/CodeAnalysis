@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, HostListener, ChangeDetectorRef } from '@angular/core';
 import { MessageService, MenuItem } from 'primeng/api';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
@@ -11,6 +11,7 @@ import { DatePipe } from '@angular/common';
 import { TimelineHistoryComponent } from './../../timeline/timeline-history/timeline-history.component';
 import { CommonService } from 'src/app/Services/common.service';
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-search-projects',
@@ -29,6 +30,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   viewUploadDocumentDialogComponent: ViewUploadDocumentDialogComponent;
 
   @ViewChild('timelineRef', { static: true })
+  @ViewChild('project', { static: false }) project: Table;
   timeline: TimelineHistoryComponent;
 
   selectedDate: DateObj;
@@ -91,7 +93,9 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     private spServices: SPOperationService,
     private commonService: CommonService,
     private datePipe: DatePipe,
-    public sharedObject: GlobalService, public router: Router) { }
+    public sharedObject: GlobalService, public router: Router,
+    private cdr: ChangeDetectorRef,
+  ) { }
 
   ngOnInit() {
     const route = this.router.url;
@@ -110,11 +114,8 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
       { field: 'ProjectType', header: 'Project Type' },
       { field: 'Status', header: 'Status' },
       { field: 'CreatedBy', header: 'Created By' },
-      { field: 'Created', header: 'Created Date' },
+      { field: 'CreatedDate', header: 'Created Date' },
     ];
-  }
-
-  ngOnDestroy() {
   }
 
 
@@ -173,65 +174,64 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   //   create column heading multiselect options
   // **************************************************************************************************
 
-  createColFieldValues() {
+  createColFieldValues(resArray) {
 
     this.ProjectColArray = {
       SOWCode: [], ProjectCode: [], WBJID: [], ClientLegalEntity: [],
-      DeliverableType: [], ProjectType: [], Status: [], CreatedBy: [], Created: []
+      DeliverableType: [], ProjectType: [], Status: [], CreatedBy: [], CreatedDate: []
     };
     this.ProjectColArray.SOWCode = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.SOWCode, value: a.SOWCode }; return b;
       })));
 
     this.ProjectColArray.ProjectCode = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.ProjectCode, value: a.ProjectCode }; return b;
       })));
 
     this.ProjectColArray.WBJID = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.WBJID, value: a.WBJID }; return b;
       })));
 
     this.ProjectColArray.ClientLegalEntity = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b;
       })));
 
     this.ProjectColArray.DeliverableType = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.DeliverableType, value: a.DeliverableType }; return b;
       })));
 
     this.ProjectColArray.ProjectType = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.ProjectType, value: a.ProjectType }; return b;
       })));
 
     this.ProjectColArray.Status = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.Status, value: a.Status }; return b;
       })));
 
 
     this.ProjectColArray.CreatedBy = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.CreatedBy, value: a.CreatedBy }; return b;
       })));
 
 
-    this.ProjectColArray.Created.push.apply(this.ProjectColArray.Created,
-      this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
-        const b = { label: this.datePipe.transform(a.Created, 'MMM d, y, h:mm a'), value: a.Create }; return b;
+    this.ProjectColArray.CreatedDate.push.apply(this.ProjectColArray.CreatedDate,
+      this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
+        const b = { label: this.datePipe.transform(a.CreatedDate, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.CreatedDate, 'MMM dd, yyyy, h:mm a')) }; return b;
       })));
 
 
 
-    this.ProjectColArray.Created = this.ProjectColArray.Created.sort((a, b) =>
+    this.ProjectColArray.CreatedDate = this.ProjectColArray.CreatedDate.sort((a, b) =>
       new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
     );
-
 
     this.loaderenable = false;
     this.tableviewenable = true;
@@ -284,11 +284,18 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
       if (this.response.length > 0) {
         this.ProjectList = this.response;
 
-        this.ProjectList.map(c => c.Created = new Date(c.Created));
+        this.ProjectList.map(c => c.Created = new Date(this.datePipe.transform(c.Created, 'MMM dd, yyyy, h:mm a')));
 
         this.ProjectList.map(c => c.CreatedBy = c.Author.Title);
 
-        this.createColFieldValues();
+        this.ProjectList = this.ProjectList.map(c => {
+          c['CreatedDate'] = c['Created'];
+          // delete c['Created'];
+          return c;
+        })
+
+        console.log('this.ProjectList ', this.ProjectList);
+        this.createColFieldValues(this.ProjectList);
 
         this.ProjectCode = '';
         this.ProjectTitle = '';
@@ -434,6 +441,34 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
       this.timeline.showTimeline(selectedProjectObj.ID, 'ProjectMgmt', 'Project');
     }
   }
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.ProjectList.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.project,
+        colFields: this.ProjectColArray
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.createColFieldValues(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+    }
+    this.cdr.detectChanges();
+  }
+
+  ngOnDestroy() {
+  }
+
+
 }
 
 

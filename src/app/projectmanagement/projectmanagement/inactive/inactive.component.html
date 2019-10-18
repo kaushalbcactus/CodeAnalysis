@@ -25,20 +25,20 @@
                     <th class="lastColumnWidth"></th>
                     <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
                         <input *ngSwitchCase="'PrimaryResourceText'" pInputText type="text" (input)="iapTableRef.filter($event.target.value, col.field, col.filterMatchMode)" (keydown.enter)="$event.preventDefault()">
-                        <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="iapArrays.projectCodeArray" defaultLabel="All" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        <p-multiSelect *ngSwitchCase="'ProjectCode'" [options]="iapArrays.ProjectCode" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'shortTitle'" [options]="iapArrays.shortTitleArray" defaultLabel="All" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="iapArrays.ShortTitle" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="iapArrays.clientLegalEntityArray" defaultLabel="All" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="iapArrays.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'POC'" [options]="iapArrays.POCArray" defaultLabel="All" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="iapArrays.deliveryTypeArray" defaultLabel="All" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        <p-multiSelect *ngSwitchCase="'POC'" [options]="iapArrays.POC" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'DeliverableType'" [options]="iapArrays.DeliverableType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'TA'" [options]="iapArrays.taArray" defaultLabel="All" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'Molecule'" [options]="iapArrays.moleculeArray" defaultLabel="All" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'Milestone'" [options]="iapArrays.milestoneArray" defaultLabel="All" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                        <p-multiSelect *ngSwitchCase="'TA'" [options]="iapArrays.TA" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'Molecule'" [options]="iapArrays.Molecule" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'Milestone'" [options]="iapArrays.Milestone" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect *ngSwitchCase="'Status'" [options]="iapArrays.statusArray" defaultLabel="All" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'Status'" [options]="iapArrays.Status" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="iapTableRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
                     </th>
                     <th class="lastColumnWidth"></th>
                 </tr>
@@ -47,7 +47,7 @@
                 <tr>
                     <td>{{rowIndex+1}}</td>
                     <td>{{task.ProjectCode}}</td>
-                    <td>{{task.shortTitle}}</td>
+                    <td>{{task.ShortTitle}}</td>
                     <td>{{task.ClientLegalEntity}}</td>
                     <td>{{task.POC}}</td>
                     <td>{{task.DeliverableType}}</td>

@@ -650,19 +650,27 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         }
     }
 
+    isOptionFilter: boolean;
+    optionFilter(event: any) {
+        if (event.target.value) {
+            this.isOptionFilter = false;
+        }
+    }
+
     ngAfterViewChecked() {
-        let obj = {
-            tableData: this.approvedNBTable,
-            colFields: this.anonBillableColArray,
-            // colFieldsArray: this.createColFieldValues(this.canRejExpenseTable.value)
+        if (this.approvedNonBillableRes.length && this.isOptionFilter) {
+            let obj = {
+                tableData: this.approvedNBTable,
+                colFields: this.anonBillableColArray
+            }
+            if (obj.tableData.filteredValue) {
+                this.commonService.updateOptionValues(obj);
+            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+                this.createColFieldValues(obj.tableData.value);
+                this.isOptionFilter = false;
+            }
         }
-        if (obj.tableData.filteredValue) {
-            this.commonService.updateOptionValues(obj);
-            this.cdr.detectChanges();
-        } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-            this.createColFieldValues(obj.tableData.value);
-            this.cdr.detectChanges();
-        }
+        this.cdr.detectChanges();
     }
 
 }

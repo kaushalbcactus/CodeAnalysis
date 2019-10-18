@@ -52,7 +52,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
         private cdr: ChangeDetectorRef,
-        ) {
+    ) {
         this.subscription.add(this.fdDataShareServie.getDateRange().subscribe(date => {
             this.DateRange = date;
             console.log('this.DateRange ', this.DateRange);
@@ -357,19 +357,27 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
         }
     }
 
+    isOptionFilter: boolean;
+    optionFilter(event: any) {
+        if (event.target.value) {
+            this.isOptionFilter = false;
+        }
+    }
+
     ngAfterViewChecked() {
-        let obj = {
-            tableData: this.canRejExpenseTable,
-            colFields: this.pendinExpenseColArray,
-            // colFieldsArray: this.createColFieldValues(this.canRejExpenseTable.value)
+        if (this.rejectExpenses.length && this.isOptionFilter) {
+            let obj = {
+                tableData: this.canRejExpenseTable,
+                colFields: this.pendinExpenseColArray,
+            }
+            if (obj.tableData.filteredValue) {
+                this.commonService.updateOptionValues(obj);
+            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+                this.createColFieldValues(obj.tableData.value);
+                this.isOptionFilter = false;
+            }
         }
-        if (obj.tableData.filteredValue) {
-            this.commonService.updateOptionValues(obj);
-            this.cdr.detectChanges();
-        } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-            this.createColFieldValues(obj.tableData.value);
-            this.cdr.detectChanges();
-        }
+        this.cdr.detectChanges();
     }
 
 }

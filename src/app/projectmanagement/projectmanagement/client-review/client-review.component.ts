@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ViewEncapsulation, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -11,6 +11,7 @@ import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
+import { DataTable } from 'primeng/primeng';
 
 declare var $;
 @Component({
@@ -30,7 +31,7 @@ export class ClientReviewComponent implements OnInit {
   displayedColumns: any[] = [
     { field: 'SLA', header: 'SLA', visibility: true },
     { field: 'ProjectCode', header: 'Project Code', visibility: true },
-    { field: 'shortTitle', header: 'Short Title', visibility: true },
+    { field: 'ShortTitle', header: 'Short Title', visibility: true },
     { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
     { field: 'POC', header: 'POC', visibility: true },
     { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
@@ -41,7 +42,7 @@ export class ClientReviewComponent implements OnInit {
     { field: 'DueDateFormat', header: 'Due Date', visibility: false }];
   filterColumns: any[] = [
     { field: 'ProjectCode' },
-    { field: 'shortTitle' },
+    { field: 'ShortTitle' },
     { field: 'ClientLegalEntity' },
     { field: 'POC' },
     { field: 'DeliverableType' },
@@ -49,6 +50,8 @@ export class ClientReviewComponent implements OnInit {
     { field: 'Milestone' },
     { field: 'DeliveryDate' }];
   @ViewChild('crTableRef', { static: true }) crRef: ElementRef;
+  @ViewChild('crTableRef', { static: true }) crTableRef: DataTable;
+
   // tslint:disable-next-line:variable-name
   private _success = new Subject<string>();
   // tslint:disable-next-line:variable-name
@@ -66,14 +69,24 @@ export class ClientReviewComponent implements OnInit {
   queryEndDate = new Date();
   public crArrays = {
     taskItems: [],
-    projectCodeArray: [],
-    shortTitleArray: [],
-    clientLegalEntityArray: [],
-    POCArray: [],
-    deliveryTypeArray: [],
-    dueDateArray: [],
-    milestoneArray: [],
-    deliveryDateArray: [],
+    ProjectCode: [],
+    ShortTitle: [],
+    ClientLegalEntity: [],
+    POC: [],
+    DeliverableType: [],
+    DueDate: [],
+    Milestone: [],
+    PreviousTaskUser: [],
+    PreviousTaskStatus: [],
+    DeliveryDate: [],
+    // projectCodeArray: [],
+    // shortTitleArray: [],
+    // clientLegalEntityArray: [],
+    // POCArray: [],
+    // deliveryTypeArray: [],
+    // dueDateArray: [],
+    // milestoneArray: [],
+    // deliveryDateArray: [],
     nextTaskArray: [],
     previousTaskArray: []
   };
@@ -87,7 +100,8 @@ export class ClientReviewComponent implements OnInit {
     private pmConstant: PmconstantService,
     public pmCommonService: PMCommonService,
     public spOperations: SPOperationService,
-    public router: Router
+    public router: Router,
+    private cdr: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
@@ -238,7 +252,7 @@ export class ClientReviewComponent implements OnInit {
         });
         if (projectObj.length) {
           crObj.ClientLegalEntity = projectObj[0].ClientLegalEntity;
-          crObj.shortTitle = projectObj[0].WBJID;
+          crObj.ShortTitle = projectObj[0].WBJID;
           crObj.DeliverableType = projectObj[0].DeliverableType;
           crObj.ProjectFolder = projectObj[0].ProjectFolder;
           // tslint:disable-next-line:only-arrow-functions
@@ -250,8 +264,8 @@ export class ClientReviewComponent implements OnInit {
             crObj.POC = projecContObj[0].FullName;
           }
         }
-        crObj.DueDate = task.DueDate;
-        crObj.DueDateFormat = this.datePipe.transform(new Date(crObj.DueDate), 'MMM dd yyyy hh:mm:ss aa');
+        crObj.DueDate = new Date(this.datePipe.transform(task.DueDate, 'MMM dd, yyyy, h:mm a'));
+        crObj.DueDateFormat = new Date(this.datePipe.transform(crObj.DueDate, 'MMM dd, yyyy, h:mm a'));
         crObj.Milestone = task.Milestone;
 
         // Check Task Due is greater or smaller than current date.
@@ -269,7 +283,7 @@ export class ClientReviewComponent implements OnInit {
           crObj.SLA = this.pmConstant.ColorIndicator.RED;
         }
         projectCodeTempArray.push({ label: crObj.ProjectCode, value: crObj.ProjectCode });
-        shortTitleTempArray.push({ label: crObj.shortTitle, value: crObj.shortTitle });
+        shortTitleTempArray.push({ label: crObj.ShortTitle, value: crObj.ShortTitle });
         clientLegalEntityTempArray.push({ label: crObj.ClientLegalEntity, value: crObj.ClientLegalEntity });
         POCTempArray.push({ label: crObj.POC, value: crObj.POC });
         deliveryTypeTempArray.push({ label: crObj.DeliverableType, value: crObj.DeliverableType });
@@ -302,18 +316,22 @@ export class ClientReviewComponent implements OnInit {
           taskItem.PreviousTaskStatus = prevTask[0][0].Status;
           this.crArrays.previousTaskArray.push(prevTask[0]);
           taskItem.DeliveryDate = prevTask[0][0].DueDate;
-          taskItem.DeliveryDateFormat = this.datePipe.transform(new Date(prevTask[0][0].DueDate), 'MMM dd yyyy hh:mm:ss aa');
+          taskItem.DeliveryDateFormat = this.datePipe.transform(new Date(prevTask[0][0].DueDate), 'MMM dd, yyyy, h:mm a');
           deliveryDateTempArray.push({ label: taskItem.DeliveryDate, value: taskItem.DeliveryDate });
         }
       }
-      this.crArrays.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
-      this.crArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
-      this.crArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
-      this.crArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
-      this.crArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
-      this.crArrays.dueDateArray = this.commonService.unique(dueDateTempArray, 'value');
-      this.crArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
-      this.crArrays.deliveryDateArray = this.commonService.unique(deliveryDateTempArray, 'value');
+
+      if (tempCRArray.length) {
+        this.createColFieldValues(tempCRArray);
+      }
+      // this.crArrays.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
+      // this.crArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
+      // this.crArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
+      // this.crArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
+      // this.crArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
+      // this.crArrays.dueDateArray = this.commonService.unique(dueDateTempArray, 'value');
+      // this.crArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
+      // this.crArrays.deliveryDateArray = this.commonService.unique(deliveryDateTempArray, 'value');
       this.pmObject.clientReviewArray = tempCRArray;
       this.pmObject.countObj.crCount = tempCRArray.length;
       this.pmObject.clientReviewArray_copy = tempCRArray.slice(0, 5);
@@ -332,6 +350,29 @@ export class ClientReviewComponent implements OnInit {
     }
     this.commonService.setIframeHeight();
   }
+
+  createColFieldValues(resArray) {
+    this.crArrays.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+    this.crArrays.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
+    this.crArrays.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+    this.crArrays.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
+    this.crArrays.DeliverableType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DeliverableType, value: a.DeliverableType }; return b; }).filter(ele => ele.label)));
+    this.crArrays.DueDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.DueDateFormat, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.DueDateFormat, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
+    this.crArrays.Milestone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Milestone, value: a.Milestone }; return b; }).filter(ele => ele.label)));
+    this.crArrays.DeliveryDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.DeliveryDate, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.DeliveryDate, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
+  }
+
+  uniqueArrayObj(array: any) {
+    let sts: any = '';
+    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
+      const keys = {
+        label: label1,
+        value: array.find(s => s.label === label1).value
+      };
+      return keys ? keys : '';
+    });
+  }
+
   async downloadTask(task) {
     console.log(task);
     const tempArray = [];
@@ -437,4 +478,29 @@ export class ClientReviewComponent implements OnInit {
       }
     }
   }
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.pmObject.clientReviewArray.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.crTableRef,
+        colFields: this.crArrays,
+        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.createColFieldValues(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+    }
+    this.cdr.detectChanges();
+  }
+
 }

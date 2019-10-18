@@ -35,25 +35,25 @@
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                     <ng-container *ngIf="col.field">
                         <td></td>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ClientLegalEntity'" [options]="outInvoiceColArray.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ClientLegalEntity'" [options]="outInvoiceColArray.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'InvoiceStatus'" [options]="outInvoiceColArray.InvoiceStatus" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'InvoiceStatus'" [options]="outInvoiceColArray.InvoiceStatus" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'InvoiceNumber'" [options]="outInvoiceColArray.InvoiceNumber" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'InvoiceNumber'" [options]="outInvoiceColArray.InvoiceNumber" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'PONumber'" [options]="outInvoiceColArray.PONumber" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'PONumber'" [options]="outInvoiceColArray.PONumber" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'POName'" [options]="outInvoiceColArray.POName" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'POName'" [options]="outInvoiceColArray.POName" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'InvoiceDate'" [options]="outInvoiceColArray.InvoiceDate" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'InvoiceDate'" [options]="outInvoiceColArray.InvoiceDate" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Amount'" [options]="outInvoiceColArray.Amount" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Amount'" [options]="outInvoiceColArray.Amount" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Currency'" [options]="outInvoiceColArray.Currency" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'Currency'" [options]="outInvoiceColArray.Currency" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'POC'" [options]="outInvoiceColArray.POC" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'POC'" [options]="outInvoiceColArray.POC" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ModifiedBy'" [options]="outInvoiceColArray.ModifiedBy" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'ModifiedBy'" [options]="outInvoiceColArray.ModifiedBy" defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="outi.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         
                     </ng-container>

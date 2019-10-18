@@ -85,59 +85,59 @@
                 <td></td>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'ProjectCode'" [options]="confirmedInColArray.ProjectCode" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')">
+                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'SOWValue'" [options]="confirmedInColArray.SOWCode" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')">
+                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'ClientLegalEntity'" [options]="confirmedInColArray.ClientLegalEntity"
-                    defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="cnf.filter($event.value, col.field, 'in')">
+                    defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'ProjectMileStone'" [options]="confirmedInColArray.ProjectMileStone"
-                    defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="cnf.filter($event.value, col.field, 'in')">
+                    defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'POName'" [options]="confirmedInColArray.POName" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')">
+                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'ClientName'" [options]="confirmedInColArray.ClientName" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')">
+                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'ClientAmount'" [options]="confirmedInColArray.ClientAmount" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')">
+                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'ClientCurrency'" [options]="confirmedInColArray.ClientCurrency" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')">
+                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'ScheduledDate'" [options]="confirmedInColArray.ScheduledDate" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')">
+                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'ScheduleType'" [options]="confirmedInColArray.ScheduleType" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')">
+                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" *ngSwitchCase="'POC'"
                     [options]="confirmedInColArray.POC" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')">
+                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'Amount'" [options]="confirmedInColArray.Amount" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')">
+                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'Currency'" [options]="confirmedInColArray.Currency" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')">
+                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
                 <p-multiSelect (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true"
                     *ngSwitchCase="'POCName'" [options]="confirmedInColArray.POCName" defaultLabel="All" [maxSelectedLabels]="1" 
-                    (onChange)="cnf.filter($event.value, col.field, 'in')">
+                    (onChange)="cnf.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                 </p-multiSelect>
 
                 </ng-container>

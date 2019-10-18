@@ -821,23 +821,29 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   }
 
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
   ngAfterViewChecked() {
-    if (this.allTasks.length) {
+    if (this.allTasks.length && this.isOptionFilter) {
       let obj = {
         tableData: this.taskId,
-        colFields: this.AllTaskColArray,
-        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+        colFields: this.AllTaskColArray
       }
       if (obj.tableData.filteredValue) {
         this.commonService.updateOptionValues(obj);
-        this.cdr.detectChanges();
       } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
         this.createColFieldValues(obj.tableData.value);
-        this.cdr.detectChanges();
+        this.isOptionFilter = false;
       }
-    } else {
-      this.initializeTableOptions();
     }
+    //  else {
+    //   this.initializeTableOptions();
+    // }
     this.cdr.detectChanges();
   }
 

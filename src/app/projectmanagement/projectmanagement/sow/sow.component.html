@@ -20,23 +20,23 @@
             <tr>
                 <th class="lastColumnWidth"></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
-                    <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allSOW.sowCodeArray" defaultLabel="All" [(ngModel)]="pmObject.columnFilter.SOWCode" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                    <p-multiSelect *ngSwitchCase="'SOWCode'" [options]="allSOW.SOWCode" defaultLabel="All" [maxSelectedLabels]="1" [(ngModel)]="pmObject.columnFilter.SOWCode" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="allSOW.shortTitleArray" defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                    <p-multiSelect *ngSwitchCase="'ShortTitle'" [options]="allSOW.ShortTitle" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="allSOW.clientLegalEntityArray" defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [options]="allSOW.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'POC'" [options]="allSOW.pocArray" defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                    <p-multiSelect *ngSwitchCase="'POC'" [options]="allSOW.POC" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'RevenueBudget'" [options]="allSOW.RevenueBudgetArray" defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                    <p-multiSelect *ngSwitchCase="'RevenueBudget'" [options]="allSOW.RevenueBudget" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'OOPBudget'" [options]="allSOW.OOPBudgetArray" defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                    <p-multiSelect *ngSwitchCase="'OOPBudget'" [options]="allSOW.OOPBudget" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Currency'" [options]="allSOW.currencyArray" defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                    <p-multiSelect *ngSwitchCase="'Currency'" [options]="allSOW.Currency" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ModifiedBy'" [options]="allSOW.modifiedByArray" defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                    <p-multiSelect *ngSwitchCase="'ModifiedBy'" [options]="allSOW.ModifiedBy" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                     </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ModifiedDate'" [options]="allSOW.modifiedDateArray" defaultLabel="All" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true">
+                    <p-multiSelect *ngSwitchCase="'ModifiedDate'" [options]="allSOW.ModifiedDate" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="allProjectRef.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                     </p-multiSelect>
                 </th>
                 <th class="lastColumnWidth"></th>
@@ -53,7 +53,7 @@
                 <td>{{task.RevenueBudget}}</td>
                 <td>{{task.OOPBudget}}</td>
                 <td>{{task.ModifiedBy}}</td>
-                <td>{{task.ModifiedDate | date:'MMM dd yyyy hh:mm:ss aa'}}</td>
+                <td>{{task.ModifiedDate | date:'MMM dd, yyyy, h:mm a'}}</td>
                 <td>
                     <div>
                         <p-menu [showTransitionOptions]="'0ms'" [hideTransitionOptions]="'0ms'" #menu [model]="popItems" [popup]="true">

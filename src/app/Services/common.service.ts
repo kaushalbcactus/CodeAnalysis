@@ -398,6 +398,7 @@ export class CommonService {
             }
             return result;
         });
+        return data;
     }
     async getTaskDocument(folderUrl, documentUrl) {
         let completeFolderRelativeUrl = folderUrl + documentUrl;
@@ -995,15 +996,21 @@ export class CommonService {
         this.tableObj.colFields[colName] = [];
         let totalArr = array.map(item => item[colName]);
         if (colName.toLowerCase().includes("date")) {
-            totalArr = this.sortDateArray(this.uniqueArrayObj(totalArr.map(a => { let b = { label: this.datePipe.transform(a, "MMM dd, yyyy"), value: a }; return b; }).filter(ele => ele.label)));
+            totalArr = this.uniqueArrayObj(totalArr.map(a => { let b = { label: this.datePipe.transform(a, "MMM dd, yyyy, h:mm a"), value: a }; return b; }).filter(ele => ele.label));
+            // totalArr = this.uniqueArrayObj(totalArr.map(a => { let b = { label: this.datePipe.transform(a, "MMM dd, yyyy, h:mm a"), value: a }; return b; }).filter(ele => ele.label));
         }
         // const uniqueTotalArr = totalArr.filter((item, index) => totalArr.indexOf(item) === index);
-        const uniqueTotalArr = Array.from(new Set(totalArr));
+        let uniqueTotalArr = [];
+        uniqueTotalArr = Array.from(new Set(totalArr));
         let tempArr = [];
         for (let i = 0; i < uniqueTotalArr.length; i++) {
             const element = uniqueTotalArr[i];
             if (colName.toLowerCase().includes("date")) {
-                tempArr.push({ label: this.datePipe.transform(element, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(element, 'MMM dd, yyyy')) });
+                if (element.label.includes("12:00 AM")) {
+                    tempArr.push({ label: this.datePipe.transform(element.label, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(element.value, 'MMM dd, yyyy')) });
+                } else {
+                    tempArr.push({ label: this.datePipe.transform(element.label, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(element.value, 'MMM dd, yyyy, h:mm a')) });
+                }
             } else {
                 tempArr.push({ label: element, value: element });
             }

@@ -685,19 +685,27 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         }
     }
 
+    isOptionFilter: boolean;
+    optionFilter(event: any) {
+        if (event.target.value) {
+            this.isOptionFilter = false;
+        }
+    }
+
     ngAfterViewChecked() {
-        let obj = {
-            tableData: this.paidInvTable,
-            colFields: this.outInvoiceColArray,
-            // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+        if (this.paidInvoicesRes.length && this.isOptionFilter) {
+            let obj = {
+                tableData: this.paidInvTable,
+                colFields: this.outInvoiceColArray
+            }
+            if (obj.tableData.filteredValue) {
+                this.commonService.updateOptionValues(obj);
+            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+                this.createColFieldValues(obj.tableData.value);
+                this.isOptionFilter = false;
+            }
         }
-        if (obj.tableData.filteredValue) {
-            this.commonService.updateOptionValues(obj);
-            this.cdr.detectChanges();
-        } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-            this.createColFieldValues(obj.tableData.value);
-            this.cdr.detectChanges();
-        }
+        this.cdr.detectChanges();
     }
 
 

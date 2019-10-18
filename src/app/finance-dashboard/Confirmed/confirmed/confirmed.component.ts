@@ -1272,19 +1272,28 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }
     }
 
+    isOptionFilter: boolean;
+    optionFilter(event: any) {
+        if (event.target.value) {
+            this.isOptionFilter = false;
+        }
+    }
+
     ngAfterViewChecked() {
-        let obj = {
-            tableData: this.confirmTable,
-            colFields: this.confirmedInColArray,
-            // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+        if (this.confirmedRes.length && this.isOptionFilter) {
+            let obj = {
+                tableData: this.confirmTable,
+                colFields: this.confirmedInColArray
+            }
+            if (obj.tableData.filteredValue) {
+                this.commonService.updateOptionValues(obj);
+                this.cdr.detectChanges();
+            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+                this.createColFieldValues(obj.tableData.value);
+                this.isOptionFilter = false;
+            }
         }
-        if (obj.tableData.filteredValue) {
-            this.commonService.updateOptionValues(obj);
-            this.cdr.detectChanges();
-        } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-            this.createColFieldValues(obj.tableData.value);
-            this.cdr.detectChanges();
-        }
+        this.cdr.detectChanges();
     }
 
 }

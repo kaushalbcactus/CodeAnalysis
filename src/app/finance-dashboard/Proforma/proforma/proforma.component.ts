@@ -1637,17 +1637,26 @@ export class ProformaComponent implements OnInit, OnDestroy {
         }
     }
 
-    ngAfterViewChecked() {
-        let obj = {
-            tableData: this.proformaTable,
-            colFields: this.proformaColArray,
-            // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+    isOptionFilter: boolean;
+    optionFilter(event: any) {
+        if (event.target.value) {
+            this.isOptionFilter = false;
         }
-        if (obj.tableData.filteredValue) {
-            this.commonService.updateOptionValues(obj);
-            this.cdr.detectChanges();
-        } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-            this.createColFieldValues(obj.tableData.value);
+    }
+
+    ngAfterViewChecked() {
+        if (this.proformaRes.length && this.isOptionFilter) {
+            let obj = {
+                tableData: this.proformaTable,
+                colFields: this.proformaColArray,
+                // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+            }
+            if (obj.tableData.filteredValue) {
+                this.commonService.updateOptionValues(obj);
+            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+                this.createColFieldValues(obj.tableData.value);
+                this.isOptionFilter = false;
+            }
             this.cdr.detectChanges();
         }
     }
