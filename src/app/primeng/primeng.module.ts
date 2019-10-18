@@ -15,7 +15,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { MessageService, ConfirmationService, DialogService } from 'primeng/api';
 import { TabViewModule } from 'primeng/tabview';
 import { MenubarModule, OverlayPanelModule, InputTextareaModule, InputTextModule,
-   AutoComplete, AutoCompleteModule, TieredMenuModule } from 'primeng/primeng';
+   AutoComplete, AutoCompleteModule, TieredMenuModule, InputSwitchModule } from 'primeng/primeng';
 import { CalendarModule } from 'primeng/calendar';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ContextMenuModule } from 'primeng/contextmenu';
@@ -72,7 +72,8 @@ import { FullCalendarModule } from 'primeng/fullcalendar';
     OverlayPanelModule,
     InputTextareaModule,
     InputTextModule,
-    TieredMenuModule
+    TieredMenuModule,
+    InputSwitchModule
   ],
   providers: [ConfirmationService, DialogService, MessageService]
 })
