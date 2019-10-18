@@ -2586,6 +2586,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
           + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'Central task deallocated');
       }
     }
+    if (milestoneTask.IsCentrallyAllocated === 'Yes' && milestoneTask.status !== 'Not Started') {
+      milestoneTask.ActiveCA = 'No';
+    }
 
     // tslint:disable
     const endpoint = bAdd ?
