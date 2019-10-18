@@ -811,19 +811,19 @@ export class SPOperationService {
     batchContents.push('');
     return batchContents;
   }
-  getChangeSetBodySC(batchContents, changeSetId, endPoint, data, createFolder) {
-    batchContents.push('--changeset_' + changeSetId);
-    batchContents.push('Content-Type: application/http');
-    batchContents.push('Content-Transfer-Encoding: binary');
-    batchContents.push('');
-    batchContents.push(createFolder ? 'POST ' + endPoint + ' HTTP/1.1' : 'PATCH ' + endPoint + ' HTTP/1.1');
-    batchContents.push('Content-Type: application/json;odata=verbose');
-    batchContents.push('Accept: application/json;odata=verbose');
-    batchContents.push('If-Match: *');
-    batchContents.push('');
-    batchContents.push(data);
-    batchContents.push('');
-  }
+  // getChangeSetBodySC(batchContents, changeSetId, endPoint, data, createFolder) {
+  //   batchContents.push('--changeset_' + changeSetId);
+  //   batchContents.push('Content-Type: application/http');
+  //   batchContents.push('Content-Transfer-Encoding: binary');
+  //   batchContents.push('');
+  //   batchContents.push(createFolder ? 'POST ' + endPoint + ' HTTP/1.1' : 'PATCH ' + endPoint + ' HTTP/1.1');
+  //   batchContents.push('Content-Type: application/json;odata=verbose');
+  //   batchContents.push('Accept: application/json;odata=verbose');
+  //   batchContents.push('If-Match: *');
+  //   batchContents.push('');
+  //   batchContents.push(data);
+  //   batchContents.push('');
+  // }
   // getChangeSetBodyMove(batchContents, changeSetId, endPoint) {
   //   batchContents.push('--changeset_' + changeSetId);
   //   batchContents.push('Content-Type: application/http');

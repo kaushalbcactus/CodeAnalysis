@@ -131,8 +131,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     const mainQuery = this.selectedTab === 'allocated' ?
       Object.assign({}, this.caConstant.scheduleAllocatedQueryOptions) : Object.assign({}, this.caConstant.scheduleQueryOptions);
 
-    const arrResults = await this.commonService.getItems(this.resourceCategorizationList,
-      this.projectInformationList, this.scheduleList, mainQuery);
+    const arrResults = await this.commonService.getItems(mainQuery);
     this.resourceList = arrResults[0];
     this.projects = arrResults[1];
     this.schedulesItems = arrResults[2];
@@ -448,9 +447,11 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     const timezoneOptions = { 'AssignedToId': task.allocatedResource, 'CentralAllocationDone': 'Yes', 'TimeZone': task.userTimeZone };
     //// Save task and remove task from list 
     if (istimeZoneUpdate) {
-      this.spServices.update(this.scheduleList, task.id, timezoneOptions, 'SP.Data.SchedulesListItem');
+      await this.spServices.updateItem(this.scheduleList, task.id, timezoneOptions, this.globalConstant.listNames.Schedules.type)
+      // this.spServices.update(this.scheduleList, task.id, timezoneOptions, 'SP.Data.SchedulesListItem');
     } else {
-      this.spServices.update(this.scheduleList, task.id, options, 'SP.Data.SchedulesListItem');
+      await this.spServices.updateItem(this.scheduleList, task.id, options, this.globalConstant.listNames.Schedules.type)
+      // this.spServices.update(this.scheduleList, task.id, options, 'SP.Data.SchedulesListItem');
     }
 
     await this.commonService.ResourceAllocation(task, this.projectInformationList);
@@ -584,14 +585,14 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   async performDelete(task, nextTasks, prevTasks, unt) {
     if (task) {
       const options = { 'NextTasks': '', 'PrevTasks': '', 'Status': 'Deleted' }
-      await this.spServices.update(this.scheduleList, task.id, options, 'SP.Data.SchedulesListItem');
+      await this.spServices.updateItem(this.scheduleList, task.id, options, this.globalConstant.listNames.Schedules.type);
     }
     if (prevTasks) {
       for (const tempTask of prevTasks) {
         let sUpdateVal = tempTask.NextTasks ? tempTask.NextTasks.replace(task.title, task.NextTasks) : '';
         sUpdateVal = this.commonService.getUniqueValues(sUpdateVal, ";#");
         const options = { 'NextTasks': sUpdateVal }
-        await this.spServices.update(this.scheduleList, tempTask.Id, options, 'SP.Data.SchedulesListItem');
+        await this.spServices.updateItem(this.scheduleList, tempTask.Id, options, this.globalConstant.listNames.Schedules.type);
       }
     }
     if (nextTasks) {
@@ -599,7 +600,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         let sUpdateVal = tempTask.PrevTasks ? tempTask.PrevTasks.replace(task.title, task.PrevTasks) : '';
         sUpdateVal = this.commonService.getUniqueValues(sUpdateVal, ";#");
         const options = { 'PrevTasks': sUpdateVal }
-        await this.spServices.update(this.scheduleList, tempTask.Id, options, 'SP.Data.SchedulesListItem');
+        await this.spServices.updateItem(this.scheduleList, tempTask.Id, options, this.globalConstant.listNames.Schedules.type);
       }
     }
 
