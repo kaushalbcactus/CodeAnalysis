@@ -519,7 +519,7 @@ export class MyTimelineComponent implements OnInit {
 
         this.CalendarLoader = true;
         if (event === 'Leave') {
-          debugger;
+          // update leaves table based on leaves 
           const dbAvailableHours = await this.getAvailableHours(blockTimeobj);
 
           // await this.spServices.create(this.constants.listNames.LeaveCalendar.name, blockTimeobj, '');
@@ -673,6 +673,11 @@ export class MyTimelineComponent implements OnInit {
     }
   }
 
+  // *************************************************************************************************************************************
+  // Update leave hours based on leave days
+  // *************************************************************************************************************************************
+
+
   async getAvailableHours(blockTimeobj) {
 
     let dbRecords = [];
@@ -700,14 +705,35 @@ export class MyTimelineComponent implements OnInit {
     AvailableHoursGet.listName = this.constants.listNames.AvailableHours.name;
     batchURL.push(AvailableHoursGet);
 
+    const LeaveDates = [];
+    const startDate = new Date(this.datePipe.transform(blockTimeobj.EventDate, 'yyyy-MM-dd' + 'T00:00:00Z'));
+    let endDate = new Date(this.datePipe.transform(blockTimeobj.EndDate, 'yyyy-MM-dd' + 'T00:00:00Z'));
+    while (startDate <= endDate) {
+      LeaveDates.push(new Date(endDate));
+      endDate = new Date(endDate.setDate(endDate.getDate() - 1));
+    }
+
+
     const arrResults = await this.spServices.executeBatch(batchURL);
 
     if (arrResults) {
       if (arrResults[0].retItems.length > 0) {
         dbRecords = arrResults[0].retItems;
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        arrResults[0].retItems.forEach(element => {
+          const date = new Date(element.WeekStartDate);
+          while (date <= new Date(element.WeekEndDate)) {
+
+            const LeaveDatePresent = LeaveDates.find(c => c.getTime() === date.getTime()) ? true : false;
+            if (LeaveDatePresent && date.getDay() !== 0 && date.getDay() !== 6) {
+              element[days[date.getDay()] + 'Leave'] = blockTimeobj.IsHalfDay ?
+                element[days[date.getDay()]] / 2 : element[days[date.getDay()]];
+            }
+            date.setDate(date.getDate() + 1);
+          }
+        });
       }
     }
-
     return dbRecords;
   }
 }

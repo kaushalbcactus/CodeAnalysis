@@ -386,6 +386,7 @@ export class UsercapacityComponent implements OnInit {
   async fetchUserLeaveDetails(oCapacity, oUser, leaves, availableHrs) {
     oUser.leaves = [];
     let AvailableHrs = [];
+    debugger;
     if (availableHrs) {
       AvailableHrs = await this.calculateAvailableHours(availableHrs);
     }
