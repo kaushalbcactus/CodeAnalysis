@@ -265,7 +265,7 @@ export class AdminConstantService {
       top: 4900
     },
     GET_CLE_MAPPING_BY_ID: {
-      select: 'ID',
+      select: 'ID,CLEName',
       filter: 'CLEName eq \'{{clientLegalEntity}}\' and EndDate eq null',
       orderby: 'ID asc'
     }

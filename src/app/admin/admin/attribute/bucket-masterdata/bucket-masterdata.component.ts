@@ -51,6 +51,8 @@ export class BucketMasterdataComponent implements OnInit {
   bucketDataColumns = [];
   bucketArray = [];
   clientArray = [];
+  minDateValue = new Date();
+  min30Days = new Date();
   /**
    * Construct a method to create an instance of required component.
    *
@@ -203,7 +205,17 @@ export class BucketMasterdataComponent implements OnInit {
    * @param clientArray An clientLegalEntity array required as parameter.
    */
   displayClient(clientArray) {
-    this.viewClientArray = clientArray;
+    this.viewClientArray = [];
+    const tempArray = [];
+    clientArray.forEach(item => {
+      const obj = Object.assign({}, this.adminObject.bucketClientObj);
+      obj.ID = item.ID;
+      obj.Title = item.Title;
+      obj.Bucket = item.Bucket;
+      obj.EffectiveDate = new Date();
+      tempArray.push(obj);
+    });
+    this.viewClientArray = tempArray;
     this.viewClient = true;
   }
   /**
@@ -274,10 +286,12 @@ export class BucketMasterdataComponent implements OnInit {
    */
   editClientData(data) {
     this.adminObject.isMainLoaderHidden = false;
+    this.min30Days = new Date(new Date().setDate(new Date().getDate() - 30));
     this.selectedClient = [];
     this.selectedRowItems = [];
     this.clientList.forEach(client => {
       client.isCheckboxDisabled = false;
+      client.EffectiveDate = new Date();
       data.RowClientsArray.forEach(element => {
         if (client.ID === element.ID) {
           client.isCheckboxDisabled = true;
@@ -431,6 +445,7 @@ export class BucketMasterdataComponent implements OnInit {
     });
     if (batchURL.length) {
       const results = await this.spServices.executeBatch(batchURL);
+      const updateResult = await this.updateCLEMapping();
       this.editClient = false;
       this.messageService.add({
         key: 'adminCustom', severity: 'success', sticky: true,
@@ -440,7 +455,106 @@ export class BucketMasterdataComponent implements OnInit {
       this.adminObject.isMainLoaderHidden = true;
     }
   }
-
+  /**
+   * Construct a method to add item into `CLEBucketMapping` list.
+   *
+   * @description
+   *
+   * This method will add item into `CLEBucketMapping` list.
+   *
+   * @note
+   *
+   * It will call both time while creating and updating the client legal entity.
+   *
+   * If Create - Start Date will be today's date.
+   *
+   * If update - Start Date will be the value `bucketEffictiveDate` field.
+   */
+  async createCLEMapping() {
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    this.selectedClient.forEach(element => {
+      if (!element.isCheckboxDisabled) {
+        const data = {
+          Title: element.Title,
+          CLEName: element.Title,
+          Bucket: element.Bucket,
+          StartDate: element.EffectiveDate
+        };
+        const createCleMapping = Object.assign({}, options);
+        createCleMapping.data = data;
+        createCleMapping.listName = this.constants.listNames.CLEBucketMapping.name;
+        createCleMapping.type = 'POST';
+        createCleMapping.url = this.spServices.getItemURL(this.constants.listNames.CLEBucketMapping.name, null);
+        batchURL.push(createCleMapping);
+      }
+    });
+    const results = await this.spServices.executeBatch(batchURL);
+  }
+  /**
+   * Construct a method is to update item in `CLEBucketMapping` list.
+   *
+   * @description
+   *
+   * This method is used to update the item in `CLEBucketMapping` list.
+   *
+   * @note
+   *
+   * This method only calls when bucket value changes.
+   */
+  async updateCLEMapping() {
+    let batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    this.selectedClient.forEach(element => {
+      if (!element.isCheckboxDisabled) {
+        const cleMappingGet = Object.assign({}, options);
+        const cleFilter = Object.assign({}, this.adminConstants.QUERY.GET_CLE_MAPPING_BY_ID);
+        cleFilter.filter = cleFilter.filter.replace(/{{clientLegalEntity}}/gi,
+          element.Title);
+        cleMappingGet.url = this.spServices.getReadURL(this.constants.listNames.CLEBucketMapping.name,
+          cleFilter);
+        cleMappingGet.type = 'GET';
+        cleMappingGet.listName = this.constants.listNames.CLEBucketMapping.name;
+        batchURL.push(cleMappingGet);
+      }
+    });
+    if (batchURL.length) {
+      const getCLEResults = await this.spServices.executeBatch(batchURL);
+      console.log(getCLEResults);
+      batchURL = [];
+      if (getCLEResults && getCLEResults.length) {
+        // this.createCLEMapping();
+        getCLEResults.forEach(element => {
+          if (element.retItems && element.retItems.length) {
+            const Id = element.retItems[0];
+            const tempDate = this.selectedClient.filter(a => a.Title === element.CLEName);
+            const updateData = {
+              EndDate: new Date(new Date(tempDate[0]).setDate(new Date(tempDate[0]).getDate() - 1))
+            };
+            const updateCleMapping = Object.assign({}, options);
+            updateCleMapping.data = updateData;
+            updateCleMapping.listName = this.constants.listNames.CLEBucketMapping.name;
+            updateCleMapping.type = 'PATCH';
+            updateCleMapping.url = this.spServices.getItemURL(this.constants.listNames.CLEBucketMapping.name, Id);
+            batchURL.push(updateCleMapping);
+          }
+        });
+        if (batchURL.length) {
+          const updateResult = await this.spServices.executeBatch(batchURL);
+        }
+      }
+    }
+  }
   downloadExcel(bmd) {
     bmd.exportCSV();
   }

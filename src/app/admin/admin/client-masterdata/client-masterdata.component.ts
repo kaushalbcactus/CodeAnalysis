@@ -1995,54 +1995,47 @@ export class ClientMasterdataComponent implements OnInit {
    * respective list and iterate the result to load the respective dropdown.
    */
   async loadPODropdown() {
-    if (!this.dropdown.CurrencyArray.length
-      || !this.dropdown.CMLevel2Array.length
-      || !this.dropdown.POTAArray.length
-      || !this.dropdown.POMoleculeArray.length
-      || !this.dropdown.POPointOfContactArray.length
-      || !this.dropdown.POBuyingEntityArray.length) {
-      const sResults = await this.getPODropdownRecords();
-      if (sResults && sResults.length) {
-        const pocArray = sResults[0].retItems;
-        const taArray = sResults[1].retItems;
-        const moleculeArray = sResults[2].retItems;
-        const poBuyingEntityArray = sResults[3].retItems;
-        if (pocArray && pocArray.length) {
-          this.dropdown.POPointOfContactArray = [];
-          pocArray.forEach(element => {
-            this.dropdown.POPointOfContactArray.push({ label: element.FullName, value: element.ID });
-          });
-        }
-        if (taArray && taArray.length) {
-          this.dropdown.POTAArray = [];
-          taArray.forEach(element => {
-            this.dropdown.POTAArray.push({ label: element.Title, value: element.Title });
-          });
-        }
-        if (moleculeArray && moleculeArray.length) {
-          this.dropdown.POMoleculeArray = [];
-          moleculeArray.forEach(element => {
-            this.dropdown.POMoleculeArray.push({ label: element.Title, value: element.Title });
-          });
-        }
-        if (poBuyingEntityArray && poBuyingEntityArray.length) {
-          const tempArray = poBuyingEntityArray[0].Choices.results;
-          this.dropdown.POBuyingEntityArray = [];
-          tempArray.forEach(element => {
-            this.dropdown.POBuyingEntityArray.push({ label: element, value: element });
-          });
-        }
-        if (!this.dropdown.CMLevel2Array.length) {
-          const cmLevelArray = sResults[4].retItems;
-          this.separateResourceCat(cmLevelArray);
-        }
-        if (!this.dropdown.CurrencyArray.length) {
-          const currencyArray = sResults[5].retItems;
-          this.dropdown.CurrencyArray = [];
-          currencyArray.forEach(element => {
-            this.dropdown.CurrencyArray.push({ label: element.Title, value: element.Title });
-          });
-        }
+    const sResults = await this.getPODropdownRecords();
+    if (sResults && sResults.length) {
+      const pocArray = sResults[0].retItems;
+      const taArray = sResults[1].retItems;
+      const moleculeArray = sResults[2].retItems;
+      const poBuyingEntityArray = sResults[3].retItems;
+      if (pocArray && pocArray.length) {
+        this.dropdown.POPointOfContactArray = [];
+        pocArray.forEach(element => {
+          this.dropdown.POPointOfContactArray.push({ label: element.FullName, value: element.ID });
+        });
+      }
+      if (taArray && taArray.length) {
+        this.dropdown.POTAArray = [];
+        taArray.forEach(element => {
+          this.dropdown.POTAArray.push({ label: element.Title, value: element.Title });
+        });
+      }
+      if (moleculeArray && moleculeArray.length) {
+        this.dropdown.POMoleculeArray = [];
+        moleculeArray.forEach(element => {
+          this.dropdown.POMoleculeArray.push({ label: element.Title, value: element.Title });
+        });
+      }
+      if (poBuyingEntityArray && poBuyingEntityArray.length) {
+        const tempArray = poBuyingEntityArray[0].Choices.results;
+        this.dropdown.POBuyingEntityArray = [];
+        tempArray.forEach(element => {
+          this.dropdown.POBuyingEntityArray.push({ label: element, value: element });
+        });
+      }
+      if (!this.dropdown.CMLevel2Array.length) {
+        const cmLevelArray = sResults[4].retItems;
+        this.separateResourceCat(cmLevelArray);
+      }
+      if (!this.dropdown.CurrencyArray.length) {
+        const currencyArray = sResults[5].retItems;
+        this.dropdown.CurrencyArray = [];
+        currencyArray.forEach(element => {
+          this.dropdown.CurrencyArray.push({ label: element.Title, value: element.Title });
+        });
       }
     }
   }
@@ -2337,8 +2330,8 @@ export class ClientMasterdataComponent implements OnInit {
     this.poItems = [
       { label: 'Change Budget', command: (e) => this.showchangeBudgetModal() },
       { label: 'Edit', command: (e) => this.showEditPOModal() },
-      { label: 'Delete', command: (e) => this.deletePO() },
-      { label: 'View', command: (e) => this.viewPO() }];
+      { label: 'Delete', command: (e) => this.deletePO() }
+    ];
   }
   /**
    * Construct a method to load the newly created item into the table without refreshing the whole page.
@@ -2452,14 +2445,7 @@ export class ClientMasterdataComponent implements OnInit {
     this.cmObject.isPOFormSubmit = false;
     this.editPo = false;
     this.buttonLabel = 'Update';
-    if (!this.dropdown.CurrencyArray.length
-      || !this.dropdown.CMLevel2Array.length
-      || !this.dropdown.POTAArray.length
-      || !this.dropdown.POMoleculeArray.length
-      || !this.dropdown.POPointOfContactArray.length
-      || !this.dropdown.POBuyingEntityArray.length) {
-      await this.loadPODropdown();
-    }
+    await this.loadPODropdown();
     this.PoForm.controls.poNumber.disable();
     this.PoForm.controls.currency.disable();
     this.PoForm.controls.total.disable();
@@ -2634,21 +2620,21 @@ export class ClientMasterdataComponent implements OnInit {
     if (this.newBudget.AmountOOP < 0) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'OOP should be in Positive Number'
+        detail: 'OOP should be Positive Number'
       });
       return false;
     }
     if (this.newBudget.AmountTax < 0) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Tax should be in Positive Number'
+        detail: 'Tax should be Positive Number'
       });
       return false;
     }
     if (this.newBudget.Amount < 0) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Total should be in Positive Number'
+        detail: 'Total should be Positive Number'
       });
       return false;
     }
@@ -2777,7 +2763,7 @@ export class ClientMasterdataComponent implements OnInit {
     if (this.newBudget.Amount > 0) {
       this.messageService.add({
         key: 'adminCustom', severity: 'error', summary: 'Error Message',
-        detail: 'Total should be in negative number'
+        detail: 'Total should be negative number'
       });
       return false;
     }

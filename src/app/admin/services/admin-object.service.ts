@@ -103,6 +103,12 @@ export class AdminObjectService {
     LastUpdatedBy: '',
     LastUpdatedFormat: '',
   };
+  public bucketClientObj = {
+    ID: '',
+    Title: '',
+    Bucket: '',
+    EffectiveDate: new Date()
+  };
   public projectTypeObj = {
     ID: 0,
     ProjectType: '',
