@@ -707,7 +707,7 @@ export class SPOperationService {
     });
   }
 
-
+}
   // added function From old sharepoint service
 
 
@@ -772,45 +772,45 @@ export class SPOperationService {
   //   return resp;
   // }
 
-  async getFDData(batchGuid, batchBody): Promise<any> {
-    // const arrResults = [];
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'multipart/mixed; boundary="batch_' + batchGuid + '"',
-        "Accept": "application/json; odata=verbose",
-        'X-RequestDigest': $("#__REQUESTDIGEST").val() ? $("#__REQUESTDIGEST").val() : ''
-      })
-    };
+  // async getFDData(batchGuid, batchBody): Promise<any> {
+  //   // const arrResults = [];
+  //   const httpOptions = {
+  //     headers: new HttpHeaders({
+  //       'Content-Type': 'multipart/mixed; boundary="batch_' + batchGuid + '"',
+  //       "Accept": "application/json; odata=verbose",
+  //       'X-RequestDigest': $("#__REQUESTDIGEST").val() ? $("#__REQUESTDIGEST").val() : ''
+  //     })
+  //   };
 
-    // create the request endpoint
-    const endpoint = this.globalServices.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
-    const res = await this.httpClient.post(endpoint, batchBody, { ...httpOptions, responseType: 'text' })
-      .toPromise().catch((err: HttpErrorResponse) => {
-        var error = err.error;
-        return error;
-      });
+  //   // create the request endpoint
+  //   const endpoint = this.globalServices.sharePointPageObject.webAbsoluteUrl + '/_api/$batch';
+  //   const res = await this.httpClient.post(endpoint, batchBody, { ...httpOptions, responseType: 'text' })
+  //     .toPromise().catch((err: HttpErrorResponse) => {
+  //       var error = err.error;
+  //       return error;
+  //     });
 
-    const arrResults = this.parseBatchRet(res);
-    return arrResults;
-  }
+  //   const arrResults = this.parseBatchRet(res);
+  //   return arrResults;
+  // }
 
-  getChangeSetBody1(changeSetId, endPoint, data, isPostMethod) {
-    const batchContents = new Array();
-    batchContents.push('--changeset_' + changeSetId);
-    batchContents.push('Content-Type: application/http');
-    batchContents.push('Content-Transfer-Encoding: binary');
-    batchContents.push('');
-    batchContents.push(isPostMethod ? 'POST ' + endPoint + ' HTTP/1.1' : 'PATCH ' + endPoint + ' HTTP/1.1');
-    batchContents.push('Content-Type: application/json;odata=verbose');
-    batchContents.push('Accept: application/json;odata=verbose');
-    if (data !== '{}') {
-      batchContents.push('If-Match: *');
-      batchContents.push('');
-      batchContents.push(data);
-    }
-    batchContents.push('');
-    return batchContents;
-  }
+  // getChangeSetBody1(changeSetId, endPoint, data, isPostMethod) {
+  //   const batchContents = new Array();
+  //   batchContents.push('--changeset_' + changeSetId);
+  //   batchContents.push('Content-Type: application/http');
+  //   batchContents.push('Content-Transfer-Encoding: binary');
+  //   batchContents.push('');
+  //   batchContents.push(isPostMethod ? 'POST ' + endPoint + ' HTTP/1.1' : 'PATCH ' + endPoint + ' HTTP/1.1');
+  //   batchContents.push('Content-Type: application/json;odata=verbose');
+  //   batchContents.push('Accept: application/json;odata=verbose');
+  //   if (data !== '{}') {
+  //     batchContents.push('If-Match: *');
+  //     batchContents.push('');
+  //     batchContents.push(data);
+  //   }
+  //   batchContents.push('');
+  //   return batchContents;
+  // }
   // getChangeSetBodySC(batchContents, changeSetId, endPoint, data, createFolder) {
   //   batchContents.push('--changeset_' + changeSetId);
   //   batchContents.push('Content-Type: application/http');
@@ -834,17 +834,17 @@ export class SPOperationService {
   //   batchContents.push('Accept: application/json;odata=verbose');
   //   batchContents.push('');
   // }
-  getBatchBodyPost1(batchBody, batchGuid, changeSetId) {
-    const batchContents = new Array();
-    batchContents.push('--batch_' + batchGuid);
-    batchContents.push('Content-Type: multipart/mixed; boundary="changeset_' + changeSetId + '"');
-    batchContents.push('Content-Length: ' + batchBody.length);
-    batchContents.push('Content-Transfer-Encoding: binary');
-    batchContents.push('');
-    batchContents.push(batchBody);
-    batchContents.push('');
-    return batchContents;
-  }
+  // getBatchBodyPost1(batchBody, batchGuid, changeSetId) {
+  //   const batchContents = new Array();
+  //   batchContents.push('--batch_' + batchGuid);
+  //   batchContents.push('Content-Type: multipart/mixed; boundary="changeset_' + changeSetId + '"');
+  //   batchContents.push('Content-Length: ' + batchBody.length);
+  //   batchContents.push('Content-Transfer-Encoding: binary');
+  //   batchContents.push('');
+  //   batchContents.push(batchBody);
+  //   batchContents.push('');
+  //   return batchContents;
+  // }
   // fetchTaskDocumentsByRestAPI(url, prevTask) {
   //   let arrPrevTasks = [];
   //   if (prevTask === null || prevTask === undefined) //changed on 9.8.17
@@ -1340,4 +1340,4 @@ export class SPOperationService {
   //   // cc = [fromEmail];
   //   this.sendEmail(fromEmail, arrayTo, mailBody, mailSubject, errorDetail, cc);
   // }
-}
+

@@ -186,7 +186,9 @@ export class UsercapacityComponent implements OnInit {
 
     // batchContents.push('--batch_' + batchGuid + '--');
     // const userBatchBody = batchContents.join('\r\n');
-    const arruserResults = this.executeBatchRequest(batchUrl);
+    // const arruserResults = this.executeBatchRequest(batchUrl);
+    let arruserResults = await this.spService.executeBatch(batchUrl);
+    arruserResults = arruserResults.length ? arruserResults.map(a => a.retItems) : [];
     // const batchContentsLeaves = new Array();
 
     const batchURL = [];
@@ -197,22 +199,22 @@ export class UsercapacityComponent implements OnInit {
       listName: ''
     };
 
-    const leaveCalendar = {
-      // tslint:disable 
-      select: "ID,EventDate,EndDate,IsHalfDay",
-      filter: "(UserName/Id eq {{userId}} and IsActive eq 'Yes' ) and((EventDate ge '{{startDateString}}' and EventDate le '{{endDateString}}') or (EndDate ge '{{startDateString}}' and EndDate le '{{endDateString}}') or (EventDate le '{{startDateString}}' and EndDate ge '{{endDateString}}'))",
-      orderby: "Created",
-      top: 4500
-      // tslint:enable
-    };
-    const availableHrs = {
-      // tslint:disable 
-      select: "ID,ResourceID,WeekStartDate,WeekEndDate,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday,MondayLeave,TuesdayLeave,WednesdayLeave,ThursdayLeave,FridayLeave",
-      filter: "ResourceID eq {{ResourceId}} and((WeekStartDate ge '{{startDateString}}' and WeekStartDate le '{{endDateString}}') or (WeekEndDate ge '{{startDateString}}' and WeekEndDate le '{{endDateString}}') or (WeekStartDate le '{{startDateString}}' and WeekEndDate ge '{{endDateString}}'))",
-      orderby: "WeekStartDate asc",
-      top: 4500
-      // tslint:enable
-    };
+    // const leaveCalendar = {
+    //   // tslint:disable 
+    //   select: "ID,EventDate,EndDate,IsHalfDay",
+    //   filter: "(UserName/Id eq {{userId}} and IsActive eq 'Yes' ) and((EventDate ge '{{startDateString}}' and EventDate le '{{endDateString}}') or (EndDate ge '{{startDateString}}' and EndDate le '{{endDateString}}') or (EventDate le '{{startDateString}}' and EndDate ge '{{endDateString}}'))",
+    //   orderby: "Created",
+    //   top: 4500
+    //   // tslint:enable
+    // };
+    // const availableHrs = {
+    //   // tslint:disable 
+    //   select: "ID,ResourceID,WeekStartDate,WeekEndDate,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday,MondayLeave,TuesdayLeave,WednesdayLeave,ThursdayLeave,FridayLeave",
+    //   filter: "ResourceID eq {{ResourceId}} and((WeekStartDate ge '{{startDateString}}' and WeekStartDate le '{{endDateString}}') or (WeekEndDate ge '{{startDateString}}' and WeekEndDate le '{{endDateString}}') or (WeekStartDate le '{{startDateString}}' and WeekEndDate ge '{{endDateString}}'))",
+    //   orderby: "WeekStartDate asc",
+    //   top: 4500
+    //   // tslint:enable
+    // };
 
 
 
@@ -243,7 +245,7 @@ export class UsercapacityComponent implements OnInit {
         oCapacity.arrUserDetails.map(c => c.AvailableHoursRID = selectedUsers.find(c => c.ResourceUserID === oCapacity.arrUserDetails[indexUser].uid).ID)
 
         const leaveGet = Object.assign({}, options);
-        const leavesQuery = Object.assign({}, leaveCalendar);
+        const leavesQuery = Object.assign({}, this.sharedConstant.userCapacity.leaveCalendar);
         leaveGet.url = this.spService.getReadURL('' + this.globalConstantService.listNames.LeaveCalendar.name + '', leavesQuery);
         leaveGet.url = leaveGet.url.replace(/{{userId}}/gi, oCapacity.arrUserDetails[indexUser].uid).replace(/{{startDateString}}/gi, startDateString).replace(/{{endDateString}}/gi, endDateString);
         leaveGet.type = 'GET';
@@ -251,9 +253,9 @@ export class UsercapacityComponent implements OnInit {
         batchURL.push(leaveGet);
 
         const availableHrsGet = Object.assign({}, options);
-        const availableHrsQuery = Object.assign({}, availableHrs);
+        const availableHrsQuery = Object.assign({}, this.sharedConstant.userCapacity.availableHrs);
         availableHrsGet.url = this.spService.getReadURL('' + this.globalConstantService.listNames.AvailableHours.name +
-          '', availableHrsQuery);
+                                                        '', availableHrsQuery);
         availableHrsGet.url = availableHrsGet.url.replace(/{{ResourceId}}/gi, oCapacity.arrUserDetails[indexUser].AvailableHoursRID).replace(/{{startDateString}}/gi, startDateString).replace(/{{endDateString}}/gi, endDateString);
         availableHrsGet.type = 'GET';
         availableHrsGet.listName = this.globalConstantService.listNames.AvailableHours.name;
@@ -291,8 +293,8 @@ export class UsercapacityComponent implements OnInit {
     //   batchURL.push(availableHrsGet);
     // });
 
-    const arrResults = await this.spService.executeBatch(batchURL);
-
+    let arrResults = await this.spService.executeBatch(batchURL);
+    arrResults = arrResults.length ? arrResults.map(a => a.retItems) : [];
     if (arrResults) {
 
       const UserLeaves = arrResults.filter(c => c.listName === 'Leave Calendar');
@@ -310,7 +312,7 @@ export class UsercapacityComponent implements OnInit {
 
 
 
-    console.log(arrResults);
+    // console.log(arrResults);
 
 
     return oCapacity;
@@ -342,7 +344,7 @@ export class UsercapacityComponent implements OnInit {
     // tslint:disable-next-line: max-line-length
     invObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name, this.sharedConstant.userCapacity.fetchTasks);
     invObj.url = invObj.url.replace('{{userID}}', selectedUserID).replace('/{{startDateString}}/g', startDateString)
-                           .replace('/{{endDateString}}/g', endDateString)
+                           .replace('/{{endDateString}}/g', endDateString);
     invObj.listName = this.globalConstantService.listNames.Schedules.name;
     invObj.type = 'GET';
     batchUrl.push(invObj);
@@ -618,28 +620,46 @@ export class UsercapacityComponent implements OnInit {
     }
   }
   // tslint:disable
-  bindProjectTaskDetails(tasks, objt, user) {
+  async bindProjectTaskDetails(tasks, objt, user) {
     if (tasks.length > 0) {
+      const batchUrl = [];
       const batchContents = new Array();
       const batchGuid = this.spService.generateUUID();
       for (const taskIndex in tasks) {
         if (tasks.hasOwnProperty(taskIndex)) {
           if (tasks[taskIndex].projectCode !== 'Adhoc') {
             // tslint:disable
-            const url = this.globalService.sharePointPageObject.webAbsoluteUrl
-              + "/_api/web/lists/getbytitle('" + this.ProjectInformation + "')/items?$select=WBJID&&$filter=ProjectCode eq '" + tasks[taskIndex].projectCode + "'";
-            this.spService.getBatchBodyGet(batchContents, batchGuid, url);
-            var sSchedulesURL = this.globalService.sharePointPageObject.webAbsoluteUrl
-              + "/_api/web/lists/getbytitle('" + this.Schedules + "')/items?$select=ID,Task,Title,ExpectedTime,StartDate,DueDate,TimeZone,Status,AssignedToText,ContentType/Name&$expand=ContentType&$filter=startswith(Title,'" + tasks[taskIndex].projectCode + "') and Milestone eq '" + tasks[taskIndex].milestone + "' and Status ne 'Abandon' and Status ne 'Completed' and Status ne 'Deleted' and Status ne 'Auto Closed'";
-            this.spService.getBatchBodyGet(batchContents, batchGuid, sSchedulesURL);
+            // const url = this.globalService.sharePointPageObject.webAbsoluteUrl
+            //   + "/_api/web/lists/getbytitle('" + this.ProjectInformation + "')/items?$select=WBJID&&$filter=ProjectCode eq '" + tasks[taskIndex].projectCode + "'";
+            // this.spService.getBatchBodyGet(batchContents, batchGuid, url);
+            const piObj = Object.assign({}, this.queryConfig);
+            piObj.url = this.spService.getReadURL(this.globalConstantService.listNames.ProjectInformation.name,this.sharedConstant.userCapacity.getProjectInformation);
+            piObj.url = piObj.url.replace('{{projectCode}}', tasks[taskIndex].projectCode)
+            piObj.listName = this.globalConstantService.listNames.ProjectInformation.name;
+            piObj.type = 'GET';
+            batchUrl.push(piObj);
+
+
+            // var sSchedulesURL = this.globalService.sharePointPageObject.webAbsoluteUrl
+            //   + "/_api/web/lists/getbytitle('" + this.Schedules + "')/items?$select=ID,Task,Title,ExpectedTime,StartDate,DueDate,TimeZone,Status,AssignedToText,ContentType/Name&$expand=ContentType&$filter=startswith(Title,'" + tasks[taskIndex].projectCode + "') and Milestone eq '" + tasks[taskIndex].milestone + "' and Status ne 'Abandon' and Status ne 'Completed' and Status ne 'Deleted' and Status ne 'Auto Closed'";
+            // this.spService.getBatchBodyGet(batchContents, batchGuid, sSchedulesURL);
+            const tasksObj = Object.assign({}, this.queryConfig);
+            tasksObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name,this.sharedConstant.userCapacity.getProjectInformation);
+            tasksObj.url = tasksObj.url.replace('{{projectCode}}', tasks[taskIndex].projectCode)
+            tasksObj.listName = this.globalConstantService.listNames.Schedules.name;
+            tasksObj.type = 'GET';
+            batchUrl.push(tasksObj);
+
             // tslint:enable
           }
         }
       }
-      if (batchContents.length) {
-        batchContents.push('--batch_' + batchGuid + '--');
-        const sBatchData = batchContents.join('\r\n');
-        const arrResults = this.executeBatchRequest(batchGuid); /// , sBatchData code fix pending by kaushal
+      if (batchUrl.length) {
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // const sBatchData = batchContents.join('\r\n');
+        // const arrResults = this.executeBatchRequest(batchUrl);
+        let arrResults = await this.spService.executeBatch(batchUrl);
+        arrResults  = arrResults.length ? arrResults.map(a => a.retItems) : [];
         let nCount = 0;
         for (const i in tasks) {
           if (tasks.hasOwnProperty(i)) {

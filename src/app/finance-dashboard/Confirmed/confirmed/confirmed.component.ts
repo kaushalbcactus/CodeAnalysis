@@ -906,11 +906,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             // tslint:disable-next-line: max-line-length
             // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);
             const iliObj = Object.assign({}, this.queryConfig);
-            iliObj.url = this.spServices.getReadURL(this.constantService.listNames.InvoiceLineItems.name,
-                                                    this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem);
-            iliObj.url =  iliObj.url.replace('{{Id}}', this.selectedRowItem.Id);
+            iliObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, this.selectedRowItem.Id);
             iliObj.listName = this.constantService.listNames.InvoiceLineItems.name;
-            iliObj.type = this.constantService.listNames.InvoiceLineItems.type;
+            iliObj.type = 'PATCH';
             iliObj.data = iliData;
             batchUrl.push(iliObj);
 
@@ -925,11 +923,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 // const piEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectInformation.update.replace("{{Id}}", pInfo.Id);
 
                 const piObj = Object.assign({}, this.queryConfig);
-                piObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name,
-                                                        this.fdConstantsService.fdComponent.addUpdateProjectInformation);
-                piObj.url =  piObj.url.replace('{{Id}}', pInfo.Id);
+                piObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectInformation.name, pInfo.Id);
                 piObj.listName = this.constantService.listNames.ProjectInformation.name;
-                piObj.type = this.constantService.listNames.ProjectInformation.type;
+                piObj.type = 'PATCH';
                 piObj.data = piData;
                 batchUrl.push(iliObj);
 
@@ -953,7 +949,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                     const pfObj = Object.assign({}, this.queryConfig);
                     pfObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name,  pf.Id);
                     pfObj.listName = this.constantService.listNames.ProjectFinances.name;
-                    pfObj.type = this.constantService.listNames.ProjectFinances.type;
+                    pfObj.type = 'PATCH';
                     pfObj.data = pfData;
 
                     batchUrl.push(iliObj);
@@ -1003,7 +999,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             const proformaObj = Object.assign({}, this.queryConfig);
             proformaObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name);
             proformaObj.listName = this.constantService.listNames.ProjectFinances.name;
-            proformaObj.type = this.constantService.listNames.ProjectFinances.type;
+            proformaObj.type = 'POST';
             proformaObj.data = prfData;
             batchUrl.push(proformaObj);
             // Get Cle
@@ -1018,7 +1014,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             const cleObj = Object.assign({}, this.queryConfig);
             cleObj.url = this.spServices.getItemURL(this.constantService.listNames.ClientLegalEntity.name, currentCle.Id);
             cleObj.listName = this.constantService.listNames.ClientLegalEntity.name;
-            cleObj.type = this.constantService.listNames.ClientLegalEntity.type;
+            cleObj.type = 'PATCH';
             cleObj.data = cleData;
             batchUrl.push(cleObj);
             // let data = [
@@ -1087,7 +1083,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 const prfObj = Object.assign({}, this.queryConfig);
                 prfObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, element.Id);
                 prfObj.listName = this.constantService.listNames.InvoiceLineItems.name;
-                prfObj.type = this.constantService.listNames.InvoiceLineItems.type;
+                prfObj.type = 'PATCH';
                 prfObj.data = prfData;
                 innerBatchUrl.push(prfObj);
             });
