@@ -59,6 +59,7 @@ export class MyDashboardConstantsService {
     ClientLegalEntitys: {
       select: 'ID,Title,Acronym,Geography,ClientGroup,Bucket,DistributionList',
       orderby: 'Title asc',
+      filter: "IsActive eq 'yes'",
       top: 4500
     },
     ResourceCategorization: {
@@ -157,6 +158,7 @@ export class MyDashboardConstantsService {
     ClientLegalEntities: {
       select: 'ID,Title',
       orderby: "Title asc",
+      filter: "IsActive eq 'Yes'",
       top: 4500
     },
     LeaveCalendar: {
@@ -432,7 +434,7 @@ export class MyDashboardConstantsService {
 
     else if (task.Task === 'Submit') {
 
-      let jcSubObj = Object.assign({}, this.queryConfig);
+      const jcSubObj = Object.assign({}, this.queryConfig);
       jcSubObj.url = this.spServices.getReadURL(this.constants.listNames.JCSubmission.name, this.mydashboardComponent.SubmissionPkg);
       jcSubObj.url = jcSubObj.url.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Selected');
       jcSubObj.listName = this.constants.listNames.JCSubmission.name;
@@ -444,7 +446,7 @@ export class MyDashboardConstantsService {
       // const jcSubUrl = this.spServices.getReadURL('' + this.constants.listNames.JCSubmission.name + '', jcSub);
       // this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubUrl);
 
-      let jcSubCatObj = Object.assign({}, this.queryConfig);
+      const jcSubCatObj = Object.assign({}, this.queryConfig);
       jcSubCatObj.url = this.spServices.getReadURL(this.constants.listNames.JournalConf.name, this.mydashboardComponent.Submit);
       jcSubCatObj.url = jcSubCatObj.url.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Selected').replace(/{{Status1}}/gi, 'Resubmit to same journal');
       jcSubCatObj.listName = this.constants.listNames.JournalConf.name;
@@ -461,7 +463,7 @@ export class MyDashboardConstantsService {
       isJcIdFound = true;
     }
     else if (task.Task === 'Journal Requirement') {
-      let jcReqObj = Object.assign({}, this.queryConfig);
+      const jcReqObj = Object.assign({}, this.queryConfig);
       jcReqObj.url = this.spServices.getReadURL(this.constants.listNames.JournalConf.name, this.mydashboardComponent.JournalRequirement);
       jcReqObj.url = jcReqObj.url.replace(/{{projectCode}}/gi, task.ProjectCode);
       jcReqObj.listName = this.constants.listNames.JournalConf.name;
@@ -532,7 +534,7 @@ export class MyDashboardConstantsService {
     taskObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +task.ID);
     taskObj.data = newdata;
     taskObj.listName = this.constants.listNames.Schedules.name;
-    taskObj.type = this.constants.listNames.Schedules.type;
+    taskObj.type = 'PATCH';
     batchUrl.push(taskObj);
     // const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(task.ID) + ")";
     // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(newdata), false);
@@ -552,14 +554,13 @@ export class MyDashboardConstantsService {
         jcSubObj.url = this.spServices.getItemURL(this.constants.listNames.JCSubmission.name, +this.jcSubId);
         jcSubObj.data = jcSubmissionData;
         jcSubObj.listName = this.constants.listNames.JCSubmission.name;
-        jcSubObj.type = this.constants.listNames.JCSubmission.type;
+        jcSubObj.type = 'PATCH';
         batchUrl.push(jcSubObj);
 
         // const SubPackPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
         // this.spServices.getChangeSetBodySC(batchContents, changeSetId, SubPackPoint, JSON.stringify(jcSubmissionObj), false);
 
-      }
-      else if (task.Task === 'Galley') {
+      } else if (task.Task === 'Galley') {
         const jcSubmissionData = {
           __metadata: { type: 'SP.Data.JCGalleyListItem' },
           Title: task.ProjectCode,
@@ -568,9 +569,10 @@ export class MyDashboardConstantsService {
           GalleyURL: docUrl
         };
         const jcSubObj = Object.assign({}, this.queryConfig);
+        jcSubObj.url = this.spServices.getReadURL(this.constants.listNames.jcGalley.name);
         jcSubObj.data = jcSubmissionData;
         jcSubObj.listName = this.constants.listNames.jcGalley.name;
-        jcSubObj.type = this.constants.listNames.jcGalley.type;
+        jcSubObj.type = 'POST';
         batchUrl.push(jcSubObj);
         // const GallyPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.jcGalley.name + "')/items";
         // this.spServices.getChangeSetBodySC(batchContents, changeSetId, GallyPoint, JSON.stringify(jcSubmissionObj), true);
@@ -584,7 +586,7 @@ export class MyDashboardConstantsService {
         jcObj.data = jcSubData;
         jcObj.url = this.spServices.getItemURL(this.constants.listNames.JCSubmission.name, +this.jcSubId);
         jcObj.listName = this.constants.listNames.JCSubmission.name;
-        jcObj.type = this.constants.listNames.JCSubmission.type;
+        jcObj.type = 'PATCH';
         batchUrl.push(jcObj);
         // this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcendPoint, JSON.stringify(jcSubObj), false);
 
@@ -598,7 +600,7 @@ export class MyDashboardConstantsService {
         jcConObj.data = jcConData;
         jcConObj.url = this.spServices.getItemURL(this.constants.listNames.JournalConf.name, +this.jcId);
         jcConObj.listName = this.constants.listNames.JournalConf.name;
-        jcConObj.type = this.constants.listNames.JournalConf.type;
+        jcConObj.type = 'PATCH';
         batchUrl.push(jcConObj);
 
         // this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcConendPoint, JSON.stringify(jcConObj), false);
@@ -612,7 +614,7 @@ export class MyDashboardConstantsService {
         projectInfoObj.data = projectInfoData;
         projectInfoObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +this.projectInfo.ID);
         projectInfoObj.listName = this.constants.listNames.ProjectInformation.name;
-        projectInfoObj.type = this.constants.listNames.ProjectInformation.type;
+        projectInfoObj.type = 'PATCH';
         batchUrl.push(projectInfoObj);
         // this.spServices.getChangeSetBodySC(batchContents, changeSetId, ProjetcInfoPoint, JSON.stringify(projectInfoObj), false);
 
@@ -629,7 +631,7 @@ export class MyDashboardConstantsService {
         jcSubmissionObj.data = jcSubmissionData;
         jcSubmissionObj.url = this.spServices.getItemURL(this.constants.listNames.JCSubmission.name, +this.jcSubId);
         jcSubmissionObj.listName = this.constants.listNames.JCSubmission.name;
-        jcSubmissionObj.type = this.constants.listNames.JCSubmission.type;
+        jcSubmissionObj.type = 'PATCH';
         batchUrl.push(jcSubmissionObj);
         // const SubmitPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
         // this.spServices.getChangeSetBodySC(batchContents, changeSetId, SubmitPoint, JSON.stringify(jcSubmissionObj), false);
@@ -643,7 +645,7 @@ export class MyDashboardConstantsService {
         jcConObj.data = jcConData;
         jcConObj.url = this.spServices.getItemURL(this.constants.listNames.JournalConf.name, +this.jcId);
         jcConObj.listName = this.constants.listNames.JournalConf.name;
-        jcConObj.type = this.constants.listNames.JournalConf.type;
+        jcConObj.type = 'PATCH';
         batchUrl.push(jcConObj);
         // this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcConendPoint, JSON.stringify(jcConObj), false);
         //--------------------------------------- new Url--------------------------------------------------//
@@ -657,7 +659,7 @@ export class MyDashboardConstantsService {
         projectInfoObj.data = projectInfoData;
         projectInfoObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +this.projectInfo.ID);
         projectInfoObj.listName = this.constants.listNames.ProjectInformation.name;
-        projectInfoObj.type = this.constants.listNames.ProjectInformation.type;
+        projectInfoObj.type = 'PATCH';
         batchUrl.push(projectInfoObj);
         // this.spServices.getChangeSetBodySC(batchContents, changeSetId, ProjetcInfoPoint, JSON.stringify(projectInfoObj), false);
 
@@ -674,7 +676,7 @@ export class MyDashboardConstantsService {
         projectInfoObj.data = projectInfoData;
         projectInfoObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +this.projectInfo.ID);
         projectInfoObj.listName = this.constants.listNames.ProjectInformation.name;
-        projectInfoObj.type = this.constants.listNames.ProjectInformation.type;
+        projectInfoObj.type = 'PATCH';
         batchUrl.push(projectInfoObj);
         // this.spServices.getChangeSetBodySC(batchContents, changeSetId, ProjetcInfoPoint, JSON.stringify(projectInfoObj), false);
 
@@ -692,7 +694,7 @@ export class MyDashboardConstantsService {
         jcConObj.data = jcConData;
         jcConObj.url = this.spServices.getItemURL(this.constants.listNames.JournalConf.name, +this.jcId);
         jcConObj.listName = this.constants.listNames.JournalConf.name;
-        jcConObj.type = this.constants.listNames.JournalConf.type;
+        jcConObj.type = 'PATCH';
         batchUrl.push(jcConObj);
         // this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcConendPoint, JSON.stringify(jcConObj), false);
 
@@ -715,7 +717,7 @@ export class MyDashboardConstantsService {
       scObj.data = data1;
       scObj.url = this.spServices.getItemURL(this.constants.listNames.projectInfo.name, +this.projectInfo.ID);
       scObj.listName = this.constants.listNames.projectInfo.name;
-      scObj.type = this.constants.listNames.projectInfo.type;
+      scObj.type = 'PATCH';
       batchUrl.push(scObj);
       // const endPoint1 = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.projectInfo.name + "')/items(" + +(this.projectInfo.ID) + ")";
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint1, JSON.stringify(data1), false);
@@ -730,7 +732,7 @@ export class MyDashboardConstantsService {
       nextTaskObj.data = data;
       nextTaskObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +element.ID);
       nextTaskObj.listName = this.constants.listNames.Schedules.name;
-      nextTaskObj.type = this.constants.listNames.Schedules.type;
+      nextTaskObj.type = 'PATCH';
       batchUrl.push(nextTaskObj);
       // const tempendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(element.ID) + ")";
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, tempendPoint, JSON.stringify(data), false);

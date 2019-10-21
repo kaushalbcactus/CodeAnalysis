@@ -384,7 +384,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     // const ProjectResourcesUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', ProjectResources);
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectResourcesUrl);
 
-    const ProjectResources = Object.assign({},this.queryConfig);
+    const ProjectResources = Object.assign({}, this.queryConfig);
     ProjectResources.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name, this.myDashboardConstantsService.mydashboardComponent.ProjectResource);
     ProjectResources.url =  ProjectResources.url.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
     ProjectResources.listName = this.constants.listNames.ProjectInformation.name;

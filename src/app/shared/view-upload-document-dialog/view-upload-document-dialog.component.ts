@@ -382,10 +382,10 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           //   ")";
           // var test = await  this.updateDocumentProperties(true,element);
           const updateObj = Object.assign({}, this.queryConfig);
-          updateObj.url = this.spServices.getItemURL(listName, element.ListItemAllFields.ID);
+          updateObj.url = this.spServices.getItemURL(listName, +element.ListItemAllFields.ID);
           updateObj.data = objPost;
           updateObj.listName = listName;
-          updateObj.type = 'SP.ListItem';
+          updateObj.type = 'PATCH';
           batchUrl.push(updateObj);
           this.spServices.updateItem(listName, +element.ListItemAllFields.ID, objPost);
           // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(objPost), false);
@@ -402,7 +402,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         taskObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +this.selectedTask.ID);
         taskObj.data = jsonData;
         taskObj.listName = this.constants.listNames.Schedules.name;
-        taskObj.type = this.constants.listNames.Schedules.type;
+        taskObj.type = 'PATCH';
         batchUrl.push(taskObj);
 
         // const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl +
@@ -588,7 +588,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       taskObj.url = this.spServices.getItemURL(listName, +element.ListItemAllFields.ID);
       taskObj.data = objPost;
       taskObj.listName = listName;
-      taskObj.type = 'SP.ListItem';
+      taskObj.type = 'PATCH';
       batchUrl.push(taskObj);
       // const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl +
       //   // tslint:disable-next-line: quotemark

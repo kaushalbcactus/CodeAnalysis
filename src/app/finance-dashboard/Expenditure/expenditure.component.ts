@@ -826,7 +826,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                 const addExpenseObj = Object.assign({}, this.queryConfig);
                 addExpenseObj.url = this.spServices.getReadURL(this.constantService.listNames.SpendingInfo.name);
                 addExpenseObj.listName = this.constantService.listNames.SpendingInfo.name;
-                addExpenseObj.type = 'GET';
+                addExpenseObj.type = 'POST';
                 addExpenseObj.data = element;
                 batchUrl.push(addExpenseObj);
             }

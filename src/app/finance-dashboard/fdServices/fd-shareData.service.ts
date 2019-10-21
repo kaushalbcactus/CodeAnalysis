@@ -265,55 +265,55 @@ export class FDDataShareService {
             const prjInfoObj = Object.assign({}, this.queryConfig);
             prjInfoObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfo);
             prjInfoObj.listName = this.constantService.listNames.ProjectInformation.name;
-            prjInfoObj.type = this.constantService.listNames.ProjectInformation.type;
+            prjInfoObj.type = 'GET';
             batchUrl.push(prjInfoObj);
 
             const prjContactsObj = Object.assign({}, this.queryConfig);
             prjContactsObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectContacts.name, this.fdConstantsService.fdComponent.projectContacts);
             prjContactsObj.listName = this.constantService.listNames.ProjectContacts.name;
-            prjContactsObj.type = this.constantService.listNames.ProjectContacts.type;
+            prjContactsObj.type = 'GET';
             batchUrl.push(prjContactsObj);
 
             const cleObj = Object.assign({}, this.queryConfig);
             cleObj.url = this.spServices.getReadURL(this.constantService.listNames.ClientLegalEntity.name, this.fdConstantsService.fdComponent.clientLegalEntity);
             cleObj.listName = this.constantService.listNames.ClientLegalEntity.name;
-            cleObj.type = this.constantService.listNames.ClientLegalEntity.type;
+            cleObj.type = 'GET';
             batchUrl.push(cleObj);
 
             const usStatesObj = Object.assign({}, this.queryConfig);
             usStatesObj.url = this.spServices.getReadURL(this.constantService.listNames.UsState.name, this.fdConstantsService.fdComponent.usStates);
             usStatesObj.listName = this.constantService.listNames.UsState.name;
-            usStatesObj.type = this.constantService.listNames.UsState.type;
+            usStatesObj.type = 'GET';
             batchUrl.push(usStatesObj);
 
             const currencyObj = Object.assign({}, this.queryConfig);
             currencyObj.url = this.spServices.getReadURL(this.constantService.listNames.Currency.name, this.fdConstantsService.fdComponent.currency);
             currencyObj.listName = this.constantService.listNames.Currency.name;
-            currencyObj.type = this.constantService.listNames.Currency.type;
+            currencyObj.type = 'GET';
             batchUrl.push(currencyObj);
 
             const projectPOObj = Object.assign({}, this.queryConfig);
             projectPOObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectPO.name, this.fdConstantsService.fdComponent.projectPO);
             projectPOObj.listName = this.constantService.listNames.ProjectPO.name;
-            projectPOObj.type = this.constantService.listNames.ProjectPO.type;
+            projectPOObj.type = 'GET';
             batchUrl.push(projectPOObj);
 
             const resCatObj = Object.assign({}, this.queryConfig);
             resCatObj.url = this.spServices.getReadURL(this.constantService.listNames.ResourceCategorization.name, this.fdConstantsService.fdComponent.resourceCategorization);
             resCatObj.listName = this.constantService.listNames.ResourceCategorization.name;
-            resCatObj.type = this.constantService.listNames.ResourceCategorization.type;
+            resCatObj.type = 'GET';
             batchUrl.push(resCatObj);
 
             const billingEntObj = Object.assign({}, this.queryConfig);
             billingEntObj.url = this.spServices.getReadURL(this.constantService.listNames.BillingEntity.name, this.fdConstantsService.fdComponent.billingEntity);
             billingEntObj.listName = this.constantService.listNames.BillingEntity.name;
-            billingEntObj.type = this.constantService.listNames.BillingEntity.type;
+            billingEntObj.type = 'GET';
             batchUrl.push(billingEntObj);
 
             const budgetRateObj = Object.assign({}, this.queryConfig);
             budgetRateObj.url = this.spServices.getReadURL(this.constantService.listNames.BudgetRateMaster.name, this.fdConstantsService.fdComponent.budgetRate);
             budgetRateObj.listName = this.constantService.listNames.BudgetRateMaster.name;
-            budgetRateObj.type = this.constantService.listNames.BudgetRateMaster.type;
+            budgetRateObj.type = 'GET';
             batchUrl.push(budgetRateObj);
 
             // const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
@@ -382,13 +382,13 @@ export class FDDataShareService {
         const cleObj = Object.assign({}, this.queryConfig);
         cleObj.url = this.spServices.getReadURL(this.constantService.listNames.ClientLegalEntity.name, this.fdConstantsService.fdComponent.clientLegalEntity);
         cleObj.listName = this.constantService.listNames.ClientLegalEntity.name;
-        cleObj.type = this.constantService.listNames.ClientLegalEntity.type;
+        cleObj.type = 'GET';
         batchUrl.push(cleObj);
 
         const projectPOObj = Object.assign({}, this.queryConfig);
         projectPOObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectPO.name, this.fdConstantsService.fdComponent.projectPO);
         projectPOObj.listName = this.constantService.listNames.ProjectPO.name;
-        projectPOObj.type = this.constantService.listNames.ProjectPO.type;
+        projectPOObj.type = 'GET';
         batchUrl.push(projectPOObj);
 
         // const clientLegalEntityEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
@@ -398,7 +398,7 @@ export class FDDataShareService {
             const hourlyObj = Object.assign({}, this.queryConfig);
             hourlyObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfo);
             hourlyObj.listName = this.constantService.listNames.ProjectInformation.name;
-            hourlyObj.type = this.constantService.listNames.ProjectInformation.type;
+            hourlyObj.type = 'GET';
             batchUrl.push(hourlyObj);
             // const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
             // endPoints = [clientLegalEntityEndpoint, projectPO, projectInfoEndpoint];

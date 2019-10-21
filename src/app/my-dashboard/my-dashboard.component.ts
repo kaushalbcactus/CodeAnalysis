@@ -111,8 +111,9 @@ export class MyDashboardComponent implements OnInit {
     // **************************************************************************************************************************************
     //  Get Client Legal Entities
     // **************************************************************************************************************************************
-    const cleObj = Object.assign({},this.queryConfig);
-    cleObj.url = this.spServices.getReadURL(this.constants.listNames.ClientLegalEntity.name, this.myDashboardConstantsService.mydashboardComponent.ClientLegalEntitys);
+    const cleObj = Object.assign({}, this.queryConfig);
+    cleObj.url = this.spServices.getReadURL(this.constants.listNames.ClientLegalEntity.name,
+                 this.myDashboardConstantsService.mydashboardComponent.ClientLegalEntitys);
     cleObj.listName = this.constants.listNames.ClientLegalEntity.name;
     cleObj.type = 'GET';
     batchUrl.push(cleObj);
@@ -123,8 +124,9 @@ export class MyDashboardComponent implements OnInit {
     // **************************************************************************************************************************************
     //  Get All ResourceCategorization
     // **************************************************************************************************************************************
-    const rcObj = Object.assign({},this.queryConfig);
-    rcObj.url = this.spServices.getReadURL(this.constants.listNames.ResourceCategorization.name, this.myDashboardConstantsService.mydashboardComponent.ResourceCategorization);
+    const rcObj = Object.assign({}, this.queryConfig);
+    rcObj.url = this.spServices.getReadURL(this.constants.listNames.ResourceCategorization.name,
+                this.myDashboardConstantsService.mydashboardComponent.ResourceCategorization);
     rcObj.listName = this.constants.listNames.ResourceCategorization.name;
     rcObj.type = 'GET';
     batchUrl.push(rcObj);
@@ -137,8 +139,9 @@ export class MyDashboardComponent implements OnInit {
 
     //  Get All ProjectContacts
     // **************************************************************************************************************************************
-    const prjContactsObj = Object.assign({},this.queryConfig);
-    prjContactsObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectContacts.name, this.myDashboardConstantsService.mydashboardComponent.ProjectContacts);
+    const prjContactsObj = Object.assign({}, this.queryConfig);
+    prjContactsObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectContacts.name,
+                         this.myDashboardConstantsService.mydashboardComponent.ProjectContacts);
     prjContactsObj.listName = this.constants.listNames.ProjectContacts.name;
     prjContactsObj.type = 'GET';
     batchUrl.push(prjContactsObj);
@@ -151,8 +154,9 @@ export class MyDashboardComponent implements OnInit {
 
     //  Get All ProjectInformation
     // **************************************************************************************************************************************
-    const piObj = Object.assign({},this.queryConfig);
-    piObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name, this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
+    const piObj = Object.assign({}, this.queryConfig);
+    piObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name,
+                this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
     piObj.listName = this.constants.listNames.ProjectInformation.name;
     piObj.type = 'GET';
     batchUrl.push(piObj);

@@ -232,7 +232,7 @@ export class QMSConstantsService {
         select: 'Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title, DeliveryLevel2/EMail,'+
         'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID,  CMLevel2/Title,  CMLevel2/EMail',
         expand: 'DeliveryLevel1, DeliveryLevel2, CMLevel1, CMLevel2',
-        filter: "Title eq '{{Title}}'",
+        filter: "IsActive eq 'Yes' and Title eq '{{Title}}'",
         top: '4900',
         orderby: 'Title'
       },
@@ -250,6 +250,7 @@ export class QMSConstantsService {
       getClients:{
         select: 'Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title, DeliveryLevel2/EMail,'+
         'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID,  CMLevel2/Title,  CMLevel2/EMail',
+        filter: "IsActive eq 'Yes'",
         expand: 'DeliveryLevel1, DeliveryLevel2, CMLevel1, CMLevel2',
         top: '4900',
         orderby: 'Title'

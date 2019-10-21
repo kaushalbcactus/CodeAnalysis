@@ -244,7 +244,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 this.fdConstantsService.fdComponent.projectFinances);
             prjObj.url = prjObj.url.replace('{{ProjectCode}}', element.ProjectCode);
             prjObj.listName = this.constantService.listNames.ProjectFinances.name;
-            prjObj.type = this.constantService.listNames.ProjectFinances.type;
+            prjObj.type = 'GET';
             batchUrl.push(prjObj);
         });
         // let endPoints = this.hBQuery;

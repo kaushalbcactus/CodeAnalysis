@@ -58,7 +58,7 @@ export class FdConstantsService {
         },
         clientLegalEntity: {
             select: "ID,Title,Acronym,ProformaCounter,InvoiceCounter,TimeZone,Geography,APEmail,APAddress,InvoiceName,ListName, CMLevel1/ID, CMLevel2/ID, Currency",
-            // filter: "",
+            filter: "IsActive eq 'Yes'",
             orderby: "Title",
             top: 4500,
             expand: "CMLevel1, CMLevel2"
@@ -71,6 +71,7 @@ export class FdConstantsService {
         },
         currency: {
             select: "ID,Title",
+            filter: "IsActive eq 'Yes'",
             top: 4500,
             orderby: "Title"
         },
@@ -83,6 +84,7 @@ export class FdConstantsService {
         },
         billingEntity: {
             select: "Title, Acronym, InvoiceTemplate",
+            filter: "IsActive eq 'Yes'",
             top: "7"
         },
         budgetRate: {

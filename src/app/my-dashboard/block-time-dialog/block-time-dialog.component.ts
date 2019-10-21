@@ -282,9 +282,8 @@ export class BlockTimeDialogComponent implements OnInit {
     };
 
     const leavesGet = Object.assign({}, options);
-    const leavesQuery = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
-    leavesGet.url = this.spServices.getReadURL('' + this.constants.listNames.LeaveCalendar.name +
-      '', leavesQuery);
+    leavesGet.url = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name,
+                           this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
     leavesGet.url = leavesGet.url.replace(/{{currentUser}}/gi,
       this.sharedObject.sharePointPageObject.userId.toString()).replace(/{{startDateString}}/gi,
         EventDate).replace(/{{endDateString}}/gi, EndDate);

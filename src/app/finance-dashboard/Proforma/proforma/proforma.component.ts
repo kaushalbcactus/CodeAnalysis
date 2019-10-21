@@ -788,7 +788,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.fdConstantsService.fdComponent.projectFinances);
             pfObj.url = pfObj.url.replace('{{ProjectCode}}', element.item.Title);
             pfObj.listName = this.constantService.listNames.ProjectFinances.name;
-            pfObj.type = this.constantService.listNames.ProjectFinances.type;
+            pfObj.type = 'GET';
             batchUrl.push(pfObj);
             // PFB
 
@@ -803,7 +803,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO);
             pfbObj.url = pfbObj.url.replace('{{ProjectCode}}', element.item.Title).replace('{{PO}}', element.item.PO);
             pfbObj.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
-            pfbObj.type = this.constantService.listNames.ProjectFinanceBreakup.type;
+            pfbObj.type = 'GET';
             batchUrl.push(pfbObj);
             // SOW
 
@@ -818,7 +818,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.fdConstantsService.fdComponent.sowForIG);
             sowObj.url = sowObj.url.replace('{{SOWCode}}', element.item.SOWCode);
             sowObj.listName = this.constantService.listNames.SOW.name;
-            sowObj.type = this.constantService.listNames.SOW.type;
+            sowObj.type = 'GET';
             batchUrl.push(pfbObj);
             const res = await this.spServices.executeBatch(batchUrl);
             // let endPoints = this.invoicesQuery;

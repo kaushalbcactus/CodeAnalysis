@@ -3114,14 +3114,15 @@ export class EditorComponent implements OnInit {
                 url: '',
                 type: '',
                 listName: ''
-            }
+            };
 
             callProjects.forEach(element => {
-                var getPIData = Object.assign({}, options);
-                getPIData.url = this.spOperationsServices.getReadURL(this.constantsService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfoCode);
-                getPIData.url = getPIData.url.replace("{{ProjectCode}}", element);
+                const getPIData = Object.assign({}, options);
+                getPIData.url = this.spOperationsServices.getReadURL(this.constantsService.listNames.ProjectInformation.name,
+                                                                     this.fdConstantsService.fdComponent.projectInfoCode);
+                getPIData.url = getPIData.url.replace('{{ProjectCode}}', element);
                 getPIData.listName = this.constantsService.listNames.ProjectInformation.name;
-                getPIData.type = "GET";
+                getPIData.type = 'GET';
                 batchURL.push(getPIData);
 
             });

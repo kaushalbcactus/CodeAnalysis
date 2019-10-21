@@ -232,6 +232,7 @@ export class PmconstantService {
     BILLING_ENTITY: {
       select: 'Title, InvoiceTemplate, Acronym',
       orderby: 'Title',
+      filter: "IsActive eq 'Yes'",
       top: 4900
     },
     PRACTICE_AREA: {
@@ -245,6 +246,7 @@ export class PmconstantService {
         + 'DeliveryLevel2/ID, DeliveryLevel2/Title',
       expand: 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
         + 'DeliveryLevel2/ID, DeliveryLevel2/Title',
+      filter: "IsActive eq 'Yes'",
       orderby: 'Title',
       top: 4900
     },
@@ -266,6 +268,7 @@ export class PmconstantService {
     MOLECULES: {
       select: 'Title',
       orderby: 'Title',
+      filter: "IsActive eq 'Yes'",
       top: 4900
     },
     PROJECT_CONTANTCS: {
@@ -276,6 +279,7 @@ export class PmconstantService {
     PROJECT_TYPE: {
       select: 'Title',
       orderby: 'Title',
+      filter: "IsActive eq 'Yes'",
       top: 4900
     },
     SUBDELIVERABLES: {
@@ -315,6 +319,7 @@ export class PmconstantService {
       select: 'ID,Title,BillingEntity,Acronym,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
       // tslint:disable-next-line:max-line-length
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Titl,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
+      filter: "IsActive eq 'Yes'",
       top: 4900
     },
     DELIVERY_TYPE: {

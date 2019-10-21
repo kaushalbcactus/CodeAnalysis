@@ -1696,7 +1696,7 @@ export class ManageFinanceComponent implements OnInit {
         const poItemArray = this.getPOData(projectFinanceBreakArray, this.poArray);
         poItemArray.forEach(element => {
           const poItemCreate = Object.assign({}, options);
-          poItemCreate.url = this.spServices.getItemURL(this.constant.listNames.PO.name, element.ID);
+          poItemCreate.url = this.spServices.getItemURL(this.constant.listNames.PO.name, +element.ID);
           poItemCreate.data = element;
           poItemCreate.type = 'PATCH';
           poItemCreate.listName = this.constant.listNames.PO.name;
@@ -1713,7 +1713,7 @@ export class ManageFinanceComponent implements OnInit {
           || projectFinaceData.BudgetHrs !== currentBudget.BudgetHrs) {
           const projectFinaceUpdate = Object.assign({}, options);
           projectFinaceUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectFinances.name,
-            this.existBudgetArray.retItems[0].ID);
+            +this.existBudgetArray.retItems[0].ID);
           projectFinaceUpdate.data = projectFinaceData;
           projectFinaceUpdate.type = 'PATCH';
           projectFinaceUpdate.listName = this.constant.listNames.ProjectFinances.name;
@@ -1723,7 +1723,7 @@ export class ManageFinanceComponent implements OnInit {
             const projectBudgetBreakupData = this.getProjectBudgetBreakupData(this.budgetData, this.projObj, false, true);
             const projectBudgetBreakupUpdate = Object.assign({}, options);
             projectBudgetBreakupUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectBudgetBreakup.name,
-              this.existPBBBudgetArray.retItems[0].ID);
+              +this.existPBBBudgetArray.retItems[0].ID);
             projectBudgetBreakupUpdate.data = projectBudgetBreakupData;
             projectBudgetBreakupUpdate.type = 'PATCH';
             projectBudgetBreakupUpdate.listName = this.constant.listNames.ProjectBudgetBreakup.name;
@@ -1774,7 +1774,7 @@ export class ManageFinanceComponent implements OnInit {
           const sowUpdateData = this.getSOWData(this.projObj, projectFinaceData);
           if (sowUpdateData.hasOwnProperty('TotalLinked')) {
             const sowUpdate = Object.assign({}, options);
-            sowUpdate.url = this.spServices.getItemURL(this.constant.listNames.SOW.name, sowObj.ID);
+            sowUpdate.url = this.spServices.getItemURL(this.constant.listNames.SOW.name, +sowObj.ID);
             sowUpdate.data = sowUpdateData;
             sowUpdate.type = 'PATCH';
             sowUpdate.listName = this.constant.listNames.SOW.name;

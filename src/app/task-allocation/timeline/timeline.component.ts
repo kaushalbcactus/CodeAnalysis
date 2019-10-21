@@ -2514,7 +2514,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       const addMilObj = Object.assign({}, this.queryConfig);
       addMilObj.url = this.spServices.getFolderCreationURL();
       addMilObj.listName = 'Milestone Folder Creation';
-      addMilObj.type = 'SP.Folder';
+      addMilObj.type = 'POST';
       addMilObj.data = this.spServices.getFolderCreationData(folderUrl);
       batchUrl.push(addMilObj);
       // const milestoneFolderBody = {
@@ -2587,13 +2587,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
           const moveItemObj = Object.assign({}, this.queryConfig);
           moveItemObj.url = this.spServices.getMoveURL(fileUrl, moveFileUrl);
           moveItemObj.listName = 'Move Item';
-          moveItemObj.type = '';
+          moveItemObj.type = 'POST';
           respBatchUrl.push(moveItemObj);
 
           const updateTaskObj = Object.assign({}, this.queryConfig);
           updateTaskObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +response.d.ID);
           updateTaskObj.listName = this.constants.listNames.Schedules.name;
-          updateTaskObj.type = this.constants.listNames.Schedules.type;
+          updateTaskObj.type = 'PATCH';
           updateTaskObj.data = moveData;
           respBatchUrl.push(updateTaskObj);
           // let url = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/getfolderbyserverrelativeurl('" + fileUrl + "')/moveto(newurl='" + moveFileUrl + "')";
@@ -2609,7 +2609,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           const moveItemObj = Object.assign({}, this.queryConfig);
           moveItemObj.url = this.spServices.getMoveURL(fileUrl, moveFileUrl);
           moveItemObj.listName = 'Move Item';
-          moveItemObj.type = '';
+          moveItemObj.type = 'POST';
           respBatchUrl.push(moveItemObj);
         }
         else {
@@ -2694,7 +2694,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       const addTaskObj = Object.assign({}, this.queryConfig);
       addTaskObj.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name);
       addTaskObj.listName = this.constants.listNames.Schedules.name;
-      addTaskObj.type = this.constants.listNames.Schedules.type;
+      addTaskObj.type = 'POST';
       addTaskObj.data = addData;
       batchUrl.push(addTaskObj);
     } else {
@@ -2724,7 +2724,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       const updateTaskObj = Object.assign({}, this.queryConfig);
       updateTaskObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +milestoneTask.pID);
       updateTaskObj.listName = this.constants.listNames.Schedules.name;
-      updateTaskObj.type = this.constants.listNames.Schedules.type;
+      updateTaskObj.type = 'PATCH';
       updateTaskObj.data = updateData;
       batchUrl.push(updateTaskObj);
     }
@@ -2841,7 +2841,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       const updateMilObj = Object.assign({}, this.queryConfig);
       updateMilObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +currentMilestone.pID);
       updateMilObj.listName = this.constants.listNames.Schedules.name;
-      updateMilObj.type = this.constants.listNames.Schedules.type;
+      updateMilObj.type = 'PATCH';
       updateMilObj.data = updateData;
       batchUrl.push(updateMilObj);
     } else {
@@ -2862,7 +2862,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       const addMilObj = Object.assign({}, this.queryConfig);
       addMilObj.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name);
       addMilObj.listName = this.constants.listNames.Schedules.name;
-      addMilObj.type = this.constants.listNames.Schedules.type;
+      addMilObj.type = 'POST';
       addMilObj.data = addData;
       batchUrl.push(addMilObj);
     }
@@ -2930,7 +2930,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const updateMilObj = Object.assign({}, this.queryConfig);
     updateMilObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name, +projectID);
     updateMilObj.listName = this.constants.listNames.ProjectInformation.name;
-    updateMilObj.type = this.constants.listNames.ProjectInformation.type;
+    updateMilObj.type = 'PATCH';
     updateMilObj.data = updateProjectRes;
     batchUrl.push(updateMilObj);
 
@@ -3400,7 +3400,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       taskObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +projectID);
       taskObj.data = updateProjectBody;
       taskObj.listName = this.constants.listNames.ProjectInformation.name;
-      taskObj.type = this.constants.listNames.ProjectInformation.type;
+      taskObj.type = 'PATCH';
       batchUrl.push(taskObj);
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateProjectBody, false);
     }
@@ -3451,7 +3451,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           milestoneObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +milestoneID);
           milestoneObj.data = updatePMilestoneBody;
           milestoneObj.listName = this.constants.listNames.Schedules.name;
-          milestoneObj.type = this.constants.listNames.Schedules.type;
+          milestoneObj.type = 'PATCH';
           batchUrl.push(milestoneObj);
           // tslint:enable
           // this.spServices.getChangeSetBodySC(batchContents, changeSetId, pMilestoneEndpoint, updatePMilestoneBody, false);
@@ -3484,7 +3484,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             taskUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +task.pID);
             taskUpdateObj.data = updateSchedulesBody;
             taskUpdateObj.listName = this.constants.listNames.Schedules.name;
-            taskUpdateObj.type = this.constants.listNames.Schedules.type;
+            taskUpdateObj.type = 'PATCH';
             batchUrl.push(taskUpdateObj);
             // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateSchedulesBody, false);
           }
@@ -3556,7 +3556,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         taskCAUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +element.pID);
         taskCAUpdateObj.data = updateSchedulesBody;
         taskCAUpdateObj.listName = this.constants.listNames.Schedules.name;
-        taskCAUpdateObj.type = this.constants.listNames.Schedules.type;
+        taskCAUpdateObj.type = 'PATCH';
         batchUrl.push(taskCAUpdateObj);
         // spservice.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateSchedulesBody, false);
       }
@@ -3589,10 +3589,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
     // tslint:disable
     const taskCMUpdateObj = Object.assign({}, this.queryConfig);
-    taskCMUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, curMilestoneID);
+    taskCMUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +curMilestoneID);
     taskCMUpdateObj.data = updateCMilestoneBody;
     taskCMUpdateObj.listName = this.constants.listNames.Schedules.name;
-    taskCMUpdateObj.type = this.constants.listNames.Schedules.type;
+    taskCMUpdateObj.type = 'PATCH';
     batchUrl.push(taskCMUpdateObj);
     // this.spServices.getChangeSetBodySC(batchContents, changeSetId, cMilestoneEndpoint, updateCMilestoneBody, false);
 

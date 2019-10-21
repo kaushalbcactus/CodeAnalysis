@@ -36,7 +36,7 @@ export class TaskAllocationConstantsService {
         },
         ClientLegal: {
             select: 'IsCentrallyAllocated',
-            filter: "Title eq '{{ProjectDetailsaccount}}'",
+            filter: "IsActive eq 'Yes' and Title eq '{{ProjectDetailsaccount}}'",
             top: 4500
         },
         checkAccess: {

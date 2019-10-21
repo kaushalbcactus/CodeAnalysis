@@ -631,7 +631,7 @@ export class DragDropComponent implements OnInit {
                                                   this.taskAllocationService.taskallocationComponent.milestoneList);
     milestoneObj.url = milestoneObj.url.replace(/{{status}}/gi, 'Active');
     milestoneObj.listName = this.constants.listNames.Milestones.name;
-    milestoneObj.type = this.constants.listNames.Milestones.type;
+    milestoneObj.type = 'GET';
     batchUrl.push(milestoneObj);
     // ******************************************************************************************
     //  Get All Submilestones
@@ -649,7 +649,7 @@ export class DragDropComponent implements OnInit {
                                                   this.taskAllocationService.taskallocationComponent.submilestonesList);
     submilestoneObj.url = submilestoneObj.url.replace(/{{status}}/gi, 'Yes');
     submilestoneObj.listName = this.constants.listNames.SubMilestones.name;
-    submilestoneObj.type = this.constants.listNames.SubMilestones.type;
+    submilestoneObj.type = 'GET';
     batchUrl.push(submilestoneObj);
     // ************************************************************************************************
     //  Get All Submilestones
@@ -666,7 +666,7 @@ export class DragDropComponent implements OnInit {
                                                   this.taskAllocationService.taskallocationComponent.taskList);
     tasksObj.url = tasksObj.url.replace(/{{status}}/gi, 'Yes');
     tasksObj.listName = this.constants.listNames.MilestoneTasks.name;
-    tasksObj.type = this.constants.listNames.MilestoneTasks.type;
+    tasksObj.type = 'GET';
     batchUrl.push(tasksObj);
     const arrResult = await this.spServices.executeBatch(batchUrl);
     this.response = arrResult.length ? arrResult.map(a => a.retItems) : [];
