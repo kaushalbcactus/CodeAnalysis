@@ -385,7 +385,8 @@
       <div class="p-grid mt-20">
         <div class="p-col-2"><span class="compulsory">*</span>Bucket</div>
         <div class="p-col-4">
-          <p-dropdown placeholder="Select Bucket" [options]="adminDropDown.bucketArray" formControlName="bucket" filter="true" resetFilterOnHide="true">
+          <p-dropdown placeholder="Select Bucket" [options]="adminDropDown.bucketArray" formControlName="bucket"
+            filter="true" resetFilterOnHide="true">
           </p-dropdown>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.bucket.errors">
             <div *ngIf="addUser.controls.bucket.errors.required">Bucket is required</div>
@@ -430,7 +431,8 @@
         </div>
         <div class="p-col-2"><span class="compulsory">*</span>Date of Joining</div>
         <div class="p-col-4">
-          <p-calendar formControlName="dateofjoin" placeholder="Date of Joining" showIcon="true" [readonlyInput]="true">
+          <p-calendar formControlName="dateofjoin" placeholder="Date of Joining" showIcon="true" [readonlyInput]="true"
+            [monthNavigator]="true" [yearNavigator]="true" yearRange="{{yearRange}}">
           </p-calendar>
           <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.dateofjoin.errors">
             <div *ngIf="addUser.controls.dateofjoin.errors.required"> Date of Joining is required</div>
@@ -522,7 +524,8 @@
         </div>
         <div class="p-col-2">Role</div>
         <div class="p-col-4">
-          <p-dropdown placeholder="Select Role" [options]="adminDropDown.roleArray" formControlName="role" filter="true" resetFilterOnHide="true"></p-dropdown>
+          <p-dropdown placeholder="Select Role" [options]="adminDropDown.roleArray" formControlName="role" filter="true"
+            resetFilterOnHide="true"></p-dropdown>
         </div>
       </div>
       <div class="p-grid mt-20">
@@ -603,25 +606,27 @@
           Define your work week
         </div>
         <div class="p-col-1">
-            <p-checkbox name="workWeek" label="Sun" formControlName="workSunday" binary="true"></p-checkbox>
+          <p-checkbox name="workWeek" label="Sun" formControlName="workSunday" binary="true" [disabled]="true">
+          </p-checkbox>
         </div>
         <div class="p-col-1">
-            <p-checkbox name="workWeek" label="Mon" formControlName="workMonday" binary="true"></p-checkbox>
+          <p-checkbox name="workWeek" label="Mon" formControlName="workMonday" binary="true"></p-checkbox>
         </div>
         <div class="p-col-1">
-            <p-checkbox name="workWeek" label="Tue" formControlName="workTuesday" binary="true"></p-checkbox>
+          <p-checkbox name="workWeek" label="Tue" formControlName="workTuesday" binary="true"></p-checkbox>
         </div>
         <div class="p-col-1">
-            <p-checkbox name="workWeek" label="Wed" formControlName="workWednessday" binary="true"></p-checkbox>
+          <p-checkbox name="workWeek" label="Wed" formControlName="workWednessday" binary="true"></p-checkbox>
         </div>
         <div class="p-col-1">
-            <p-checkbox name="workWeek" label="Thu" formControlName="workThursday" binary="true"></p-checkbox>
+          <p-checkbox name="workWeek" label="Thu" formControlName="workThursday" binary="true"></p-checkbox>
         </div>
         <div class="p-col-1">
-            <p-checkbox name="workWeek" label="Fri" formControlName="workFriday" binary="true"></p-checkbox>
+          <p-checkbox name="workWeek" label="Fri" formControlName="workFriday" binary="true"></p-checkbox>
         </div>
         <div class="p-col-1">
-            <p-checkbox name="workWeek" label="Sat" formControlName="workSaturday" binary="true"></p-checkbox>
+          <p-checkbox name="workWeek" label="Sat" formControlName="workSaturday" binary="true" [disabled]="true">
+          </p-checkbox>
         </div>
       </div>
     </div>

@@ -14,6 +14,7 @@ export class AdminConstantService {
     },
     GET_PRACTICE_AREA: {
       select: 'ID,Title',
+      filter: 'IsActive eq \'Yes\' ',
       orderby: 'Title',
       top: 4900
     },

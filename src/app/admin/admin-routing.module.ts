@@ -30,11 +30,11 @@ const routes: Routes = [
         component: AttributeComponent,
         children: [
           { path: '', redirectTo: 'bucketMasterData', pathMatch: 'prefix' },
-          { path: 'bucketMasterData', component: BucketMasterdataComponent, runGuardsAndResolvers: 'always' },
-          { path: 'projectTypes', component: ProjectTypesComponent, runGuardsAndResolvers: 'always' },
-          { path: 'deliverableTypes', component: DeliverableTypesComponent, runGuardsAndResolvers: 'always' },
-          { path: 'therapeuticAreas', component: TherapeuticAreasComponent, runGuardsAndResolvers: 'always' },
-          { path: 'practiceAreas', component: PracticeAreasComponent, runGuardsAndResolvers: 'always' }
+          { path: 'bucketMasterData', component: BucketMasterdataComponent },
+          { path: 'projectTypes', component: ProjectTypesComponent },
+          { path: 'deliverableTypes', component: DeliverableTypesComponent },
+          { path: 'therapeuticAreas', component: TherapeuticAreasComponent },
+          { path: 'practiceAreas', component: PracticeAreasComponent }
         ]
       },
       { path: 'userProfile', component: UserProfileComponent },
@@ -43,18 +43,19 @@ const routes: Routes = [
         component: EntitlementComponent,
         children: [
           { path: '', redirectTo: 'userRoleMapping', pathMatch: 'prefix' },
-          { path: 'userRoleMapping', component: UserRoleMappingComponent, runGuardsAndResolvers: 'always' },
-          { path: 'roleUserMapping', component: RoleUserMappingComponent, runGuardsAndResolvers: 'always' },
-          { path: 'copyPermission', component: CopyPermissionComponent, runGuardsAndResolvers: 'always' },
-          { path: 'addUserToSow', component: AddUserToSowComponent, runGuardsAndResolvers: 'always' },
-          { path: 'addUserToProjects', component: AddUserToProjectsComponent, runGuardsAndResolvers: 'always' },
-          { path: 'addGroupDescription', component: GroupDescriptionComponent, runGuardsAndResolvers: 'always' }
+          { path: 'userRoleMapping', component: UserRoleMappingComponent },
+          { path: 'roleUserMapping', component: RoleUserMappingComponent },
+          { path: 'copyPermission', component: CopyPermissionComponent },
+          { path: 'addUserToSow', component: AddUserToSowComponent },
+          { path: 'addUserToProjects', component: AddUserToProjectsComponent },
+          { path: 'addGroupDescription', component: GroupDescriptionComponent }
         ]
       },
-      { path: 'clientMasterData', component: ClientMasterdataComponent, runGuardsAndResolvers: 'always' },
-      { path: 'rules', component: RulesComponent, runGuardsAndResolvers: 'always' },
-      { path: 'referenceData', component: ReferenceDataComponent, runGuardsAndResolvers: 'always' }
-    ]
+      { path: 'clientMasterData', component: ClientMasterdataComponent },
+      { path: 'rules', component: RulesComponent },
+      { path: 'referenceData', component: ReferenceDataComponent }
+    ],
+    runGuardsAndResolvers: 'always'
   }
 ];
 

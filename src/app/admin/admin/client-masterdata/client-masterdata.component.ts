@@ -678,16 +678,24 @@ export class ClientMasterdataComponent implements OnInit {
       const role = element.Role;
       switch (role) {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel1:
+        case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
           this.dropdown.CMLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
-          break;
+          if (role === this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel1) {
+            break;
+          }
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
           this.dropdown.CMLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
           break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_1:
+        case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
           this.dropdown.DeliveryLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
-          break;
+          if (role === this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_1) {
+            break;
+          }
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
           this.dropdown.DeliveryLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
+          break;
+        default:
           break;
       }
     });

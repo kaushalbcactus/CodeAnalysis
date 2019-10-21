@@ -393,7 +393,11 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 ">Notes</div>
             <div class="p-col-4">
-                <textarea [rows]="5" [cols]="60" formControlName="notes" pInputTextarea></textarea>
+                <textarea [rows]="5" [cols]="60" formControlName="notes" pInputTextarea maxlength="1000"></textarea>
+                <span *ngIf="addClient.value.notes" style="float: right;">{{addClient.value.notes.length}}/1000</span>
+                <span *ngIf="addClient.value.notes && addClient.value.notes.length >= '1000'"
+                    style="color:red;float: right;">You have enter
+                    maximum length of Notes</span>
             </div>
         </div>
         <div class="p-grid mt-20">
@@ -911,7 +915,8 @@
         Change Budget
     </p-header>
 
-    <p-dropdown [options]="budgetType" placeholder="Select Value" [(ngModel)]="selectedValue" filter="true" resetFilterOnHide="true">
+    <p-dropdown [options]="budgetType" placeholder="Select Value" [(ngModel)]="selectedValue" filter="true"
+        resetFilterOnHide="true">
     </p-dropdown>
 
     <div class="ui-g" *ngIf="checkBudgetValue">
@@ -1189,7 +1194,8 @@
         <div class="p-grid mt-20">
             <div class="p-col-2 "><span class="compulsory">*</span>TA</div>
             <div class="p-col-4">
-                <p-dropdown [options]="dropdown.POTAArray" placeholder="Select TA" formControlName="ta" filter="true" resetFilterOnHide="true">
+                <p-dropdown [options]="dropdown.POTAArray" placeholder="Select TA" formControlName="ta" filter="true"
+                    resetFilterOnHide="true">
                 </p-dropdown>
                 <div class="error" *ngIf="cmObject.isPOFormSubmit && PoForm.controls.ta.errors">
                     <div *ngIf="PoForm.controls.ta.errors.required">

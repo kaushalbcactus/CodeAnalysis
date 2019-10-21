@@ -33,6 +33,7 @@ export class UserProfileComponent implements OnInit {
   auditHistoryRows = [];
   userProfileViewDataArray = [];
   minPastMonth;
+  yearRange: any;
   showModal = false;
   showeditUser = false;
   isUserProfileRightSideVisible = false;
@@ -213,6 +214,8 @@ export class UserProfileComponent implements OnInit {
    */
   async ngOnInit() {
     this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
+    const currentYear = new Date();
+    this.yearRange = (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
     this.userProfileColumns = [
       { field: 'User', header: 'User', visibility: true },
       { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
