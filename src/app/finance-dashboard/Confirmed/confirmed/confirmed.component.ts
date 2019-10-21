@@ -1164,7 +1164,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             }
 
             callProjects.forEach(element => {
-                var getPIData = Object.assign({}, options);
+                const getPIData = Object.assign({}, options);
                 getPIData.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name,
                                                            this.fdConstantsService.fdComponent.projectInfoCode);
                 getPIData.url = getPIData.url.replace('{{ProjectCode}}', element);
