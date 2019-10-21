@@ -1361,12 +1361,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
   }
 
-
-  // enableDisableCascadeTask(task) {
-  //   task.DisableCascade = task.DisableCascade === 'Yes' ? 'Yes' : 'No';
-  // }
-
-
   // *************************************************************************************************
   // hide popup menu on production
   // ***********************************************************************************************
@@ -1720,7 +1714,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
         this.milestoneData = [...this.milestoneData];
         console.log(this.milestoneData);
 
-
         this.changeInRestructure = this.milestoneData.find(c => c.data.editMode === true) !== undefined ? true : false;
         if (this.changeInRestructure) {
           setTimeout(() => {
@@ -1736,10 +1729,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
       else {
         this.CancelChanges(tempSubmilestones, 'discardAll');
       }
-
-
-
-
     });
   }
 
@@ -2095,25 +2084,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
         if (this.milestoneData.length > (selectedMil + 1)) {
           nextNode.push(this.milestoneData[selectedMil + 1]);
         }
-
-        // if(this.milestoneData[selectedMil].children){
-        //   const retNodes = this.milestoneData[selectedMil].children.filter(c => parseInt(c.data.position) == (subMilestonePosition + 1));
-
-        //   if (retNodes.length) {
-        //     retNodes.forEach(element => {
-        //       nextNode.push(element);
-        //     });
-        //   }
-        // }
-        // else {
-        //   sentPrevNode = this.milestoneData[selectedMil];
-        //   this.setStartAndEnd(sentPrevNode);
-        //   this.milestoneData[selectedMil] = sentPrevNode;
-        //   //sentPrevNode = previousNode;
-        //   if (this.milestoneData.length > (selectedMil + 1)) {
-        //     nextNode.push(this.milestoneData[selectedMil + 1]);
-        //   }
-        // }
 
       }
     }
@@ -2673,26 +2643,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   setMilestoneForAddUpdate(sentMilestone, bAdd) {
-
-
     let currentMilestone = sentMilestone.data;
-    // let arrSubMil = [];
-    // if (sentMilestone.children !== undefined) {
-    //   for (var nCountSub = 0; nCountSub < sentMilestone.children.length; nCountSub = nCountSub + 1) {
-    //     var submilestone = sentMilestone.children[nCountSub];
-    //     submilestone.data.status = submilestone.data.status === 'Not Saved' ? 'Not Confirmed' : submilestone.data.status;
-    //     if (submilestone.data.type !== 'task') {
-    //       arrSubMil.push(submilestone.data.pName + ':' + submilestone.data.position + ':' + submilestone.data.status);
-    //     }
-    //   }
-    // }
-    // if (arrSubMil.length) {
-    //   currentMilestone.submilestone = arrSubMil.join(';#');
-    // }
-    // else {
-    //   currentMilestone.submilestone = '';
-    // }
-
+    
     currentMilestone.submilestone = this.getSubMilestoneStatus(sentMilestone, '').join(';#');
     let updateMilestoneBody = {};
     const milestoneStartDate = new Date(currentMilestone.pStart);
@@ -3051,35 +3003,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   // tslint:enable
 
-  // validateNextMilestone() {
-  //   let validateNextMilestone = true;
-  //   const nextMilestoneText = this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone;
-  //   const newCurrentMilestone = this.milestoneData.filter((obj) => {
-  //     return obj.data.pName.split(' (')[0] === nextMilestoneText;
-  //   });
-  //   if (newCurrentMilestone.length > 0) {
-  //     let currMilTasks = this.getTasksFromMilestones(newCurrentMilestone[0], false);
-  //     currMilTasks = currMilTasks.filter((objt) => {
-  //       return objt.status !== 'Deleted' && objt.status !== 'Abandon';
-  //     });
-
-  //     currMilTasks.forEach(element => {
-  //       const title = element.AssignedTo.Title;
-  //       if (!title) {
-  //         validateNextMilestone = false;
-  //       }
-  //     });
-  //     if (!validateNextMilestone) {
-  //       this.messageService.add({
-  //         key: 'custom', severity: 'warn', summary: 'Warning Message',
-  //         detail: 'All tasks should be assigned to either a resource or skill before setting the milestone as current milestone.'
-  //       });
-  //     }
-  //   }
-
-  //   return validateNextMilestone;
-  // }
-
   validateNextMilestone(subMile) {
 
     let validateNextMilestone = true;
@@ -3316,28 +3239,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         });
       }
     }
-    // if (submilePresentInCurrent) {
-    //   const allTasks = this.getTasksFromMilestones(previousSubMilestones[0].parent, false);
-    //   const AllTaskStatus = allTasks.filter(c => c.itemType !== 'Client Review').every(this.checkCompletedStatus);
 
-    //   if (AllTaskStatus) {
-
-    //     const ClientTask = allTasks.find(c => c.itemType === 'Client Review');
-    //     if (ClientTask) {
-    //       // tslint:disable
-    //       const endpoint1 = this.sharedObject.sharePointPageObject.webAbsoluteUrl +
-    //         "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(ClientTask.pID) +
-    //         ")";
-    //       // tslint:enable
-    //       const updateSchedulesBody = JSON.stringify({
-    //         __metadata: { type: 'SP.Data.SchedulesListItem' },
-    //         Status: 'Completed',
-    //         AllowCompletion: 'Yes'
-    //       });
-    //       this.spServices.getChangeSetBodySC(batchContents, changeSetId, endpoint1, updateSchedulesBody, false);
-    //     }
-    //   }
-    // }
 
     const schedules = this.constants.listNames.Schedules.name;
     const spservice = this.spServices;
@@ -3455,95 +3357,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // ************************************************************************************************
   // Milestone Validation
   // **************************************************************************************************
-
-  // validate() {
-
-
-  //   const projectBudgetHours = this.oProjectDetails.budgetHours;
-  //   const milestonesData = this.milestoneData;
-  //   const allMilestones = milestonesData.filter(c => c.data.type === 'milestone').map(c => c.data);
-  //   const milestoneBudgetHrs = allMilestones.reduce((a, b) => a + +b.budgetHours, 0);
-  //   if (projectBudgetHours < milestoneBudgetHrs) {
-
-  //     this.messageService.add({
-  //       key: 'custom', severity: 'warn', summary: 'Warning Message',
-  //       detail: 'Sum of milestone budget hours cannot be greater than project budget hours.'
-  //     });
-  //     return false;
-  //   }
-  //   const tempMilestones = allMilestones.filter(e => e.status !== 'Completed');
-  //   const checkMilestoneAllicatedTime = tempMilestones.filter(e => (e.budgetHours === '' || +e.budgetHours === 0));
-  //   if (checkMilestoneAllicatedTime.length > 0) {
-  //     this.messageService.add({
-  //       key: 'custom', severity: 'warn', summary: 'Warning Message',
-  //       detail: 'Budget hours for Milestone cannot be less than or equal to 0'
-  //     });
-  //     return false;
-  //   }
-  //   let previousNode;
-  //   for (const milestone of milestonesData) {
-
-  //     if (milestone.data.status !== 'Completed') {
-  //       const AllTasks = this.getTasksFromMilestones(milestone, false);
-
-  //       const milestoneTasks = AllTasks.filter(t => t.status !== 'Abandon' && t.itemType !== 'Adhoc');
-  //       // tslint:disable
-  //       const checkTaskAllocatedTime = milestoneTasks.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
-  //         && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed');
-  //       // tslint:enable
-  //       if (checkTaskAllocatedTime.length > 0) {
-  //         this.messageService.add({
-  //           key: 'custom', severity: 'warn', summary: 'Warning Message',
-  //           detail: 'Allocated time for task cannot be equal or less than 0.'
-  //         });
-
-  //         return false;
-  //       }
-  //       const checkDates = milestoneTasks.filter(e => (e.pUserStart === null || e.pUserEnd === null));
-  //       if (checkDates.length > 0) {
-  //         this.messageService.add({
-  //           key: 'custom', severity: 'warn', summary: 'Warning Message',
-  //           detail: 'Please select valid date for ' + milestone.data.pName + ' - ' + checkDates[0].pName
-  //         });
-
-  //         return false;
-  //       }
-  //       const compareDates = milestoneTasks.filter(e => (e.pEnd <= e.pStart && e.tat === false
-  //         && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' &&
-  //         e.itemType !== 'Follow up' && e.status !== 'Completed'));
-  //       if (compareDates.length > 0) {
-
-  //         this.messageService.add({
-  //           key: 'custom', severity: 'warn', summary: 'Warning Message',
-  //           detail: 'End date should be greater than start date of ' + milestone.data.pName + ' - ' + compareDates[0].pName
-  //         });
-
-  //         return false;
-  //       }
-
-  //       if (previousNode !== undefined && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart)) {
-  //         let errormessage = 'Previous Client Review';
-  //         if (previousNode.pName !== 'Client Review') {
-  //           errormessage = previousNode.pName;
-  //         }
-
-  //         this.messageService.add({
-  //           key: 'custom', severity: 'warn', summary: 'Warning Message',
-  //           detail: 'Start Date of ' + milestone.data.pName + '  should be greater than end date of ' + errormessage
-  //         });
-  //         return false;
-  //       }
-
-  //       if (milestoneTasks.length > 0) {
-
-  //         this.LinkScToClientReview(milestoneTasks);
-  //       }
-  //       previousNode = milestone.data;
-  //     }
-
-  //   }
-  //   return true;
-  // }
 
   validate() {
 
