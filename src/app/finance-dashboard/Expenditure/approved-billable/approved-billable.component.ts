@@ -744,7 +744,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                                                this.fdConstantsService.fdComponent.projectFinances);
         pfObj.url = pfObj.url.replace('{{ProjectCode}}', this.scheduleOopInvoice_form.getRawValue().ProjectCode);
         pfObj.listName = this.constantService.listNames.ProjectFinances.name;
-        pfObj.type = this.constantService.listNames.ProjectFinances.type;
+        pfObj.type = 'GET';
         batchUrl.push(pfObj);
         // let obj = {
         //     filter: this.fdConstantsService.fdComponent.projectFinances.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode),
@@ -761,7 +761,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         pfbObj.url = pfbObj.url.replace('{{ProjectCode}}', this.scheduleOopInvoice_form.getRawValue().ProjectCode)
                              .replace('{{PO}}', this.poItem.Id);
         pfbObj.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
-        pfbObj.type = this.constantService.listNames.ProjectFinanceBreakup.type;
+        pfbObj.type = 'GET';
         batchUrl.push(pfbObj);
         // let pfbObj = {
         //     filter: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode).replace("{{PO}}", this.poItem.Id),
@@ -776,7 +776,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                                                this.fdConstantsService.fdComponent.projectBudgetBreakup);
         pbbObj.url = pbbObj.url.replace('{{ProjectCode}}', this.scheduleOopInvoice_form.getRawValue().ProjectCode);
         pbbObj.listName = this.constantService.listNames.ProjectBudgetBreakup.name;
-        pbbObj.type = this.constantService.listNames.ProjectBudgetBreakup.type;
+        pbbObj.type = 'GET';
         batchUrl.push(pbbObj);
 
         // let pbbObj = {

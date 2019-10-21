@@ -221,7 +221,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         }
     }
 
-    
+
     async getRequiredData() {
         this.hourlyBasedRes = [];
         this.hBQuery = [];
@@ -241,7 +241,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         this.projectCodes.forEach(element => {
             const prjObj = Object.assign({}, this.queryConfig);
             prjObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name,
-                                                    this.fdConstantsService.fdComponent.projectFinances);
+                this.fdConstantsService.fdComponent.projectFinances);
             prjObj.url = prjObj.url.replace('{{ProjectCode}}', element.ProjectCode);
             prjObj.listName = this.constantService.listNames.ProjectFinances.name;
             prjObj.type = this.constantService.listNames.ProjectFinances.type;
@@ -350,21 +350,24 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     // Project PO
     async getPONumber(pf) {
         // Get Finance Brekup List
-        let obj1 = {
-            filter: this.fdConstantsService.fdComponent.projectFinanceBreakupForPO.filter.replace("{{ProjectCode}}", pf.ProjectCode),
-            select: this.fdConstantsService.fdComponent.projectFinanceBreakupForPO.select,
-            top: this.fdConstantsService.fdComponent.projectFinanceBreakupForPO.top,
-        }
-        let pfbUrl = this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinanceBreakup.name + '', obj1);
-        let endPoints = [{ endPointsUrl: pfbUrl }];
-        const res = await this.getProjectBudgetBreakup(endPoints, 'poDetails');
-        let poByPfb = res[0];
-        let found = this.purchaseOrdersList.find((x) => {
+        // let obj1 = {
+        //     filter: this.fdConstantsService.fdComponent.projectFinanceBreakupForPO.filter.replace("{{ProjectCode}}", pf.ProjectCode),
+        //     select: this.fdConstantsService.fdComponent.projectFinanceBreakupForPO.select,
+        //     top: this.fdConstantsService.fdComponent.projectFinanceBreakupForPO.top,
+        // }
+        // let pfbUrl = this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinanceBreakup.name + '', obj1);
+        // let endPoints = [{ endPointsUrl: pfbUrl }];
+        const pfbObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinanceBreakupForPO);
+        pfbObj.filter = pfbObj.filter.replace('{{ProjectCode}}', pf.ProjectCode);
+        const res = await this.spServices.readItems(this.constantService.listNames.ProjectFinanceBreakup.name, pfbObj);
+        // const res = await this.getProjectBudgetBreakup(endPoints, 'poDetails');
+        const poByPfb = res.length ? res[0] : {};
+        const found = this.purchaseOrdersList.find((x) => {
             if (x.ID === poByPfb.POLookup) {
                 return x;
             }
-        })
-        return found ? found : ''
+        });
+        return found ? found : '';
     }
 
     getPODetailsByPF(poId) {
@@ -529,9 +532,10 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     projectInfoLineItem: any;
     poLineItem: any;
     updateConfirmModal() {
+        const batchUrl = [];
         this.projectInfoLineItem = '';
-        //this.confirmHourlybased_form.get('BudgetHrs').setValue(this.selectedRowItem.BudgetHrs);
-        //this.confirmHourlybased_form.get('HoursSpent').setValue(this.selectedRowItem.HoursSpent);
+        // this.confirmHourlybased_form.get('BudgetHrs').setValue(this.selectedRowItem.BudgetHrs);
+        // this.confirmHourlybased_form.get('HoursSpent').setValue(this.selectedRowItem.HoursSpent);
         const format = 'dd MMM , yyyy';
         const myDate = new Date();
         const locale = 'en-IN';
@@ -543,29 +547,47 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         })
 
         // Get Project Budget Brekup
-        let obj = {
-            filter: this.fdConstantsService.fdComponent.projectBudgetBreakup.filter.replace("{{ProjectCode}}", this.selectedRowItem.ProjectCode),
-            select: this.fdConstantsService.fdComponent.projectBudgetBreakup.select,
-        }
-        let pbuUrl = this.spServices.getReadURL('' + this.constantService.listNames.ProjectBudgetBreakup.name + '', obj)
-
+        // let obj = {
+        //     filter: this.fdConstantsService.fdComponent.projectBudgetBreakup.filter.replace("{{ProjectCode}}", this.selectedRowItem.ProjectCode),
+        //     select: this.fdConstantsService.fdComponent.projectBudgetBreakup.select,
+        // }
+        // let pbuUrl = this.spServices.getReadURL('' + this.constantService.listNames.ProjectBudgetBreakup.name + '', obj)
+        const pbbObj = Object.assign({}, this.queryConfig);
+        pbbObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectBudgetBreakup.name,
+            this.fdConstantsService.fdComponent.projectBudgetBreakup);
+        pbbObj.url = pbbObj.url.replace('{{ProjectCode}}', this.selectedRowItem.ProjectCode);
+        pbbObj.listName = this.constantService.listNames.ProjectBudgetBreakup.name;
+        pbbObj.type = 'GET';
+        batchUrl.push(pbbObj);
         // Get Finance Brekup List
-        let obj1 = {
-            filter: this.fdConstantsService.fdComponent.projectFinanceBreakup.filter.replace("{{ProjectCode}}", this.selectedRowItem.ProjectCode),
-            select: this.fdConstantsService.fdComponent.projectFinanceBreakup.select,
-        }
-        let pfbUrl = this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinanceBreakup.name + '', obj1)
-
+        // let obj1 = {
+        //     filter: this.fdConstantsService.fdComponent.projectFinanceBreakup.filter.replace("{{ProjectCode}}", this.selectedRowItem.ProjectCode),
+        //     select: this.fdConstantsService.fdComponent.projectFinanceBreakup.select,
+        // }
+        // let pfbUrl = this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinanceBreakup.name + '', obj1)
+        const pfbObj = Object.assign({}, this.queryConfig);
+        pfbObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinanceBreakup.name,
+            this.fdConstantsService.fdComponent.projectFinanceBreakup);
+        pfbObj.url = pfbObj.url.replace('{{ProjectCode}}', this.selectedRowItem.ProjectCode);
+        pfbObj.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
+        pfbObj.type = 'GET';
+        batchUrl.push(pfbObj);
         // Get SOW
-        let obj2 = {
-            filter: this.fdConstantsService.fdComponent.sowByProjectCode.filter.replace("{{SOWCode}}", this.selectedRowItem.SOWCode),
-            select: this.fdConstantsService.fdComponent.sowByProjectCode.select,
-        }
-        let sowUrl = this.spServices.getReadURL('' + this.constantService.listNames.SOW.name + '', obj2)
+        // let obj2 = {
+        //     filter: this.fdConstantsService.fdComponent.sowByProjectCode.filter.replace("{{SOWCode}}", this.selectedRowItem.SOWCode),
+        //     select: this.fdConstantsService.fdComponent.sowByProjectCode.select,
+        // }
+        // let sowUrl = this.spServices.getReadURL('' + this.constantService.listNames.SOW.name + '', obj2)
 
-        let endPoints = [{ endPointsUrl: pbuUrl }, { endPointsUrl: pfbUrl }, { endPointsUrl: sowUrl }];
-
-        this.getProjectBudgetBreakup(endPoints, 'updateModal');
+        // let endPoints = [{ endPointsUrl: pbuUrl }, { endPointsUrl: pfbUrl }, { endPointsUrl: sowUrl }];
+        const sowObj = Object.assign({}, this.queryConfig);
+        sowObj.url = this.spServices.getReadURL(this.constantService.listNames.SOW.name,
+            this.fdConstantsService.fdComponent.sowByProjectCode);
+        sowObj.url = sowObj.url.replace('{{SOWCode}}', this.selectedRowItem.SOWCode);
+        sowObj.listName = this.constantService.listNames.SOW.name;
+        sowObj.type = 'GET';
+        batchUrl.push(sowObj);
+        this.getProjectBudgetBreakup(batchUrl);
         const last3Days = this.commonService.getLastWorkingDay(3, new Date());
         this.minScheduleDate = last3Days;
     }
@@ -579,27 +601,29 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         return found ? found : '';
     }
 
-    async getProjectBudgetBreakup(endPoints, type: string) {
-        this.hBQuery = [];
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element.endPointsUrl);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        arrResults = res;
-        if (arrResults.length && type === 'updateModal') {
+    async getProjectBudgetBreakup(batchUrl) {
+        // this.hBQuery = [];
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element.endPointsUrl);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        const res = await this.spServices.executeBatch(batchUrl);
+        const arrResults = res.length ? res.map(a => a.retItems) : [];
+        if (arrResults.length) {
             console.log('arrResults ', arrResults);
             this.setValue(arrResults);
-        } else if (arrResults.length && type === 'poDetails') {
-            console.log('arrResults in poDetails ', arrResults);
-            return arrResults[0];
         }
+        // } else if (arrResults.length && type === 'poDetails') {
+        //     console.log('arrResults in poDetails ', arrResults);
+        //     return arrResults[0];
+        // }
         // });
     }
 
@@ -664,6 +688,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         this.isPSInnerLoaderHidden = true;
         if (this.submitBtn.isClicked) {
             this.isPSInnerLoaderHidden = false;
+            const batchUrl = [];
             let rate = this.selectedRowItem.Rate ? this.selectedRowItem.Rate : 0;
             let hrs = this.selectedRowItem.HoursSpent ? this.selectedRowItem.HoursSpent : 0;
             let totalVal = rate * hrs;
@@ -680,77 +705,107 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                         this.pcmLevels.push(element);
                     }
                     this.pcmLevels.push(piId.CMLevel2);
-                    console.log('this.pcmLevels ', this.pcmLevels);
+                    // console.log('this.pcmLevels ', this.pcmLevels);
                 }
 
-                //Update SOW Total Linked
-                let updatedTotalLinkedValue = parseFloat(this.sowData.TotalLinked) + totalVal;
-                let updatedSOWScheduledRevenue = parseFloat(this.sowData.ScheduledRevenue) + totalVal;
-                let updatedSOWTotalScheduled = parseFloat(this.sowData.TotalScheduled) + totalVal;
-                let updatedSOWRevenueLinked = parseFloat(this.sowData.RevenueLinked) + totalVal;
+                // Update SOW Total Linked
+                const updatedTotalLinkedValue = parseFloat(this.sowData.TotalLinked) + totalVal;
+                const updatedSOWScheduledRevenue = parseFloat(this.sowData.ScheduledRevenue) + totalVal;
+                const updatedSOWTotalScheduled = parseFloat(this.sowData.TotalScheduled) + totalVal;
+                const updatedSOWRevenueLinked = parseFloat(this.sowData.RevenueLinked) + totalVal;
 
-                //Update PO Linked
-                let updatedPOTotalLinkedValue = parseFloat(this.poLookupDataObj.TotalLinked) + totalVal;
-                let updatedPORevenueLinked = parseFloat(this.poLookupDataObj.RevenueLinked) + totalVal;
-                let updatedPOTotalScheduled = parseFloat(this.poLookupDataObj.TotalScheduled) + totalVal;
-                let updatedScheduledRevenue = parseFloat(this.poLookupDataObj.ScheduledRevenue) + totalVal;
+                // Update PO Linked
+                const updatedPOTotalLinkedValue = parseFloat(this.poLookupDataObj.TotalLinked) + totalVal;
+                const updatedPORevenueLinked = parseFloat(this.poLookupDataObj.RevenueLinked) + totalVal;
+                const updatedPOTotalScheduled = parseFloat(this.poLookupDataObj.TotalScheduled) + totalVal;
+                const updatedScheduledRevenue = parseFloat(this.poLookupDataObj.ScheduledRevenue) + totalVal;
 
 
                 // Update ProjectInformation
-                let piObj = {
+                const piData = {
                     Status: 'Audit In Progress',
                     ProposeClosureDate: new Date(),
                     IsApproved: 'Yes',
 
-                }
-                piObj['__metadata'] = { type: 'SP.Data.ProjectInformationListItem' };
-                const piEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectInformation.update.replace("{{Id}}", piId.Id);
+                };
+                piData['__metadata'] = { type: 'SP.Data.ProjectInformationListItem' };
+                const piObj = Object.assign({}, this.queryConfig);
+                piObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectInformation.name, +piId.Id);
+                piObj.listName = this.constantService.listNames.ProjectInformation.name;
+                piObj.type = 'PATCH';
+                piObj.data = piData;
+                batchUrl.push(piObj);
+                // const piEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectInformation.update.replace("{{Id}}", piId.Id);
 
                 ///update PO
-                let poObj = {
+                let poData = {
                     TotalLinked: updatedPOTotalLinkedValue,
                     RevenueLinked: updatedPORevenueLinked,
                     TotalScheduled: updatedPOTotalScheduled,
                     ScheduledRevenue: updatedScheduledRevenue,
                 }
-                poObj['__metadata'] = { type: 'SP.Data.POListItem' };
-                const poEndpoint = this.fdConstantsService.fdComponent.addUpdatePO.update.replace("{{Id}}", this.poLookupDataObj.ID);
-
+                poData['__metadata'] = { type: 'SP.Data.POListItem' };
+                // const poEndpoint = this.fdConstantsService.fdComponent.addUpdatePO.update.replace("{{Id}}", this.poLookupDataObj.ID);
+                const poObj = Object.assign({}, this.queryConfig);
+                poObj.url = this.spServices.getItemURL(this.constantService.listNames.PO.name, +this.poLookupDataObj.ID);
+                poObj.listName = this.constantService.listNames.PO.name;
+                poObj.type = 'PATCH';
+                poObj.data = poData;
+                batchUrl.push(poObj);
 
                 ///Update ProjectFinanceBreakup
-                let pfbObj = {
+                let pfbData = {
                     Amount: totalVal,
                     AmountRevenue: totalVal,
                     TotalScheduled: totalVal,
                     ScheduledRevenue: totalVal,
-                }
-                pfbObj['__metadata'] = { type: 'SP.Data.ProjectFinanceBreakupListItem' };
-                const pfbEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinanceBreakup.update.replace("{{Id}}", this.ProjectFinanceBreakupData.ID);
-
+                };
+                pfbData['__metadata'] = { type: 'SP.Data.ProjectFinanceBreakupListItem' };
+                // const pfbEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinanceBreakup.update.replace("{{Id}}", this.ProjectFinanceBreakupData.ID);
+                const pfbObj = Object.assign({}, this.queryConfig);
+                pfbObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinanceBreakup.name,
+                    +this.ProjectFinanceBreakupData.ID);
+                pfbObj.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
+                pfbObj.type = 'PATCH';
+                pfbObj.data = pfbData;
+                batchUrl.push(poObj);
                 ///Update ProjectBudgetBreakup
-                let pbbObj = {
+                let pbbData = {
                     OriginalBudget: totalVal,
                     NetBudget: totalVal,
                     Status: 'Approved',
                     ApprovalDate: this.confirmHourlybased_form.value.approvalDate,
                     BudgetHours: hrs
                 }
-                pbbObj['__metadata'] = { type: 'SP.Data.ProjectBudgetBreakupListItem' };
-                const pbbEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectBudgetBreakup.update.replace("{{Id}}", this.projectBudgetBreakupData.ID);
-
+                pbbData['__metadata'] = { type: 'SP.Data.ProjectBudgetBreakupListItem' };
+                // const pbbEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectBudgetBreakup.update.replace("{{Id}}", this.projectBudgetBreakupData.ID);
+                const pbbObj = Object.assign({}, this.queryConfig);
+                pbbObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectBudgetBreakup.name,
+                    +this.projectBudgetBreakupData.ID);
+                pbbObj.listName = this.constantService.listNames.ProjectBudgetBreakup.name;
+                pbbObj.type = 'PATCH';
+                pbbObj.data = pbbData;
+                batchUrl.push(poObj);
 
                 ///Update SOW
-                let sowObj = {
+                let sowData = {
                     TotalLinked: updatedTotalLinkedValue,
                     ScheduledRevenue: updatedSOWScheduledRevenue,
                     TotalScheduled: updatedSOWTotalScheduled,
                     RevenueLinked: updatedSOWRevenueLinked
                 }
-                sowObj['__metadata'] = { type: 'SP.Data.SOWListItem' };
-                const sowEndpoint = this.fdConstantsService.fdComponent.addUpdateSow.update.replace("{{Id}}", this.sowData.ID);
+                sowData['__metadata'] = { type: 'SP.Data.SOWListItem' };
+                // const sowEndpoint = this.fdConstantsService.fdComponent.addUpdateSow.update.replace("{{Id}}", this.sowData.ID);
+                const sowObj = Object.assign({}, this.queryConfig);
+                sowObj.url = this.spServices.getItemURL(this.constantService.listNames.SOW.name,
+                    +this.sowData.ID);
+                sowObj.listName = this.constantService.listNames.SOW.name;
+                sowObj.type = 'PATCH';
+                sowObj.data = sowData;
+                batchUrl.push(poObj);
 
                 ///Add InvoiceLineItem
-                let iliObj = {
+                const iliData = {
                     Title: this.selectedRowItem.ProjectCode,
                     Status: 'Confirmed',
                     ScheduledDate: this.confirmHourlybased_form.value.approvalDate,
@@ -763,45 +818,61 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                     Template: this.selectedRowItem.Template,
                     CSId: { results: this.pcmLevels.map(x => x.ID) },
                     SOWCode: this.selectedRowItem.SOWCode,
-                }
-                iliObj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-                const iliEndpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.create;
+                };
+                iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+                // const iliEndpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.create;
+                const iliObj = Object.assign({}, this.queryConfig);
+                iliObj.url = this.spServices.getReadURL(this.constantService.listNames.InvoiceLineItems.name);
+                iliObj.listName = this.constantService.listNames.InvoiceLineItems.name;
+                iliObj.type = 'POST';
+                iliObj.data = iliData;
+                batchUrl.push(poObj);
 
                 // Project Finance
-                let pfObj = {
+                let pfData = {
                     ApprovedBudget: totalVal,
                     ScheduledRevenue: totalVal,
                     BudgetHrs: hrs,
                     InvoicesScheduled: totalVal
                 }
-                pfObj['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
-                const pfEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinances.update.replace("{{Id}}", this.selectedRowItem.PFID);
+                pfData['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
+                // const pfEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinances.update.replace("{{Id}}", this.selectedRowItem.PFID);
+                const pfObj = Object.assign({}, this.queryConfig);
+                pfObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, +this.selectedRowItem.PFID);
+                pfObj.listName = this.constantService.listNames.ProjectFinances.name;
+                pfObj.type = 'PATCH';
+                pfObj.data = pfData;
+                batchUrl.push(poObj);
+                // let data = [
+                //     { objData: piObj, endpoint: piEndpoint, requestPost: false },
+                //     { objData: poObj, endpoint: poEndpoint, requestPost: false },
+                //     { objData: pfbObj, endpoint: pfbEndpoint, requestPost: false },
+                //     { objData: pbbObj, endpoint: pbbEndpoint, requestPost: false },
+                //     { objData: sowObj, endpoint: sowEndpoint, requestPost: false },
+                //     { objData: pfObj, endpoint: pfEndpoint, requestPost: false },
+                //     { objData: iliObj, endpoint: iliEndpoint, requestPost: true },
+                // ];
+                // console.log('data ', data);
 
-                let data = [
-                    { objData: piObj, endpoint: piEndpoint, requestPost: false },
-                    { objData: poObj, endpoint: poEndpoint, requestPost: false },
-                    { objData: pfbObj, endpoint: pfbEndpoint, requestPost: false },
-                    { objData: pbbObj, endpoint: pbbEndpoint, requestPost: false },
-                    { objData: sowObj, endpoint: sowEndpoint, requestPost: false },
-                    { objData: pfObj, endpoint: pfEndpoint, requestPost: false },
-                    { objData: iliObj, endpoint: iliEndpoint, requestPost: true },
-                ];
-                console.log('data ', data);
 
-
-                let item = this.projectInfoData.find((x) => {
-                    return x.ProjectCode == this.selectedRowItem.ProjectCode
+                const item = this.projectInfoData.find((x) => {
+                    return x.ProjectCode === this.selectedRowItem.ProjectCode;
                 });
 
-                let projIndex = this.projectInfoData.findIndex((x) => {
-                    return x.ProjectCode == this.selectedRowItem.ProjectCode
-                })
-                item.Status = 'Audit In Progress'
+                const projIndex = this.projectInfoData.findIndex((x) => {
+                    return x.ProjectCode === this.selectedRowItem.ProjectCode;
+                });
+                item.Status = 'Audit In Progress';
                 this.projectInfoData.splice(projIndex, 1, item);
 
-                this.submitForm(data, 'confirmInvoice');
+                this.submitForm(batchUrl, 'confirmInvoice');
             } else {
-                this.messageService.add({ key: 'hourlyInfoToast', severity: 'info', summary: 'Info message', detail: 'Project budget cannot be more than SOW available budget or PO available budget.', life: 4000 })
+                this.messageService.add({
+                    key: 'hourlyInfoToast', severity: 'info',
+                    summary: 'Info message',
+                    detail: 'Project budget cannot be more than SOW available budget or PO available budget.',
+                    life: 4000
+                });
                 this.isPSInnerLoaderHidden = true;
                 this.confirmationModal = false;
                 this.formSubmit.isSubmit = false;
@@ -841,11 +912,11 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         this.submitBtn.isClicked = false;
     }
 
-    onSubmit(type: string) {
+    async onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
 
         if (type === 'confirmInvoice') {
-            console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
+            // console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
             if (this.confirmHourlybased_form.invalid) {
                 return;
             }
@@ -854,25 +925,33 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             this.updateRequiredItems();
         } else if (type === 'editInvoice') {
             if (this.editHourly_form.invalid) {
-                return
+                return;
             }
             this.submitBtn.isClicked = true;
             this.isPSInnerLoaderHidden = false;
             this.updateHourlyData();
-            let obj1 = {
+            const pfData = {
                 Budget: this.editHourly_form.value.Rate,
                 HoursSpent: this.editHourly_form.value.HoursSpent
-            }
-            obj1['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinances.update.replace("{{Id}}", this.selectedRowItem.PFID);
-            let data = [
-                {
-                    objData: obj1,
-                    endpoint: endpoint,
-                    requestPost: false
-                }
-            ]
-            this.submitForm(data, type);
+            };
+            pfData['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinances.update.replace("{{Id}}", this.selectedRowItem.PFID);
+            // let data = [
+            //     {
+            //         objData: obj1,
+            //         endpoint: endpoint,
+            //         requestPost: false
+            //     }
+            // ]
+            await this.spServices.updateItem(this.constantService.listNames.ProjectFinances.name, +this.selectedRowItem.PFID,
+                                             pfData, this.constantService.listNames.ProjectFinances.type);
+            // this.submitForm(data, type);
+            this.messageService.add({
+                key: 'hourlySuccessToast', severity: 'success',
+                summary: 'Success message', detail: 'Invoice Updated.', life: 2000
+            });
+            this.cancelFormSub('editInvoice');
+            this.reFetchData('edit');
         }
     }
 
@@ -889,38 +968,43 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     }
 
     batchContents: any = [];
-    async submitForm(dataEndpointArray, type: string) {
-        console.log('Form is submitting');
+    async submitForm(batchUrl, type: string) {
+        // console.log('Form is submitting');
 
-        this.batchContents = [];
-        const batchGuid = this.spServices.generateUUID();
-        const changeSetId = this.spServices.generateUUID();
+        // this.batchContents = [];
+        // const batchGuid = this.spServices.generateUUID();
+        // const changeSetId = this.spServices.generateUUID();
 
-        // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        console.log(' dataEndpointArray ', dataEndpointArray);
-        dataEndpointArray.forEach(element => {
-            if (element)
-                this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        });
+        // // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
+        // console.log(' dataEndpointArray ', dataEndpointArray);
+        // dataEndpointArray.forEach(element => {
+        //     if (element)
+        //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
+        // });
 
-        console.log("this.batchContents ", JSON.stringify(this.batchContents));
+        // console.log("this.batchContents ", JSON.stringify(this.batchContents));
 
-        this.batchContents.push('--changeset_' + changeSetId + '--');
-        const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        batchBodyContent.push('--batch_' + batchGuid + '--');
-        const sBatchData = batchBodyContent.join('\r\n');
-        const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
-        const arrResults = res;
+        // this.batchContents.push('--changeset_' + changeSetId + '--');
+        // const batchBody = this.batchContents.join('\r\n');
+        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+        // batchBodyContent.push('--batch_' + batchGuid + '--');
+        // const sBatchData = batchBodyContent.join('\r\n');
+        // const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
+        const res = await this.spServices.executeBatch(batchUrl);
+        const arrResults = res.length ? res.map(a => a.retItems) : [];
         console.log('--oo ', arrResults);
         if (type === "confirmInvoice") {
-            this.messageService.add({ key: 'hourlySuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000 });
+            this.messageService.add({
+                key: 'hourlySuccessToast', severity: 'success',
+                summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000
+            });
             // this.cancelFormSub('confirmationModal');
             this.sendConfirmInvoiceMail();
         } else if (type === "editInvoice") {
-            this.messageService.add({ key: 'hourlySuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice Updated.', life: 2000 });
-            this.cancelFormSub('editInvoice');
-            this.reFetchData('edit');
+            // this.messageService.add({ key: 'hourlySuccessToast', severity: 'success',
+            //                          summary: 'Success message', detail: 'Invoice Updated.', life: 2000 });
+            // this.cancelFormSub('editInvoice');
+            // this.reFetchData('edit');
         }
 
         // });

@@ -60,7 +60,12 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         startDate: '',
         endDate: '',
     };
-
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
 
@@ -624,79 +629,96 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
+        const batchUrl = [];
         if (type === 'confirmInvoice') {
-            console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
-            let obj = {
+            // console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
+            const iliData = {
                 Status: 'Confirmed'
-            }
-            obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);
-            let data = [
-                {
-                    objData: obj,
-                    endpoint: endpoint,
-                    requestPost: false
-                }
-            ]
+            };
+            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            const iliObj = Object.assign({}, this.queryConfig);
+            iliObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
+            iliObj.listName = this.constantService.listNames.Invoices.name;
+            iliObj.type = 'PATCH';
+            iliObj.data = iliData;
+            batchUrl.push(iliObj);
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);
+            // let data = [
+            //     {
+            //         objData: obj,
+            //         endpoint: endpoint,
+            //         requestPost: false
+            //     }
+            // ]
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-            this.submitForm(data, type);
+            this.submitForm(batchUrl, type);
 
         } else if (type === 'editInvoice') {
             if (this.editDeliverable_form.invalid) {
-                return
+                return;
             }
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-            console.log('form is submitting ..... for selected row Item i.e ', this.editDeliverable_form.value);
-            let obj1 = {
+            // console.log('form is submitting ..... for selected row Item i.e ', this.editDeliverable_form.value);
+            const iliData = {
                 AddressType: this.editDeliverable_form.value.AddressType.value,
                 ScheduledDate: this.editDeliverable_form.value.ScheduledDate,
                 MainPOC: this.editDeliverable_form.value.POCName.ID
             }
-            obj1['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);;
-            let data = [
-                {
-                    objData: obj1,
-                    endpoint: endpoint,
-                    requestPost: false
-                }
-            ]
-            this.submitForm(data, type);
+            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            const iliObj = Object.assign({}, this.queryConfig);
+            iliObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
+            iliObj.listName = this.constantService.listNames.InvoiceLineItems.name;
+            iliObj.type = 'PATCH';
+            iliObj.data = iliData;
+            batchUrl.push(iliObj);
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);;
+            // let data = [
+            //     {
+            //         objData: obj1,
+            //         endpoint: endpoint,
+            //         requestPost: false
+            //     }
+            // ]
+            this.submitForm(batchUrl, type);
             this.cancelFormSub('editDeliverable');
             // this.submitForm();
         }
     }
 
-    batchContents: any = [];
-    async submitForm(dataEndpointArray, type: string) {
-        console.log('Form is submitting');
+    // batchContents: any = [];
+    async submitForm(batchUrl, type: string) {
+        // console.log('Form is submitting');
 
-        this.batchContents = [];
-        const batchGuid = this.spServices.generateUUID();
-        const changeSetId = this.spServices.generateUUID();
+        // this.batchContents = [];
+        // const batchGuid = this.spServices.generateUUID();
+        // const changeSetId = this.spServices.generateUUID();
 
-        // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        console.log(' dataEndpointArray ', dataEndpointArray);
-        dataEndpointArray.forEach(element => {
-            if (element)
-                this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        });
+        // // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
+        // console.log(' dataEndpointArray ', dataEndpointArray);
+        // dataEndpointArray.forEach(element => {
+        //     if (element)
+        //         this.batchContents = [...this.batchContents,
+        //  ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
+        // });
 
-        console.log("this.batchContents ", JSON.stringify(this.batchContents));
+        // console.log("this.batchContents ", JSON.stringify(this.batchContents));
 
-        this.batchContents.push('--changeset_' + changeSetId + '--');
-        const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        batchBodyContent.push('--batch_' + batchGuid + '--');
-        const sBatchData = batchBodyContent.join('\r\n');
-        const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
-        const arrResults = res;
-        console.log('--oo ', arrResults);
+        // this.batchContents.push('--changeset_' + changeSetId + '--');
+        // const batchBody = this.batchContents.join('\r\n');
+        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+        // batchBodyContent.push('--batch_' + batchGuid + '--');
+        // const sBatchData = batchBodyContent.join('\r\n');
+        // const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
+        // const arrResults = res;
+        // console.log('--oo ', arrResults);
+        await this.spServices.executeBatch(batchUrl);
         if (type === "confirmInvoice") {
-            this.messageService.add({ key: 'deliverableSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000 });
+            this.messageService.add({ key: 'deliverableSuccessToast', severity: 'success',
+                                     summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000 });
             this.sendCreateExpenseMail();
         } else if (type === "editInvoice") {
-            this.messageService.add({ key: 'deliverableSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice Updated.', life: 2000 })
+            this.messageService.add({ key: 'deliverableSuccessToast', severity: 'success',
+                                     summary: 'Success message', detail: 'Invoice Updated.', life: 2000 })
             this.reFetchData();
         }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
@@ -710,20 +732,23 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     mailContentRes: any;
     async getApproveExpenseMailContent(type) {
         // const mailContentEndpoint = this.fdConstantsService.fdComponent.mailContent;
-        let mailContentEndpoint = {
-            filter: this.fdConstantsService.fdComponent.mailContent.filter.replace("{{MailType}}", type),
-            select: this.fdConstantsService.fdComponent.mailContent.select,
-            top: this.fdConstantsService.fdComponent.mailContent.top,
-        }
+        const objMail = Object.assign({}, this.fdConstantsService.fdComponent.mailContent);
+        objMail.filter = objMail.filter.replace('{{MailType}}', type);
+        const res = await this.spServices.readItems(this.constantService.listNames.MailContent.name, objMail);
+        // let mailContentEndpoint = {
+        //     filter: this.fdConstantsService.fdComponent.mailContent.filter.replace("{{MailType}}", type),
+        //     select: this.fdConstantsService.fdComponent.mailContent.select,
+        //     top: this.fdConstantsService.fdComponent.mailContent.top,
+        // }
 
-        let obj = [{
-            url: this.spServices.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
-            type: 'GET',
-            listName: this.constantService.listNames.MailContent.name
-        }]
-        const res = await this.spServices.executeBatch(obj);
-        this.mailContentRes = res;
-        console.log('Approve Mail Content res ', this.mailContentRes);
+        // let obj = [{
+        //     url: this.spServices.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
+        //     type: 'GET',
+        //     listName: this.constantService.listNames.MailContent.name
+        // }]
+        // const res = await this.spServices.executeBatch(obj);
+        this.mailContentRes = res.length ? res : [];
+        // console.log('Approve Mail Content res ', this.mailContentRes);
     }
 
     selectedProjectInof: any;
@@ -757,8 +782,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     selectedPI: any = [];
     getPIByTitle(title) {
-        let found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == title.ProjectCode) {
+        const found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode === title.ProjectCode) {
                 if (x.CMLevel1.hasOwnProperty('results')) {
                     this.selectedPI = x.CMLevel1.results;
                 }
