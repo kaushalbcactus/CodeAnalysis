@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CAConstantService } from '../caservices/caconstant.service';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -10,6 +10,7 @@ import { CAGlobalService } from '../caservices/caglobal.service';
 import { Table } from 'primeng/table';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-unallocated-allocated-tasks',
@@ -36,22 +37,27 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     public globalService: GlobalService,
     public caGlobal: CAGlobalService,
     public dialogService: DialogService,
-    private commonService: CACommonService,
+    private caCommonService: CACommonService,
     private route: ActivatedRoute,
     private usercapacityComponent: UsercapacityComponent,
     private datePipe: DatePipe,
     private confirmationService: ConfirmationService,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+    private commonService: CommonService,
+    private cdr: ChangeDetectorRef,
+  ) { }
+
   public caArrays = {
-    clientLegalEntityArray: [],
-    projectCodeArray: [],
-    milestoneArray: [],
-    taskArray: [],
-    deliveryTypeArray: [],
-    allocatedArray: [],
-    startTimeArray: [],
-    endTimeArray: []
+    ClientLegalEntity: [],
+    ProjectCode: [],
+    Milestone: [],
+    Task: [],
+    DeliveryType: [],
+    Allocated: [],
+    StartTime: [],
+    EndTime: []
   };
+
   private scheduleList = this.globalConstant.listNames.Schedules.name;
   private resourceCategorizationList = this.globalConstant.listNames.ResourceCategorization.name;
   private projectInformationList = this.globalConstant.listNames.ProjectInformation.name;
@@ -70,14 +76,14 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   completeTaskArray = [];
 
   displayedColumns: any[] = [
-    { field: 'clientName', header: 'Client' },
-    { field: 'projectCode', header: 'Project' },
-    { field: 'milestone', header: 'Milestone' },
-    { field: 'taskName', header: 'Task' },
-    { field: 'deliveryType', header: 'Deliverable' },
-    { field: 'estimatedTime', header: 'Hrs' },
-    { field: 'startDateText', header: 'Start Time' },
-    { field: 'dueDateText', header: 'End Time' }];
+    { field: 'ClientLegalEntity', header: 'Client' },
+    { field: 'ProjectCode', header: 'Project' },
+    { field: 'Milestone', header: 'Milestone' },
+    { field: 'Task', header: 'Task' },
+    { field: 'DeliveryType', header: 'Deliverable' },
+    { field: 'Allocated', header: 'Hrs' },
+    { field: 'StartTime', header: 'Start Time' },
+    { field: 'EndTime', header: 'End Time' }];
 
   filterColumns: any[] = [
     { field: 'clientName' },
@@ -131,33 +137,24 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     const mainQuery = this.selectedTab === 'allocated' ?
       Object.assign({}, this.caConstant.scheduleAllocatedQueryOptions) : Object.assign({}, this.caConstant.scheduleQueryOptions);
 
-    const arrResults = await this.commonService.getItems(mainQuery);
+    const arrResults = await this.caCommonService.getItems(mainQuery);
     this.resourceList = arrResults[0];
     this.projects = arrResults[1];
     this.schedulesItems = arrResults[2];
     if (this.schedulesItems && this.schedulesItems.length) {
       for (const task of this.schedulesItems) {
-        this.commonService.getCaProperties(taskCounter, schedulesItemFetch, task, this.projects,
-          this.resourceList, this.completeTaskArray, acTempArrays);
+        this.caCommonService.getCaProperties(taskCounter, schedulesItemFetch, task, this.projects, this.resourceList, this.completeTaskArray, acTempArrays);
       }
 
-      this.commonService.getScheduleItems(schedulesItemFetch, this.completeTaskArray);
-      this.caArrays.clientLegalEntityArray = this.commonService.sortByAttribute(this.commonService.unique
-        (acTempArrays.clientLegalEntityTempArray, 'value'), 'value', 'label');
-      this.caArrays.projectCodeArray = this.commonService.sortByAttribute(this.commonService.unique
-        (acTempArrays.projectCodeTempArray, 'value'), 'value', 'label');
-      this.caArrays.milestoneArray = this.commonService.sortByAttribute(this.commonService.unique
-        (acTempArrays.milestoneTempArray, 'value'), 'value', 'label');
-      this.caArrays.taskArray = this.commonService.sortByAttribute(this.commonService.unique
-        (acTempArrays.taskTempArray, 'value'), 'value', 'label');
-      this.caArrays.deliveryTypeArray = this.commonService.sortByAttribute(this.commonService.unique
-        (acTempArrays.deliveryTypeTempArray, 'value'), 'value', 'label');
-      this.caArrays.allocatedArray = this.commonService.sortByAttribute(this.commonService.unique
-        (acTempArrays.allocatedTempArray, 'value'), 'value', 'label');
-      this.caArrays.startTimeArray = this.commonService.sortByDate(this.commonService.unique
-        (acTempArrays.startTimeTempArray, 'value'), 'value');
-      this.caArrays.endTimeArray = this.commonService.sortByDate(this.commonService.unique
-        (acTempArrays.endTimeTempArray, 'value'), 'value');
+      this.caCommonService.getScheduleItems(schedulesItemFetch, this.completeTaskArray);
+      this.caArrays.ClientLegalEntity = this.caCommonService.sortByAttribute(this.commonService.unique(acTempArrays.clientLegalEntityTempArray, 'value'), 'value', 'label');
+      this.caArrays.ProjectCode = this.caCommonService.sortByAttribute(this.commonService.unique(acTempArrays.projectCodeTempArray, 'value'), 'value', 'label');
+      this.caArrays.Milestone = this.caCommonService.sortByAttribute(this.commonService.unique(acTempArrays.milestoneTempArray, 'value'), 'value', 'label');
+      this.caArrays.Task = this.caCommonService.sortByAttribute(this.commonService.unique(acTempArrays.taskTempArray, 'value'), 'value', 'label');
+      this.caArrays.DeliveryType = this.caCommonService.sortByAttribute(this.commonService.unique(acTempArrays.deliveryTypeTempArray, 'value'), 'value', 'label');
+      this.caArrays.Allocated = this.caCommonService.sortByAttribute(this.commonService.unique(acTempArrays.allocatedTempArray, 'value'), 'value', 'label');
+      this.caArrays.StartTime = this.caCommonService.sortByDate(this.commonService.unique(acTempArrays.startTimeTempArray, 'value'), 'value');
+      this.caArrays.EndTime = this.caCommonService.sortByDate(this.commonService.unique(acTempArrays.endTimeTempArray, 'value'), 'value');
 
       this.caGlobal.totalRecords = this.completeTaskArray.length;
       this.caGlobal.dataSource = this.completeTaskArray.slice(0, 30);
@@ -170,8 +167,48 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.loaderenable = false;
   }
 
+  createColFieldValues(acTempArrays) {
+    this.caArrays.ClientLegalEntity = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.clientLegalEntityTempArray, 'value'), 'value', 'label');
+    this.caArrays.ProjectCode = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.projectCodeTempArray, 'value'), 'value', 'label');
+    this.caArrays.Milestone = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.milestoneTempArray, 'value'), 'value', 'label');
+    this.caArrays.Task = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.taskTempArray, 'value'), 'value', 'label');
+    this.caArrays.DeliveryType = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.deliveryTypeTempArray, 'value'), 'value', 'label');
+    this.caArrays.Allocated = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.allocatedTempArray, 'value'), 'value', 'label');
+    this.caArrays.StartTime = this.caCommonService.sortByDate(this.caCommonService.unique(acTempArrays.startTimeTempArray, 'value'), 'value');
+    this.caArrays.EndTime = this.caCommonService.sortByDate(this.caCommonService.unique(acTempArrays.endTimeTempArray, 'value'), 'value');
+    // this.caArrays.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
+    // this.caArrays.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
+    // this.caArrays.Milestone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
+    // this.caArrays.Task = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
+    // this.caArrays.DeliveryType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaType, value: a.ProformaType }; return b; }).filter(ele => ele.label)));
+    // this.caArrays.Allocated = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
+    // this.caArrays.StartTime = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
+    // this.caArrays.EndTime = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
+
+    // this.proformaColArray.ProformaNumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
+    // this.proformaColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
+    // const proformaDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ProformaDate, "MMM dd, yyyy"), value: a.ProformaDate }; return b; }).filter(ele => ele.label)));
+    // this.proformaColArray.ProformaDate = proformaDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
+    // this.proformaColArray.ProformaType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaType, value: a.ProformaType }; return b; }).filter(ele => ele.label)));
+    // this.proformaColArray.Status = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
+    // const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
+    // this.proformaColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label')
+    // this.proformaColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+    // this.proformaColArray.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
+  }
+
+  uniqueArrayObj(array: any) {
+    let sts: any = '';
+    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
+      return {
+        label: label1,
+        value: array.find(s => s.label === label1).value
+      }
+    })
+  }
+
   lazyLoadTask(event) {
-    this.commonService.lazyLoadTask(event, this.completeTaskArray, this.filterColumns);
+    this.caCommonService.lazyLoadTask(event, this.completeTaskArray, this.filterColumns);
   }
 
   // ****************************************************************************************************
@@ -254,7 +291,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       key: 'tc', severity: 'warn', sticky: true,
       summary: 'Info Message', detail: 'updating...'
     });
-    this.commonService.saveTaskScopeComments(task, comments);
+    this.caCommonService.saveTaskScopeComments(task, comments);
 
     setTimeout(() => {
       this.getProperties();
@@ -296,7 +333,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           resource.timeAvailable = dispTime;
         }
         task.selectedResources = [];
-        const res = this.commonService.sortResources(setResources, task);
+        const res = this.caCommonService.sortResources(setResources, task);
         const resExtn = $.extend(true, [], res);
         for (const retRes of resExtn) {
           task.selectedResources.push(retRes);
@@ -400,8 +437,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
                 this.completeEqualTask(task, unt, false);
               }, 500);
             } else {
-              const newStartTime = this.commonService.calcTimeForDifferentTimeZone(task.startDate, task.timezone, resourceTimeZone);
-              const newEndTime = this.commonService.calcTimeForDifferentTimeZone(task.dueDate, task.timezone, resourceTimeZone);
+              const newStartTime = this.caCommonService.calcTimeForDifferentTimeZone(task.startDate, task.timezone, resourceTimeZone);
+              const newEndTime = this.caCommonService.calcTimeForDifferentTimeZone(task.dueDate, task.timezone, resourceTimeZone);
               // tslint:disable-next-line: quotemark
               if (window.confirm("Task '" + task.title + "' will be allocated to " + this.resourceList
               // tslint:disable-next-line: max-line-length
@@ -454,7 +491,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       // this.spServices.update(this.scheduleList, task.id, options, 'SP.Data.SchedulesListItem');
     }
 
-    await this.commonService.ResourceAllocation(task, this.projectInformationList);
+    await this.caCommonService.ResourceAllocation(task, this.projectInformationList);
     const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource);
     const mailSubject = task.projectCode + '(' + task.projectName + ')' + ': Task created';
     const objEmailBody = [];
@@ -502,7 +539,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       'value': task.taskScope ? task.taskScope : ''
     });
     //// Send allocation email
-    this.commonService.triggerMail(this.resourceList[indexRes].UserName.EMail, this.globalService.sharePointPageObject.email,
+    this.caCommonService.triggerMail(this.resourceList[indexRes].UserName.EMail, this.globalService.sharePointPageObject.email,
       '', 'TaskCreation', objEmailBody, mailSubject);
 
     this.messageService.add({
@@ -523,7 +560,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     }
     if (unt) {
       this.caGlobal.loading = true;
-      this.commonService.filterAction(unt.sortField, unt.sortOrder, unt.filters.hasOwnProperty('global') ?
+      this.caCommonService.filterAction(unt.sortField, unt.sortOrder, unt.filters.hasOwnProperty('global') ?
         unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
         this.completeTaskArray, this.filterColumns);
     }
@@ -590,7 +627,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (prevTasks) {
       for (const tempTask of prevTasks) {
         let sUpdateVal = tempTask.NextTasks ? tempTask.NextTasks.replace(task.title, task.NextTasks) : '';
-        sUpdateVal = this.commonService.getUniqueValues(sUpdateVal, ";#");
+        sUpdateVal = this.caCommonService.getUniqueValues(sUpdateVal, ";#");
         const options = { 'NextTasks': sUpdateVal }
         await this.spServices.updateItem(this.scheduleList, tempTask.Id, options, this.globalConstant.listNames.Schedules.type);
       }
@@ -598,7 +635,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (nextTasks) {
       for (const tempTask of nextTasks) {
         let sUpdateVal = tempTask.PrevTasks ? tempTask.PrevTasks.replace(task.title, task.PrevTasks) : '';
-        sUpdateVal = this.commonService.getUniqueValues(sUpdateVal, ";#");
+        sUpdateVal = this.caCommonService.getUniqueValues(sUpdateVal, ";#");
         const options = { 'PrevTasks': sUpdateVal }
         await this.spServices.updateItem(this.scheduleList, tempTask.Id, options, this.globalConstant.listNames.Schedules.type);
       }
@@ -617,16 +654,16 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       milestone: task.milestone
     }
     tempTaskArray.push(queryObj);
-    const arrMilestoneTasks = await this.commonService.getMilestoneSchedules(this.scheduleList, tempTaskArray);
+    const arrMilestoneTasks = await this.caCommonService.getMilestoneSchedules(this.scheduleList, tempTaskArray);
     for (const compTask of this.completeTaskArray) {
       const index = arrMilestoneTasks[0].MilestoneTasks.findIndex(item => item.ID === compTask.id);
       if (index > -1) {
         compTask.PrevTasks = arrMilestoneTasks[0].MilestoneTasks[index].PrevTasks ? arrMilestoneTasks[0].MilestoneTasks[index].PrevTasks : '';
         compTask.NextTasks = arrMilestoneTasks[0].MilestoneTasks[index].NextTasks ? arrMilestoneTasks[0].MilestoneTasks[index].NextTasks : '';
       }
-      this.commonService.getMiscDates(compTask, arrMilestoneTasks);
+      this.caCommonService.getMiscDates(compTask, arrMilestoneTasks);
     }
-    this.commonService.filterAction(unt.sortField, unt.sortOrder, unt.filters.hasOwnProperty("global") ? unt.filters.global.value : null, unt.filters, unt.first, unt.rows
+    this.caCommonService.filterAction(unt.sortField, unt.sortOrder, unt.filters.hasOwnProperty("global") ? unt.filters.global.value : null, unt.filters, unt.first, unt.rows
       , this.completeTaskArray, this.filterColumns);
   }
   // tslint:enable
@@ -681,6 +718,29 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   //       this.multiselectClick.style.display = 'none';
   //       this.multiselectClick = undefined;
   //     }
+  //   }
+  // }
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  // ngAfterViewChecked() {
+  //   if (this.caGlobal.dataSource.length && this.isOptionFilter) {
+  //     let obj = {
+  //       tableData: this.taskTable,
+  //       colFields: this.caArrays
+  //     }
+  //     if (obj.tableData.filteredValue) {
+  //       this.commonService.updateOptionValues(obj);
+  //     } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+  //       this.createColFieldValues(obj.tableData.value);
+  //       this.isOptionFilter = false;
+  //     }
+  //     this.cdr.detectChanges();
   //   }
   // }
 }

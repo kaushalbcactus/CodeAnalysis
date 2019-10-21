@@ -269,7 +269,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', mytasks);
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
 
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     const res = this.response[0] !== '' ? this.response[0] : [];
 
     if (res.length > 0) {
@@ -634,7 +634,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
       TaskComments: comment
     };
 
-    await this.spOperations.updateItem(this.constants.listNames.Schedules.name, task.ID, data, 'SP.Data.SchedulesListItem');
+    await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, data, 'SP.Data.SchedulesListItem');
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
   }
 
