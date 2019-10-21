@@ -74,6 +74,12 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     isExpenseCreate: boolean = false;
 
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+    };
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
@@ -317,7 +323,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         } else {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoCS);
             speInfoObj.filter = speInfoObj.filter.replace('{{Status}}', 'Created')
-                                                 .replace('{{UserID}}', this.globalService.sharePointPageObject.userId.toString());
+                .replace('{{UserID}}', this.globalService.sharePointPageObject.userId.toString());
             speInfoObj.orderby = speInfoObj.orderby.replace('{{Status}}', 'Created');
         }
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
@@ -652,9 +658,10 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
         if (res.ServerRelativeUrl) {
             this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
-            console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
+            // console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
             if (this.fileUploadedUrl) {
-                let speInfoObj = {
+                const batchUrl = [];
+                const speInfoObj = {
                     PayingEntity: this.approveExpense_form.value.PayingEntity.Title,
                     Number: this.approveExpense_form.value.Number,
                     DateSpend: this.approveExpense_form.value.DateSpend,
@@ -664,47 +671,65 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                     Status: 'Approved'
                 }
                 speInfoObj["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
-                let data = [];
+                // let data = [];
                 for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
                     const element = this.selectedAllRowsItem[inv];
-                    const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);
-                    data.push({
-                        objData: speInfoObj,
-                        endpoint: spEndpoint,
-                        requestPost: false
-                    })
+                    // const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);
+                    // data.push({
+                    //     objData: speInfoObj,
+                    //     endpoint: spEndpoint,
+                    //     requestPost: false
+                    // })
+
+                    const expenseObj = Object.assign({}, this.queryConfig);
+                    expenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +element.Id);
+                    expenseObj.listName = this.constantService.listNames.SpendingInfo.name;
+                    expenseObj.type = 'PATCH';
+                    expenseObj.data = speInfoObj;
+                    batchUrl.push(expenseObj);
                 }
-                this.submitForm(data, type);
+                this.submitForm(batchUrl, type);
             }
         } else if (res.hasError) {
             this.isPSInnerLoaderHidden = true;
             this.submitBtn.isClicked = false;
-            this.messageService.add({ key: 'pendingExpenseToast', severity: 'error', summary: 'Error message', detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000 })
+            this.messageService.add({
+                key: 'pendingExpenseToast', severity: 'error', summary: 'Error message',
+                detail: 'File not uploaded,Folder / ' + res.message.value + '', life: 3000
+            });
         }
     }
 
     onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
+        const batchUrl = [];
         if (type === 'Cancel Expense') {
             if (this.cancelReject_form.invalid) {
                 return;
             }
             this.isPSInnerLoaderHidden = false;
-            console.log('form is submitting ..... this.cancelReject_form ', this.cancelReject_form.value);
-            let speInfoObj = {
+            // console.log('form is submitting ..... this.cancelReject_form ', this.cancelReject_form.value);
+            const speInfoObj = {
                 ApproverComments: this.cancelReject_form.value.ApproverComments,
                 Status: 'Cancelled'
             }
-            const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", this.selectedRowItem.Id);;
             speInfoObj["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
-            let data = [
-                {
-                    objData: speInfoObj,
-                    endpoint: spEndpoint,
-                    requestPost: false
-                }
-            ]
-            this.submitForm(data, type);
+            // const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}",
+            //                       this.selectedRowItem.Id);
+            // let data = [
+            //     {
+            //         objData: speInfoObj,
+            //         endpoint: spEndpoint,
+            //         requestPost: false
+            //     }
+            // ]
+            const cancelExpenseObj = Object.assign({}, this.queryConfig);
+            cancelExpenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +this.selectedRowItem.Id);
+            cancelExpenseObj.listName = this.constantService.listNames.SpendingInfo.name;
+            cancelExpenseObj.type = 'PATCH';
+            cancelExpenseObj.data = speInfoObj;
+            batchUrl.push(cancelExpenseObj);
+            this.submitForm(batchUrl, type);
 
         } else if (type === 'Reject Expense') {
             if (this.cancelReject_form.invalid) {
@@ -712,49 +737,61 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             }
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
-            console.log('form is submitting ..... this.cancelReject_form ', this.cancelReject_form.value);
+            // console.log('form is submitting ..... this.cancelReject_form ', this.cancelReject_form.value);
             let speInfoObj = {
                 ApproverComments: this.cancelReject_form.value.ApproverComments,
                 Status: 'Rejected'
             }
             speInfoObj["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
-            let data = [];
+            // let data = [];
             for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
                 const element = this.selectedAllRowsItem[inv];
-                const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);
-                // const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", this.selectedRowItem.Id);
-                data.push({
-                    objData: speInfoObj,
-                    endpoint: spEndpoint,
-                    requestPost: false
-                })
+                // tslint:disable-next-line: max-line-length
+                // const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);
+                // data.push({
+                //     objData: speInfoObj,
+                //     endpoint: spEndpoint,
+                //     requestPost: false
+                // })
+                const rejectExpenseObj = Object.assign({}, this.queryConfig);
+                rejectExpenseObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +element.Id);
+                rejectExpenseObj.listName = this.constantService.listNames.SpendingInfo.name;
+                rejectExpenseObj.type = 'PATCH';
+                rejectExpenseObj.data = speInfoObj;
+                batchUrl.push(rejectExpenseObj);
             }
-            this.submitForm(data, type);
+            this.submitForm(batchUrl, type);
         } else if (type === 'Approve Expense') {
             if (this.approveExpense_form.invalid) {
                 return;
             }
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
-            console.log('form is submitting ..... this.approveExpense_form ', this.approveExpense_form.value);
-            if (this.selectedRowItem.RequestType === "Invoice Payment") {
-                let speInfoObj = {
+            // console.log('form is submitting ..... this.approveExpense_form ', this.approveExpense_form.value);
+            if (this.selectedRowItem.RequestType === 'Invoice Payment') {
+                const speInfoObj = {
                     PayingEntity: this.approveExpense_form.value.PayingEntity.Title,
                     ApproverComments: this.approveExpense_form.value.ApproverComments,
                     Status: 'Approved Payment Pending'
                 }
                 speInfoObj["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
-                let data = [];
+                // let data = [];
                 for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
                     const element = this.selectedAllRowsItem[inv];
-                    const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);;
-                    data.push({
-                        objData: speInfoObj,
-                        endpoint: spEndpoint,
-                        requestPost: false
-                    })
+                    // const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);;
+                    // data.push({
+                    //     objData: speInfoObj,
+                    //     endpoint: spEndpoint,
+                    //     requestPost: false
+                    // })
+                    const invPayObj = Object.assign({}, this.queryConfig);
+                    invPayObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, +element.Id);
+                    invPayObj.listName = this.constantService.listNames.SpendingInfo.name;
+                    invPayObj.type = 'PATCH';
+                    invPayObj.data = speInfoObj;
+                    batchUrl.push(invPayObj);
                 }
-                this.submitForm(data, type);
+                this.submitForm(batchUrl, type);
                 return;
             }
             this.uploadFileData(type);
@@ -762,33 +799,35 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     }
 
     batchContents: any = [];
-    async submitForm(dataEndpointArray, type: string) {
-        console.log('Form is submitting');
-        this.batchContents = [];
-        const batchGuid = this.spServices.generateUUID();
-        const changeSetId = this.spServices.generateUUID();
-        dataEndpointArray.forEach(element => {
-            if (element)
-                this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        });
+    async submitForm(batchUrl, type: string) {
+        // console.log('Form is submitting');
+        // this.batchContents = [];
+        // const batchGuid = this.spServices.generateUUID();
+        // const changeSetId = this.spServices.generateUUID();
+        // dataEndpointArray.forEach(element => {
+        //     if (element)
+        //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId,
+        //               element.endpoint, JSON.stringify(element.objData), element.requestPost)];
+        // });
 
-        this.batchContents.push('--changeset_' + changeSetId + '--');
-        const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        batchBodyContent.push('--batch_' + batchGuid + '--');
-        const sBatchData = batchBodyContent.join('\r\n');
-        const res = await this.spServices.getFDData(batchGuid, sBatchData);
-        const arrResults = res;
-        console.log('--oo ', arrResults);
-        if (type === "Approve Expense") {
-            this.messageService.add({ key: 'pendingExpenseToast', severity: 'success', summary: 'Success message', detail: 'Expense Approved.', life: 2000 });
+        // this.batchContents.push('--changeset_' + changeSetId + '--');
+        // const batchBody = this.batchContents.join('\r\n');
+        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+        // batchBodyContent.push('--batch_' + batchGuid + '--');
+        // const sBatchData = batchBodyContent.join('\r\n');
+        // const res = await this.spServices.getFDData(batchGuid, sBatchData);
+        // const arrResults = res;
+        // console.log('--oo ', arrResults);
+        await this.spServices.executeBatch(batchUrl);
+        if (type === 'Approve Expense') {
+            this.messageService.add({ key: 'pendingExpenseToast', severity: 'success', summary: 'Success message',
+                                     detail: 'Expense Approved.', life: 2000 });
             this.displayModal = false;
-            // this.sendCreateExpenseMail(this.selectedRowItem, type);
             this.sendMailToSelectedLineItems(type);
-        } else if (type === "Cancel Expense" || type === "Reject Expense") {
-            this.messageService.add({ key: 'pendingExpenseToast', severity: 'success', summary: 'Success message', detail: 'Submitted.', life: 2000 })
+        } else if (type === 'Cancel Expense' || type === 'Reject Expense') {
+            this.messageService.add({ key: 'pendingExpenseToast', severity: 'success', summary: 'Success message',
+                                     detail: 'Submitted.', life: 2000 })
             this.displayModal = false;
-            // this.sendCreateExpenseMail(this.selectedRowItem, type);
             this.sendMailToSelectedLineItems(type);
         }
         this.isPSInnerLoaderHidden = true;

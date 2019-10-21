@@ -61,7 +61,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         url: '',
         type: '',
         listName: ''
-      };
+    };
 
     @ViewChild("target", { static: true }) MyProp: ElementRef;
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
@@ -521,7 +521,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     }
 
 
-   
+
     async getPFByTitle(ProjectCode: any, index: number) {
         // const batchContents = new Array();
         // const batchGuid = this.spServices.generateUUID();
@@ -551,8 +551,10 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         if (arrResults.length) {
             console.log(arrResults[0]);
             if (!arrResults[0].length) {
-                this.messageService.add({ key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
-                                          detail: 'Currency not found for selected project / client.', life: 4000 });
+                this.messageService.add({
+                    key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'Currency not found for selected project / client.', life: 4000
+                });
                 this.totalLineItems[index] = {};
                 this.selectedPCArrays[index].ProjectCode = '';
                 this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
@@ -719,37 +721,48 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
             if (!this.addSts) {
                 // this.totalLineItems[index].AmountPerProject = '';
-                this.messageService.add({ key: 'expenseInfoToast', severity: 'info', summary: 'Info message', detail: 'Your entered amount is less than actual Amount.', life: 4000 });
+                this.messageService.add({
+                    key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'Your entered amount is less than actual Amount.', life: 4000
+                });
                 return;
             }
-            console.log('form is submitting ..... this.addExpenditure_form ', this.addExpenditure_form.value);
+            // console.log('form is submitting ..... this.addExpenditure_form ', this.addExpenditure_form.value);
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
             this.uploadFileData();
 
         } else if (type === 'createFreelancer') {
+            const batchUrl = [];
             this.formSubmit.isSubmit = true;
             if (this.createFreelancer_form.invalid || this.cvEmailIdFound) {
                 return;
             }
             this.submitBtn.isClicked = true;
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-            console.log('form is submitting ..... this.addExpenditure_form ', this.createFreelancer_form.value);
+            // console.log('form is submitting ..... this.addExpenditure_form ', this.createFreelancer_form.value);
             this.createFreelancer_form.get('BilledTo').setValue(this.createFreelancer_form.value.BilledTo.Title);
             this.createFreelancer_form.get('RecordType').setValue(this.createFreelancer_form.value.RecordType.value);
-            this.createFreelancer_form.value["__metadata"] = { type: 'SP.Data.VendorFreelancerListItem' };
+            this.createFreelancer_form.value['__metadata'] = { type: 'SP.Data.VendorFreelancerListItem' };
             const endpoint = this.fdConstantsService.fdComponent.addUpdateFreelancer.create;
-            let formValue: any = this.createFreelancer_form.value;
+            const formValue: any = this.createFreelancer_form.value;
             if (!formValue.ContractEndDate) {
                 formValue.ContractEndDate = null;
             }
-            let data = [
-                {
-                    objData: formValue,
-                    endpoint: endpoint,
-                    requestPost: true
-                }
-            ]
-            this.submitForm(data, type);
+
+            const getPrjContactItemData = Object.assign({}, this.queryConfig);
+            getPrjContactItemData.url = this.spServices.getReadURL(this.constantService.listNames.VendorFreelancer.name);
+            getPrjContactItemData.listName = this.constantService.listNames.VendorFreelancer.name;
+            getPrjContactItemData.type = 'POST';
+            getPrjContactItemData.data = formValue;
+            batchUrl.push(getPrjContactItemData);
+            // let data = [
+            //     {
+            //         objData: formValue,
+            //         endpoint: endpoint,
+            //         requestPost: true
+            //     }
+            // ]
+            this.submitForm(batchUrl, type);
         }
     }
     pcmLevels: any = [];
@@ -757,6 +770,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     submitExpediture() {
         if (this.fileUploadedUrl && this.caFileUploadedUrl) {
             this.finalAddEArray = [];
+            const batchUrl = [];
             for (let pi = 0; pi < this.totalLineItems.length; pi++) {
                 const element = this.totalLineItems[pi];
                 this.pcmLevels = [];
@@ -768,13 +782,13 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                     this.pcmLevels.push(element.ProjectCode.CMLevel2);
                 }
                 let finalAmt = element.AmountPerProject;
-                if (this.addExpenditure_form.value.Currency != element.projectItem.Currency) {
-                    let cc = this.getConversionRate(this.addExpenditure_form.value.Currency);
-                    let pcurrency = this.getConversionRate(element.projectItem.Currency);
-                    console.log('CC ', cc);
-                    console.log('pcurrency ', pcurrency);
-                    let amt = this.convertAmtToCC(parseFloat(cc), parseFloat(pcurrency), parseFloat(element.AmountPerProject));
-                    console.log('amt ----- ', amt);
+                if (this.addExpenditure_form.value.Currency !== element.projectItem.Currency) {
+                    const cc = this.getConversionRate(this.addExpenditure_form.value.Currency);
+                    const pcurrency = this.getConversionRate(element.projectItem.Currency);
+                    // console.log('CC ', cc);
+                    // console.log('pcurrency ', pcurrency);
+                    const amt = this.convertAmtToCC(parseFloat(cc), parseFloat(pcurrency), parseFloat(element.AmountPerProject));
+                    // console.log('amt ----- ', amt);
                     finalAmt = parseFloat(amt.toFixed(2));
                 }
                 this.finalAddEArray.push({
@@ -796,21 +810,27 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                     // PayingEntity: this.addExpenditure_form.value.PayingEntity.Title,
                     RequestType: this.addExpenditure_form.value.PaymentRequest,
                     VendorFreelancer: this.addExpenditure_form.value.FreelancerVenderName.Id,
-                })
+                });
             }
 
-            let data = [];
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.create;
+            // let data = [];
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.create;
             for (let j = 0; j < this.finalAddEArray.length; j++) {
                 const element = this.finalAddEArray[j];
-                element["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
-                data.push({
-                    objData: element,
-                    endpoint: endpoint,
-                    requestPost: true,
-                })
+                element['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
+                // data.push({
+                //     objData: element,
+                //     endpoint: endpoint,
+                //     requestPost: true,
+                // })
+                const addExpenseObj = Object.assign({}, this.queryConfig);
+                addExpenseObj.url = this.spServices.getReadURL(this.constantService.listNames.SpendingInfo.name);
+                addExpenseObj.listName = this.constantService.listNames.SpendingInfo.name;
+                addExpenseObj.type = 'GET';
+                addExpenseObj.data = element;
+                batchUrl.push(addExpenseObj);
             }
-            this.submitForm(data, 'addExpenditure');
+            this.submitForm(batchUrl, 'addExpenditure');
         }
         console.log('finalAddEArray ', this.finalAddEArray);
     }
@@ -904,33 +924,41 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     }
 
     batchContents: any = [];
-    async submitForm(dataEndpointArray, type: string) {
-        this.batchContents = [];
-        const batchGuid = this.spServices.generateUUID();
-        const changeSetId = this.spServices.generateUUID();
-        // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        dataEndpointArray.forEach(element => {
-            if (element)
-                this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        });
-        this.batchContents.push('--changeset_' + changeSetId + '--');
-        const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        batchBodyContent.push('--batch_' + batchGuid + '--');
-        const sBatchData = batchBodyContent.join('\r\n');
-        const res = await this.spServices.getFDData(batchGuid, sBatchData);
-        // const res = await this.spServices.executeBatch(dataEndpointArray);
-        console.log('res ', res);
-        if (type === "addExpenditure") {
-            this.messageService.add({ key: 'expenseSuccessToast', severity: 'success', summary: 'Success message', detail: 'Expense created.', life: 2000 });
+    async submitForm(batchUrl, type: string) {
+        // this.batchContents = [];
+        // const batchGuid = this.spServices.generateUUID();
+        // const changeSetId = this.spServices.generateUUID();
+        // // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
+        // dataEndpointArray.forEach(element => {
+        //     if (element)
+        //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
+        // });
+        // this.batchContents.push('--changeset_' + changeSetId + '--');
+        // const batchBody = this.batchContents.join('\r\n');
+        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+        // batchBodyContent.push('--batch_' + batchGuid + '--');
+        // const sBatchData = batchBodyContent.join('\r\n');
+        // const res = await this.spServices.getFDData(batchGuid, sBatchData);
+        // // const res = await this.spServices.executeBatch(dataEndpointArray);
+        // console.log('res ', res);
+        let res = await this.spServices.executeBatch(batchUrl);
+        res = res.length ? res : [];
+        if (type === 'addExpenditure') {
+            this.messageService.add({
+                key: 'expenseSuccessToast', severity: 'success', summary: 'Success message',
+                detail: 'Expense created.', life: 2000
+            });
             this.showHideREModal = false;
             for (let k = 0; k < res.length; k++) {
                 const element = res[k];
                 this.sendCreateExpenseMail(element);
             }
 
-        } else if (type === "createFreelancer") {
-            this.messageService.add({ key: 'expenseSuccessToast', severity: 'success', summary: 'Success message', detail: this.createFreelancer_form.value.RecordType + ' created.', life: 3000 })
+        } else if (type === 'createFreelancer') {
+            this.messageService.add({
+                key: 'expenseSuccessToast', severity: 'success', summary: 'Success message',
+                detail: this.createFreelancer_form.value.RecordType + ' created.', life: 3000
+            });
             this.cancelFormSub(type);
             this.getVendorFreelanceData();
         }
