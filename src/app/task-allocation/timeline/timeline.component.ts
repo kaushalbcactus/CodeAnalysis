@@ -1103,6 +1103,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           milestone.AssignedTo = SelectedTask.AssignedTo;
           milestone.allowStart = SelectedTask.allowStart;
           milestone.budgetHours = SelectedTask.budgetHours;
+          milestone.DisableCascade = SelectedTask.DisableCascade;
           milestone.tatVal = this.commonService.calcBusinessDays(new Date(milestone.pStart), new Date(milestone.pEnd));
         }
       });

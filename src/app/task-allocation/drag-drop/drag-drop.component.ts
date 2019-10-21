@@ -44,7 +44,7 @@ export class DragDropComponent implements OnInit {
   subMilestoneMaxHeight: number = 350;
   taskWidth: number = 1200;
   taskHeight: number = 150;
-  taskMaxHeight: number = 170;
+  taskMaxHeight: number = 100;
   width: number = 700;
   height: number = 80;
   minWidth: number = 1200;
