@@ -295,7 +295,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
 
         // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
         const arrResults = res.length ? res : [];
-        this.formatData(arrResults[0]);
+        this.formatData(arrResults);
         this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         // });
@@ -996,7 +996,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 return;
             }
             console.log('form is submitting ..... for selected row Item i.e ', this.scheduleOopInvoice_form.getRawValue());
-            let obj = {
+            const obj = {
                 Title: this.scheduleOopInvoice_form.getRawValue().ProjectCode,
                 PO: this.scheduleOopInvoice_form.getRawValue().PONumber.Id,
                 ScheduleType: this.scheduleOopInvoice_form.getRawValue().ScheduledType,
@@ -1060,9 +1060,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                     listName: this.constantService.listNames.ProjectBudgetBreakup.name
                 });
             }
-            console.log('pfbb ', pfbb);
+            // console.log('pfbb ', pfbb);
 
-            console.log('data ', data);
+            // console.log('data ', data);
 
             this.isPSInnerLoaderHidden = false;
             this.submitForm(data, type);
@@ -1072,12 +1072,12 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 return;
             }
             this.isPSInnerLoaderHidden = false;
-            console.log('form is submitting ..... for selected row Item i.e ', this.markAsPayment_form.value);
+            // console.log('form is submitting ..... for selected row Item i.e ', this.markAsPayment_form.value);
             this.uploadFileData(type);
         }
     }
 
-    batchContents: any = [];
+    // batchContents: any = [];
     async submitForm(dataEndpointArray, type: string) {
         console.log('Form is submitting');
 
@@ -1099,7 +1099,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         // const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
         // batchBodyContent.push('--batch_' + batchGuid + '--');
         // const sBatchData = batchBodyContent.join('\r\n');
-        var res = await this.spServices.executeBatch(dataEndpointArray);
+        const res = await this.spServices.executeBatch(dataEndpointArray);
         // await this.spServices.getData(batchGuid, sBatchData).subscribe(res => {
 
 

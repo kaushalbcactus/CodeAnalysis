@@ -1459,6 +1459,9 @@ export class PubsupportComponent implements OnInit {
         // tslint:disable-next-line: max-line-length
         const projEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.ProjectInformation.name, this.selectedProject.Id);
         const projObj: any = {
+            __metadata: {
+                type: this.constantService.listNames.ProjectInformation.type
+            },
             PubSupportStatus: 'Selected'
         };
         projObj.__metadata = { type: this.constantService.listNames.ProjectInformation.type };

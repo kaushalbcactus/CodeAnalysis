@@ -263,21 +263,21 @@ export class OopComponent implements OnInit, OnDestroy {
         // let arrResults: any = [];
         // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
         const arrResults = res.length ? res : [];
-        if (arrResults.length) {
-            for (let j = 0; j < arrResults.length; j++) {
-                const element = arrResults[j];
-                this.isPSInnerLoaderHidden = true;
-                this.formatData(element);
-            }
-        }
+        // if (arrResults.length) {
+        // for (let j = 0; j < arrResults.length; j++) {
+        //     const element = arrResults[j];
+        this.isPSInnerLoaderHidden = true;
+        this.formatData(arrResults);
+        // }
+        // }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
     showMenu(element) {
         const project = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == element.Title) {
+            if (x.ProjectCode === element.Title) {
                 return x;
             }
-        })
+        });
 
         if (project) {
             return true;
@@ -760,7 +760,7 @@ export class OopComponent implements OnInit, OnDestroy {
         // var mailTemplate =  data.Status === "Approved" ? "ApproveExpense" :  data.Status === "Cancelled" ? "CancelExpense" : "RejectExpense";
         var mailSubject = this.selectedRowItem.ProjectCode + "/" + this.selectedRowItem.ClientName + ": Confirmed line item for billing";
 
-        let mailContent = this.mailContentRes[0].retItems[0].Content;
+        let mailContent = this.mailContentRes.Content;
         mailContent = this.replaceContent(mailContent, "@@Val1@@", "Hello Invoice Team");
         mailContent = this.replaceContent(mailContent, "@@Val2@@", this.selectedRowItem.ProjectCode);
         mailContent = this.replaceContent(mailContent, "@@Val3@@", this.selectedRowItem.ClientName);

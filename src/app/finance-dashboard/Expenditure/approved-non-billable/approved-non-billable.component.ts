@@ -243,7 +243,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         }
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
         const arrResults = res.length ? res : [];
-        this.formatData(arrResults[0]);
+        this.formatData(arrResults);
         this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         this.isPSInnerLoaderHidden = true;

@@ -270,10 +270,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
 
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    const res = this.response[0] !== '' ? this.response[0] : [];
+    const res = this.response.length ? this.response : [];
 
     if (res.length > 0) {
-      let data = [];
+      const data = [];
       res.forEach(task => {
 
         const TaskProject = this.sharedObject.DashboardData.ProjectCodes ? this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === task.ProjectCode) : null;
@@ -745,12 +745,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   async checkCompleteTask(task) {
 
-    const allowedStatus= ['Completed', 'AllowCompletion', 'Auto Closed'];
-    const TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
-    TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, task.ID);
-    
-    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
+    const allowedStatus = ['Completed', 'AllowCompletion', 'Auto Closed'];
+    // const TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
+    // TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, task.ID);
 
+    // this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
+    this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
 
     // this.batchContents = new Array();
     // const batchGuid = this.spServices.generateUUID();
@@ -765,10 +765,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
 
-    task.TaskComments = this.response.length ? this.response[0].TaskComments: '';
+    task.TaskComments = this.response.length ? this.response[0].TaskComments : '';
 
     // if (stval === 'Completed' || stval === 'AllowCompletion' || stval === 'Auto Closed') {
-      if(allowedStatus.includes(stval)) {
+    if (allowedStatus.includes(stval)) {
       if (!task.FinalDocSubmit) {
         this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'No Final Document Found' });
         return false;

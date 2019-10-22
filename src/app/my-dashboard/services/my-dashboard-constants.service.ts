@@ -26,12 +26,12 @@ export class MyDashboardConstantsService {
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
     private spServices: SPOperationService,
-    public messageService: MessageService, 
+    public messageService: MessageService,
     public common: CommonService) { }
 
   mydashboardComponent = {
 
-    common : {
+    common: {
       getAllResource: {
         select: 'ID,UserName/ID,UserName/EMail,UserName/Title,UserName/Name,TimeZone/Title,Designation, Manager/ID, Manager/Title, Tasks/ID, Tasks/Title',
         expand: 'UserName,TimeZone,Manager,Tasks',
@@ -209,7 +209,7 @@ export class MyDashboardConstantsService {
       expand: "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title",
       filter: "ID eq {{projectId}}",
     },
-    
+
   }
 
   // var endpoint = _spPageContextInfo.webAbsoluteUrl
@@ -257,7 +257,7 @@ export class MyDashboardConstantsService {
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
 
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    this.tasks = this.response.length > 0 ? this.response[0] : [];
+    this.tasks = this.response.length > 0 ? this.response : [];
 
     this.tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : "-");
     this.tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : "-");
@@ -279,11 +279,12 @@ export class MyDashboardConstantsService {
 
 
   async getPrevTaskStatus(task) {
-    var status = '';
+    let status = '';
     const currentTask = Object.assign({}, this.mydashboardComponent.previousTaskStatus);
-    currentTask.filter = currentTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
+    currentTask.filter = currentTask.filter.replace(/{{taskId}}/gi, task.ID)
+                                           .replace(/{{userID}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, currentTask);
-      for(const element of this.response) {
+    for (const element of this.response) {
       if (element.AllowCompletion === 'No') {
         let previousTaskFilter = '';
         if (element.PrevTasks) {
@@ -295,7 +296,7 @@ export class MyDashboardConstantsService {
           const previousTask = Object.assign({}, this.mydashboardComponent.taskStatus);
           previousTask.filter = previousTaskFilter;
           const prevTaskResponse = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousTask);
-          for(const obj of prevTaskResponse) {
+          for (const obj of prevTaskResponse) {
             status = obj.Status;
           }
         } else {
@@ -319,7 +320,7 @@ export class MyDashboardConstantsService {
     this.projectInfo = await this.getCurrentTaskProjectInformation(task.ProjectCode);
     this.NextPreviousTask = await this.getNextPreviousTask(task);
     const allowedTasks = ['Galley', 'Submission Pkg', 'Submit', 'Journal Selection', 'Journal Requirement'];
-    if(allowedTasks.includes(task.Task)) {
+    if (allowedTasks.includes(task.Task)) {
       await this.GetAllDocuments(task);
       var isJcIdFound = await this.getJCIDS(task);
       if (!isJcIdFound) {
@@ -371,13 +372,13 @@ export class MyDashboardConstantsService {
   async getCurrentTaskProjectInformation(ProjectCode) {
     // this.batchContents = new Array();
     // const batchGuid = this.spServices.generateUUID();
-    let project = Object.assign({}, this.mydashboardComponent.projectInfo);
+    const project = Object.assign({}, this.mydashboardComponent.projectInfo);
     project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
     this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, project);
     // const projectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', project);
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectUrl);
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    return this.response.length > 0 ? this.response[0] : {};
+    return this.response.length > 0 ? this.response : {};
   }
 
 
@@ -429,7 +430,7 @@ export class MyDashboardConstantsService {
       // const jcSubCatUrl = this.spServices.getReadURL('' + this.constants.listNames.JournalConf.name + '', jcSubCat);
       // this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubCatUrl);
 
-      
+
     }
 
     else if (task.Task === 'Submit') {
@@ -457,7 +458,7 @@ export class MyDashboardConstantsService {
       // jcSubCat.filter = jcSubCat.filter.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Selected').replace(/{{Status1}}/gi, 'Resubmit to same journal');
       // const jcSubCatUrl = this.spServices.getReadURL('' + this.constants.listNames.JournalConf.name + '', jcSubCat);
       // this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubCatUrl);
-      
+
     }
     else if (task.Task === 'Journal Selection') {
       isJcIdFound = true;
@@ -529,7 +530,7 @@ export class MyDashboardConstantsService {
       Status: task.Status,
       TaskComments: task.TaskComments,
     };
-    const newdata = task.IsCentrallyAllocated === 'Yes' ? {...data, ActiveCA: 'No'} : {...data};
+    const newdata = task.IsCentrallyAllocated === 'Yes' ? { ...data, ActiveCA: 'No' } : { ...data };
     const taskObj = Object.assign({}, this.queryConfig);
     taskObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +task.ID);
     taskObj.data = newdata;
@@ -849,7 +850,7 @@ export class MyDashboardConstantsService {
   async getAllClients() {
 
     let ClientLegalEntities = Object.assign({}, this.mydashboardComponent.ClientLegalEntities);
-    this.response  = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, ClientLegalEntities);
+    this.response = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, ClientLegalEntities);
 
     // this.batchContents = new Array();
     // const batchGuid = this.spServices.generateUUID();
@@ -977,26 +978,26 @@ export class MyDashboardConstantsService {
         reviewDocArray.push(reviewDocuments[document].ServerRelativeUrl);
       }
     }
-    if (newValue.length == 1 && tempArray.length) {
+    if (newValue.length === 1 && tempArray.length) {
       const taskObj = Object.assign({}, this.mydashboardComponent.TaskDetails);
       taskObj.filter = previousTaskFilter;
       const previousItems = this.spServices.readItems(this.constants.listNames.Schedules.name, taskObj);
       const obj = {
-        documentURL : tempArray,
-        resourceID : previousItems[0].AssignedTo.Id,
-        subMilestones : previousItems[0].SubMilestones,
-        resource : previousItems[0].AssignedTo.Title,
-        taskCompletionDate : previousItems[0].Actual_x0020_End_x0020_Date,
-        reviewTask : {
-          ID : currentTaskElement.ID,
-          Title : currentTaskElement.TaskName ? currentTaskElement.TaskName : currentTaskElement.Title,
-          PrevTasks : currentTaskElement.PrevTasks,
-          Rated : currentTaskElement.Rated
+        documentURL: tempArray,
+        resourceID: previousItems[0].AssignedTo.Id,
+        subMilestones: previousItems[0].SubMilestones,
+        resource: previousItems[0].AssignedTo.Title,
+        taskCompletionDate: previousItems[0].Actual_x0020_End_x0020_Date,
+        reviewTask: {
+          ID: currentTaskElement.ID,
+          Title: currentTaskElement.TaskName ? currentTaskElement.TaskName : currentTaskElement.Title,
+          PrevTasks: currentTaskElement.PrevTasks,
+          Rated: currentTaskElement.Rated
         },
-        taskTitle : previousItems[0].Title,
-        taskID : previousItems[0].ID,
-        reviewTaskDocUrl : reviewDocArray,
-      }
+        taskTitle: previousItems[0].Title,
+        taskID: previousItems[0].ID,
+        reviewTaskDocUrl: reviewDocArray,
+      };
       qmsObj.openPopup(obj);
     }
   }

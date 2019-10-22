@@ -193,8 +193,9 @@ export class FDDataShareService {
         const res = await this.spServices.readItems(this.constantService.listNames.VendorFreelancer.name, vendorObj);
         const arrResults = res.length ? res : [];
         if (arrResults.length) {
-            this.freelancerVendersRes = arrResults[0];
+            this.freelancerVendersRes = arrResults;
         }
+        return arrResults;
     }
 
     // SOWList
@@ -262,12 +263,6 @@ export class FDDataShareService {
             // const batchGuid = this.spServices.generateUUID();
             const batchUrl = [];
             // tslint:disable:max-line-length
-            const prjInfoObj = Object.assign({}, this.queryConfig);
-            prjInfoObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfo);
-            prjInfoObj.listName = this.constantService.listNames.ProjectInformation.name;
-            prjInfoObj.type = 'GET';
-            batchUrl.push(prjInfoObj);
-
             const prjContactsObj = Object.assign({}, this.queryConfig);
             prjContactsObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectContacts.name, this.fdConstantsService.fdComponent.projectContacts);
             prjContactsObj.listName = this.constantService.listNames.ProjectContacts.name;
@@ -293,8 +288,8 @@ export class FDDataShareService {
             batchUrl.push(currencyObj);
 
             const projectPOObj = Object.assign({}, this.queryConfig);
-            projectPOObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectPO.name, this.fdConstantsService.fdComponent.projectPO);
-            projectPOObj.listName = this.constantService.listNames.ProjectPO.name;
+            projectPOObj.url = this.spServices.getReadURL(this.constantService.listNames.PO.name, this.fdConstantsService.fdComponent.projectPO);
+            projectPOObj.listName = this.constantService.listNames.PO.name;
             projectPOObj.type = 'GET';
             batchUrl.push(projectPOObj);
 
@@ -315,6 +310,12 @@ export class FDDataShareService {
             budgetRateObj.listName = this.constantService.listNames.BudgetRateMaster.name;
             budgetRateObj.type = 'GET';
             batchUrl.push(budgetRateObj);
+
+            const prjInfoObj = Object.assign({}, this.queryConfig);
+            prjInfoObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfo);
+            prjInfoObj.listName = this.constantService.listNames.ProjectInformation.name;
+            prjInfoObj.type = 'GET';
+            batchUrl.push(prjInfoObj);
 
             // const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
             // const projectContactEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectContacts.name + '', this.fdConstantsService.fdComponent.projectContacts);
@@ -337,8 +338,8 @@ export class FDDataShareService {
             // userBatchBody = batchContents.join('\r\n');
 
             // const arrResults = await this.spServices.getFDData(batchGuid, userBatchBody);
-            const arrResults = await this.spServices.executeBatch(batchUrl);
-            this.requiredData = arrResults.length ? arrResults.map(a => a.retItems) : [];
+            let arrResults = await this.spServices.executeBatch(batchUrl);
+            this.requiredData = arrResults = arrResults.length ? arrResults.map(a => a.retItems) : [];
             this.setData(arrResults);
             this.constantService.loader.isPSInnerLoaderHidden = true;
             return '';
@@ -360,7 +361,7 @@ export class FDDataShareService {
             }]
             const res = await this.spServices.executeBatch(obj);
             if (res.length) {
-                console.log('this.projectsInfo ', res[0]);
+                // console.log('this.projectsInfo ', res[0]);
                 this.projectsInfo = res[0].retItems;
                 this.projectInfoData.next(this.projectsInfo);
                 return this.projectsInfo;

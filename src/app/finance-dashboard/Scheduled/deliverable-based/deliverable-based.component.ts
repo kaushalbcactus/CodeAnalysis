@@ -65,8 +65,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         url: '',
         type: '',
         listName: ''
-      };
-    // List of Subscribers 
+    };
+    // List of Subscribers
     private subscription: Subscription = new Subscription();
 
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
@@ -135,7 +135,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     updateCalendarUI(calendar: Calendar) {
         calendar.updateUI();
     }
-    // Project Info 
+    // Project Info
     projectInfoData: any = [];
     async projectInfo() {
         // Check PI list
@@ -173,7 +173,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         }))
     }
 
-    // Client Legal Entity 
+    // Client Legal Entity
     cleData: any = [];
     cleInfo() {
         this.subscription.add(this.fdDataShareServie.defaultCLEData.subscribe((res) => {
@@ -259,7 +259,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             isManager = true;
         }
         const obj = Object.assign({}, isManager ? this.fdConstantsService.fdComponent.invoicesDel :
-                                                this.fdConstantsService.fdComponent.invoicesDelCS);
+            this.fdConstantsService.fdComponent.invoicesDelCS);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
         if (!isManager) {
             obj.filter = obj.filter.replace('{{UserID}}', this.globalService.sharePointPageObject.userId.toString());
@@ -280,13 +280,13 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
         // console.log('REs in deliverable based ', res);
         const arrResults = res.length ? res : [];
-        if (arrResults.length) {
-            for (let j = 0; j < arrResults.length; j++) {
-                const element = arrResults[j];
-                // console.log('-- deliverable based ', element);
-                this.formatData(element);
-            }
-        }
+        // if (arrResults.length) {
+        //     for (let j = 0; j < arrResults.length; j++) {
+        //         const element = arrResults[j];
+        // console.log('-- deliverable based ', element);
+        this.formatData(arrResults);
+        //     }
+        // }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -637,8 +637,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             };
             iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
             const iliObj = Object.assign({}, this.queryConfig);
-            iliObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
-            iliObj.listName = this.constantService.listNames.Invoices.name;
+            iliObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
+            iliObj.listName = this.constantService.listNames.InvoiceLineItems.name;
             iliObj.type = 'PATCH';
             iliObj.data = iliData;
             batchUrl.push(iliObj);
@@ -713,12 +713,16 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         // console.log('--oo ', arrResults);
         await this.spServices.executeBatch(batchUrl);
         if (type === "confirmInvoice") {
-            this.messageService.add({ key: 'deliverableSuccessToast', severity: 'success',
-                                     summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000 });
+            this.messageService.add({
+                key: 'deliverableSuccessToast', severity: 'success',
+                summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000
+            });
             this.sendCreateExpenseMail();
         } else if (type === "editInvoice") {
-            this.messageService.add({ key: 'deliverableSuccessToast', severity: 'success',
-                                     summary: 'Success message', detail: 'Invoice Updated.', life: 2000 })
+            this.messageService.add({
+                key: 'deliverableSuccessToast', severity: 'success',
+                summary: 'Success message', detail: 'Invoice Updated.', life: 2000
+            })
             this.reFetchData();
         }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
@@ -845,7 +849,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         // var mailTemplate =  data.Status === "Approved" ? "ApproveExpense" :  data.Status === "Cancelled" ? "CancelExpense" : "RejectExpense";
         var mailSubject = this.selectedRowItem.ProjectCode + "/" + this.selectedRowItem.ClientName + ": Confirmed line item for billing";
 
-        let mailContent = this.mailContentRes[0].retItems[0].Content;
+        let mailContent = this.mailContentRes[0].Content;
         mailContent = this.replaceContent(mailContent, "@@Val1@@", "Hello Invoice Team");
         mailContent = this.replaceContent(mailContent, "@@Val2@@", this.selectedRowItem.ProjectCode);
         mailContent = this.replaceContent(mailContent, "@@Val3@@", this.selectedRowItem.ClientName);

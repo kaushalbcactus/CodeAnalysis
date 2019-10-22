@@ -327,7 +327,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         console.log('this.currentUserInfoData  ', this.currentUserInfoData);
         this.groupInfo = await this.fdDataShareServie.getGroupInfo();
         this.groupITInfo = await this.fdDataShareServie.getITInfo();
-        this.getVendorFreelanceData();
+        await this.getVendorFreelanceData();
         await this.getMailContent();
         this.showHideREModal = true;
     }
@@ -378,11 +378,11 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         const vendorObj = Object.assign({}, this.fdConstantsService.fdComponent.addUpdateFreelancer);
         const res = await this.spServices.readItems(this.constantService.listNames.VendorFreelancer.name, vendorObj);
         const arrResults = res.length ? res : [];
-        if (arrResults.length) {
-            // console.log(arrResults);
-            this.freelancerVendersRes = arrResults[0];
-            console.log('this.freelancerVendersRes ', this.freelancerVendersRes);
-        }
+        // if (arrResults.length) {
+        // console.log(arrResults);
+        this.freelancerVendersRes = arrResults;
+        // console.log('this.freelancerVendersRes ', this.freelancerVendersRes);
+        // }
     }
 
     piCleData: any = [];
@@ -433,8 +433,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             listName: this.constantService.listNames.MailContent.name
         }]
         const res = await this.spServices.executeBatch(obj);
-        this.mailContentRes = res;
-        console.log('Mail Content res ', this.mailContentRes);
+        this.mailContentRes = res.length ? res[0].retItems : [];
+        // console.log('Mail Content res ', this.mailContentRes);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -500,7 +500,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     selectedPI: any = [];
     getPIByTitle(title, index) {
         let found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == title) {
+            if (x.ProjectCode === title) {
                 this.selectedPI[index] = x.CMLevel1.results;
                 console.log('this.selectedPI ', this.selectedPI);
                 return x;
@@ -526,7 +526,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         // const batchContents = new Array();
         // const batchGuid = this.spServices.generateUUID();
         const pfObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
-        pfObj.filter = pfObj.filter.replace("{{ProjectCode}}", ProjectCode);
+        pfObj.filter = pfObj.filter.replace('{{ProjectCode}}', ProjectCode);
         const res = await this.spServices.readItems(this.constantService.listNames.ProjectFinances.name, pfObj);
         // let obj = {
         //     filter: this.fdConstantsService.fdComponent.projectFinances.filter.replace("{{ProjectCode}}", ProjectCode),
@@ -549,8 +549,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         // const res = await this.spServices.getFDData(batchGuid, userBatchBody) //.subscribe(res => {
         const arrResults = res.length ? res : [];
         if (arrResults.length) {
-            console.log(arrResults[0]);
-            if (!arrResults[0].length) {
+            // console.log(arrResults[0]);
+            if (!arrResults.length) {
                 this.messageService.add({
                     key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
                     detail: 'Currency not found for selected project / client.', life: 4000
@@ -560,7 +560,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                 this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
                 return;
             }
-            this.totalLineItems[index].projectItem = arrResults[0][0];
+            this.totalLineItems[index].projectItem = arrResults[0];
             // Check Is proejct code & amount are Enter
             this.projectClientIsEmpty = this.isEmpty(this.totalLineItems);
         }
@@ -942,7 +942,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         // // const res = await this.spServices.executeBatch(dataEndpointArray);
         // console.log('res ', res);
         let res = await this.spServices.executeBatch(batchUrl);
-        res = res.length ? res : [];
+        res = res.length ? res.map(a => a.retItems) : [];
         if (type === 'addExpenditure') {
             this.messageService.add({
                 key: 'expenseSuccessToast', severity: 'success', summary: 'Success message',
@@ -1060,29 +1060,35 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     }
 
     sendCreateExpenseMail(expense) {
-        let isCleData = this.getCleByPC(expense);
-        let val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.Title + ' (' + isCleData.ClientLegalEntity + ')' : expense.Title;
+        const isCleData = this.getCleByPC(expense);
+        const val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.Title + ' (' + isCleData.ClientLegalEntity + ')' :
+            expense.Title;
 
+        if (this.mailContentRes.length) {
+            const mailSubject = expense.Title + ": Expense Created";
+            let mailContent = this.mailContentRes[0].Content;
+            mailContent = this.replaceContent(mailContent, "@@Val9@@", this.currentUserInfoData.Title);
+            mailContent = this.replaceContent(mailContent, "@@Val8@@", !isCleData.hasOwnProperty('ClientLegalEntity') ?
+                "Client legal entity" : "Project");
+            mailContent = this.replaceContent(mailContent, "@@Val0@@", expense.ID);
+            mailContent = this.replaceContent(mailContent, "@@Val1@@", val1);
+            mailContent = this.replaceContent(mailContent, "@@Val2@@", expense.Category);
+            mailContent = this.replaceContent(mailContent, "@@Val4@@", expense.SpendType);
+            mailContent = this.replaceContent(mailContent, "@@Val5@@", expense.Currency + ' ' + parseFloat(expense.Amount).toFixed(2));
+            mailContent = this.replaceContent(mailContent, "@@Val6@@", expense.ClientAmount ? expense.ClientCurrency +
+                ' ' + parseFloat(expense.ClientAmount).toFixed(2) : '--');
+            mailContent = this.replaceContent(mailContent, "@@Val7@@", expense.Notes);
+            mailContent = this.replaceContent(mailContent, "@@Val10@@", this.globalService.sharePointPageObject.rootsite +
+                '' + expense.FileURL);
+            mailContent = this.replaceContent(mailContent, "@@Val11@@", this.globalService.sharePointPageObject.rootsite +
+                '' + expense.ClientApprovalFileURL);
+            mailContent = this.replaceContent(mailContent, "@@Val12@@", expense.RequestType);
 
-        var mailSubject = expense.Title + ": Expense Created";
-        let mailContent = this.mailContentRes[0].retItems[0].Content;
-        mailContent = this.replaceContent(mailContent, "@@Val9@@", this.currentUserInfoData.Title);
-        mailContent = this.replaceContent(mailContent, "@@Val8@@", !isCleData.hasOwnProperty('ClientLegalEntity') ? "Client legal entity" : "Project");
-        mailContent = this.replaceContent(mailContent, "@@Val0@@", expense.ID);
-        mailContent = this.replaceContent(mailContent, "@@Val1@@", val1);
-        mailContent = this.replaceContent(mailContent, "@@Val2@@", expense.Category);
-        mailContent = this.replaceContent(mailContent, "@@Val4@@", expense.SpendType);
-        mailContent = this.replaceContent(mailContent, "@@Val5@@", expense.Currency + ' ' + parseFloat(expense.Amount).toFixed(2));
-        mailContent = this.replaceContent(mailContent, "@@Val6@@", expense.ClientAmount ? expense.ClientCurrency + ' ' + parseFloat(expense.ClientAmount).toFixed(2) : '--');
-        mailContent = this.replaceContent(mailContent, "@@Val7@@", expense.Notes);
-        mailContent = this.replaceContent(mailContent, "@@Val10@@", this.globalService.sharePointPageObject.rootsite + '' + expense.FileURL);
-        mailContent = this.replaceContent(mailContent, "@@Val11@@", this.globalService.sharePointPageObject.rootsite + '' + expense.ClientApprovalFileURL);
-        mailContent = this.replaceContent(mailContent, "@@Val12@@", expense.RequestType);
-
-        var ccUser = [];
-        ccUser.push(this.currentUserInfoData.Email);
-        let tos = this.getTosList();
-        this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
+            const ccUser = [];
+            ccUser.push(this.currentUserInfoData.Email);
+            const tos = this.getTosList();
+            this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
+        }
         this.reFetchData();
     }
 

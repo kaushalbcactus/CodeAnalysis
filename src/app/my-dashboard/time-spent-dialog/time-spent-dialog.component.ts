@@ -103,12 +103,12 @@ export class TimeSpentDialogComponent implements OnInit {
 
     this.currentTaskTimeSpent = this.response.length > 0 ? this.response : [];
     this.dateArray = [];
-    var todayDate = new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
-    var startDate = new Date(this.datePipe.transform(task.StartDate, 'MMM d, y'));
+    const todayDate = new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
+    let startDate = new Date(this.datePipe.transform(task.StartDate, 'MMM d, y'));
 
    
     if (this.currentTaskTimeSpent[0].TimeSpentPerDay) {
-      var timeSpentForTask = this.currentTaskTimeSpent[0].TimeSpentPerDay.split(/\n/);
+      const timeSpentForTask = this.currentTaskTimeSpent[0].TimeSpentPerDay.split(/\n/);
 
       if (timeSpentForTask.indexOf("") > -1) {
         timeSpentForTask.splice(timeSpentForTask.indexOf(""), 1);
@@ -116,7 +116,7 @@ export class TimeSpentDialogComponent implements OnInit {
 
       startDate = timeSpentForTask[0].split(':')[0] === timeSpentForTask[0] ? new Date(timeSpentForTask[0].split('#')[0]) : new Date(timeSpentForTask[0].split(':')[0].replace(/,/g, ", "));
 
-      var endDate = this.SelectedTabType === 'MyCompletedTask' || task.Status ==="Completed" ? new Date(this.datePipe.transform(new Date(new Date(task.Actual_x0020_End_x0020_Date)), 'MMM d, y')) : new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
+      let endDate = this.SelectedTabType === 'MyCompletedTask' || task.Status ==="Completed" ? new Date(this.datePipe.transform(new Date(new Date(task.Actual_x0020_End_x0020_Date)), 'MMM d, y')) : new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
 
       endDate = task.Status ==="Auto Closed" ?  new Date(this.datePipe.transform(task.DueDate, 'MMM d, y'))  :endDate;
 

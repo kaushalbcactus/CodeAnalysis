@@ -406,14 +406,15 @@ export class MyTimelineComponent implements OnInit {
     if (this.step === 0) {
       this.modalloaderenable = true;
 
-      let TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
-      TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, this.task.ID);
+      // let TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
+      // TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, this.task.ID);
   
-      this.response  = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
+      // this.response  = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
+      this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, +this.task.ID);
       this.task = this.response.length ? this.response[0] : {};
       this.task.AssignedTo = this.sharedObject.currentUser.title;
       this.task.TimeSpent = this.task.TimeSpent === null ? "00:00" : this.task.TimeSpent.replace('.', ':');
-      var data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === this.task.ProjectCode);
+      const data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === this.task.ProjectCode);
 
       if (data !== undefined) {
         this.task.ProjectName = data.WBJID !== null ? this.task.ProjectCode + '(' + data.WBJID + ')' : this.task.ProjectCode;
@@ -539,10 +540,11 @@ export class MyTimelineComponent implements OnInit {
 
     this.CalendarLoader = true;
     if (this.step !== 0) {
-      let TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
-      TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, this.task.ID);
+      // let TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
+      // TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, this.task.ID);
   
-      this.response  = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
+      // this.response  = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
+      this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, +this.task.ID);
 
       // this.batchContents = new Array();
       // const batchGuid = this.spServices.generateUUID();
@@ -557,7 +559,7 @@ export class MyTimelineComponent implements OnInit {
       this.task = this.response.length ? this.response[0] : {};
       this.task.AssignedTo = this.sharedObject.currentUser.title;
       this.task.TimeSpent = this.task.TimeSpent ? "00:00" : this.task.TimeSpent.replace('.', ':');
-      var data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === this.task.ProjectCode);
+      const data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === this.task.ProjectCode);
 
       if (data !== undefined) {
         this.task.ProjectName = data.WBJID !== null ? this.task.ProjectCode + '(' + data.WBJID + ')' : this.task.ProjectCode;

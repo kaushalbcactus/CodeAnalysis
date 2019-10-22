@@ -298,9 +298,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
         // console.log('REs in Outstanding Invoice ', res);
         const arrResults = res.length ? res : [];
-        if (arrResults.length) {
-            this.formatData(arrResults[0]);
-        }
+        // if (arrResults.length) {
+        this.formatData(arrResults);
+        // }
         this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         // });
@@ -854,6 +854,9 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             const sts = this.constantService.invoicesStatus.SentToAP;
             // sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
             const invData = {
+                __metadata: {
+                    type: this.constantService.listNames.Invoices.type
+                },
                 Status: sts
             };
             const invObj = Object.assign({}, this.queryConfig);
@@ -951,27 +954,37 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         // console.log('--oo ', arrResults);
         await this.spServices.executeBatch(batchUrl);
         if (type === "creditDebit") {
-            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                                        detail: 'Success.', life: 2000 });
+            this.messageService.add({
+                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
+                detail: 'Success.', life: 2000
+            });
             this.creditOrDebitModal = false;
             this.reFetchData();
         } else if (type === "sentToAP") {
-            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                                      detail: 'Invoice Status Changed.', life: 2000 });
+            this.messageService.add({
+                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
+                detail: 'Invoice Status Changed.', life: 2000
+            });
             this.sentToAPModal = false;
             this.reFetchData();
         } else if (type === "disputeInvoice") {
-            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                                      detail: 'Submitted.', life: 2000 });
+            this.messageService.add({
+                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
+                detail: 'Submitted.', life: 2000
+            });
             this.disputeInvoiceModal = false;
         } else if (type === "paymentResoved") {
-            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                                      detail: 'Success.', life: 2000 });
+            this.messageService.add({
+                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
+                detail: 'Success.', life: 2000
+            });
             this.paymentResovedModal = false;
             this.reFetchData();
         } else if (type === "replaceInvoice") {
-            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                                      detail: 'Success.', life: 2000 });
+            this.messageService.add({
+                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
+                detail: 'Success.', life: 2000
+            });
             this.replaceInvoiceModal = false;
             this.reFetchData();
         }
