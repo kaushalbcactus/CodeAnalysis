@@ -5,7 +5,6 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { TaskAllocationConstantsService } from '../services/task-allocation-constants.service';
 import * as shape from 'd3-shape';
-
 declare var $: any;
 @Component({
   selector: 'app-drag-drop',
@@ -63,6 +62,9 @@ export class DragDropComponent implements OnInit {
   showSvg = false;
   alldbMilestones: any;
   AlldbRecords: any;
+  enableZoom: boolean = false;
+  enablePaan: boolean = false;
+
   // tslint:enable
   constructor(
     public ref: DynamicDialogRef,
@@ -193,6 +195,20 @@ export class DragDropComponent implements OnInit {
 
   setStep(index: number) {
     this.step = index;
+    switch(this.step) {
+      case 0:
+          this.resizeGraph = 'milestone';
+          this.GraphResize();
+        break;
+      case 1:
+          this.resizeGraph = 'submilestone';
+          this.GraphResize();
+        break;
+      case 2:
+          this.resizeGraph = 'task';
+          this.GraphResize();
+        break;
+    }
   }
 
 
@@ -482,9 +498,6 @@ export class DragDropComponent implements OnInit {
     }
 
     if (miletype === 'milestone') {
-
-
-
       this.milestonesGraph.nodes.push(node);
       this.milestonesGraph.nodeOrder.push(node.id);
 
@@ -1140,7 +1153,6 @@ export class DragDropComponent implements OnInit {
 
   loadLinks(event, links) {
 
-    debugger;
     if (event.itemType !== "Client Review") {
       var preTasks = event.previousTask !== undefined && event.previousTask !== null ? event.previousTask.split(';') : [];
       var nextTasks = event.nextTask !== undefined && event.nextTask !== null ? event.nextTask.split(';') : [];
@@ -1394,6 +1406,14 @@ export class DragDropComponent implements OnInit {
     this.GraphResize();
   }
 
+  EnableZoom(bVal) {
+    this.enableZoom = bVal;
+  }
+
+  EnablePaan(bVal) {
+    this.enablePaan = bVal;
+  }
+
   ChangeOrientation(sType) {
     switch (sType) {
       case 'submilestone':
@@ -1410,9 +1430,11 @@ export class DragDropComponent implements OnInit {
   GraphResize() {
     this.grapLoading = true;
     setTimeout(() => {
-
+      let uiDialog: any = document.querySelector('.ui-dialog-content');
       switch (this.resizeGraph) {
         case 'milestone':
+          var milestoneAreaWidth: any = document.querySelector('.milestonesDropArea');
+          this.minWidth = milestoneAreaWidth.clientWidth;
           var outerHtmlElement: any = document.querySelector('.milestonesDropArea .ngx-charts .nodes');
           var nodeWidth = Math.ceil(outerHtmlElement.getBBox().width);
           if (nodeWidth > this.minWidth) {
@@ -1432,6 +1454,9 @@ export class DragDropComponent implements OnInit {
           break;
         case 'submilestone':
           let changeGraph = false;
+          var milestoneAreaWidth: any = document.querySelector('.submilestonesDropArea');
+          this.minWidth = milestoneAreaWidth.clientWidth;
+          this.subMilestoneMaxHeight = uiDialog.clientHeight - milestoneAreaWidth.offsetTop - 150;
           var outerHtmlElement: any = document.querySelector('.submilestonesDropArea .ngx-charts .nodes');
           var outerHtmlElementLinks: any = document.querySelector('.submilestonesDropArea .ngx-charts .links');
           var nodeWidth = Math.ceil(outerHtmlElement.getBBox().width);
@@ -1474,6 +1499,10 @@ export class DragDropComponent implements OnInit {
           break;
         case 'task':
           let changeTaskGraph = false;
+          var milestoneAreaWidth: any = document.querySelector('.taskDropArea');
+          this.minWidth = milestoneAreaWidth.clientWidth;
+          this.taskMaxHeight = uiDialog.clientHeight - milestoneAreaWidth.offsetTop - 60;
+          
           var outerHtmlElement: any = document.querySelector('.taskDropArea .ngx-charts .nodes');
           var outerHtmlElementLinks: any = document.querySelector('.taskDropArea .ngx-charts .links');
           var nodeWidth = Math.ceil(outerHtmlElement.getBBox().width);

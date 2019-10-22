@@ -134,8 +134,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
   tempClick: any;
   selectedSubMilestone: any;
   changeInRestructure = false;
-  errorMessageCount = 0;
-  taskerrorMessage: string;
+  // errorMessageCount = 0;
+  // taskerrorMessage: string;
   dbRecords: any[];
 
   constructor(
@@ -918,7 +918,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'ActiveCA': milestoneTask.ActiveCA,
                     'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
                     'deallocateCentral': false,
-                    'DisableCascade': milestoneTask.DisableCascade && milestoneTask.DisableCascade ==='Yes'? true : false
+                    'DisableCascade': milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes' ? true : false
                   };
 
                   if (milestoneTask.Task === 'Client Review' && milestoneTask.Status !== 'Deleted') {
@@ -1944,7 +1944,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // tslint:disable
   DateChange(Node, type) {
     let previousNode = undefined;
-    let CheckDateTasks;
+    //let CheckDateTasks;
     let milestonePosition = -1;
     let selectedMil = -1;
     let subMilestonePosition = 0;
@@ -1963,7 +1963,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               this.changeDateOfEditedTask(submilestone.data, type);
               selectedMil = milestonePosition;
               previousNode = submilestone.data;
-              CheckDateTasks = milestone.children.map(c => c.data);
+              // CheckDateTasks = milestone.children.map(c => c.data);
             }
           }
           if (submilestone.children !== undefined) {
@@ -1973,7 +1973,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                 this.changeDateOfEditedTask(task.data, type);
                 selectedMil = milestonePosition;
                 previousNode = task.data;
-                CheckDateTasks = submilestone.children.map(c => c.data);
+                // CheckDateTasks = submilestone.children.map(c => c.data);
               }
             });
           }
@@ -1981,19 +1981,21 @@ export class TimelineComponent implements OnInit, OnDestroy {
       }
     });
     this.cascadeNextNodes(previousNode, subMilestonePosition, selectedMil);
-    if (CheckDateTasks) {
-      this.validateTaskDates(CheckDateTasks);
-    }
+    // if (CheckDateTasks) {
+    //   this.validateTaskDates(CheckDateTasks);
+    // }
 
     this.ResetStartAndEnd();
   }
 
 
   validateTaskDates(AllTasks) {
-
-    this.errorMessageCount = 0;
-    AllTasks.forEach(task => {
-
+    let errorPresnet = false;
+    //this.errorMessageCount = 0;
+    const taskCount = AllTasks.length;
+    for (let i = 0; i < taskCount; i = i + 1) {
+      // AllTasks.forEach(task => {
+      const task = AllTasks[i];
       if (task.nextTask && task.status !== 'Completed'
         && task.status !== 'Auto Closed' && task.status !== 'Deleted') {
         const nextTasks = task.nextTask.split(';');
@@ -2002,16 +2004,19 @@ export class TimelineComponent implements OnInit, OnDestroy {
         const SDTask = AllNextTasks.find(c => c.pStart < task.pEnd && c.status !== 'Completed'
           && c.status !== 'Auto Closed' && c.status !== 'Deleted' && c.allowStart === false);
         if (SDTask) {
-          this.errorMessageCount++;
+          // this.errorMessageCount++;
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName
+            detail: 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName + ' in ' + task.milestone 
           });
-
-          this.taskerrorMessage = 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName;
+          errorPresnet =  true;
+          break;
+          // this.taskerrorMessage = 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName;
         }
       }
-    });
+    }
+    return errorPresnet;
+    // });
   }
 
   cascadeNextNodes(previousNode, subMilestonePosition, selectedMil) {
@@ -2260,15 +2265,15 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (this.milestoneData.length > 0) {
 
       const isValid = this.validate();
-      if (this.errorMessageCount > 0) {
-        this.messageService.add({
-          key: 'custom', severity: 'warn', summary: 'Warning Message',
-          detail: this.taskerrorMessage
-        });
-      }
+      // if (this.errorMessageCount > 0) {
+      //   this.messageService.add({
+      //     key: 'custom', severity: 'warn', summary: 'Warning Message',
+      //     detail: this.taskerrorMessage
+      //   });
+      // }
 
-
-      if (isValid && this.errorMessageCount === 0) {
+      // && this.errorMessageCount === 0
+      if (isValid) {
         this.loaderenable = true;
         this.sharedObject.resSectionShow = false;
         setTimeout(() => {
@@ -2593,7 +2598,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           IsCentrallyAllocated: milestoneTask.IsCentrallyAllocated,
           CentralAllocationDone: milestoneTask.CentralAllocationDone,
           ActiveCA: milestoneTask.ActiveCA,
-          DisableCascade: milestoneTask.DisableCascade ?   'Yes' : 'No'
+          DisableCascade: milestoneTask.DisableCascade ? 'Yes' : 'No'
         } :
         {
           __metadata: { type: 'SP.Data.SchedulesListItem' },
@@ -2618,7 +2623,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           IsCentrallyAllocated: milestoneTask.IsCentrallyAllocated,
           CentralAllocationDone: milestoneTask.CentralAllocationDone,
           ActiveCA: milestoneTask.ActiveCA,
-          DisableCascade: milestoneTask.DisableCascade ?  'Yes' : 'No'
+          DisableCascade: milestoneTask.DisableCascade ? 'Yes' : 'No'
         }
     );
     return {
@@ -2645,7 +2650,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   setMilestoneForAddUpdate(sentMilestone, bAdd) {
     let currentMilestone = sentMilestone.data;
-    
+
     currentMilestone.submilestone = this.getSubMilestoneStatus(sentMilestone, '').join(';#');
     let updateMilestoneBody = {};
     const milestoneStartDate = new Date(currentMilestone.pStart);
@@ -3374,11 +3379,11 @@ export class TimelineComponent implements OnInit, OnDestroy {
       return false;
     }
     const tempMilestones = allMilestones.filter(e => e.status !== 'Completed');
-    const checkMilestoneAllicatedTime = tempMilestones.filter(e => (e.budgetHours === '' || +e.budgetHours === 0) && e.status !== 'Not Confirmed');
-    if (checkMilestoneAllicatedTime.length > 0 && checkMilestoneAllicatedTime[0].status !== 'Not Saved') {
+    const checkMilestoneAllocatedTime = tempMilestones.filter(e => (e.budgetHours === '' || +e.budgetHours === 0) && e.status !== 'Not Confirmed');
+    if (checkMilestoneAllocatedTime.length > 0 && checkMilestoneAllocatedTime[0].status !== 'Not Saved') {
       this.messageService.add({
         key: 'custom', severity: 'warn', summary: 'Warning Message',
-        detail: 'Budget hours for ' + checkMilestoneAllicatedTime[0].pName + ' milestone cannot be less than or equal to 0'
+        detail: 'Budget hours for ' + checkMilestoneAllocatedTime[0].pName + ' milestone cannot be less than or equal to 0'
       });
       return false;
     }
@@ -3446,6 +3451,11 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
             return false;
           }
+
+          const errorPresnet = this.validateTaskDates(checkTasks);
+          if (errorPresnet) {
+            return false;
+          }
         }
 
         if (previousNode !== undefined && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart)) {
@@ -3460,6 +3470,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
           });
           return false;
         }
+
+
 
         if (milestoneTasks.length > 0) {
           this.LinkScToClientReview(milestoneTasks);
@@ -3563,7 +3575,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       'ActiveCA': 'No',
       'assignedUserTimeZone': '5.5',
       'deallocateCentral': true,
-      'DisableCascade': task.DisableCascade &&  task.DisableCascade === 'Yes' ? true : false
+      'DisableCascade': task.DisableCascade && task.DisableCascade === 'Yes' ? true : false
     };
   }
 
