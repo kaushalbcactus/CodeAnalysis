@@ -260,9 +260,9 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
         const res = await this.spServices.executeBatch(batchUrl);
         const arrResults = res.length ? res.map(a => a.retItems) : [];
-        if (arrResults.length) {
-            this.formatData(arrResults);
-        }
+        // if (arrResults.length) {
+        this.formatData(arrResults);
+        // }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -361,7 +361,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         pfbObj.filter = pfbObj.filter.replace('{{ProjectCode}}', pf.ProjectCode);
         const res = await this.spServices.readItems(this.constantService.listNames.ProjectFinanceBreakup.name, pfbObj);
         // const res = await this.getProjectBudgetBreakup(endPoints, 'poDetails');
-        const poByPfb = res.length ? res[0] : {};
+        const poByPfb = res.length ? res[0] : { POLookup: '' };
         const found = this.purchaseOrdersList.find((x) => {
             if (x.ID === poByPfb.POLookup) {
                 return x;
@@ -944,7 +944,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             //     }
             // ]
             await this.spServices.updateItem(this.constantService.listNames.ProjectFinances.name, +this.selectedRowItem.PFID,
-                                             pfData, this.constantService.listNames.ProjectFinances.type);
+                pfData, this.constantService.listNames.ProjectFinances.type);
             // this.submitForm(data, type);
             this.messageService.add({
                 key: 'hourlySuccessToast', severity: 'success',

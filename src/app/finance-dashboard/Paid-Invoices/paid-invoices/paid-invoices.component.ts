@@ -354,10 +354,10 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
         // console.log('REs in Paid Invoice ', res);
         const arrResults = res.length ? res : [];
-        if (arrResults.length) {
-            this.formatData(arrResults[0]);
-            console.log(arrResults);
-        }
+        // if (arrResults.length) {
+        this.formatData(arrResults);
+        // console.log(arrResults);
+        // }
         this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }

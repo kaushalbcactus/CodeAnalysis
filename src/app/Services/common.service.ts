@@ -890,7 +890,7 @@ export class CommonService {
                     // var Data = await this.spServices.getDataByApi(batchGuid, this.batchContents);
                     const data = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, clCall);
                     if (data.length > 0) {
-                        this.sharedTaskAllocateObj.oLegalEntity = data[0];
+                        this.sharedTaskAllocateObj.oLegalEntity = data;
                     }
                     return project;
                 }

@@ -2831,6 +2831,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     currentMilestone.tatBusinessDays = this.commonService.calcBusinessDays(milestoneStartDate, milestoneEndDate);
     if (!bAdd) {
       const updateData = {
+        __metadata: { type: 'SP.Data.SchedulesListItem' },
         Actual_x0020_Start_x0020_Date: milestoneStartDate,
         Actual_x0020_End_x0020_Date: milestoneEndDate,
         ExpectedTime: '' + currentMilestone.budgetHours,
@@ -2846,6 +2847,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       batchUrl.push(updateMilObj);
     } else {
       const addData = {
+        __metadata: { type: 'SP.Data.SchedulesListItem' },
         Actual_x0020_Start_x0020_Date: milestoneStartDate,
         Actual_x0020_End_x0020_Date: milestoneEndDate,
         StartDate: milestoneStartDate,
@@ -2914,7 +2916,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const currentMilestone = this.oProjectDetails.currentMilestone;
     //  if (!currentMilestone.Exists) {
     updateProjectRes = {
-      // __metadata: { type: 'SP.Data.ProjectInformationListItem' },
+      __metadata: { type: 'SP.Data.ProjectInformationListItem' },
       WritersId: { results: updatedResources.writer.results },
       ReviewersId: { results: updatedResources.reviewer.results },
       EditorsId: { results: updatedResources.editor.results },
@@ -3002,7 +3004,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     mailObj.filter = mailObj.filter.replace('{{templateName}}', templateName);
     const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
       mailObj);
-    let mailContent = templateData.length > 0 ? templateData[0] : [];
+    let mailContent = templateData.length > 0 ? templateData[0].Content : [];
     mailContent = this.replaceContent(mailContent, "@@Val3@@", EmailType === 'Email' ? milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title : undefined : 'Team');
     mailContent = this.replaceContent(mailContent, "@@Val1@@", projectDetails.projectCode);
     mailContent = this.replaceContent(mailContent, "@@Val2@@", milestoneTask.submilestone && milestoneTask.submilestone !== 'Default' ? projectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.pName + ' - ' + milestoneTask.submilestone : projectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.pName);

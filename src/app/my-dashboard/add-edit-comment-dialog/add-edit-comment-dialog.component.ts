@@ -188,7 +188,7 @@ export class AddEditCommentComponent implements OnInit {
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, MilestoneUrl);
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
-    this.commentsdb = this.response;
+    this.commentsdb = this.response.length ? this.response : [];
     if (this.commentsdb.filter(c => c.TaskComments !== null) !== undefined) {
       this.commentsdb = this.commentsdb.filter(c => c.TaskComments !== null);
       this.commentsdb.map(c => c.TaskName = c.Title).sort(c => c.Created);

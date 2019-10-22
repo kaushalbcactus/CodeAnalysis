@@ -221,7 +221,7 @@ export class StandardprojectComponent implements OnInit {
       filter: 'Title eq \'' + projectCode + '\''
     };
     const result = await this.spService.readItems(this.constants.listNames.ProjectFinances.name, prjFinanceOptions);
-    return result;
+    return result.length ? result : [];
   }
   /**
    * This method is used to get the Project Resource based on project code.

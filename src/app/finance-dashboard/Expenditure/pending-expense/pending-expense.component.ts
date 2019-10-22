@@ -339,8 +339,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
         // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
         const arrResults = res.length ? res : [];
-        console.log('--oo ', arrResults);
-        this.formatData(arrResults[0]);
+        // console.log('--oo ', arrResults);
+        this.formatData(arrResults);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         // });
 

@@ -313,8 +313,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         const arrResults = res.length ? res : [];
         if (arrResults.length) {
             // this.formatData(arrResults);
-            this.getPOListItems(arrResults[0]);
-            this.confirmedILIarray = arrResults[0];
+            this.getPOListItems(arrResults);
+            this.confirmedILIarray = arrResults;
         }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         // });
@@ -900,8 +900,11 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.revertInvModal = false;
             // console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
             const iliData = {
+                __metadata: {
+                    type: this.constantService.listNames.InvoiceLineItems.type
+                },
                 Status: 'Scheduled'
-                };
+            };
             // obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
             // tslint:disable-next-line: max-line-length
             // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);
@@ -916,6 +919,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 const pInfo = this.getPIByPC(this.selectedRowItem);
                 // Update PI
                 const piData = {
+                    __metadata: {
+                        type: this.constantService.listNames.ProjectInformation.type
+                    },
                     ProjectType: 'Deliverable-Writing',
                     IsApproved: 'No'
                 };
@@ -940,6 +946,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 // console.log('pf ', pf);
                 if (pf.length) {
                     const pfData = {
+                        __metadata: {
+                            type: this.constantService.listNames.ProjectFinances.type
+                        },
                         Budget: this.selectedRowItem.Amount,
                         RevenueBudget: this.selectedRowItem.Amount
                     };
@@ -978,6 +987,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             // console.log('form is submitting ..... & Form data is ', this.addToProforma_form.getRawValue());
             // let obj: any = {};
             const prfData = {
+                __metadata: {
+                    type: this.constantService.listNames.Proforma.type
+                },
                 ClientLegalEntity: this.addToProforma_form.getRawValue().ClientLegalEntity,
                 PO: this.selectedPurchaseNumber.ID, // this.addToProforma_form.value.POName.Id,
                 MainPOC: this.addToProforma_form.value.POCName.ID,
@@ -997,14 +1009,17 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             // obj['__metadata'] = { type: 'SP.Data.ProformaListItem' };
             // const endpoint = this.fdConstantsService.fdComponent.addUpdateProforma.createProforma;
             const proformaObj = Object.assign({}, this.queryConfig);
-            proformaObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name);
-            proformaObj.listName = this.constantService.listNames.ProjectFinances.name;
+            proformaObj.url = this.spServices.getReadURL(this.constantService.listNames.Proforma.name);
+            proformaObj.listName = this.constantService.listNames.Proforma.name;
             proformaObj.type = 'POST';
             proformaObj.data = prfData;
             batchUrl.push(proformaObj);
             // Get Cle
             const currentCle = this.getCLEObj(prfData.ClientLegalEntity);
             const cleData = {
+                __metadata: {
+                    type: this.constantService.listNames.ClientLegalEntity.type
+                },
                 ID: currentCle.Id,
                 ProformaCounter: currentCle.ProformaCounter ? currentCle.ProformaCounter + 1 : 1
             };
@@ -1038,7 +1053,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
     batchContents: any = [];
     async submitForm(batchUrl, type: string) {
-        console.log('Form is submitting');
+        // console.log('Form is submitting');
 
         // this.batchContents = [];
         // const batchGuid = this.spServices.generateUUID();
@@ -1068,6 +1083,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.selectedAllRowData.forEach(element => {
                 
                 const prfData = {
+                    __metadata: {
+                        type: this.constantService.listNames.InvoiceLineItems.type
+                    },
                     Status: 'Proforma Created',
                     ProformaLookup: retCall[0].ID
                 };

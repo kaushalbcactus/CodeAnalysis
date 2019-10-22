@@ -357,13 +357,13 @@ export class ProformaComponent implements OnInit, OnDestroy {
         // let arrResults: any = [];
         // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
         // console.log('REs in Confirmed Invoice ', res);
-        const prfObj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesForMangerIT);
+        const prfObj = Object.assign({}, this.fdConstantsService.fdComponent.proformaForMangerIT);
         const res = await this.spServices.readItems(this.constantService.listNames.Proforma.name, prfObj);
         const arrResults = res.length ? res : [];
-        if (arrResults.length) {
-            this.formatData(arrResults[0]);
-            console.log(arrResults);
-        }
+        // if (arrResults.length) {
+        this.formatData(arrResults);
+        // console.log(arrResults);
+        // }
         this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
@@ -734,17 +734,17 @@ export class ProformaComponent implements OnInit, OnDestroy {
         iliObj.filter = iliObj.filter.replace('{{ProformaLookup}}', this.selectedRowItem.Id);
         const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, iliObj);
         const arrResults = res.length ? res : [];
-        if (arrResults.length) {
-            console.log(arrResults[0]);
-            this.iliByPidRes = arrResults[0] ? arrResults[0] : [];
-            if (this.iliByPidRes.length) {
-                this.addILIObj = {
-                    TaggedAmount: this.selectedRowItem.Amount,
-                    IsTaggedFully: 'Yes'
-                };
-            }
-            this.getUniqueItem(arrResults[0]);
+        // if (arrResults.length) {
+        // console.log(arrResults[0]);
+        this.iliByPidRes = arrResults;
+        if (this.iliByPidRes.length) {
+            this.addILIObj = {
+                TaggedAmount: this.selectedRowItem.Amount,
+                IsTaggedFully: 'Yes'
+            };
         }
+        this.getUniqueItem(arrResults);
+        // }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -819,7 +819,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             sowObj.url = sowObj.url.replace('{{SOWCode}}', element.item.SOWCode);
             sowObj.listName = this.constantService.listNames.SOW.name;
             sowObj.type = 'GET';
-            batchUrl.push(pfbObj);
+            batchUrl.push(sowObj);
             const res = await this.spServices.executeBatch(batchUrl);
             // let endPoints = this.invoicesQuery;
             // let userBatchBody = '';
@@ -1246,7 +1246,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (res) {
             // let fileUrl = res.ServerRelativeUrl;
             let prfData = {
-                FileURL:  res.ServerRelativeUrl ?  res.ServerRelativeUrl : '',
+                FileURL: res.ServerRelativeUrl ? res.ServerRelativeUrl : '',
                 ProformaHtml: null
             }
             prfData['__metadata'] = { type: 'SP.Data.ProformaListItem' };
@@ -1600,7 +1600,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 iliObj.type = 'PATCH';
                 iliObj.data = iliData;
                 batchUrl.push(iliObj);
-                
+
                 // data.push({
                 //     // Id: element.Id,
                 //     objData: iliObj,
@@ -1615,8 +1615,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
             }
             proformaData['__metadata'] = { type: 'SP.Data.ProformaListItem' };
             const prfObj = Object.assign({}, this.queryConfig);
-            prfObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
-            prfObj.listName = this.constantService.listNames.InvoiceLineItems.name;
+            prfObj.url = this.spServices.getItemURL(this.constantService.listNames.Proforma.name, +this.selectedRowItem.Id);
+            prfObj.listName = this.constantService.listNames.Proforma.name;
             prfObj.type = 'PATCH';
             prfObj.data = proformaData;
             batchUrl.push(prfObj);

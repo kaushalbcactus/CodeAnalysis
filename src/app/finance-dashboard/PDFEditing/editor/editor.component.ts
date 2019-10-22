@@ -2985,10 +2985,10 @@ export class EditorComponent implements OnInit {
         // console.log('REs in Confirmed Invoice ', res);
         const arrResults = res.length ? res : [];
         if (arrResults.length) {
-            const prf = arrResults[0][0];
-            console.log(prf);
+            const prf = arrResults[0];
+            // console.log(prf);
             await this.getILIByPID(id);
-            console.log(this.iliByPidRes);
+            // console.log(this.iliByPidRes);
 
             const projectAppendix = await this.createProjectAppendix(this.iliByPidRes);
             await this.fdShareDataService.callProformaCreation(prf, this.cleData, this.projectContactsData, this.purchaseOrdersList, this, projectAppendix);
@@ -3036,7 +3036,7 @@ export class EditorComponent implements OnInit {
     }
 
     // Generate Invoice Data start
-   
+
 
     async getILIByPID(id) {
 
@@ -3066,9 +3066,9 @@ export class EditorComponent implements OnInit {
         iliObj.filter = iliObj.filter.replace('{{ProformaLookup}}', id);
         const res = await this.spOperationsServices.readItems(this.constantsService.listNames.InvoiceLineItems.name, iliObj);
         const arrResults = res.length ? res : [];
-        if (arrResults.length) {
-            this.iliByPidRes = arrResults[0] ? arrResults[0] : [];
-        }
+        // if (arrResults.length) {
+        this.iliByPidRes = arrResults;
+        // }
 
     }
 
@@ -3119,7 +3119,7 @@ export class EditorComponent implements OnInit {
             callProjects.forEach(element => {
                 const getPIData = Object.assign({}, options);
                 getPIData.url = this.spOperationsServices.getReadURL(this.constantsService.listNames.ProjectInformation.name,
-                                                                     this.fdConstantsService.fdComponent.projectInfoCode);
+                    this.fdConstantsService.fdComponent.projectInfoCode);
                 getPIData.url = getPIData.url.replace('{{ProjectCode}}', element);
                 getPIData.listName = this.constantsService.listNames.ProjectInformation.name;
                 getPIData.type = 'GET';
