@@ -1,6 +1,6 @@
 import { QMSCommonService } from './../../services/qmscommon.service';
 import { QMSConstantsService } from './../../services/qmsconstants.service';
-import { Component, OnInit, ViewChild, OnDestroy, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ElementRef, HostListener, ChangeDetectorRef } from '@angular/core';
 import { SPOperationService } from '../../../../Services/spoperation.service';
 import { ConstantsService } from '../../../../Services/constants.service';
 import { GlobalService } from '../../../../Services/global.service';
@@ -13,6 +13,7 @@ import { Router, NavigationEnd } from '@angular/router';
 // import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MenuItem, MessageService } from 'primeng/api';
 import { ActionsPopupComponent } from './actions-popup/actions-popup.component';
+import { DataTable } from 'primeng/primeng';
 
 @Component({
   selector: 'app-cd',
@@ -23,6 +24,8 @@ export class CDComponent implements OnInit, OnDestroy {
   // @ViewChild(MatSort) cdSort: MatSort;
   @ViewChild('popupLoader', { static: true }) popupLoader: ElementRef;
   @ViewChild('CDPopup', { static: true }) CDPopup: ActionsPopupComponent;
+  @ViewChild('cd', { static: false }) cdTable: DataTable;
+
   // public successMessage: string;
   CDColumns = [];
   CDRows = [];
@@ -55,9 +58,19 @@ export class CDComponent implements OnInit, OnDestroy {
     type: '',
     listName: ''
   };
-  constructor(private spService: SPOperationService, private globalConstant: ConstantsService, private datepipe: DatePipe,
-    public global: GlobalService, public common: CommonService, public data: DataService, private router: Router, private messageService: MessageService,
-    private qmsConstant: QMSConstantsService, private qmsCommon: QMSCommonService) {
+  constructor(
+    private spService: SPOperationService,
+    private globalConstant: ConstantsService,
+    private datepipe: DatePipe,
+    public global: GlobalService,
+    public commonService: CommonService,
+    public data: DataService,
+    private router: Router,
+    private messageService: MessageService,
+    private qmsConstant: QMSConstantsService,
+    private qmsCommon: QMSCommonService,
+    private cdr: ChangeDetectorRef,
+  ) {
     this.extNavigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
@@ -103,15 +116,17 @@ export class CDComponent implements OnInit, OnDestroy {
     this.CDColArray.ID = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.ID, value: a.ID, filterValue: +a.ID }; return b; }));
     this.CDColArray.Title = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Title, value: a.Title, filterValue: a.Title }; return b; }));
     this.CDColArray.SentDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = { label: this.datepipe.transform(a.SentDate, 'MMM d, yyyy'),
-      value: this.datepipe.transform(a.SentDate, 'MMM d, yyyy') ? this.datepipe.transform(a.SentDate, 'MMM d, yyyy') : '' ,
-      filterValue: new Date(a.SentDate) };
+      const b = {
+        label: this.datepipe.transform(a.SentDate, 'MMM d, yyyy'),
+        value: a.SentDate ? new Date(this.datepipe.transform(a.SentDate, 'MMM d, yyyy')) : '',
+        filterValue: new Date(a.SentDate)
+      };
       return b;
     }));
     this.CDColArray.SentBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.SentBy, value: a.SentBy, filterValue: a.SentBy }; return b; }));
     this.CDColArray.Status = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Status, value: a.Status, filterValue: a.Status }; return b; }));
     this.CDColArray.SeverityLevel = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.SeverityLevel, value: a.SeverityLevel, filterValue: a.SeverityLevel }; return b; }));
-    this.CDColArray.Accountable = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Accountable, value: a.Accountable, filterValue: a.Accountable}; return b; }));
+    this.CDColArray.Accountable = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Accountable, value: a.Accountable, filterValue: a.Accountable }; return b; }));
     this.CDColArray.Segregation = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Segregation, value: a.Segregation, filterValue: a.Segregation }; return b; }));
     this.CDColArray.BusinessImpact = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.BusinessImpact, value: a.BusinessImpact, filterValue: a.BusinessImpact }; return b; }));
   }
@@ -129,7 +144,7 @@ export class CDComponent implements OnInit, OnDestroy {
     // const daysPrior = 180;
     // lastMonthDate.setDate(lastMonthDate.getDate() - daysPrior);
     //let startDate = new Date(new Date(lastMonthDate.setHours(0, 0, 0, 0))).toISOString();
-    let startDate = new Date( new Date(new Date().setMonth(new Date().getMonth() - 6)).setHours(0, 0, 0, 0)).toISOString();
+    let startDate = new Date(new Date(new Date().setMonth(new Date().getMonth() - 6)).setHours(0, 0, 0, 0)).toISOString();
     let endDate = new Date().toISOString();
     if (filterObj && filterObj.startDate) {
       startDate = new Date(new Date(filterObj.startDate).setHours(0, 0, 0, 1)).toISOString();
@@ -237,7 +252,7 @@ export class CDComponent implements OnInit, OnDestroy {
         isLoggedInTL: element.isLoggedInTL,
         ID: element.ID,
         Title: element.Title,
-        SentDate: this.datepipe.transform(element.SentDate, 'MMM d, yyyy') ? this.datepipe.transform(element.SentDate, 'MMM d, yyyy') : '',
+        SentDate: element.SentDate ? new Date(this.datepipe.transform(element.SentDate, 'MMM d, yyyy')) : '',
         SentBy: element.SentBy.Title ? element.SentBy.Title : '',
         Status: element.Status ? element.Status : '',
         Accountable: element.Category ? element.Category : '',
@@ -270,7 +285,7 @@ export class CDComponent implements OnInit, OnDestroy {
   // }
 
   showToastMsg(obj) {
-    this.messageService.add({severity: obj.type, summary: obj.msg, detail: obj.detail});
+    this.messageService.add({ severity: obj.type, summary: obj.msg, detail: obj.detail });
   }
 
   /**
@@ -376,6 +391,31 @@ export class CDComponent implements OnInit, OnDestroy {
         this.tempClick.style.display = 'none';
         this.tempClick = undefined;
       }
+    }
+  }
+
+
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.CDRows.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.cdTable,
+        colFields: this.CDColArray
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.colFilters(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
     }
   }
 }

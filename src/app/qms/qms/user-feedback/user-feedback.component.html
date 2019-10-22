@@ -8,19 +8,22 @@
         </tr>
         <tr>
             <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility">
-                <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}"  [options]="UFColArray.Date" defaultLabel="Date" (onChange)="uf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'Task'" [style]="{'width':'100%'}"  [options]="UFColArray.Task" defaultLabel="Task" (onChange)="uf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'Type'" [style]="{'width':'100%'}"  [options]="UFColArray.Type" defaultLabel="Type" (onChange)="uf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'Feedbackby'" [style]="{'width':'100%'}"  [options]="UFColArray.Feedbackby" defaultLabel="Feedback by" (onChange)="uf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'Rating'" [style]="{'width':'100%'}"  [options]="UFColArray.Rating" defaultLabel="Rating" (onChange)="uf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}"  [options]="UFColArray.Date" defaultLabel="Date" (onChange)="uf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Task'" [style]="{'width':'100%'}"  [options]="UFColArray.Task" defaultLabel="Task" (onChange)="uf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Type'" [style]="{'width':'100%'}"  [options]="UFColArray.Type" defaultLabel="Type" (onChange)="uf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Feedbackby'" [style]="{'width':'100%'}"  [options]="UFColArray.Feedbackby" defaultLabel="Feedback by" (onChange)="uf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Rating'" [style]="{'width':'100%'}"  [options]="UFColArray.Rating" defaultLabel="Rating" (onChange)="uf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
             </th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-rowData let-columns="columns">
         <tr>
             <td *ngFor="let col of columns" [hidden]="!col.visibility">
-                <ng-container *ngIf="col.field != '' && col.field != 'Parameters'">
+                <ng-container *ngIf="col.field != '' && col.field != 'Parameters' &&  col.field !== 'Date'">
                     {{rowData[col.field]}}
+                </ng-container>
+                <ng-container *ngIf="col.field === 'Date'">
+                    {{rowData[col.field] | date:'MMM d, yyyy' }}
                 </ng-container>
                 <ng-container *ngIf="col.field === 'Parameters'">
                    <div [innerHTML]="rowData[col.field]"></div>

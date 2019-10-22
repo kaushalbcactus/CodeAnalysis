@@ -1,5 +1,5 @@
 import { QMSCommonService } from './../../services/qmscommon.service';
-import { Component, OnInit, ViewChild, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
 import { ConstantsService } from '../../../../Services/constants.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
@@ -12,6 +12,8 @@ import { FilterComponent } from '../filter/filter.component';
 import { MenuItem, MessageService } from 'primeng/api';
 import { PopupComponent } from './popup/popup.component'
 import { QMSConstantsService } from '../../services/qmsconstants.service';
+import { DataTable } from 'primeng/primeng';
+import { CommonService } from 'src/app/Services/common.service';
 @Component({
   selector: 'app-cfpositive-feedback',
   templateUrl: './cfpositive-feedback.component.html',
@@ -23,9 +25,11 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
   CFRows = [];
   items: MenuItem[];
   private cfPFNavigationSubscription;
-  
+
   @ViewChild('positveFilter', { static: true }) filter: FilterComponent;
   @ViewChild('PFPopup', { static: true }) PFPopup: PopupComponent;
+  @ViewChild('cfp', { static: false }) cfpositiveTable: DataTable;
+
   public hideLoader = true;
   public hideTable = false;
   public pfs = [];
@@ -37,9 +41,19 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     Status: [],
     Resources: []
   };
-  constructor(private router: Router, private globalConstant: ConstantsService, private spCommon: SPCommonService,
-              private global: GlobalService, private datepipe: DatePipe, private spService: SPOperationService, private messageService: MessageService,
-              private qmsConstant: QMSConstantsService, private qmsCommon: QMSCommonService) {
+  constructor(
+    private router: Router,
+    private globalConstant: ConstantsService,
+    private spCommon: SPCommonService,
+    private global: GlobalService,
+    private datepipe: DatePipe,
+    private spService: SPOperationService,
+    private messageService: MessageService,
+    private qmsConstant: QMSConstantsService,
+    private qmsCommon: QMSCommonService,
+    private commonService: CommonService,
+    private cdr: ChangeDetectorRef,
+  ) {
     this.cfPFNavigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
@@ -82,14 +96,15 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
   colFilters(colData) {
     //
     // tslint:disable: max-line-length
-    this.CFPositiveColArray.ID = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.ID, value: a.ID, filterValue: +a.ID  }; return b; }));
+    this.CFPositiveColArray.ID = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.ID, value: a.ID, filterValue: +a.ID }; return b; }));
     this.CFPositiveColArray.Title = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Title, value: a.Title, filterValue: a.Title }; return b; }));
     this.CFPositiveColArray.Status = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Status, value: a.Status, filterValue: a.Status }; return b; }));
     this.CFPositiveColArray.SentDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
       const b = {
-      label: this.datepipe.transform(a.SentDate, 'MMM d, yyyy'),
-      value: this.datepipe.transform(a.SentDate, 'MMM d, yyyy') ? this.datepipe.transform(a.SentDate, 'MMM d, yyyy') : '' ,
-      filterValue: new Date(a.SentDate) };
+        label: this.datepipe.transform(a.SentDate, 'MMM d, yyyy'),
+        value: a.SentDate ? new Date(this.datepipe.transform(a.SentDate, 'MMM d, yyyy')) : '',
+        filterValue: new Date(a.SentDate)
+      };
       return b;
     }));
     this.CFPositiveColArray.SentBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.SentBy, value: a.SentBy, filterValue: a.SentBy }; return b; }));
@@ -117,7 +132,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     // const daysPrior = 180;
     // lastMonthDate.setDate(lastMonthDate.getDate() - daysPrior);
     // let startDate = new Date(new Date(lastMonthDate.setHours(0, 0, 0, 1))).toISOString();
-    let startDate = new Date( new Date(new Date().setMonth(new Date().getMonth() - 6)).setHours(0, 0, 0, 0)).toISOString();
+    let startDate = new Date(new Date(new Date().setMonth(new Date().getMonth() - 6)).setHours(0, 0, 0, 0)).toISOString();
     let endDate = new Date().toISOString();
     if (filterObj && filterObj.startDate) {
       startDate = new Date(new Date(filterObj.startDate).setHours(0, 0, 0, 1)).toISOString();
@@ -170,13 +185,13 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     this.hideLoader = false;
   }
 
- 
+
   /**
    * It binds table to html
    * @param arrayItems -  array of PF Items
    */
   bindTable(arrayItems) {
-   
+
     this.CFRows = [];
     arrayItems.forEach(element => {
       this.CFRows.push({
@@ -187,9 +202,10 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
         resources: element.Resources,
         ID: element.ID,
         Id: element.Id,
-        Title: element.Title,
         Status: element.Status,
-        SentDate: this.datepipe.transform(element.SentDate, 'MMM d, yyyy'),
+        SentDate: element.SentDate ? new Date(this.datepipe.transform(element.SentDate, 'MMM d, yyyy')) : '',
+        Title: element.Title ? element.Title : '',
+        AssignedTo: element.AssignedTo ? element.AssignedTo : '',
         SentBy: element.SentBy.Title,
         Resources: element.resources,
         FileUrl: element.FileURL,
@@ -219,11 +235,11 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
   savePF(pfDetails, pf) {
     this.spService.updateItem(this.globalConstant.listNames.PositiveFeedbacks.name, pf.ID, pfDetails);
 
-    this.showToastMsg({type: 'success', msg: 'Success', detail: 'Positive Feedback sent by ' + pf.SentBy.Title + ' is ' + pf.Status + '.'});
+    this.showToastMsg({ type: 'success', msg: 'Success', detail: 'Positive Feedback sent by ' + pf.SentBy.Title + ' is ' + pf.Status + '.' });
   }
 
   showToastMsg(obj) {
-    this.messageService.add({severity: obj.type, summary: obj.msg, detail: obj.detail});
+    this.messageService.add({ severity: obj.type, summary: obj.msg, detail: obj.detail });
   }
 
   showColumn(): string {
@@ -255,7 +271,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
   downloadExcel(cfp) {
     cfp.exportCSV();
   }
-  
+
   @HostListener('document:click', ['$event'])
   clickout(event) {
     if (event.target.className.indexOf('pi pi-ellipsis-v') > -1) {
@@ -279,4 +295,31 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.CFRows.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.cfpositiveTable,
+        colFields: this.CFPositiveColArray,
+        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.colFilters(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
+    }
+  }
+
+
 }

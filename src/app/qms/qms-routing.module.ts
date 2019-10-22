@@ -25,34 +25,35 @@ const routes: Routes = [
         path: 'personalFeedback',
         component: PersonalFeedbackComponent,
         children: [
-          { path: '', redirectTo: 'internalFeedback', pathMatch: 'prefix'},
-          { path: 'internalFeedback', component: InternalComponent,  runGuardsAndResolvers: 'always' },
-          { path: 'externalFeedback', component: ExternalComponent, runGuardsAndResolvers: 'always' },
-          { path: 'positiveFeedback', component: PositiveFeedbackComponent, runGuardsAndResolvers: 'always' },
-          { path: 'feedbackByMe', component: FeedbackBymeComponent, runGuardsAndResolvers: 'always' }
+          { path: '', redirectTo: 'internalFeedback', pathMatch: 'prefix' },
+          { path: 'internalFeedback', component: InternalComponent },
+          { path: 'externalFeedback', component: ExternalComponent },
+          { path: 'positiveFeedback', component: PositiveFeedbackComponent },
+          { path: 'feedbackByMe', component: FeedbackBymeComponent }
         ]
       },
       { path: 'pendingFeedback', component: ReviewerDetailViewComponent },
-      { path: 'managerView', component: ManagerViewComponent, runGuardsAndResolvers: 'always' },
+      { path: 'managerView', component: ManagerViewComponent },
       {
         path: 'clientFeedback',
         component: ClientFeedbackComponent,
         children: [
-          { path: '', redirectTo: 'cfpositiveFeedback', pathMatch: 'prefix'},
-          { path: 'clientDissatisfaction', component: CDComponent,  runGuardsAndResolvers: 'always' },
-          { path: 'cfpositiveFeedback', component: CFPositiveFeedbackComponent, runGuardsAndResolvers: 'always' }
+          { path: '', redirectTo: 'cfpositiveFeedback', pathMatch: 'prefix' },
+          { path: 'clientDissatisfaction', component: CDComponent },
+          { path: 'cfpositiveFeedback', component: CFPositiveFeedbackComponent }
         ]
       },
-      
-      { path: 'adminView', 
+      {
+        path: 'adminView',
         component: AdminComponent,
         children: [
-          { path: '', redirectTo: 'retrospectiveFeedback', pathMatch: 'prefix'},
-          { path: 'retrospectiveFeedback', component: AdminViewComponent,  runGuardsAndResolvers: 'always' },
-          { path: 'scorecards', component: ScorecardsComponent, runGuardsAndResolvers: 'always' }
+          { path: '', redirectTo: 'retrospectiveFeedback', pathMatch: 'prefix' },
+          { path: 'retrospectiveFeedback', component: AdminViewComponent },
+          { path: 'scorecards', component: ScorecardsComponent }
         ]
       }
-    ]
+    ],
+    runGuardsAndResolvers: 'always'
   },
   // {
   //   path: 'qmsFeedbackPopup',

@@ -1,12 +1,13 @@
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { QMSConstantsService } from 'src/app/qms/qms/services/qmsconstants.service';
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { GlobalService } from '../../../../Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { QMSCommonService } from '../../services/qmscommon.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-feedback-byme',
@@ -38,9 +39,19 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
   public hideDetail = false;
   ref;
   @ViewChild('fb', { static: true }) fb;
-  constructor(private datepipe: DatePipe, private globalConstant: ConstantsService, private qmsConstant: QMSConstantsService,
-    private router: Router, private spService: SPOperationService, public global: GlobalService, public data: DataService,
-    private qmsCommon: QMSCommonService) {
+  @ViewChild('fb', { static: false }) feedbackbymeTable;
+  constructor(
+    private datepipe: DatePipe,
+    private globalConstant: ConstantsService,
+    private qmsConstant: QMSConstantsService,
+    private router: Router,
+    private spService: SPOperationService,
+    public global: GlobalService,
+    public data: DataService,
+    private qmsCommon: QMSCommonService,
+    private commonService: CommonService,
+    private cdr: ChangeDetectorRef,
+  ) {
     this.feedbackByMeNavSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
@@ -83,21 +94,25 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
   colFilters(colData) {
     // tslint:disable: max-line-length
     this.FBColArray.Date = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = { label: this.datepipe.transform(a.Created, 'MMM d, yyyy'),
-                  value: this.datepipe.transform(a.Created, 'MMM d, yyyy') ?  this.datepipe.transform(a.Created, 'MMM d, yyyy') : '',
-                  filterValue: new Date(a.Created) }; return b;
-    }));
-    this.FBColArray.Task =  this.FBColArray.Task = this.qmsCommon.uniqueArrayObj(colData.map(a => {
       const b = {
-        label: a.Title ? a.SubMilestones ? a.Title + ' - ' +  a.SubMilestones : a.Title : '',
-        value: a.Title ? a.SubMilestones ? a.Title + ' - ' +  a.SubMilestones : a.Title : '',
-        filterValue: a.Title};
-      return b; }));
-    this.FBColArray.Type = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.FeedbackType, value: a.FeedbackType, filterValue: a.FeedbackType}; return b; }));
+        label: this.datepipe.transform(a.Created, 'MMM d, yyyy'),
+        value: a.Created ? new Date(this.datepipe.transform(a.Created, 'MMM d, yyyy')) : '',
+        filterValue: new Date(a.Created)
+      }; return b;
+    }));
+    this.FBColArray.Task = this.FBColArray.Task = this.qmsCommon.uniqueArrayObj(colData.map(a => {
+      const b = {
+        label: a.Title ? a.SubMilestones ? a.Title + ' - ' + a.SubMilestones : a.Title : '',
+        value: a.Title ? a.SubMilestones ? a.Title + ' - ' + a.SubMilestones : a.Title : '',
+        filterValue: a.Title
+      };
+      return b;
+    }));
+    this.FBColArray.Type = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.FeedbackType, value: a.FeedbackType, filterValue: a.FeedbackType }; return b; }));
     this.FBColArray.Feedbackfor = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AssignedTo.Title, value: a.AssignedTo.Title, filterValue: a.AssignedTo.Title }; return b; }));
     this.FBColArray.FeedbackBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Author.Title, value: a.Author.Title, filterValue: a.Author.Title }; return b; }));
-    this.FBColArray.Rating = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AverageRating, value: a.AverageRating, filterValue: +a.AverageRating}; return b; }));
-    this.FBColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Comments, value: a.Comments, filterValue: a.Comments}; return b; }));
+    this.FBColArray.Rating = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AverageRating, value: a.AverageRating, filterValue: +a.AverageRating }; return b; }));
+    this.FBColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Comments, value: a.Comments, filterValue: a.Comments }; return b; }));
   }
 
   downloadExcel(fb) {
@@ -203,8 +218,14 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
         DocumentsUrl: element.DocumentsUrl,
         Feedbackfor: element.AssignedTo.Title ? element.AssignedTo.Title : '',
         FeedbackBy: element.Author.Title ? element.Author.Title : '',
-        Date: this.datepipe.transform(element.Created, 'MMM d, yyyy'),
-        Task:  element.Title ? element.SubMilestones ? element.Title + ' - ' +  element.SubMilestones : element.Title : '',
+        Date: element.Created ? new Date(this.datepipe.transform(element.Created, 'MMM d, yyyy')) : '',
+        SubMilestones: element.SubMilestones ? element.SubMilestones : '',
+        Author: element.Author,
+        AverageRating: element.AverageRating,
+        Created: element.Created ? new Date(this.datepipe.transform(element.Created, 'MMM d, yyyy')) : '',
+        Task: element.Title ? element.SubMilestones ? element.Title + ' - ' + element.SubMilestones : element.Title : '',
+        Title: element.Title ? element.Title : '',
+        AssignedTo: element.AssignedTo ? element.AssignedTo : '',
         Type: element.FeedbackType,
         Feedbackby: element.Author.Title,
         Rating: element.AverageRating ? element.AverageRating : '',
@@ -255,5 +276,29 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
   showLoader() {
     this.hideTable = true;
     this.hideLoader = false;
+  }
+
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.feedbackRows.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.feedbackbymeTable,
+        colFields: this.FBColArray
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.colFilters(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
+    }
   }
 }
