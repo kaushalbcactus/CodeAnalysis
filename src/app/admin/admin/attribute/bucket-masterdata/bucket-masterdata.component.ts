@@ -444,8 +444,8 @@ export class BucketMasterdataComponent implements OnInit {
       }
     });
     if (batchURL.length) {
-      const results = await this.spServices.executeBatch(batchURL);
-      const updateResult = await this.updateCLEMapping();
+      // const results = await this.spServices.executeBatch(batchURL);
+      const updateResult = await this.updateCLEMapping(batchURL);
       this.editClient = false;
       this.messageService.add({
         key: 'adminCustom', severity: 'success', sticky: true,
@@ -470,8 +470,8 @@ export class BucketMasterdataComponent implements OnInit {
    *
    * If update - Start Date will be the value `bucketEffictiveDate` field.
    */
-  async createCLEMapping() {
-    const batchURL = [];
+  async createCLEMapping(batchURL) {
+    // const batchURL = [];
     const options = {
       data: null,
       url: '',
@@ -484,7 +484,7 @@ export class BucketMasterdataComponent implements OnInit {
           __metadata: { type: this.constants.listNames.CLEBucketMapping.type },
           Title: element.Title,
           CLEName: element.Title,
-          Bucket: element.Bucket,
+          Bucket: this.selectedBucket.Bucket,
           StartDate: element.EffectiveDate
         };
         const createCleMapping = Object.assign({}, options);
@@ -510,8 +510,8 @@ export class BucketMasterdataComponent implements OnInit {
    *
    * This method only calls when bucket value changes.
    */
-  async updateCLEMapping() {
-    let batchURL = [];
+  async updateCLEMapping(batchURL) {
+    // let batchURL = [];
     const options = {
       data: null,
       url: '',
@@ -553,8 +553,8 @@ export class BucketMasterdataComponent implements OnInit {
           }
         });
         if (batchURL.length) {
-          const updateResult = await this.spServices.executeBatch(batchURL);
-          await this.createCLEMapping();
+          // const updateResult = await this.spServices.executeBatch(batchURL);
+          await this.createCLEMapping(batchURL);
         }
       }
     }

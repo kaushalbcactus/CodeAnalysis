@@ -101,7 +101,9 @@ export class AddUserToProjectsComponent implements OnInit {
         this.adminObject.resourceCatArray : results[0].retItems;
       if (userResults && userResults.length) {
         userResults.forEach(element => {
-          this.users.push({ label: element.UserName.Title, value: element });
+          if (element.Role === this.adminConstants.FILTER.CM_LEVEL_1 || element.Role === this.adminConstants.FILTER.CM_LEVEL_2 || element.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || element.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
+            this.users.push({ label: element.UserName.Title, value: element });
+          }
         });
       }
       // Added resouce to global variable.

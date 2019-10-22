@@ -121,18 +121,18 @@ export class AdminCommonService {
    */
   async getClients(userObj) {
     const cleGet = Object.assign({}, this.adminConstants.QUERY.GET_CLIENTLEGALENTITY_BY_USER_ROLE);
-    if (userObj.Role && userObj.Role === this.adminConstants.FILTER.CM_LEVEL_1) {
-      cleGet.filter = 'CMLevel1/ID eq ' + userObj.UserName.ID + '';
+    if (userObj.Role && (userObj.Role === this.adminConstants.FILTER.CM_LEVEL_1 || userObj.Role === this.adminConstants.FILTER.CM_LEVEL_2)) {
+      cleGet.filter = 'CMLevel1/ID eq ' + userObj.UserName.ID + ' or ' + 'CMLevel2/ID eq ' + userObj.UserName.ID + '';
     }
-    if (userObj.Role && userObj.Role === this.adminConstants.FILTER.CM_LEVEL_2) {
-      cleGet.filter = 'CMLevel2/ID eq ' + userObj.UserName.ID + '';
+    // if (userObj.Role && userObj.Role === this.adminConstants.FILTER.CM_LEVEL_2) {
+    //   cleGet.filter = 'CMLevel2/ID eq ' + userObj.UserName.ID + '';
+    // }
+    if (userObj.Role && (userObj.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || userObj.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_2)) {
+      cleGet.filter = 'DeliveryLevel1/ID eq ' + userObj.UserName.ID + ' or '+ 'DeliveryLevel2/ID eq ' + userObj.UserName.ID + '';
     }
-    if (userObj.Role && userObj.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_1) {
-      cleGet.filter = 'DeliveryLevel1/ID eq ' + userObj.UserName.ID + '';
-    }
-    if (userObj.Role && userObj.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
-      cleGet.filter = 'DeliveryLevel2/ID eq ' + userObj.UserName.ID + '';
-    }
+    // if (userObj.Role && userObj.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
+    //   cleGet.filter = 'DeliveryLevel2/ID eq ' + userObj.UserName.ID + '';
+    // }
     const results = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, cleGet);
     return results;
   }

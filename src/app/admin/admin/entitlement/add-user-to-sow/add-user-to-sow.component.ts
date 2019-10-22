@@ -101,7 +101,9 @@ export class AddUserToSowComponent implements OnInit {
         this.adminObject.resourceCatArray : results[0].retItems;
       if (userResults && userResults.length) {
         userResults.forEach(element => {
-          this.users.push({ label: element.UserName.Title, value: element });
+          if (element.Role === this.adminConstants.FILTER.CM_LEVEL_1 || element.Role === this.adminConstants.FILTER.CM_LEVEL_2 || element.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || element.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
+            this.users.push({ label: element.UserName.Title, value: element });
+          }
         });
       }
       // Added resouce to global variable.
@@ -130,8 +132,8 @@ export class AddUserToSowComponent implements OnInit {
       results.forEach(element => {
         this.clients.push({ label: element.Title, value: element.Title });
       });
-      this.adminObject.isMainLoaderHidden = true;
     }
+    this.adminObject.isMainLoaderHidden = true;
   }
   /**
    * Construct a method to trigger when user changes client dropdown value and

@@ -87,7 +87,8 @@ export class AdminConstantService {
         + 'Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,'
         + 'Tasks/Title,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,'
         + 'Editor/ID,Editor/Title',
-      filter: 'IsActive eq \'{{isActive}}\' and ID eq \'{{Id}}\''
+      filter: 'IsActive eq \'{{isActive}}\' and ID eq \'{{Id}}\'',
+      top: 4900
     },
     GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME: {
       select: 'ID,Title,Role,UserName/ID,UserName/Title,UserName/EMail',
@@ -102,7 +103,8 @@ export class AdminConstantService {
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,'
         + 'DeliveryLevel2/ID,DeliveryLevel2/Title',
       filter: '',
-      orderby: 'Title asc'
+      orderby: 'Title asc',
+      top: 4900
     },
     GET_SOW_BY_CLIENT: {
       select: 'ID,Title,SOWCode,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,'
@@ -268,7 +270,8 @@ export class AdminConstantService {
     GET_CLE_MAPPING_BY_ID: {
       select: 'ID,CLEName',
       filter: 'CLEName eq \'{{clientLegalEntity}}\' and EndDate eq null',
-      orderby: 'ID asc'
+      orderby: 'ID asc',
+      top: 4900
     }
   };
   public LOGICAL_FIELD = {
