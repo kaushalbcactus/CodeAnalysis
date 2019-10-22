@@ -3448,7 +3448,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           }
         }
 
-        if (previousNode !== undefined && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart) && milestone.data.allowStart === false) {
+        if (previousNode !== undefined && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart)) {
           let errormessage = 'Previous Client Review';
           if (previousNode.pName !== 'Client Review') {
             errormessage = previousNode.pName;

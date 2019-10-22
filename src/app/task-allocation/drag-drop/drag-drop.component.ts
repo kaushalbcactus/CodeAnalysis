@@ -5,7 +5,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { TaskAllocationConstantsService } from '../services/task-allocation-constants.service';
 import * as shape from 'd3-shape';
-import { Title } from '@angular/platform-browser';
+
 declare var $: any;
 @Component({
   selector: 'app-drag-drop',
