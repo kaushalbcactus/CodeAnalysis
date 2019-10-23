@@ -253,7 +253,6 @@ export class BlockTimeDialogComponent implements OnInit {
         IsActive: 'Yes',
         UserNameId: this.sharedObject.sharePointPageObject.userId
       };
-      debugger;
       const validation = await this.validateLeave(this.datePipe.transform(this.eventDate, 'yyyy-MM-dd')
         + 'T09:00:00.000', this.datePipe.transform(this.eventEndDate, 'yyyy-MM-dd') + 'T19:00:00.000');
       if (validation) {

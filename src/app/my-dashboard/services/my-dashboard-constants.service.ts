@@ -163,7 +163,7 @@ export class MyDashboardConstantsService {
     },
     LeaveCalendar: {
 
-      select: 'ID,EventDate,EndDate,IsHalfDay,Title',
+      select: 'ID,EventDate,EndDate,IsHalfDay,Title,IsActive',
       filter: "(UserName/Id eq {{currentUser}} and IsActive eq 'Yes' ) and ((EventDate ge '{{startDateString}}' and EventDate le '{{endDateString}}') or (EndDate ge '{{startDateString}}' and EndDate le '{{endDateString}}') or (EventDate le '{{startDateString}}' and EndDate ge '{{endDateString}}'))",
       orderby: 'Created',
       top: 4500

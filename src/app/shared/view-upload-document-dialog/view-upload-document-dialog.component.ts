@@ -64,7 +64,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.status = this.data.Status;
     this.enableNotification = this.data.emailNotificationEnable ? this.data.emailNotificationEnable : false;
 
-    debugger;
     if (this.enableNotification) {
       this.getEmailTemplate();
     }
