@@ -50,7 +50,7 @@ export class BucketMasterdataComponent implements OnInit {
   bucketDataRows = [];
   bucketDataColumns = [];
   bucketArray = [];
-  clientArray = [];
+  clientArray: any[];
   minDateValue = new Date();
   min30Days = new Date();
   /**
@@ -129,6 +129,14 @@ export class BucketMasterdataComponent implements OnInit {
     const results = await this.getInitData();
     if (results && results.length) {
       this.bucketArray = results[0].retItems;
+      if (results[1].retItems.hasError) {
+        this.messageService.add({
+          key: 'adminCustomError', severity: 'error', summary: 'Error Message',
+          detail: results[1].retItems.message.value
+        });
+        this.adminObject.isMainLoaderHidden = true;
+        return false;
+      }
       this.clientArray = results[1].retItems;
       this.clientList = this.clientArray;
       this.bucketArray.forEach(item => {

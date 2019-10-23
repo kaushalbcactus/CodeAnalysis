@@ -128,7 +128,7 @@ export class AdminCommonService {
     //   cleGet.filter = 'CMLevel2/ID eq ' + userObj.UserName.ID + '';
     // }
     if (userObj.Role && (userObj.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_1 || userObj.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_2)) {
-      cleGet.filter = 'DeliveryLevel1/ID eq ' + userObj.UserName.ID + ' or '+ 'DeliveryLevel2/ID eq ' + userObj.UserName.ID + '';
+      cleGet.filter = 'DeliveryLevel1/ID eq ' + userObj.UserName.ID + ' or ' + 'DeliveryLevel2/ID eq ' + userObj.UserName.ID + '';
     }
     // if (userObj.Role && userObj.Role === this.adminConstants.FILTER.DELIVERY_LEVEL_2) {
     //   cleGet.filter = 'DeliveryLevel2/ID eq ' + userObj.UserName.ID + '';
@@ -149,13 +149,19 @@ export class AdminCommonService {
    * @return An object as response which contains the list data required to update in `SOW` or `ProjectInformation` list.
    *
    */
-  getListData(listType, userObj, listObj) {
+  getListData(listType, userObj, listObj, type: string) {
     const data: any = {
       __metadata: { type: listType },
     };
-    data.AllOperationresourcesId = {
-      results: listObj.AllOperationresourcesIDArray
-    };
+    if (type === 'sow') {
+      data.AllResourcesId = {
+        results: listObj.AllResourcesIDArray
+      };
+    } else if (type === 'projects') {
+      data.AllOperationresourcesId = {
+        results: listObj.AllOperationresourcesIDArray
+      };
+    }
     if (userObj.Role === this.adminConstants.FILTER.CM_LEVEL_1 ||
       userObj.Role === this.adminConstants.FILTER.CM_LEVEL_2) {
       if (listObj.AccessType === this.adminConstants.ACCESS_TYPE.ACCESS) {

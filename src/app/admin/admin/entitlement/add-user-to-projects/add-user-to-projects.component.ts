@@ -313,19 +313,22 @@ export class AddUserToProjectsComponent implements OnInit {
     if (this.selectedProject.length) {
       this.adminObject.isMainLoaderHidden = false;
       this.selectedProject.forEach(element => {
+        element.CMLevel1IDArray = [];
+        element.DeliveryLevel1IDArray = [];
+        element.AllOperationresourcesIDArray = [];
         if (element.CMLevel1 && element.CMLevel1.length) {
           element.CMLevel1IDArray = element.CMLevel1.map(x => x.ID);
         }
         if (element.AllOperationresources && element.AllOperationresources.length) {
           element.AllOperationresourcesIDArray = element.AllOperationresources.map(x => x.ID);
         }
-        // if (element.DeliveryLevel1 && element.DeliveryLevel1.length) {
-        //   element.DeliveryLevel1IDArray = element.DeliveryLevel1.map(x => x.ID);
-        // }
+        if (element.DeliveryLevel1 && element.DeliveryLevel1.length) {
+          element.DeliveryLevel1IDArray = element.DeliveryLevel1.map(x => x.ID);
+        }
         if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCESS) {
           element.CMLevel1IDArray.push(this.selectedUser.UserName.ID);
           element.AllOperationresourcesIDArray.push(this.selectedUser.UserName.ID);
-          // element.DeliveryLevel1IDArray.push(this.selectedUser.UserName.ID);
+          element.DeliveryLevel1IDArray.push(this.selectedUser.UserName.ID);
         } else if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCOUNTABLE) {
           // remove the current user if present in CMLevel1.
           const cmIndex = element.CMLevel1IDArray.indexOf(this.selectedUser.UserName.ID);
@@ -344,10 +347,9 @@ export class AddUserToProjectsComponent implements OnInit {
             element.IsUserExistInDeliveryLevel1 = false;
           }
         }
-        // !element.IsTypeChangedDisabled &&
-        //   element.CurrentAccess !== element.AccessType
-        if (true) {
-          const sowUpdateData = this.adminCommon.getListData(this.constants.listNames.ProjectInformation.type, this.selectedUser, element);
+
+        if (!element.IsTypeChangedDisabled && element.CurrentAccess !== element.AccessType) {
+          const sowUpdateData = this.adminCommon.getListData(this.constants.listNames.ProjectInformation.type, this.selectedUser, element, 'projects');
           const sowUpdate = Object.assign({}, options);
           sowUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, element.ID);
           sowUpdate.data = sowUpdateData;
@@ -359,14 +361,19 @@ export class AddUserToProjectsComponent implements OnInit {
       console.log(this.selectedProject);
       if (batchURL && batchURL.length) {
         const updateResult = await this.spServices.executeBatch(batchURL);
+        this.messageService.add({
+          key: 'adminCustom', severity: 'success', sticky: true,
+          summary: 'Success Message', detail: 'The user has been added into the selected Projects.'
+        });
+        setTimeout(() => {
+          this.clientChange();
+        }, 500);
+      } else {
+        this.messageService.add({
+          key: 'adminCustom', severity: 'info', sticky: true,
+          summary: 'Info Message', detail: 'The user NOT added into the selected Projects.'
+        });
       }
-      this.messageService.add({
-        key: 'adminCustom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: 'The user has been added into the selected Projects.'
-      });
-      setTimeout(() => {
-        this.clientChange();
-      }, 500);
     }
   }
 }
