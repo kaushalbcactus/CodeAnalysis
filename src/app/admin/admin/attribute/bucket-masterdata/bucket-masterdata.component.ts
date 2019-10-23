@@ -204,19 +204,58 @@ export class BucketMasterdataComponent implements OnInit {
    *
    * @param clientArray An clientLegalEntity array required as parameter.
    */
-  displayClient(clientArray) {
+  effectiveDateArray: any = [];
+  async displayClient(clientArray) {
     this.viewClientArray = [];
     const tempArray = [];
-    clientArray.forEach(item => {
-      const obj = Object.assign({}, this.adminObject.bucketClientObj);
-      obj.ID = item.ID;
-      obj.Title = item.Title;
-      obj.Bucket = item.Bucket;
-      obj.EffectiveDate = new Date();
-      tempArray.push(obj);
-    });
-    this.viewClientArray = tempArray;
+    this.adminObject.isMainLoaderHidden = false;
+    let res = await this.getCleBMList(clientArray[0].Bucket);
+    this.effectiveDateArray = res;
+    const arr = this.effectiveDateArray[0].retItems;
+    if (arr.length) {
+      arr.forEach(element => {
+        clientArray.find((item, index) => {
+          if (item.Title === element.CLEName) {
+            clientArray[index]['EffectiveDate'] = new Date(this.datepipe.transform(element.StartDate, 'MMM dd yyyy'))
+          } else {
+            clientArray[index]['EffectiveDate'] = new Date();
+          }
+        });
+      });
+    } else {
+      clientArray.forEach(item => {
+        const obj = Object.assign({}, this.adminObject.bucketClientObj);
+        obj.ID = item.ID;
+        obj.Title = item.Title;
+        obj.Bucket = item.Bucket;
+        tempArray.push(obj);
+      });
+      clientArray = tempArray;
+    }
+    this.viewClientArray = clientArray;
     this.viewClient = true;
+    this.adminObject.isMainLoaderHidden = true;
+  }
+
+  async getCleBMList(item) {
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const cleMappingGet = Object.assign({}, options);
+    const cleFilter = Object.assign({}, this.adminConstants.QUERY.GET_BUCKET_MAPPING_BY_ID);
+    cleFilter.filter = cleFilter.filter.replace(/{{bucket}}/gi, item);
+    cleMappingGet.url = this.spServices.getReadURL(this.constants.listNames.CLEBucketMapping.name,
+      cleFilter);
+    cleMappingGet.type = 'GET';
+    cleMappingGet.listName = this.constants.listNames.CLEBucketMapping.name;
+    let batchUrl = [];
+    batchUrl.push(cleMappingGet);
+    const getCLEResults = await this.spServices.executeBatch(batchUrl);
+    console.log(getCLEResults);
+    return getCLEResults;
   }
   /**
    * Construct a method to map the array values into particular column dropdown.
@@ -292,6 +331,7 @@ export class BucketMasterdataComponent implements OnInit {
     this.clientList.forEach(client => {
       client.isCheckboxDisabled = false;
       client.EffectiveDate = new Date();
+      // client.EffectiveDate = new Date(this.datepipe.transform(client.EffectiveDate, 'MMM dd, yyyy'));
       data.RowClientsArray.forEach(element => {
         if (client.ID === element.ID) {
           client.isCheckboxDisabled = true;

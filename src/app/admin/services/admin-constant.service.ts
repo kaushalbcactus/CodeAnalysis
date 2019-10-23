@@ -272,6 +272,12 @@ export class AdminConstantService {
       filter: 'CLEName eq \'{{clientLegalEntity}}\' and EndDate eq null',
       orderby: 'ID asc',
       top: 4900
+    },
+    GET_BUCKET_MAPPING_BY_ID: {
+      select: 'ID,CLEName,Bucket,StartDate',
+      filter: 'Bucket eq \'{{bucket}}\' and EndDate eq null',
+      orderby: 'ID asc',
+      top: 4900
     }
   };
   public LOGICAL_FIELD = {
