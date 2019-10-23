@@ -28,7 +28,6 @@ export class DragDropComponent implements OnInit {
   linkremove: boolean = false;
   subpreviousSource;
   previousSource;
-  previousevent;
   public task: Task;
   previouseventdd;
   previoussubeventdd;
@@ -64,7 +63,7 @@ export class DragDropComponent implements OnInit {
   AlldbRecords: any;
   enableZoom: boolean = false;
   enablePaan: boolean = false;
-
+  recentEventNode = undefined;
   // tslint:enable
   constructor(
     public ref: DynamicDialogRef,
@@ -195,18 +194,18 @@ export class DragDropComponent implements OnInit {
 
   setStep(index: number) {
     this.step = index;
-    switch(this.step) {
+    switch (this.step) {
       case 0:
-          this.resizeGraph = 'milestone';
-          this.GraphResize();
+        this.resizeGraph = 'milestone';
+        this.GraphResize();
         break;
       case 1:
-          this.resizeGraph = 'submilestone';
-          this.GraphResize();
+        this.resizeGraph = 'submilestone';
+        this.GraphResize();
         break;
       case 2:
-          this.resizeGraph = 'task';
-          this.GraphResize();
+        this.resizeGraph = 'task';
+        this.GraphResize();
         break;
     }
   }
@@ -522,6 +521,7 @@ export class DragDropComponent implements OnInit {
 
       this.previoussubeventdd = node.submilestone.nodes[0];
       this.previouseventdd = node;
+      this.recentEventNode = this.previouseventdd.id;
       this.milestonesGraph.nodes = [...this.milestonesGraph.nodes];
       this.milestonesGraph.links = [...this.milestonesGraph.links];
 
@@ -546,7 +546,6 @@ export class DragDropComponent implements OnInit {
         }
 
         this.subpreviousSource = miletype === 'submilestone' ? undefined : this.subpreviousSource;
-
         var DefaultObj = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === 'Default');
 
         const id = DefaultObj.id;
@@ -579,9 +578,7 @@ export class DragDropComponent implements OnInit {
                   if (link.source !== link.target) {
                     this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.push(link);
                   }
-
                 }
-
               }
             }
           }
@@ -604,6 +601,7 @@ export class DragDropComponent implements OnInit {
           }
         }
         this.previoussubeventdd = node;
+        this.recentEventNode = this.previoussubeventdd.id;;
         //this.selectedSubMilestone= node.label;
         this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes = [...this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes];
         this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = [...this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links];
@@ -887,6 +885,7 @@ export class DragDropComponent implements OnInit {
 
     if (this.milestoneDown != null) {
       if (this.milestoneDown !== node) {
+        this.recentEventNode = node.id;
         this.milestoneUp = node;
 
         var link = {
@@ -944,6 +943,7 @@ export class DragDropComponent implements OnInit {
   RemoveMilestoneLink(event, mileType) {
     if (mileType === 'submilestone') {
       this.subpreviousSource = event.source;
+      this.recentEventNode = this.subpreviousSource;
       this.linkremove = true;
       var RemoveLinkindex = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.indexOf(this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.find(c => c.source === event.source && c.target === event.target));
       this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.splice(RemoveLinkindex, 1);
@@ -952,6 +952,7 @@ export class DragDropComponent implements OnInit {
     else {
       var nodes = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes;
       this.previousSource = nodes.find(e => e.id === event.source);
+      this.recentEventNode = this.previousSource.id;
       var RemoveLinkindex = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.indexOf(this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.source === event.source && c.target === event.target));
       this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.splice(RemoveLinkindex, 1);
       this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [... this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links]
@@ -1003,7 +1004,6 @@ export class DragDropComponent implements OnInit {
   }
 
   onTaskDrop(event) {
-
 
     const originalType = event.data;
     event.data = event.data === 'Send to client' ? 'SC' : event.data;
@@ -1058,7 +1058,7 @@ export class DragDropComponent implements OnInit {
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : ''
         };
       }
-
+      this.recentEventNode = node.id;
       node.label = node.label.replace(/[0-9]/g, '').trim() === 'Client Review' ? node.label.replace(/[0-9]/g, '').trim() : node.label;
       this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push(node.label);
       subMilestone.task.nodes.push(node);
@@ -1234,6 +1234,7 @@ export class DragDropComponent implements OnInit {
       };
     }
     this.previoustaskeventdd = node;
+    this.recentEventNode = node.id;
     this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push(node.label);
     this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.push(node);
     this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes = [...this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes];
@@ -1244,76 +1245,12 @@ export class DragDropComponent implements OnInit {
   // To  link   task
   // *************************************************************************************************
 
-  ontaskDown(event, node) {
-    this.taskDown = node;
-  }
-
-  ontaskUp(event, node) {
-    if (this.taskDown != null) {
-      if (this.taskDown !== node) {
-        this.taskUp = node;
-
-        if (this.taskDown.taskType !== 'Client Review' &&
-          (this.taskDown.taskType !== 'Send to client' &&
-            this.taskUp.taskType !== 'Client Review')) {
-          var link = {
-            source: (parseInt(this.taskDown.id)).toString(),
-            target: (parseInt(this.taskUp.id)).toString(),
-          };
-
-          if (this.taskDown.type === this.taskUp.type) {
-
-            link = {
-              source: this.taskDown.id,
-              target: this.taskUp.id,
-            };
-            if (this.taskUp.taskType === 'Send to client') {
-              if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.target === link.target) === undefined) {
-                if (link.source !== link.target) {
-                  this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.push(link);
-                }
-                this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [...  this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links];
-              }
-            }
-            else {
-              if (link.source !== link.target) {
-                this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.push(link);
-              }
-              this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [...  this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links];
-            }
-          }
-        }
-        else if (this.taskDown.taskType === 'Send to client' && this.taskUp.taskType === 'Client Review') {
-          var link = {
-            source: (parseInt(this.taskDown.id)).toString(),
-            target: (parseInt(this.taskUp.id)).toString(),
-          };
-
-          if (this.taskDown.type === this.taskUp.type) {
-
-            link = {
-              source: this.taskDown.id,
-              target: this.taskUp.id,
-            };
-            if (link.source !== link.target) {
-              this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.push(link);
-            }
-            this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [...  this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links];
-          }
-        }
-      }
-      this.taskUp = null;
-      this.taskDown = null;
-      this.resizeGraph = 'task';
-      this.GraphResize();
-    }
-  }
-
   ontaskClick(node) {
 
     if (this.taskDown != null) {
       if (this.taskDown !== node) {
         this.taskUp = node;
+        this.recentEventNode = node.id;
         var link = {
           source: (parseInt(this.taskDown.id)).toString(),
           target: (parseInt(this.taskUp.id)).toString(),
@@ -1427,6 +1364,32 @@ export class DragDropComponent implements OnInit {
     this.resizeGraph = sType;
     this.GraphResize();
   }
+  moveToScrollView(milType) {
+    if (this.recentEventNode) {
+      setTimeout(() => {
+        let areaKey = '';
+        switch (milType) {
+          case 'milestone':
+            areaKey = 'milestonesDropArea';
+            break;
+          case 'submilestone':
+            areaKey = 'submilestonesDropArea';
+            break;
+          case 'task':
+            areaKey = 'taskDropArea';
+            break;
+        }
+        const nodeKey = '.' + areaKey + ' g[id="' + this.recentEventNode + '"]';
+        
+        const getNode: any = document.querySelector(nodeKey);
+        if(getNode) {
+          getNode.scrollIntoViewIfNeeded();
+        }
+        this.recentEventNode = undefined;
+      }, 500);
+    }
+  }
+
   GraphResize() {
     this.grapLoading = true;
     setTimeout(() => {
@@ -1439,21 +1402,26 @@ export class DragDropComponent implements OnInit {
           var nodeWidth = Math.ceil(outerHtmlElement.getBBox().width);
           if (nodeWidth > this.minWidth) {
             this.width = nodeWidth + 150;
-            setTimeout(() => {
-              var elmnt = document.getElementById('MilestoneChart');
-              if (elmnt !== null) {
-                elmnt.scrollLeft = this.width - this.minWidth;
-              }
-              this.grapLoading = false;
-            }, 500);
+            // setTimeout(() => {
+            //   var elmnt = document.getElementById('MilestoneChart');
+            //   if (elmnt !== null) {
+            //     elmnt.scrollLeft = this.width - this.minWidth;
+            //   }
+            //   this.grapLoading = false;
+            // }, 500);
+            //this.moveToScrollView(this.resizeGraph);
           }
           else {
             this.width = this.minWidth;
-            this.grapLoading = false;
+
           }
+
+          this.grapLoading = false;
+          this.moveToScrollView(this.resizeGraph);
+
           break;
         case 'submilestone':
-          let changeGraph = false;
+          // let changeGraph = false;
           var milestoneAreaWidth: any = document.querySelector('.submilestonesDropArea');
           this.minWidth = milestoneAreaWidth.clientWidth;
           this.subMilestoneMaxHeight = uiDialog.clientHeight - milestoneAreaWidth.offsetTop - 150;
@@ -1467,14 +1435,14 @@ export class DragDropComponent implements OnInit {
           nodeHeight = nodeHeight > nodeLinksHeight ? nodeHeight : nodeLinksHeight;
           if (nodeWidth > this.minWidth) {
             this.subMilestoneWidth = nodeWidth + 150;
-            changeGraph = true;
+            //changeGraph = true;
           }
           else {
             this.subMilestoneWidth = this.minWidth;
           }
           if (nodeHeight > this.subMilestoneMaxHeight) {
             this.subMilestoneHeight = nodeHeight + 150;
-            changeGraph = true;
+            // changeGraph = true;
           } else {
             if (nodeHeight < this.minHeight) {
               this.subMilestoneHeight = this.minHeight;
@@ -1483,26 +1451,29 @@ export class DragDropComponent implements OnInit {
               this.subMilestoneHeight = nodeHeight + 150;
             }
           }
-          if (changeGraph) {
-            setTimeout(() => {
-              var elmnt = document.getElementById('SubMilestoneChart');
-              if (elmnt !== null) {
-                elmnt.scrollLeft = this.subMilestoneWidth - this.minWidth;
-                elmnt.scrollTop = this.subMilestoneHeight - this.subMilestoneMaxHeight;
-              }
-              this.grapLoading = false;
-            }, 500);
-          }
-          else {
-            this.grapLoading = false;
-          }
+          // if (changeGraph) {
+          //   // setTimeout(() => {
+          //   //   var elmnt = document.getElementById('SubMilestoneChart');
+          //   //   if (elmnt !== null) {
+          //   //     elmnt.scrollLeft = this.subMilestoneWidth - this.minWidth;
+          //   //     elmnt.scrollTop = this.subMilestoneHeight - this.subMilestoneMaxHeight;
+          //   //   }
+          //   //   this.grapLoading = false;
+          //   // }, 500);
+          //   this.grapLoading = false;
+          //   this.moveToScrollView(this.resizeGraph);
+          // }
+          // else {
+          this.grapLoading = false;
+          this.moveToScrollView(this.resizeGraph);
+          // }
           break;
         case 'task':
-          let changeTaskGraph = false;
+          // let changeTaskGraph = false;
           var milestoneAreaWidth: any = document.querySelector('.taskDropArea');
           this.minWidth = milestoneAreaWidth.clientWidth;
           this.taskMaxHeight = uiDialog.clientHeight - milestoneAreaWidth.offsetTop - 60;
-          
+
           var outerHtmlElement: any = document.querySelector('.taskDropArea .ngx-charts .nodes');
           var outerHtmlElementLinks: any = document.querySelector('.taskDropArea .ngx-charts .links');
           var nodeWidth = Math.ceil(outerHtmlElement.getBBox().width);
@@ -1515,14 +1486,14 @@ export class DragDropComponent implements OnInit {
 
           if (nodeWidth > this.minWidth) {
             this.taskWidth = nodeWidth + 150;
-            changeTaskGraph = true;
+            // changeTaskGraph = true;
           }
           else {
             this.taskWidth = this.minWidth;
           }
           if (nodeHeight > this.taskMaxHeight) {
             this.taskHeight = nodeHeight + 200;
-            changeTaskGraph = true;
+            // changeTaskGraph = true;
           }
           else {
             if (nodeHeight < this.minHeight) {
@@ -1532,19 +1503,20 @@ export class DragDropComponent implements OnInit {
               this.taskHeight = nodeHeight + 200;
             }
           }
-          if (changeTaskGraph) {
-            setTimeout(() => {
-              var elmnt = document.getElementById('taskChart');
-              if (elmnt !== null) {
-                elmnt.scrollLeft = this.subMilestoneWidth - this.minWidth;
-                elmnt.scrollTop = this.subMilestoneHeight - this.subMilestoneMaxHeight;
-              }
-              this.grapLoading = false;
-            }, 500);
-          }
-          else {
-            this.grapLoading = false;
-          }
+          // if (changeTaskGraph) {
+          //   // setTimeout(() => {
+          //   //   var elmnt = document.getElementById('taskChart');
+          //   //   if (elmnt !== null) {
+          //   //     elmnt.scrollLeft = this.subMilestoneWidth - this.minWidth;
+          //   //     elmnt.scrollTop = this.subMilestoneHeight - this.subMilestoneMaxHeight;
+          //   //   }
+          //   //   this.grapLoading = false;
+          //   // }, 500);
+          // }
+          // else {
+          this.grapLoading = false;
+          this.moveToScrollView(this.resizeGraph);
+          //  }
           break;
       }
     }, 500);
