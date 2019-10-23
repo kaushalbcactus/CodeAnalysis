@@ -241,10 +241,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
     let allRetrievedTasks = [];
     this.milestoneData = [];
     // this.allTasks = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    if (this.allTasks.length > 0) {
+    // if (this.allTasks.length > 0) {
 
-      if (this.allTasks[0].length > 0) {
-        milestones = this.allTasks[0].filter(c => c.FileSystemObjectType === 1);
+      if (this.allTasks.length > 0) {
+        milestones = this.allTasks.filter(c => c.FileSystemObjectType === 1);
         milestones.sort(function (a, b) {
           const startDate = new Date(a.Actual_x0020_Start_x0020_Date);
           const dueDate = new Date(b.Actual_x0020_Start_x0020_Date);
@@ -257,7 +257,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         for (const milestone of milestones) {
 
 
-          const tempmilestoneTask = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title);
+          const tempmilestoneTask = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title);
 
 
           this.dbRecords.push({
@@ -410,7 +410,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                 this.GanttchartData.push(GanttTaskObj);
               }
 
-              milestoneTasks = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && c.SubMilestones === element.subMile);
+              milestoneTasks = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && c.SubMilestones === element.subMile);
 
               for (const milestoneTask of milestoneTasks) {
 
@@ -571,7 +571,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               submile.push(temptasks);
             }
 
-            const DefaultTasks = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && (c.SubMilestones === null || c.SubMilestones === 'Default') && c.Task !== 'Client Review' && c.Status !== 'Deleted');
+            const DefaultTasks = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && (c.SubMilestones === null || c.SubMilestones === 'Default') && c.Task !== 'Client Review' && c.Status !== 'Deleted');
 
             if (DefaultTasks !== undefined) {
               for (const milestoneTask of DefaultTasks) {
@@ -716,7 +716,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               this.milestoneData.push(tempmilestone);
             }
 
-            const clientReviewObj = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && (c.SubMilestones === null || c.SubMilestones === 'Default') && c.Task === 'Client Review' && c.Status !== 'Deleted');
+            const clientReviewObj = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && (c.SubMilestones === null || c.SubMilestones === 'Default') && c.Task === 'Client Review' && c.Status !== 'Deleted');
 
             if (clientReviewObj.length > 0) {
               clientReviewObj[0].assignedUsers = [{ Title: '', userType: '' }]; //this.resources.length > 0 ? this.resources : ;
@@ -809,7 +809,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             }
           }
           else {
-            milestoneTasks = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title);
+            milestoneTasks = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title);
 
             let tempSubmilestones = [];
             let GanttTaskObj;
@@ -989,10 +989,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
       else {
         this.milestoneData = [];
       }
-    }
-    else {
-      this.milestoneData = [];
-    }
+    // }
+    // else {
+    //   this.milestoneData = [];
+    // }
     this.GanttChartView = true;
     this.visualgraph = false;
     this.milestoneDataCopy = this.milestoneData;
@@ -1341,7 +1341,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (data.type === 'task' && data.milestoneStatus !== 'Completed' &&
       (data.status !== 'Completed' && data.status !== 'Abandon' && data.status !== 'Auto Closed'
         && data.status !== 'Hold')) {
-  
+
       this.taskMenu = [
         { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(data, rowNode) },
         {
@@ -1428,7 +1428,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   sortByDate(array, prop) {
-    array.sort(function (a, b) {
+    array.sort(function(a, b) {
       a = new Date(a.data[prop]).getTime();
       b = new Date(b.data[prop]).getTime();
       return a - b;
