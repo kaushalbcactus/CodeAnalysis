@@ -212,7 +212,6 @@ export class TimeBookingDialogComponent implements OnInit {
     this.modalloaderenable = true;
     this.dayscount = status === null ? 0 : status === 'increase' ? this.dayscount - 7 : this.dayscount + 7;
     this.weekDays = [];
-    debugger;
     const WeekDate = new Date(new Date().getTime() - 60 * 60 * 24 * this.dayscount * 1000);
     const day = WeekDate.getDay();
     const diffToMonday = (WeekDate.getDate() - day + (day === 0 ? -6 : 1)) - 1;

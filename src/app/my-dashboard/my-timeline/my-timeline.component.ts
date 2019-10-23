@@ -153,7 +153,7 @@ export class MyTimelineComponent implements OnInit {
       },
 
       eventClick: async function (eventInfo) {
-        debugger;
+
         self.EnableEditDate = self.EnableEditDate === undefined ? await self.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3) : self.EnableEditDate;
         if (eventInfo.event.backgroundColor !== '#D6CFC7') {
           self.modalloaderenable = true;
@@ -520,9 +520,37 @@ export class MyTimelineComponent implements OnInit {
         this.CalendarLoader = true;
         if (event === 'Leave') {
           // update leaves table based on leaves 
-          const dbAvailableHours = await this.getAvailableHours(blockTimeobj);
+          const dbAvailableHours = await this.getAvailableHours(blockTimeobj, 'apply');
 
-          // await this.spServices.create(this.constants.listNames.LeaveCalendar.name, blockTimeobj, '');
+          const batchURL = [];
+          const options = {
+            data: null,
+            url: '',
+            type: '',
+            listName: ''
+          };
+
+          const leaveCreate = Object.assign({}, options);
+          leaveCreate.data = blockTimeobj;
+          leaveCreate.listName = this.constants.listNames.AvailableHours.name;
+          leaveCreate.type = 'POST';
+          leaveCreate.url = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name, null);
+          batchURL.push(leaveCreate);
+
+          dbAvailableHours.forEach(availableHours => {
+
+            const availableHoursUpdate = Object.assign({}, options);
+            availableHoursUpdate.url = this.spServices.getItemURL(this.constants.listNames.AvailableHours.name, availableHours.ID);
+            availableHoursUpdate.data = availableHours;
+            availableHoursUpdate.type = 'PATCH';
+            availableHoursUpdate.listName = this.constants.listNames.AvailableHours.name;
+            batchURL.push(availableHoursUpdate);
+          });
+
+          const arrResults = await this.spServices.executeBatch(batchURL);
+
+          console.log(arrResults);
+
           this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Leave created successfully.' });
         }
         else {
@@ -673,12 +701,12 @@ export class MyTimelineComponent implements OnInit {
     }
   }
 
-  // *************************************************************************************************************************************
+  // ***************************************************************************************************
   // Update leave hours based on leave days
-  // *************************************************************************************************************************************
+  // ***************************************************************************************************
 
 
-  async getAvailableHours(blockTimeobj) {
+  async getAvailableHours(blockTimeobj, leaveType) {
 
     let dbRecords = [];
     const batchURL = [];
@@ -726,8 +754,14 @@ export class MyTimelineComponent implements OnInit {
 
             const LeaveDatePresent = LeaveDates.find(c => c.getTime() === date.getTime()) ? true : false;
             if (LeaveDatePresent && date.getDay() !== 0 && date.getDay() !== 6) {
-              element[days[date.getDay()] + 'Leave'] = blockTimeobj.IsHalfDay ?
-                element[days[date.getDay()]] / 2 : element[days[date.getDay()]];
+
+              if (leaveType === 'apply') {
+
+                element[days[date.getDay()] + 'Leave'] = blockTimeobj.IsHalfDay ?
+                  element[days[date.getDay()]] / 2 : element[days[date.getDay()]];
+              } else {
+                element[days[date.getDay()] + 'Leave'] = 0;
+              }
             }
             date.setDate(date.getDate() + 1);
           }
@@ -735,6 +769,45 @@ export class MyTimelineComponent implements OnInit {
       }
     }
     return dbRecords;
+  }
+
+  async DeleteLeave(leave) {
+
+    this.CalendarLoader = true;
+    const dbAvailableHours = await this.getAvailableHours(leave, 'discard');
+
+    const batchURL = [];
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    leave.IsActive = 'No';
+    const leaveUpdate = Object.assign({}, options);
+    leaveUpdate.url = this.spServices.getItemURL(this.constants.listNames.LeaveCalendar.name, leave.ID);
+    leaveUpdate.data = leave;
+    leaveUpdate.type = 'PATCH';
+    leaveUpdate.listName = this.constants.listNames.LeaveCalendar.name;
+    batchURL.push(leaveUpdate);
+
+    dbAvailableHours.forEach(availableHours => {
+      const availableHoursUpdate = Object.assign({}, options);
+      availableHoursUpdate.url = this.spServices.getItemURL(this.constants.listNames.AvailableHours.name, availableHours.ID);
+      availableHoursUpdate.data = availableHours;
+      availableHoursUpdate.type = 'PATCH';
+      availableHoursUpdate.listName = this.constants.listNames.AvailableHours.name;
+      batchURL.push(availableHoursUpdate);
+    });
+
+    await this.spServices.executeBatch(batchURL);
+
+    this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
+      this.fullCalendar.calendar.state.dateProfile.currentRange.end);
+
+    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Leaves deleted successfully.' });
+
+
   }
 }
 

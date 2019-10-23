@@ -805,7 +805,6 @@ export class CACommonService {
   // added by Maxwell
   async ResourceAllocation(task, projectInformationList) {
 
-    debugger;
     const project = await this.getProjectDetailsByCode(projectInformationList, task.projectCode);
 
     let writers = [], arrWriterIDs = [],

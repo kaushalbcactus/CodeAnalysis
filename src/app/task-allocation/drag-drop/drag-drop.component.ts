@@ -1140,7 +1140,6 @@ export class DragDropComponent implements OnInit {
 
   loadLinks(event, links) {
 
-    debugger;
     if (event.itemType !== "Client Review") {
       var preTasks = event.previousTask !== undefined && event.previousTask !== null ? event.previousTask.split(';') : [];
       var nextTasks = event.nextTask !== undefined && event.nextTask !== null ? event.nextTask.split(';') : [];
