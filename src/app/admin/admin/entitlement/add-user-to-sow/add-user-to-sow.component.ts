@@ -166,6 +166,8 @@ export class AddUserToSowComponent implements OnInit {
         const obj = Object.assign({}, this.adminObject.sowObj);
         obj.CMLevel1 = item.CMLevel1 && item.CMLevel1.results && item.CMLevel1.results.length ?
           item.CMLevel1.results : [];
+        obj.AllResources = item.AllResources && item.AllResources.results && item.AllResources.results.length ?
+          item.AllResources.results : [];
         obj.CMLevel2 = item.CMLevel2 && item.CMLevel2.hasOwnProperty('ID') ? item.CMLevel2 : '';
         obj.DeliveryLevel1 = item.DeliveryLevel1 && item.DeliveryLevel1.results && item.DeliveryLevel1.results.length ?
           item.DeliveryLevel1.results : [];
@@ -314,12 +316,16 @@ export class AddUserToSowComponent implements OnInit {
         if (element.CMLevel1 && element.CMLevel1.length) {
           element.CMLevel1IDArray = element.CMLevel1.map(x => x.ID);
         }
-        if (element.DeliveryLevel1 && element.DeliveryLevel1.length) {
-          element.DeliveryLevel1IDArray = element.DeliveryLevel1.map(x => x.ID);
+        if (element.AllResources && element.AllResources.length) {
+          element.AllResourcesIDArray = element.AllResources.map(x => x.ID);
         }
+        // if (element.DeliveryLevel1 && element.DeliveryLevel1.length) {
+        //   element.DeliveryLevel1IDArray = element.DeliveryLevel1.map(x => x.ID);
+        // }
         if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCESS) {
           element.CMLevel1IDArray.push(this.selectedUser.UserName.ID);
-          element.DeliveryLevel1IDArray.push(this.selectedUser.UserName.ID);
+          element.AllResourcesIDArray.push(this.selectedUser.UserName.ID);
+          // element.DeliveryLevel1IDArray.push(this.selectedUser.UserName.ID);
         } else if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCOUNTABLE) {
           // remove the current user if present in CMLevel1.
           const cmIndex = element.CMLevel1IDArray.indexOf(this.selectedUser.UserName.ID);
@@ -341,8 +347,8 @@ export class AddUserToSowComponent implements OnInit {
             }
           }
         }
-        if (!element.IsTypeChangedDisabled &&
-          element.CurrentAccess !== element.AccessType) {
+        // !element.IsTypeChangedDisabled && element.CurrentAccess !== element.AccessType
+        if (true) {
           const sowUpdateData = this.adminCommon.getListData(this.constants.listNames.SOW.type, this.selectedUser, element);
           const sowUpdate = Object.assign({}, options);
           sowUpdate.url = this.spServices.getItemURL(this.constants.listNames.SOW.name, element.ID);

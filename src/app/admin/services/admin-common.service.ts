@@ -153,6 +153,9 @@ export class AdminCommonService {
     const data: any = {
       __metadata: { type: listType },
     };
+    data.AllOperationresourcesId = {
+      results: listObj.AllOperationresourcesIDArray
+    };
     if (userObj.Role === this.adminConstants.FILTER.CM_LEVEL_1 ||
       userObj.Role === this.adminConstants.FILTER.CM_LEVEL_2) {
       if (listObj.AccessType === this.adminConstants.ACCESS_TYPE.ACCESS) {

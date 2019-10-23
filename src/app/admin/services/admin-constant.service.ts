@@ -108,17 +108,17 @@ export class AdminConstantService {
     },
     GET_SOW_BY_CLIENT: {
       select: 'ID,Title,SOWCode,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,'
-        + 'DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
+        + 'DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title,AllResources/ID,AllResources/Title',
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,'
-        + 'DeliveryLevel2/ID,DeliveryLevel2/Title',
+        + 'DeliveryLevel2/ID,DeliveryLevel2/Title,AllResources/ID,AllResources/Title',
       filter: 'Status ne \'Closed\' and ClientLegalEntity eq \'{{clientLegalEntity}}\'',
       top: 4900
     },
     GET_PROJECT_BY_CLIENT: {
       select: 'ID,Title,SOWCode,WBJID,ProjectCode,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,'
-        + 'DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
+        + 'DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title,AllOperationresources/ID,AllOperationresources/Title',
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,'
-        + 'DeliveryLevel2/ID,DeliveryLevel2/Title',
+        + 'DeliveryLevel2/ID,DeliveryLevel2/Title,AllOperationresources/ID,AllOperationresources/Title',
       filter: 'Status ne \'Closed\' and ClientLegalEntity eq \'{{clientLegalEntity}}\'',
       top: 4900
     },

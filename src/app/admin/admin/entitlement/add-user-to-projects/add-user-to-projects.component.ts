@@ -167,6 +167,8 @@ export class AddUserToProjectsComponent implements OnInit {
         const obj = Object.assign({}, this.adminObject.projObj);
         obj.CMLevel1 = item.CMLevel1 && item.CMLevel1.results && item.CMLevel1.results.length ? item.CMLevel1.results : [];
         obj.CMLevel2 = item.CMLevel2 && item.CMLevel2.hasOwnProperty('ID') ? item.CMLevel2 : '';
+        obj.AllOperationresources = item.AllOperationresources && item.AllOperationresources.results && item.AllOperationresources.results.length ? item.AllOperationresources.results : [];
+
         obj.DeliveryLevel1 = item.DeliveryLevel1 && item.DeliveryLevel1.results && item.DeliveryLevel1.results.length ?
           item.DeliveryLevel1.results : [];
         obj.DeliveryLevel2 = item.DeliveryLevel2 && item.DeliveryLevel2.hasOwnProperty('ID') ? item.DeliveryLevel2 : '';
@@ -314,12 +316,16 @@ export class AddUserToProjectsComponent implements OnInit {
         if (element.CMLevel1 && element.CMLevel1.length) {
           element.CMLevel1IDArray = element.CMLevel1.map(x => x.ID);
         }
-        if (element.DeliveryLevel1 && element.DeliveryLevel1.length) {
-          element.DeliveryLevel1IDArray = element.DeliveryLevel1.map(x => x.ID);
+        if (element.AllOperationresources && element.AllOperationresources.length) {
+          element.AllOperationresourcesIDArray = element.AllOperationresources.map(x => x.ID);
         }
+        // if (element.DeliveryLevel1 && element.DeliveryLevel1.length) {
+        //   element.DeliveryLevel1IDArray = element.DeliveryLevel1.map(x => x.ID);
+        // }
         if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCESS) {
           element.CMLevel1IDArray.push(this.selectedUser.UserName.ID);
-          element.DeliveryLevel1IDArray.push(this.selectedUser.UserName.ID);
+          element.AllOperationresourcesIDArray.push(this.selectedUser.UserName.ID);
+          // element.DeliveryLevel1IDArray.push(this.selectedUser.UserName.ID);
         } else if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCOUNTABLE) {
           // remove the current user if present in CMLevel1.
           const cmIndex = element.CMLevel1IDArray.indexOf(this.selectedUser.UserName.ID);
@@ -338,8 +344,9 @@ export class AddUserToProjectsComponent implements OnInit {
             element.IsUserExistInDeliveryLevel1 = false;
           }
         }
-        if (!element.IsTypeChangedDisabled &&
-          element.CurrentAccess !== element.AccessType) {
+        // !element.IsTypeChangedDisabled &&
+        //   element.CurrentAccess !== element.AccessType
+        if (true) {
           const sowUpdateData = this.adminCommon.getListData(this.constants.listNames.ProjectInformation.type, this.selectedUser, element);
           const sowUpdate = Object.assign({}, options);
           sowUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, element.ID);
