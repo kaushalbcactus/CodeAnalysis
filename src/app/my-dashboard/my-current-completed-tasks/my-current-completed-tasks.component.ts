@@ -253,7 +253,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
   async getStatusFilterDropDownValue(status, filterDates) {
 
     const mytasks = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTasks);
-    mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
+    mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
     mytasks.filter += status === 'MyCompletedTask' ? mytasks.filterCompleted : mytasks.filterStatus;
     // mytasks.filter += mytasks.filterStatus;
     mytasks.filter += mytasks.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);

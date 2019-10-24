@@ -239,7 +239,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForNonBillableCS);
             speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
                 .replace('{{EndDate}}', this.DateRange.endDate)
-                .replace('{{UserID}}', this.globalService.sharePointPageObject.userId.toString());
+                .replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
         const arrResults = res.length ? res : [];

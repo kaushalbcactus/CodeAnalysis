@@ -121,9 +121,9 @@ export class GlobalService {
     serverRelativeUrl: '',
     webRelativeUrl: '',
     publicCdn: '',
-    userId: 0,
-    email: '',
-    title: '',
+    // userId: 0,
+    // email: '',
+    // title: '',
     rootsite: '',
   };
 
@@ -152,13 +152,13 @@ export class GlobalService {
   };
 
   public currentUser = {
-    id: -1,
+    userId: 0,
     title: '',
     email: '',
     timeZone: 0,
     designation: '',
-    webAbsoluteUrl: '',
-    serverRelativeUrl: '',
+    // webAbsoluteUrl: '',
+    // serverRelativeUrl: '',
     loggedInUserInfo: [],
     loggedInUserGroup: [],
     isPFAdmin: false,

@@ -133,7 +133,7 @@ export class ClientReviewComponent implements OnInit {
     }, this.pmConstant.TIME_OUT);
   }
   getCRClient() {
-    const filter = 'AssignedTo eq ' + this.globalObject.sharePointPageObject.userId
+    const filter = 'AssignedTo eq ' + this.globalObject.currentUser.userId
       + ' and (Status eq \'Not Started\') and (Task eq \'Client Review\') and PreviousTaskClosureDate ne null';
     this.getCR(filter);
   }
@@ -201,7 +201,7 @@ export class ClientReviewComponent implements OnInit {
     const currentFilter = '((StartDate ge \'' + startDateString + '\' or StartDate le \'' + endDateString
       + '\') and (DueDate ge \'' + startDateString + '\' and DueDate le \'' + endDateString
       + '\')) and (Status eq \'Not Started\') and (Task eq \'Client Review\')'
-      + ' and PreviousTaskClosureDate ne null and AssignedTo eq ' + this.globalObject.sharePointPageObject.userId + '';
+      + ' and PreviousTaskClosureDate ne null and AssignedTo eq ' + this.globalObject.currentUser.userId + '';
     this.getCR(currentFilter);
   }
 

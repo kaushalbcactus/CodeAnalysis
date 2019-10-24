@@ -202,13 +202,13 @@ export class BlockTimeDialogComponent implements OnInit {
             'Internal meeting' : this.data.timeblockType === 'Training' ? 'Internal training' : 'Administrative Work',
         TaskComments: this.commment,
         Status: 'Completed',
-        AssignedToId: this.sharedObject.currentUser.id,
+        AssignedToId: this.sharedObject.currentUser.userId,
         TimeZone: this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID ===
-          this.sharedObject.currentUser.id) !== undefined ?
+          this.sharedObject.currentUser.userId) !== undefined ?
           this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID ===
-            this.sharedObject.currentUser.id).TimeZone !== undefined ?
+            this.sharedObject.currentUser.userId).TimeZone !== undefined ?
             this.sharedObject.DashboardData.ResourceCategorization.find(c => c.ID ===
-              this.sharedObject.currentUser.id).TimeZone.Title : '5.5' : '5.5',
+              this.sharedObject.currentUser.userId).TimeZone.Title : '5.5' : '5.5',
         TATStatus: this.data.timeblockType === 'Admin' ? 'Yes' : 'No',
 
 
@@ -251,7 +251,7 @@ export class BlockTimeDialogComponent implements OnInit {
         Description: this.commment,
         IsHalfDay: this.IsHalfDay,
         IsActive: 'Yes',
-        UserNameId: this.sharedObject.sharePointPageObject.userId
+        UserNameId: this.sharedObject.currentUser.userId
       };
       const validation = await this.validateLeave(this.datePipe.transform(this.eventDate, 'yyyy-MM-dd')
         + 'T09:00:00.000', this.datePipe.transform(this.eventEndDate, 'yyyy-MM-dd') + 'T19:00:00.000');
@@ -284,7 +284,7 @@ export class BlockTimeDialogComponent implements OnInit {
     leavesGet.url = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name,
                            this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
     leavesGet.url = leavesGet.url.replace(/{{currentUser}}/gi,
-      this.sharedObject.sharePointPageObject.userId.toString()).replace(/{{startDateString}}/gi,
+      this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi,
         EventDate).replace(/{{endDateString}}/gi, EndDate);
     leavesGet.type = 'GET';
     leavesGet.listName = this.constants.listNames.LeaveCalendar.name;

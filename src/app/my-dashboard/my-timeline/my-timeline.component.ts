@@ -265,7 +265,7 @@ export class MyTimelineComponent implements OnInit {
 
     let MyTimelineObj = Object.assign({}, this.queryConfig);
     let MyTimelineUrl = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimeline);
-    MyTimelineUrl.filter = MyTimelineUrl.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
+    MyTimelineUrl.filter = MyTimelineUrl.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
     MyTimelineUrl.filter += this.selectedType.name === 'Completed' ? MyTimelineUrl.filterCompleted : this.selectedType.name === 'Not Completed' ?
                              MyTimelineUrl.filterNotCompleted : this.selectedType.name === 'Planned' ? MyTimelineUrl.filterPlanned : this.selectedType.name === 'Adhoc' ?
                              MyTimelineUrl.filterAdhoc : MyTimelineUrl.filterAll;
@@ -283,7 +283,7 @@ export class MyTimelineComponent implements OnInit {
 
     let myLeavesObj = Object.assign({}, this.queryConfig);
     let MyLeavesUrl = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
-    MyLeavesUrl.filter = MyLeavesUrl.filter.replace(/{{currentUser}}/gi, this.sharedObject.sharePointPageObject.userId.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
+    MyLeavesUrl.filter = MyLeavesUrl.filter.replace(/{{currentUser}}/gi, this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
 
     myLeavesObj.url =  this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name, MyLeavesUrl);
     myLeavesObj.listName = this.constants.listNames.LeaveCalendar.name;
@@ -679,9 +679,9 @@ export class MyTimelineComponent implements OnInit {
     };
 
     const ResourceId = this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserName.ID
-      === this.sharedObject.sharePointPageObject.userId) ?
+      === this.sharedObject.currentUser.userId) ?
       this.sharedObject.DashboardData.ResourceCategorization.find(c => c.UserName.ID ===
-        this.sharedObject.sharePointPageObject.userId).ID : 0;
+        this.sharedObject.currentUser.userId).ID : 0;
     const AvailableHoursGet = Object.assign({}, options);
     const AvailableHoursQuery = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.AvailableHours);
     AvailableHoursGet.url = this.spServices.getReadURL('' + this.constants.listNames.AvailableHours.name +

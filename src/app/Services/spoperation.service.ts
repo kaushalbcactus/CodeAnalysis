@@ -225,7 +225,7 @@ export class SPOperationService {
   }
 
   getFolderCreationURL() {
-    return this.baseUrl + '/_api/web/folders';
+    return this.baseUrl + '/_api/web/Folders';
   }
 
   getFileUploadUrl(folderUrl: string, fileName: string, override: any) {
@@ -265,7 +265,7 @@ export class SPOperationService {
 
   getMoveURL(sourceUrl: string, destinationUrl: string) {
     // tslint:disable-next-line:max-line-length
-    return this.baseUrl + '/_api/web/getfilebyserverrelativeurl(\'' + sourceUrl + '\')/moveto(newurl=\'' + destinationUrl + '\' flags=1)';
+    return this.baseUrl + '/_api/web/getfilebyserverrelativeurl(\'' + sourceUrl + '\')/moveto(newurl=\'' + destinationUrl + '\', flags=1)';
   }
 
   getFilesFromFoldersURL(folderName: string) {
@@ -668,12 +668,10 @@ export class SPOperationService {
   }
   getFolderCreationData(folderUrl: string) {
     const data = {
-      // tslint:disable-next-line:object-literal-key-quotes
+      // tslint:disable:object-literal-key-quotes
       '__metadata': {
-        // tslint:disable-next-line:object-literal-key-quotes
         'type': 'SP.Folder'
       },
-      // tslint:disable-next-line:object-literal-key-quotes
       'ServerRelativeUrl': folderUrl
     };
 

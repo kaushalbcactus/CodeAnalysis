@@ -98,7 +98,7 @@ export class FDDataShareService {
     ) { }
 
     async getCurrentUserInfo() {
-        return await this.spServices.getUserInfo(this.globalObject.sharePointPageObject.userId);
+        return await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
     }
 
     async getGroupInfo() {
@@ -258,7 +258,7 @@ export class FDDataShareService {
     async getRequiredData(): Promise<any> {
         if (!this.requiredData.length) {
             this.constantService.loader.isPSInnerLoaderHidden = false;
-            this.globalObject.userInfo = await this.spServices.getUserInfo(this.globalObject.sharePointPageObject.userId);
+            this.globalObject.userInfo = await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
             // const batchContents = new Array();
             // const batchGuid = this.spServices.generateUUID();
             const batchUrl = [];

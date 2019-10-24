@@ -280,7 +280,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForBillableCS);
             speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
                                                  .replace('{{EndDate}}', this.DateRange.endDate)
-                                                 .replace('{{UserID}}', this.globalService.sharePointPageObject.userId.toString());
+                                                 .replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
         // const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);

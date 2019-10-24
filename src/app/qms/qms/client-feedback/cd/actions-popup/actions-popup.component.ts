@@ -311,7 +311,7 @@ export class ActionsPopupComponent implements OnInit {
           let validityMailContent = validityPendingTemplate[0].Content;
           const validityMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction validation pending';
           validityMailContent = this.replaceContent(validityMailContent, '@@Val1@@',
-            this.global.currentUser.webAbsoluteUrl + '/quality#/qms/clientFeedback/clientDissatisfaction');
+            this.global.sharePointPageObject.webAbsoluteUrl + '/quality#/qms/clientFeedback/clientDissatisfaction');
           // tslint:disable: max-line-length
           this.spService.sendMail(strCDdAdminsEmail, this.global.currentUser.email, validityMailSubject, validityMailContent, this.global.currentUser.email);
         }
@@ -320,7 +320,7 @@ export class ActionsPopupComponent implements OnInit {
             let notifyMailContent = notifyMailTemplate[0].Content;
             const notifyMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction';
             const strTo = this.qc.selectedSegregation === 'Internal' ? cd.Internal.resourcesEmail.join(',') : cd.External.resourcesEmail.join(',');
-            notifyMailContent = this.replaceContent(notifyMailContent, '@@Val1@@', this.global.currentUser.webAbsoluteUrl + '/quality#/qms/personalFeedback/externalFeedback');
+            notifyMailContent = this.replaceContent(notifyMailContent, '@@Val1@@', this.global.sharePointPageObject.webAbsoluteUrl + '/quality#/qms/personalFeedback/externalFeedback');
             this.spService.sendMail(strTo, this.global.currentUser.email, notifyMailSubject, notifyMailContent, this.global.currentUser.email);
           }
         }
@@ -390,7 +390,7 @@ export class ActionsPopupComponent implements OnInit {
           let rejectMailContent = rejectTemplate[0].Content;
           const rejectMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction rejected';
           const strTo = this.qc.deliveryLevel2.emailIDs.join(',');
-          rejectMailContent = this.replaceContent(rejectMailContent, "@@Val1@@", this.global.currentUser.webAbsoluteUrl + '/quality#/qms/clientFeedback/clientDissatisfaction');
+          rejectMailContent = this.replaceContent(rejectMailContent, "@@Val1@@", this.global.sharePointPageObject.webAbsoluteUrl + '/quality#/qms/clientFeedback/clientDissatisfaction');
           this.spService.sendMail(strTo, this.global.currentUser.email, rejectMailSubject, rejectMailContent, this.global.currentUser.email);
         }
         this.setSuccessMessage.emit({type:'success', msg:'Success', detail: 'CD rejected for ' + this.qc.projectCode + '.'});
@@ -473,7 +473,7 @@ export class ActionsPopupComponent implements OnInit {
         let createMailContent = createCDTemplate[0].Content;
         const createMailSubject = this.qc.projectCode + '(#' + this.qc.qcID + '): Dissatisfaction';
         const strTo = delivery2EMail.toString();
-        createMailContent = this.replaceContent(createMailContent, "@@Val1@@", this.global.currentUser.webAbsoluteUrl + '/quality#/qms/clientFeedback/clientDissatisfaction');
+        createMailContent = this.replaceContent(createMailContent, "@@Val1@@", this.global.sharePointPageObject.webAbsoluteUrl + '/quality#/qms/clientFeedback/clientDissatisfaction');
         this.spService.sendMail(strTo, this.global.currentUser.email, createMailSubject, createMailContent, this.global.currentUser.email);
       }
       this.setSuccessMessage.emit({type:'success', msg:'Success', detail: 'CD Tagged Successfully!'});

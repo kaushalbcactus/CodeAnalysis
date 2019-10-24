@@ -52,7 +52,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     endDate: new Date(),
     count: 10,
     dateRange: {},
-    userId: this.global.currentUser.id,
+    userId: this.global.currentUser.userId,
     hideQuarters: true,
     hideDateRange: true,
     hideYears: true,
@@ -106,7 +106,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
       ).subscribe(() => this.alertMessage = null);
       // fetching manager resources only once page loads
       const filterObject = Object.assign({}, this.filterObj);
-      const resources = await this.getAllResources(this.global.sharePointPageObject.userId);
+      const resources = await this.getAllResources(this.global.currentUser.userId);
       this.feedbacksRows = await this.applyFilters(filterObject, resources);
       this.feedbackTable = [];
       this.feedbacksRows.forEach(row => {
@@ -167,7 +167,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     leaders = leaders.map(obj => ({
       ...obj, UserName: { ID: obj.Id, Title: obj.Title }
     }));
-    const currentUserIndex = leaders.findIndex(u => u.UserName.ID === this.global.sharePointPageObject.userId);
+    const currentUserIndex = leaders.findIndex(u => u.UserName.ID === this.global.currentUser.userId);
     if (currentUserIndex > -1) {
       leaders.splice(currentUserIndex, 1);
       resources = [...resources, ...leaders].map(item => item)

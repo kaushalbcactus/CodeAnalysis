@@ -664,7 +664,7 @@ export class DragDropComponent implements OnInit {
     const tasksObj = Object.assign({}, this.queryConfig);
     tasksObj.url = this.spServices.getReadURL(this.constants.listNames.MilestoneTasks.name,
                                                   this.taskAllocationService.taskallocationComponent.taskList);
-    tasksObj.url = tasksObj.url.replace(/{{status}}/gi, 'Yes');
+    tasksObj.url = tasksObj.url.replace(/{{status}}/gi, 'Active');
     tasksObj.listName = this.constants.listNames.MilestoneTasks.name;
     tasksObj.type = 'GET';
     batchUrl.push(tasksObj);

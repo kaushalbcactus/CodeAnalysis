@@ -266,7 +266,7 @@ export class PMCommonService {
 
   async getUserProperties(): Promise<any> {
     if (this.pmObject.projectContactsItems.length === 0) {
-      const userProp = await this.spServices.getUserInfo(this.globalObject.sharePointPageObject.userId);
+      const userProp = await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
       this.pmObject.currLoginInfo = userProp;
       if (userProp && userProp.Groups && userProp.Groups.results && userProp.Groups.results.length) {
         userProp.Groups.results.forEach(element => {
@@ -423,7 +423,7 @@ export class PMCommonService {
     const resourceGet = Object.assign({}, options);
     const resourceEndPoint = this.spServices.getReadURL('' + this.constant.listNames.ResourceCategorization.name + '',
       this.pmConstant.resourceQueryOptions);
-    resourceGet.url = resourceEndPoint.replace('{0}', '' + this.globalObject.sharePointPageObject.userId);
+    resourceGet.url = resourceEndPoint.replace('{0}', '' + this.globalObject.currentUser.userId);
     resourceGet.type = 'GET';
     resourceGet.listName = this.constant.listNames.ResourceCategorization.name;
     batchURL.push(resourceGet);
@@ -1390,7 +1390,7 @@ export class PMCommonService {
           taskObj.data.PrevTasks = projectCode + ' ' + milestoneObj.MilestoneName + ' SC';
           taskObj.data.Skill = 'CS';
           taskObj.data.assignedUserTimeZone = (new Date()).getTimezoneOffset() / 60 * -1;
-          taskObj.data.userId = this.globalObject.sharePointPageObject.userId;
+          taskObj.data.userId = this.globalObject.currentUser.userId;
           const crData = this.getTaskData(taskObj, projectCode, milestoneObj, null);
           const crCreate = Object.assign({}, options);
           crCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
@@ -1554,7 +1554,7 @@ export class PMCommonService {
       data.AssignedToId = milestoneTask.userId;
     }
     if (milestoneTask.Task === 'Send to client') {
-      data.AssignedToId = this.globalObject.sharePointPageObject.userId;
+      data.AssignedToId = this.globalObject.currentUser.userId;
     }
     if (milestoneTask.hasOwnProperty('PreviousTask')) {
       let sNextTask = '';

@@ -312,7 +312,7 @@ export class AllProjectsComponent implements OnInit {
       const projectObj = this.pmObject.allProjectItems.filter(c => c.ProjectCode === this.params.ProjectCode);
       if (this.params.ActionStatus) {
         if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.APPROVED) {
-          if ((this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.sharePointPageObject.userId)) {
+          if ((this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.currentUser.userId)) {
             if (projectObj[0].Status === this.constants.projectStatus.AwaitingCancelApproval) {
               await this.getGetIds(projectObj[0], this.pmConstant.ACTION.CANCEL_PROJECT);
               this.isApprovalAction = false;
@@ -339,7 +339,7 @@ export class AllProjectsComponent implements OnInit {
 
         if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.REJECTED) {
           window.history.pushState({}, 'Title', window.location.href.split('?')[0]);
-          if ((this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.sharePointPageObject.userId)) {
+          if ((this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.currentUser.userId)) {
             if (projectObj[0].Status === this.constants.projectStatus.AwaitingCancelApproval) {
               const piUdpate: any = {
                 Status: this.params.ProjectStatus,
@@ -366,7 +366,7 @@ export class AllProjectsComponent implements OnInit {
       }
       if (this.params.ProjectBudgetStatus) {
         if (projectObj && projectObj.length) {
-          if (this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.sharePointPageObject.userId) {
+          if (this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.currentUser.userId) {
             await this.approveRejectBudgetReduction(this.params.ProjectBudgetStatus, projectObj[0]);
           } else {
             this.messageService.add({
@@ -2026,7 +2026,7 @@ export class AllProjectsComponent implements OnInit {
     expanseQuery.filter = expanseQuery.filterByProjectCode.replace(/{{projectCode}}/gi, projectCode);
     const expanseEndPoint = this.spServices.getReadURL('' + this.constants.listNames.SpendingInfo.name +
       '', expanseQuery);
-    expanseGet.url = expanseEndPoint.replace('{0}', '' + this.globalObject.sharePointPageObject.userId);
+    expanseGet.url = expanseEndPoint.replace('{0}', '' + this.globalObject.currentUser.userId);
     expanseGet.type = 'GET';
     expanseGet.listName = this.constants.listNames.SpendingInfo.name;
     batchURL.push(expanseGet);

@@ -83,7 +83,7 @@ export class AdminViewComponent implements OnInit {
 
   async ngOnInit() {
     if (!this.global.currentUser.groups.length) {
-      const result = await this.spService.getUserInfo(this.global.sharePointPageObject.userId);
+      const result = await this.spService.getUserInfo(this.global.currentUser.userId);
       this.global.currentUser.groups = result.Groups.results ? result.Groups.results : [];
     }
     const isQMSAdmin = this.global.currentUser.groups.filter(u => u.Title === this.globalConstant.Groups.QMSAdmin);

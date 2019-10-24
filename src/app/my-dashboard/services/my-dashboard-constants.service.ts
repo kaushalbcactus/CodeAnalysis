@@ -282,7 +282,7 @@ export class MyDashboardConstantsService {
     let status = '';
     const currentTask = Object.assign({}, this.mydashboardComponent.previousTaskStatus);
     currentTask.filter = currentTask.filter.replace(/{{taskId}}/gi, task.ID)
-                                           .replace(/{{userID}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
+                                           .replace(/{{userID}}/gi, this.sharedObject.currentUser.userId.toString());
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, currentTask);
     for (const element of this.response) {
       if (element.AllowCompletion === 'No') {

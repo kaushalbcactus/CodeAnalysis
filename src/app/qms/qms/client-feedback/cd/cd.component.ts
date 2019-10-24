@@ -139,7 +139,7 @@ export class CDComponent implements OnInit, OnDestroy {
     const qcComponent = JSON.parse(JSON.stringify(this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent));
     const result = await this.spService.getGroupInfo(this.globalConstant.Groups.CDAdmin);
     this.global.cdAdmins = result.results ? result.results : [];
-    this.global.currentUser.isCDAdmin = this.global.cdAdmins.find(t => t.Id === this.global.sharePointPageObject.userId) ? true : false;
+    this.global.currentUser.isCDAdmin = this.global.cdAdmins.find(t => t.Id === this.global.currentUser.userId) ? true : false;
     // const lastMonthDate = new Date();
     // const daysPrior = 180;
     // lastMonthDate.setDate(lastMonthDate.getDate() - daysPrior);
@@ -189,7 +189,7 @@ export class CDComponent implements OnInit, OnDestroy {
    * @param arrResult - returns new array
    */
   appendPropertyTOObject(arrResult) {
-    const currentUserId = this.global.sharePointPageObject.userId;
+    const currentUserId = this.global.currentUser.userId;
     const datePipe = this.datepipe;
     arrResult.map((cd) => {
       let validity = 'valid';

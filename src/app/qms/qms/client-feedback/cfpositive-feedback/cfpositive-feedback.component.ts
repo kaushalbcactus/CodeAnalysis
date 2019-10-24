@@ -127,7 +127,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     const pfComponent = JSON.parse(JSON.stringify(this.qmsConstant.ClientFeedback.PositiveFeedbackComponent));
     const result = await this.spService.getGroupInfo(this.globalConstant.Groups.PFAdmin);
     this.global.pfAdmins = result.results ? result.results : [];
-    this.global.currentUser.isPFAdmin = this.global.pfAdmins.find(t => t.Id === this.global.sharePointPageObject.userId) ? true : false;
+    this.global.currentUser.isPFAdmin = this.global.pfAdmins.find(t => t.Id === this.global.currentUser.userId) ? true : false;
     // const lastMonthDate = new Date();
     // const daysPrior = 180;
     // lastMonthDate.setDate(lastMonthDate.getDate() - daysPrior);
@@ -163,7 +163,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
    * @param arrResult
    */
   appendPropertyTOObject(arrResult) {
-    const currentUserId = this.global.sharePointPageObject.userId;
+    const currentUserId = this.global.currentUser.userId;
     const datePipe = this.datepipe;
     arrResult.map((pf) => {
       const deliveryLeads = pf.DeliveryLeads.results ? pf.DeliveryLeads.results.filter(a => a.ID === currentUserId) : [];

@@ -88,7 +88,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit() {
-        const currentUserId = this.globalService.sharePointPageObject.userId;
+        const currentUserId = this.globalService.currentUser.userId;
         //Get  User Info 
         this.currentUserInfo(currentUserId);
 

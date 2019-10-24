@@ -402,7 +402,7 @@ export class PMObjectService {
   };
   public standardPMResponse: any = [];
   public nonStandardPMResponse: any = [];
-  public currentUserID = this.globalObject.sharePointPageObject.userId;
+  public currentUserID = this.globalObject.currentUser.userId;
   public oTaskAllocation: any = {
     oStandardServices: [],
     oResources: [],

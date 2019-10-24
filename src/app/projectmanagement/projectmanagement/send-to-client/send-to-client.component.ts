@@ -289,7 +289,7 @@ export class SendToClientComponent implements OnInit {
     const endDate = new Date(this.queryEndDate.setHours(23, 59, 59, 0));
     const startDateString = new Date(this.commonService.formatDate(startDate) + ' 00:00:00').toISOString();
     const endDateString = new Date(this.commonService.formatDate(endDate) + ' 23:59:00').toISOString();
-    const currentFilter = 'AssignedTo eq ' + this.globalObject.sharePointPageObject.userId + ' and ' +
+    const currentFilter = 'AssignedTo eq ' + this.globalObject.currentUser.userId + ' and ' +
       '(Status eq \'Not Started\') and (Task eq \'Send to client\') and ' +
       '((StartDate ge \'' + startDateString + '\' and StartDate le \'' + endDateString + '\') and ' +
       ' (DueDate ge \'' + startDateString + '\' and DueDate le \'' + endDateString + '\'))';

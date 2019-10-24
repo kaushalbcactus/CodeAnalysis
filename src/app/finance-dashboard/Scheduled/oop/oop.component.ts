@@ -244,7 +244,7 @@ export class OopComponent implements OnInit, OnDestroy {
             this.fdConstantsService.fdComponent.invoicesOOPCS);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
         if (!isManager) {
-            obj.filter = obj.filter.replace('{{UserID}}', this.globalService.sharePointPageObject.userId.toString());
+            obj.filter = obj.filter.replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
         const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, obj);
         // let obj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesOOP);

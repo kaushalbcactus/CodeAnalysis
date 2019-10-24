@@ -38,7 +38,7 @@ export class AccessleveldashboardComponent implements OnInit {
     const resourceGet = Object.assign({}, options);
     const resourceEndPoint = this.spServices.getReadURL('' + this.constant.listNames.ResourceCategorization.name + '',
       this.accessLevelconstantService.resourceQueryOptions);
-    resourceGet.url = resourceEndPoint.replace('{0}', '' + this.globalObject.sharePointPageObject.userId);
+    resourceGet.url = resourceEndPoint.replace('{0}', '' + this.globalObject.currentUser.userId);
     resourceGet.type = 'GET';
     resourceGet.listName = this.constant.listNames.ResourceCategorization.name;
     batchURL.push(resourceGet);

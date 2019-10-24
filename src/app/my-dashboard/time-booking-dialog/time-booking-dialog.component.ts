@@ -285,7 +285,7 @@ export class TimeBookingDialogComponent implements OnInit {
     // const batchGuid = this.spServices.generateUUID();
     const AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimelineForBooking);
     const minDate = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 4);
-    AllMilestones.filter = AllMilestones.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
+    AllMilestones.filter = AllMilestones.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
     AllMilestones.filter += AllMilestones.filterNotCompleted;
 
     AllMilestones.filter += AllMilestones.filterDate.replace(/{{startDateString}}/gi, startDate).replace(/{{endDateString}}/gi, endDate);
@@ -579,7 +579,7 @@ export class TimeBookingDialogComponent implements OnInit {
                 TimeSpentPerDay: timeSpentString,
                 TaskComments: dbTasks[i].Comments,
                 Title: dbTasks[i].ProjectCode + ' ' + dbTasks[i].Milestone + ' TB ' + this.sharedObject.currentUser.title,
-                AssignedToId: this.sharedObject.currentUser.id,
+                AssignedToId: this.sharedObject.currentUser.userId,
               };
               count++;
               const folderUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/Lists/Schedules/' + dbTasks[i].ProjectCode;

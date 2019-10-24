@@ -100,7 +100,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.createInvoiceFormFiled();
 
         //Get  User Info 
-        const currentUserId = this.globalService.sharePointPageObject.userId;
+        const currentUserId = this.globalService.currentUser.userId;
         this.currentUserInfo(currentUserId);
 
         // POC & PO Number

@@ -26,19 +26,31 @@ export class AppComponent {
   ngOnInit() {
     // tslint:disable-next-line: only-arrow-functions
     this.constantsService.loader.isPSInnerLoaderHidden = true;
-    if (environment.production) { if (window) { window.console.log = function () { }; } }
+    if (environment.production) { if (window) { window.console.log = () => { }; } }
     this.globalService.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
+    this.initSPPageObject();
+    this.initSPLoggedInUser();
+    this.initSPPageObject();
+  }
+
+  initSPPageObject() {
     this.globalService.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
-    this.globalService.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 79 : _spPageContextInfo.userId;
-    this.globalService.sharePointPageObject.email = window.location.href.indexOf('localhost') > -1 ? 'kaushal.bagrodia@cactusglobal.com' : _spPageContextInfo.userEmail;
-    this.globalService.sharePointPageObject.title = window.location.href.indexOf('localhost') > -1 ? 'Kaushal' : _spPageContextInfo.userDisplayName;
     this.globalService.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
       : _spPageContextInfo.webAbsoluteUrl;
     this.globalService.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
       : _spPageContextInfo.siteServerRelativeUrl;
     this.globalService.sharePointPageObject.serverRelativeUrl = this.globalService.sharePointPageObject.webRelativeUrl;
     this.globalService.sharePointPageObject.rootsite = window.origin;
+  }
+
+  initSPLoggedInUser() {
+    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 79 : _spPageContextInfo.userId;
+    this.globalService.currentUser.email = window.location.href.indexOf('localhost') > -1 ?
+                                           'kaushal.bagrodia@cactusglobal.com' : _spPageContextInfo.userEmail;
+    this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Kaushal' : _spPageContextInfo.userDisplayName;
+  }
+  initSPComponentRedirection() {
     // tslint:disable:no-string-literal
     window['pubSupportComponentReference'] = { component: this, zone: this._ngZone, loadPubSupport: () => this.goToPubSupport(), };
     window['qmsComponentReference'] = { component: this, zone: this._ngZone, loadQMS: () => this.goToQMS(), };
@@ -70,8 +82,6 @@ export class AppComponent {
       component: this, zone: this._ngZone,
       loadLeaveCalendar: () => this.goToLeaveCalendar(),
     };
-
-
   }
   goToQMS() {
     if (!window.location.href.includes('qms')) {

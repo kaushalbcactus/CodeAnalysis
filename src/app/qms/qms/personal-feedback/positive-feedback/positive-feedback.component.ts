@@ -120,7 +120,7 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
   }
 
   appendPropertyTOObject(arrResult) {
-    const currentUserId = this.global.sharePointPageObject.userId;
+    const currentUserId = this.global.currentUser.userId;
     const datePipe = this.datepipe;
     arrResult.map((pf) => {
       const deliveryLeads = pf.DeliveryLeads.results ? pf.DeliveryLeads.results.filter(a => a.ID === currentUserId) : [];

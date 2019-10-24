@@ -539,7 +539,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       'value': task.taskScope ? task.taskScope : ''
     });
     //// Send allocation email
-    this.caCommonService.triggerMail(this.resourceList[indexRes].UserName.EMail, this.globalService.sharePointPageObject.email,
+    this.caCommonService.triggerMail(this.resourceList[indexRes].UserName.EMail, this.globalService.currentUser.email,
       '', 'TaskCreation', objEmailBody, mailSubject);
 
     this.messageService.add({

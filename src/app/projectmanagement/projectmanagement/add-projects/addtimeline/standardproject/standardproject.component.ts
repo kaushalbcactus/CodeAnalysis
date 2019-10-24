@@ -136,7 +136,7 @@ export class StandardprojectComponent implements OnInit {
       this.standardServices = [];
       this.getProjectManagement();
       this.getStandardTemplate();
-      this.userProperties = await this.spService.getUserInfo(this.sharedObject.sharePointPageObject.userId);
+      this.userProperties = await this.spService.getUserInfo(this.sharedObject.currentUser.userId);
     } else {
       this.setDropdownField();
     }

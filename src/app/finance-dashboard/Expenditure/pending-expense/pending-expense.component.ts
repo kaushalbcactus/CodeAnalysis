@@ -323,7 +323,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         } else {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoCS);
             speInfoObj.filter = speInfoObj.filter.replace('{{Status}}', 'Created')
-                .replace('{{UserID}}', this.globalService.sharePointPageObject.userId.toString());
+                .replace('{{UserID}}', this.globalService.currentUser.userId.toString());
             speInfoObj.orderby = speInfoObj.orderby.replace('{{Status}}', 'Created');
         }
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);

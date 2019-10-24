@@ -262,7 +262,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             this.fdConstantsService.fdComponent.invoicesDelCS);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
         if (!isManager) {
-            obj.filter = obj.filter.replace('{{UserID}}', this.globalService.sharePointPageObject.userId.toString());
+            obj.filter = obj.filter.replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
         const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, obj);
         // const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);

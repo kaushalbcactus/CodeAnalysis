@@ -52,7 +52,7 @@ export class MyDashboardComponent implements OnInit {
       { label: 'Search Projects', routerLink: ['search-projects'] }
     ];
 
-    this.GetCurrentUser();
+    // this.GetCurrentUser();
   }
 
 
@@ -68,8 +68,8 @@ export class MyDashboardComponent implements OnInit {
   }
 
   async GetCurrentUser() {
-    var currentUser = await this.spServices.getUserInfo(this.sharedObject.sharePointPageObject.userId);
-    this.sharedObject.currentUser.id = currentUser.Id;
+    const currentUser = await this.spServices.getUserInfo(this.sharedObject.currentUser.userId);
+    this.sharedObject.currentUser.userId = currentUser.Id;
     this.sharedObject.currentUser.email = currentUser.Email;
     this.sharedObject.currentUser.title = currentUser.Title;
   }
