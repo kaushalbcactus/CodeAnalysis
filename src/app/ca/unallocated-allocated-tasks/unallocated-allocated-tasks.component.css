@@ -10,6 +10,41 @@
     background-color: #e28080 !important;
 }
 
+::ng-deep .ng-dropdown-panel {
+    width: 400px !important;
+    left: 0px !important;
+    right: 0px !important;
+}
+
+::ng-deep .ui-dropdown-item {
+    padding: 10px 10px 20px 10px !important;
+}
+
+::ng-deep .allocate-btn {
+    float: right !important;
+    padding: 2px 5px 2px 5px !important;
+    border: 1px solid #cdcdcd !important;
+    border-radius: 2px !important;
+}
+
+::ng-deep .allocate-btn:hover {
+    background-color: #f1cdcd;
+    border: 1px solid #f1cdcd;
+}
+
+::ng-deep .allocatedUnallocatedTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child div.ui-menu {
+    top: inherit !important;
+    left: inherit !important;
+    right: 50px !important;
+}
+
+::ng-deep .allocatedUnallocatedTable .ui-dropdown-panel {
+    left: inherit !important;
+    right: 0px !important;
+}
+
+
+/* 
 ::ng-deep .ui-menu.ui-menu-dynamic {
     position: fixed;
 }
@@ -30,8 +65,22 @@
     position: fixed !important;
     background: #ffffff !important;
     border: 1px solid #e6e6e6 !important;
+} */
+
+
+/* ::ng-deep .ui-dropdown-panel {
+    overflow: visible !important;
+    position: fixed !important;
+    right: 79px !important;
+    min-width: 20% !important;
 }
 
+::ng-deep .ui-dropdown {
+    min-width: 10.5em !important;
+} */
+
+
+/* 
  ::ng-deep .ui-widget-overlay {
     z-index: 6001 !important;
 }
@@ -39,4 +88,4 @@
 ::ng-deep .ui-dynamicdialog,
 ::ng-deep .ScopeComment {
     z-index: 7001 !important;
-}
+} */

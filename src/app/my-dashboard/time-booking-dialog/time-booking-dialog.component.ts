@@ -682,7 +682,6 @@ export class TimeBookingDialogComponent implements OnInit {
 
 
   openDialog(rowData) {
-    console.log(rowData);
     this.displayComment = true;
     this.timebookingRow = rowData;
   }

@@ -166,6 +166,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     }
 
+   
+
     this.sharedObject.currentUser.timeZone = this.commonService.getCurrentUserTimeZone();
     this.editorOptions = {
 
@@ -189,6 +191,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
   }
+ 
 
   async onPopupload() {
     await this.callReloadRes();
@@ -1336,7 +1339,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   openPopup(data, rowNode) {
 
-    console.log(rowNode);
     this.taskMenu = [];
     if (data.type === 'task' && data.milestoneStatus !== 'Completed' &&
       (data.status !== 'Completed' && data.status !== 'Abandon' && data.status !== 'Auto Closed'
@@ -1418,6 +1420,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         endTime: milestoneTask.pUserEnd,
       },
       width: '90vw',
+     
       header: milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.pName
         + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.pName,
       contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' }
@@ -1717,8 +1720,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
         this.assignUsers(allReturnedTasks);
         this.loaderenable = false;
         this.milestoneData = [...this.milestoneData];
-        console.log(this.milestoneData);
-
 
         this.changeInRestructure = this.milestoneData.find(c => c.data.editMode === true) !== undefined ? true : false;
         if (this.changeInRestructure) {

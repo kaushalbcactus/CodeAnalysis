@@ -297,7 +297,6 @@ export class BlockTimeDialogComponent implements OnInit {
         validation = false;
       }
     }
-    console.log(arrResults);
     return validation;
   }
 

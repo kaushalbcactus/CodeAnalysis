@@ -30,6 +30,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   selectedTab: string;
   taskTitle = '';
   displayCommentenable: boolean;
+  selectedButton: any;
+  selectedUser: any;
   constructor(
     private spServices: SPOperationService,
     private globalConstant: ConstantsService,
@@ -333,12 +335,37 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           resource.timeAvailable = dispTime;
         }
         task.selectedResources = [];
-        const res = this.caCommonService.sortResources(setResources, task);
+        task.displayselectedResources = [];
+        const res = this.commonService.sortResources(setResources, task);
         const resExtn = $.extend(true, [], res);
-        for (const retRes of resExtn) {
-          task.selectedResources.push(retRes);
+
+        if (resExtn) {
+          const UniqueUserType = resExtn.map(c => c.userType).filter((item, index) => resExtn.map(c => c.userType).indexOf(item) === index);
+
+
+          for (const retRes of UniqueUserType) {
+
+            const Users = resExtn.filter(c => c.userType === retRes);
+            const Items = [];
+            Users.forEach(user => {
+              Items.push({ label: user.UserName.Title + ' (' + user.timeAvailable + ') ', value: user }
+              );
+              task.selectedResources.push(user);
+            });
+
+            task.displayselectedResources.push({ label: retRes, items: Items });
+          }
         }
         this.messageService.clear();
+        if (this.selectedUser) {
+          this.selectedButton = Array.from(document.querySelectorAll('li'))
+            .find(el => el.textContent.indexOf(this.selectedUser.UserName.Title) > -1);
+          if (this.selectedButton) {
+            this.selectedButton.scrollIntoViewIfNeeded();
+            this.selectedButton = null;
+          }
+          this.selectedUser = null;
+        }
       }, 500);
     }
   }
@@ -367,11 +394,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   // *****************************************************************************************************
 
 
-  async showCapacityPopup(task, item, allocateResource) {
-    // this.messageService.add({
-    //   key: 'tc', severity: 'warn', sticky: true,
-    //   summary: 'Info Message', detail: 'Fetching User Capacity...'
-    // });
+  async showCapacityPopup(task, item, allocateResource, selectedButton) {
 
     const startTime = new Date(new Date(task.startTime).setHours(0, 0, 0, 0));
     let endDate = new Date(new Date(task.endTime).setDate(new Date(task.endTime).getDate() + 2));
@@ -401,10 +424,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         severity: 'info', summary: 'Info Message',
         detail: 'Please wait..'
       });
-
+      this.selectedUser = item;
       this.openedTask.allocatedResource = '';
       this.messageService.clear();
-      this.openedSelect.open();
+      this.openedSelect.show();
       this.selectOpened = false;
     });
 
@@ -425,7 +448,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         if (currentScheduleTask) {
           if (new Date(task.startDate).getTime() === new Date(currentScheduleTask.StartDate).getTime() &&
             new Date(task.dueDate).getTime() === new Date(currentScheduleTask.DueDate).getTime()) {
-            const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource);
+            const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource.UserName.ID);
             let resourceTimeZone = this.resourceList[indexRes].TimeZone.Title;
             resourceTimeZone = resourceTimeZone ? resourceTimeZone : '5.5';
             if (parseFloat(task.timezone) === parseFloat(resourceTimeZone)) {
@@ -479,9 +502,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   async completeEqualTask(task, unt, istimeZoneUpdate) {
     // tslint:disable-next-line: object-literal-key-quotes
-    const options = { 'AssignedToId': task.allocatedResource, 'CentralAllocationDone': 'Yes' };
+    const options = { 'AssignedToId': task.allocatedResource.UserName.ID, 'CentralAllocationDone': 'Yes' };
     // tslint:disable-next-line: object-literal-key-quotes
-    const timezoneOptions = { 'AssignedToId': task.allocatedResource, 'CentralAllocationDone': 'Yes', 'TimeZone': task.userTimeZone };
+    const timezoneOptions = { 'AssignedToId': task.allocatedResource.UserName.ID, 'CentralAllocationDone': 'Yes', 'TimeZone': task.userTimeZone };
     //// Save task and remove task from list 
     if (istimeZoneUpdate) {
       await this.spServices.updateItem(this.scheduleList, task.id, timezoneOptions, this.globalConstant.listNames.Schedules.type)
@@ -491,8 +514,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       // this.spServices.update(this.scheduleList, task.id, options, 'SP.Data.SchedulesListItem');
     }
 
-    await this.caCommonService.ResourceAllocation(task, this.projectInformationList);
-    const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource);
+    await this.commonService.ResourceAllocation(task, this.projectInformationList);
+    const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource.UserName.ID);
     const mailSubject = task.projectCode + '(' + task.projectName + ')' + ': Task created';
     const objEmailBody = [];
     objEmailBody.push({

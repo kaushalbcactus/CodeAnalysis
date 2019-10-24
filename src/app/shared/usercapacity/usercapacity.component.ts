@@ -1,13 +1,14 @@
-import { Component, OnInit, ElementRef, HostListener } from '@angular/core';
+import { Component, OnInit, ElementRef, HostListener, ChangeDetectorRef } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { DynamicDialogConfig, MessageService } from 'primeng/api';
+import { DynamicDialogConfig, MessageService, DialogService } from 'primeng/api';
 import { CAGlobalService } from 'src/app/ca/caservices/caglobal.service';
 import { CACommonService } from 'src/app/ca/caservices/cacommon.service';
 import { Alert } from 'selenium-webdriver';
 import { SharedConstantsService } from '../services/shared-constants.service';
+import { MilestoneTasksDialogComponent } from './milestone-tasks-dialog/milestone-tasks-dialog.component';
 
 @Component({
   selector: 'app-usercapacity',
@@ -35,6 +36,8 @@ export class UsercapacityComponent implements OnInit {
     type: '',
     listName: ''
   };
+  enableTaskDialog = false;
+  selectedTask: any;
   constructor(
     public datepipe: DatePipe, public config: DynamicDialogConfig,
     private spService: SPOperationService,
@@ -44,7 +47,9 @@ export class UsercapacityComponent implements OnInit {
     elRef: ElementRef,
     private globalService: GlobalService,
     private messageService: MessageService,
-    private sharedConstant: SharedConstantsService) {
+    private sharedConstant: SharedConstantsService,
+    private cdRef: ChangeDetectorRef,
+    public dialogService: DialogService) {
     this.elRef = elRef;
   }
 
@@ -64,6 +69,10 @@ export class UsercapacityComponent implements OnInit {
     arrDateFormat: [],
   }
 
+  ngAfterViewChecked() {
+    this.cdRef.detectChanges();
+  }
+
   // *************************************************************************************************************************************
   // load component for user capacity from diff. module
   // *************************************************************************************************************************************
@@ -71,8 +80,10 @@ export class UsercapacityComponent implements OnInit {
 
   async Onload(data) {
 
+
+
     this.messageService.add({
-      key: 'tc', severity: 'warn', sticky: true,
+      key: 'myKey1', severity: 'warn', sticky: true,
       summary: 'Info Message', detail: 'Fetching data...'
     });
 
@@ -98,13 +109,9 @@ export class UsercapacityComponent implements OnInit {
       }
       oCapacity.arrUserDetails = tempUserDetailsArray;
     }
-
-    console.log(oCapacity);
     this.oCapacity = oCapacity;
-
+ 
     this.calc(oCapacity);
-
-
   }
 
 
@@ -307,14 +314,6 @@ export class UsercapacityComponent implements OnInit {
         }
       }
     }
-
-
-
-
-
-    // console.log(arrResults);
-
-
     return oCapacity;
   }
 
@@ -503,7 +502,7 @@ export class UsercapacityComponent implements OnInit {
               oUser.tasks[j].timeAllocatedPerDay = '0:0';
             }
             if (oUser.dates[i].date >= taskStartDate && oUser.dates[i].date <= taskEndDate) {
-              const totalAllocatedTime = oUser.tasks[j].Task !== 'Adhoc' ? oUser.tasks[j].ExpectedTime : oUser.tasks[j].TimeSpent;
+              const TotalAllocatedTime = oUser.tasks[j].Task !== 'Adhoc' ? oUser.tasks[j].ExpectedTime : oUser.tasks[j].TimeSpent;
               taskCount++;
               const objTask = {
                 title: oUser.tasks[j].Title,
@@ -518,17 +517,17 @@ export class UsercapacityComponent implements OnInit {
                 displayTimeAllocatedPerDay: oUser.tasks[j].timeAllocatedPerDay !== null ?
                   oUser.tasks[j].timeAllocatedPerDay.replace('.', ':') : oUser.tasks[j].timeAllocatedPerDay,
                 status: oUser.tasks[j].Status,
-                totalAllocatedTime: totalAllocatedTime,
-                displayTotalAllocatedTime: totalAllocatedTime !== null ? oUser.tasks[j].Task !== 'Adhoc' ?
-                  totalAllocatedTime : totalAllocatedTime.replace('.', ':') : totalAllocatedTime
+                totalAllocatedTime: TotalAllocatedTime,
+                displayTotalAllocatedTime: TotalAllocatedTime !== null ? oUser.tasks[j].Task !== 'Adhoc' ?
+                  TotalAllocatedTime : TotalAllocatedTime.replace('.', ':') : TotalAllocatedTime
               };
               tasksDetails.push(objTask);
               const taskHrsMinObject = {
                 timeHrs: '0',
                 timeMins: '0'
               };
-              taskHrsMinObject.timeHrs = oUser.tasks[j].timeAllocatedPerDay.split(':')[0];
-              taskHrsMinObject.timeMins = oUser.tasks[j].timeAllocatedPerDay.split(':')[1];
+              taskHrsMinObject.timeHrs = oUser.tasks[j].timeAllocatedPerDay.replace('.', ':').split(':')[0];
+              taskHrsMinObject.timeMins = oUser.tasks[j].timeAllocatedPerDay.replace('.', ':').split(':')[1];
               arrHoursMins.push(taskHrsMinObject);
             }
           }
@@ -643,8 +642,8 @@ export class UsercapacityComponent implements OnInit {
             //   + "/_api/web/lists/getbytitle('" + this.Schedules + "')/items?$select=ID,Task,Title,ExpectedTime,StartDate,DueDate,TimeZone,Status,AssignedToText,ContentType/Name&$expand=ContentType&$filter=startswith(Title,'" + tasks[taskIndex].projectCode + "') and Milestone eq '" + tasks[taskIndex].milestone + "' and Status ne 'Abandon' and Status ne 'Completed' and Status ne 'Deleted' and Status ne 'Auto Closed'";
             // this.spService.getBatchBodyGet(batchContents, batchGuid, sSchedulesURL);
             const tasksObj = Object.assign({}, this.queryConfig);
-            tasksObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name,this.sharedConstant.userCapacity.getProjectInformation);
-            tasksObj.url = tasksObj.url.replace('{{projectCode}}', tasks[taskIndex].projectCode)
+            tasksObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name,this.sharedConstant.userCapacity.getProjectTasks);
+            tasksObj.url = tasksObj.url.replace('{{projectCode}}', tasks[taskIndex].projectCode).replace('{{milestone}}', tasks[taskIndex].milestone);
             tasksObj.listName = this.globalConstantService.listNames.Schedules.name;
             tasksObj.type = 'GET';
             batchUrl.push(tasksObj);
@@ -694,6 +693,7 @@ export class UsercapacityComponent implements OnInit {
                   return new Date(a.StartDate) < new Date(b.StartDate);
                 }) : [];
               }
+              debugger;
               tasks[i].milestoneTasks = miltasks;
               tasks[i].milestoneDeadline = lastSCTask.length > 0 ? lastSCTask[0].StartDate : '--';
               nCount = nCount + 2;
@@ -770,25 +770,34 @@ export class UsercapacityComponent implements OnInit {
           }
         }
         setTimeout(() => {
-          this.messageService.clear();
+          this.messageService.clear('myKey1');
         }, 500);
-
-
-
       }, 500);
-
 
     } else {
       this.height = 'inherit';
       this.verticalAlign = 'middle';
       setTimeout(() => {
-        this.messageService.clear();
+        this.messageService.clear('myKey1');
       }, 500);
     }
 
 
 
 
+  }
+
+  getMilestoneTasks(task) {
+
+    const ref = this.dialogService.open(MilestoneTasksDialogComponent, {
+      data: {
+        task
+      },
+      header: task.title,
+      width: '90vw',
+    });
+    ref.onClose.subscribe(async (tasks: any) => {
+    });
   }
   // open(content, tasks, task) {
   //   this.modalReference = this.modalService.open(content, { size: 'lg' });
@@ -799,10 +808,10 @@ export class UsercapacityComponent implements OnInit {
   //   this.milestoneTasks = selectedTask[0].milestoneTasks;
   // }
 
-  cancelScope() {
-    this.modalReference.close();
-    $('#txtScope').html('');
-  }
+  // cancelScope() {
+  //   this.modalReference.close();
+  //   $('#txtScope').html('');
+  // }
 
   collpaseTable(objt) {
     const oCollpase = $(objt).closest('.TaskPerDayRow');
@@ -814,4 +823,5 @@ export class UsercapacityComponent implements OnInit {
   onResize(event) {
     this.calc(this.oCapacity);
   }
+ 
 }
