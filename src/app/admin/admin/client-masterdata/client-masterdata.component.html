@@ -4,7 +4,7 @@
                 aria-hidden="true"></i>
         </a>
     </div>
-    <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New Client Form"
+    <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New Client Form" *ngIf="isUserSPMCA"
         (click)="showAddClientModal()">
     </p-button>
 </div>
@@ -437,7 +437,7 @@
         <a (click)="downloadExcel(sd)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
-        <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New Sub-Division"
+        <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New Sub-Division" *ngIf="isUserSPMCA"
             (click)="showAddSubDivision()">
         </p-button>
     </div>
@@ -580,7 +580,7 @@
         <a (click)="downloadExcel(poc)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
-        <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New POC"
+        <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New POC" *ngIf="isUserSPMCA"
             (click)="showAddPOC()"></p-button>
     </div>
     <div class="clearBoth"></div>
@@ -808,7 +808,7 @@
         <a (click)="downloadExcel(po)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
-        <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New Purchase Order"
+        <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New Purchase Order" *ngIf="isUserSPMCA"
             (click)="showAddPO()">
         </p-button>
     </div>

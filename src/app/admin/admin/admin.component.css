@@ -66,7 +66,7 @@ form{
     z-index:9999;
   }
   /** Loader **/
-@-webkit-keyframes spin {
+/* @-webkit-keyframes spin {
     0% { -webkit-transform: rotate(0deg); }
     100% { -webkit-transform: rotate(360deg); }
   }
@@ -107,7 +107,7 @@ form{
       top: 0;
       margin-bottom: 1%;
       position: relative;
-    }
+    } */
     .ng-invalid.ng-dirty:not(form), .ng-invalid:not(form).form-submitted {
         border: solid 2px lightcoral;
     }

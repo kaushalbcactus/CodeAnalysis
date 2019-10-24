@@ -11,6 +11,7 @@ import { MessageService } from 'primeng/api';
 import { AdminObjectService } from '../../services/admin-object.service';
 import { Router } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
+import { GlobalService } from 'src/app/Services/global.service';
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
@@ -156,7 +157,8 @@ export class UserProfileComponent implements OnInit {
     private router: Router,
     private zone: NgZone,
     private applicationRef: ApplicationRef,
-    private common: CommonService
+    private common: CommonService,
+    private globalObject: GlobalService,
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -306,11 +308,31 @@ export class UserProfileComponent implements OnInit {
    * Once the response return from REST Call, Iterate through each item and store into the
    * `userProfileData` array to display the result into Ng Prime table.
    */
+  isUserSPMUPA: boolean;
   async loadUserTable() {
     this.adminObject.isMainLoaderHidden = false;
-    const resCatFilter = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION);
-    resCatFilter.filter = resCatFilter.filter.replace(/{{isActive}}/gi,
-      this.adminConstants.LOGICAL_FIELD.YES);
+
+    let resCatFilter: any = {};
+    if (this.globalObject.userInfo.Groups.results.length) {
+      const groups = this.globalObject.userInfo.Groups.results.map(x => x.LoginName);
+      if (groups.indexOf('SPTeam') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('User_Profile_Admin') > -1) {
+        this.isUserSPMUPA = true;
+        resCatFilter = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION);
+        resCatFilter.filter = resCatFilter.filter.replace(/{{isActive}}/gi,
+          this.adminConstants.LOGICAL_FIELD.YES);
+      } else {
+        this.isUserSPMUPA = false;
+        resCatFilter = Object.assign({}, this.adminConstants.QUERY.GET_ACCESS_RESOURCE_CATEGERIZATION);
+        resCatFilter.filter = resCatFilter.filter.replace(/{{isActive}}/gi,
+          this.adminConstants.LOGICAL_FIELD.YES).replace(/{{UserId}}/gi,
+            this.globalObject.sharePointPageObject.userId);
+      }
+    }
+
+    // const resCatFilter = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION);
+    // resCatFilter.filter = resCatFilter.filter.replace(/{{isActive}}/gi,
+    //   this.adminConstants.LOGICAL_FIELD.YES);
+
     const sResult = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resCatFilter);
     const tempResult = [];
     if (sResult && sResult.length > 0) {

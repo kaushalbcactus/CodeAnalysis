@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
-
+import { AdminObjectService } from '../../services/admin-object.service';
+import { AdminConstantService } from '../../services/admin-constant.service';
 @Component({
   selector: 'app-entitlement',
   templateUrl: './entitlement.component.html',
@@ -11,7 +12,10 @@ export class EntitlementComponent implements OnInit {
   public navLinks = [];
   constructor(
     private spServices: SPOperationService,
-    private globalObject: GlobalService) { }
+    private globalObject: GlobalService,
+    public adminObject: AdminObjectService,
+    public adminConstantService: AdminConstantService
+    ) { }
 
   async ngOnInit() {
     this.navLinks = [

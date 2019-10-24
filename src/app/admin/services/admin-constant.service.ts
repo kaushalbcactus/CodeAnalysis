@@ -74,6 +74,23 @@ export class AdminConstantService {
       top: 4900,
       orderby: 'Modified desc'
     },
+    GET_ACCESS_RESOURCE_CATEGERIZATION: {
+      select: 'ID,Title,Account/ID,Account/Title,Bucket,Categories,Created,DateofExit,DateOfJoining,DeliverableExclusion/ID,'
+        + 'DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,Designation,GoLiveDate,InCapacity,'
+        + 'IsActive,IsLeader,Manager/ID,Manager/Title,Manager/EMail,ManagerEffectiveDate,MaxHrs,Modified,Pooled,Practice_x0020_Area,'
+        + 'PracticeAreaEffectiveDate,PrimarySkill,PrimarySkillEffectiveDate,Ready_x0020_To,Role,SkillLevel/ID,SkillLevel/Title,'
+        + 'SkillLevelEffectiveDate,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,Tasks/Title,TimeZone/ID,TimeZone/Title,'
+        + 'TimeZone/TimeZoneName,TimeZoneEffectiveDate,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,'
+        + 'Editor/ID,Editor/Title,WorkingSunday,WorkingMonday,WorkingTuesday,WorkingWednesday,WorkingThursday,WorkingFriday,'
+        + 'WorkingSaturday',
+      expand: 'Account/ID,Account/Title,DeliverableExclusion/ID,DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,'
+        + 'Manager/ID,Manager/Title,Manager/EMail,SkillLevel/ID,SkillLevel/Title,TA/ID,TA/Title,TAExclusion/ID,TAExclusion/Title,Tasks/ID,'
+        + 'Tasks/Title,TimeZone/ID,TimeZone/Title,TimeZone/TimeZoneName,UserName/ID,UserName/Title,UserName/EMail,Author/ID,Author/Title,'
+        + 'Editor/ID,Editor/Title',
+      filter: 'IsActive eq \'{{isActive}}\' and Manager/ID eq \'{{UserId}}\'',
+      top: 4900,
+      orderby: 'Modified desc'
+    },
     GET_RESOURCE_CATEGERIZATION_BY_ID: {
       select: 'ID,Title,Account/ID,Account/Title,Bucket,Categories,Created,DateofExit,DateOfJoining,DeliverableExclusion/ID,'
         + 'DeliverableExclusion/Title,Deliverables/ID,Deliverables/Title,Designation,GoLiveDate,InCapacity,'
@@ -171,6 +188,17 @@ export class AdminConstantService {
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,'
         + 'DeliveryLevel2/Title,Editor/ID,Editor/Title',
       filter: 'IsActive eq \'{{isActive}}\'',
+      orderby: 'Modified desc',
+      top: 4900
+    },
+    GET_ACCESS_CLIENT_LEGAL_ENTITY_BY_ACTIVE: {
+      select: 'ID,Title,Acronym,Geography,ListName,Market,ClientGroup,InvoiceName,Currency,APAddress,APEmail,Template,'
+        + 'DistributionList,Realization,TimeZone,Notes,PORequired,BillingEntity,Bucket,IsCentrallyAllocated,IsActive,'
+        + 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,'
+        + 'DeliveryLevel2/Title,Editor/ID,Editor/Title,Modified',
+      expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,'
+        + 'DeliveryLevel2/Title,Editor/ID,Editor/Title',
+      filter: 'IsActive eq \'{{isActive}}\' and (CMLevel1/ID eq \'{{UserId}}\' or CMLevel2/ID eq \'{{UserId}}\' or DeliveryLevel1/ID eq \'{{UserId}}\' or DeliveryLevel2/ID eq \'{{UserId}}\') ',
       orderby: 'Modified desc',
       top: 4900
     },
@@ -344,4 +372,19 @@ export class AdminConstantService {
   public GROUP_CONSTANT_TEXT = {
     SP_TEAM: '-Managed By SPTeam'
   };
+
+  public DefaultMenu = {
+    List: []
+  }
+
+  public EntitleMentMenu = {
+    List: []
+  }
+  
+  public TabMenu = {
+    ClientMaster: [],
+    UserProfile: [],
+    Attribute: [],
+    Entitlement: []
+  }
 }

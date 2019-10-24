@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { AuthGuard } from './auth/auth.guard';
 import { FdAuthGuard } from './finance-dashboard/fd-AuthGuard/fd-auth.guard';
+import { AdminAuthGuard } from './admin/auth/admin-auth.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -13,7 +14,7 @@ const routes: Routes = [
   { path: 'myDashboard', loadChildren: './my-dashboard/my-dashboard.module#MyDashboardModule' },
   { path: 'taskAllocation', loadChildren: './task-allocation/task-allocation.module#TaskAllocationModule' },
   { path: 'financeDashboard', loadChildren: './finance-dashboard/finance-dashboard.module#FinanceDashboardModule' },
-  { path: 'admin', loadChildren: './admin/admin.module#AdminModule' }
+  { path: 'admin', canLoad: [AdminAuthGuard], loadChildren: './admin/admin.module#AdminModule' }
 ];
 
 

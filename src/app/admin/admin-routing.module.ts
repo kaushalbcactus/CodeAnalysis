@@ -24,7 +24,7 @@ const routes: Routes = [
     path: '',
     component: AdminComponent,
     children: [
-      { path: '', redirectTo: 'attribute', pathMatch: 'prefix' },
+      { path: '', redirectTo: 'clientMasterData', pathMatch: 'prefix' },
       {
         path: 'attribute',
         component: AttributeComponent,

@@ -5,7 +5,7 @@
   <a (click)="loadUserTable()" class="download-worksheet td-none mr-10"><i class="pi pi-refresh" aria-hidden="true"></i>
   </a>
 </div>
-<div [hidden]='false' class="top-right-title">
+<div [hidden]='false' class="top-right-title" *ngIf="isUserSPMUPA">
   <input *ngIf="showUserInput" class="mr-5" type="text" (keydown.enter)="searchInactiveUser(); $event.preventDefault()"
     (change)="searchInactiveUser()" id="userSelect" placeholder="User" pInputText [(ngModel)]="providedUser" />
   <p-dropdown [options]="userFilterOptions" [(ngModel)]="selectedOption" styleClass="custom-dropDown"

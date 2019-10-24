@@ -24,6 +24,7 @@ import { ReferenceDataComponent } from './admin/reference-data/reference-data.co
 import { RulesComponent } from './admin/rules/rules.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { GroupDescriptionComponent } from './admin/entitlement/group-description/group-description.component';
+
 @NgModule({
   declarations: [
     AdminComponent,
@@ -51,6 +52,9 @@ import { GroupDescriptionComponent } from './admin/entitlement/group-description
     FormsModule,
     ReactiveFormsModule,
     NgbModule,
+  ],
+  providers: [
+    
   ]
 })
 export class AdminModule { }

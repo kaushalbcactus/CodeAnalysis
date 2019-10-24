@@ -214,7 +214,7 @@ export class ClientMasterdataComponent implements OnInit {
     private adminCommonService: AdminCommonService,
     private adminConstants: AdminConstantService,
     private adminObject: AdminObjectService,
-    private constants: ConstantsService,
+    private constantsService: ConstantsService,
     private spServices: SPOperationService,
     private confirmationService: ConfirmationService,
     private platformLocation: PlatformLocation,
@@ -375,13 +375,29 @@ export class ClientMasterdataComponent implements OnInit {
    * The table have option for sorting, pagination, edit and delete the client legal entity.
    *
    */
+  isUserSPMCA: boolean;
   async loadClientTable() {
-    this.adminObject.isMainLoaderHidden = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
+    // this.constantsService.loader.isPSInnerLoaderHidden = false;
     const tempArray = [];
-    const getClientLegalInfo = Object.assign({}, this.adminConstants.QUERY.GET_ALL_CLIENT_LEGAL_ENTITY_BY_ACTIVE);
-    getClientLegalInfo.filter = getClientLegalInfo.filter.replace(/{{isActive}}/gi,
-      this.adminConstants.LOGICAL_FIELD.YES);
-    const results = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, getClientLegalInfo);
+    let getClientLegalInfo: any = {};
+    if (this.globalObject.userInfo.Groups.results.length) {
+      const groups = this.globalObject.userInfo.Groups.results.map(x => x.LoginName);
+      if (groups.indexOf('SPTeam') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('Client_Admin') > -1) {
+        this.isUserSPMCA = true;
+        getClientLegalInfo = Object.assign({}, this.adminConstants.QUERY.GET_ALL_CLIENT_LEGAL_ENTITY_BY_ACTIVE);
+        getClientLegalInfo.filter = getClientLegalInfo.filter.replace(/{{isActive}}/gi,
+          this.adminConstants.LOGICAL_FIELD.YES);
+      } else {
+        this.isUserSPMCA = false;
+        getClientLegalInfo = Object.assign({}, this.adminConstants.QUERY.GET_ACCESS_CLIENT_LEGAL_ENTITY_BY_ACTIVE);
+        getClientLegalInfo.filter = getClientLegalInfo.filter.replace(/{{isActive}}/gi,
+          this.adminConstants.LOGICAL_FIELD.YES).replace(/{{UserId}}/gi,
+            this.globalObject.sharePointPageObject.userId);
+      }
+    }
+    // const getClientLegalInfo = Object.assign({}, this.adminConstants.QUERY.GET_ALL_CLIENT_LEGAL_ENTITY_BY_ACTIVE);
+    const results = await this.spServices.readItems(this.constantsService.listNames.ClientLegalEntity.name, getClientLegalInfo);
     if (results && results.length) {
       this.resultResponse.ClientLegalEntityArray = results;
       results.forEach(item => {
@@ -419,7 +435,7 @@ export class ClientMasterdataComponent implements OnInit {
       this.clientMasterDataRows = tempArray;
       this.colFilters(this.clientMasterDataRows);
     }
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   /**
    * Construct a method to map the array values into particular column dropdown.
@@ -463,7 +479,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showAddClientModal() {
-    this.adminObject.isMainLoaderHidden = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
     await this.loadClientDropdown();
     this.addClient.reset();
     this.addClient.controls.name.enable();
@@ -474,7 +490,7 @@ export class ClientMasterdataComponent implements OnInit {
     this.showEditClient = false;
     this.buttonLabel = 'Submit';
     this.showaddClientModal = true;
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
     this.cmObject.isClientFormSubmit = false;
   }
   /**
@@ -506,10 +522,10 @@ export class ClientMasterdataComponent implements OnInit {
     const clientGroupFilter = Object.assign({}, this.adminConstants.QUERY.GET_CLIENT_GROUP_BY_ACTIVE);
     clientGroupFilter.filter = clientGroupFilter.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES);
-    clientGroupGet.url = this.spServices.getReadURL(this.constants.listNames.ClientGroup.name,
+    clientGroupGet.url = this.spServices.getReadURL(this.constantsService.listNames.ClientGroup.name,
       clientGroupFilter);
     clientGroupGet.type = 'GET';
-    clientGroupGet.listName = this.constants.listNames.ClientGroup.name;
+    clientGroupGet.listName = this.constantsService.listNames.ClientGroup.name;
     batchURL.push(clientGroupGet);
 
     // Get market from ClientLegalEntity list ##2
@@ -517,19 +533,19 @@ export class ClientMasterdataComponent implements OnInit {
     const marketFilter = Object.assign({}, this.adminConstants.QUERY.GET_CHOICEFIELD);
     marketFilter.filter = marketFilter.filter.replace(/{{choiceField}}/gi,
       this.adminConstants.CHOICE_FIELD_NAME.MARKET);
-    marketGet.url = this.spServices.getChoiceFieldUrl(this.constants.listNames.ClientLegalEntity.name,
+    marketGet.url = this.spServices.getChoiceFieldUrl(this.constantsService.listNames.ClientLegalEntity.name,
       marketFilter);
     marketGet.type = 'GET';
-    marketGet.listName = this.constants.listNames.ClientLegalEntity.name;
+    marketGet.listName = this.constantsService.listNames.ClientLegalEntity.name;
     batchURL.push(marketGet);
 
     // Get TimeZones from TimeZones list ##3
     const timezonesGet = Object.assign({}, options);
     const timeZonesFilter = Object.assign({}, this.adminConstants.QUERY.GET_TIMEZONES);
-    timezonesGet.url = this.spServices.getReadURL(this.constants.listNames.TimeZones.name,
+    timezonesGet.url = this.spServices.getReadURL(this.constantsService.listNames.TimeZones.name,
       timeZonesFilter);
     timezonesGet.type = 'GET';
-    timezonesGet.listName = this.constants.listNames.TimeZones.name;
+    timezonesGet.listName = this.constantsService.listNames.TimeZones.name;
     batchURL.push(timezonesGet);
 
     // Get billing entity from BillingEntity list ##4;
@@ -537,10 +553,10 @@ export class ClientMasterdataComponent implements OnInit {
     const billingEntityFilter = Object.assign({}, this.adminConstants.QUERY.GET_BILLING_ENTITY_BY_ACTIVE);
     billingEntityFilter.filter = billingEntityFilter.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES);
-    billingEntityGet.url = this.spServices.getReadURL(this.constants.listNames.BillingEntity.name,
+    billingEntityGet.url = this.spServices.getReadURL(this.constantsService.listNames.BillingEntity.name,
       billingEntityFilter);
     billingEntityGet.type = 'GET';
-    billingEntityGet.listName = this.constants.listNames.BillingEntity.name;
+    billingEntityGet.listName = this.constantsService.listNames.BillingEntity.name;
     batchURL.push(billingEntityGet);
 
     // Get resource from ResourceCategorization list ##5;
@@ -548,10 +564,10 @@ export class ClientMasterdataComponent implements OnInit {
     const resourceFilter = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME);
     resourceFilter.filter = resourceFilter.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES);
-    resourceGet.url = this.spServices.getReadURL(this.constants.listNames.ResourceCategorization.name,
+    resourceGet.url = this.spServices.getReadURL(this.constantsService.listNames.ResourceCategorization.name,
       resourceFilter);
     resourceGet.type = 'GET';
-    resourceGet.listName = this.constants.listNames.ResourceCategorization.name;
+    resourceGet.listName = this.constantsService.listNames.ResourceCategorization.name;
     batchURL.push(resourceGet);
 
     // Get currency from Currency list ##6;
@@ -559,19 +575,19 @@ export class ClientMasterdataComponent implements OnInit {
     const currencyFilter = Object.assign({}, this.adminConstants.QUERY.GET_CURRENCY_BY_ACTIVE);
     currencyFilter.filter = currencyFilter.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES);
-    currencyGet.url = this.spServices.getReadURL(this.constants.listNames.Currency.name,
+    currencyGet.url = this.spServices.getReadURL(this.constantsService.listNames.Currency.name,
       currencyFilter);
     currencyGet.type = 'GET';
-    currencyGet.listName = this.constants.listNames.Currency.name;
+    currencyGet.listName = this.constantsService.listNames.Currency.name;
     batchURL.push(currencyGet);
 
     // Get Bucket value  from FocusGroup list ##7;
     const bucketGet = Object.assign({}, options);
     const bucketFilter = Object.assign({}, this.adminConstants.QUERY.GET_BUCKET);
-    bucketGet.url = this.spServices.getReadURL(this.constants.listNames.FocusGroup.name,
+    bucketGet.url = this.spServices.getReadURL(this.constantsService.listNames.FocusGroup.name,
       bucketFilter);
     bucketGet.type = 'GET';
-    bucketGet.listName = this.constants.listNames.FocusGroup.name;
+    bucketGet.listName = this.constantsService.listNames.FocusGroup.name;
     batchURL.push(bucketGet);
 
     const sResults = await this.spServices.executeBatch(batchURL);
@@ -784,11 +800,11 @@ export class ClientMasterdataComponent implements OnInit {
         }
       }
       // write the save logic using rest api.
-      this.adminObject.isMainLoaderHidden = false;
+      this.constantsService.loader.isPSInnerLoaderHidden = false;
       const clientData = await this.getClientData();
       if (!this.showEditClient) {
-        const results = await this.spServices.createItem(this.constants.listNames.ClientLegalEntity.name,
-          clientData, this.constants.listNames.ClientLegalEntity.type);
+        const results = await this.spServices.createItem(this.constantsService.listNames.ClientLegalEntity.name,
+          clientData, this.constantsService.listNames.ClientLegalEntity.type);
         if (!results.hasOwnProperty('hasError') && !results.hasError) {
           await this.createCLEMapping();
           this.messageService.add({
@@ -799,8 +815,8 @@ export class ClientMasterdataComponent implements OnInit {
         }
       }
       if (this.showEditClient) {
-        const results = await this.spServices.updateItem(this.constants.listNames.ClientLegalEntity.name, this.currClientObj.ID,
-          clientData, this.constants.listNames.ClientLegalEntity.type);
+        const results = await this.spServices.updateItem(this.constantsService.listNames.ClientLegalEntity.name, this.currClientObj.ID,
+          clientData, this.constantsService.listNames.ClientLegalEntity.type);
         if (this.currClientObj.Bucket !== this.addClient.value.bucket) {
           await this.updateCLEMapping();
         }
@@ -811,7 +827,7 @@ export class ClientMasterdataComponent implements OnInit {
         await this.loadRecentRecords(this.currClientObj.ID, this.showEditClient);
       }
       this.showaddClientModal = false;
-      this.adminObject.isMainLoaderHidden = true;
+      this.constantsService.loader.isPSInnerLoaderHidden = true;
     } else {
       this.cmObject.isClientFormSubmit = true;
     }
@@ -838,8 +854,8 @@ export class ClientMasterdataComponent implements OnInit {
       Bucket: this.addClient.value.bucket,
       StartDate: !this.showEditClient ? new Date() : this.addClient.value.bucketEffectiveDate
     };
-    const results = await this.spServices.createItem(this.constants.listNames.CLEBucketMapping.name,
-      data, this.constants.listNames.CLEBucketMapping.type);
+    const results = await this.spServices.createItem(this.constantsService.listNames.CLEBucketMapping.name,
+      data, this.constantsService.listNames.CLEBucketMapping.type);
   }
   /**
    * Construct a method is to update item in `CLEBucketMapping` list.
@@ -856,14 +872,14 @@ export class ClientMasterdataComponent implements OnInit {
     const cleMappingGet = Object.assign({}, this.adminConstants.QUERY.GET_CLE_MAPPING_BY_ID);
     cleMappingGet.filter = cleMappingGet.filter.replace(/{{clientLegalEntity}}/gi,
       this.currClientObj.ClientLegalEntity);
-    const result = await this.spServices.readItems(this.constants.listNames.CLEBucketMapping.name, cleMappingGet);
+    const result = await this.spServices.readItems(this.constantsService.listNames.CLEBucketMapping.name, cleMappingGet);
     if (result && result.length) {
       const tempDate = this.addClient.value.bucketEffectiveDate;
       const updateItem = {
         EndDate: new Date(new Date(tempDate).setDate(new Date(tempDate).getDate() - 1))
       };
-      const updateResult = await this.spServices.updateItem(this.constants.listNames.CLEBucketMapping.name, result[0].ID,
-        updateItem, this.constants.listNames.CLEBucketMapping.type);
+      const updateResult = await this.spServices.updateItem(this.constantsService.listNames.CLEBucketMapping.name, result[0].ID,
+        updateItem, this.constantsService.listNames.CLEBucketMapping.type);
       this.createCLEMapping();
     }
   }
@@ -883,7 +899,7 @@ export class ClientMasterdataComponent implements OnInit {
     const resGet = Object.assign({}, this.adminConstants.QUERY.GET_CLIENT_LEGAL_ENTITY_BY_ID);
     resGet.filter = resGet.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES).replace(/{{Id}}/gi, ID);
-    const result = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, resGet);
+    const result = await this.spServices.readItems(this.constantsService.listNames.ClientLegalEntity.name, resGet);
     if (result && result.length) {
       const item = result[0];
       const obj = Object.assign({}, this.adminObject.clientObj);
@@ -981,15 +997,19 @@ export class ClientMasterdataComponent implements OnInit {
    * It will dynamically add the submenu in the table.
    */
   openMenuPopup(data) {
+    this.items = [];
     this.currClientObj = data;
-    console.log(this.currClientObj);
     this.items = [
       { label: 'Edit', command: (e) => this.showEditCLientModal() },
-      { label: 'Delete', command: (e) => this.deleteClient() },
       { label: 'Sub-Division Details', command: (e) => this.showSubDivision() },
       { label: 'Point of Contact', command: (e) => this.showPOC() },
       { label: 'Purchase Order', command: (e) => this.showPO() }
     ];
+    if (this.isUserSPMCA) {
+      this.items.join();
+      this.items.splice(1, 0, { label: 'Delete', command: (e) => this.deleteClient() });
+      this.items.join();
+    }
   }
   /**
    * Construct a method to show the edit form to edit the client legal entity.
@@ -1003,7 +1023,7 @@ export class ClientMasterdataComponent implements OnInit {
    */
   async showEditCLientModal() {
     this.cmObject.isClientFormSubmit = false;
-    this.adminObject.isMainLoaderHidden = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
     this.buttonLabel = 'Update';
     this.addClient.controls.name.disable();
     this.addClient.controls.acronym.disable();
@@ -1043,7 +1063,7 @@ export class ClientMasterdataComponent implements OnInit {
     });
     this.showaddClientModal = true;
     this.showEditClient = true;
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   /**
    * Construct a method to remove the item from table.
@@ -1064,8 +1084,8 @@ export class ClientMasterdataComponent implements OnInit {
         const updateData = {
           IsActive: this.adminConstants.LOGICAL_FIELD.NO
         };
-        this.confirmUpdate(this.currClientObj, updateData, this.constants.listNames.ClientLegalEntity.name,
-          this.constants.listNames.ClientLegalEntity.type, this.adminConstants.DELETE_LIST_ITEM.CLIENT_LEGAL_ENTITY);
+        this.confirmUpdate(this.currClientObj, updateData, this.constantsService.listNames.ClientLegalEntity.name,
+          this.constantsService.listNames.ClientLegalEntity.type, this.adminConstants.DELETE_LIST_ITEM.CLIENT_LEGAL_ENTITY);
       },
     });
 
@@ -1079,7 +1099,7 @@ export class ClientMasterdataComponent implements OnInit {
    * @param itemName pass the item name from which list we want to delete record.
    */
   async confirmUpdate(data, updateData, listName, type, itemName) {
-    this.adminObject.isMainLoaderHidden = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
     switch (itemName) {
       case this.adminConstants.DELETE_LIST_ITEM.CLIENT_LEGAL_ENTITY:
@@ -1119,7 +1139,7 @@ export class ClientMasterdataComponent implements OnInit {
         this.POFilters(this.PORows);
         break;
     }
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
@@ -1131,14 +1151,14 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showSubDivision() {
-    this.adminObject.isMainLoaderHidden = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
     const tempArray = [];
     this.subDivisionDetailsRows = [];
     const getSubDivisionInfo = Object.assign({}, this.adminConstants.QUERY.GET_SUB_DIVISION_BY_ACTIVE);
     getSubDivisionInfo.filter = getSubDivisionInfo.filter
       .replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity);
-    const results = await this.spServices.readItems(this.constants.listNames.ClientSubdivision.name, getSubDivisionInfo);
+    const results = await this.spServices.readItems(this.constantsService.listNames.ClientSubdivision.name, getSubDivisionInfo);
     if (results && results.length) {
       results.forEach(item => {
         const obj = Object.assign({}, this.adminObject.subDivisionObj);
@@ -1157,7 +1177,7 @@ export class ClientMasterdataComponent implements OnInit {
       this.subDivisionDetailsRows = tempArray;
       this.subDivisionFilters(this.subDivisionDetailsRows);
     }
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
     this.showSubDivisionDetails = true;
   }
   /**
@@ -1201,7 +1221,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showAddSubDivision() {
-    this.adminObject.isMainLoaderHidden = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
     this.cmObject.isSubDivisionFormSubmit = false;
     this.subDivisionform.reset();
     await this.loadSubDivisionDropdown();
@@ -1209,7 +1229,7 @@ export class ClientMasterdataComponent implements OnInit {
     this.buttonLabel = 'Submit';
     this.showaddSubDivision = true;
     this.subDivisionform.controls.subDivision_Name.enable();
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   /**
    * Construct a method to load the sub division dropdown.
@@ -1228,7 +1248,7 @@ export class ClientMasterdataComponent implements OnInit {
       const getResourceCat = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME);
       getResourceCat.filter = getResourceCat.filter.replace(/{{isActive}}/gi,
         this.adminConstants.LOGICAL_FIELD.YES);
-      const result = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, getResourceCat);
+      const result = await this.spServices.readItems(this.constantsService.listNames.ResourceCategorization.name, getResourceCat);
       this.separateResourceCat(result);
     }
   }
@@ -1261,11 +1281,11 @@ export class ClientMasterdataComponent implements OnInit {
         }
       }
       // write the save logic using rest api.
-      this.adminObject.isMainLoaderHidden = false;
+      this.constantsService.loader.isPSInnerLoaderHidden = false;
       const subDivisionData = await this.getSubDivisionData();
       if (!this.showeditSubDivision) {
-        const results = await this.spServices.createItem(this.constants.listNames.ClientSubdivision.name,
-          subDivisionData, this.constants.listNames.ClientSubdivision.type);
+        const results = await this.spServices.createItem(this.constantsService.listNames.ClientSubdivision.name,
+          subDivisionData, this.constantsService.listNames.ClientSubdivision.type);
         if (!results.hasOwnProperty('hasError') && !results.hasError) {
           this.messageService.add({
             key: 'adminCustom', severity: 'success', summary: 'Success Message',
@@ -1275,8 +1295,8 @@ export class ClientMasterdataComponent implements OnInit {
         }
       }
       if (this.showeditSubDivision) {
-        const results = await this.spServices.updateItem(this.constants.listNames.ClientSubdivision.name, this.currSubDivisionObj.ID,
-          subDivisionData, this.constants.listNames.ClientSubdivision.type);
+        const results = await this.spServices.updateItem(this.constantsService.listNames.ClientSubdivision.name, this.currSubDivisionObj.ID,
+          subDivisionData, this.constantsService.listNames.ClientSubdivision.type);
         this.messageService.add({
           key: 'adminCustom', severity: 'success',
           summary: 'Success Message', detail: 'The subdivision ' + this.currSubDivisionObj.SubDivision + ' is updated successfully.'
@@ -1284,7 +1304,7 @@ export class ClientMasterdataComponent implements OnInit {
         await this.loadRecentSubDivisionRecords(this.currSubDivisionObj.ID, this.showeditSubDivision);
       }
       this.showaddSubDivision = false;
-      this.adminObject.isMainLoaderHidden = true;
+      this.constantsService.loader.isPSInnerLoaderHidden = true;
     } else {
       this.cmObject.isSubDivisionFormSubmit = true;
     }
@@ -1328,7 +1348,7 @@ export class ClientMasterdataComponent implements OnInit {
       .replace(/{{isActive}}/gi, this.adminConstants.LOGICAL_FIELD.YES)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
       .replace(/{{Id}}/gi, ID);
-    const result = await this.spServices.readItems(this.constants.listNames.ClientSubdivision.name, subDivisionGet);
+    const result = await this.spServices.readItems(this.constantsService.listNames.ClientSubdivision.name, subDivisionGet);
     if (result && result.length) {
       const item = result[0];
       const obj = Object.assign({}, this.adminObject.subDivisionObj);
@@ -1365,8 +1385,17 @@ export class ClientMasterdataComponent implements OnInit {
    */
   subDivisionMenu(data) {
     this.currSubDivisionObj = data;
-    this.subDivisionItems = [{ label: 'Edit', command: (e) => this.showEditSubDivision() },
-    { label: 'Delete', command: (e) => this.deleteSubDivision() }];
+    if (this.isUserSPMCA) {
+      this.subDivisionItems = [
+        { label: 'Edit', command: (e) => this.showEditSubDivision() },
+        { label: 'Delete', command: (e) => this.deleteSubDivision() }
+      ];
+    } else {
+      this.subDivisionItems = [
+        { label: 'You dont have permission, please contact SP Team' }
+      ]
+    }
+
   }
   /**
    * Construct a method to show the edit form to edit the sub division.
@@ -1379,7 +1408,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showEditSubDivision() {
-    this.adminObject.isMainLoaderHidden = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
     this.cmObject.isSubDivisionFormSubmit = false;
     this.buttonLabel = 'Update';
     this.showaddSubDivision = true;
@@ -1398,7 +1427,7 @@ export class ClientMasterdataComponent implements OnInit {
         this.adminCommonService.getIds(this.currSubDivisionObj.DeliveryLevel1.results) : []
     });
     this.showeditSubDivision = true;
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   /**
    * Construct a method to remove the item from table.
@@ -1419,8 +1448,8 @@ export class ClientMasterdataComponent implements OnInit {
         const updateData = {
           IsActive: this.adminConstants.LOGICAL_FIELD.NO
         };
-        this.confirmUpdate(this.currSubDivisionObj, updateData, this.constants.listNames.ClientSubdivision.name,
-          this.constants.listNames.ClientSubdivision.type, this.adminConstants.DELETE_LIST_ITEM.SUB_DIVISION);
+        this.confirmUpdate(this.currSubDivisionObj, updateData, this.constantsService.listNames.ClientSubdivision.name,
+          this.constantsService.listNames.ClientSubdivision.type, this.adminConstants.DELETE_LIST_ITEM.SUB_DIVISION);
       },
     });
   }
@@ -1434,14 +1463,14 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showPOC() {
-    this.adminObject.isMainLoaderHidden = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
     const tempArray = [];
     this.POCRows = [];
     const getPocInfo = Object.assign({}, this.adminConstants.QUERY.GET_POC_BY_ACTIVE);
     getPocInfo.filter = getPocInfo.filter
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity);
-    const results = await this.spServices.readItems(this.constants.listNames.ProjectContacts.name, getPocInfo);
+    const results = await this.spServices.readItems(this.constantsService.listNames.ProjectContacts.name, getPocInfo);
     if (results && results.length) {
       results.forEach(item => {
         const obj = Object.assign({}, this.adminObject.pocObj);
@@ -1470,7 +1499,7 @@ export class ClientMasterdataComponent implements OnInit {
       this.POCRows = tempArray;
       this.POCFilters(this.POCRows);
     }
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
     this.showPointofContact = true;
   }
   /**
@@ -1518,14 +1547,14 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showAddPOC() {
-    this.adminObject.isMainLoaderHidden = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
     this.pocForm.reset();
     await this.loadPOCDropdown();
     this.showeditPOC = false;
     this.buttonLabel = 'Submit';
     this.showaddPOC = true;
     this.cmObject.isPOCFormSubmit = false;
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   /**
    * Construct a method to load all the dropdown of Point of Contact form.
@@ -1598,10 +1627,10 @@ export class ClientMasterdataComponent implements OnInit {
     const reffereSourceFilter = Object.assign({}, this.adminConstants.QUERY.GET_CHOICEFIELD);
     reffereSourceFilter.filter = reffereSourceFilter.filter.replace(/{{choiceField}}/gi,
       this.adminConstants.CHOICE_FIELD_NAME.POC_REFERRAL_SOURCE);
-    reffereSourceGet.url = this.spServices.getChoiceFieldUrl(this.constants.listNames.ProjectContacts.name,
+    reffereSourceGet.url = this.spServices.getChoiceFieldUrl(this.constantsService.listNames.ProjectContacts.name,
       reffereSourceFilter);
     reffereSourceGet.type = 'GET';
-    reffereSourceGet.listName = this.constants.listNames.ProjectContacts.name;
+    reffereSourceGet.listName = this.constantsService.listNames.ProjectContacts.name;
     batchURL.push(reffereSourceGet);
 
     // Get Relationship Strength from ProjectContacts list ##2
@@ -1609,10 +1638,10 @@ export class ClientMasterdataComponent implements OnInit {
     const relationShipFilter = Object.assign({}, this.adminConstants.QUERY.GET_CHOICEFIELD);
     relationShipFilter.filter = relationShipFilter.filter.replace(/{{choiceField}}/gi,
       this.adminConstants.CHOICE_FIELD_NAME.POC_RELATIONSHIP_STRENGTH);
-    relationShipGet.url = this.spServices.getChoiceFieldUrl(this.constants.listNames.ProjectContacts.name,
+    relationShipGet.url = this.spServices.getChoiceFieldUrl(this.constantsService.listNames.ProjectContacts.name,
       relationShipFilter);
     relationShipGet.type = 'GET';
-    relationShipGet.listName = this.constants.listNames.ProjectContacts.name;
+    relationShipGet.listName = this.constantsService.listNames.ProjectContacts.name;
     batchURL.push(relationShipGet);
 
     // Get  Project Contact Types from ProjectContacts list ##3
@@ -1620,10 +1649,10 @@ export class ClientMasterdataComponent implements OnInit {
     const projectContactsFilter = Object.assign({}, this.adminConstants.QUERY.GET_CHOICEFIELD);
     projectContactsFilter.filter = projectContactsFilter.filter.replace(/{{choiceField}}/gi,
       this.adminConstants.CHOICE_FIELD_NAME.POC_PROJECT_CONTACTS_TYPE);
-    projectContactsGet.url = this.spServices.getChoiceFieldUrl(this.constants.listNames.ProjectContacts.name,
+    projectContactsGet.url = this.spServices.getChoiceFieldUrl(this.constantsService.listNames.ProjectContacts.name,
       projectContactsFilter);
     projectContactsGet.type = 'GET';
-    projectContactsGet.listName = this.constants.listNames.ProjectContacts.name;
+    projectContactsGet.listName = this.constantsService.listNames.ProjectContacts.name;
     batchURL.push(projectContactsGet);
     const sResults = await this.spServices.executeBatch(batchURL);
     return sResults;
@@ -1639,9 +1668,16 @@ export class ClientMasterdataComponent implements OnInit {
    */
   pocMenu(data) {
     this.currPOCObj = data;
-    this.pocItems = [
-      { label: 'Edit', command: (e) => this.showEditPOC() },
-      { label: 'Delete', command: (e) => this.deletePOC() }];
+    if (this.isUserSPMCA) {
+      this.pocItems = [
+        { label: 'Edit', command: (e) => this.showEditPOC() },
+        { label: 'Delete', command: (e) => this.deletePOC() }
+      ];
+    } else {
+      this.pocItems = [
+        { label: 'Edit', command: (e) => this.showEditPOC() }
+      ]
+    }
   }
   /**
    * Construct a method to save or update the point of contact into `ProjectContacts` list.
@@ -1670,11 +1706,11 @@ export class ClientMasterdataComponent implements OnInit {
         }
       }
       // write the save logic using rest api.
-      this.adminObject.isMainLoaderHidden = false;
+      this.constantsService.loader.isPSInnerLoaderHidden = false;
       const pocData = await this.getPOCData();
       if (!this.showeditPOC) {
-        const results = await this.spServices.createItem(this.constants.listNames.ProjectContacts.name,
-          pocData, this.constants.listNames.ProjectContacts.type);
+        const results = await this.spServices.createItem(this.constantsService.listNames.ProjectContacts.name,
+          pocData, this.constantsService.listNames.ProjectContacts.type);
         if (!results.hasOwnProperty('hasError') && !results.hasError) {
           this.messageService.add({
             key: 'adminCustom', severity: 'success', summary: 'Success Message',
@@ -1684,8 +1720,8 @@ export class ClientMasterdataComponent implements OnInit {
         }
       }
       if (this.showeditPOC) {
-        const results = await this.spServices.updateItem(this.constants.listNames.ProjectContacts.name, this.currPOCObj.ID,
-          pocData, this.constants.listNames.ProjectContacts.type);
+        const results = await this.spServices.updateItem(this.constantsService.listNames.ProjectContacts.name, this.currPOCObj.ID,
+          pocData, this.constantsService.listNames.ProjectContacts.type);
         this.messageService.add({
           key: 'adminCustom', severity: 'success',
           summary: 'Success Message', detail: 'The Poc ' + this.pocForm.value.fname + ' ' + this.pocForm.value.lname +
@@ -1694,7 +1730,7 @@ export class ClientMasterdataComponent implements OnInit {
         await this.loadRecentPOCRecords(this.currPOCObj.ID, this.showeditPOC);
       }
       this.showaddPOC = false;
-      this.adminObject.isMainLoaderHidden = true;
+      this.constantsService.loader.isPSInnerLoaderHidden = true;
     } else {
       this.cmObject.isPOCFormSubmit = true;
     }
@@ -1751,7 +1787,7 @@ export class ClientMasterdataComponent implements OnInit {
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
       .replace(/{{Id}}/gi, ID);
-    const result = await this.spServices.readItems(this.constants.listNames.ProjectContacts.name, pocGet);
+    const result = await this.spServices.readItems(this.constantsService.listNames.ProjectContacts.name, pocGet);
     if (result && result.length) {
       const item = result[0];
       const obj = Object.assign({}, this.adminObject.pocObj);
@@ -1800,7 +1836,7 @@ export class ClientMasterdataComponent implements OnInit {
   async showEditPOC() {
     this.cmObject.isPOCFormSubmit = false;
     this.buttonLabel = 'Update';
-    this.adminObject.isMainLoaderHidden = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
     if (!this.dropdown.POCProjectContactTypesArray.length
       || !this.dropdown.POCRefferalSourceArray.length
       || !this.dropdown.POCRelationshipArray.length) {
@@ -1826,7 +1862,7 @@ export class ClientMasterdataComponent implements OnInit {
     });
     this.showaddPOC = true;
     this.showeditPOC = true;
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   /**
    * Construct a method to remove the item from table.
@@ -1847,8 +1883,8 @@ export class ClientMasterdataComponent implements OnInit {
         const updateData = {
           Status: this.adminConstants.LOGICAL_FIELD.INACTIVE
         };
-        this.confirmUpdate(this.currPOCObj, updateData, this.constants.listNames.ProjectContacts.name,
-          this.constants.listNames.ProjectContacts.type, this.adminConstants.DELETE_LIST_ITEM.POINT_OF_CONTACT);
+        this.confirmUpdate(this.currPOCObj, updateData, this.constantsService.listNames.ProjectContacts.name,
+          this.constantsService.listNames.ProjectContacts.type, this.adminConstants.DELETE_LIST_ITEM.POINT_OF_CONTACT);
       },
     });
   }
@@ -1862,14 +1898,14 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showPO() {
-    this.adminObject.isMainLoaderHidden = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
     const tempArray = [];
     this.PORows = [];
     const getPOInfo = Object.assign({}, this.adminConstants.QUERY.GET_PO_BY_ACTIVE);
     getPOInfo.filter = getPOInfo.filter
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity);
-    const results = await this.spServices.readItems(this.constants.listNames.PO.name, getPOInfo);
+    const results = await this.spServices.readItems(this.constantsService.listNames.PO.name, getPOInfo);
     if (results && results.length) {
       results.forEach(item => {
         const obj = Object.assign({}, this.adminObject.poObj);
@@ -1915,7 +1951,7 @@ export class ClientMasterdataComponent implements OnInit {
       this.PORows = tempArray;
       this.POFilters(this.PORows);
     }
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
     this.showPurchaseOrder = true;
   }
   /**
@@ -1967,7 +2003,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showAddPO() {
-    this.adminObject.isMainLoaderHidden = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
     this.editPo = true;
     this.PoForm.controls.poNumber.enable();
     this.PoForm.controls.currency.enable();
@@ -1981,7 +2017,7 @@ export class ClientMasterdataComponent implements OnInit {
     this.showeditPO = false;
     this.initAddPOForm();
     this.cmObject.isPOFormSubmit = false;
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   /**
    * Construct a method to load all the dropdown of purchase order form.
@@ -2079,10 +2115,10 @@ export class ClientMasterdataComponent implements OnInit {
     pocFilter.filter = pocFilter.filter
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity);
-    pocGet.url = this.spServices.getReadURL(this.constants.listNames.ProjectContacts.name,
+    pocGet.url = this.spServices.getReadURL(this.constantsService.listNames.ProjectContacts.name,
       pocFilter);
     pocGet.type = 'GET';
-    pocGet.listName = this.constants.listNames.ProjectContacts.name;
+    pocGet.listName = this.constantsService.listNames.ProjectContacts.name;
     batchURL.push(pocGet);
 
     // Get TA from TA list ##2
@@ -2090,10 +2126,10 @@ export class ClientMasterdataComponent implements OnInit {
     const taFilter = Object.assign({}, this.adminConstants.QUERY.GET_TA);
     taFilter.filter = taFilter.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES);
-    taGet.url = this.spServices.getReadURL(this.constants.listNames.TA.name,
+    taGet.url = this.spServices.getReadURL(this.constantsService.listNames.TA.name,
       taFilter);
     taGet.type = 'GET';
-    taGet.listName = this.constants.listNames.TA.name;
+    taGet.listName = this.constantsService.listNames.TA.name;
     batchURL.push(taGet);
 
     // Get Molecule from Molecule list ##3
@@ -2101,10 +2137,10 @@ export class ClientMasterdataComponent implements OnInit {
     const moleculeFilter = Object.assign({}, this.adminConstants.QUERY.GET_MOLECULES_ORDER_BY_TITLE);
     moleculeFilter.filter = moleculeFilter.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES);
-    moleculeGet.url = this.spServices.getReadURL(this.constants.listNames.Molecules.name,
+    moleculeGet.url = this.spServices.getReadURL(this.constantsService.listNames.Molecules.name,
       moleculeFilter);
     moleculeGet.type = 'GET';
-    moleculeGet.listName = this.constants.listNames.Molecules.name;
+    moleculeGet.listName = this.constantsService.listNames.Molecules.name;
     batchURL.push(moleculeGet);
 
     // Get PO Buying Entity from PO list ##4
@@ -2112,10 +2148,10 @@ export class ClientMasterdataComponent implements OnInit {
     const poBuyingEntityFilter = Object.assign({}, this.adminConstants.QUERY.GET_CHOICEFIELD);
     poBuyingEntityFilter.filter = poBuyingEntityFilter.filter.replace(/{{choiceField}}/gi,
       this.adminConstants.CHOICE_FIELD_NAME.PO_BUYING_ENTITY);
-    poBuyingEntityGet.url = this.spServices.getChoiceFieldUrl(this.constants.listNames.PO.name,
+    poBuyingEntityGet.url = this.spServices.getChoiceFieldUrl(this.constantsService.listNames.PO.name,
       poBuyingEntityFilter);
     poBuyingEntityGet.type = 'GET';
-    poBuyingEntityGet.listName = this.constants.listNames.PO.name;
+    poBuyingEntityGet.listName = this.constantsService.listNames.PO.name;
     batchURL.push(poBuyingEntityGet);
     if (!this.dropdown.CMLevel2Array.length) {
       // Get resource from ResourceCategorization list ##5;
@@ -2123,10 +2159,10 @@ export class ClientMasterdataComponent implements OnInit {
       const resourceFilter = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION_ORDER_BY_USERNAME);
       resourceFilter.filter = resourceFilter.filter.replace(/{{isActive}}/gi,
         this.adminConstants.LOGICAL_FIELD.YES);
-      resourceGet.url = this.spServices.getReadURL(this.constants.listNames.ResourceCategorization.name,
+      resourceGet.url = this.spServices.getReadURL(this.constantsService.listNames.ResourceCategorization.name,
         resourceFilter);
       resourceGet.type = 'GET';
-      resourceGet.listName = this.constants.listNames.ResourceCategorization.name;
+      resourceGet.listName = this.constantsService.listNames.ResourceCategorization.name;
       batchURL.push(resourceGet);
     }
     if (!this.dropdown.CurrencyArray.length) {
@@ -2135,10 +2171,10 @@ export class ClientMasterdataComponent implements OnInit {
       const currencyFilter = Object.assign({}, this.adminConstants.QUERY.GET_CURRENCY_BY_ACTIVE);
       currencyFilter.filter = currencyFilter.filter.replace(/{{isActive}}/gi,
         this.adminConstants.LOGICAL_FIELD.YES);
-      currencyGet.url = this.spServices.getReadURL(this.constants.listNames.Currency.name,
+      currencyGet.url = this.spServices.getReadURL(this.constantsService.listNames.Currency.name,
         currencyFilter);
       currencyGet.type = 'GET';
-      currencyGet.listName = this.constants.listNames.Currency.name;
+      currencyGet.listName = this.constantsService.listNames.Currency.name;
       batchURL.push(currencyGet);
     }
     if (batchURL.length) {
@@ -2226,7 +2262,7 @@ export class ClientMasterdataComponent implements OnInit {
           return false;
         }
       }
-      this.adminObject.isMainLoaderHidden = false;
+      this.constantsService.loader.isPSInnerLoaderHidden = false;
       const docFolder = this.adminConstants.FOLDER_LOCATION.PO;
       const libraryName = this.currClientObj.ListName;
       const folderPath: string = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + libraryName + '/' + docFolder;
@@ -2237,12 +2273,12 @@ export class ClientMasterdataComponent implements OnInit {
         // write the logic of create new PO.
         const poData = await this.getPOData();
         if (!this.showeditPO) {
-          const results = await this.spServices.createItem(this.constants.listNames.PO.name,
-            poData, this.constants.listNames.PO.type);
+          const results = await this.spServices.createItem(this.constantsService.listNames.PO.name,
+            poData, this.constantsService.listNames.PO.type);
           if (!results.hasOwnProperty('hasError') && !results.hasError) {
             const poBreakUPData = await this.getPOBudgetBreakUPData(results);
-            const poBreakUPResult = await this.spServices.createItem(this.constants.listNames.POBudgetBreakup.name,
-              poBreakUPData, this.constants.listNames.POBudgetBreakup.type);
+            const poBreakUPResult = await this.spServices.createItem(this.constantsService.listNames.POBudgetBreakup.name,
+              poBreakUPData, this.constantsService.listNames.POBudgetBreakup.type);
             if (!poBreakUPResult.hasOwnProperty('hasError') && !poBreakUPResult.hasError) {
               this.messageService.add({
                 key: 'adminCustom', severity: 'success', summary: 'Success Message',
@@ -2253,8 +2289,8 @@ export class ClientMasterdataComponent implements OnInit {
           }
         }
         if (this.showeditPO) {
-          const results = await this.spServices.updateItem(this.constants.listNames.PO.name, this.currPOObj.ID,
-            poData, this.constants.listNames.PO.type);
+          const results = await this.spServices.updateItem(this.constantsService.listNames.PO.name, this.currPOObj.ID,
+            poData, this.constantsService.listNames.PO.type);
           this.messageService.add({
             key: 'adminCustom', severity: 'success',
             summary: 'Success Message', detail: 'The Po ' + this.currPOObj.PoNumber + ' is updated successfully.'
@@ -2262,7 +2298,7 @@ export class ClientMasterdataComponent implements OnInit {
           await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
         }
         this.showaddPO = false;
-        this.adminObject.isMainLoaderHidden = true;
+        this.constantsService.loader.isPSInnerLoaderHidden = true;
       }
     } else {
       this.cmObject.isPOFormSubmit = true;
@@ -2335,11 +2371,17 @@ export class ClientMasterdataComponent implements OnInit {
    */
   poMenu(data) {
     this.currPOObj = data;
-    this.poItems = [
-      { label: 'Change Budget', command: (e) => this.showchangeBudgetModal() },
-      { label: 'Edit', command: (e) => this.showEditPOModal() },
-      { label: 'Delete', command: (e) => this.deletePO() }
-    ];
+    if (this.isUserSPMCA) {
+      this.poItems = [
+        { label: 'Change Budget', command: (e) => this.showchangeBudgetModal() },
+        { label: 'Edit', command: (e) => this.showEditPOModal() },
+        { label: 'Delete', command: (e) => this.deletePO() }
+      ];
+    } else {
+      this.poItems = [
+        { label: 'Edit', command: (e) => this.showEditPOModal() },
+      ]
+    }
   }
   /**
    * Construct a method to load the newly created item into the table without refreshing the whole page.
@@ -2366,7 +2408,7 @@ export class ClientMasterdataComponent implements OnInit {
       .replace(/{{active}}/gi, this.adminConstants.LOGICAL_FIELD.ACTIVE)
       .replace(/{{clientLegalEntity}}/gi, this.currClientObj.ClientLegalEntity)
       .replace(/{{Id}}/gi, ID);
-    const result = await this.spServices.readItems(this.constants.listNames.PO.name, poGet);
+    const result = await this.spServices.readItems(this.constantsService.listNames.PO.name, poGet);
     if (result && result.length) {
       const item = result[0];
       const obj = Object.assign({}, this.adminObject.poObj);
@@ -2449,7 +2491,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async showEditPOModal() {
-    this.adminObject.isMainLoaderHidden = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
     this.cmObject.isPOFormSubmit = false;
     this.editPo = false;
     this.buttonLabel = 'Update';
@@ -2479,7 +2521,7 @@ export class ClientMasterdataComponent implements OnInit {
     });
     this.showeditPO = true;
     this.showaddPO = true;
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   /**
    * Construct a method to remove the item from table.
@@ -2501,8 +2543,8 @@ export class ClientMasterdataComponent implements OnInit {
         const updateData = {
           Status: this.adminConstants.LOGICAL_FIELD.INACTIVE
         };
-        this.confirmUpdate(this.currPOObj, updateData, this.constants.listNames.PO.name,
-          this.constants.listNames.PO.type, this.adminConstants.DELETE_LIST_ITEM.PURCHASE_ORDER);
+        this.confirmUpdate(this.currPOObj, updateData, this.constantsService.listNames.PO.name,
+          this.constantsService.listNames.PO.type, this.adminConstants.DELETE_LIST_ITEM.PURCHASE_ORDER);
       },
     });
   }
@@ -2515,10 +2557,10 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   async viewPO() {
-    this.adminObject.isMainLoaderHidden = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
     this.PORightRows = [this.currPOObj];
     this.po.isRightVisible = true;
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   /**
    * Construct a function to open the form to add, subtract and restructure the amount.
@@ -2529,7 +2571,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   showchangeBudgetModal() {
-    this.adminObject.isMainLoaderHidden = false;
+    this.constantsService.loader.isPSInnerLoaderHidden = false;
     this.selectedValue = [];
     this.checkBudgetValue = false;
     this.oldBudget.Amount = this.currPOObj.Amount;
@@ -2541,7 +2583,7 @@ export class ClientMasterdataComponent implements OnInit {
     this.initAddBudgetForm();
     this.showaddBudget = true;
     this.cmObject.isBudgetFormSubmit = false;
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   /**
    * Construct a method to save the budget in `PO` and `POBudgetBreakup` list.
@@ -2565,19 +2607,19 @@ export class ClientMasterdataComponent implements OnInit {
     }
     if (this.selectedValue.length) {
       if (this.changeBudgetForm.valid) {
-        this.adminObject.isMainLoaderHidden = false;
+        this.constantsService.loader.isPSInnerLoaderHidden = false;
         switch (this.selectedValue) {
           case this.adminConstants.ACTION.ADD:
             await this.addBudget();
-            this.adminObject.isMainLoaderHidden = true;
+            this.constantsService.loader.isPSInnerLoaderHidden = true;
             break;
           case this.adminConstants.ACTION.REDUCE:
             await this.reduceBudget();
-            this.adminObject.isMainLoaderHidden = true;
+            this.constantsService.loader.isPSInnerLoaderHidden = true;
             break;
           case this.adminConstants.ACTION.RESTRUCTURE:
             await this.restructureBudget();
-            this.adminObject.isMainLoaderHidden = true;
+            this.constantsService.loader.isPSInnerLoaderHidden = true;
             break;
         }
 
@@ -2649,7 +2691,7 @@ export class ClientMasterdataComponent implements OnInit {
     await this.confirmBudgetUpdate();
     this.showaddBudget = false;
     await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   /**
    * Construct a method to execute the `BATCH` request using SharePoint REST-API to add/update the
@@ -2672,14 +2714,14 @@ export class ClientMasterdataComponent implements OnInit {
     this.finalBudget.AmountOOP = this.oldBudget.AmountOOP + this.newBudget.AmountOOP;
     this.finalBudget.AmountTax = this.oldBudget.AmountTax + this.newBudget.AmountTax;
     const poData = {
-      __metadata: { type: this.constants.listNames.PO.type },
+      __metadata: { type: this.constantsService.listNames.PO.type },
       Amount: this.finalBudget.Amount,
       AmountRevenue: this.finalBudget.AmountRevenue,
       AmountOOP: this.finalBudget.AmountOOP,
       AmountTax: this.finalBudget.AmountTax,
     };
     const poBudgetBreakupData = {
-      __metadata: { type: this.constants.listNames.POBudgetBreakup.type },
+      __metadata: { type: this.constantsService.listNames.POBudgetBreakup.type },
       POLookup: this.currPOObj.ID,
       Currency: this.currPOObj.Currency,
       CreateDate: new Date(),
@@ -2697,16 +2739,16 @@ export class ClientMasterdataComponent implements OnInit {
     };
     const updatePOData = Object.assign({}, options);
     updatePOData.data = poData;
-    updatePOData.listName = this.constants.listNames.PO.name;
+    updatePOData.listName = this.constantsService.listNames.PO.name;
     updatePOData.type = 'PATCH';
-    updatePOData.url = this.spServices.getItemURL(this.constants.listNames.PO.name, this.currPOObj.ID);
+    updatePOData.url = this.spServices.getItemURL(this.constantsService.listNames.PO.name, this.currPOObj.ID);
     batchURL.push(updatePOData);
 
     const createPOBudgetBreakupObj = Object.assign({}, options);
-    createPOBudgetBreakupObj.url = this.spServices.getReadURL(this.constants.listNames.POBudgetBreakup.name, null);
+    createPOBudgetBreakupObj.url = this.spServices.getReadURL(this.constantsService.listNames.POBudgetBreakup.name, null);
     createPOBudgetBreakupObj.data = poBudgetBreakupData;
     createPOBudgetBreakupObj.type = 'POST';
-    createPOBudgetBreakupObj.listName = this.constants.listNames.POBudgetBreakup.name;
+    createPOBudgetBreakupObj.listName = this.constantsService.listNames.POBudgetBreakup.name;
     batchURL.push(createPOBudgetBreakupObj);
     await this.spServices.executeBatch(batchURL);
   }
@@ -2810,7 +2852,7 @@ export class ClientMasterdataComponent implements OnInit {
     await this.confirmBudgetUpdate();
     this.showaddBudget = false;
     await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   /**
    * Construct a method to add budget from one category to another category without affecting the total budget.
@@ -2901,7 +2943,7 @@ export class ClientMasterdataComponent implements OnInit {
     await this.confirmBudgetUpdate();
     this.showaddBudget = false;
     await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
-    this.adminObject.isMainLoaderHidden = true;
+    this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
   downloadExcel(cmd) {
     cmd.exportCSV();
