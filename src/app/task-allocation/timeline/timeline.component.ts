@@ -161,6 +161,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     }
 
+   
+
     this.sharedObject.currentUser.timeZone = this.commonService.getCurrentUserTimeZone();
     this.editorOptions = {
 
@@ -184,6 +186,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
   }
+ 
 
   async onPopupload() {
     await this.callReloadRes();
@@ -236,7 +239,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.milestoneData = [];
     this.allTasks = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
-    console.log(this.allTasks);
     if (this.allTasks.length > 0) {
 
       if (this.allTasks[0].length > 0) {
@@ -1332,12 +1334,11 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   openPopup(data, rowNode) {
 
-    console.log(rowNode);
     this.taskMenu = [];
     if (data.type === 'task' && data.milestoneStatus !== 'Completed' &&
       (data.status !== 'Completed' && data.status !== 'Abandon' && data.status !== 'Auto Closed'
         && data.status !== 'Hold')) {
-  
+
       this.taskMenu = [
         { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(data, rowNode) },
         {
@@ -1414,6 +1415,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         endTime: milestoneTask.pUserEnd,
       },
       width: '90vw',
+     
       header: milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.pName
         + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.pName,
       contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' }
@@ -1605,7 +1607,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             submile.forEach(element => {
               expand = expand === false ? (element.data.status === 'Not Saved' ? true : false) : true;
               if (element.children !== undefined) {
-                element.children = this.sortByDate(element.children,'pStart');
+                element.children = this.sortByDate(element.children, 'pStart');
                 element.children.forEach(task => {
                   element.expanded = element.expanded === false ? (task.data.status === 'Not Saved' ? true : false) : true;
                 });
@@ -1675,7 +1677,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               }
             });
             let mileexpand = false;
-            temptasks = this.sortByDate(temptasks,'pStart');
+            temptasks = this.sortByDate(temptasks, 'pStart');
             temptasks.forEach(element => {
               mileexpand = mileexpand == false ? (element.data.status === 'Not Saved' ? true : false) : true;
             });
@@ -1713,8 +1715,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
         this.assignUsers(allReturnedTasks);
         this.loaderenable = false;
         this.milestoneData = [...this.milestoneData];
-        console.log(this.milestoneData);
-
 
         this.changeInRestructure = this.milestoneData.find(c => c.data.editMode === true) !== undefined ? true : false;
         if (this.changeInRestructure) {
@@ -2021,12 +2021,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
     AllTasks.forEach(task => {
 
       if (task.nextTask && task.status !== 'Completed'
-      && task.status !== 'Auto Closed' && task.status !== 'Deleted') {
+        && task.status !== 'Auto Closed' && task.status !== 'Deleted') {
         const nextTasks = task.nextTask.split(';');
         const AllNextTasks = AllTasks.filter(c => (nextTasks.indexOf(c.pName) > -1));
 
-        const SDTask = AllNextTasks.find(c => c.pStart < task.pEnd && c.status !== 'Completed' 
-        && c.status !== 'Auto Closed' && c.status !== 'Deleted'  && c.allowStart === false);
+        const SDTask = AllNextTasks.find(c => c.pStart < task.pEnd && c.status !== 'Completed'
+          && c.status !== 'Auto Closed' && c.status !== 'Deleted' && c.allowStart === false);
         if (SDTask) {
           this.errorMessageCount++;
           this.messageService.add({
@@ -2040,9 +2040,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
     });
   }
 
-   cascadeNextNodes(previousNode, subMilestonePosition, selectedMil) {
+  cascadeNextNodes(previousNode, subMilestonePosition, selectedMil) {
 
-    
+
     var nextNode = [];
     let sentPrevNode = undefined;
     if (previousNode.nextTask && previousNode.nextTask.indexOf('Client Review') === -1) {
@@ -2120,7 +2120,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (nextNode.length) {
       nextNode.forEach(async element => {
         if (element.DisableCascade !== 'Yes') {
-         await this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
+          await this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
         }
       });
     }
@@ -2151,7 +2151,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
         //alert('next task');
         // if (nodeData.itemType === 'Send to client') {
-         
+
         //    this.confirmationService.confirm({
         //     message: 'Are you sure that you want to proceed?' + nodeData.pName,
         //     header: 'Confirmation',
@@ -2164,7 +2164,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
         //      }, 3000);
 
-             
+
 
         //     },
         //     reject: () => {
@@ -2174,23 +2174,23 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
         // }
         // else {
-           this.cascadeNode(previousNode, nodeData);
-           this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
+        this.cascadeNode(previousNode, nodeData);
+        this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
 
         // }
 
       }
       else if (new Date(prevNodeData.pEnd).getTime() === new Date(nodeData.pStart).getTime() && prevNodeData.itemType === 'Client Review' && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
-         this.cascadeNode(previousNode, nodeData);
-         this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
+        this.cascadeNode(previousNode, nodeData);
+        this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
       }
     }
     else if (nodeData.type === 'task' && nodeData.itemType === 'Client Review') {
       if (new Date(prevNodeData.pEnd) >= new Date(nodeData.pStart) && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
         //alert('next CR');
         //this.setStartAndEnd(previousNode);
-         this.cascadeNode(previousNode, nodeData);
-          this.cascadeNextNodes(nodeData, 0, selectedMil + 1);
+        this.cascadeNode(previousNode, nodeData);
+        this.cascadeNextNodes(nodeData, 0, selectedMil + 1);
       }
     }
     else if (nodeData.type === 'submilestone') {
@@ -2202,7 +2202,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         });
         allParallelTasks.forEach(async element => {
           if (element.DisableCascade !== 'Yes') {
-              this.cascadeNextTask(previousNode, element.data, parseInt(nodeData.position), selectedMil);
+            this.cascadeNextTask(previousNode, element.data, parseInt(nodeData.position), selectedMil);
           }
         });
       }
@@ -2545,7 +2545,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           arrResponse.push(resItem);
         }
         catch (e) {
-          //console.log(e);
+
         }
       }
       let counter = 0;

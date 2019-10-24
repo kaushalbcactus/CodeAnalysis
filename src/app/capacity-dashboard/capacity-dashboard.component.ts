@@ -240,7 +240,7 @@ export class CapacityDashboardComponent implements OnInit {
         task: { resources: this.searchCapacityForm.value.resources },
         startTime: this.searchCapacityForm.value.rangeDates[0],
         endTime: this.searchCapacityForm.value.rangeDates[1],
-        width: 1320
+        type : 'CapacityDashboard'
       };
 
       this.userCapacity.loaderenable = true;

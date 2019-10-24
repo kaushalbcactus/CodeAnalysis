@@ -549,8 +549,6 @@ export class MyTimelineComponent implements OnInit {
 
           const arrResults = await this.spServices.executeBatch(batchURL);
 
-          console.log(arrResults);
-
           this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Leave created successfully.' });
         }
         else {
@@ -806,8 +804,6 @@ export class MyTimelineComponent implements OnInit {
       this.fullCalendar.calendar.state.dateProfile.currentRange.end);
 
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Leaves deleted successfully.' });
-
-
   }
 }
 

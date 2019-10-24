@@ -14,9 +14,8 @@
                                                         Table View Data
 **************************************************************************************************** -->
 
-<div class="MyCurrentCompletedTable" [hidden]='loderenable' style="padding-top: 5px;">
-    <p-table #taskTable [columns]="displayedColumns" [value]="caGlobal.dataSource" [paginator]="true" [rows]="30" [lazy]="true" [scrollable]="true" scrollHeight="600px" (onLazyLoad)="lazyLoadTask($event)" [loading]="caGlobal.loading" [style]="{'font-size':'13px'}"
-        [lazyLoadOnInit]="false" [totalRecords]="caGlobal.totalRecords">
+<div class="allocatedUnallocatedTable" [hidden]='loderenable' style="padding-top: 5px;">
+    <p-table #taskTable [columns]="displayedColumns" [value]="caGlobal.dataSource" [paginator]="true" [rows]="30" [lazy]="true" (onLazyLoad)="lazyLoadTask($event)" [loading]="caGlobal.loading" [style]="{'font-size':'13px'}" [lazyLoadOnInit]="false" [totalRecords]="caGlobal.totalRecords">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field">
@@ -63,39 +62,47 @@
                 <td>{{task.nextTaskStartDateText}}</td>
                 <td>{{task.lastTaskEndDateText}}</td>
                 <td>{{task.sendToClientDateText}}</td>
-                <td *ngIf="selectedTab ==='allocated'">
-                    <ng-select #allocateResource id="allocateResource" [items]="task.selectedResources" [hidden]="task.isAllocatedSelectHidden" bindLabel="Title" bindValue="UserName.ID" groupBy="userType" placeholder="Select Resource" (open)="fetchResources(task, allocateResource)"
-                        (close)="saveTask(task,taskTable)" (clear)="onClear(task)" [(ngModel)]="task.allocatedResource" required>
-                        <ng-template ng-option-tmp let-item="item" let-index="index">
-                            <div class="templateOption" [style.color]="item.Color">{{item.Title}} ({{item.timeAvailable}})</div>
-                            <button (click)="showCapacityPopup(task,item,allocateResource)" class="allocate-btn" type="button">View Schedule</button>
+                <td *ngIf="selectedTab ==='allocated'" class="ui-fluid">
+                    <p-dropdown [hidden]="!task.isAssignedToHidden" #allocateResource class="resourceDropdown" [options]="task.displayselectedResources" [panelStyle]="{minWidth:'25em' }" [(ngModel)]="task.allocatedResource" placeholder="Select Resource" [group]="true" filter="true"
+                        placeholder="Select Resource" (onShow)="fetchResources(task, allocateResource)" (onHide)="saveTask(task,taskTable)">
+                        <ng-template let-group pTemplate="group">
+                            <span style="margin-left:.25em">{{group.label}}</span>
                         </ng-template>
-                    </ng-select>
+                        <ng-template let-item pTemplate="item">
+                            <span style="margin-left:.25em" [style.color]="item.value.Color">{{item.label}}</span>
+
+                            <button (click)="showCapacityPopup(task,item.value,allocateResource,$event)" class="ui-button-secondary allocate-btn" type="button">View Schedule</button>
+
+                        </ng-template>
+                    </p-dropdown>
+
                     <span [hidden]="task.isAssignedToHidden">{{task.assignedTo}} </span>
                 </td>
-                <td *ngIf="selectedTab !=='allocated'">
-                    <ng-select #allocateResource id="allocateResource" [items]="task.selectedResources" bindLabel="Title" bindValue="UserName.ID" groupBy="userType" placeholder="Select Resource" (open)="fetchResources(task, allocateResource)" (clear)="onClear(task)" (close)="saveTask($event, task, unallocatedTable)"
-                        [(ngModel)]="task.allocatedResource" required>
-                        <ng-template ng-option-tmp let-item="item" let-index="index">
-                            <div class="templateOption" [style.color]="item.Color">{{item.Title}} ({{item.timeAvailable}})</div>
-                            <button (click)="showCapacityPopup(task,item,allocateResource)" class="allocate-btn" type="button">View Schedule</button>
+                <td *ngIf="selectedTab !=='allocated'" class="ui-fluid">
+
+                    <p-dropdown #allocateResource class="resourceDropdown" [options]="task.displayselectedResources" [panelStyle]="{minWidth:'25em' }" [(ngModel)]="task.allocatedResource" placeholder="Select Resource" [group]="true" filter="true" placeholder="Select Resource"
+                        (onShow)="fetchResources(task, allocateResource)" (onHide)="saveTask(task,taskTable)">
+                        <ng-template let-group pTemplate="group">
+                            <span style="margin-left:.25em">{{group.label}}</span>
                         </ng-template>
-                    </ng-select>
+                        <ng-template let-item pTemplate="item">
+                            <span style="margin-left:.25em" [style.color]="item.value.Color">{{item.label}}</span>
+
+                            <button (click)="showCapacityPopup(task,item.value,allocateResource)" class="ui-button-secondary allocate-btn" type="button">View Schedule</button>
+
+                        </ng-template>
+                    </p-dropdown>
                 </td>
                 <td style="width: 3%;">
                     <p-menu #popupMenu [style]="{'width': '16em'}" [popup]="true" [model]="taskMenu"></p-menu>
 
                     <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(task, popupMenu);popupMenu.show($event);"></i>
-
-                    <!-- <div class="hide taskID">
-                        {{task.id}}
-                    </div> -->
                 </td>
             </tr>
         </ng-template>
         <ng-template pTemplate="emptymessage" let-columns>
             <tr>
-                <td [attr.colspan]="columns.length" style="text-align: center;font-size: 1.5em;font-weight: 600;">
+                <td [attr.colspan]="13" style="text-align: center;font-size: 1.5em;font-weight: 600;">
                     No Data found
                 </td>
             </tr>

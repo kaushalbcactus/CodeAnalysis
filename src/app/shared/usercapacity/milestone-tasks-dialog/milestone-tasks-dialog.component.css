@@ -1,0 +1,9 @@
+.allTaskDialog>tbody>tr>th,
+.allTaskDialog>tbody>tr>td {
+    border: 1px solid gray;
+    padding: 5px;
+}
+
+.allTaskDialog>tbody>tr>th {
+    background: #cdcdcd;
+}

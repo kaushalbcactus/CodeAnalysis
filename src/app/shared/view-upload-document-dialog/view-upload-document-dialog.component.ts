@@ -646,7 +646,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
     if (arrResults[0].retItems) {
       this.Emailtemplate = arrResults[0].retItems[0].Content;
-      console.log(this.Emailtemplate);
     }
   }
 }
