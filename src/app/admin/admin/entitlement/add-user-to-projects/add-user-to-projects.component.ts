@@ -325,9 +325,9 @@ export class AddUserToProjectsComponent implements OnInit {
         if (element.DeliveryLevel1 && element.DeliveryLevel1.length) {
           element.DeliveryLevel1IDArray = element.DeliveryLevel1.map(x => x.ID);
         }
+        element.AllOperationresourcesIDArray.push(this.selectedUser.UserName.ID);
         if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCESS) {
           element.CMLevel1IDArray.push(this.selectedUser.UserName.ID);
-          element.AllOperationresourcesIDArray.push(this.selectedUser.UserName.ID);
           element.DeliveryLevel1IDArray.push(this.selectedUser.UserName.ID);
         } else if (element.AccessType === this.adminConstants.ACCESS_TYPE.ACCOUNTABLE) {
           // remove the current user if present in CMLevel1.
