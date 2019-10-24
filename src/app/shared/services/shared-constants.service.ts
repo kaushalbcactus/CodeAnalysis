@@ -24,7 +24,7 @@ export class SharedConstantsService {
       top: '1'
     },
     getProjectTasks : {
-      select: 'ID,Task,Title,ExpectedTime,StartDate,DueDate,TimeZone,Status,AssignedToText,ContentType/Name',
+      select: 'ID,Task,Title,ExpectedTime,StartDate,DueDate,TimeZone,Status,AssignedTo/Title,ContentType/Name',
       expand: 'ContentType',
       filter: "startswith(Title,'{{projectCode}}') and Milestone eq '{{milestone}}'" +
               "Status ne 'Abandon' and Status ne 'Completed' and Status ne 'Deleted' and Status ne 'Auto Closed'",

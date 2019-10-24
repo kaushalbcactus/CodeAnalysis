@@ -336,7 +336,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         }
         task.selectedResources = [];
         task.displayselectedResources = [];
-        const res = this.commonService.sortResources(setResources, task);
+        const res = this.caCommonService.sortResources(setResources, task);
         const resExtn = $.extend(true, [], res);
 
         if (resExtn) {
@@ -514,7 +514,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       // this.spServices.update(this.scheduleList, task.id, options, 'SP.Data.SchedulesListItem');
     }
 
-    await this.commonService.ResourceAllocation(task, this.projectInformationList);
+    await this.caCommonService.ResourceAllocation(task, this.projectInformationList);
     const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource.UserName.ID);
     const mailSubject = task.projectCode + '(' + task.projectName + ')' + ': Task created';
     const objEmailBody = [];

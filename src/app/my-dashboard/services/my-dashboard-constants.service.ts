@@ -540,9 +540,9 @@ export class MyDashboardConstantsService {
     // const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(task.ID) + ")";
     // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(newdata), false);
     if (isJcIdFound) {
-      var docUrl = '';
+      let docUrl = '';
       const count = this.DocumentArray.length;
-      this.DocumentArray.forEach(function (value, i) {
+      this.DocumentArray.forEach((value, i) => {
         docUrl += value.ServerRelativeUrl;
         docUrl += i < count - 1 ? ";#" : '';
       });
