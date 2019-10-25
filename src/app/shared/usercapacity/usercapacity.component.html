@@ -123,7 +123,7 @@
 
                                                 <td>
 
-                                                    <i *ngIf="task.projectCode !=='Adhoc'" class="pi pi-camera" title="Milestone Tasks" (click)="getMilestoneTasks(task)" style="font-size: 3em;cursor: pointer;"></i>
+                                                    <i *ngIf="task.projectCode !=='Adhoc' && !disableCamera" class="pi pi-camera" title="Milestone Tasks" (click)="getMilestoneTasks(task)" style="font-size: 3em;cursor: pointer;"></i>
 
                                                 </td>
                                             </tr>

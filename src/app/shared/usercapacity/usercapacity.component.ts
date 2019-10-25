@@ -31,6 +31,7 @@ export class UsercapacityComponent implements OnInit {
   pageWidth: any;
   enableTaskDialog = false;
   selectedTask: any;
+  disableCamera = false;
   constructor(
     public datepipe: DatePipe, public config: DynamicDialogConfig,
     private spService: SPOperationService,
@@ -102,7 +103,13 @@ export class UsercapacityComponent implements OnInit {
       oCapacity.arrUserDetails = tempUserDetailsArray;
     }
     this.oCapacity = oCapacity;
- 
+
+    if (data.Module) {
+      if (data.Module === 'PM') {
+        this.disableCamera = true;
+      }
+    }
+
     this.calc(oCapacity);
   }
 
@@ -313,8 +320,14 @@ export class UsercapacityComponent implements OnInit {
     this.globalService.oCapacity = await this.applyFilter(startDate, endDate, selectedUsers);
 
   }
-  async applyFilterLocal(startDate, endDate, selectedUsers) {
+  async applyFilterLocal(startDate, endDate, selectedUsers,Module) {
     this.oCapacity = await this.applyFilter(startDate, endDate, selectedUsers);
+
+    if (Module) {
+      if (Module === 'PM') {
+        this.disableCamera = true;
+      }
+    }
 
     this.calc(this.oCapacity);
   }
@@ -684,7 +697,9 @@ export class UsercapacityComponent implements OnInit {
     if (arrDateRange <= 10) {
 
       setTimeout(() => {
-        const tableWidth = document.getElementById('capacityTable').offsetWidth;
+        let tableWidth = document.getElementById('capacityTable').offsetWidth ;
+
+        tableWidth = tableWidth === 0 ? 1191 : tableWidth;
 
         this.pageWidth = tableWidth + 'px';
 
@@ -782,5 +797,5 @@ export class UsercapacityComponent implements OnInit {
   onResize(event) {
     this.calc(this.oCapacity);
   }
- 
+
 }
