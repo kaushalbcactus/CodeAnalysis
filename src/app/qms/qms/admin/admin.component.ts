@@ -15,7 +15,7 @@ export class AdminComponent implements OnInit {
   constructor(private global: GlobalService, private globalConstant: ConstantsService, private spService: SPOperationService) { }
 
   async ngOnInit() {
-    const result = await this.spService.getUserInfo(this.global.sharePointPageObject.userId);
+    const result = await this.spService.getUserInfo(this.global.currentUser.userId);
     this.global.currentUser.groups = result.Groups.results ? result.Groups.results : [];
     const isQMSAdmin = this.global.currentUser.groups.filter(u => u.Title === this.globalConstant.Groups.QMSAdmin);
     const isQMSScorecardReader = this.global.currentUser.groups.filter(u => u.Title === this.globalConstant.Groups.QMSViewScorecard);

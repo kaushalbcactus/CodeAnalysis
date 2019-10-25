@@ -52,6 +52,12 @@ export class NonStandardprojectComponent implements OnInit {
   public selectedResource;
   public ngNonStandardProposedStartDate;
   public ngNonStandardProposedEndDate;
+  public queryConfig = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
   ngOnInit() {
     this.isNonStandardLoaderHidden = false;
     this.isNonStandardTableHidden = true;
@@ -74,31 +80,76 @@ export class NonStandardprojectComponent implements OnInit {
   // tslint:disable
   private async getProjectManagement() {
     this.pmObject.isMainLoaderHidden = false;
-    const batchContents = new Array();
-    const batchGuid = this.spService.generateUUID();
+    const batchUrl = [];
+    // const batchContents = new Array();
+    // const batchGuid = this.spService.generateUUID();
     const oCurrentDate = new Date();
     let sYear = oCurrentDate.getFullYear();
     sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
-    const projectYearEndPoint = this.spService.getReadURL('' + this.constants.listNames.ProjectPerYear.name + '',
-      this.pmConstant.TIMELINE_QUERY.PROJECT_PER_YEAR);
-    const projectYearUpdatedEndPoint = projectYearEndPoint.replace('{0}', '' + sYear);
-    this.spService.getBatchBodyGet(batchContents, batchGuid, projectYearUpdatedEndPoint);
-    const clientEndPoint = this.spService.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '',
-      this.pmConstant.TIMELINE_QUERY.CLIENT_LEGAL_ENTITY);
-    this.spService.getBatchBodyGet(batchContents, batchGuid, clientEndPoint);
-    const deliveryTypeEndPoint = this.spService.getReadURL('' + this.constants.listNames.DeliverableType.name + '',
-      this.pmConstant.TIMELINE_QUERY.DELIVERY_TYPE);
-    this.spService.getBatchBodyGet(batchContents, batchGuid, deliveryTypeEndPoint);
-    const subTypeEndPoint = this.spService.getReadURL('' + this.constants.listNames.SubDeliverables.name + '',
-      this.pmConstant.TIMELINE_QUERY.NON_STANDARD_SUB_TYPE);
-    this.spService.getBatchBodyGet(batchContents, batchGuid, subTypeEndPoint);
-    const servicesUrlEndPoint = this.spService.getReadURL('' + this.constants.listNames.Services.name + '',
-      this.pmConstant.TIMELINE_QUERY.NON_STANDARD_SERVICE);
-    this.spService.getBatchBodyGet(batchContents, batchGuid, servicesUrlEndPoint);
-    const resoureOptionEndPoint = this.spService.getReadURL('' + this.constants.listNames.ResourceCategorization.name + '',
-      this.pmConstant.TIMELINE_QUERY.NON_STANDARD_RESOURCE_CATEGORIZATION);
-    this.spService.getBatchBodyGet(batchContents, batchGuid, resoureOptionEndPoint);
-    this.pmObject.nonStandardPMResponse = await this.spService.getDataByApi(batchGuid, batchContents);
+
+    const projectPerYearObj = Object.assign({},this.queryConfig);
+    projectPerYearObj.url = this.spService.getReadURL(this.constants.listNames.ProjectPerYear.name, this.pmConstant.TIMELINE_QUERY.PROJECT_PER_YEAR);
+    projectPerYearObj.url = projectPerYearObj.url.replace('{0}', '' + sYear);
+    projectPerYearObj.listName = this.constants.listNames.ProjectPerYear.name;
+    projectPerYearObj.type = 'GET';
+    batchUrl.push(projectPerYearObj);
+    // const projectYearEndPoint = this.spService.getReadURL('' + this.constants.listNames.ProjectPerYear.name + '',
+    //   this.pmConstant.TIMELINE_QUERY.PROJECT_PER_YEAR);
+    // const projectYearUpdatedEndPoint = projectYearEndPoint.replace('{0}', '' + sYear);
+    // this.spService.getBatchBodyGet(batchContents, batchGuid, projectYearUpdatedEndPoint);
+
+    const clientObj = Object.assign({},this.queryConfig);
+    clientObj.url = this.spService.getReadURL(this.constants.listNames.ClientLegalEntity.name, this.pmConstant.TIMELINE_QUERY.CLIENT_LEGAL_ENTITY);
+    clientObj.listName = this.constants.listNames.ClientLegalEntity.name;
+    clientObj.type = 'GET';
+    batchUrl.push(clientObj);
+
+    // const clientEndPoint = this.spService.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '',
+    //   this.pmConstant.TIMELINE_QUERY.CLIENT_LEGAL_ENTITY);
+    // this.spService.getBatchBodyGet(batchContents, batchGuid, clientEndPoint);
+
+    const deliveryTypeObj = Object.assign({},this.queryConfig);
+    deliveryTypeObj.url = this.spService.getReadURL(this.constants.listNames.DeliverableType.name, this.pmConstant.TIMELINE_QUERY.DELIVERY_TYPE);
+    deliveryTypeObj.listName = this.constants.listNames.DeliverableType.name;
+    deliveryTypeObj.type = 'GET';
+    batchUrl.push(deliveryTypeObj);
+
+    // const deliveryTypeEndPoint = this.spService.getReadURL('' + this.constants.listNames.DeliverableType.name + '',
+    //   this.pmConstant.TIMELINE_QUERY.DELIVERY_TYPE);
+    // this.spService.getBatchBodyGet(batchContents, batchGuid, deliveryTypeEndPoint);
+
+    const subdeliveryTypeObj = Object.assign({},this.queryConfig);
+    subdeliveryTypeObj.url = this.spService.getReadURL(this.constants.listNames.SubDeliverables.name, this.pmConstant.TIMELINE_QUERY.NON_STANDARD_SUB_TYPE);
+    subdeliveryTypeObj.listName = this.constants.listNames.SubDeliverables.name;
+    subdeliveryTypeObj.type = 'GET';
+    batchUrl.push(subdeliveryTypeObj);
+
+    // const subTypeEndPoint = this.spService.getReadURL('' + this.constants.listNames.SubDeliverables.name + '',
+    //   this.pmConstant.TIMELINE_QUERY.NON_STANDARD_SUB_TYPE);
+    // this.spService.getBatchBodyGet(batchContents, batchGuid, subTypeEndPoint);
+
+    const servicesObj = Object.assign({},this.queryConfig);
+    servicesObj.url = this.spService.getReadURL(this.constants.listNames.Services.name, this.pmConstant.TIMELINE_QUERY.NON_STANDARD_SERVICE);
+    servicesObj.listName = this.constants.listNames.Services.name;
+    servicesObj.type = 'GET';
+    batchUrl.push(servicesObj);
+
+    // const servicesUrlEndPoint = this.spService.getReadURL('' + this.constants.listNames.Services.name + '',
+    //   this.pmConstant.TIMELINE_QUERY.NON_STANDARD_SERVICE);
+    // this.spService.getBatchBodyGet(batchContents, batchGuid, servicesUrlEndPoint);
+    
+    const resourcesObj = Object.assign({},this.queryConfig);
+    resourcesObj.url = this.spService.getReadURL(this.constants.listNames.ResourceCategorization.name, this.pmConstant.TIMELINE_QUERY.NON_STANDARD_RESOURCE_CATEGORIZATION);
+    resourcesObj.listName = this.constants.listNames.ResourceCategorization.name;
+    resourcesObj.type = 'GET';
+    batchUrl.push(resourcesObj);
+
+    // const resoureOptionEndPoint = this.spService.getReadURL('' + this.constants.listNames.ResourceCategorization.name + '',
+    //   this.pmConstant.TIMELINE_QUERY.NON_STANDARD_RESOURCE_CATEGORIZATION);
+    // this.spService.getBatchBodyGet(batchContents, batchGuid, resoureOptionEndPoint);
+    // this.pmObject.nonStandardPMResponse = await this.spService.getDataByApi(batchGuid, batchContents);
+    const arrResult = await this.spService.executeBatch(batchUrl);
+    this.pmObject.nonStandardPMResponse = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
     if (this.pmObject.nonStandardPMResponse && this.pmObject.nonStandardPMResponse.length) {
       const projectResult = this.pmObject.nonStandardPMResponse[0];
       if (projectResult && projectResult.length) {

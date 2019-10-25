@@ -330,7 +330,7 @@ export class PubsupportComponent implements OnInit {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         this.loggedInUserInfo = [];
         this.loggedInUserGroup = [];
-        const curruentUsrInfo = await this.spOperationsService.getUserInfo(this.globalObject.sharePointPageObject.userId);
+        const curruentUsrInfo = await this.spOperationsService.getUserInfo(this.globalObject.currentUser.userId);
         this.loggedInUserInfo = curruentUsrInfo.Groups.results;
         this.loggedInUserInfo.forEach(element => {
             if (element) {
@@ -363,7 +363,7 @@ export class PubsupportComponent implements OnInit {
             if (isManager) {
                 projectInfoEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.pubsupportService.pubsupportComponent.projectInfo);
             } else {
-                this.pubsupportService.pubsupportComponent.projectInfoUser.filter = this.pubsupportService.pubsupportComponent.projectInfoUser.filter.replace(/{{ID}}/gi, this.globalObject.sharePointPageObject.userId.toString());
+                this.pubsupportService.pubsupportComponent.projectInfoUser.filter = this.pubsupportService.pubsupportComponent.projectInfoUser.filter.replace(/{{ID}}/gi, this.globalObject.currentUser.userId.toString());
                 projectInfoEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.pubsupportService.pubsupportComponent.projectInfoUser);
             }
             arrEndPoints.push(projectInfoEndpoint);
@@ -806,7 +806,7 @@ export class PubsupportComponent implements OnInit {
         }
         this.fileSourcePath = [];
         this.fileDestinationPath = [];
-        this.batchContents = [];
+        // this.batchContents = [];
         if (data) {
             const projectCodeData: any = data;
             const fileEndPoint = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + projectCodeData.ClientLegalEntity + '/' + projectCodeData.ProjectCode + '/Publication Support/Forms/';
@@ -1459,6 +1459,9 @@ export class PubsupportComponent implements OnInit {
         // tslint:disable-next-line: max-line-length
         const projEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.ProjectInformation.name, this.selectedProject.Id);
         const projObj: any = {
+            __metadata: {
+                type: this.constantService.listNames.ProjectInformation.type
+            },
             PubSupportStatus: 'Selected'
         };
         projObj.__metadata = { type: this.constantService.listNames.ProjectInformation.type };

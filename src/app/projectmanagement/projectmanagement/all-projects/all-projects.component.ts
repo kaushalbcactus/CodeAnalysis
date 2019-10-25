@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation, HostListener, ChangeDetectorRef } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -68,17 +68,27 @@ export class AllProjectsComponent implements OnInit {
   // { field: 'CreatedBy' },
   // { field: 'CreatedDate' }];
   public allProjects = {
-    sowCodeArray: [],
-    projectCodeArray: [],
-    shortTitleArray: [],
-    clientLegalEntityArray: [],
+    SOWCode: [],
+    ProjectCode: [],
+    ShortTitle: [],
+    ClientLegalEntity: [],
+    ProjectType: [],
+    Status: [],
+    TA: [],
+    Molecule: [],
+    PrimaryResources: [],
+    POC: []
+    // sowCodeArray: [],
+    // projectCodeArray: [],
+    // shortTitleArray: [],
+    // clientLegalEntityArray: [],
+    // POCArray: [],
+    // TAArray: [],
+    // PrimaryResourcesArray: [],
+    // MoleculeArray: [],
+    // projectTypeArray: [],
+    // statusArray: [],
     // deliveryTypeArray: [],
-    POCArray: [],
-    TAArray: [],
-    PrimaryResourcesArray: [],
-    MoleculeArray: [],
-    projectTypeArray: [],
-    statusArray: [],
     // createdByArray: [],
     // createdDateArray: []
   };
@@ -137,7 +147,8 @@ export class AllProjectsComponent implements OnInit {
     private confirmationService: ConfirmationService,
     private globalObject: GlobalService,
     private route: ActivatedRoute,
-    private dataService: DataService
+    private dataService: DataService,
+    private cdr: ChangeDetectorRef,
   ) { }
 
   ngOnInit() {
@@ -301,7 +312,7 @@ export class AllProjectsComponent implements OnInit {
       const projectObj = this.pmObject.allProjectItems.filter(c => c.ProjectCode === this.params.ProjectCode);
       if (this.params.ActionStatus) {
         if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.APPROVED) {
-          if ((this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.sharePointPageObject.userId)) {
+          if ((this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.currentUser.userId)) {
             if (projectObj[0].Status === this.constants.projectStatus.AwaitingCancelApproval) {
               await this.getGetIds(projectObj[0], this.pmConstant.ACTION.CANCEL_PROJECT);
               this.isApprovalAction = false;
@@ -328,7 +339,7 @@ export class AllProjectsComponent implements OnInit {
 
         if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.REJECTED) {
           window.history.pushState({}, 'Title', window.location.href.split('?')[0]);
-          if ((this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.sharePointPageObject.userId)) {
+          if ((this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.currentUser.userId)) {
             if (projectObj[0].Status === this.constants.projectStatus.AwaitingCancelApproval) {
               const piUdpate: any = {
                 Status: this.params.ProjectStatus,
@@ -355,7 +366,7 @@ export class AllProjectsComponent implements OnInit {
       }
       if (this.params.ProjectBudgetStatus) {
         if (projectObj && projectObj.length) {
-          if (this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.sharePointPageObject.userId) {
+          if (this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.currentUser.userId) {
             await this.approveRejectBudgetReduction(this.params.ProjectBudgetStatus, projectObj[0]);
           } else {
             this.messageService.add({
@@ -497,18 +508,21 @@ export class AllProjectsComponent implements OnInit {
         // });
         tempAllProjectArray.push(projObj);
       }
-      this.allProjects.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');
-      this.allProjects.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
-      this.allProjects.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
-      this.allProjects.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
-      // this.allProjects.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
-      this.allProjects.projectTypeArray = this.commonService.unique(projectTypeTempArray, 'value');
-      this.allProjects.statusArray = this.commonService.unique(statusTempArray, 'value');
+      if (tempAllProjectArray) {
+        this.createColFieldValues(tempAllProjectArray);
+      }
+      // this.allProjects.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');
+      // this.allProjects.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
+      // this.allProjects.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
+      // this.allProjects.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
+      // // this.allProjects.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
+      // this.allProjects.projectTypeArray = this.commonService.unique(projectTypeTempArray, 'value');
+      // this.allProjects.statusArray = this.commonService.unique(statusTempArray, 'value');
 
-      // this.allProjects.PrimaryResourcesArray = this.commonService.unique(PrimaryResourcesTempArray, 'value');
-      this.allProjects.POCArray = this.commonService.unique(POCTempArray, 'value');
-      this.allProjects.TAArray = this.commonService.unique(TATempArray, 'value');
-      this.allProjects.MoleculeArray = this.commonService.unique(MoleculeTempArray, 'value');
+      // // this.allProjects.PrimaryResourcesArray = this.commonService.unique(PrimaryResourcesTempArray, 'value');
+      // this.allProjects.POCArray = this.commonService.unique(POCTempArray, 'value');
+      // this.allProjects.TAArray = this.commonService.unique(TATempArray, 'value');
+      // this.allProjects.MoleculeArray = this.commonService.unique(MoleculeTempArray, 'value');
       // this.allProjects.createdByArray = this.commonService.unique(createdByTempArray, 'value');
       // this.allProjects.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
       this.pmObject.allProjectsArray = [];
@@ -523,7 +537,7 @@ export class AllProjectsComponent implements OnInit {
     }
 
     if (this.pmObject.columnFilter.ProjectCode && this.pmObject.columnFilter.ProjectCode.length) {
-      const codeExists = this.allProjects.projectCodeArray.find(e => e.label === this.pmObject.columnFilter.ProjectCode[0]);
+      const codeExists = this.allProjects.ProjectCode.find(e => e.label === this.pmObject.columnFilter.ProjectCode[0]);
       if (codeExists) {
         this.allProjectRef.filter(this.pmObject.columnFilter.ProjectCode, 'ProjectCode', 'in');
       } else {
@@ -548,6 +562,19 @@ export class AllProjectsComponent implements OnInit {
     }
 
     this.showFilterOptions = true;
+  }
+
+  createColFieldValues(resArray) {
+    this.allProjects.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label)));
+    this.allProjects.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+    this.allProjects.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
+    this.allProjects.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+    this.allProjects.ProjectType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectType, value: a.ProjectType }; return b; }).filter(ele => ele.label)));
+    this.allProjects.Status = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
+    this.allProjects.TA = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.TA, value: a.TA }; return b; }).filter(ele => ele.label)));
+    this.allProjects.Molecule = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Molecule, value: a.Molecule }; return b; }).filter(ele => ele.label)));
+    const pocArray = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC[0], value: a.POC[0] }; return b; }).filter(ele => ele.label));
+    this.allProjects.POC = this.commonService.sortData(pocArray);
   }
 
   async approveRejectBudgetReduction(selectedStatus, projectObj) {
@@ -1999,7 +2026,7 @@ export class AllProjectsComponent implements OnInit {
     expanseQuery.filter = expanseQuery.filterByProjectCode.replace(/{{projectCode}}/gi, projectCode);
     const expanseEndPoint = this.spServices.getReadURL('' + this.constants.listNames.SpendingInfo.name +
       '', expanseQuery);
-    expanseGet.url = expanseEndPoint.replace('{0}', '' + this.globalObject.sharePointPageObject.userId);
+    expanseGet.url = expanseEndPoint.replace('{0}', '' + this.globalObject.currentUser.userId);
     expanseGet.type = 'GET';
     expanseGet.listName = this.constants.listNames.SpendingInfo.name;
     batchURL.push(expanseGet);
@@ -2285,7 +2312,6 @@ export class AllProjectsComponent implements OnInit {
     projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi,
       projectCode);
 
-    debugger
     const results = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInfoFilter);
     if (results && results.length) {
       this.pmObject.allProjectItems = results;
@@ -2337,4 +2363,29 @@ export class AllProjectsComponent implements OnInit {
       }
     }
   }
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.pmObject.allProjectsArray.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.allProjectRef,
+        colFields: this.allProjects,
+        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.createColFieldValues(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+    }
+    this.cdr.detectChanges();
+  }
+
 }

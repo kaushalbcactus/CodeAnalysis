@@ -1,17 +1,18 @@
 <div class="userdetails">
-    <div class='customer-detail'  [hidden]="hideDetail">
+    <div class='customer-detail' [hidden]="hideDetail">
         Name:
         <div id="cd-name">{{global.currentUser.title}}</div>
     </div>
-    <div class='customer-detail'  [hidden]="hideDetail">
+    <div class='customer-detail' [hidden]="hideDetail">
         Designation:
         <div id="cd-designation">{{global.currentUser.designation}}</div>
     </div>
-    <a [hidden]="hideTable" (click)="downloadExcel(fb)" class="download-worksheet td-none"><i class="fa fa-download" aria-hidden="true"></i>
+    <a [hidden]="hideTable" (click)="downloadExcel(fb)" class="download-worksheet td-none"><i class="fa fa-download"
+            aria-hidden="true"></i>
         Download worksheet</a>
 </div>
 
-<p-table #fb [columns]="feedbackColumns" [value]="feedbackRows"  [hidden]="hideTable">
+<p-table #fb [columns]="feedbackColumns" [value]="feedbackRows" [hidden]="hideTable">
     <ng-template pTemplate="header" let-columns>
         <tr>
             <ng-container *ngFor="let col of columns">
@@ -28,27 +29,33 @@
                 <th [ngSwitch]="col.field" *ngIf="!col.visibility">
                     <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" [options]="FBColArray.Date"
                         defaultLabel="Date" (onChange)="fb.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                        (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
+                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" [maxSelectedLabels]="1">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Task'" [style]="{'width':'100%'}" [options]="FBColArray.Task"
                         defaultLabel="Task" (onChange)="fb.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                        (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
+                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" [maxSelectedLabels]="1">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Type'" [style]="{'width':'100%'}" [options]="FBColArray.Type"
                         defaultLabel="Type" (onChange)="fb.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                        (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
+                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" [maxSelectedLabels]="1">
                     </p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Feedbackfor'" [style]="{'width':'100%'}"
                         [options]="FBColArray.Feedbackfor" defaultLabel="Feedback For"
                         (onChange)="fb.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" resetFilterOnHide="true"></p-multiSelect>
+                        filter="true" resetFilterOnHide="true" (input)="optionFilter($event)"
+                        (onPanelShow)="isOptionFilter=true;" [maxSelectedLabels]="1"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'FeedbackBy'" [style]="{'width':'100%'}"
                         [options]="FBColArray.FeedbackBy" defaultLabel="Feedback By"
                         (onChange)="fb.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" resetFilterOnHide="true"></p-multiSelect>
+                        filter="true" resetFilterOnHide="true" (input)="optionFilter($event)"
+                        (onPanelShow)="isOptionFilter=true;" [maxSelectedLabels]="1"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Rating'" [style]="{'width':'100%'}" [options]="FBColArray.Rating"
                         defaultLabel="Rating" (onChange)="fb.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                        (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
+                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;" [maxSelectedLabels]="1">
                     </p-multiSelect>
                 </th>
             </ng-container>
@@ -56,9 +63,23 @@
     </ng-template>
     <ng-template pTemplate="body" let-rowData let-columns="columns">
         <tr>
+            <!-- <td *ngFor="let col of columns">
+                <ng-container *ngIf="col.field != '' && !col.visibility &&  col.field !== 'Date'">
+                    {{rowData[col.field]}}
+                </ng-container>
+                <ng-container *ngIf="col.field === 'Date'">
+                    {{rowData[col.field] | date:'MMM d, yyyy' }}
+                </ng-container>
+            </td> -->
             <ng-container *ngFor="let col of columns">
                 <td *ngIf="col.field != '' && !col.visibility">
-                    {{rowData[col.field]}}
+                    <!-- {{rowData[col.field]}} -->
+                    <ng-container *ngIf="col.field != '' && !col.visibility &&  col.field !== 'Date'">
+                        {{rowData[col.field]}}
+                    </ng-container>
+                    <ng-container *ngIf="col.field === 'Date'">
+                        {{rowData[col.field] | date:'MMM d, yyyy' }}
+                    </ng-container>
                 </td>
             </ng-container>
         </tr>

@@ -30,7 +30,7 @@ export class InternalComponent implements OnInit, OnDestroy {
     this.data.filterObj.subscribe(filter => this.filterObj = filter);
     this.feedbackTable.applyFilters(this.filterObj);
     this.global.personalFeedback.internal.assignedTo = {
-      ID: this.global.sharePointPageObject.userId,
+      ID: this.global.currentUser.userId,
       title: this.global.currentUser.title,
       designation: this.global.currentUser.designation
     };

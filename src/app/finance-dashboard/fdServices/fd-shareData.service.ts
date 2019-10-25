@@ -83,7 +83,12 @@ export class FDDataShareService {
 
     private budgetRateData = new BehaviorSubject("");
     defaultBRMData = this.budgetRateData.asObservable();
-
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+    };
     constructor(
         private spServices: SPOperationService,
         private constantService: ConstantsService,
@@ -93,7 +98,7 @@ export class FDDataShareService {
     ) { }
 
     async getCurrentUserInfo() {
-        return await this.spServices.getUserInfo(this.globalObject.sharePointPageObject.userId);
+        return await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
     }
 
     async getGroupInfo() {
@@ -101,7 +106,7 @@ export class FDDataShareService {
     }
 
     async getITInfo() {
-        return await this.spServices.getITGroupInfo('Invoice_Team');
+        return await this.spServices.getGroupInfo('Invoice_Team');
     }
 
     // Export to Excel
@@ -151,35 +156,46 @@ export class FDDataShareService {
         }
         // this.dataSource.next(data)
     }
+    // freelancerVendersRes: any = [];
+    // async getVendorFreelanceData() {
+    //     if (this.freelancerVendersRes.length) {
+    //         return this.freelancerVendersRes;
+    //     } else {
+    //         let data = [
+    //             { query: this.spServices.getReadURL('' + this.constantService.listNames.VendorFreelancer.name + '', this.fdConstantsService.fdComponent.addUpdateFreelancer) },
+    //         ]
+    //         const batchContents = new Array();
+    //         const batchGuid = this.spServices.generateUUID();
+    //         let endPoints = data;
+    //         let userBatchBody = '';
+    //         for (let i = 0; i < endPoints.length; i++) {
+    //             const element = endPoints[i];
+    //             this.spServices.getBatchBodyGet(batchContents, batchGuid, element.query);
+    //         }
+    //         batchContents.push('--batch_' + batchGuid + '--');
+    //         userBatchBody = batchContents.join('\r\n');
+    //         let arrResults: any = [];
+    //         const res = await this.spServices.getFDData(batchGuid, userBatchBody);
+    //         arrResults = res;
+    //         if (arrResults.length) {
+    //             console.log('this.freelancerVendersRes ', arrResults[0]);
+    //             this.freelancerVendersRes = arrResults[0];
+    //             return this.freelancerVendersRes;
+    //         } else {
+    //             return '';
+    //         }
+    //     }
+    // }
+
     freelancerVendersRes: any = [];
     async getVendorFreelanceData() {
-        if (this.freelancerVendersRes.length) {
-            return this.freelancerVendersRes;
-        } else {
-            let data = [
-                { query: this.spServices.getReadURL('' + this.constantService.listNames.VendorFreelancer.name + '', this.fdConstantsService.fdComponent.addUpdateFreelancer) },
-            ]
-            const batchContents = new Array();
-            const batchGuid = this.spServices.generateUUID();
-            let endPoints = data;
-            let userBatchBody = '';
-            for (let i = 0; i < endPoints.length; i++) {
-                const element = endPoints[i];
-                this.spServices.getBatchBodyGet(batchContents, batchGuid, element.query);
-            }
-            batchContents.push('--batch_' + batchGuid + '--');
-            userBatchBody = batchContents.join('\r\n');
-            let arrResults: any = [];
-            const res = await this.spServices.getFDData(batchGuid, userBatchBody);
-            arrResults = res;
-            if (arrResults.length) {
-                console.log('this.freelancerVendersRes ', arrResults[0]);
-                this.freelancerVendersRes = arrResults[0];
-                return this.freelancerVendersRes;
-            } else {
-                return '';
-            }
+        const vendorObj = Object.assign({}, this.fdConstantsService.fdComponent.addUpdateFreelancer);
+        const res = await this.spServices.readItems(this.constantService.listNames.VendorFreelancer.name, vendorObj);
+        const arrResults = res.length ? res : [];
+        if (arrResults.length) {
+            this.freelancerVendersRes = arrResults;
         }
+        return arrResults;
     }
 
     // SOWList
@@ -235,90 +251,100 @@ export class FDDataShareService {
             if (x.UserName.ID === ele.EditorId) {
                 return x;
             }
-        })
-        return found ? found : ''
+        });
+        return found ? found : '';
     }
 
     async getRequiredData(): Promise<any> {
         if (!this.requiredData.length) {
             this.constantService.loader.isPSInnerLoaderHidden = false;
-            this.globalObject.userInfo = await this.spServices.getUserInfo(this.globalObject.sharePointPageObject.userId);
-            // Default Tabs & sub Menus
-            // this.fdConstantsService.fdComponent.tabs.topMenu = [
-            //     { label: 'Expenditure', routerLink: ['expenditure'] },
-            //     { label: 'Scheduled', routerLink: ['scheduled'] }
-            // ];
-            // this.fdConstantsService.fdComponent.tabs.expenditureMenu = [
-            //     { label: 'Pending Expense', routerLink: ['pending'] },
-            // ]
-            // // Scheduled Tabs
-            // this.fdConstantsService.fdComponent.tabs.scheduleMenu = [
-            //     { label: 'Deliverable Based', routerLink: ['deliverable-based'] },
-            //     // { label: 'Hourly Based', routerLink: ['hourly-based'] },
-            //     { label: 'OOP', routerLink: ['oop'] },
-            // ]
+            this.globalObject.userInfo = await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
+            // const batchContents = new Array();
+            // const batchGuid = this.spServices.generateUUID();
+            const batchUrl = [];
+            // tslint:disable:max-line-length
+            const prjContactsObj = Object.assign({}, this.queryConfig);
+            prjContactsObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectContacts.name, this.fdConstantsService.fdComponent.projectContacts);
+            prjContactsObj.listName = this.constantService.listNames.ProjectContacts.name;
+            prjContactsObj.type = 'GET';
+            batchUrl.push(prjContactsObj);
 
-            // if (this.globalObject.userInfo.Groups.results.length) {
-            //     const groups = this.globalObject.userInfo.Groups.results.map(x => x.LoginName);
-            //     if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1) {
-            //         // All 
-            //         this.fdConstantsService.fdComponent.tabs.topMenu.push(
-            //             { label: 'Confirmed', routerLink: ['confirmed'] },
-            //             { label: 'Proforma', routerLink: ['proforma'] },
-            //             { label: 'Outstanding Invoices', routerLink: ['outstanding-invoices'] },
-            //             { label: 'Paid Invoices', routerLink: ['paid-invoices'] },
-            //         );
-            //         // All Expenditure Menus
-            //         this.fdConstantsService.fdComponent.tabs.expenditureMenu.push(
-            //             { label: 'Cancelled/Rejected', routerLink: ['cancelled-reject'] },
-            //             { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'] },
-            //             { label: 'Approved(Billable)', routerLink: ['approvedBillable'] }
-            //         );
+            const cleObj = Object.assign({}, this.queryConfig);
+            cleObj.url = this.spServices.getReadURL(this.constantService.listNames.ClientLegalEntity.name, this.fdConstantsService.fdComponent.clientLegalEntity);
+            cleObj.listName = this.constantService.listNames.ClientLegalEntity.name;
+            cleObj.type = 'GET';
+            batchUrl.push(cleObj);
 
-            //         // All Scheduled Tabs
-            //         this.fdConstantsService.fdComponent.tabs.scheduleMenu.push(
-            //             { label: 'Hourly Based', routerLink: ['hourly-based'] },
-            //         )
+            const usStatesObj = Object.assign({}, this.queryConfig);
+            usStatesObj.url = this.spServices.getReadURL(this.constantService.listNames.UsState.name, this.fdConstantsService.fdComponent.usStates);
+            usStatesObj.listName = this.constantService.listNames.UsState.name;
+            usStatesObj.type = 'GET';
+            batchUrl.push(usStatesObj);
 
-            //     } else if (groups.indexOf('ExpenseApprovers') > -1) {
-            //         // All Expenditure Menus
-            //         this.fdConstantsService.fdComponent.tabs.expenditureMenu.push(
-            //             { label: 'Cancelled/Rejected', routerLink: ['cancelled-reject'] },
-            //             { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'] },
-            //             { label: 'Approved(Billable)', routerLink: ['approvedBillable'] }
-            //         );
+            const currencyObj = Object.assign({}, this.queryConfig);
+            currencyObj.url = this.spServices.getReadURL(this.constantService.listNames.Currency.name, this.fdConstantsService.fdComponent.currency);
+            currencyObj.listName = this.constantService.listNames.Currency.name;
+            currencyObj.type = 'GET';
+            batchUrl.push(currencyObj);
 
-            //     }
-            // }
-            const batchContents = new Array();
-            const batchGuid = this.spServices.generateUUID();
-            const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
-            const projectContactEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectContacts.name + '', this.fdConstantsService.fdComponent.projectContacts);
-            const clientLegalEntityEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
-            const usStates = this.spServices.getReadURL('' + this.constantService.listNames.UsState.name + '', this.fdConstantsService.fdComponent.usStates);
-            const currnecy = this.spServices.getReadURL('' + this.constantService.listNames.Currency.name + '', this.fdConstantsService.fdComponent.currency);
-            const projectPO = this.spServices.getReadURL('' + this.constantService.listNames.ProjectPO.name + '', this.fdConstantsService.fdComponent.projectPO);
-            const resourceCateg = this.spServices.getReadURL('' + this.constantService.listNames.ResourceCategorization.name + '', this.fdConstantsService.fdComponent.resourceCategorization);
-            const billingEntity = this.spServices.getReadURL('' + this.constantService.listNames.BillingEntity.name + '', this.fdConstantsService.fdComponent.billingEntity);
-            const budgetRate = this.spServices.getReadURL('' + this.constantService.listNames.BudgetRateMaster.name + '', this.fdConstantsService.fdComponent.budgetRate);
+            const projectPOObj = Object.assign({}, this.queryConfig);
+            projectPOObj.url = this.spServices.getReadURL(this.constantService.listNames.PO.name, this.fdConstantsService.fdComponent.projectPO);
+            projectPOObj.listName = this.constantService.listNames.PO.name;
+            projectPOObj.type = 'GET';
+            batchUrl.push(projectPOObj);
+
+            const resCatObj = Object.assign({}, this.queryConfig);
+            resCatObj.url = this.spServices.getReadURL(this.constantService.listNames.ResourceCategorization.name, this.fdConstantsService.fdComponent.resourceCategorization);
+            resCatObj.listName = this.constantService.listNames.ResourceCategorization.name;
+            resCatObj.type = 'GET';
+            batchUrl.push(resCatObj);
+
+            const billingEntObj = Object.assign({}, this.queryConfig);
+            billingEntObj.url = this.spServices.getReadURL(this.constantService.listNames.BillingEntity.name, this.fdConstantsService.fdComponent.billingEntity);
+            billingEntObj.listName = this.constantService.listNames.BillingEntity.name;
+            billingEntObj.type = 'GET';
+            batchUrl.push(billingEntObj);
+
+            const budgetRateObj = Object.assign({}, this.queryConfig);
+            budgetRateObj.url = this.spServices.getReadURL(this.constantService.listNames.BudgetRateMaster.name, this.fdConstantsService.fdComponent.budgetRate);
+            budgetRateObj.listName = this.constantService.listNames.BudgetRateMaster.name;
+            budgetRateObj.type = 'GET';
+            batchUrl.push(budgetRateObj);
+
+            const prjInfoObj = Object.assign({}, this.queryConfig);
+            prjInfoObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfo);
+            prjInfoObj.listName = this.constantService.listNames.ProjectInformation.name;
+            prjInfoObj.type = 'GET';
+            batchUrl.push(prjInfoObj);
+
+            // const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
+            // const projectContactEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectContacts.name + '', this.fdConstantsService.fdComponent.projectContacts);
+            // const clientLegalEntityEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
+            // const usStates = this.spServices.getReadURL('' + this.constantService.listNames.UsState.name + '', this.fdConstantsService.fdComponent.usStates);
+            // const currnecy = this.spServices.getReadURL('' + this.constantService.listNames.Currency.name + '', this.fdConstantsService.fdComponent.currency);
+            // const projectPO = this.spServices.getReadURL('' + this.constantService.listNames.ProjectPO.name + '', this.fdConstantsService.fdComponent.projectPO);
+            // const resourceCateg = this.spServices.getReadURL('' + this.constantService.listNames.ResourceCategorization.name + '', this.fdConstantsService.fdComponent.resourceCategorization);
+            // const billingEntity = this.spServices.getReadURL('' + this.constantService.listNames.BillingEntity.name + '', this.fdConstantsService.fdComponent.billingEntity);
+            // const budgetRate = this.spServices.getReadURL('' + this.constantService.listNames.BudgetRateMaster.name + '', this.fdConstantsService.fdComponent.budgetRate);
             // const userGroup = this.spServices.getReadURL(''+this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
-            //projectInfoEndpoint,
-            let endPoints = [projectContactEndpoint, clientLegalEntityEndpoint, usStates, currnecy, projectPO, resourceCateg, billingEntity, budgetRate];
-            let userBatchBody;
-            for (let i = 0; i < endPoints.length; i++) {
-                const element = endPoints[i];
-                this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-            }
-            batchContents.push('--batch_' + batchGuid + '--');
-            userBatchBody = batchContents.join('\r\n');
+            // projectInfoEndpoint,
+            // let endPoints = [projectContactEndpoint, clientLegalEntityEndpoint, usStates, currnecy, projectPO, resourceCateg, billingEntity, budgetRate];
+            // let userBatchBody;
+            // for (let i = 0; i < endPoints.length; i++) {
+            //     const element = endPoints[i];
+            //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+            // }
+            // batchContents.push('--batch_' + batchGuid + '--');
+            // userBatchBody = batchContents.join('\r\n');
 
-            const arrResults = await this.spServices.getFDData(batchGuid, userBatchBody);
-            this.requiredData = arrResults;
+            // const arrResults = await this.spServices.getFDData(batchGuid, userBatchBody);
+            let arrResults = await this.spServices.executeBatch(batchUrl);
+            this.requiredData = arrResults = arrResults.length ? arrResults.map(a => a.retItems) : [];
             this.setData(arrResults);
             this.constantService.loader.isPSInnerLoaderHidden = true;
-            return "";
+            return '';
         } else {
-            return "";
+            return '';
         }
     }
 
@@ -335,7 +361,7 @@ export class FDDataShareService {
             }]
             const res = await this.spServices.executeBatch(obj);
             if (res.length) {
-                console.log('this.projectsInfo ', res[0]);
+                // console.log('this.projectsInfo ', res[0]);
                 this.projectsInfo = res[0].retItems;
                 this.projectInfoData.next(this.projectsInfo);
                 return this.projectsInfo;
@@ -348,28 +374,48 @@ export class FDDataShareService {
     }
     // clePoPiRes: any = [];
     async getClePO(type: string) {
+        const batchUrl = [];
         // if (this.clePoPiRes.length) {
         //     return this.clePoPiRes;
         // } else {
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        const clientLegalEntityEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
-        const projectPO = this.spServices.getReadURL('' + this.constantService.listNames.ProjectPO.name + '', this.fdConstantsService.fdComponent.projectPO);
-        let endPoints = [clientLegalEntityEndpoint, projectPO];
-        if (type === 'hourly') {
-            const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
-            endPoints = [clientLegalEntityEndpoint, projectPO, projectInfoEndpoint];
-        }
-        let userBatchBody;
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        const cleObj = Object.assign({}, this.queryConfig);
+        cleObj.url = this.spServices.getReadURL(this.constantService.listNames.ClientLegalEntity.name, this.fdConstantsService.fdComponent.clientLegalEntity);
+        cleObj.listName = this.constantService.listNames.ClientLegalEntity.name;
+        cleObj.type = 'GET';
+        batchUrl.push(cleObj);
 
-        const arrResults = await this.spServices.getFDData(batchGuid, userBatchBody);
+        const projectPOObj = Object.assign({}, this.queryConfig);
+        projectPOObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectPO.name, this.fdConstantsService.fdComponent.projectPO);
+        projectPOObj.listName = this.constantService.listNames.ProjectPO.name;
+        projectPOObj.type = 'GET';
+        batchUrl.push(projectPOObj);
+
+        // const clientLegalEntityEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
+        // const projectPO = this.spServices.getReadURL('' + this.constantService.listNames.ProjectPO.name + '', this.fdConstantsService.fdComponent.projectPO);
+        // let endPoints = [clientLegalEntityEndpoint, projectPO];
+        if (type === 'hourly') {
+            const hourlyObj = Object.assign({}, this.queryConfig);
+            hourlyObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfo);
+            hourlyObj.listName = this.constantService.listNames.ProjectInformation.name;
+            hourlyObj.type = 'GET';
+            batchUrl.push(hourlyObj);
+            // const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
+            // endPoints = [clientLegalEntityEndpoint, projectPO, projectInfoEndpoint];
+        }
+        // let userBatchBody;
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+
+        // const arrResults = await this.spServices.getFDData(batchGuid, userBatchBody);
         // this.clePoPiRes = arrResults;
+        let arrResults = await this.spServices.executeBatch(batchUrl);
+        arrResults = arrResults.length ? arrResults.map(a => a.retItems) : [];
         this.setClePOData(arrResults);
         // }
     }

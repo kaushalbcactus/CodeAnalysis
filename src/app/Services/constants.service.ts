@@ -29,6 +29,10 @@ export class ConstantsService {
       name: 'InvoiceDetails',
       type: 'SP.Data.InvoiceDetailsListItem'
     },
+    AvailableHours: {
+      name: 'AvailableHours',
+      type: 'SP.Data.AvailableHoursListItem'
+    },
     SubDeliverables: {
       name: 'SubDeliverables',
       type: 'SP.Data.SubDeliverablesListItem'

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';
 import { GlobalService } from '../../../Services/global.service';
@@ -6,6 +6,7 @@ import { CommonService } from '../../../Services/common.service';
 import { DatePipe } from '@angular/common';
 import { QMSConstantsService } from '../services/qmsconstants.service';
 import { QMSCommonService } from '../services/qmscommon.service';
+import { DataTable } from 'primeng/primeng';
 
 @Component({
   selector: 'app-user-feedback',
@@ -20,6 +21,7 @@ export class UserFeedbackComponent implements OnInit {
   @ViewChild('uf', { static: true }) uf;
   @Output() setAverageRating = new EventEmitter<string>();
   @Output() feedbackData = new EventEmitter<any>();
+  @ViewChild('uf', { static: false }) userFeedbackTable: DataTable;
 
   public hideTable = false;
   public hideLoader = true;
@@ -42,8 +44,10 @@ export class UserFeedbackComponent implements OnInit {
   // tslint:disable-next-line
   public displayedColumns: string[] = ['Created', 'Title', 'FeedbackType', 'Author', 'AverageRating', 'Comments', 'ParameterRating', 'Value'];
   constructor(private spService: SPOperationService, private globalConstant: ConstantsService, private qmsConstant: QMSConstantsService,
-              public global: GlobalService, private datepipe: DatePipe, public common: CommonService,
-              private qmsCommon: QMSCommonService) { }
+    public global: GlobalService, private datepipe: DatePipe, public commonService: CommonService,
+    private qmsCommon: QMSCommonService,
+    private cdr: ChangeDetectorRef,
+  ) { }
 
   ngOnInit() {
     this.UFColumns = [
@@ -61,20 +65,24 @@ export class UserFeedbackComponent implements OnInit {
   colFilters(colData) {
     // tslint:disable: max-line-length
     this.UFColArray.Date = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = { label: this.datepipe.transform(a.Created, 'MMM d, yyyy'),
-      value: this.datepipe.transform(a.Created, 'MMM d, yyyy') ? this.datepipe.transform(a.Created, 'MMM d, yyyy') : '' ,
-      filterValue:  new Date(a.Created)}; return b;
+      const b = {
+        label: this.datepipe.transform(a.Created, 'MMM d, yyyy'),
+        value: a.Created ? new Date(this.datepipe.transform(a.Created, 'MMM d, yyyy')) : '',
+        filterValue: new Date(a.Created)
+      }; return b;
     }));
     this.UFColArray.Task = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-       const b = {
-         label: a.Title ? a.SubMilestones ? a.Title + ' - ' +  a.SubMilestones : a.Title  : '',
-         value: a.Title ? a.SubMilestones ? a.Title + ' - ' +  a.SubMilestones : a.Title  : '',
-         filterValue: a.Title};
-       return b; }));
+      const b = {
+        label: a.Title ? a.SubMilestones ? a.Title + ' - ' + a.SubMilestones : a.Title : '',
+        value: a.Title ? a.SubMilestones ? a.Title + ' - ' + a.SubMilestones : a.Title : '',
+        filterValue: a.Title
+      };
+      return b;
+    }));
     this.UFColArray.Type = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.FeedbackType, value: a.FeedbackType, filterValue: a.FeedbackType }; return b; }));
-    this.UFColArray.Feedbackby = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Author.Title, value: a.Author.Title, filterValue: a.Author.Title}; return b; }));
-    this.UFColArray.Rating = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AverageRating, value: +a.AverageRating, filterValue:  a.AverageRating}; return b; }));
-    this.UFColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Comments, value: a.Comments, filterValue:  a.Comments }; return b; }));
+    this.UFColArray.Feedbackby = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Author.Title, value: a.Author.Title, filterValue: a.Author.Title }; return b; }));
+    this.UFColArray.Rating = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.AverageRating, value: +a.AverageRating, filterValue: a.AverageRating }; return b; }));
+    this.UFColArray.Comments = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Comments, value: a.Comments, filterValue: a.Comments }; return b; }));
   }
 
   /**
@@ -125,10 +133,10 @@ export class UserFeedbackComponent implements OnInit {
       const getScorecardData = Object.assign({}, this.options);
       getScorecardData.url = this.spService.getReadURL(this.globalConstant.listNames.Scorecard.name, personalFeedbackComponent.getScorecard);
       getScorecardData.url = getScorecardData.url.replace('{{AssignedTo}}', assignedToID)
-                                                .replace('{{TopCount}}', '4500')
-                                                .replace('{{startDate}}', qfStartDate)
-                                                .replace('{{endDate}}', qfEndDate)
-                                                .replace('{{FeedbackTypeFilter}}', 'and FeedbackType eq "' + this.globalConstant.FeedbackType.qualitative + '"');
+        .replace('{{TopCount}}', '4500')
+        .replace('{{startDate}}', qfStartDate)
+        .replace('{{endDate}}', qfEndDate)
+        .replace('{{FeedbackTypeFilter}}', 'and FeedbackType eq "' + this.globalConstant.FeedbackType.qualitative + '"');
       getScorecardData.listName = this.globalConstant.listNames.ProjectInformation.name;
       getScorecardData.type = 'GET';
       batchURL.push(getScorecardData);
@@ -147,9 +155,9 @@ export class UserFeedbackComponent implements OnInit {
           arrScoreCards[i].Value = '';
           arrRatings[i].retItems.forEach(elem => {
             arrScoreCards[i].ParameterRating = filterObj.managerView ? arrScoreCards[i].ParameterRating + elem.Parameter.Title + '<br style="mso-data-placement:same-cell;" />' :
-                                                arrScoreCards[i].ParameterRating + elem.Parameter.Title + '\n';
+              arrScoreCards[i].ParameterRating + elem.Parameter.Title + '\n';
             arrScoreCards[i].Value = filterObj.managerView ? arrScoreCards[i].Value + elem.Rating + '<br style="mso-data-placement:same-cell;" />' :
-                                                arrScoreCards[i].Value + elem.Rating + '\n';
+              arrScoreCards[i].Value + elem.Rating + '\n';
           });
         }
       }
@@ -176,8 +184,13 @@ export class UserFeedbackComponent implements OnInit {
         FeedbackType: element.FeedbackType ? element.FeedbackType : '',
         DocumentsUrl: element.DocumentsUrl ? element.DocumentsUrl : '',
         AssignedTo: element.AssignedTo,
-        Date: this.datepipe.transform(element.Created, 'MMM d, yyyy'),
-        Task: element.Title ? element.SubMilestones ? element.Title + ' - ' +  element.SubMilestones : element.Title : '',
+        Date: element.Created ? new Date(this.datepipe.transform(element.Created, 'MMM d, yyyy')) : '',
+        SubMilestones: element.SubMilestones ? element.SubMilestones : '',
+        Author: element.Author,
+        AverageRating: element.AverageRating,
+        Created: element.Created ? new Date(this.datepipe.transform(element.Created, 'MMM d, yyyy')) : '',
+        Task: element.Title ? element.SubMilestones ? element.Title + ' - ' + element.SubMilestones : element.Title : '',
+        Title: element.Title ? element.Title : '',
         Type: element.FeedbackType ? element.FeedbackType : '',
         Feedbackby: element.Author.Title ? element.Author.Title : '',
         Rating: element.AverageRating ? element.AverageRating : '',
@@ -224,6 +237,31 @@ export class UserFeedbackComponent implements OnInit {
       this.hideTable = false;
       this.hideLoader = true;
     }, 500);
+  }
+
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.UFRows.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.userFeedbackTable,
+        colFields: this.UFColArray,
+        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.colFilters(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
+    }
   }
 
 }

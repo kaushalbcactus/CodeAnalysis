@@ -14,6 +14,12 @@ declare var $;
 // tslint:disable
 export class CommonService {
     response;
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+    };
     batchContents = new Array();
     public sharedTaskAllocateObj = this.sharedObject.oTaskAllocation;
     constructor(private pmObject: PMObjectService,
@@ -392,16 +398,11 @@ export class CommonService {
             }
             return result;
         });
+        return data;
     }
-    getTaskDocument(folderUrl, documentUrl, previousTask) {
-        var documents = [];
-        var completeFolderRelativeUrl = folderUrl + documentUrl;
-        var Url = "/_api/web/getfolderbyserverrelativeurl('" + completeFolderRelativeUrl + "')/Files?$expand=ListItemAllFields";
-        if (previousTask) {
-            documents = this.spServices.fetchTaskDocumentsByRestAPI(Url, previousTask);
-        } else {
-            documents = this.spServices.fetchTaskDocumentsByRestAPI(Url, null);
-        }
+    async getTaskDocument(folderUrl, documentUrl) {
+        let completeFolderRelativeUrl = folderUrl + documentUrl;
+        let documents = await this.spServices.readFiles(completeFolderRelativeUrl);
         if (documents.length) {
             documents = documents.sort(function (a, b) {
                 return new Date(a.modified) < new Date(b.modified) ? -1 : 1;
@@ -776,64 +777,77 @@ export class CommonService {
 
     async getProjectResources(projectCode, bFirstCall, bSaveRes) {
 
-         
-        this.batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        let projectResource = '';
 
+        // this.batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        // let projectResource = '';
+        const batchUrl = [];
 
         // ***********************************************************************************************************************************
         // Project Information
         // ***********************************************************************************************************************************
 
-
-        let projectResourcesCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.projectResources);
-        projectResourcesCall.filter = projectResourcesCall.filter.replace(/{{ProjectCode}}/gi, projectCode);
-        projectResource = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', projectResourcesCall);
-        this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectResource);
+        let prjResObj = Object.assign({}, this.queryConfig);
+        prjResObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name, this.taskAllocationService.taskallocationComponent.projectResources);
+        prjResObj.url = prjResObj.url.replace(/{{ProjectCode}}/gi, projectCode);
+        prjResObj.listName = this.constants.listNames.ProjectInformation.name;
+        prjResObj.type = 'GET';
+        batchUrl.push(prjResObj);
+        // let projectResourcesCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.projectResources);
+        // projectResourcesCall.filter = projectResourcesCall.filter.replace(/{{ProjectCode}}/gi, projectCode);
+        // projectResource = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', projectResourcesCall);
+        // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectResource);
 
         // ***********************************************************************************************************************************
         // Budget Hours 
         // ***********************************************************************************************************************************
-        let budgetsCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.Budgets);
-        budgetsCall.filter = budgetsCall.filter.replace(/{{ProjectCode}}/gi, projectCode);
-        const budgetHours = this.spServices.getReadURL('' + this.constants.listNames.ProjectFinances.name + '', budgetsCall);
-        this.spServices.getBatchBodyGet(this.batchContents, batchGuid, budgetHours);
+        // let budgetsCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.Budgets);
+        // budgetsCall.filter = budgetsCall.filter.replace(/{{ProjectCode}}/gi, projectCode);
+        // const budgetHours = this.spServices.getReadURL('' + this.constants.listNames.ProjectFinances.name + '', budgetsCall);
+        // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, budgetHours);
 
+        let budgetObj = Object.assign({}, this.queryConfig);
+        budgetObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectFinances.name, this.taskAllocationService.taskallocationComponent.Budgets);
+        budgetObj.url = budgetObj.url.replace(/{{ProjectCode}}/gi, projectCode);
+        budgetObj.listName = this.constants.listNames.ProjectFinances.name;
+        budgetObj.type = 'GET';
+        batchUrl.push(budgetObj);
         if (bFirstCall) {
-
-
 
             // ***********************************************************************************************************************************
             // Resources
             // ***********************************************************************************************************************************
-            let resourceCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.Resources);
-            resourceCall.filter = resourceCall.filter.replace(/{{enable}}/gi, 'Yes');
-            const Resources = this.spServices.getReadURL('' + this.constants.listNames.ResourceCategorization.name + '', resourceCall);
-            this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Resources);
+            // let resourceCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.Resources);
+            // resourceCall.filter = resourceCall.filter.replace(/{{enable}}/gi, 'Yes');
+            // const Resources = this.spServices.getReadURL('' + this.constants.listNames.ResourceCategorization.name + '', resourceCall);
+            // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Resources);
+
+            let resourceObj = Object.assign({}, this.queryConfig);
+            resourceObj.url = this.spServices.getReadURL(this.constants.listNames.ResourceCategorization.name, this.taskAllocationService.taskallocationComponent.Resources);
+            resourceObj.url = resourceObj.url.replace(/{{enable}}/gi, 'Yes');
+            resourceObj.listName = this.constants.listNames.ResourceCategorization.name;
+            resourceObj.type = 'GET';
+            batchUrl.push(resourceObj);
 
             // ***********************************************************************************************************************************
             // Central Group
             // ***********************************************************************************************************************************
-            let cgCall = this.taskAllocationService.taskallocationComponent.getUserFromGroup.UserFromGroup;
-            const CentralGroup = cgCall.replace("{{groupName}}", 'CA_Admin');
-            this.spServices.getBatchBodyGet(this.batchContents, batchGuid, CentralGroup);
+            // let cgCall = this.taskAllocationService.taskallocationComponent.getUserFromGroup.UserFromGroup;
+            // const CentralGroup = cgCall.replace("{{groupName}}", 'CA_Admin');
+            // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, CentralGroup);
+            let grpResourceObj = Object.assign({}, this.queryConfig);
+            grpResourceObj.url = this.spServices.getGroupURL(this.constants.Groups.CDAdmin);
+            grpResourceObj.listName = this.constants.Groups.CDAdmin;
+            grpResourceObj.type = 'GET';
+            batchUrl.push(grpResourceObj);
         }
 
-        this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
+        // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+           const arrResult = await this.spServices.executeBatch(batchUrl);
+           this.response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
         if (this.response.length > 0) {
-
-        
-            this.sharedTaskAllocateObj.oResources = this.response.length > 2 ? this.response[2]:this.sharedTaskAllocateObj.oResources;
-            this.sharedTaskAllocateObj.oCentralGroup = this.response.length > 2 ? this.response[3]: this.sharedTaskAllocateObj.oCentralGroup;
-            console.log("Central group");
-            
-            console.log(this.sharedTaskAllocateObj.oCentralGroup);
-            
-            
-
-          
+            this.sharedTaskAllocateObj.oResources = this.response.length > 2 ? this.response[2] : this.sharedTaskAllocateObj.oResources;
+            this.sharedTaskAllocateObj.oCentralGroup = this.response.length > 2 ? this.response[3] : this.sharedTaskAllocateObj.oCentralGroup;
             const project = this.response[0] !== "" ? this.response[0].length > 0 ? this.setLevel1Email(this.response[0][0]) : [] : [];
             if (project.length > 0) {
                 const returnedProject = project[0];
@@ -871,12 +885,12 @@ export class CommonService {
                     this.batchContents = new Array();
                     let clCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.ClientLegal);
                     clCall.filter = clCall.filter.replace(/{{ProjectDetailsaccount}}/gi, this.sharedTaskAllocateObj.oProjectDetails.account);
-                    const clientLegalurl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', clCall);
-                    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, clientLegalurl);
-
-                    var Data = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-                    if (Data.length > 0) {
-                        this.sharedTaskAllocateObj.oLegalEntity = Data[0];
+                    // const clientLegalurl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', clCall);
+                    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, clientLegalurl);
+                    // var Data = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+                    const data = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, clCall);
+                    if (data.length > 0) {
+                        this.sharedTaskAllocateObj.oLegalEntity = data;
                     }
                     return project;
                 }
@@ -896,7 +910,7 @@ export class CommonService {
     // ***********************************************************************************************************************************
 
     public setLevel1Email(prjObj) {
-        
+
         if (prjObj.CMLevel1.results) {
             prjObj.CMLevel1.results = prjObj.CMLevel1.results.map(cmL1 => {
                 var cm = this.sharedTaskAllocateObj.oResources.filter(user => user.UserName.ID === cmL1.ID).map(u => u.UserName.EMail);
@@ -957,8 +971,63 @@ export class CommonService {
             .map(reverseDateRepresentation)
             .sort()
             .map(reverseDateRepresentation);
-        console.log(sortedDates);
         return sortedDates;
+    }
+
+    public tableObj: any;
+    // Filter multiselct option
+    updateOptionValues(obj) {
+        this.tableObj = obj;
+        if (obj.tableData.filteredValue) {
+            if (Object.entries(obj.tableData.filters).length >= 1) {
+                this.isEmpty(obj.colFields, obj.tableData.filters);
+            }
+        }
+    }
+
+    isEmpty(obj, firstColFilter) {
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop) && !firstColFilter[prop]) {
+                this.firstFilterCol(this.tableObj.tableData.filteredValue, prop);
+            }
+        }
+    }
+
+    firstFilterCol(array, colName) {
+        this.tableObj.colFields[colName] = [];
+        let totalArr = array.map(item => item[colName]);
+        if (colName.toLowerCase().includes("date")) {
+            totalArr = this.uniqueArrayObj(totalArr.map(a => { let b = { label: this.datePipe.transform(a, "MMM dd, yyyy, h:mm a"), value: a }; return b; }).filter(ele => ele.label));
+            // totalArr = this.uniqueArrayObj(totalArr.map(a => { let b = { label: this.datePipe.transform(a, "MMM dd, yyyy, h:mm a"), value: a }; return b; }).filter(ele => ele.label));
+        }
+        // const uniqueTotalArr = totalArr.filter((item, index) => totalArr.indexOf(item) === index);
+        let uniqueTotalArr = [];
+        uniqueTotalArr = Array.from(new Set(totalArr));
+        let tempArr = [];
+        for (let i = 0; i < uniqueTotalArr.length; i++) {
+            const element = uniqueTotalArr[i];
+            if (colName.toLowerCase().includes("date")) {
+                if (element.label.includes("12:00 AM")) {
+                    tempArr.push({ label: this.datePipe.transform(element.label, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(element.value, 'MMM dd, yyyy')) });
+                } else {
+                    tempArr.push({ label: this.datePipe.transform(element.label, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(element.value, 'MMM dd, yyyy, h:mm a')) });
+                }
+            } else {
+                tempArr.push({ label: element, value: element });
+            }
+        }
+        // console.log(tempArr);
+        this.tableObj.colFields[colName] = [...tempArr];
+    }
+
+    uniqueArrayObj(array: any) {
+        let sts: any = '';
+        return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
+            return {
+                label: label1,
+                value: array.find(s => s.label === label1).value
+            }
+        })
     }
 
 

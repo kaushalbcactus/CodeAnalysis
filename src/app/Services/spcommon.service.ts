@@ -25,30 +25,30 @@ export class SPCommonService {
    * @returns
    * @memberof AdminViewComponent
    */
-  fetchData(url) {
-    const batchGuid = this.spService.generateUUID();
-    const batchContents = new Array();
-    // REST API url in contants file
-    this.spService.getBatchBodyGet(batchContents, batchGuid, url);
-    batchContents.push('--batch_' + batchGuid + '--');
-    const sCUserBatchData = batchContents.join('\r\n');
-    let resources = this.spService.executeBatchRequest1(batchGuid, sCUserBatchData);
-    resources = resources.length > 0 ? resources[0] : [];
-    return resources;
-  }
+  // fetchData(url) {
+  //   const batchGuid = this.spService.generateUUID();
+  //   const batchContents = new Array();
+  //   // REST API url in contants file
+  //   this.spService.getBatchBodyGet(batchContents, batchGuid, url);
+  //   batchContents.push('--batch_' + batchGuid + '--');
+  //   const sCUserBatchData = batchContents.join('\r\n');
+  //   let resources = this.spService.executeBatchRequest1(batchGuid, sCUserBatchData);
+  //   resources = resources.length > 0 ? resources[0] : [];
+  //   return resources;
+  // }
 
-  checkIfFileExists(docUrl, fileName) {
-      let newfileName = fileName;
-      // tslint:disable-next-line
-      const url =  "/_api/web/getfilebyserverrelativeurl('/MedicalWriting/" + docUrl + "/" + fileName + "')";
-      const file = this.spService.fetchListItemsByRestAPI(url);
-      if (file && file.length > 0) {
-          const date = new Date();
-          newfileName = fileName.split('.');
-          newfileName = newfileName[0] + '-' + this.datePipe.transform(date, 'ddMMyyyyhhmmss') + '.' + newfileName[1];
-      }
-      return newfileName;
-  }
+  // checkIfFileExists(docUrl, fileName) {
+  //     let newfileName = fileName;
+  //     // tslint:disable-next-line
+  //     const url =  "/_api/web/getfilebyserverrelativeurl('/MedicalWriting/" + docUrl + "/" + fileName + "')";
+  //     const file = this.spService.fetchListItemsByRestAPI(url);
+  //     if (file && file.length > 0) {
+  //         const date = new Date();
+  //         newfileName = fileName.split('.');
+  //         newfileName = newfileName[0] + '-' + this.datePipe.transform(date, 'ddMMyyyyhhmmss') + '.' + newfileName[1];
+  //     }
+  //     return newfileName;
+  // }
 
  
 

@@ -91,40 +91,54 @@ export class ResourceSectionComponent implements OnInit {
     }, 300);
   }
   // tslint:disable
-  private saveDeliveryResources() {
-    const updateInformation = [];
-    const allDeliveryResources = [];
+  private async saveDeliveryResources() {
+    // const updateInformation = [];
+    // const allDeliveryResources = [];
     const project = this.sharedTaskAllocateObj.oProjectDetails;
     project.resources = this.getPeoplePickerResourcesID();
-    updateInformation.push({ 'key': 'WritersId', 'value': project.resources.WritersID });
-    updateInformation.push({ 'key': 'ReviewersId', 'value': project.resources.reviewersID });
-    updateInformation.push({ 'key': 'QCId', 'value': project.resources.qcersID });
-    updateInformation.push({ 'key': 'EditorsId', 'value': project.resources.editorsID });
-    updateInformation.push({
-      'key': 'GraphicsMembersId', 'value': project.resources.graphicsMembersID !== '' ?
-        project.resources.graphicsMembersID : []
-    });
-    updateInformation.push({
-      'key': 'PSMembersId', 'value': project.resources.pubSupportMembersID !== '' ?
-        project.resources.pubSupportMembersID : []
-    });
-    updateInformation.push({
-      'key': 'PrimaryResMembersId', 'value': project.resources.primaryResources !== '' ?
-        project.resources.primaryResources : []
-    });
-    updateInformation.push({
-      'key': 'AllDeliveryResourcesId', 'value': project.resources.allDeliveryResources !== '' ?
-        project.allDeliveryResources : []
-    });
+    const resourcesData = {
+      'WritersId': project.resources.WritersID,
+      'ReviewersId' : project.resources.reviewersID,
+      'QCId': project.resources.qcersID,
+      'EditorsId': project.resources.editorsID,
+      'GraphicsMembersId': project.resources.graphicsMembersID !== '' ? project.resources.graphicsMembersID : [],
+      'PSMembersId': project.resources.pubSupportMembersID !== '' ? project.resources.pubSupportMembersID : [],
+      'PrimaryResMembersId': project.resources.primaryResources !== '' ? project.resources.primaryResources : [],
+      'AllDeliveryResourcesId': project.resources.allDeliveryResources !== '' ? project.allDeliveryResources : []
+    }
+    // updateInformation.push({ 'key': 'WritersId', 'value': project.resources.WritersID });
+    // updateInformation.push({ 'key': 'ReviewersId', 'value': project.resources.reviewersID });
+    // updateInformation.push({ 'key': 'QCId', 'value': project.resources.qcersID });
+    // updateInformation.push({ 'key': 'EditorsId', 'value': project.resources.editorsID });
+    // updateInformation.push({
+    //   'key': 'GraphicsMembersId', 'value': project.resources.graphicsMembersID !== '' ?
+    //     project.resources.graphicsMembersID : []
+    // });
+    // updateInformation.push({
+    //   'key': 'PSMembersId', 'value': project.resources.pubSupportMembersID !== '' ?
+    //     project.resources.pubSupportMembersID : []
+    // });
+    // updateInformation.push({
+    //   'key': 'PrimaryResMembersId', 'value': project.resources.primaryResources !== '' ?
+    //     project.resources.primaryResources : []
+    // });
+    // updateInformation.push({
+    //   'key': 'AllDeliveryResourcesId', 'value': project.resources.allDeliveryResources !== '' ?
+    //     project.allDeliveryResources : []
+    // });
     // tslint:disable-next-line:max-line-length
-    this.spService.updateListItemRestApi(this.projectInformationList, updateInformation, project.projectID,
-      'SP.Data.ProjectInformationListItem', false, function () {
-        $('.loading').hide();
-        $('.resources #resp-table').show();
-        $('#primaryResourcesSelect').prop('selectedIndex', 0);
+    // this.spService.updateListItemRestApi(this.projectInformationList, updateInformation, project.projectID,
+    //   'SP.Data.ProjectInformationListItem', false, function () {
+    //     $('.loading').hide();
+    //     $('.resources #resp-table').show();
+    //     $('#primaryResourcesSelect').prop('selectedIndex', 0);
 
-      }, function () { });
-  }
+    //   }, function () { });
+      await this.spService.updateItem(this.projectInformationList, project.projectID, resourcesData, this.constants.listNames.ProjectInformation.type);
+      $('.loading').hide();
+      $('.resources #resp-table').show();
+      $('#primaryResourcesSelect').prop('selectedIndex', 0);
+    }
 
   // tslint:enable
 

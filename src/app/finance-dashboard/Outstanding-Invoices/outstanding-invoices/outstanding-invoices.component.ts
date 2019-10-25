@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, MessageService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -11,6 +11,7 @@ import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/edi
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
+import { DataTable } from 'primeng/primeng';
 
 @Component({
     selector: 'app-outstanding-invoices',
@@ -41,11 +42,11 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
     formSubmit: any = {
         isSubmit: false
-    }
+    };
     submitBtn: any = {
         isClicked: false
-    }
-
+    };
+    outstandingInv: any = [];
     // Purchase Order Number
     selectedPurchaseNumber: any;
 
@@ -55,13 +56,19 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
     // Right side bar
     rightSideBar: boolean = false;
-
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+    };
     // Loader
     isPSInnerLoaderHidden: boolean = false;
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
     @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
     @ViewChild('replaceInvoiceFile', { static: false }) replaceInvoiceFile: ElementRef;
     @ViewChild('paymentResolvedFile', { static: false }) paymentResolvedFile: ElementRef;
+    @ViewChild('outi', { static: false }) outInvTable: DataTable;
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
@@ -77,11 +84,13 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
+        private cdr: ChangeDetectorRef,
     ) { }
 
     ngOnInit() {
+        const currentUserId = this.globalService.currentUser.userId;
         //Get  User Info 
-        this.currentUserInfo();
+        this.currentUserInfo(currentUserId);
 
         // POC & PO Number
         this.projectContacts();
@@ -247,54 +256,51 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     // Logged In user Info
     loggedInUserInfo: any = [];
     loggedInUserGroup: any = [];
-    async currentUserInfo() {
+    async currentUserInfo(userId) {
         this.loggedInUserInfo = [];
         this.loggedInUserGroup = [];
-        let curruentUsrInfo = await this.spServices.getCurrentUser();
-        this.loggedInUserInfo = curruentUsrInfo.d.Groups.results;
-        console.log('loggedInUserInfo ', this.loggedInUserInfo);
-
+        //let curruentUsrInfo = await this.spServices.getCurrentUser();
+        let currentUsrInfo = await this.spServices.getUserInfo(userId);
+        this.loggedInUserInfo = currentUsrInfo.Groups.results;
         this.loggedInUserInfo.forEach(element => {
             if (element) {
                 this.loggedInUserGroup.push(element.LoginName);
             }
         });
-        if (this.loggedInUserGroup.findIndex(c => (c === "Managers" || c === 'Project-FullAccess')) != -1) {
-            // this.getProjectInfoData(true);
-        } else {
-            // this.getProjectInfoData(false);
-        }
     }
 
     // Get Proformas InvoiceItemList
-    outstandingInv: any = [];
+
     async getRequiredData() {
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        let invoicesQuery = '';
-        if (true) {
-            invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name + '', this.fdConstantsService.fdComponent.invoicesForMangerIT);
-        } else {
-            invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name + '', this.fdConstantsService.fdComponent.invoicesForNonManger);
-        }
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        // let invoicesQuery = '';
+        // if (true) {
+        //     invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name + '',
+        //      this.fdConstantsService.fdComponent.invoicesForMangerIT);
+        // } else {
+        //     invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name +
+        //      '', this.fdConstantsService.fdComponent.invoicesForNonManger);
+        // }
+        const outInvObj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesForMangerIT);
+        const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, outInvObj);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
-        let endPoints = [invoicesQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        console.log('REs in Outstanding Invoice ', res);
-        arrResults = res;
-        if (arrResults.length) {
-            this.formatData(arrResults[0]);
-            console.log(arrResults);
-        }
+        // let endPoints = [invoicesQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        // console.log('REs in Outstanding Invoice ', res);
+        const arrResults = res.length ? res : [];
+        // if (arrResults.length) {
+        this.formatData(arrResults);
+        // }
         this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         // });
@@ -350,7 +356,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         }
         this.outstandingInvoicesRes = [...this.outstandingInvoicesRes];
         this.isPSInnerLoaderHidden = true;
-        this.createColFieldValues();
+        this.createColFieldValues(this.outstandingInvoicesRes);
     }
 
     // Project PO
@@ -393,19 +399,18 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         ModifiedBy: [],
     }
 
-    createColFieldValues() {
-        this.outInvoiceColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.InvoiceStatus = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.InvoiceNumber = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.POName = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label)));
-        console.log(this.outInvoiceColArray.POName);
-        this.outInvoiceColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.POC = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.ModifiedBy = this.commonService.sortData(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label)));
-        const invoiceDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: this.datePipe.transform(a.InvoiceDate, 'MMM dd, yyyy'), value: a.InvoiceDate }; return b; }).filter(ele => ele.label)));
+    createColFieldValues(resArray) {
+        this.outInvoiceColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.InvoiceStatus = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.InvoiceNumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.POName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.ModifiedBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label)));
+        const invoiceDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.InvoiceDate, 'MMM dd, yyyy'), value: a.InvoiceDate }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.InvoiceDate = invoiceDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        const amount = this.uniqueArrayObj(this.outstandingInvoicesRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
+        const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
         this.outInvoiceColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
     }
 
@@ -683,51 +688,71 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     }
 
     async uploadFileData() {
+        const batchUrl = [];
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-        console.log('selectedFile uploaded .', res.ServerRelativeUrl);
-        if (res.ServerRelativeUrl) {
-            let fileUrl = res.ServerRelativeUrl;
-            let obj = {
-                FileURL: fileUrl,
+        // console.log('selectedFile uploaded .', res.ServerRelativeUrl);
+        if (res) {
+            // let fileUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
+            const invData = {
+                FileURL: res.ServerRelativeUrl ? res.ServerRelativeUrl : '',
                 InvoiceHtml: null
             }
-            obj['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
-            let data = [
-                {
-                    objData: obj,
-                    endpoint: endpoint,
-                    requestPost: false
-                }
-            ];
-            this.submitForm(data, 'replaceInvoice');
+            invData['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
+            // let data = [
+            //     {
+            //         objData: obj,
+            //         endpoint: endpoint,
+            //         requestPost: false
+            //     }
+            // ];
+            const invObj = Object.assign({}, this.queryConfig);
+            invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
+            invObj.listName = this.constantService.listNames.Invoices.name;
+            invObj.type = 'PATCH';
+            invObj.data = invData;
+            batchUrl.push(invObj);
+            this.submitForm(batchUrl, 'replaceInvoice');
         } else if (res.hasError) {
             this.isPSInnerLoaderHidden = true;
-            this.messageService.add({ key: 'outstandingInfoToast', severity: 'info', summary: 'Info message', detail: 'File not uploaded,folder / ' + res.message.value + '', life: 3000 })
+            this.messageService.add({
+                key: 'outstandingInfoToast', severity: 'info', summary: 'Info message',
+                detail: 'File not uploaded,folder / ' + res.message.value + '', life: 3000
+            });
         }
     }
 
     async uploadPaymentFileData(type: string) {
-        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result)
-        console.log('selectedFile uploaded .', res.ServerRelativeUrl);
-        if (res.ServerRelativeUrl) {
-            console.log('selectedFile uploaded .', res.ServerRelativeUrl);
-            let obj2 = {
+        const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
+        const batchUrl = [];
+        // console.log('selectedFile uploaded .', res.ServerRelativeUrl);
+        if (res) {
+            // console.log('selectedFile uploaded .', res.ServerRelativeUrl);
+            const invData = {
                 Status: 'Paid',
-                PaymentURL: res.ServerRelativeUrl
-            }
-            obj2['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
-            const endpoint2 = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
-            let data = [
-                {
-                    objData: obj2,
-                    endpoint: endpoint2,
-                    requestPost: false
-                }]
-            this.submitForm(data, type);
+                PaymentURL: res.ServerRelativeUrl ? res.ServerRelativeUrl : ''
+            };
+            invData['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
+            // const endpoint2 = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
+            // let data = [
+            //     {
+            //         objData: obj2,
+            //         endpoint: endpoint2,
+            //         requestPost: false
+            //     }]
+            const invObj = Object.assign({}, this.queryConfig);
+            invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
+            invObj.listName = this.constantService.listNames.Invoices.name;
+            invObj.type = 'PATCH';
+            invObj.data = invData;
+            batchUrl.push(invObj);
+            this.submitForm(batchUrl, type);
         } else if (res.hasError) {
             this.isPSInnerLoaderHidden = true;
-            this.messageService.add({ key: 'outstandingInfoToast', severity: 'info', summary: 'Info message', detail: 'File not uploaded,folder / ' + res.message.value + '', life: 3000 })
+            this.messageService.add({
+                key: 'outstandingInfoToast', severity: 'info', summary: 'Info message',
+                detail: 'File not uploaded,folder / ' + res.message.value + '', life: 3000
+            });
         }
     }
 
@@ -767,7 +792,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
     async onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
-        console.log()
+        const batchUrl = [];
         if (type === 'paymentResoved') {
             if (this.paymentResoved_form.invalid) {
                 return;
@@ -775,71 +800,87 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
             this.uploadPaymentFileData(type);
-            console.log('form is submitting ..... & Form data is ', this.paymentResoved_form.value);
+            // console.log('form is submitting ..... & Form data is ', this.paymentResoved_form.value);
         } else if (type === 'disputeInvoice') {
             if (this.disputeInvoice_form.invalid) {
-                return
+                return;
             }
-            console.log('form is submitting ..... & Form data is ', this.disputeInvoice_form.value);
+            // console.log('form is submitting ..... & Form data is ', this.disputeInvoice_form.value);
             this.submitBtn.isClicked = true;
             this.isPSInnerLoaderHidden = false;
-            let obj = {
+            const disputeData = {
                 DisputeReason: this.disputeInvoice_form.value.DisputeReason.value,
                 DisputeComments: this.disputeInvoice_form.value.DisputeComments
-            }
-            obj['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
-            let data = [
-                {
-                    objData: obj,
-                    endpoint: endpoint,
-                    requestPost: false
-                }
-            ]
-            this.submitForm(data, type);
+            };
+            disputeData['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
+            // let data = [
+            //     {
+            //         objData: obj,
+            //         endpoint: endpoint,
+            //         requestPost: false
+            //     }
+            // ]
+            const invObj = Object.assign({}, this.queryConfig);
+            invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
+            invObj.listName = this.constantService.listNames.Invoices.name;
+            invObj.type = 'PATCH';
+            invObj.data = disputeData;
+            batchUrl.push(invObj);
+            this.submitForm(batchUrl, type);
         } else if (type === 'replaceInvoice') {
             if (this.replaceInvoice_form.invalid) {
                 return;
             }
-            console.log('form is submitting ..... & Form data is ', this.replaceInvoice_form.value);
+            // console.log('form is submitting ..... & Form data is ', this.replaceInvoice_form.value);
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
             this.uploadFileData();
         } else if (type === 'creditDebit') {
             if (this.creditOrDebitNote_form.invalid) {
-                return
+                return;
             }
-            console.log('form is submitting ..... & Form data is ', this.creditOrDebitNote_form.value);
+            // console.log('form is submitting ..... & Form data is ', this.creditOrDebitNote_form.value);
             // sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
             this.isPSInnerLoaderHidden = false;
             const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
             if (res) {
-                console.log('selectedFile uploaded .', res);
+                // console.log('selectedFile uploaded .', res);
                 this.submitDebitCreditNoteForm(type, res.ServerRelativeUrl);
             }
         } else if (type === 'sentToAP') {
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
-            let sts = this.constantService.invoicesStatus.SentToAP;
+            const sts = this.constantService.invoicesStatus.SentToAP;
             // sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
-            let obj = {
+            const invData = {
+                __metadata: {
+                    type: this.constantService.listNames.Invoices.type
+                },
                 Status: sts
-            }
-            obj['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
-            let data = [
-                {
-                    objData: obj,
-                    endpoint: endpoint,
-                    requestPost: false
-                }
-            ]
-            this.submitForm(data, type);
+            };
+            const invObj = Object.assign({}, this.queryConfig);
+            invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
+            invObj.listName = this.constantService.listNames.Invoices.name;
+            invObj.type = 'PATCH';
+            invObj.data = invData;
+            batchUrl.push(invObj);
+            // obj['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
+            // let data = [
+            //     {
+            //         objData: obj,
+            //         endpoint: endpoint,
+            //         requestPost: false
+            //     }
+            // ]
+            this.submitForm(batchUrl, type);
         }
     }
 
     submitDebitCreditNoteForm(type: string, pathURL) {
-        let obj = {
+        const batchUrl = [];
+        const debitCreditData = {
             Title: this.creditOrDebitNote_form.value.Number,
             Amount: this.creditOrDebitNote_form.value.Amount,
             Currency: this.selectedRowItem.Currency,
@@ -851,70 +892,99 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             OriginatedInvoiceLookup: this.selectedRowItem.Id,
             LinkedInvoiceLookup: this.selectedRowItem.Id
         }
-        obj['__metadata'] = { type: 'SP.Data.CreditAndDebitNoteListItem' };
-        const endpoint = this.fdConstantsService.fdComponent.addUpdateCreditDebit.createCD;
-        let obj2 = {
+        debitCreditData['__metadata'] = { type: 'SP.Data.CreditAndDebitNoteListItem' };
+        const debCreditObj = Object.assign({}, this.queryConfig);
+        debCreditObj.url = this.spServices.getReadURL(this.constantService.listNames.CreditAndDebit.name);
+        debCreditObj.listName = this.constantService.listNames.CreditAndDebit.name;
+        debCreditObj.type = 'POST';
+        debCreditObj.data = debitCreditData;
+        batchUrl.push(debCreditObj);
+        // const endpoint = this.fdConstantsService.fdComponent.addUpdateCreditDebit.createCD;
+        const invData = {
             Status: this.creditOrDebitNote_form.value.Status
-        }
-        obj2['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
-        const endpoint2 = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
-        let data = [
-            {
-                objData: obj,
-                endpoint: endpoint,
-                requestPost: true
-            },
-            {
-                objData: obj2,
-                endpoint: endpoint2,
-                requestPost: false
-            },
-        ];
+        };
+        invData['__metadata'] = { type: 'SP.Data.InvoicesListItem' };
+        const invObj = Object.assign({}, this.queryConfig);
+        invObj.url = this.spServices.getItemURL(this.constantService.listNames.Invoices.name, +this.selectedRowItem.Id);
+        invObj.listName = this.constantService.listNames.Invoices.name;
+        invObj.type = 'PATCH';
+        invObj.data = invData;
+        batchUrl.push(invObj);
+        // const endpoint2 = this.fdConstantsService.fdComponent.addUpdateInvoice.update.replace("{{Id}}", this.selectedRowItem.Id);
+        // let data = [
+        //     {
+        //         objData: obj,
+        //         endpoint: endpoint,
+        //         requestPost: true
+        //     },
+        //     {
+        //         objData: obj2,
+        //         endpoint: endpoint2,
+        //         requestPost: false
+        //     },
+        // ];
 
-        this.submitForm(data, type);
+        this.submitForm(batchUrl, type);
     }
 
-    batchContents: any = [];
-    async submitForm(dataEndpointArray, type: string) {
-        console.log('Form is submitting');
-        this.batchContents = [];
-        const batchGuid = this.spServices.generateUUID();
-        const changeSetId = this.spServices.generateUUID();
+    // batchContents: any = [];
+    async submitForm(batchUrl, type: string) {
+        // console.log('Form is submitting');
+        // this.batchContents = [];
+        // const batchGuid = this.spServices.generateUUID();
+        // const changeSetId = this.spServices.generateUUID();
 
-        // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        console.log(' dataEndpointArray ', dataEndpointArray);
-        dataEndpointArray.forEach(element => {
-            if (element)
-                this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        });
+        // // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
+        // console.log(' dataEndpointArray ', dataEndpointArray);
+        // dataEndpointArray.forEach(element => {
+        //     if (element)
+        //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, 
+        //      element.endpoint, JSON.stringify(element.objData), element.requestPost)];
+        // });
 
-        console.log("this.batchContents ", JSON.stringify(this.batchContents));
+        // console.log("this.batchContents ", JSON.stringify(this.batchContents));
 
-        this.batchContents.push('--changeset_' + changeSetId + '--');
-        const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        batchBodyContent.push('--batch_' + batchGuid + '--');
-        const sBatchData = batchBodyContent.join('\r\n');
-        const res = await this.spServices.getFDData(batchGuid, sBatchData);//.subscribe(res => {
-        const arrResults = res;
-        console.log('--oo ', arrResults);
+        // this.batchContents.push('--changeset_' + changeSetId + '--');
+        // const batchBody = this.batchContents.join('\r\n');
+        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+        // batchBodyContent.push('--batch_' + batchGuid + '--');
+        // const sBatchData = batchBodyContent.join('\r\n');
+        // const res = await this.spServices.getFDData(batchGuid, sBatchData);//.subscribe(res => {
+        // const arrResults = res;
+        // console.log('--oo ', arrResults);
+        await this.spServices.executeBatch(batchUrl);
         if (type === "creditDebit") {
-            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message', detail: 'Success.', life: 2000 });
+            this.messageService.add({
+                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
+                detail: 'Success.', life: 2000
+            });
             this.creditOrDebitModal = false;
             this.reFetchData();
         } else if (type === "sentToAP") {
-            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice Status Changed.', life: 2000 })
+            this.messageService.add({
+                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
+                detail: 'Invoice Status Changed.', life: 2000
+            });
             this.sentToAPModal = false;
             this.reFetchData();
         } else if (type === "disputeInvoice") {
-            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message', detail: 'Submitted.', life: 2000 })
+            this.messageService.add({
+                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
+                detail: 'Submitted.', life: 2000
+            });
             this.disputeInvoiceModal = false;
         } else if (type === "paymentResoved") {
-            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message', detail: 'Success.', life: 2000 })
+            this.messageService.add({
+                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
+                detail: 'Success.', life: 2000
+            });
             this.paymentResovedModal = false;
             this.reFetchData();
         } else if (type === "replaceInvoice") {
-            this.messageService.add({ key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message', detail: 'Success.', life: 2000 })
+            this.messageService.add({
+                key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
+                detail: 'Success.', life: 2000
+            });
             this.replaceInvoiceModal = false;
             this.reFetchData();
         }
@@ -963,6 +1033,30 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 this.tempClick = undefined;
             }
         }
+    }
+
+
+    isOptionFilter: boolean;
+    optionFilter(event: any) {
+        if (event.target.value) {
+            this.isOptionFilter = false;
+        }
+    }
+
+    ngAfterViewChecked() {
+        if (this.outstandingInvoicesRes.length && this.isOptionFilter) {
+            let obj = {
+                tableData: this.outInvTable,
+                colFields: this.outInvoiceColArray
+            }
+            if (obj.tableData.filteredValue) {
+                this.commonService.updateOptionValues(obj);
+            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+                this.createColFieldValues(obj.tableData.value);
+                this.isOptionFilter = false;
+            }
+        }
+        this.cdr.detectChanges();
     }
 
 }

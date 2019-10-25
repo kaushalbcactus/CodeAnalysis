@@ -51,6 +51,7 @@ export class EditorComponent implements OnInit {
     USHtmlObject: any = {};
     showAppendix = false;
     serviceDetailHeader = '';
+    iliByPidRes: any = [];
     private subscription: Subscription = new Subscription();
     constructor(
         private common: CommonService,
@@ -2963,27 +2964,31 @@ export class EditorComponent implements OnInit {
         this.poInfo();
         this.projectContacts();
         const id = "2393";
-        const batchContents = new Array();
-        const batchGuid = this.spOperationsServices.generateUUID();
-        let invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.Proforma.name + '', this.fdConstantsService.fdComponent.proformaForUser);
-        invoicesQuery = invoicesQuery.replace('{{ItemID}}', id);
-        let endPoints = [invoicesQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spOperationsServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spOperationsServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        //console.log('REs in Confirmed Invoice ', res);
-        arrResults = res;
+        // const batchContents = new Array();
+        // const batchGuid = this.spOperationsServices.generateUUID();
+        const prfObj = Object.assign({}, this.fdConstantsService.fdComponent.proformaForUser);
+        prfObj.filter = prfObj.filter.replace('{{ItemID}}', id);
+        const res = await this.spOperationsServices.readItems(this.constantsService.listNames.Proforma.name, prfObj);
+        // let invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.Proforma.name +
+        //  '', this.fdConstantsService.fdComponent.proformaForUser);
+        // invoicesQuery = invoicesQuery.replace('{{ItemID}}', id);
+        // let endPoints = [invoicesQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spOperationsServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spOperationsServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        // console.log('REs in Confirmed Invoice ', res);
+        const arrResults = res.length ? res : [];
         if (arrResults.length) {
-            const prf = arrResults[0][0];
-            console.log(prf);
+            const prf = arrResults[0];
+            // console.log(prf);
             await this.getILIByPID(id);
-            console.log(this.iliByPidRes);
+            // console.log(this.iliByPidRes);
 
             const projectAppendix = await this.createProjectAppendix(this.iliByPidRes);
             await this.fdShareDataService.callProformaCreation(prf, this.cleData, this.projectContactsData, this.purchaseOrdersList, this, projectAppendix);
@@ -3031,33 +3036,39 @@ export class EditorComponent implements OnInit {
     }
 
     // Generate Invoice Data start
-    iliByPidRes: any = [];
+
 
     async getILIByPID(id) {
 
-        const batchContents = new Array();
-        const batchGuid = this.spOperationsServices.generateUUID();
-        let invoicesQuery = '';
-        let obj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItem);
-        obj.filter = obj.filter.replace("{{ProformaLookup}}", id);
-        invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.InvoiceLineItems.name + '', obj);
-        // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
+        // const batchContents = new Array();
+        // const batchGuid = this.spOperationsServices.generateUUID();
+        // let invoicesQuery = '';
+        // let obj = {
+        //     filter: this.fdConstantsService.fdComponent.invoiceLineItem.filter.replace("{{ProformaLookup}}", id),
+        //     select: this.fdConstantsService.fdComponent.invoiceLineItem.select,
+        //     top: this.fdConstantsService.fdComponent.invoiceLineItem.top,
+        //     // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
+        // }
+        // invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.InvoiceLineItems.name + '', obj);
+        // // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
-        let endPoints = [invoicesQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spOperationsServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spOperationsServices.getFDData(batchGuid, userBatchBody);// .subscribe(res => {
-        arrResults = res;
-        if (arrResults.length) {
-            console.log(arrResults[0]);
-            this.iliByPidRes = arrResults[0] ? arrResults[0] : [];
-        }
+        // let endPoints = [invoicesQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spOperationsServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spOperationsServices.getFDData(batchGuid, userBatchBody);// .subscribe(res => {
+        const iliObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItem);
+        iliObj.filter = iliObj.filter.replace('{{ProformaLookup}}', id);
+        const res = await this.spOperationsServices.readItems(this.constantsService.listNames.InvoiceLineItems.name, iliObj);
+        const arrResults = res.length ? res : [];
+        // if (arrResults.length) {
+        this.iliByPidRes = arrResults;
+        // }
 
     }
 
@@ -3103,14 +3114,15 @@ export class EditorComponent implements OnInit {
                 url: '',
                 type: '',
                 listName: ''
-            }
+            };
 
             callProjects.forEach(element => {
-                var getPIData = Object.assign({}, options);
-                getPIData.url = this.spOperationsServices.getReadURL(this.constantsService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfoCode);
-                getPIData.url = getPIData.url.replace("{{ProjectCode}}", element);
+                const getPIData = Object.assign({}, options);
+                getPIData.url = this.spOperationsServices.getReadURL(this.constantsService.listNames.ProjectInformation.name,
+                    this.fdConstantsService.fdComponent.projectInfoCode);
+                getPIData.url = getPIData.url.replace('{{ProjectCode}}', element);
                 getPIData.listName = this.constantsService.listNames.ProjectInformation.name;
-                getPIData.type = "GET";
+                getPIData.type = 'GET';
                 batchURL.push(getPIData);
 
             });

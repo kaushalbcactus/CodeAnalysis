@@ -1,7 +1,7 @@
 
-import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
 import { MessageService, Message, SelectItem } from 'primeng/api';
-import { Calendar } from 'primeng/primeng';
+import { Calendar, DataTable } from 'primeng/primeng';
 import { ConfirmationService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -60,11 +60,17 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         startDate: '',
         endDate: '',
     };
-
-    // List of Subscribers 
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+    };
+    // List of Subscribers
     private subscription: Subscription = new Subscription();
 
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+    @ViewChild('db', { static: false }) deliverableTable: DataTable;
     constructor(
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
@@ -76,6 +82,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
+        private cdr: ChangeDetectorRef,
     ) {
         this.subscription.add(this.fdDataShareServie.getScheduleDateRange().subscribe(date => {
             this.DateRange = date;
@@ -128,7 +135,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     updateCalendarUI(calendar: Calendar) {
         calendar.updateUI();
     }
-    // Project Info 
+    // Project Info
     projectInfoData: any = [];
     async projectInfo() {
         // Check PI list
@@ -166,7 +173,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         }))
     }
 
-    // Client Legal Entity 
+    // Client Legal Entity
     cleData: any = [];
     cleInfo() {
         this.subscription.add(this.fdDataShareServie.defaultCLEData.subscribe((res) => {
@@ -244,46 +251,48 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         this.deliverableBasedRes = [];
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
         let isManager = false;
         if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1) {
             isManager = true;
         }
-        let obj = Object.assign({}, isManager ? this.fdConstantsService.fdComponent.invoicesDel : this.fdConstantsService.fdComponent.invoicesDelCS);
+        const obj = Object.assign({}, isManager ? this.fdConstantsService.fdComponent.invoicesDel :
+            this.fdConstantsService.fdComponent.invoicesDelCS);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
         if (!isManager) {
-            obj.filter = obj.filter.replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
+            obj.filter = obj.filter.replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
-        const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);
-        // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
+        const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, obj);
+        // const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);
+        // // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
-        let endPoints = [invoicesQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        console.log('REs in deliverable based ', res);
-        arrResults = res;
-        if (arrResults.length) {
-            for (let j = 0; j < arrResults.length; j++) {
-                const element = arrResults[j];
-                console.log('-- deliverable based ', element);
-                this.formatData(element);
-            }
-        }
+        // let endPoints = [invoicesQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        // console.log('REs in deliverable based ', res);
+        const arrResults = res.length ? res : [];
+        // if (arrResults.length) {
+        //     for (let j = 0; j < arrResults.length; j++) {
+        //         const element = arrResults[j];
+        // console.log('-- deliverable based ', element);
+        this.formatData(arrResults);
+        //     }
+        // }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
     showMenu(element) {
         const project = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == element.Title) {
+            if (x.ProjectCode === element.Title) {
                 return x;
             }
         })
@@ -357,7 +366,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         }
         this.deliverableBasedRes = [...this.deliverableBasedRes];
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-        this.createColFieldValues();
+        this.createColFieldValues(this.deliverableBasedRes);
     }
 
     // Project PO
@@ -424,7 +433,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     deliverableBasedColArray = {
         ProjectCode: [],
-        SOWCode: [],
+        SOWValue: [],
         ProjectMileStone: [],
         POValues: [],
         ClientName: [],
@@ -434,18 +443,18 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         POCName: []
     }
 
-    createColFieldValues() {
-        this.deliverableBasedColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.ClientName = this.commonService.sortData(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
+    createColFieldValues(resArray) {
+        this.deliverableBasedColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.SOWValue = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.ClientName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
 
-        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
+        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
         this.deliverableBasedColArray.ScheduledDate = scheduledDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        const amount = this.uniqueArrayObj(this.deliverableBasedRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
+        const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
         this.deliverableBasedColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label')
     }
 
@@ -620,79 +629,100 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
+        const batchUrl = [];
         if (type === 'confirmInvoice') {
-            console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
-            let obj = {
+            // console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
+            const iliData = {
                 Status: 'Confirmed'
-            }
-            obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);
-            let data = [
-                {
-                    objData: obj,
-                    endpoint: endpoint,
-                    requestPost: false
-                }
-            ]
+            };
+            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            const iliObj = Object.assign({}, this.queryConfig);
+            iliObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
+            iliObj.listName = this.constantService.listNames.InvoiceLineItems.name;
+            iliObj.type = 'PATCH';
+            iliObj.data = iliData;
+            batchUrl.push(iliObj);
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);
+            // let data = [
+            //     {
+            //         objData: obj,
+            //         endpoint: endpoint,
+            //         requestPost: false
+            //     }
+            // ]
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-            this.submitForm(data, type);
+            this.submitForm(batchUrl, type);
 
         } else if (type === 'editInvoice') {
             if (this.editDeliverable_form.invalid) {
-                return
+                return;
             }
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-            console.log('form is submitting ..... for selected row Item i.e ', this.editDeliverable_form.value);
-            let obj1 = {
+            // console.log('form is submitting ..... for selected row Item i.e ', this.editDeliverable_form.value);
+            const iliData = {
                 AddressType: this.editDeliverable_form.value.AddressType.value,
                 ScheduledDate: this.editDeliverable_form.value.ScheduledDate,
                 MainPOC: this.editDeliverable_form.value.POCName.ID
             }
-            obj1['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);;
-            let data = [
-                {
-                    objData: obj1,
-                    endpoint: endpoint,
-                    requestPost: false
-                }
-            ]
-            this.submitForm(data, type);
+            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            const iliObj = Object.assign({}, this.queryConfig);
+            iliObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
+            iliObj.listName = this.constantService.listNames.InvoiceLineItems.name;
+            iliObj.type = 'PATCH';
+            iliObj.data = iliData;
+            batchUrl.push(iliObj);
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);;
+            // let data = [
+            //     {
+            //         objData: obj1,
+            //         endpoint: endpoint,
+            //         requestPost: false
+            //     }
+            // ]
+            this.submitForm(batchUrl, type);
             this.cancelFormSub('editDeliverable');
             // this.submitForm();
         }
     }
 
-    batchContents: any = [];
-    async submitForm(dataEndpointArray, type: string) {
-        console.log('Form is submitting');
+    // batchContents: any = [];
+    async submitForm(batchUrl, type: string) {
+        // console.log('Form is submitting');
 
-        this.batchContents = [];
-        const batchGuid = this.spServices.generateUUID();
-        const changeSetId = this.spServices.generateUUID();
+        // this.batchContents = [];
+        // const batchGuid = this.spServices.generateUUID();
+        // const changeSetId = this.spServices.generateUUID();
 
-        // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        console.log(' dataEndpointArray ', dataEndpointArray);
-        dataEndpointArray.forEach(element => {
-            if (element)
-                this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        });
+        // // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
+        // console.log(' dataEndpointArray ', dataEndpointArray);
+        // dataEndpointArray.forEach(element => {
+        //     if (element)
+        //         this.batchContents = [...this.batchContents,
+        //  ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
+        // });
 
-        console.log("this.batchContents ", JSON.stringify(this.batchContents));
+        // console.log("this.batchContents ", JSON.stringify(this.batchContents));
 
-        this.batchContents.push('--changeset_' + changeSetId + '--');
-        const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        batchBodyContent.push('--batch_' + batchGuid + '--');
-        const sBatchData = batchBodyContent.join('\r\n');
-        const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
-        const arrResults = res;
-        console.log('--oo ', arrResults);
+        // this.batchContents.push('--changeset_' + changeSetId + '--');
+        // const batchBody = this.batchContents.join('\r\n');
+        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+        // batchBodyContent.push('--batch_' + batchGuid + '--');
+        // const sBatchData = batchBodyContent.join('\r\n');
+        // const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
+        // const arrResults = res;
+        // console.log('--oo ', arrResults);
+        await this.spServices.executeBatch(batchUrl);
         if (type === "confirmInvoice") {
-            this.messageService.add({ key: 'deliverableSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000 });
+            this.messageService.add({
+                key: 'deliverableSuccessToast', severity: 'success',
+                summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000
+            });
             this.sendCreateExpenseMail();
         } else if (type === "editInvoice") {
-            this.messageService.add({ key: 'deliverableSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice Updated.', life: 2000 })
+            this.messageService.add({
+                key: 'deliverableSuccessToast', severity: 'success',
+                summary: 'Success message', detail: 'Invoice Updated.', life: 2000
+            })
             this.reFetchData();
         }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
@@ -706,20 +736,23 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     mailContentRes: any;
     async getApproveExpenseMailContent(type) {
         // const mailContentEndpoint = this.fdConstantsService.fdComponent.mailContent;
-        let mailContentEndpoint = {
-            filter: this.fdConstantsService.fdComponent.mailContent.filter.replace("{{MailType}}", type),
-            select: this.fdConstantsService.fdComponent.mailContent.select,
-            top: this.fdConstantsService.fdComponent.mailContent.top,
-        }
+        const objMail = Object.assign({}, this.fdConstantsService.fdComponent.mailContent);
+        objMail.filter = objMail.filter.replace('{{MailType}}', type);
+        const res = await this.spServices.readItems(this.constantService.listNames.MailContent.name, objMail);
+        // let mailContentEndpoint = {
+        //     filter: this.fdConstantsService.fdComponent.mailContent.filter.replace("{{MailType}}", type),
+        //     select: this.fdConstantsService.fdComponent.mailContent.select,
+        //     top: this.fdConstantsService.fdComponent.mailContent.top,
+        // }
 
-        let obj = [{
-            url: this.spServices.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
-            type: 'GET',
-            listName: this.constantService.listNames.MailContent.name
-        }]
-        const res = await this.spServices.executeBatch(obj);
-        this.mailContentRes = res;
-        console.log('Approve Mail Content res ', this.mailContentRes);
+        // let obj = [{
+        //     url: this.spServices.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
+        //     type: 'GET',
+        //     listName: this.constantService.listNames.MailContent.name
+        // }]
+        // const res = await this.spServices.executeBatch(obj);
+        this.mailContentRes = res.length ? res : [];
+        // console.log('Approve Mail Content res ', this.mailContentRes);
     }
 
     selectedProjectInof: any;
@@ -753,8 +786,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     selectedPI: any = [];
     getPIByTitle(title) {
-        let found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == title.ProjectCode) {
+        const found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode === title.ProjectCode) {
                 if (x.CMLevel1.hasOwnProperty('results')) {
                     this.selectedPI = x.CMLevel1.results;
                 }
@@ -816,7 +849,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         // var mailTemplate =  data.Status === "Approved" ? "ApproveExpense" :  data.Status === "Cancelled" ? "CancelExpense" : "RejectExpense";
         var mailSubject = this.selectedRowItem.ProjectCode + "/" + this.selectedRowItem.ClientName + ": Confirmed line item for billing";
 
-        let mailContent = this.mailContentRes[0].retItems[0].Content;
+        let mailContent = this.mailContentRes[0].Content;
         mailContent = this.replaceContent(mailContent, "@@Val1@@", "Hello Invoice Team");
         mailContent = this.replaceContent(mailContent, "@@Val2@@", this.selectedRowItem.ProjectCode);
         mailContent = this.replaceContent(mailContent, "@@Val3@@", this.selectedRowItem.ClientName);
@@ -905,6 +938,29 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 this.tempClick = undefined;
             }
         }
+    }
+
+    isOptionFilter: boolean;
+    optionFilter(event: any) {
+        if (event.target.value) {
+            this.isOptionFilter = false;
+        }
+    }
+
+    ngAfterViewChecked() {
+        if (this.deliverableBasedRes.length && this.isOptionFilter) {
+            let obj = {
+                tableData: this.deliverableTable,
+                colFields: this.deliverableBasedColArray
+            }
+            if (obj.tableData.filteredValue) {
+                this.commonService.updateOptionValues(obj);
+            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+                this.createColFieldValues(obj.tableData.value);
+                this.isOptionFilter = false;
+            }
+        }
+        this.cdr.detectChanges();
     }
 
 }

@@ -31,6 +31,12 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   selectedDocuments: any = [];
   uploadedFiles: any[] = [];
   fileReader = new FileReader();
+  public queryConfig = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
 
   @Input() milestoneData: any;
   menuItems: any = [];
@@ -114,14 +120,21 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   // *************************************************************************************************
 
   async getCurrentTaskProjectInformation(ProjectCode) {
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+
     const project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
     project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
-    const projectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', project);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectUrl);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    this.sharedObject.DashboardData.ProjectInformation = this.response[0][0];
+
+    this.response  = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, project);
+    this.sharedObject.DashboardData.ProjectInformation = this.response.length > 0 ? this.response[0] : {};
+
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+    // const project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
+    // project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
+    // const projectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', project);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    // this.sharedObject.DashboardData.ProjectInformation = this.response[0][0];
   }
 
   // **************************************************************************************************
@@ -137,19 +150,20 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
     let completeFolderRelativeUrl = '';
     const folderUrl = this.ProjectInformation.ProjectFolder;
     completeFolderRelativeUrl = folderUrl + documentsUrl;
-    const Url = this.sharedObject.sharePointPageObject.serverRelativeUrl +
-      // tslint:disable-next-line: quotemark
-      "/_api/web/getfolderbyserverrelativeurl('" + completeFolderRelativeUrl + "')/Files?$expand=ListItemAllFields";
+    // const Url = this.sharedObject.sharePointPageObject.serverRelativeUrl +
+    //   // tslint:disable-next-line: quotemark
+    //   "/_api/web/getfolderbyserverrelativeurl('" + completeFolderRelativeUrl + "')/Files?$expand=ListItemAllFields";
 
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
 
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Url);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Url);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.response = await this.spServices.readFiles(completeFolderRelativeUrl);
 
-    this.allDocuments = this.response[0];
+    this.allDocuments = this.response.length > 0 ? this.response : [];
 
-    if (this.response.length > 0) {
+    if ( this.allDocuments.length > 0) {
       this.DocumentArray = this.allDocuments;
 
       if (this.allDocuments.length > 0) {
@@ -190,16 +204,24 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
   // **************************************************************************************************
 
   async getUsers(Ids) {
-
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    const batchURL = [];   
+    
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
 
     Ids.forEach(element => {
-      const url = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/_api/Web/GetUserById(' + element + ')';
-      this.spServices.getBatchBodyGet(this.batchContents, batchGuid, url);
+      let userDetailObj = Object.assign({}, this.queryConfig);
+      userDetailObj.url = this.spServices.getUserURL(element);
+      userDetailObj.listName = 'UserInfo';
+      userDetailObj.type = 'GET';
+      batchURL.push(userDetailObj);
+      // const url = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/_api/Web/GetUserById(' + element + ')';
+      // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, url);
     });
 
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.response = await this.spServices.executeBatch(batchURL);
+    this.response = this.response.length > 0 ? this.response[0].retItems : [];
     return this.response;
   }
 

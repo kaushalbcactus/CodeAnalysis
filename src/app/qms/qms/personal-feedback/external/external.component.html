@@ -21,23 +21,26 @@
         </tr>
         <tr>
             <th *ngFor="let col of columns" [ngSwitch]="col.field">
-                <p-multiSelect *ngSwitchCase="'ID'" [style]="{'width':'100%'}"  [options]="QCColArray.ID" defaultLabel="ID" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'Title'" [style]="{'width':'100%'}"  [options]="QCColArray.Title" defaultLabel="Title" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'SentDate'" [style]="{'width':'100%'}"  [options]="QCColArray.SentDate" defaultLabel="Sent Date" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'SentBy'" [style]="{'width':'100%'}"  [options]="QCColArray.SentBy" defaultLabel="Sent By" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'Status'" [style]="{'width':'100%'}"  [options]="QCColArray.Status" defaultLabel="Status" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'SeverityLevel'" [style]="{'width':'100%'}"  [options]="QCColArray.SeverityLevel" defaultLabel="Severity Level" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'Accountable'" [style]="{'width':'100%'}"  [options]="QCColArray.Accountable" defaultLabel="Accountable" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'Segregation'" [style]="{'width':'100%'}"  [options]="QCColArray.Segregation" defaultLabel="Segregation" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'BusinessImpact'" [style]="{'width':'100%'}"  [options]="QCColArray.BusinessImpact" defaultLabel="Business Impact" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'ID'" [style]="{'width':'100%'}"  [options]="QCColArray.ID" defaultLabel="ID" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Title'" [style]="{'width':'100%'}"  [options]="QCColArray.Title" defaultLabel="Title" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'SentDate'" [style]="{'width':'100%'}"  [options]="QCColArray.SentDate" defaultLabel="Sent Date" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'SentBy'" [style]="{'width':'100%'}"  [options]="QCColArray.SentBy" defaultLabel="Sent By" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Status'" [style]="{'width':'100%'}"  [options]="QCColArray.Status" defaultLabel="Status" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'SeverityLevel'" [style]="{'width':'100%'}"  [options]="QCColArray.SeverityLevel" defaultLabel="Severity Level" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Accountable'" [style]="{'width':'100%'}"  [options]="QCColArray.Accountable" defaultLabel="Accountable" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Segregation'" [style]="{'width':'100%'}"  [options]="QCColArray.Segregation" defaultLabel="Segregation" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'BusinessImpact'" [style]="{'width':'100%'}"  [options]="QCColArray.BusinessImpact" defaultLabel="Business Impact" (onChange)="qc.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
             </th>
         </tr>
     </ng-template>
     <ng-template pTemplate="body" let-rowData let-columns="columns">
         <tr>
             <td *ngFor="let col of columns">
-                <ng-container *ngIf="col.field != 'Title' &&  col.field != ''">
+                <ng-container *ngIf="col.field != 'Title' &&  col.field != '' &&  col.field !== 'SentDate'">
                     {{rowData[col.field]}}
+                </ng-container>
+                <ng-container *ngIf="col.field === 'SentDate'">
+                    {{rowData[col.field] | date:'MMM d, yyyy' }}
                 </ng-container>
                 <ng-container *ngIf="col.field == 'Title'">
                     <a [href]="rowData['fullUrl']" download> {{rowData[col.field]}}</a>

@@ -64,6 +64,12 @@ export class DragDropComponent implements OnInit {
   enableZoom: boolean = false;
   enablePaan: boolean = false;
   recentEventNode = undefined;
+  public queryConfig = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
   // tslint:enable
   constructor(
     public ref: DynamicDialogRef,
@@ -616,45 +622,66 @@ export class DragDropComponent implements OnInit {
 
   async GetAllTasksMilestones() {
 
-    const batchGuid = this.spServices.generateUUID();
-    this.batchContents = new Array();
-
+    // const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
+    const batchUrl = [];
 
     // ************************************************************************************************
     //  Get All milestones
     // ****************************************************     ***************************************
 
-    this.taskAllocationService.taskallocationComponent.milestoneList.filter =
-      this.taskAllocationService.taskallocationComponent.milestoneList.filter.replace(/{{status}}/gi, 'Active');
-    const milestoneListUrl =
-      this.spServices.getReadURL('' + this.constants.listNames.Milestones.name
-        + '', this.taskAllocationService.taskallocationComponent.milestoneList);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, milestoneListUrl);
+    // this.taskAllocationService.taskallocationComponent.milestoneList.filter =
+    //   this.taskAllocationService.taskallocationComponent.milestoneList.filter.replace(/{{status}}/gi, 'Active');
+    // const milestoneListUrl =
+    //   this.spServices.getReadURL('' + this.constants.listNames.Milestones.name
+    //     + '', this.taskAllocationService.taskallocationComponent.milestoneList);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, milestoneListUrl);
 
+    const milestoneObj = Object.assign({}, this.queryConfig);
+    milestoneObj.url = this.spServices.getReadURL(this.constants.listNames.Milestones.name,
+                                                  this.taskAllocationService.taskallocationComponent.milestoneList);
+    milestoneObj.url = milestoneObj.url.replace(/{{status}}/gi, 'Active');
+    milestoneObj.listName = this.constants.listNames.Milestones.name;
+    milestoneObj.type = 'GET';
+    batchUrl.push(milestoneObj);
     // ******************************************************************************************
     //  Get All Submilestones
     // ******************************************************************************************
 
-    this.taskAllocationService.taskallocationComponent.submilestonesList.filter
-      = this.taskAllocationService.taskallocationComponent.submilestonesList.filter.replace
-        (/{{status}}/gi, 'Yes');
-    const submilestoneListUrl = this.spServices.getReadURL
-      ('' + this.constants.listNames.SubMilestones.name + '', this.taskAllocationService.taskallocationComponent.submilestonesList);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, submilestoneListUrl);
+    // this.taskAllocationService.taskallocationComponent.submilestonesList.filter
+    //   = this.taskAllocationService.taskallocationComponent.submilestonesList.filter.replace
+    //     (/{{status}}/gi, 'Yes');
+    // const submilestoneListUrl = this.spServices.getReadURL
+    //   ('' + this.constants.listNames.SubMilestones.name + '', this.taskAllocationService.taskallocationComponent.submilestonesList);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, submilestoneListUrl);
 
-
+    const submilestoneObj = Object.assign({}, this.queryConfig);
+    submilestoneObj.url = this.spServices.getReadURL(this.constants.listNames.SubMilestones.name,
+                                                  this.taskAllocationService.taskallocationComponent.submilestonesList);
+    submilestoneObj.url = submilestoneObj.url.replace(/{{status}}/gi, 'Yes');
+    submilestoneObj.listName = this.constants.listNames.SubMilestones.name;
+    submilestoneObj.type = 'GET';
+    batchUrl.push(submilestoneObj);
     // ************************************************************************************************
     //  Get All Submilestones
     // ************************************************************************************************
 
-    this.taskAllocationService.taskallocationComponent.taskList.filter
-      = this.taskAllocationService.taskallocationComponent.taskList.filter.replace(/{{status}}/gi, 'Active');
-    const taskListUrl = this.spServices.getReadURL
-      ('' + this.constants.listNames.MilestoneTasks.name + '', this.taskAllocationService.taskallocationComponent.taskList);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, taskListUrl);
+    // this.taskAllocationService.taskallocationComponent.taskList.filter
+    //   = this.taskAllocationService.taskallocationComponent.taskList.filter.replace(/{{status}}/gi, 'Active');
+    // const taskListUrl = this.spServices.getReadURL
+    //   ('' + this.constants.listNames.MilestoneTasks.name + '', this.taskAllocationService.taskallocationComponent.taskList);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, taskListUrl);
 
-
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    const tasksObj = Object.assign({}, this.queryConfig);
+    tasksObj.url = this.spServices.getReadURL(this.constants.listNames.MilestoneTasks.name,
+                                                  this.taskAllocationService.taskallocationComponent.taskList);
+    tasksObj.url = tasksObj.url.replace(/{{status}}/gi, 'Active');
+    tasksObj.listName = this.constants.listNames.MilestoneTasks.name;
+    tasksObj.type = 'GET';
+    batchUrl.push(tasksObj);
+    const arrResult = await this.spServices.executeBatch(batchUrl);
+    this.response = arrResult.length ? arrResult.map(a => a.retItems) : [];
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
     this.sharedObject.oTaskAllocation.arrMilestones = this.response[0].map(c => c.Title);
     this.sharedObject.oTaskAllocation.arrSubMilestones = this.response[1].map(c => c.Title);
@@ -1200,6 +1227,7 @@ export class DragDropComponent implements OnInit {
   onPageLoad(event) {
 
     var MilTask = undefined;
+
     if (this.sharedObject.oTaskAllocation.arrTasks !== undefined) {
       MilTask = this.sharedObject.oTaskAllocation.arrTasks.find(c => c === event.taskType);
     }

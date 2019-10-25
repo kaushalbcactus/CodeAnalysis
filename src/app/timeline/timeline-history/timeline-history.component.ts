@@ -1,11 +1,13 @@
 import { GlobalService } from '../../Services/global.service';
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { SPCommonService } from '../../Services/spcommon.service';
 import { TimelineConstantsService } from './../services/timeline-constants.service';
 import { DatePipe } from '@angular/common';
-import { LazyLoadEvent } from 'primeng/primeng';
+import { LazyLoadEvent, DataTable } from 'primeng/primeng';
 import { SPOperationService } from '../../Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
+import { CommonService } from 'src/app/Services/common.service';
+import { Table } from 'primeng/table';
 
 
 @Component({
@@ -31,6 +33,7 @@ export class TimelineHistoryComponent implements OnInit {
     file_uploaded: ''
   };
   public loading: boolean;
+  public lazy: boolean;
   public displayBody = false;
   public timelineHeader = [
     { field: 'date_time', header: 'Date & Time', width: '14%' },
@@ -75,11 +78,24 @@ export class TimelineHistoryComponent implements OnInit {
   public filterEnabled = false;
   public hideLoader = true;
   public datesValues = '';
-  constructor(private spStandardService: SPOperationService, private constant: TimelineConstantsService,
-              private globalConstant: ConstantsService, private spcommon: SPCommonService, private datePipe: DatePipe,
-              public elemRef: ElementRef, public global: GlobalService) { }
+
+  @ViewChild('timelineTable', { static: true }) timelineTable: DataTable;
+
+  constructor(
+    private spStandardService: SPOperationService,
+    private constant: TimelineConstantsService,
+    private globalConstant: ConstantsService,
+    private spcommon: SPCommonService,
+    private datePipe: DatePipe,
+    public elemRef: ElementRef,
+    public global: GlobalService,
+    private commonService: CommonService,
+    private cdr: ChangeDetectorRef,
+  ) { }
 
   ngOnInit() {
+    console.log('timelineTable ', this.timelineTable);
+    this.lazy = true;
     /**
      * fetches project contacts and po on page load
      */
@@ -693,7 +709,7 @@ export class TimelineHistoryComponent implements OnInit {
             case this.globalConstant.invoiceList.columns.PaymentURL:
               if (properties[key]) {
                 obj.activity_type = 'Payment resolved attachment';
-                obj.file_uploaded =  properties[key];
+                obj.file_uploaded = properties[key];
               }
               break;
             case this.globalConstant.invoiceList.columns.InvoiceHtml:
@@ -769,7 +785,7 @@ export class TimelineHistoryComponent implements OnInit {
             case this.globalConstant.proformaList.columns.FileURL:
               if (properties[key] && !versionDetail.ProformaHtml) {
                 obj.activity_type = 'Attachment';
-                obj.file_uploaded =  properties[key];
+                obj.file_uploaded = properties[key];
                 obj.activity_description = 'File Replaced';
               }
               break;
@@ -2000,6 +2016,43 @@ export class TimelineHistoryComponent implements OnInit {
   }
   // #endregion
 
-  // #endregion
 
+  ngAfterViewChecked() {
+    let obj = {
+      tableData: this.timelineTable,
+      colFields: this.objTimelineData,
+      // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+    }
+    if (this.isEmpty(this.timelineTable.filters)) {
+      this.lazy = false;
+      console.log('this.timelineTable ', this.timelineTable);
+      if (obj.tableData.filteredValue) {
+        // obj.tableData.filteredValue = obj.tableData.value;
+        this.commonService.updateOptionValues(obj);
+        this.cdr.detectChanges();
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        // this.createColFieldValues(obj.tableData.value);
+        this.getFilterData(obj.tableData.value)
+        this.cdr.detectChanges();
+      }
+      console.log('this.objTimelineData ',this.filter);
+    } else {
+      this.lazy = true;
+      this.getFilterData(this.timelineData);
+      this.cdr.detectChanges();
+    }
+    
+  }
+
+  isEmpty(obj) {
+    for (var prop in obj) {
+      if (obj.hasOwnProperty(prop)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  // #endregion
 }

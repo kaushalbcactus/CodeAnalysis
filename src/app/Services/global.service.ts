@@ -19,6 +19,13 @@ export class GlobalService {
       Title: ''
     }
   };
+
+  public oCapacity = {
+    arrUserDetails: [],
+    arrDateRange : [],
+    arrResources : [],
+    arrDateFormat: [],
+  };
   public templateMatrix = {
     task: '',
     submilestones: '',
@@ -114,9 +121,9 @@ export class GlobalService {
     serverRelativeUrl: '',
     webRelativeUrl: '',
     publicCdn: '',
-    userId: 0,
-    email: '',
-    title: '',
+    // userId: 0,
+    // email: '',
+    // title: '',
     rootsite: '',
   };
 
@@ -145,13 +152,13 @@ export class GlobalService {
   };
 
   public currentUser = {
-    id: -1,
+    userId: 0,
     title: '',
     email: '',
     timeZone: 0,
     designation: '',
-    webAbsoluteUrl: '',
-    serverRelativeUrl: '',
+    // webAbsoluteUrl: '',
+    // serverRelativeUrl: '',
     loggedInUserInfo: [],
     loggedInUserGroup: [],
     isPFAdmin: false,
@@ -325,4 +332,14 @@ export class GlobalService {
     cancelImageURL:''+this.sharePointPageObject.publicCdn+'/cancel.png',
     scopeImageURL: ''+this.sharePointPageObject.publicCdn+'/comments.png'
   };
+
+
+  unique(arr, keyProps) {
+    const kvArray = arr.map(entry => {
+      const key = keyProps.map(k => entry[k] ? entry[k] : '').join('|');
+      return [key, entry];
+    });
+    const map = new Map(kvArray);
+    return Array.from(map.values());
+  }
 }

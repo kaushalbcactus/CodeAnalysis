@@ -59,7 +59,7 @@ export class QMSComponent implements OnInit {
     this.displayAdminView();
     this.global.viewTabsPermission.hideAdmin = this.hideAdmin;
     resource = this.global.allResources.length > 0 ?
-      this.global.allResources.filter(u => u.UserName.ID === this.global.sharePointPageObject.userId) : [];
+      this.global.allResources.filter(u => u.UserName.ID === this.global.currentUser.userId) : [];
     if (resource && resource.length > 0) {
       this.global.currentUser.title = resource[0].UserName.Title;
       this.global.currentUser.email = resource[0].UserName.EMail;
@@ -115,7 +115,7 @@ export class QMSComponent implements OnInit {
    * Display manager tab if resources have current user as manager
    */
   displayManagerTab() {
-    const resources = this.global.allResources.filter(u => u.Manager.ID === this.global.sharePointPageObject.userId);
+    const resources = this.global.allResources.filter(u => u.Manager.ID === this.global.currentUser.userId);
     const isQMSLeader = this.global.currentUser.groups.filter(u => u.Title === this.globalConstant.Groups.QMSLeaders);
     this.hideManager = resources.length > 0 || isQMSLeader.length > 0 ? false : true;
     if (!this.hideManager) {
@@ -132,7 +132,7 @@ export class QMSComponent implements OnInit {
     const batchURL = [];
     const getResourceData = Object.assign({}, this.options);
     // tslint:disable: max-line-length
-    getResourceData.url = this.spService.getUserURL(this.global.sharePointPageObject.userId);
+    getResourceData.url = this.spService.getUserURL(this.global.currentUser.userId);
     getResourceData.listName = 'UserInfo';
     getResourceData.type = 'GET';
     batchURL.push(getResourceData);

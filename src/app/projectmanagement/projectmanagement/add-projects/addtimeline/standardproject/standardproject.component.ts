@@ -1,9 +1,8 @@
-import { Component, OnInit, NgZone, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, NgZone, ViewEncapsulation, ViewChild } from '@angular/core';
 import { TreeNode, SelectItemGroup, MessageService } from 'primeng/api';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { UsercapacityComponent } from '../usercapacity/usercapacity.component';
 import { AddTimelineComponent } from '../addtimeline.component';
 import { DatePipe } from '@angular/common';
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
@@ -11,15 +10,19 @@ import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
+import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
+import { async } from '@angular/core/testing';
+
 declare var $;
 @Component({
   selector: 'app-standardproject',
   templateUrl: './standardproject.component.html',
   styleUrls: ['./standardproject.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class StandardprojectComponent implements OnInit {
   public deliverableType: string;
+  @ViewChild('InitialUserCapacity', { static: true }) userCapacity: UsercapacityComponent;
   public minProposedDate;
   public serviceId;
   public reviewerId;
@@ -85,7 +88,6 @@ export class StandardprojectComponent implements OnInit {
     private spService: SPOperationService,
     public pmObject: PMObjectService,
     private constants: ConstantsService,
-    private userCapacity: UsercapacityComponent,
     private timelineObject: AddTimelineComponent,
     public datepipe: DatePipe,
     private ngZone: NgZone,
@@ -134,7 +136,7 @@ export class StandardprojectComponent implements OnInit {
       this.standardServices = [];
       this.getProjectManagement();
       this.getStandardTemplate();
-      this.userProperties = await this.spService.getUserInfo(this.sharedObject.sharePointPageObject.userId);
+      this.userProperties = await this.spService.getUserInfo(this.sharedObject.currentUser.userId);
     } else {
       this.setDropdownField();
     }
@@ -219,7 +221,7 @@ export class StandardprojectComponent implements OnInit {
       filter: 'Title eq \'' + projectCode + '\''
     };
     const result = await this.spService.readItems(this.constants.listNames.ProjectFinances.name, prjFinanceOptions);
-    return result;
+    return result.length ? result : [];
   }
   /**
    * This method is used to get the Project Resource based on project code.
@@ -498,8 +500,15 @@ export class StandardprojectComponent implements OnInit {
         oCapacityStartDate = this.ngStandardProposedStartDate;
       }
       let oCapacityEndDate = this.calcBusinessNextDate(oCapacityStartDate, 10);
-      setTimeout(() => {
-        userCapacityRef.applyFilterLocal(oCapacityStartDate, oCapacityEndDate, this.sharedTaskAllocateObj.oAllResource);
+      setTimeout(async () => {
+
+        const Resources = { resources: this.sharedTaskAllocateObj.oAllResource };
+        const data = { task: Resources, startTime: oCapacityStartDate, endTime: oCapacityEndDate,Module:'PM' }
+
+        await userCapacityRef.Onload(data)
+
+
+        // userCapacityRef.applyFilterLocal(oCapacityStartDate, oCapacityEndDate, this.sharedTaskAllocateObj.oAllResource);
         $('.standard-spinner-section').hide();
         $('.initialUserCapacity-section').show();
       }, 100);
@@ -612,7 +621,7 @@ export class StandardprojectComponent implements OnInit {
       let resource = [];
       resource.push(this.selectedSkillObject.value, this.selectedResourceObject.value);
       this.pmObject.oTaskAllocation.oAllSelectedResource = resource;
-      this.userCapacity.applyFilterGlobal(startDate, endDate, resource);
+     await this.userCapacity.applyFilterGlobal(startDate, endDate, resource);
     }
     this.standardFiles = [];
     this.createMilestone(0, true, new Date(startDate));
@@ -1579,7 +1588,7 @@ export class StandardprojectComponent implements OnInit {
    * @param milestoneTaskObj Provide the task object
    */
   private checkUserAvailability(startdate, milestoneTaskObj) {
-    let userCapacity = this.pmObject.oCapacity.arrUserDetails;
+    let userCapacity = this.sharedObject.oCapacity.arrUserDetails;
     let filterUser;
     if (userCapacity.length > 0) {
       filterUser = userCapacity.filter(function (obj) {
@@ -1725,8 +1734,12 @@ export class StandardprojectComponent implements OnInit {
    */
   private async getMilestoneByType() {
     this.sharedTaskAllocateObj.oMilestones = await this.getStandardMilestone();
+    // if (this.sharedObject.oCapacity.arrUserDetails.length === 0) {
+    //   await this.userCapacity.Onload(data);
+    // }
     await this.getMilestoneTask(this.sharedTaskAllocateObj.oMilestones);
     this.generateSkillMilestones();
+
     $('.standard-spinner-section').hide();
     $('.standardMilestoneByType').show();
   }
@@ -1737,6 +1750,7 @@ export class StandardprojectComponent implements OnInit {
    * @param userCapacityRef Provide the usercapacity ref.
    */
   getUserCapacity(curObj, userCapacityRef) {
+
     if (curObj) {
       let milestones_copy: any = this.standardFiles;
       let uniqueId = curObj.MileId.split(';#');
@@ -1757,9 +1771,22 @@ export class StandardprojectComponent implements OnInit {
               return milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.userId === obj.UserName.ID;
             });
             if (milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.toggleCapacity) {
-              setTimeout(() => {
-                userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.EndDate, filterResource);
+              setTimeout(async () => {
                 milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.toggleCapacity = false;
+                // await userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.EndDate, filterResource,'PM');
+              
+                const Resources = { resources: filterResource };
+                const data = { task: Resources, startTime: milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.StartDate, endTime:  milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.EndDate,Module:'PM' }
+        
+                await userCapacityRef.Onload(data)
+
+
+
+                // data.task.resources
+                // const data = { task: Resources, startTime: oCapacityStartDate, endTime: oCapacityEndDate,Module:'PM' }
+
+                // await userCapacityRef.Onload(data)
+
               }, 100);
             } else {
               milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.toggleCapacity = true;
@@ -1775,9 +1802,15 @@ export class StandardprojectComponent implements OnInit {
               return milestones_copy[milestoneIndex].children[taskIndex].data.userId === obj.UserName.ID;
             });
             if (milestones_copy[milestoneIndex].children[taskIndex].data.toggleCapacity) {
-              setTimeout(() => {
-                userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[taskIndex].data.EndDate, filterResource);
+              setTimeout(async () => {
                 milestones_copy[milestoneIndex].children[taskIndex].data.toggleCapacity = false;
+                // await userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[taskIndex].data.EndDate, filterResource,'PM');
+
+                const Resources = { resources: filterResource };
+                const data = { task: Resources, startTime: milestones_copy[milestoneIndex].children[taskIndex].data.StartDate, endTime:  milestones_copy[milestoneIndex].children[taskIndex].data.EndDate,Module:'PM' }
+        
+                await userCapacityRef.Onload(data)
+              
               }, 100);
             } else {
               milestones_copy[milestoneIndex].children[taskIndex].data.toggleCapacity = true;

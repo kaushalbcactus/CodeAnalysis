@@ -658,7 +658,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * @param sowObj The parameter shoudl be SOW list object.
    */
   async addUpdateSOW(sowObj) {
-    debugger;
     if (!sowObj.ID) { // Create SOW
       const sowInfoOptions = this.getSOWDataObj(sowObj);
       await this.spServices.createItem(this.constant.listNames.SOW.name, sowInfoOptions, this.constant.listNames.SOW.type);

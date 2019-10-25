@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { SPOperationService } from '../../../../Services/spoperation.service';
 import { ConstantsService } from '../../../../Services/constants.service';
 import { Subject } from 'rxjs';
@@ -10,6 +10,7 @@ import { SPCommonService } from '../../../../Services/spcommon.service';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { QMSCommonService } from '../../services/qmscommon.service';
 import { MessageService } from 'primeng/api';
+import { DataTable } from 'primeng/primeng';
 
 @Component({
   selector: 'app-admin-view',
@@ -59,18 +60,30 @@ export class AdminViewComponent implements OnInit {
   };
 
   public AdminColArray = {
-    TaskTitle: [],
-    TaskCompletionDate: [],
-    Rated: [],
+    taskTitle: [],
+    taskCompletionDate: [],
+    rated: [],
     Drafts: [],
   };
-  constructor(private spService: SPOperationService, private globalConstant: ConstantsService,
-    public datepipe: DatePipe, private global: GlobalService, private qmsConstant: QMSConstantsService,
-    private qmsCommon: QMSCommonService, private messageService: MessageService) { }
+
+  @ViewChild('admin', { static: false }) adminTable: DataTable;
+
+  constructor(
+    private spService: SPOperationService,
+    private globalConstant: ConstantsService,
+    public datepipe: DatePipe,
+    private global: GlobalService,
+    private qmsConstant: QMSConstantsService,
+    private qmsCommon: QMSCommonService,
+    private messageService: MessageService,
+    public commonService: CommonService,
+    private cdr: ChangeDetectorRef,
+
+  ) { }
 
   async ngOnInit() {
     if (!this.global.currentUser.groups.length) {
-      const result = await this.spService.getUserInfo(this.global.sharePointPageObject.userId);
+      const result = await this.spService.getUserInfo(this.global.currentUser.userId);
       this.global.currentUser.groups = result.Groups.results ? result.Groups.results : [];
     }
     const isQMSAdmin = this.global.currentUser.groups.filter(u => u.Title === this.globalConstant.Groups.QMSAdmin);
@@ -97,23 +110,25 @@ export class AdminViewComponent implements OnInit {
   }
 
   colFilters(colData) {
-    this.AdminColArray.TaskTitle = this.qmsCommon.uniqueArrayObj(colData.map(a => {
+    this.AdminColArray.taskTitle = this.qmsCommon.uniqueArrayObj(colData.map(a => {
       const b = {
         label: a.taskTitle,
         value: a.taskTitle,
-        filterValue: a.taskTitle};
-      return b; }));
-    this.AdminColArray.TaskCompletionDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
+        filterValue: a.taskTitle
+      };
+      return b;
+    }));
+    this.AdminColArray.taskCompletionDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
       const b = {
         label: this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy'),
         // tslint:disable-next-line: max-line-length
-        value: this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy') ? this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy') : '',
+        value: a.taskCompletionDate ? new Date(this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy')) : '',
         filterValue: a.taskCompletionDate ? new Date(a.taskCompletionDate) : ''
       };
       return b;
     }));
     // tslint:disable: max-line-length
-    this.AdminColArray.Rated = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.rated, value: a.rated, filterValue: +a.rated }; return b; }));
+    this.AdminColArray.rated = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.rated, value: a.rated, filterValue: +a.rated }; return b; }));
   }
 
   /**
@@ -138,10 +153,10 @@ export class AdminViewComponent implements OnInit {
     this.ReviewerDetail = [];
     tasks.forEach(element => {
       this.ReviewerDetail.push({
-        taskTitle: element.taskTitle ? element.subMilestones ? element.taskTitle + ' - ' +  element.subMilestones: element.taskTitle : '',
+        taskTitle: element.taskTitle ? element.subMilestones ? element.taskTitle + ' - ' + element.subMilestones : element.taskTitle : '',
         title: element.taskTitle,
         subMilestones: element.subMilestones,
-        taskCompletionDate: this.datepipe.transform(element.taskCompletionDate, 'MMM d, yyyy') ? this.datepipe.transform(element.taskCompletionDate, 'MMM d, yyyy') : '',
+        taskCompletionDate: element.taskCompletionDate ? new Date(this.datepipe.transform(element.taskCompletionDate, 'MMM d, yyyy')) : '',
         rated: element.rated ? element.rated : '',
         docUrlHtmlTag: element.docUrlHtmlTag ? element.docUrlHtmlTag : '',
         documentURL: element.documentURL ? element.documentURL : '',
@@ -276,6 +291,31 @@ export class AdminViewComponent implements OnInit {
   }
 
   showToastMsg(objMsg) {
-    this.messageService.add({severity: objMsg.type, summary: objMsg.msg, detail: objMsg.detail});
+    this.messageService.add({ severity: objMsg.type, summary: objMsg.msg, detail: objMsg.detail });
+  }
+
+
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.ReviewerDetail.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.adminTable,
+        colFields: this.AdminColArray
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.colFilters(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
+    }
   }
 }
