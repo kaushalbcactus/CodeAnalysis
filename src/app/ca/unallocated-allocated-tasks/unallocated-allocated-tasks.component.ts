@@ -2,7 +2,6 @@ import { Component, OnInit, HostListener, ViewChild, ChangeDetectorRef } from '@
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CAConstantService } from '../caservices/caconstant.service';
 import { GlobalService } from 'src/app/Services/global.service';
-import { DialogService, MenuItem, MessageService, ConfirmationService } from 'primeng/api';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { CACommonService } from '../caservices/cacommon.service';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
@@ -11,6 +10,7 @@ import { Table } from 'primeng/table';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
+import { DialogService, ConfirmationService, MessageService, MenuItem } from 'primeng/primeng';
 
 @Component({
   selector: 'app-unallocated-allocated-tasks',
@@ -178,14 +178,14 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
   createColFieldValues(acTempArrays) {
-    this.caArrays.ClientLegalEntity = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.clientLegalEntityTempArray, 'value'), 'value', 'label');
-    this.caArrays.ProjectCode = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.projectCodeTempArray, 'value'), 'value', 'label');
-    this.caArrays.Milestone = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.milestoneTempArray, 'value'), 'value', 'label');
-    this.caArrays.Task = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.taskTempArray, 'value'), 'value', 'label');
-    this.caArrays.DeliveryType = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.deliveryTypeTempArray, 'value'), 'value', 'label');
-    this.caArrays.Allocated = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.allocatedTempArray, 'value'), 'value', 'label');
-    this.caArrays.StartTime = this.caCommonService.sortByDate(this.caCommonService.unique(acTempArrays.startTimeTempArray, 'value'), 'value');
-    this.caArrays.EndTime = this.caCommonService.sortByDate(this.caCommonService.unique(acTempArrays.endTimeTempArray, 'value'), 'value');
+    this.caArrays.clientLegalEntityArray = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.clientLegalEntityTempArray, 'value'), 'value', 'label');
+    this.caArrays.projectCodeArray = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.projectCodeTempArray, 'value'), 'value', 'label');
+    this.caArrays.milestoneArray = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.milestoneTempArray, 'value'), 'value', 'label');
+    this.caArrays.taskArray = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.taskTempArray, 'value'), 'value', 'label');
+    this.caArrays.deliveryTypeArray = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.deliveryTypeTempArray, 'value'), 'value', 'label');
+    this.caArrays.allocatedArray = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.allocatedTempArray, 'value'), 'value', 'label');
+    this.caArrays.startTimeArray = this.caCommonService.sortByDate(this.caCommonService.unique(acTempArrays.startTimeTempArray, 'value'), 'value');
+    this.caArrays.endTimeArray = this.caCommonService.sortByDate(this.caCommonService.unique(acTempArrays.endTimeTempArray, 'value'), 'value');
     // this.caArrays.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
     // this.caArrays.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
     // this.caArrays.Milestone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
@@ -605,6 +605,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   async deleteTask(task, unt) {
 
+    debugger;
     this.confirmationService.confirm({
       message: 'Do you want to delete this task?',
       header: 'Delete Confirmation',

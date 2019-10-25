@@ -10,7 +10,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule } from '@angular/forms';
 import { CaRoutingModule } from './ca-routing.module';
 import { CaComponent } from './ca.component';
-import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/api';
+import { DynamicDialogRef, DynamicDialogConfig, ConfirmationService } from 'primeng/api';
 import { UnallocatedAllocatedTasksComponent } from './unallocated-allocated-tasks/unallocated-allocated-tasks.component';
 import { UserCapacityModule } from '../shared/usercapacity/usercapacity.module';
 import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.component';
@@ -27,7 +27,7 @@ import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.compo
     CaRoutingModule,
     UserCapacityModule
   ],
-  providers: [DynamicDialogConfig, DynamicDialogRef],
+  providers: [DynamicDialogConfig, DynamicDialogRef, ConfirmationService],
   entryComponents: [UsercapacityComponent],
 })
 export class CAModule { }

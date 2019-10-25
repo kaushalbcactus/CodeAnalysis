@@ -41,6 +41,7 @@
 ::ng-deep .allocatedUnallocatedTable .ui-dropdown-panel {
     left: inherit !important;
     right: 0px !important;
+    top: 35px !important;
 }
 
 

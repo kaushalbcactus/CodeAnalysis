@@ -5,30 +5,36 @@
 @import '@fullcalendar/daygrid/main.css';
 @import '@fullcalendar/timegrid/main.css';
 @import '@fullcalendar/list/main.css';
-
 @import '@fullcalendar/bootstrap/main.css';
 @font-face {
     font-family: 'Helvetica';
-    url:('/fonts/HelveticaNeue.ttf')  format('truetype'), /* Safari, Android, iOS */
+    url: ('/fonts/HelveticaNeue.ttf') format('truetype'), /* Safari, Android, iOS */
 }
-body{
-    font-family:  Helvetica;
+
+body {
+    font-family: Helvetica;
     font-size: 14px;
 }
 
- 
+.ui-dialog-footer>button {
+    background-color: #b90707 !important;
+    border: 1px solid #b90707 !important;
+}
+
+body .ui-inputtext {
+    padding: 0.426em !important;
+}
+
 button.ui-datepicker-trigger.ui-calendar-button {
-	width: 30px !important;
+    width: 30px !important;
     min-width: 30px !important;
 }
 
 button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable {
-	    padding: 5px !important;
-} 
- 
+    padding: 5px !important;
+}
 
-
-#scInnerLoader{
+#scInnerLoader {
     border: 10px solid #f3f3f3 !important;
     border-radius: 50% !important;
     border-top: 10px solid red !important;
@@ -37,14 +43,13 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
     height: 100px !important;
     -webkit-animation: spin 2s linear infinite !important;
     animation: spin 2s linear infinite !important;
-    margin: 0 auto  !important;
+    margin: 0 auto !important;
     position: relative !important;
     top: 30% !important;
     transform: translateY(-50%) !important;
-   
-  }
-  
-  #scInnerLoaderText{
+}
+
+#scInnerLoaderText {
     -moz-animation: loading-text-opacity 2s linear 0s infinite normal !important;
     -o-animation: loading-text-opacity 2s linear 0s infinite normal !important;
     -webkit-animation: loading-text-opacity 2s linear 0s infinite normal !important;
@@ -58,53 +63,58 @@ button.ui-datepicker-trigger.ui-calendar-button span.ui-button-text.ui-clickable
     text-transform: uppercase !important;
     top: 35% !important;
     position: relative;
-  }
-  
-  /* Added for timeline */
-.ui-table-scrollable-header{
+}
+
+
+/* Added for timeline */
+
+.ui-table-scrollable-header {
     overflow: visible!important;
 }
+
 .ui-table.ui-widget {
     margin-top: 20px;
 }
 
+
 /* You can add global styles to this file, and also import other style files */
-.floatLeft{
-    float:left;
+
+.floatLeft {
+    float: left;
 }
 
 .floatRight {
     float: right;
 }
 
-#mainLoader{
-  border: 10px solid #f3f3f3;
-  border-radius: 50%;
-  border-top: 10px solid red;
-  border-bottom: 10px solid red;
-  width: 100px;
-  height: 100px;
-  -webkit-animation: spin 2s linear infinite;
-  animation: spin 2s linear infinite;
-  margin: 0 auto;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-top: 1%;
+#mainLoader {
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid red;
+    border-bottom: 10px solid red;
+    width: 100px;
+    height: 100px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-top: 1%;
 }
 
-#mainLoaderText{
-  -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
-  -o-animation: loading-text-opacity 2s linear 0s infinite normal;
-  -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
-  animation: loading-text-opacity 2s linear 0s infinite normal;
-  color: black;
-  font-family: "Helvetica Neue, "Helvetica", ""arial";
-  font-size: 10px;
-  font-weight: bold;
-  opacity: 0.5;
-  text-align: center;
-  text-transform: uppercase;
-  top: 0;
-  margin-bottom: 1%;
+#mainLoaderText {
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, "Helvetica", ""arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
+    margin-bottom: 1%;
 }

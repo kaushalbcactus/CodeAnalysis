@@ -6,6 +6,7 @@
     <div id="scInnerLoaderText">Loading...</div>
 </div> -->
 
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
 
 <p-toast [style]="{marginTop: '80px'}"></p-toast>
 
@@ -63,6 +64,7 @@
                 <td>{{task.lastTaskEndDateText}}</td>
                 <td>{{task.sendToClientDateText}}</td>
                 <td *ngIf="selectedTab ==='allocated'" class="ui-fluid">
+
                     <p-dropdown [hidden]="!task.isAssignedToHidden" #allocateResource class="resourceDropdown" [options]="task.displayselectedResources" [panelStyle]="{minWidth:'25em' }" [(ngModel)]="task.allocatedResource" placeholder="Select Resource" [group]="true" filter="true"
                         placeholder="Select Resource" (onShow)="fetchResources(task, allocateResource)" (onHide)="saveTask(task,taskTable)">
                         <ng-template let-group pTemplate="group">

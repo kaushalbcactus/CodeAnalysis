@@ -293,7 +293,7 @@ export class TimeBookingDialogComponent implements OnInit {
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
 
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, AllMilestones);
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, AllMilestones);
     this.allTasks = this.response.length > 0 ? this.response : [];
 
     const tempMilestones = this.allTasks.map(o => new Object({

@@ -67,7 +67,6 @@ import {TooltipModule} from 'primeng/tooltip';
     SplitButtonModule,
     StepsModule,
     CheckboxModule,
-    ConfirmDialogModule,
     FileUploadModule,
     FullCalendarModule,
     SidebarModule,
@@ -78,7 +77,8 @@ import {TooltipModule} from 'primeng/tooltip';
     ListboxModule,
     AutoCompleteModule,
     TooltipModule,
-    TieredMenuModule
+    TieredMenuModule,
+    InputSwitchModule
   ],
   providers: [ConfirmationService, DialogService, MessageService]
 })
