@@ -18,7 +18,7 @@ export class AdminAuthService {
 
   async getUserRole() {
     this.constantsService.loader.isPSInnerLoaderHidden = false;
-    this.globalObject.userInfo = await this.spOperationsServices.getUserInfo(this.globalObject.sharePointPageObject.userId);
+    this.globalObject.userInfo = await this.spOperationsServices.getUserInfo(this.globalObject.currentUser.userId);
     console.log('this.globalObject.userInfo ', this.globalObject.userInfo);
     if (this.globalObject.userInfo.Groups.results.length) {
       const groups = this.globalObject.userInfo.Groups.results.map(x => x.LoginName);

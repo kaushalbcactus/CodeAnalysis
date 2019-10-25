@@ -325,7 +325,7 @@ export class UserProfileComponent implements OnInit {
         resCatFilter = Object.assign({}, this.adminConstants.QUERY.GET_ACCESS_RESOURCE_CATEGERIZATION);
         resCatFilter.filter = resCatFilter.filter.replace(/{{isActive}}/gi,
           this.adminConstants.LOGICAL_FIELD.YES).replace(/{{UserId}}/gi,
-            this.globalObject.sharePointPageObject.userId);
+            this.globalObject.currentUser.userId);
       }
     }
 

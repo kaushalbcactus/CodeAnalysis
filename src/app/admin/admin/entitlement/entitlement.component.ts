@@ -29,7 +29,7 @@ export class EntitlementComponent implements OnInit {
   }
   async checkUserPresentInGroup() {
     const isPresent = false;
-    const userInfo = await this.spServices.getUserInfo(this.globalObject.sharePointPageObject.userId);
+    const userInfo = await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
     if (userInfo && userInfo.hasOwnProperty('Groups')) {
       if (userInfo.Groups && userInfo.Groups.results && userInfo.Groups.results.length) {
         console.log(userInfo.Groups.results);

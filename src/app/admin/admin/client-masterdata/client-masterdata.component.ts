@@ -393,7 +393,7 @@ export class ClientMasterdataComponent implements OnInit {
         getClientLegalInfo = Object.assign({}, this.adminConstants.QUERY.GET_ACCESS_CLIENT_LEGAL_ENTITY_BY_ACTIVE);
         getClientLegalInfo.filter = getClientLegalInfo.filter.replace(/{{isActive}}/gi,
           this.adminConstants.LOGICAL_FIELD.YES).replace(/{{UserId}}/gi,
-            this.globalObject.sharePointPageObject.userId);
+            this.globalObject.currentUser.userId);
       }
     }
     // const getClientLegalInfo = Object.assign({}, this.adminConstants.QUERY.GET_ALL_CLIENT_LEGAL_ENTITY_BY_ACTIVE);
