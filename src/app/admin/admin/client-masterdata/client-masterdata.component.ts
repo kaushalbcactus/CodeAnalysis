@@ -376,6 +376,7 @@ export class ClientMasterdataComponent implements OnInit {
    *
    */
   isUserSPMCA: boolean;
+  isUserPO: boolean;
   async loadClientTable() {
     this.constantsService.loader.isPSInnerLoaderHidden = false;
     // this.constantsService.loader.isPSInnerLoaderHidden = false;
@@ -383,6 +384,12 @@ export class ClientMasterdataComponent implements OnInit {
     let getClientLegalInfo: any = {};
     if (this.globalObject.userInfo.Groups.results.length) {
       const groups = this.globalObject.userInfo.Groups.results.map(x => x.LoginName);
+      if (groups.indexOf('PO_Admin') > -1) {
+        // this.isUserSPMCA = false;
+        this.isUserPO = true;
+      } else {
+        this.isUserPO = false;
+      }
       if (groups.indexOf('SPTeam') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('Client_Admin') > -1) {
         this.isUserSPMCA = true;
         getClientLegalInfo = Object.assign({}, this.adminConstants.QUERY.GET_ALL_CLIENT_LEGAL_ENTITY_BY_ACTIVE);
@@ -1385,17 +1392,15 @@ export class ClientMasterdataComponent implements OnInit {
    */
   subDivisionMenu(data) {
     this.currSubDivisionObj = data;
+    this.subDivisionItems = [];
+    this.subDivisionItems.push(
+      { label: 'Edit', command: (e) => this.showEditSubDivision() }
+    )
     if (this.isUserSPMCA) {
-      this.subDivisionItems = [
-        { label: 'Edit', command: (e) => this.showEditSubDivision() },
+      this.subDivisionItems.push(
         { label: 'Delete', command: (e) => this.deleteSubDivision() }
-      ];
-    } else {
-      this.subDivisionItems = [
-        { label: 'You dont have permission, please contact SP Team' }
-      ]
+      );
     }
-
   }
   /**
    * Construct a method to show the edit form to edit the sub division.
@@ -2371,7 +2376,7 @@ export class ClientMasterdataComponent implements OnInit {
    */
   poMenu(data) {
     this.currPOObj = data;
-    if (this.isUserSPMCA) {
+    if (this.isUserSPMCA || this.isUserPO) {
       this.poItems = [
         { label: 'Change Budget', command: (e) => this.showchangeBudgetModal() },
         { label: 'Edit', command: (e) => this.showEditPOModal() },

@@ -33,7 +33,7 @@ export class AdminAuthService {
           { label: 'Attribute', routerLink: ['attribute'] }
         )
       }
-      if (groups.indexOf('SPTeam') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('Entitlement_Admin ') > -1 || groups.indexOf('Permission_Admin ') > -1) {
+      if (groups.indexOf('SPTeam') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('Entitlement_Admin') > -1 || groups.indexOf('Permission_Admin') > -1) {
         this.adminConstantService.DefaultMenu.List.push(
           { label: 'Entitlement', routerLink: ['entitlement'] }
         )
