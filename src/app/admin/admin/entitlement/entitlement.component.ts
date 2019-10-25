@@ -33,12 +33,12 @@ export class EntitlementComponent implements OnInit {
     if (userInfo && userInfo.hasOwnProperty('Groups')) {
       if (userInfo.Groups && userInfo.Groups.results && userInfo.Groups.results.length) {
         console.log(userInfo.Groups.results);
-        if (userInfo.Groups.results.some(x => x.Title === 'SPTeam')) {
-          this.navLinks.push({
-            routerLink: ['/admin/entitlement/addGroupDescription'],
-            label: 'Add Group Description', value: 'Add Group Description'
-          });
-        }
+        // if (userInfo.Groups.results.some(x => x.Title === 'SPTeam')) {
+        //   this.navLinks.push({
+        //     routerLink: ['/admin/entitlement/addGroupDescription'],
+        //     label: 'Add Group Description', value: 'Add Group Description'
+        //   });
+        // }
       }
     }
   }

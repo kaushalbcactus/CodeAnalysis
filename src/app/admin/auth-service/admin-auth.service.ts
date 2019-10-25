@@ -37,7 +37,7 @@ export class AdminAuthService {
         this.adminConstantService.DefaultMenu.List.push(
           { label: 'Entitlement', routerLink: ['entitlement'] }
         )
-        debugger;
+
         // { routerLink: ['/admin/entitlement/userRoleMapping'], label: 'User to Role Mapping', value: 'UserToRoleMapping' },
         // { routerLink: ['/admin/entitlement/roleUserMapping'], label: 'Role to User Mapping', value: 'RoleToUserMapping' },
         // { routerLink: ['/admin/entitlement/copyPermission'], label: 'Copy Permission', value: 'Copy Permission' },
@@ -68,6 +68,11 @@ export class AdminAuthService {
             { label: 'Add User To Sow', routerLink: ['addUserToSow'] },
             { label: 'Add User To Projects', routerLink: ['addUserToProjects'] },
           )
+          if (groups.indexOf('SPTeam') > -1) {
+            this.adminConstantService.EntitleMentMenu.List.push(
+              { label: 'Add Group Description', routerLink: ['addGroupDescription'] }
+            )
+          }
         }
 
       }
