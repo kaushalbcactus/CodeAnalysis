@@ -1,11 +1,11 @@
 import { QMSCommonService } from './../../services/qmscommon.service';
 import { QMSConstantsService } from './../../services/qmsconstants.service';
-import { Component, OnInit, ViewChild, OnDestroy, ElementRef, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ElementRef, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { SPOperationService } from '../../../../Services/spoperation.service';
 import { ConstantsService } from '../../../../Services/constants.service';
 import { GlobalService } from '../../../../Services/global.service';
 import { CommonService } from '../../../../Services/common.service';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { DataService } from '../../../../Services/data.service';
 import { Router, NavigationEnd } from '@angular/router';
 // import { Subject } from 'rxjs';
@@ -70,15 +70,27 @@ export class CDComponent implements OnInit, OnDestroy {
     private qmsConstant: QMSConstantsService,
     private qmsCommon: QMSCommonService,
     private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
   ) {
+
+    this.router.routeReuseStrategy.shouldReuseRoute = function () {
+      return false;
+    }
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
     this.extNavigationSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.initialiseCFDissatisfaction();
-      }
+      zone.run(() => _applicationRef.tick());
     });
   }
   async ngOnInit() {
+    this.initialiseCFDissatisfaction();
   }
 
   protected initialiseCFDissatisfaction() {

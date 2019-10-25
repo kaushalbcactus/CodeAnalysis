@@ -1,11 +1,11 @@
-import { Component, OnDestroy, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, ViewChild, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { SPOperationService } from '../../../../Services/spoperation.service';
 import { ConstantsService } from '../../../../Services/constants.service';
 import { GlobalService } from '../../../../Services/global.service';
 import { CommonService } from '../../../../Services/common.service';
 import { DataService } from '../../../../Services/data.service';
 import { Router, NavigationEnd } from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { QMSCommonService } from '../../services/qmscommon.service';
 import { DataTable } from 'primeng/primeng';
@@ -28,6 +28,8 @@ export class ExternalComponent implements OnDestroy {
   public hideTable = false;
   private filterObj = {};
   public cdNavigationSubscription;
+  public filterSubscription;
+  public routerSubscription;
   QCColArray = {
     ID: [],
     Title: [],
@@ -52,17 +54,36 @@ export class ExternalComponent implements OnDestroy {
     private qmsConstant: QMSConstantsService,
     private qmsCommon: QMSCommonService,
     private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    private ref: ChangeDetectorRef,
+    zone: NgZone
   ) {
+    this.router.routeReuseStrategy.shouldReuseRoute = function () {
+      return false;
+    }
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
     this.cdNavigationSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.initialisePFCD();
-      }
+      zone.run(() => _applicationRef.tick());
     });
   }
 
+  ngOnInit() {
+    this.initialisePFCD();
+  }
+
+  ngDoCheck() {
+    this.ref.markForCheck();
+  }
   initialisePFCD() {
+
     this.showLoader();
+    console.log('Test');
     this.QCColumns = [
       { field: 'ID', header: 'ID' },
       { field: 'Title', header: 'Project Code' },
@@ -76,9 +97,10 @@ export class ExternalComponent implements OnDestroy {
     ];
     setTimeout(async () => {
       // Set default values and re-fetch any data you need.
-      this.data.filterObj.subscribe(filter => this.filterObj = filter);
+      this.filterSubscription = this.data.filterObj.subscribe(filter => this.filterObj = filter);
       await this.applyFilters(this.filterObj);
       this.showTable();
+
     }, 500);
   }
 
@@ -89,6 +111,12 @@ export class ExternalComponent implements OnDestroy {
     if (this.cdNavigationSubscription) {
       this.cdNavigationSubscription.unsubscribe();
     }
+    if (this.filterSubscription) {
+      this.filterSubscription.unsubscribe();
+    }
+    // if (this.routerSubscription) {
+    // this.routerSubscription.unsubscribe();
+    // }
   }
 
   colFilters(colData) {
@@ -179,6 +207,7 @@ export class ExternalComponent implements OnDestroy {
       });
     });
     this.colFilters(this.QCRows);
+    this.QCRows = [...this.QCRows];
   }
   showTable() {
     this.hideTable = false;
