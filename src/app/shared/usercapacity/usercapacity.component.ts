@@ -190,8 +190,8 @@ export class UsercapacityComponent implements OnInit {
             oUser.uid = userDetail[0].UserName.ID ? userDetail[0].UserName.ID : userDetail[0].UserName.Id;
             oUser.userName = userDetail[0].UserName.Title;
             oUser.maxHrs = userDetail[0].UserName.MaxHrs ? userDetail[0].UserName.MaxHrs : userDetail[0].MaxHrs;
-            const taskBatchUrl = this.fetchData(oUser, startDateString, endDateString, batchUrl);
-            batchUrl = [...batchUrl, ...taskBatchUrl];
+            this.fetchData(oUser, startDateString, endDateString, batchUrl);
+            //batchUrl = [...batchUrl, ...taskBatchUrl];
             oCapacity.arrUserDetails.push(oUser);
           }
         }
@@ -308,7 +308,7 @@ export class UsercapacityComponent implements OnInit {
     // });
 
     let arrResults = await this.spService.executeBatch(batchURL);
-    arrResults = arrResults.length ? arrResults.map(a => a.retItems) : [];
+    arrResults = arrResults.length ? arrResults : [];
     if (arrResults) {
 
       const UserLeaves = arrResults.filter(c => c.listName === 'Leave Calendar');
@@ -355,8 +355,8 @@ export class UsercapacityComponent implements OnInit {
     const invObj = Object.assign({}, this.queryConfig);
     // tslint:disable-next-line: max-line-length
     invObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name, this.sharedConstant.userCapacity.fetchTasks);
-    invObj.url = invObj.url.replace('{{userID}}', selectedUserID).replace('/{{startDateString}}/g', startDateString)
-                           .replace('/{{endDateString}}/g', endDateString);
+    invObj.url = invObj.url.replace('{{userID}}', selectedUserID).replace(/{{startDateString}}/gi, startDateString)
+                           .replace(/{{endDateString}}/gi, endDateString);
     invObj.listName = this.globalConstantService.listNames.Schedules.name;
     invObj.type = 'GET';
     batchUrl.push(invObj);
