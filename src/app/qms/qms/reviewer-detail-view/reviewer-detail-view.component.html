@@ -13,9 +13,9 @@
         </tr>
         <tr>
             <th *ngFor="let col of columns" [ngSwitch]="col.field">
-                <p-multiSelect *ngSwitchCase="'resource'" [style]="{'width':'100%'}" [options]="RDColArray.Resource" defaultLabel="Resource" (onChange)="rd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'taskTitle'" [style]="{'width':'100%'}"  [options]="RDColArray.TaskTitle" defaultLabel="Task Title" (onChange)="rd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'taskCompletionDate'" [style]="{'width':'100%'}" [options]="RDColArray.TaskCompletionDate" defaultLabel="Task Completion Date" (onChange)="rd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'resource'" [style]="{'width':'100%'}" [options]="RDColArray.Resource" defaultLabel="Resource" (onChange)="rd.filter($event.filterValue, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'taskTitle'" [style]="{'width':'100%'}"  [options]="RDColArray.TaskTitle" defaultLabel="Task Title" (onChange)="rd.filter($event.filterValue, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'taskCompletionDate'" [style]="{'width':'100%'}" [options]="RDColArray.TaskCompletionDate" defaultLabel="Task Completion Date" (onChange)="rd.filter($event.filterValue, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
             </th>
            <th></th>
         </tr>
@@ -27,7 +27,7 @@
                     {{rowData[col.field]}}
                 </ng-container>
                 <ng-container *ngIf="col.field === 'taskTitle'">
-                   {{rowData[col.field]}} - {{rowData['subMilestones']}}
+                   {{rowData[col.field]}}
                 </ng-container>
                 <ng-container *ngIf="col.field === 'docUrlHtmlTag'">
                   <div [innerHTML]="rowData[col.field]"></div>

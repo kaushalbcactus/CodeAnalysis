@@ -186,7 +186,7 @@ export class TaskAllocationComponent implements OnInit {
       const operationalResouce = arrayOperationResources.length > 0 ? (arrayOperationResources.find
         (c => c.ID === this.globalObject.sharePointPageObject.userId) !== undefined ?
         arrayOperationResources.find(c => c.ID === this.globalObject.sharePointPageObject.userId) : '') : '';
-      if (operationalResouce.length > 0) {
+      if (operationalResouce) {
         return true;
       } else {
         this.errormessage = 'You do not have access on the project.';

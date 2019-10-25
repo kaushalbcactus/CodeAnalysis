@@ -34,7 +34,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
                 <div class="box">
-                    <input type="text" pInputText maxlength="25" formControlName="ExpectedReviewPeriod"
+                    <input type="text" pInputText maxlength="100" formControlName="ExpectedReviewPeriod"
                         placeholder="12 Months">
                     <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.ExpectedReviewPeriod.errors">
                         <div *ngIf="isValidCreateJournalForm.ExpectedReviewPeriod.errors.required" style="color:red;">
@@ -79,7 +79,7 @@
             </div>
             <div class="p-col-12 p-md-6 p-lg-4" style="padding: 0.5rem!important;">
                 <div class="box">
-                    <textarea rows="5" cols="30" pInputTextarea formControlName="Comments" maxlength="100"></textarea>
+                    <textarea rows="5" cols="30" pInputTextarea formControlName="Comments" maxlength="2000"></textarea>
                     <!-- <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.Comments.errors">
                         <div *ngIf="isValidCreateJournalForm.Comments.errors.required" style="color:red;">
                             Please provide Comments.</div>
@@ -93,7 +93,7 @@
             <div class="p-col-12 p-md-6 p-lg-3" style="padding: 0.5rem!important;">
                 <div class="box">
                     <textarea rows="5" cols="30" pInputTextarea formControlName="JournalEditorInfo"
-                        maxlength="100"></textarea>
+                        maxlength="2000"></textarea>
                     <div *ngIf="formSubmit.isSubmit && isValidCreateJournalForm.JournalEditorInfo.errors">
                         <div *ngIf="isValidCreateJournalForm.JournalEditorInfo.errors.required" style="color:red;">
                             Journal Editor Info is required.

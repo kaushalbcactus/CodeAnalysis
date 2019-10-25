@@ -77,10 +77,10 @@ export class ProjectAttributesComponent implements OnInit {
             ClientLegalEntity: sow[0].ClientLegalEntity,
             BillingEntity: sow[0].BillingEntity,
             PrimaryPOC: sow[0].PrimaryPOC ? sow[0].PrimaryPOC : 0,
-            CMLevel1: sow[0].CMLevel1 && sow[0].CMLevel1.results && sow[0].CMLevel1.results.length ? sow[0].CMLevel1.results : [],
+            CMLevel1: sow[0].CMLevel1 && sow[0].CMLevel1.results && sow[0].CMLevel1.results.length ? [...sow[0].CMLevel1.results, sow[0].CMLevel2.ID] : [],
             CMLevel2: sow[0].CMLevel2.ID,
             DeliveryLevel1: sow[0].DeliveryLevel1 && sow[0].DeliveryLevel1.results &&
-              sow[0].DeliveryLevel1.results.length ? sow[0].DeliveryLevel1.results : [],
+              sow[0].DeliveryLevel1.results.length ? [...sow[0].DeliveryLevel1.results, sow[0].DeliveryLevel2.ID] : [],
             DeliveryLevel2: sow[0].DeliveryLevel2.ID,
             AdditionalPOC: sow[0].AdditionalPOC ? sow[0].AdditionalPOC.split(';#').map(x => parseInt(x, 10)) : []
           };
@@ -241,14 +241,18 @@ export class ProjectAttributesComponent implements OnInit {
       this.cmLevel1.push({ label: element.Title, value: element.ID });
     });
     this.pmObject.oProjectCreation.Resources.cmLevel2.forEach(element => {
+      this.cmLevel1.push({ label: element.Title, value: element.ID });
       this.cmLevel2.push({ label: element.Title, value: element.ID });
     });
     this.pmObject.oProjectCreation.Resources.deliveryLevel1.forEach(element => {
       this.deliveryLevel1.push({ label: element.Title, value: element.ID });
     });
     this.pmObject.oProjectCreation.Resources.deliveryLevel2.forEach(element => {
+      this.deliveryLevel1.push({ label: element.Title, value: element.ID });
       this.deliveryLevel2.push({ label: element.Title, value: element.ID });
     });
+    this.cmLevel1.sort((a, b) => (a.label > b.label) ? 1 : -1);
+    this.deliveryLevel1.sort((a, b) => (a.label > b.label) ? 1 : -1);
   }
   /**
    * This method is used to initiliaze the project attributes forms.

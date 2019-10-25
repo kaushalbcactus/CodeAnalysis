@@ -53,6 +53,7 @@ export class CreateConferenceComponent implements OnInit {
             SubmissionDeadline: ['', Validators.required],
             ConferenceName: ['', Validators.required],
             Comments: [''],
+            IsActive: ['Yes']
         })
     }
 

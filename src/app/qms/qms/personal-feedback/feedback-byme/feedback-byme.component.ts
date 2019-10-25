@@ -89,8 +89,8 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
     }));
     this.FBColArray.Task =  this.FBColArray.Task = this.qmsCommon.uniqueArrayObj(colData.map(a => {
       const b = {
-        label: a.Title ? a.SubMilestones ? a.Title + ' - ' +  a.SubMilestones : a.Title + ' - Default' : '',
-        value: a.Title ? a.SubMilestones ? a.Title + ' - ' +  a.SubMilestones : a.Title + ' - Default' : '',
+        label: a.Title ? a.SubMilestones ? a.Title + ' - ' +  a.SubMilestones : a.Title : '',
+        value: a.Title ? a.SubMilestones ? a.Title + ' - ' +  a.SubMilestones : a.Title : '',
         filterValue: a.Title};
       return b; }));
     this.FBColArray.Type = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.FeedbackType, value: a.FeedbackType, filterValue: a.FeedbackType}; return b; }));
@@ -159,7 +159,7 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
         .replace('{{TopCount}}', '4500')
         .replace('{{startDate}}', qfStartDate)
         .replace('{{endDate}}', qfEndDate)
-        .replace('{{FeedbackTypeFilter}}', 'and FeedbackType eq "' + this.globalConstant.FeedbackType.qualitative + '"');
+        .replace('{{FeedbackTypeFilter}}', "and FeedbackType eq '" + this.globalConstant.FeedbackType.qualitative + "'");
       getScorecardData.listName = this.globalConstant.listNames.Scorecard.name;
       getScorecardData.type = 'GET';
       batchURL.push(getScorecardData);
@@ -204,7 +204,7 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
         Feedbackfor: element.AssignedTo.Title ? element.AssignedTo.Title : '',
         FeedbackBy: element.Author.Title ? element.Author.Title : '',
         Date: this.datepipe.transform(element.Created, 'MMM d, yyyy'),
-        Task:  element.Title ? element.SubMilestones ? element.Title + ' - ' +  element.SubMilestones : element.Title + ' - Default' : '',
+        Task:  element.Title ? element.SubMilestones ? element.Title + ' - ' +  element.SubMilestones : element.Title : '',
         Type: element.FeedbackType,
         Feedbackby: element.Author.Title,
         Rating: element.AverageRating ? element.AverageRating : '',

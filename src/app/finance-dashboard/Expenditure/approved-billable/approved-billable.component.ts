@@ -651,22 +651,6 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         }
     }
 
-
-
-    updateSchedulteOopInvoice() {
-        // this.scheduleOopInvoice_form.get('ProjectCode').setValue(this.selectedRowItem.data.ProjectCode);
-        // this.scheduleOopInvoice_form.get('PONumber').setValue(this.selectedRowItem.data.PONumber);
-        // this.scheduleOopInvoice_form.get('ScheduledType').setValue('revenue');
-        // this.scheduleOopInvoice_form.get('Amount').setValue(this.selectedRowItem.data.Amount);
-        // this.scheduleOopInvoice_form.get('Currency').setValue(this.selectedRowItem.data.Currency);
-        // const format = 'dd MMM , yyyy';
-        // const myDate = new Date(this.selectedRowItem.data.ScheduledDate);
-        // const locale = 'en-IN';
-        // const formattedDate = formatDate(myDate, format, locale);
-        // console.log('formatted Date ', formattedDate);
-        // this.scheduleOopInvoice_form.get('ScheduledDate').setValue(formattedDate);
-    }
-
     cancelFormSub(type) {
         this.formSubmit.isSubmit = false;
         this.submitBtn.isClicked = false;
@@ -696,6 +680,15 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         if (this.poItem) {
             this.oopBalance = (this.poItem.AmountOOP ? this.poItem.AmountOOP - this.poItem.OOPLinked : 0 - (this.poItem.OOPLinked ? this.poItem.OOPLinked : 0));
             this.oopBalance = parseFloat(this.oopBalance.toFixed(2));
+            const defaultPOC = this.listOfPOCs.filter(item => item.Id === this.poItem.POCLookup);
+            if (defaultPOC.length) {
+                this.scheduleOopInvoice_form.patchValue({
+                    POCName: defaultPOC[0]
+                })
+                this.pocItem = defaultPOC[0];
+            } else {
+                this.scheduleOopInvoice_form.controls['POCName'].setValue(null);
+            }
         }
         if (this.oopBalance >= this.scheduleOopInvoice_form.getRawValue().Amount) {
             await this.getPfPfb();

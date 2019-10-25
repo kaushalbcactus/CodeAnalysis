@@ -98,8 +98,11 @@ export class AdminViewComponent implements OnInit {
 
   colFilters(colData) {
     this.AdminColArray.TaskTitle = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = { label: a.taskTitle, value: a.taskTitle, filterValue: a.taskTitle }; return b;
-    }));
+      const b = {
+        label: a.taskTitle,
+        value: a.taskTitle,
+        filterValue: a.taskTitle};
+      return b; }));
     this.AdminColArray.TaskCompletionDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
       const b = {
         label: this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy'),
@@ -135,7 +138,8 @@ export class AdminViewComponent implements OnInit {
     this.ReviewerDetail = [];
     tasks.forEach(element => {
       this.ReviewerDetail.push({
-        taskTitle: element.taskTitle ? element.taskTitle : '',
+        taskTitle: element.taskTitle ? element.subMilestones ? element.taskTitle + ' - ' +  element.subMilestones: element.taskTitle : '',
+        title: element.taskTitle,
         subMilestones: element.subMilestones,
         taskCompletionDate: this.datepipe.transform(element.taskCompletionDate, 'MMM d, yyyy') ? this.datepipe.transform(element.taskCompletionDate, 'MMM d, yyyy') : '',
         rated: element.rated ? element.rated : '',
@@ -199,7 +203,7 @@ export class AdminViewComponent implements OnInit {
     arrTasks.forEach(task => {
       const taskDocuments = this.qmsCommon.getTaskDocuments(documents, task.Title);
       const taskDate = task.Actual_x0020_End_x0020_Date ? new Date(task.Actual_x0020_End_x0020_Date) : '';
-      const subMilestones = task.SubMilestones ? task.SubMilestones : 'Default';
+      const subMilestones = task.SubMilestones ? task.SubMilestones : '';
       const obj = {
         resource: task.AssignedTo ? task.AssignedTo.Title : '',
         resourceID: task.AssignedTo ? task.AssignedTo.ID : '',

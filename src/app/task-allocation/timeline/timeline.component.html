@@ -4,6 +4,7 @@
 </div>
 
 
+<p-toast [style]="{marginTop: '80px'}" position="top-center" key="tc" [modal]="true" [baseZIndex]="5000" closable="false"></p-toast>
 
 <div fxLayout="row" fxLayoutAlign="start center" style="width:100%;">
 
@@ -139,6 +140,7 @@
                         <th style="width:4%">TAT</th>
                         <th style="width:15%">Assign To</th>
                         <th style="width:5%">Allow Start</th>
+                        <th style="width:5%">Disable Cascade</th>
                         <th style="width:3%"> </th>
                     </tr>
                 </ng-template>
@@ -230,7 +232,7 @@
                         <!-- TaT -->
                         <td style="text-align: center">
                             <span *ngIf="rowData.type ==='milestone' || rowData.type ==='submilestone'">{{rowData.tatVal}}</span>
-                            <span *ngIf="!rowData.editMode && rowData.type ==='task'">{{rowData.tat === true ? rowData.tatVal :'No'}}</span>
+                            <span *ngIf="!rowData.editMode && rowData.type ==='task'">{{rowData.tat === true ? 'Yes' :'No'}}</span>
                             <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task'" [disabled]=" rowData.pName ==='Client Review'" (onChange)="ChangeEndDate($event, rowData)" [(ngModel)]="rowData.pName ==='Client Review' ? 'Yes' : rowData.tat" binary="true"></p-checkbox>
                         </td>
 
@@ -241,9 +243,23 @@
                                 (change)="assignedToUserChanged(rowData)" appendTo="body"></ng-select>
                         </td>
                         <!-- Allow start -->
-                        <td>
+                        <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
                             <span *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone') ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
-                            <p-checkbox *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.pName !=='Client Review' && rowData.pName !=='SC')" [(ngModel)]="rowData.allowStart" binary="true"></p-checkbox>
+
+                            <p-inputSwitch *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client')" [(ngModel)]="rowData.allowStart"></p-inputSwitch>
+
+                            <!-- <p-checkbox *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.pName !=='Client Review' && rowData.pName !=='SC')" [(ngModel)]="rowData.allowStart" binary="true"></p-checkbox> -->
+                        </td>
+                        <!-- Disable cascade -->
+
+                        <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
+                            <span *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade ? 'Yes':'No'}}</span>
+
+                            <p-inputSwitch *ngIf="rowData.editMode && rowData.type==='task' && rowData.itemType !== 'Client Review'" [(ngModel)]="rowData.DisableCascade"></p-inputSwitch>
+
+                            <!-- {{rowData.DisableCascade}} -->
+
+                            <!-- <span *ngIf="rowData.type==='task'"> {{rowData.DisableCascade === 'Yes' ? 'No':'Yes'}}</span> -->
                         </td>
 
                         <!-- Menu option -->
@@ -265,13 +281,19 @@
 
                                 <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData,rowNode, popupMenu);popupMenu.show($event);"></i>
                             </div>
+
+                            <div *ngIf=" rowData.editMode && rowData.type === 'task' && rowData.status === 'Not Saved' && rowData.itemType !== 'Client Review' && rowData.itemType !== 'Send to client'">
+                                <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu"></p-menu>
+
+                                <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopupEdit(rowData,rowNode, popupMenu);popupMenu.show($event);"></i>
+                            </div>
                         </td>
                     </tr>
                 </ng-template>
 
                 <ng-template pTemplate="emptymessage" let-columns>
                     <tr>
-                        <td style="text-align:center" [attr.colspan]="9">
+                        <td style="text-align:center" [attr.colspan]="10">
                             No milestones found
                         </td>
                     </tr>

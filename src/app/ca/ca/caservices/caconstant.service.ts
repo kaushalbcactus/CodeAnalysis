@@ -17,7 +17,7 @@ export class CAConstantService {
   public scheduleQueryOptions = {
     select:'ID,Title,TimeZone,SkillLevel,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,ExpectedTime,TaskComments,Comments,StartDate,DueDate,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title',
     expand:'AssignedTo/ID, AssignedTo/Title',
-    filter : "ActiveCA eq 'Yes' and CentralAllocationDone eq 'No' and IsCentrallyAllocated eq 'Yes'",
+    filter : "ActiveCA eq 'Yes' and CentralAllocationDone eq 'No' and IsCentrallyAllocated eq 'Yes' and Status eq 'Not Started'",
     orderby : 'DueDate asc',
     top:4200
   };
@@ -54,7 +54,7 @@ export class CAConstantService {
   public scheduleAllocatedQueryOptions = {
     select:'ID,Title,TimeZone,SkillLevel,TimeSpentSubmitStatus,TimeSpentPerDay,TimeSpent,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,ExpectedTime,TaskComments,Comments,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,StartDate,DueDate,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title, ActiveCA',
     expand:'AssignedTo/ID, AssignedTo/Title',
-    filter : "ActiveCA eq 'Yes' and CentralAllocationDone eq 'Yes' and IsCentrallyAllocated eq 'Yes'",
+    filter : "ActiveCA eq 'Yes' and CentralAllocationDone eq 'Yes' and IsCentrallyAllocated eq 'Yes' and Status eq 'Not Started'",
     orderby : 'DueDate asc',
     top:4200
   };

@@ -29,17 +29,18 @@ export class AppComponent {
     this.globalService.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
     this.globalService.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
-
-    this.globalService.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 286 : _spPageContextInfo.userId;
-    this.globalService.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
+    this.globalService.sharePointPageObject.userId = window.location.href.indexOf('localhost') > -1 ? 8 : _spPageContextInfo.userId;
+    // this.globalService.sharePointPageObject.email = window.location.href.indexOf('localhost') > -1 ? 'kaushal.bagrodia@cactusglobal.com' : _spPageContextInfo.userEmail;
+    // this.globalService.sharePointPageObject.title = window.location.href.indexOf('localhost') > -1 ? 'Kaushal' : _spPageContextInfo.userDisplayName;
+    this.globalService.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
       : _spPageContextInfo.webAbsoluteUrl;
-    this.globalService.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomdev'
+    this.globalService.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
       : _spPageContextInfo.siteServerRelativeUrl;
     this.globalService.sharePointPageObject.serverRelativeUrl = this.globalService.sharePointPageObject.webRelativeUrl;
     this.globalService.sharePointPageObject.rootsite = window.origin;
     // tslint:disable:no-string-literal
-    window['angularComponentReference'] = { component: this, zone: this._ngZone, loadPubSupport: () => this.goToPubSupport(), };
-    // window['qmsComponentReference'] = { component: this, zone: this._ngZone, loadQMS: () => this.goToQMS(), };
+    window['pubSupportComponentReference'] = { component: this, zone: this._ngZone, loadPubSupport: () => this.goToPubSupport(), };
+    window['qmsComponentReference'] = { component: this, zone: this._ngZone, loadQMS: () => this.goToQMS(), };
     window['fdComponentReference'] = { component: this, zone: this._ngZone, loadFD: () => this.goToFD(), };
     // tslint:disable-next-line:no-string-literal
     window['pmComponentReference'] = { component: this, zone: this._ngZone, loadPM: () => this.goToPM(), };
@@ -65,6 +66,12 @@ export class AppComponent {
     }
   }
 
+  goToQMS() {
+    if (!window.location.href.includes('qms')) {
+      this.router.navigate(['/qms']);
+    }
+  }
+
   goToMyDashboard() {
     if (!window.location.href.includes('myDashboard')) {
       this.router.navigate(['/myDashboard']);
@@ -78,7 +85,8 @@ export class AppComponent {
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnDestroy() {
     // tslint:disable-next-line:no-string-literal
-    window['angularComponentReference'] = null;
+    window['pubSupportComponentReference'] = null;
+    window['qmsComponentReference'] = null;
     // tslint:disable-next-line:no-string-literal
     window['fdComponentReference'] = null;
     // tslint:disable-next-line:no-string-literal
