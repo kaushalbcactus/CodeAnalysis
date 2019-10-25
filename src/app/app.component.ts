@@ -29,7 +29,7 @@ export class AppComponent {
     this.globalService.sharePointPageObject.webAbsoluteArchiveUrl = environment.archiveURL;
     this.initSPPageObject();
     this.initSPLoggedInUser();
-    this.initSPPageObject();
+    this.initSPComponentRedirection();
   }
 
   initSPPageObject() {
