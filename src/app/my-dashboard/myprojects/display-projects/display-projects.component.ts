@@ -5,11 +5,11 @@ import { AllProjectsComponent } from 'src/app/projectmanagement/projectmanagemen
   selector: 'app-display-projects',
   templateUrl: './display-projects.component.html',
   styleUrls: ['./display-projects.component.css'],
-  providers:[AllProjectsComponent, SearchProjectsComponent]
+  providers: [AllProjectsComponent, SearchProjectsComponent]
 })
 export class DisplayProjectsComponent implements OnInit {
-  @ViewChild('searchProject', {static:true}) searchProject: SearchProjectsComponent;
-  constructor( 
+  @ViewChild('searchProject', { static: true }) searchProject: SearchProjectsComponent;
+  constructor(
     public allProject: AllProjectsComponent) { }
 
   ngOnInit() {
