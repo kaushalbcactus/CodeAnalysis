@@ -503,7 +503,7 @@ export class StandardprojectComponent implements OnInit {
       setTimeout(async () => {
 
         const Resources = { resources: this.sharedTaskAllocateObj.oAllResource };
-        const data = { task: Resources, startTime: oCapacityStartDate, endTime: oCapacityEndDate }
+        const data = { task: Resources, startTime: oCapacityStartDate, endTime: oCapacityEndDate,Module:'PM' }
 
         await userCapacityRef.Onload(data)
 
@@ -1772,8 +1772,21 @@ export class StandardprojectComponent implements OnInit {
             });
             if (milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.toggleCapacity) {
               setTimeout(async () => {
-                await userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.EndDate, filterResource);
                 milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.toggleCapacity = false;
+                // await userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.EndDate, filterResource,'PM');
+              
+                const Resources = { resources: filterResource };
+                const data = { task: Resources, startTime: milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.StartDate, endTime:  milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.EndDate,Module:'PM' }
+        
+                await userCapacityRef.Onload(data)
+
+
+
+                // data.task.resources
+                // const data = { task: Resources, startTime: oCapacityStartDate, endTime: oCapacityEndDate,Module:'PM' }
+
+                // await userCapacityRef.Onload(data)
+
               }, 100);
             } else {
               milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.toggleCapacity = true;
@@ -1790,8 +1803,14 @@ export class StandardprojectComponent implements OnInit {
             });
             if (milestones_copy[milestoneIndex].children[taskIndex].data.toggleCapacity) {
               setTimeout(async () => {
-                await userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[taskIndex].data.EndDate, filterResource);
                 milestones_copy[milestoneIndex].children[taskIndex].data.toggleCapacity = false;
+                // await userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[taskIndex].data.EndDate, filterResource,'PM');
+
+                const Resources = { resources: filterResource };
+                const data = { task: Resources, startTime: milestones_copy[milestoneIndex].children[taskIndex].data.StartDate, endTime:  milestones_copy[milestoneIndex].children[taskIndex].data.EndDate,Module:'PM' }
+        
+                await userCapacityRef.Onload(data)
+              
               }, 100);
             } else {
               milestones_copy[milestoneIndex].children[taskIndex].data.toggleCapacity = true;
