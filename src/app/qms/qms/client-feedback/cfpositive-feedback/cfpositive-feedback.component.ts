@@ -1,11 +1,11 @@
 import { QMSCommonService } from './../../services/qmscommon.service';
-import { Component, OnInit, ViewChild, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { ConstantsService } from '../../../../Services/constants.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 import { SPCommonService } from '../../../../Services/spcommon.service';
 import { GlobalService } from '../../../../Services/global.service';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subject } from 'rxjs/internal/Subject';
 import { SPOperationService } from '../../../../Services/spoperation.service';
 import { FilterComponent } from '../filter/filter.component';
@@ -53,16 +53,29 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     private qmsCommon: QMSCommonService,
     private commonService: CommonService,
     private cdr: ChangeDetectorRef,
-  ) {
-    this.cfPFNavigationSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.initialiseCFPositive();
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+    ) {
+      this.router.routeReuseStrategy.shouldReuseRoute = function () {
+        return false;
       }
+    
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    this.cfPFNavigationSubscription = this.router.events.subscribe((e: any) => {
+      zone.run(() => _applicationRef.tick());
     });
   }
 
   async ngOnInit() {
+    this.initialiseCFPositive();
   }
 
 

@@ -1,17 +1,15 @@
-import { Component, OnInit, ViewChild, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter, NgZone, ApplicationRef, ChangeDetectorRef } from '@angular/core';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';
 import { GlobalService } from '../../../Services/global.service';
-import { DatePipe } from '@angular/common';
+import { DatePipe, LocationStrategy, PlatformLocation } from '@angular/common';
 import { CommonService } from '../../../Services/common.service';
 import { FeedbackPopupComponent } from './feedback-popup/feedback-popup.component';
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { SPCommonService } from '../../../Services/spcommon.service';
 import { QMSConstantsService } from '../services/qmsconstants.service';
 import { QMSCommonService } from '../services/qmscommon.service';
 import { MessageService } from 'primeng/api';
 import { DataTable } from 'primeng/primeng';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reviewer-detail-view',
@@ -45,6 +43,7 @@ export class ReviewerDetailViewComponent implements OnInit {
     type: '',
     listName: ''
   };
+  navigationSubscription;
   constructor(
     private spService: SPOperationService,
     private globalConstant: ConstantsService,
@@ -55,7 +54,30 @@ export class ReviewerDetailViewComponent implements OnInit {
     private qmsCommon: QMSCommonService,
     private messageService: MessageService,
     private cdr: ChangeDetectorRef,
-  ) { }
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    this.navigationSubscription = _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+  }
+  ngOnDestroy() {
+    if (this.navigationSubscription) {
+      this.navigationSubscription.unsubscribe();
+    }
+  }
+
   //#endregion of Initialisation
   /**
    * Initial function

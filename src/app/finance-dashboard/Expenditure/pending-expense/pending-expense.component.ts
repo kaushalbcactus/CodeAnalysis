@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ViewChild, ElementRef, ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { SelectItem, MessageService } from 'primeng/api';
 import { SPOperationService } from '../../../Services/spoperation.service';
@@ -7,8 +7,8 @@ import { GlobalService } from '../../../Services/global.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { CommonService } from '../../../Services/common.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
-import { DatePipe } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { DataTable } from 'primeng/primeng';
 
@@ -96,11 +96,27 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private route: ActivatedRoute,
         private cdr: ChangeDetectorRef,
+        private platformLocation: PlatformLocation,
+        private locationStrategy: LocationStrategy,
+        private readonly _router: Router,
+        _applicationRef: ApplicationRef,
+        zone: NgZone,
     ) {
         this.subscription.add(this.fdDataShareServie.getAddExpenseSuccess().subscribe(date => {
             this.isExpenseCreate = true;
             this.getRequiredData();
         }));
+
+        // Browser back button disabled & bookmark issue solution
+        history.pushState(null, null, window.location.href);
+        platformLocation.onPopState(() => {
+            history.pushState(null, null, window.location.href);
+        });
+
+        _router.events.subscribe((uri) => {
+            zone.run(() => _applicationRef.tick());
+        });
+
     }
 
     async ngOnInit() {

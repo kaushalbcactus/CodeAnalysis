@@ -1,11 +1,11 @@
 import { QMSCommonService } from './../../services/qmscommon.service';
-import { Component, OnInit, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { ConstantsService } from '../../../../Services/constants.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 import { SPCommonService } from '../../../../Services/spcommon.service';
 import { GlobalService } from '../../../../Services/global.service';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subject } from 'rxjs/internal/Subject';
 import { CommonService } from '../../../../Services/common.service';
 import { DataService } from '../../../../Services/data.service';
@@ -51,16 +51,30 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
     public spService: SPOperationService,
     private qmsCommon: QMSCommonService,
     private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
   ) {
-    this.extPFNavigationSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.initialisePFPositive();
-      }
+    this.router.routeReuseStrategy.shouldReuseRoute = function () {
+      return false;
+    }
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
     });
+
+    this.extPFNavigationSubscription = this.router.events.subscribe((e: any) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
   }
 
   ngOnInit() {
+    this.initialisePFPositive();
   }
 
   ngOnDestroy() {

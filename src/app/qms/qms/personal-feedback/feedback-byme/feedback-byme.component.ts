@@ -1,7 +1,7 @@
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { QMSConstantsService } from 'src/app/qms/qms/services/qmsconstants.service';
-import { Component, OnInit, ViewChild, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component, OnInit, ViewChild, OnDestroy, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { GlobalService } from '../../../../Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router, NavigationEnd } from '@angular/router';
@@ -51,16 +51,34 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
     private qmsCommon: QMSCommonService,
     private commonService: CommonService,
     private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    // private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
   ) {
-    this.feedbackByMeNavSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.initialiseFeedback();
-      }
+    this.router.routeReuseStrategy.shouldReuseRoute = function () {
+      return false;
+    }
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
     });
+    this.feedbackByMeNavSubscription = this.router.events.subscribe((e: any) => {
+      zone.run(() => _applicationRef.tick());
+    });
+    // _router.events.subscribe((uri) => {
+    //   zone.run(() => _applicationRef.tick());
+    // });
+
   }
 
   ngOnInit() {
+   this.initialiseFeedback();
+  }
+
+  protected async initialiseFeedback() {
     this.feedbackColumns = [
       { field: 'Date', header: 'Date', visibility: false },
       { field: 'Task', header: 'Task', visibility: false },
@@ -73,13 +91,12 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
       { field: 'Score', header: 'Score', visibility: true }
     ];
     this.hideDetail = false;
-  }
-
-  protected async initialiseFeedback() {
     this.feedbackRows = [];
     this.showLoader();
+    setTimeout(async () => {
     this.data.filterObj.subscribe(filter => this.filterObj = filter);
     this.applyFilters(this.filterObj);
+    }, 500);
   }
 
   ngOnDestroy() {

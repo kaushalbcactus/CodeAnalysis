@@ -1,11 +1,13 @@
 import { GlobalService } from './../../../../../Services/global.service';
-import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, ElementRef, ApplicationRef, NgZone } from '@angular/core';
 import { ConstantsService } from '../../../../../Services/constants.service';
 import { SPOperationService } from '../../../../../Services/spoperation.service';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { QMSConstantsService } from '../../../services/qmsconstants.service';
 import { MessageService } from 'primeng/api';
+import { PlatformLocation, LocationStrategy } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-actions-popup',
@@ -102,7 +104,26 @@ export class ActionsPopupComponent implements OnInit {
   };
   public hideResourceLoader = true;
   constructor(private globalConstant: ConstantsService, private spService: SPOperationService,
-              private global: GlobalService, private qmsConstant: QMSConstantsService, private messageService: MessageService) {
+    private global: GlobalService, private qmsConstant: QMSConstantsService, private messageService: MessageService,
+    // private platformLocation: PlatformLocation,
+    // private locationStrategy: LocationStrategy,
+    // private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+  ) {
+
+
+    // // Browser back button disabled & bookmark issue solution
+    // history.pushState(null, null, window.location.href);
+    // platformLocation.onPopState(() => {
+    //   history.pushState(null, null, window.location.href);
+    // });
+
+    // _router.events.subscribe((uri) => {
+    //   zone.run(() => _applicationRef.tick());
+    // });
+
+
   }
 
   ngOnInit() {
@@ -221,7 +242,7 @@ export class ActionsPopupComponent implements OnInit {
     this.qc.deliveryLevel2 = this.qc.deliveryLevel1 = this.qc.cm = this.cdDelete.selectedReason = null;
   }
 
- 
+
   /**
    * updates CD
    * @param cdDetails- detals that needs to be updated
@@ -247,7 +268,7 @@ export class ActionsPopupComponent implements OnInit {
       // Send updated qc to CD component and update CD
       this.bindTableEvent.emit(this.qc);
       // tslint:disable-next-line
-      this.setSuccessMessage.emit({type:'success', msg:'Success', detail:'CD for "' + this.qc.projectCode + '" successfully marked deleted due to ' + this.cdDelete.selectedReason.value});
+      this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD for "' + this.qc.projectCode + '" successfully marked deleted due to ' + this.cdDelete.selectedReason.value });
       this.close();
       this.hidePopupLoader = true;
       this.hidePopupTable = false;
@@ -324,7 +345,7 @@ export class ActionsPopupComponent implements OnInit {
             this.spService.sendMail(strTo, this.global.currentUser.email, notifyMailSubject, notifyMailContent, this.global.currentUser.email);
           }
         }
-        this.setSuccessMessage.emit({type:'success', msg:'Success', detail:'CD status updated for ' + this.qc.projectCode + '.'});
+        this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD status updated for ' + this.qc.projectCode + '.' });
         oldStatus = this.qc.status;
         this.resetAccountableResource();
       } else {
@@ -393,11 +414,11 @@ export class ActionsPopupComponent implements OnInit {
           rejectMailContent = this.replaceContent(rejectMailContent, "@@Val1@@", this.global.sharePointPageObject.webAbsoluteUrl + '/quality#/qms/clientFeedback/clientDissatisfaction');
           this.spService.sendMail(strTo, this.global.currentUser.email, rejectMailSubject, rejectMailContent, this.global.currentUser.email);
         }
-        this.setSuccessMessage.emit({type:'success', msg:'Success', detail: 'CD rejected for ' + this.qc.projectCode + '.'});
+        this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD rejected for ' + this.qc.projectCode + '.' });
       } else if (actionClicked === 'valid') {
-        this.setSuccessMessage.emit({type:'success', msg:'Success', detail: 'CD marked as valid and closed for ' + this.qc.projectCode + '.'});
+        this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD marked as valid and closed for ' + this.qc.projectCode + '.' });
       } else if (actionClicked === 'invalid') {
-        this.setSuccessMessage.emit({type:'success', msg:'Success', detail: 'CD marked as invalid and closed for ' + this.qc.projectCode + '.'});
+        this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD marked as invalid and closed for ' + this.qc.projectCode + '.' });
       }
       // emit success message to CD component
       this.resetAccountableResource();
@@ -476,7 +497,7 @@ export class ActionsPopupComponent implements OnInit {
         createMailContent = this.replaceContent(createMailContent, "@@Val1@@", this.global.sharePointPageObject.webAbsoluteUrl + '/quality#/qms/clientFeedback/clientDissatisfaction');
         this.spService.sendMail(strTo, this.global.currentUser.email, createMailSubject, createMailContent, this.global.currentUser.email);
       }
-      this.setSuccessMessage.emit({type:'success', msg:'Success', detail: 'CD Tagged Successfully!'});
+      this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'CD Tagged Successfully!' });
       this.close();
       this.hidePopupLoader = true;
       this.hidePopupTable = false;
@@ -512,7 +533,7 @@ export class ActionsPopupComponent implements OnInit {
    */
   getSelectedGroupItems() {
     this.qc.tagGroupItems = [];
-    this.hideResourceLoader =  false;
+    this.hideResourceLoader = false;
     setTimeout(async () => {
       const cdComponent = this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent;
       const group = this.qc.selectedGroup;
@@ -539,7 +560,7 @@ export class ActionsPopupComponent implements OnInit {
           this.updateResourceEmail(obj.CMLevel1.results);
         }
       });
-      this.hideResourceLoader =  true;
+      this.hideResourceLoader = true;
     }, 300);
   }
 
@@ -558,6 +579,6 @@ export class ActionsPopupComponent implements OnInit {
   }
 
   showToastMsg(type, msg, detail) {
-    this.messageService.add({severity: type, summary: msg, detail: detail});
+    this.messageService.add({ severity: type, summary: msg, detail: detail });
   }
 }
