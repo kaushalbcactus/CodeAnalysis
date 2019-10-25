@@ -32,6 +32,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   displayCommentenable: boolean;
   selectedButton: any;
   selectedUser: any;
+  modalloaderenable: boolean;
+  loderenable: boolean;
   constructor(
     private spServices: SPOperationService,
     private globalConstant: ConstantsService,
@@ -106,6 +108,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.caGlobal.loading = true;
     this.caGlobal.totalRecords = 0;
     this.selectedTab = this.route.snapshot.data.type;
+    this.modalloaderenable = false;
+    this.loderenable = false;
     setTimeout(() => {
       this.getProperties();
     }, 100);
@@ -177,35 +181,35 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.loaderenable = false;
   }
 
-  createColFieldValues(acTempArrays) {
-    this.caArrays.clientLegalEntityArray = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.clientLegalEntityTempArray, 'value'), 'value', 'label');
-    this.caArrays.projectCodeArray = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.projectCodeTempArray, 'value'), 'value', 'label');
-    this.caArrays.milestoneArray = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.milestoneTempArray, 'value'), 'value', 'label');
-    this.caArrays.taskArray = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.taskTempArray, 'value'), 'value', 'label');
-    this.caArrays.deliveryTypeArray = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.deliveryTypeTempArray, 'value'), 'value', 'label');
-    this.caArrays.allocatedArray = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.allocatedTempArray, 'value'), 'value', 'label');
-    this.caArrays.startTimeArray = this.caCommonService.sortByDate(this.caCommonService.unique(acTempArrays.startTimeTempArray, 'value'), 'value');
-    this.caArrays.endTimeArray = this.caCommonService.sortByDate(this.caCommonService.unique(acTempArrays.endTimeTempArray, 'value'), 'value');
-    // this.caArrays.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
-    // this.caArrays.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
-    // this.caArrays.Milestone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
-    // this.caArrays.Task = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
-    // this.caArrays.DeliveryType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaType, value: a.ProformaType }; return b; }).filter(ele => ele.label)));
-    // this.caArrays.Allocated = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
-    // this.caArrays.StartTime = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
-    // this.caArrays.EndTime = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
+  // createColFieldValues(acTempArrays) {
+  //   this.caArrays.ClientLegalEntity = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.clientLegalEntityTempArray, 'value'), 'value', 'label');
+  //   this.caArrays.ProjectCode = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.projectCodeTempArray, 'value'), 'value', 'label');
+  //   this.caArrays.Milestone = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.milestoneTempArray, 'value'), 'value', 'label');
+  //   this.caArrays.Task = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.taskTempArray, 'value'), 'value', 'label');
+  //   this.caArrays.DeliveryType = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.deliveryTypeTempArray, 'value'), 'value', 'label');
+  //   this.caArrays.Allocated = this.caCommonService.sortByAttribute(this.caCommonService.unique(acTempArrays.allocatedTempArray, 'value'), 'value', 'label');
+  //   this.caArrays.StartTime = this.caCommonService.sortByDate(this.caCommonService.unique(acTempArrays.startTimeTempArray, 'value'), 'value');
+  //   this.caArrays.EndTime = this.caCommonService.sortByDate(this.caCommonService.unique(acTempArrays.endTimeTempArray, 'value'), 'value');
+  //   // this.caArrays.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
+  //   // this.caArrays.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
+  //   // this.caArrays.Milestone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
+  //   // this.caArrays.Task = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
+  //   // this.caArrays.DeliveryType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaType, value: a.ProformaType }; return b; }).filter(ele => ele.label)));
+  //   // this.caArrays.Allocated = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
+  //   // this.caArrays.StartTime = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
+  //   // this.caArrays.EndTime = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
 
-    // this.proformaColArray.ProformaNumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
-    // this.proformaColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
-    // const proformaDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ProformaDate, "MMM dd, yyyy"), value: a.ProformaDate }; return b; }).filter(ele => ele.label)));
-    // this.proformaColArray.ProformaDate = proformaDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-    // this.proformaColArray.ProformaType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaType, value: a.ProformaType }; return b; }).filter(ele => ele.label)));
-    // this.proformaColArray.Status = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
-    // const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
-    // this.proformaColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label')
-    // this.proformaColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-    // this.proformaColArray.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
-  }
+  //   // this.proformaColArray.ProformaNumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaNumber, value: a.ProformaNumber }; return b; }).filter(ele => ele.label)));
+  //   // this.proformaColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
+  //   // const proformaDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ProformaDate, "MMM dd, yyyy"), value: a.ProformaDate }; return b; }).filter(ele => ele.label)));
+  //   // this.proformaColArray.ProformaDate = proformaDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
+  //   // this.proformaColArray.ProformaType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProformaType, value: a.ProformaType }; return b; }).filter(ele => ele.label)));
+  //   // this.proformaColArray.Status = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
+  //   // const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
+  //   // this.proformaColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label')
+  //   // this.proformaColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+  //   // this.proformaColArray.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
+  // }
 
   uniqueArrayObj(array: any) {
     let sts: any = '';

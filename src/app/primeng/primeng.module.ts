@@ -14,8 +14,9 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { DropdownModule } from 'primeng/dropdown';
 import { MessageService, ConfirmationService, DialogService } from 'primeng/api';
 import { TabViewModule } from 'primeng/tabview';
-import { MenubarModule, OverlayPanelModule, InputTextareaModule, InputTextModule,
-   AutoComplete, TieredMenuModule, InputSwitchModule } from 'primeng/primeng';
+import {
+  MenubarModule, OverlayPanelModule, InputTextareaModule, InputTextModule, AutoComplete, TieredMenuModule
+} from 'primeng/primeng';
 import { CalendarModule } from 'primeng/calendar';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ContextMenuModule } from 'primeng/contextmenu';
@@ -30,9 +31,10 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { SidebarModule } from 'primeng/sidebar';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { FullCalendarModule } from 'primeng/fullcalendar';
-import {ListboxModule} from 'primeng/listbox';
-import {AutoCompleteModule} from 'primeng/autocomplete';
-import {TooltipModule} from 'primeng/tooltip';
+import { ListboxModule } from 'primeng/listbox';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { TooltipModule } from 'primeng/tooltip';
+import { InputSwitchModule } from 'primeng/inputswitch';
 @NgModule({
   declarations: [],
   imports: [
