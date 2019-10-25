@@ -50,14 +50,14 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   ) { }
 
   public caArrays = {
-    ClientLegalEntity: [],
-    ProjectCode: [],
-    Milestone: [],
-    Task: [],
-    DeliveryType: [],
-    Allocated: [],
-    StartTime: [],
-    EndTime: []
+    clientLegalEntityArray: [],
+    projectCodeArray: [],
+    milestoneArray: [],
+    taskArray: [],
+    deliveryTypeArray: [],
+    allocatedArray: [],
+    startTimeArray: [],
+    endTimeArray: []
   };
 
   private scheduleList = this.globalConstant.listNames.Schedules.name;
@@ -78,14 +78,14 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   completeTaskArray = [];
 
   displayedColumns: any[] = [
-    { field: 'ClientLegalEntity', header: 'Client' },
-    { field: 'ProjectCode', header: 'Project' },
-    { field: 'Milestone', header: 'Milestone' },
-    { field: 'Task', header: 'Task' },
-    { field: 'DeliveryType', header: 'Deliverable' },
-    { field: 'Allocated', header: 'Hrs' },
-    { field: 'StartTime', header: 'Start Time' },
-    { field: 'EndTime', header: 'End Time' }];
+    { field: 'clientName', header: 'Client' },
+    { field: 'projectCode', header: 'Project' },
+    { field: 'milestone', header: 'Milestone' },
+    { field: 'taskName', header: 'Task' },
+    { field: 'deliveryType', header: 'Deliverable' },
+    { field: 'estimatedTime', header: 'Hrs' },
+    { field: 'startDateText', header: 'Start Time' },
+    { field: 'dueDateText', header: 'End Time' }];
 
   filterColumns: any[] = [
     { field: 'clientName' },
@@ -149,14 +149,22 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       }
 
       this.caCommonService.getScheduleItems(schedulesItemFetch, this.completeTaskArray);
-      this.caArrays.ClientLegalEntity = this.caCommonService.sortByAttribute(this.commonService.unique(acTempArrays.clientLegalEntityTempArray, 'value'), 'value', 'label');
-      this.caArrays.ProjectCode = this.caCommonService.sortByAttribute(this.commonService.unique(acTempArrays.projectCodeTempArray, 'value'), 'value', 'label');
-      this.caArrays.Milestone = this.caCommonService.sortByAttribute(this.commonService.unique(acTempArrays.milestoneTempArray, 'value'), 'value', 'label');
-      this.caArrays.Task = this.caCommonService.sortByAttribute(this.commonService.unique(acTempArrays.taskTempArray, 'value'), 'value', 'label');
-      this.caArrays.DeliveryType = this.caCommonService.sortByAttribute(this.commonService.unique(acTempArrays.deliveryTypeTempArray, 'value'), 'value', 'label');
-      this.caArrays.Allocated = this.caCommonService.sortByAttribute(this.commonService.unique(acTempArrays.allocatedTempArray, 'value'), 'value', 'label');
-      this.caArrays.StartTime = this.caCommonService.sortByDate(this.commonService.unique(acTempArrays.startTimeTempArray, 'value'), 'value');
-      this.caArrays.EndTime = this.caCommonService.sortByDate(this.commonService.unique(acTempArrays.endTimeTempArray, 'value'), 'value');
+      this.caArrays.clientLegalEntityArray = this.caCommonService.sortByAttribute(this.commonService.unique
+        (acTempArrays.clientLegalEntityTempArray, 'value'), 'value', 'label');
+      this.caArrays.projectCodeArray = this.caCommonService.sortByAttribute(this.commonService.unique
+        (acTempArrays.projectCodeTempArray, 'value'), 'value', 'label');
+      this.caArrays.milestoneArray = this.caCommonService.sortByAttribute(this.commonService.unique
+        (acTempArrays.milestoneTempArray, 'value'), 'value', 'label');
+      this.caArrays.taskArray = this.caCommonService.sortByAttribute(this.commonService.unique
+        (acTempArrays.taskTempArray, 'value'), 'value', 'label');
+      this.caArrays.deliveryTypeArray = this.caCommonService.sortByAttribute(this.commonService.unique
+        (acTempArrays.deliveryTypeTempArray, 'value'), 'value', 'label');
+      this.caArrays.allocatedArray = this.caCommonService.sortByAttribute(this.commonService.unique
+        (acTempArrays.allocatedTempArray, 'value'), 'value', 'label');
+      this.caArrays.startTimeArray = this.caCommonService.sortByDate(this.commonService.unique
+        (acTempArrays.startTimeTempArray, 'value'), 'value');
+      this.caArrays.endTimeArray = this.caCommonService.sortByDate(this.commonService.unique
+        (acTempArrays.endTimeTempArray, 'value'), 'value');
 
       this.caGlobal.totalRecords = this.completeTaskArray.length;
       this.caGlobal.dataSource = this.completeTaskArray.slice(0, 30);
