@@ -2007,9 +2007,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
           // this.errorMessageCount++;
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName + ' in ' + task.milestone 
+            detail: 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName + ' in ' + task.milestone
           });
-          errorPresnet =  true;
+          errorPresnet = true;
           break;
           // this.taskerrorMessage = 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName;
         }
@@ -3089,6 +3089,11 @@ export class TimelineComponent implements OnInit, OnDestroy {
           detail: 'End date should be greater than start date of ' + compareDates[0].pName
         });
 
+        return false;
+      }
+
+      const errorPresnet = this.validateTaskDates(currMilTasks);
+      if (errorPresnet) {
         return false;
       }
     }
