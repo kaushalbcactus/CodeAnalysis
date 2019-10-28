@@ -3463,8 +3463,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
           }
         }
 
-        if (previousNode !== undefined && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart)) {
-          let errormessage = 'Previous Client Review';
+        if (previousNode !== undefined && previousNode.status !== "Completed" && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart)) {
+          let errormessage = previousNode.milestone +  ' Client Review';
           if (previousNode.pName !== 'Client Review') {
             errormessage = previousNode.pName;
           }
@@ -3475,8 +3475,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
           });
           return false;
         }
-
-
 
         if (milestoneTasks.length > 0) {
           this.LinkScToClientReview(milestoneTasks);
