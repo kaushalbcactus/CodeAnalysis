@@ -580,7 +580,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   async deleteTask(task, unt) {
 
-    debugger;
     this.confirmationService.confirm({
       message: 'Do you want to delete this task?',
       header: 'Delete Confirmation',

@@ -706,7 +706,7 @@ export class UsercapacityComponent implements OnInit {
                   return new Date(a.StartDate) < new Date(b.StartDate);
                 }) : [];
               }
-              debugger;
+        
               tasks[i].milestoneTasks = miltasks;
               tasks[i].milestoneDeadline = lastSCTask.length > 0 ? lastSCTask[0].StartDate : '--';
               nCount = nCount + 2;
