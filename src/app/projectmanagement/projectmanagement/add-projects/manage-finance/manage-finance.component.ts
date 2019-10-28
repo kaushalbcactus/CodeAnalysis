@@ -701,7 +701,7 @@ export class ManageFinanceComponent implements OnInit {
     const poIndex = this.poData.findIndex(item => item.poInfo[0].poId === this.selectedPo);
     const retPOInfo = this.poData[poIndex].poInfo[0];
     const reservePO = this.poArray.find(item => item.ID === this.selectedPo);
-
+    const poExistItem = this.existPOArray.retItems.find(poObj => poObj.Id === this.poData[poIndex].Id);
     if (!retPOInfo.poRevenue) {
       this.messageService.add({
         key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
@@ -709,7 +709,9 @@ export class ManageFinanceComponent implements OnInit {
       });
     }
 
-    if ((reservePO.AmountRevenue - reservePO.RevenueLinked) < retPOInfo.poRevenue) {
+    const nAvailableToTag = reservePO.AmountRevenue - reservePO.RevenueLinked + (poExistItem ? (poExistItem.AmountRevenue - retPOInfo.revenue) : 0);
+
+    if ((nAvailableToTag) < retPOInfo.poRevenue) {
       this.messageService.add({
         key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
         detail: 'PO revenue balance should be greater than or equal to the amount to reserved on PO.'
@@ -1348,7 +1350,7 @@ export class ManageFinanceComponent implements OnInit {
           invoiceObj.proformaLookup = invoiceItem.ProformaLookup;
           invoiceObj.invoiceLookup = invoiceItem.InvoiceLookup;
 
-          if (invoiceObj.status === 'Scheduled') {
+          if (invoiceObj.status === 'Scheduled' && invoiceObj.type === 'revenue') {
 
             if (this.projectStatus === this.constant.projectStatus.Unallocated
               || this.projectStatus === this.constant.projectStatus.InProgress
@@ -1496,42 +1498,7 @@ export class ManageFinanceComponent implements OnInit {
       return invoiceProformaResult;
     }
   }
-  // async getInvoiceProformaNumber(inoviceItems) {
-  //   const uniqueInvoiceItems = this.commonService.unique(inoviceItems, 'InvoiceLookup');
-  //   const batchURL = [];
-  //   const options = {
-  //     data: null,
-  //     url: '',
-  //     type: '',
-  //     listName: ''
-  //   };
-  //   for (const invoiceItem of uniqueInvoiceItems) {
-  //     // Get InoviceItems  ##0;
-  //     const inoviceGet = Object.assign({}, options);
-  //     const invoiceFilter = Object.assign({}, this.pmConstant.QUERY.INVOICES_BY_INVOICELOOKUP);
-  //     invoiceFilter.filter = invoiceFilter.filter.replace(/{{invoiceLookup}}/gi,
-  //       invoiceItem.InvoiceLookup);
-  //     inoviceGet.url = this.spServices.getReadURL(this.constant.listNames.Invoices.name,
-  //       invoiceFilter);
-  //     inoviceGet.type = 'GET';
-  //     inoviceGet.listName = this.constant.listNames.Invoices.name;
-  //     batchURL.push(inoviceGet);
-  //     // Get Proforma  ##1;
-  //     const proformaGet = Object.assign({}, options);
-  //     const proformaFilter = Object.assign({}, this.pmConstant.QUERY.PROFORMA_BY_PROFORMALOOKUP);
-  //     proformaFilter.filter = proformaFilter.filter.replace(/{{proformaLookup}}/gi,
-  //       invoiceItem.ProformaLookup);
-  //     proformaGet.url = this.spServices.getReadURL(this.constant.listNames.Proforma.name,
-  //       proformaFilter);
-  //     proformaGet.type = 'GET';
-  //     proformaGet.listName = this.constant.listNames.Proforma.name;
-  //     batchURL.push(proformaGet);
-  //   }
-  //   const invoiceProformaResult = await this.spServices.executeBatch(batchURL);
-  //   if (invoiceProformaResult && invoiceProformaResult.length) {
-  //     return invoiceProformaResult;
-  //   }
-  // }
+
   confirmInvoiceItem(rowData) {
     this.invoiceObj = rowData;
     console.log(rowData);
