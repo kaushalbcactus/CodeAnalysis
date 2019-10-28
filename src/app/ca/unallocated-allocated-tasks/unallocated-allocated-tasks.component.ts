@@ -220,7 +220,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       if (data.task !== 'QC' && data.task !== 'Edit' && data.task !== 'Graphics') {
         this.taskMenu = [
           { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) },
-          { label: 'Delete Task', icon: 'pi pi-fw pi-trash', command: (e) => this.deleteTask(data, 'unallocatedTable') }
+          { label: 'Delete Task', icon: 'pi pi-fw pi-trash', command: (e) => this.deleteTask(data, this.taskTable ) }
         ];
       } else {
         this.taskMenu = [
@@ -607,7 +607,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
               prevTasks.push(milTask);
             }
           });
-          //  this.performDelete(task, nextTasks, prevTasks, unt);
+          this.performDelete(task, nextTasks, prevTasks, unt);
           this.messageService.clear('tc');
         }, 500);
       },
