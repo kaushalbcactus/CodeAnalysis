@@ -166,7 +166,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     }
 
-   
+
 
     this.sharedObject.currentUser.timeZone = this.commonService.getCurrentUserTimeZone();
     this.editorOptions = {
@@ -191,7 +191,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
   }
- 
+
 
   async onPopupload() {
     await this.callReloadRes();
@@ -477,7 +477,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
               // Gantt Chart Sub Object 
               if (milestone.Title === milestoneTask.Milestone) {
                 if (milestoneTask.Status !== 'Deleted') {
-
                   let GanttTaskObj = {
                     'pID': milestoneTask.Id,
                     'pName': milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', ''),
@@ -514,6 +513,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
                       > -1 ? true : false : false,
                     'assignedUsers': milestoneTask.assignedUsers,
+                    // 'AssignedTo': {ID :  milestoneTask.AssignedTo.ID , Title :  milestoneTask.AssignedTo.Title, Email :  milestoneTask.AssignedTo.EMail,SkillText : milestoneTask.AssignedTo.SkillLevel },
                     'AssignedTo': milestoneTask.AssignedTo,
                     'userCapacityEnable': false,
                     'color': milestoneTask.color,
@@ -635,6 +635,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
               if (milestone.Title === milestoneTask.Milestone) {
                 if (milestoneTask.Status !== 'Deleted') {
+              
                   let GanttTaskObj = {
                     'pID': milestoneTask.Id,
                     'pName': milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', ''),
@@ -672,6 +673,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                       this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
                         > -1 ? true : false : false,
                     'assignedUsers': milestoneTask.assignedUsers,
+                    // 'AssignedTo': {ID :  milestoneTask.AssignedTo.ID , Title :  milestoneTask.AssignedTo.Title, Email :  milestoneTask.AssignedTo.EMail,SkillText : milestoneTask.AssignedTo.SkillLevel },
                     'AssignedTo': milestoneTask.AssignedTo,
                     'userCapacityEnable': false,
                     'color': milestoneTask.color,
@@ -746,7 +748,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             if (color.length) {
               clientReviewObj[0].color = color[0].value;
             }
-
+            
             let GanttTaskObj = {
               'pID': clientReviewObj[0].Id,
               'pName': clientReviewObj[0].Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + clientReviewObj[0].Milestone + ' ', ''),
@@ -783,6 +785,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                 this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
                   > -1 ? true : false : false,
               'assignedUsers': clientReviewObj[0].assignedUsers,
+              // 'AssignedTo': {ID :  clientReviewObj[0].AssignedTo.ID , Title :  clientReviewObj[0].AssignedTo.Title, Email :  clientReviewObj[0].AssignedTo.Email,SkillText : clientReviewObj[0].AssignedTo.SkillLevel },
               'AssignedTo': clientReviewObj[0].AssignedTo,
               'userCapacityEnable': false,
               'color': clientReviewObj[0].color,
@@ -875,6 +878,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
             if (milestone.Title === milestoneTask.Milestone) {
               if (milestoneTask.Status !== 'Deleted') {
+              
                 GanttTaskObj = {
                   'pID': milestoneTask.Id,
                   'pName': milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', ''),
@@ -911,6 +915,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
                     > -1 ? true : false : false,
                   'assignedUsers': milestoneTask.assignedUsers,
+                  // 'AssignedTo': {ID :  milestoneTask.AssignedTo.ID , Title :  milestoneTask.AssignedTo.Title, Email :  milestoneTask.AssignedTo.EMail,SkillText : milestoneTask.AssignedTo.SkillLevel },
                   'AssignedTo': milestoneTask.AssignedTo,
                   'userCapacityEnable': false,
                   'color': milestoneTask.color,
@@ -1022,25 +1027,62 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // *************************************************************************************************************************************
 
   public async assignUsers(allRetrievedTasks) {
+    
     for (let nCount = 0; nCount < this.milestoneData.length; nCount = nCount + 1) {
       let milestone = this.milestoneData[nCount];
       if (milestone.data.itemType === 'Client Review') {
-        milestone.data.assignedUsers = await this.commonService.getResourceByMatrix(milestone.data, allRetrievedTasks);
+        const assignedUsers = await this.commonService.getResourceByMatrix(milestone.data, allRetrievedTasks);
+
+        milestone.data.assignedUsers = [];
+        const response = await await this.formatAssignedUser(assignedUsers);
+        milestone.data.assignedUsers = response;
+
       } else if (milestone.children !== undefined) {
         for (let nCountSub = 0; nCountSub < milestone.children.length; nCountSub = nCountSub + 1) {
           let submilestone = milestone.children[nCountSub];
           if (submilestone.data.type === 'task') {
-            submilestone.data.assignedUsers = await this.commonService.getResourceByMatrix(submilestone.data, allRetrievedTasks);
+            const assignedUsers = await this.commonService.getResourceByMatrix(submilestone.data, allRetrievedTasks);
+
+            submilestone.data.assignedUsers = [];
+            const response = await await this.formatAssignedUser(assignedUsers);
+            submilestone.data.assignedUsers = response;
+
+
           } else if (submilestone.children !== undefined) {
             for (let nCountTask = 0; nCountTask < submilestone.children.length; nCountTask = nCountTask + 1) {
               const task = submilestone.children[nCountTask];
-              task.data.assignedUsers = await this.commonService.getResourceByMatrix(task.data, allRetrievedTasks);
+              const assignedUsers = await this.commonService.getResourceByMatrix(task.data, allRetrievedTasks);
+              task.data.assignedUsers = [];
+              const response = await await this.formatAssignedUser(assignedUsers);
+              task.data.assignedUsers = response;
+
+              // task.data.assignedUsers = await this.commonService.getResourceByMatrix(task.data, allRetrievedTasks);
 
             }
           }
         }
       }
     }
+  }
+
+  formatAssignedUser(assignedUsers) {
+    const response = []
+    const UniqueUserType = assignedUsers.map(c => c.userType).filter((item, index) => assignedUsers.map(c => c.userType).indexOf(item) === index);
+    console.log(assignedUsers)
+
+    for (const retRes of UniqueUserType) {
+      const Items = [];
+      const Users = assignedUsers.filter(c => c.userType === retRes);
+      Users.forEach(user => {
+
+        const tempUser = user.UserName ? user.UserName : user;
+        Items.push({ label: tempUser.Title, value: { ID: tempUser.ID, Title: tempUser.Title, Email: tempUser.Email, SkillText: tempUser.SkillText ? tempUser.SkillText : '' } }
+        );
+      });
+      response.push({ label: retRes, items: Items });
+
+    }
+    return response;
   }
 
   showVisualRepresentation() {
@@ -1269,6 +1311,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
   editTask(task, rowNode) {
+
+    task.assignedUsers.forEach(element => {
+
+      if (element.items.find(c => c.value.ID === task.AssignedTo.ID)) {
+        task.AssignedTo = element.items.find(c => c.value.ID === task.AssignedTo.ID).value;
+      }
+    });
     if (rowNode.parent !== null) {
       if (rowNode.parent.parent === null) {
         rowNode.parent.data.editMode = true;
@@ -1283,6 +1332,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
     task.editMode = true;
     task.edited = true;
+
+
 
   }
 
@@ -1422,7 +1473,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         endTime: milestoneTask.pUserEnd,
       },
       width: '90vw',
-     
+
       header: milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.pName
         + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.pName,
       contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' }

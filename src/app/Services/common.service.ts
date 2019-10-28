@@ -562,9 +562,10 @@ export class CommonService {
                 Title: task.skillLevel,
                 Name: task.skillLevel,
                 SkillText: task.skillLevel
+
             }
             if ((!task.AssignedTo) || (task.AssignedTo && (!task.AssignedTo.hasOwnProperty('ID') || (task.AssignedTo.hasOwnProperty('ID') && task.AssignedTo.ID === -1)))) {
-                task.AssignedTo = oCentralGroup;
+                task.AssignedTo = { ID: undefined, Title: oCentralGroup.Title, Email:undefined, SkillText: oCentralGroup.SkillText };
                 task.pRes = oCentralGroup.Title;
             }
             filteredResources.push(oCentralGroup)
@@ -843,8 +844,8 @@ export class CommonService {
         }
 
         // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-           const arrResult = await this.spServices.executeBatch(batchUrl);
-           this.response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
+        const arrResult = await this.spServices.executeBatch(batchUrl);
+        this.response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
         if (this.response.length > 0) {
             this.sharedTaskAllocateObj.oResources = this.response.length > 2 ? this.response[2] : this.sharedTaskAllocateObj.oResources;
             this.sharedTaskAllocateObj.oCentralGroup = this.response.length > 2 ? this.response[3] : this.sharedTaskAllocateObj.oCentralGroup;

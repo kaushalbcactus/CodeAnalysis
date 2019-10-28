@@ -33,14 +33,22 @@
             </tr>
             <tr>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
-                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" class="clientName" (onChange)="taskTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'ProjectCode'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.ProjectCode" defaultLabel="All" [maxSelectedLabels]="1" class="projectCode" (onChange)="taskTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Milestone'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.Milestone" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Task'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.Task" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'DeliveryType'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.DeliveryType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Allocated'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.Allocated" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'StartTime'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.StartTime" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'EndTime'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.EndTime" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" class="clientName" (onChange)="taskTable.filter($event.value, col.field, 'in')"
+                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ProjectCode'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.ProjectCode" defaultLabel="All" [maxSelectedLabels]="1" class="projectCode" (onChange)="taskTable.filter($event.value, col.field, 'in')"
+                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Milestone'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.Milestone" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Task'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.Task" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'DeliveryType'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.DeliveryType" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskTable.filter($event.value, col.field, 'in')"
+                        (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Allocated'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.Allocated" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'StartTime'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.StartTime" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'EndTime'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.EndTime" defaultLabel="All" [maxSelectedLabels]="1" (onChange)="taskTable.filter($event.value, col.field, 'in')" (input)="optionFilter($event)"
+                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
                 </th>
                 <th colspan="5">
                     <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
