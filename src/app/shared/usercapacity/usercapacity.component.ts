@@ -269,7 +269,7 @@ export class UsercapacityComponent implements OnInit {
         const availableHrsGet = Object.assign({}, options);
         const availableHrsQuery = Object.assign({}, this.sharedConstant.userCapacity.availableHrs);
         availableHrsGet.url = this.spService.getReadURL('' + this.globalConstantService.listNames.AvailableHours.name +
-                                                        '', availableHrsQuery);
+          '', availableHrsQuery);
         availableHrsGet.url = availableHrsGet.url.replace(/{{ResourceId}}/gi, oCapacity.arrUserDetails[indexUser].AvailableHoursRID).replace(/{{startDateString}}/gi, startDateString).replace(/{{endDateString}}/gi, endDateString);
         availableHrsGet.type = 'GET';
         availableHrsGet.listName = this.globalConstantService.listNames.AvailableHours.name;
@@ -332,7 +332,7 @@ export class UsercapacityComponent implements OnInit {
     this.globalService.oCapacity = await this.applyFilter(startDate, endDate, selectedUsers);
 
   }
-  async applyFilterLocal(startDate, endDate, selectedUsers,Module) {
+  async applyFilterLocal(startDate, endDate, selectedUsers, Module) {
     this.oCapacity = await this.applyFilter(startDate, endDate, selectedUsers);
 
     if (Module) {
@@ -356,7 +356,7 @@ export class UsercapacityComponent implements OnInit {
     // tslint:disable-next-line: max-line-length
     invObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name, this.sharedConstant.userCapacity.fetchTasks);
     invObj.url = invObj.url.replace('{{userID}}', selectedUserID).replace(/{{startDateString}}/gi, startDateString)
-                           .replace(/{{endDateString}}/gi, endDateString);
+      .replace(/{{endDateString}}/gi, endDateString);
     invObj.listName = this.globalConstantService.listNames.Schedules.name;
     invObj.type = 'GET';
     batchUrl.push(invObj);
@@ -644,7 +644,7 @@ export class UsercapacityComponent implements OnInit {
             //   + "/_api/web/lists/getbytitle('" + this.ProjectInformation + "')/items?$select=WBJID&&$filter=ProjectCode eq '" + tasks[taskIndex].projectCode + "'";
             // this.spService.getBatchBodyGet(batchContents, batchGuid, url);
             const piObj = Object.assign({}, this.queryConfig);
-            piObj.url = this.spService.getReadURL(this.globalConstantService.listNames.ProjectInformation.name,this.sharedConstant.userCapacity.getProjectInformation);
+            piObj.url = this.spService.getReadURL(this.globalConstantService.listNames.ProjectInformation.name, this.sharedConstant.userCapacity.getProjectInformation);
             piObj.url = piObj.url.replace('{{projectCode}}', tasks[taskIndex].projectCode)
             piObj.listName = this.globalConstantService.listNames.ProjectInformation.name;
             piObj.type = 'GET';
@@ -655,7 +655,7 @@ export class UsercapacityComponent implements OnInit {
             //   + "/_api/web/lists/getbytitle('" + this.Schedules + "')/items?$select=ID,Task,Title,ExpectedTime,StartDate,DueDate,TimeZone,Status,AssignedToText,ContentType/Name&$expand=ContentType&$filter=startswith(Title,'" + tasks[taskIndex].projectCode + "') and Milestone eq '" + tasks[taskIndex].milestone + "' and Status ne 'Abandon' and Status ne 'Completed' and Status ne 'Deleted' and Status ne 'Auto Closed'";
             // this.spService.getBatchBodyGet(batchContents, batchGuid, sSchedulesURL);
             const tasksObj = Object.assign({}, this.queryConfig);
-            tasksObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name,this.sharedConstant.userCapacity.getProjectTasks);
+            tasksObj.url = this.spService.getReadURL(this.globalConstantService.listNames.Schedules.name, this.sharedConstant.userCapacity.getProjectTasks);
             tasksObj.url = tasksObj.url.replace('{{projectCode}}', tasks[taskIndex].projectCode).replace('{{milestone}}', tasks[taskIndex].milestone);
             tasksObj.listName = this.globalConstantService.listNames.Schedules.name;
             tasksObj.type = 'GET';
@@ -670,7 +670,7 @@ export class UsercapacityComponent implements OnInit {
         // const sBatchData = batchContents.join('\r\n');
         // const arrResults = this.executeBatchRequest(batchUrl);
         let arrResults = await this.spService.executeBatch(batchUrl);
-        arrResults  = arrResults.length ? arrResults.map(a => a.retItems) : [];
+        arrResults = arrResults.length ? arrResults.map(a => a.retItems) : [];
         let nCount = 0;
         for (const i in tasks) {
           if (tasks.hasOwnProperty(i)) {
@@ -706,7 +706,7 @@ export class UsercapacityComponent implements OnInit {
                   return new Date(a.StartDate) < new Date(b.StartDate);
                 }) : [];
               }
-        
+
               tasks[i].milestoneTasks = miltasks;
               tasks[i].milestoneDeadline = lastSCTask.length > 0 ? lastSCTask[0].StartDate : '--';
               nCount = nCount + 2;
@@ -738,9 +738,9 @@ export class UsercapacityComponent implements OnInit {
     if (arrDateRange <= 10) {
 
       setTimeout(() => {
-        let tableWidth = document.getElementById('capacityTable').offsetWidth ;
+        let tableWidth = document.getElementById('capacityTable').offsetWidth;
 
-        tableWidth = tableWidth === 0 ? 1191 : tableWidth;
+        tableWidth = tableWidth === 0 ? (document.getElementsByClassName("userCapacity") ? document.getElementsByClassName("userCapacity")[0].parentElement.offsetWidth : 1192) : tableWidth;
 
         this.pageWidth = tableWidth + 'px';
 

@@ -503,7 +503,7 @@ export class StandardprojectComponent implements OnInit {
       setTimeout(async () => {
 
         const Resources = { resources: this.sharedTaskAllocateObj.oAllResource };
-        const data = { task: Resources, startTime: oCapacityStartDate, endTime: oCapacityEndDate,Module:'PM' }
+        const data = { task: Resources, startTime: oCapacityStartDate, endTime: oCapacityEndDate, Module: 'PM' }
 
         await userCapacityRef.Onload(data)
 
@@ -621,7 +621,7 @@ export class StandardprojectComponent implements OnInit {
       let resource = [];
       resource.push(this.selectedSkillObject.value, this.selectedResourceObject.value);
       this.pmObject.oTaskAllocation.oAllSelectedResource = resource;
-     await this.userCapacity.applyFilterGlobal(startDate, endDate, resource);
+      await this.userCapacity.applyFilterGlobal(startDate, endDate, resource);
     }
     this.standardFiles = [];
     this.createMilestone(0, true, new Date(startDate));
@@ -1773,12 +1773,12 @@ export class StandardprojectComponent implements OnInit {
             if (milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.toggleCapacity) {
               setTimeout(async () => {
                 milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.toggleCapacity = false;
-                // await userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.EndDate, filterResource,'PM');
-              
-                const Resources = { resources: filterResource };
-                const data = { task: Resources, startTime: milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.StartDate, endTime:  milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.EndDate,Module:'PM' }
-        
-                await userCapacityRef.Onload(data)
+                await userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.EndDate, filterResource, 'PM');
+
+                // const Resources = { resources: filterResource };
+                // const data = { task: Resources, startTime: milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.StartDate, endTime:  milestones_copy[milestoneIndex].children[subMilestoneIndex].children[taskIndex].data.EndDate,Module:'PM' }
+
+                // await userCapacityRef.Onload(data)
 
 
 
@@ -1804,13 +1804,13 @@ export class StandardprojectComponent implements OnInit {
             if (milestones_copy[milestoneIndex].children[taskIndex].data.toggleCapacity) {
               setTimeout(async () => {
                 milestones_copy[milestoneIndex].children[taskIndex].data.toggleCapacity = false;
-                // await userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[taskIndex].data.EndDate, filterResource,'PM');
+                await userCapacityRef.applyFilterLocal(milestones_copy[milestoneIndex].children[taskIndex].data.StartDate, milestones_copy[milestoneIndex].children[taskIndex].data.EndDate, filterResource, 'PM');
 
-                const Resources = { resources: filterResource };
-                const data = { task: Resources, startTime: milestones_copy[milestoneIndex].children[taskIndex].data.StartDate, endTime:  milestones_copy[milestoneIndex].children[taskIndex].data.EndDate,Module:'PM' }
-        
-                await userCapacityRef.Onload(data)
-              
+                // const Resources = { resources: filterResource };
+                // const data = { task: Resources, startTime: milestones_copy[milestoneIndex].children[taskIndex].data.StartDate, endTime:  milestones_copy[milestoneIndex].children[taskIndex].data.EndDate,Module:'PM' }
+
+                // await userCapacityRef.Onload(data)
+
               }, 100);
             } else {
               milestones_copy[milestoneIndex].children[taskIndex].data.toggleCapacity = true;

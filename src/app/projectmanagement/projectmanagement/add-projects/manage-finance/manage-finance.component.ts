@@ -701,7 +701,7 @@ export class ManageFinanceComponent implements OnInit {
     const poIndex = this.poData.findIndex(item => item.poInfo[0].poId === this.selectedPo);
     const retPOInfo = this.poData[poIndex].poInfo[0];
     const reservePO = this.poArray.find(item => item.ID === this.selectedPo);
-    const poExistItem = this.existPOArray.retItems.find(poObj => poObj.Id === this.poData[poIndex].Id);
+    const poExistItem = this.existPOArray && this.existPOArray.retItems ? this.existPOArray.retItems.find(poObj => poObj.Id === this.poData[poIndex].Id) : null;
     if (!retPOInfo.poRevenue) {
       this.messageService.add({
         key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
@@ -711,7 +711,7 @@ export class ManageFinanceComponent implements OnInit {
 
     const nAvailableToTag = reservePO.AmountRevenue - reservePO.RevenueLinked + (poExistItem ? (poExistItem.AmountRevenue - retPOInfo.revenue) : 0);
 
-    if ((nAvailableToTag) < retPOInfo.poRevenue) {
+    if (nAvailableToTag < retPOInfo.poRevenue) {
       this.messageService.add({
         key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
         detail: 'PO revenue balance should be greater than or equal to the amount to reserved on PO.'

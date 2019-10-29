@@ -252,8 +252,8 @@
                             <!-- <ng-select *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone'" #assignedTo class="txtTask" [items]="rowData.assignedUsers" bindLabel="Title" placeholder="Select Resource" groupBy="userType" [(ngModel)]="rowData.AssignedTo"
                                 (change)="assignedToUserChanged(rowData)" appendTo="body"></ng-select> -->
                             <!-- {{rowData.AssignedTo |json}} -->
-                            <p-dropdown *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone'" #assignedTo class="txtTask" [options]="rowData.assignedUsers" [panelStyle]="{minWidth:'15em' }" [(ngModel)]="rowData.AssignedTo" placeholder="Select Resource"
-                                [showClear]="true" [group]="true" filter="true" (onChange)="assignedToUserChanged(rowData)">
+                            <p-dropdown [style]="{'width':'100%'}" *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone'" #assignedTo class="txtTask" [options]="rowData.assignedUsers" [panelStyle]="{minWidth:'15em' }" [(ngModel)]="rowData.AssignedTo"
+                                placeholder="Select Resource" [showClear]="true" [group]="true" filter="true" (onChange)="assignedToUserChanged(rowData)">
                                 <ng-template let-group pTemplate="group">
                                     <span style="margin-left:.25em">{{group.label}}</span>
                                 </ng-template>

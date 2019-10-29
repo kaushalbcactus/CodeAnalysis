@@ -93,7 +93,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     private spServices: SPOperationService,
     private commonService: CommonService,
     private datePipe: DatePipe,
-    public sharedObject: GlobalService, 
+    public sharedObject: GlobalService,
     public router: Router,
     private cdr: ChangeDetectorRef,
     private platformLocation: PlatformLocation,
@@ -382,9 +382,9 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   async GetProjectResources() {
     const batchUrl = [];
     this.response = [];
-    const ProjectInfoResources = Object.assign({},this.queryConfig);
+    const ProjectInfoResources = Object.assign({}, this.queryConfig);
     ProjectInfoResources.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name, this.myDashboardConstantsService.mydashboardComponent.ProjectInfoResources);
-    ProjectInfoResources.url =  ProjectInfoResources.url.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
+    ProjectInfoResources.url = ProjectInfoResources.url.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
     ProjectInfoResources.listName = this.constants.listNames.ProjectInformation.name;
     ProjectInfoResources.type = 'GET';
     batchUrl.push(ProjectInfoResources);
@@ -404,7 +404,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
 
     const ProjectResources = Object.assign({}, this.queryConfig);
     ProjectResources.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name, this.myDashboardConstantsService.mydashboardComponent.ProjectResource);
-    ProjectResources.url =  ProjectResources.url.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
+    ProjectResources.url = ProjectResources.url.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
     ProjectResources.listName = this.constants.listNames.ProjectInformation.name;
     ProjectResources.type = 'GET';
     batchUrl.push(ProjectResources);
@@ -412,9 +412,9 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     const result = await this.spServices.executeBatch(batchUrl);
     const prjResInfo = result.length > 0 ? result[0].retItems : [];
-    const prjResReponse = result.length > 1 ? result[1].retItems : [];  
+    const prjResReponse = result.length > 1 ? result[1].retItems : [];
     this.response.push(prjResInfo);
-    this.response.push(prjResReponse);  
+    this.response.push(prjResReponse);
     this.ProjectDetails.cmLevel1 = this.response[1][0].CMLevel1;
 
     this.projectResource.CMMembers = this.response[1].map(c => c).map(c => c.CMLevel1)[0].results ?
@@ -468,11 +468,11 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewChecked() {
-    if (this.ProjectList.length && this.isOptionFilter) {
-      let obj = {
+    if (this.ProjectList && this.isOptionFilter) {
+      const obj = {
         tableData: this.project,
         colFields: this.ProjectColArray
-      }
+      };
       if (obj.tableData.filteredValue) {
         this.commonService.updateOptionValues(obj);
       } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
