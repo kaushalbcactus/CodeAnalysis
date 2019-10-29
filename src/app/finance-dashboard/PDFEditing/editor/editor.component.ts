@@ -2662,8 +2662,10 @@ export class EditorComponent implements OnInit {
         console.log('data.class ', data.class);
         if (this.elementId === 'appendix') {
             document.getElementById(this.elementId).innerHTML = data.htmldata;
-            this.widthDefineModal = true;
-            this.extractData(data.htmldata);
+            const returnVal = this.extractData(data.htmldata);
+            if(returnVal) {
+                this.widthDefineModal = true;
+            } 
             document.getElementById('appendix').parentElement.className = data.class;
         } else if (getLi === null || getLi === undefined) {
             document.getElementById(this.elementId).innerHTML = data.htmldata;
@@ -2681,24 +2683,29 @@ export class EditorComponent implements OnInit {
         var oDiv = document.createElement('div');
         oDiv.innerHTML = table;
         var oTable = oDiv.querySelector('table');
-        this.appendixTableTh = oTable.rows[0].cells;
-        const tableHeader = [];
-        const tableRowData = [];
+        if (oTable) {
+            this.appendixTableTh = oTable.rows[0].cells;
+            const tableHeader = [];
+            const tableRowData = [];
 
-        if (oTable.rows[0].cells.length) {
-            for (let i = 0; i < oTable.rows[0].cells.length; i++) {
-                const element = oTable.rows[0].cells[i].innerText;
-                tableHeader.push(element);
+            if (oTable.rows[0].cells.length) {
+                for (let i = 0; i < oTable.rows[0].cells.length; i++) {
+                    const element = oTable.rows[0].cells[i].innerText;
+                    tableHeader.push(element);
+                }
             }
-        }
-        if (oTable.rows[1].cells.length) {
-            for (let j = 0; j < oTable.rows[1].cells.length; j++) {
-                const element = oTable.rows[1].cells[j].innerText;
-                tableRowData.push({ element, width: '' });
+            if (oTable.rows[1].cells.length) {
+                for (let j = 0; j < oTable.rows[1].cells.length; j++) {
+                    const element = oTable.rows[1].cells[j].innerText;
+                    tableRowData.push({ element, width: '' });
+                }
             }
+            this.appendixEditTbHeader = tableHeader;
+            this.appendixEditTbbody = tableRowData;
+            return true;
+        } else {
+            return false;
         }
-        this.appendixEditTbHeader = tableHeader;
-        this.appendixEditTbbody = tableRowData;
     }
     errMsg: string;
     definedColWidth: number = 0;
