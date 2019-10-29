@@ -26,7 +26,7 @@ import { ProjectDraftsComponent } from './search-projects/project-drafts/project
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxGraphModule } from '@swimlane/ngx-graph';
 import { DndModule } from 'ngx-drag-drop';
-import { NgSelectModule } from '@ng-select/ng-select';
+
 import { TreeTableModule, RatingModule } from 'primeng/primeng';
 import { NgGanttEditorModule } from 'ng-gantt';
 import { ProjectmanagementModule } from '../projectmanagement/projectmanagement.module';
@@ -76,7 +76,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NgGanttEditorModule,
     TreeTableModule,
     RatingModule,
-    NgSelectModule,
     DndModule,
     NgxGraphModule,
     NgxChartsModule,

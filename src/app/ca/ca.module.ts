@@ -6,7 +6,6 @@ import { CommonModule } from '@angular/common';
 
 import { PrimengModule } from '../primeng/primeng.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule } from '@angular/forms';
 import { CaRoutingModule } from './ca-routing.module';
 import { CaComponent } from './ca.component';
@@ -22,7 +21,6 @@ import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.compo
     CommonModule,
     PrimengModule,
     NgbModule,
-    NgSelectModule,
     FormsModule,
     CaRoutingModule,
     UserCapacityModule

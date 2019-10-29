@@ -106,10 +106,11 @@ tr.ui-contextmenu-selected {
     color: white !important;
 }
 
-.milestoneTable>td>.txtTask>.ng-select-container {
+
+/* .milestoneTable>td>.txtTask>.ng-select-container {
     border: none;
     border-radius: 0px;
-}
+} */
 
 #calenderIcon>.ui-calendar-w-btn>.ui-button>.ui-button-icon-left {
     font-size: 2rem !important;
@@ -538,4 +539,12 @@ body .ui-treetable .ui-treetable-tbody>tr>td:last-child {
 
 body .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider {
     background-color: #db1721 !important;
+}
+
+body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight {
+    background-color: #db1721 !important;
+}
+
+body .ui-dropdown-panel .ui-dropdown-filter-container .ui-dropdown-filter-icon {
+    color: #db1721 !important;
 }

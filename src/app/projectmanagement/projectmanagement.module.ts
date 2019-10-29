@@ -21,7 +21,6 @@ import { ManageFinanceComponent } from './projectmanagement/add-projects/manage-
 import { StandardprojectComponent } from './projectmanagement/add-projects/addtimeline/standardproject/standardproject.component';
 // tslint:disable-next-line: max-line-length
 import { NonStandardprojectComponent } from './projectmanagement/add-projects/addtimeline/non-standardproject/non-standardproject.component';
-import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { PMResolve } from './PMResolve';
 import { PMMainResolve } from './PMMainResolve';
@@ -62,7 +61,6 @@ import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.compo
     PrimengModule,
     FormsModule,
     NgxMaterialTimepickerModule,
-    NgSelectModule,
     ReactiveFormsModule,
     TimelineModule,
     CustomMaterialModule,

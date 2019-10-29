@@ -702,30 +702,30 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
 
-  // @HostListener('document:click', ['$event'])
-  // clickoutmultiselect(event) {
-  //   debugger;
-  //   if (event.target.className === 'ui-multiselect-label ui-corner-all') {
-  //     if (this.multiselectClick) {
-  //       this.multiselectClick.style.display = 'none';
-  //       if (this.multiselectClick !== event.target.parentElement.parentElement.children[3]) {
-  //         this.multiselectClick = event.target.parentElement.parentElement.children[3];
-  //         this.multiselectClick.style.display = '';
-  //       } else {
-  //         this.multiselectClick = undefined;
-  //       }
-  //     } else {
-  //       this.multiselectClick = event.target.parentElement.parentElement.children[3];
-  //       this.multiselectClick.style.display = '';
-  //     }
+  @HostListener('document:click', ['$event'])
+  clickoutmultiselect(event) {
+    debugger;
+    if (event.target.className === 'ui-multiselect-label ui-corner-all') {
+      if (this.multiselectClick) {
+        this.multiselectClick.style.display = 'none';
+        if (this.multiselectClick !== event.target.parentElement.parentElement.children[3]) {
+          this.multiselectClick = event.target.parentElement.parentElement.children[3];
+          this.multiselectClick.style.display = '';
+        } else {
+          this.multiselectClick = undefined;
+        }
+      } else {
+        this.multiselectClick = event.target.parentElement.parentElement.children[3];
+        this.multiselectClick.style.display = '';
+      }
 
-  //   } else {
-  //     if (this.multiselectClick) {
-  //       this.multiselectClick.style.display = 'none';
-  //       this.multiselectClick = undefined;
-  //     }
-  //   }
-  // }
+    } else {
+      if (this.multiselectClick) {
+        this.multiselectClick.style.display = 'none';
+        this.multiselectClick = undefined;
+      }
+    }
+  }
 
   isOptionFilter: boolean;
   optionFilter(event: any) {

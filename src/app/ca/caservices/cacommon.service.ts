@@ -404,7 +404,7 @@ export class CACommonService {
     // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
     const arrResults = await this.spServices.executeBatch(batchUrl);
     for (const count in arrTasks) {
-      arrTasks[count].MilestoneTasks = arrResults[count].length > 0 ? arrResults[count].retItems : [];
+      arrTasks[count].MilestoneTasks =  arrResults[count].retItems;
     }
     return arrTasks;
   }

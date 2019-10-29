@@ -18,7 +18,7 @@ const routes: Routes = [
   { path: 'qms', loadChildren: './qms/qms.module#QmsModule' },
   { path: 'centralallocation', loadChildren: './ca/ca.module#CAModule'},
   { path: 'capacityDashboard', loadChildren: './capacity-dashboard/capacity-dashboard.module#CapacityDashboardModule' },
-  { path: 'leavecalendar', loadChildren: './leave-calendar/leave-calendar.module#LeaveCalendarModule' },
+  { path: 'leaveCalendar', loadChildren: './leave-calendar/leave-calendar.module#LeaveCalendarModule' },
   { path: '**', redirectTo: '/404' },
   { path: '404', component: PageNotFoundComponent }
 ];

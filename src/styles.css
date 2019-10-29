@@ -1,6 +1,5 @@
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 @import "~jsgantt-improved/dist/jsgantt.css";
-@import "~@ng-select/ng-select/themes/default.theme.css";
 @import '@fullcalendar/core/main.css';
 @import '@fullcalendar/daygrid/main.css';
 @import '@fullcalendar/timegrid/main.css';
