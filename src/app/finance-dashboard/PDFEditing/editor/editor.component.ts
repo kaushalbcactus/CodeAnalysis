@@ -2663,8 +2663,10 @@ export class EditorComponent implements OnInit {
         console.log('data.class ', data.class);
         if (this.elementId === 'appendix') {
             document.getElementById(this.elementId).innerHTML = data.htmldata;
-            this.widthDefineModal = true;
-            this.extractData(data.htmldata);
+            const returnVal = this.extractData(data.htmldata);
+            if(returnVal) {
+                this.widthDefineModal = true;
+            } 
             document.getElementById('appendix').parentElement.className = data.class;
         } else if (getLi === null || getLi === undefined) {
             document.getElementById(this.elementId).innerHTML = data.htmldata;
@@ -2682,6 +2684,7 @@ export class EditorComponent implements OnInit {
         var oDiv = document.createElement('div');
         oDiv.innerHTML = table;
         var oTable = oDiv.querySelector('table');
+        if (oTable) {
         this.appendixTableTh = oTable.rows[0].cells;
         const tableHeader = [];
         const tableRowData = [];
@@ -2700,7 +2703,11 @@ export class EditorComponent implements OnInit {
         }
         this.appendixEditTbHeader = tableHeader;
         this.appendixEditTbbody = tableRowData;
+        return true;
+    } else {
+        return false;
     }
+}
     errMsg: string;
     definedColWidth: number = 0;
     setWidth(type: string) {
