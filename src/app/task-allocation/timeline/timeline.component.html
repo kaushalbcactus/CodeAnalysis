@@ -273,7 +273,7 @@
                         <!-- Disable cascade -->
 
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
-                            <span *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade ? 'Yes':'No'}}</span>
+                            <span *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
 
                             <p-inputSwitch *ngIf="rowData.editMode && rowData.type==='task' && rowData.itemType !== 'Client Review'" [(ngModel)]="rowData.DisableCascade"></p-inputSwitch>
 

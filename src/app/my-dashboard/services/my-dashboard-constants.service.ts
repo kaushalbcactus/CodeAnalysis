@@ -96,7 +96,7 @@ export class MyDashboardConstantsService {
     },
     TimeSpent: {
       select: 'ID,Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,DueDate,Status,ExpectedTime,TimeSpentPerDay,TimeSpentSubmitStatus',
-      filter: 'ID eq {{taskId}}',
+     // filter: 'ID eq {{taskId}}',
     },
     Comments: {
       select: "ID,Title,Milestone,FileDirRef,NextTasks,PrevTasks,Status,ProjectCode,Task",

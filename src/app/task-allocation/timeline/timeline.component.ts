@@ -530,7 +530,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'ActiveCA': milestoneTask.ActiveCA,
                     'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
                     'deallocateCentral': false,
-                    'DisableCascade': milestoneTask.DisableCascade
+                    'DisableCascade': milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes' ? true : false
                   };
 
                   taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
@@ -635,7 +635,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
               if (milestone.Title === milestoneTask.Milestone) {
                 if (milestoneTask.Status !== 'Deleted') {
-              
+
                   let GanttTaskObj = {
                     'pID': milestoneTask.Id,
                     'pName': milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', ''),
@@ -748,7 +748,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             if (color.length) {
               clientReviewObj[0].color = color[0].value;
             }
-            
+
             let GanttTaskObj = {
               'pID': clientReviewObj[0].Id,
               'pName': clientReviewObj[0].Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + clientReviewObj[0].Milestone + ' ', ''),
@@ -802,7 +802,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
               'ActiveCA': clientReviewObj[0].ActiveCA,
               'assignedUserTimeZone': clientReviewObj[0].assignedUserTimeZone,
               'deallocateCentral': false,
-              'DisableCascade': clientReviewObj[0].DisableCascade
+              'DisableCascade': clientReviewObj[0].DisableCascade && clientReviewObj[0].DisableCascade === 'Yes' ? true : false
+              //  'DisableCascade': clientReviewObj[0].DisableCascade
             };
             i = clientReviewObj[0].Id;
             if (GanttTaskObj.status !== 'Deleted') {
@@ -878,7 +879,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
             if (milestone.Title === milestoneTask.Milestone) {
               if (milestoneTask.Status !== 'Deleted') {
-              
+
                 GanttTaskObj = {
                   'pID': milestoneTask.Id,
                   'pName': milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', ''),
@@ -932,7 +933,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   'ActiveCA': milestoneTask.ActiveCA,
                   'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
                   'deallocateCentral': false,
-                  'DisableCascade': milestoneTask.DisableCascade
+                  'DisableCascade': milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes' ? true : false
+
                 };
 
                 if (milestoneTask.Task === 'Client Review' && milestoneTask.Status !== 'Deleted') {
@@ -1027,7 +1029,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // *************************************************************************************************************************************
 
   public async assignUsers(allRetrievedTasks) {
-    
+
     for (let nCount = 0; nCount < this.milestoneData.length; nCount = nCount + 1) {
       let milestone = this.milestoneData[nCount];
       if (milestone.data.itemType === 'Client Review') {
@@ -1311,7 +1313,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
   editTask(task, rowNode) {
-
+    debugger;
     task.assignedUsers.forEach(element => {
 
       if (element.items.find(c => c.value.ID === task.AssignedTo.ID)) {
@@ -2178,6 +2180,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     if (nextNode.length) {
       nextNode.forEach(element => {
+
         if (!element.DisableCascade) {
           this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
         }
@@ -2260,6 +2263,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           return !dataEl.data.previousTask
         });
         allParallelTasks.forEach(element => {
+
           if (!element.DisableCascade) {
             this.cascadeNextTask(previousNode, element.data, parseInt(nodeData.position), selectedMil);
           }
@@ -2287,6 +2291,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           });
         }
         allParallelTasks.forEach(element => {
+
           if (!element.DisableCascade) {
             this.cascadeNextTask(previousNode, element, element.submilestone ? 1 : 0, selectedMil + 1);
           }
@@ -2865,6 +2870,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
       batchUrl.push(milObj);
     }
     for (const tasks of updateTasks) {
+
+
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, tasks.url, tasks.body, false);
       const taskObj = Object.assign({}, this.queryConfig);
       taskObj.url = tasks.url;
@@ -2873,6 +2880,32 @@ export class TimelineComponent implements OnInit, OnDestroy {
       taskObj.data = tasks.body;
       batchUrl.push(taskObj);
     }
+
+
+    // addObj.ProjectAttributes.ActiveCM1 = addObj.ProjectAttributes.ActiveCM1.filter(function (el) {
+    //   return el != null;
+    // });
+    arrWriterIDs = arrWriterIDs.filter((el) => {
+      return el != null;
+    });
+    arrEditorsIds = arrEditorsIds.filter((el) => {
+      return el != null;
+    });
+    arrGraphicsIds = arrGraphicsIds.filter((el) => {
+      return el != null;
+    });
+    arrQualityCheckerIds = arrQualityCheckerIds.filter((el) => {
+      return el != null;
+    });
+    arrReviewers = arrReviewers.filter((el) => {
+      return el != null;
+    });
+    arrPubSupportIds = arrPubSupportIds.filter((el) => {
+      return el != null;
+    });
+    arrPrimaryResourcesIds = arrPrimaryResourcesIds.filter((el) => {
+      return el != null;
+    });
 
     const updatedResources = {
       writer: { results: [...arrWriterIDs] },
@@ -2889,13 +2922,15 @@ export class TimelineComponent implements OnInit, OnDestroy {
     ...updatedResources.graphicsMembers.results, ...updatedResources.qualityChecker.results,
     ...updatedResources.reviewer.results, ...updatedResources.pubSupportMembers.results,
     ...updatedResources.primaryResources.results];
+
     const restructureMilstoneStr = this.oProjectDetails.allMilestones && this.oProjectDetails.allMilestones.length > 0 ?
       this.oProjectDetails.allMilestones.join(';#') : '';
-
-    const mile = updateMilestoneItems.find(c => c.data.pName === this.oProjectDetails.currentMilestone);
+   
+      debugger;
+    const mile = updateMilestoneItems.find(c => c.data.pName.split(' (')[0] === this.oProjectDetails.currentMilestone);
     const task = addTaskItems.filter(c => c.milestone === this.oProjectDetails.currentMilestone);
 
-    updatedCurrentMilestone = mile && mile.length && task && task.length ? true : false;
+    updatedCurrentMilestone = mile  && task && task.length ? true : false;
 
     const responseInLines = await this.executeBulkRequests(updatedCurrentMilestone, restructureMilstoneStr,
       updatedResources, batchUrl);
@@ -3039,7 +3074,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         IsCentrallyAllocated: milestoneTask.IsCentrallyAllocated,
         CentralAllocationDone: milestoneTask.CentralAllocationDone,
         ActiveCA: milestoneTask.ActiveCA,
-        DisableCascade: milestoneTask.DisableCascade ? 'Yes' : 'No'
+        DisableCascade: milestoneTask.DisableCascade === true ? 'Yes' : 'No'
       };
       url = this.spServices.getReadURL(this.constants.listNames.Schedules.name);
       data = addData;
@@ -3068,7 +3103,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         IsCentrallyAllocated: milestoneTask.IsCentrallyAllocated,
         CentralAllocationDone: milestoneTask.CentralAllocationDone,
         ActiveCA: milestoneTask.ActiveCA,
-        DisableCascade: milestoneTask.DisableCascade ? 'Yes' : 'No'
+        DisableCascade: milestoneTask.DisableCascade === true ? 'Yes' : 'No'
       };
       // const updateTaskObj = Object.assign({}, this.queryConfig);
       // updateTaskObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +milestoneTask.pID);
@@ -3673,26 +3708,35 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
   setAsNextMilestoneCall(rowData, rowNode) {
 
-    const Title = rowNode.parent ? rowNode.parent.data.pName + ' - ' + rowData.pName : rowData.pName;
+    if (rowData.editMode) {
+      this.messageService.add({
+        key: 'custom', severity: 'warn', summary: 'Warning Message',
+        detail: 'There are some unsaved changes, Please save them.'
+      });
+      return false;
 
-    this.confirmationService.confirm({
-      message: 'Are you sure that you want to Confirm ' + Title + ' ?',
-      header: 'Confirmation',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.selectedSubMilestone = rowData;
-        const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
-        if (validateNextMilestone) {
-          this.loaderenable = true;
-          // const newCurrentMilestoneText = this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone;
-          // this.messageService.add({key: 'custom', severity:'warn', summary: 'Warning Message',
-          // detail:' Setting ' + newCurrentMilestoneText + ' as current milestone'});
-          setTimeout(() => { this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
+    } else {
+      const Title = rowNode.parent ? rowNode.parent.data.pName + ' - ' + rowData.pName : rowData.pName;
+
+      this.confirmationService.confirm({
+        message: 'Are you sure that you want to Confirm ' + Title + ' ?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          this.selectedSubMilestone = rowData;
+          const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
+          if (validateNextMilestone) {
+            this.loaderenable = true;
+            // const newCurrentMilestoneText = this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone;
+            // this.messageService.add({key: 'custom', severity:'warn', summary: 'Warning Message',
+            // detail:' Setting ' + newCurrentMilestoneText + ' as current milestone'});
+            setTimeout(() => { this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
+          }
+        },
+        reject: () => {
         }
-      },
-      reject: () => {
-      }
-    });
+      });
+    }
   }
 
 
@@ -4060,7 +4104,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
 
         if (previousNode !== undefined && previousNode.status !== "Completed" && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart)) {
-          let errormessage = previousNode.milestone +  ' Client Review';
+          let errormessage = previousNode.milestone + ' Client Review';
           if (previousNode.pName !== 'Client Review') {
             errormessage = previousNode.pName;
           }

@@ -223,7 +223,6 @@ export class CapacityDashboardComponent implements OnInit {
 
   async onSubmit() {
 
-
     if (!this.searchCapacityForm.valid) {
       if (!this.searchCapacityForm.value.resources) {
         this.messageService.add({ key: 'toastMessage', severity: 'warn', summary: 'Warn Message', detail: 'Please select Resource.' });
@@ -239,8 +238,9 @@ export class CapacityDashboardComponent implements OnInit {
       const data = {
         task: { resources: this.searchCapacityForm.value.resources },
         startTime: this.searchCapacityForm.value.rangeDates[0],
-        endTime: this.searchCapacityForm.value.rangeDates[1],
-        type : 'CapacityDashboard'
+        endTime: this.searchCapacityForm.value.rangeDates[1] ?
+          this.searchCapacityForm.value.rangeDates[1] : this.searchCapacityForm.value.rangeDates[0],
+        type: 'CapacityDashboard'
       };
 
       this.userCapacity.loaderenable = true;

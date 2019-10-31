@@ -417,6 +417,19 @@ export class DragDropComponent implements OnInit {
     this.alldbMilestones.push(nodeLabel);
 
     const milestoneTasks = this.AlldbRecords.find(c => c.milestone.Title === nodeLabel) ? this.AlldbRecords.find(c => c.milestone.Title === nodeLabel).tasks : []
+    let milestoneTaskProcess = [];
+    milestoneTasks.forEach(task => {
+      const TaskType = task.replace(/[0-9]/g, '').replace(/\s+$/, '');
+      if (milestoneTaskProcess.length > 0 && milestoneTaskProcess.find(c => c.type === TaskType)) {
+        milestoneTaskProcess.find(c => c.type === TaskType).tasks.push(task);
+      }
+      else {
+        milestoneTaskProcess.push({ type: TaskType, tasks: [task] });
+      }
+    });
+    // if (milestoneTasks.length > 0) {
+
+    // }
 
     if (miletype === 'milestone' ? this.milestonesGraph.nodes.length > 0 : this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length > 0) {
       var previousnode = null;
@@ -424,7 +437,7 @@ export class DragDropComponent implements OnInit {
         previousnode = miletype === 'milestone' ? this.milestonesGraph.nodes.map(c => c.id).filter(c => !this.milestonesGraph.links.map(c => c.source).includes(c)) : this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.map(c => c.id).filter(c => !this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.map(c => c.source).includes(c));
       }
 
-
+      
       var node = {
         id: previousnode === null ? '1' : (parseInt(previousnode[previousnode.length - 1]) + 1).toString(),
         dbId: event.id !== undefined ? event.id : 0,
@@ -446,7 +459,7 @@ export class DragDropComponent implements OnInit {
           }], links: [], nodeOrder: ['1'], taskWidth: 1200
         } : null,
         allsubmilestones: miletype === 'milestone' ? ['Default'] : null,
-        allTasks: milestoneTasks
+        allTasks: milestoneTaskProcess
       };
       const tempprvnode = this.tempSubmileArray.filter(function (node) {
         return node.data === event.data;
@@ -472,7 +485,7 @@ export class DragDropComponent implements OnInit {
       }
     }
     else {
-
+      
       node = {
         id: '1',
         dbId: event.id !== undefined ? event.id : 0,
@@ -493,7 +506,7 @@ export class DragDropComponent implements OnInit {
           }], links: [], nodeOrder: ['1'], taskWidth: 1200
         } : null,
         allsubmilestones: miletype === 'milestone' ? ['Default'] : null,
-        allTasks: milestoneTasks
+        allTasks: milestoneTaskProcess
       };
 
       link = {
@@ -639,7 +652,7 @@ export class DragDropComponent implements OnInit {
 
     const milestoneObj = Object.assign({}, this.queryConfig);
     milestoneObj.url = this.spServices.getReadURL(this.constants.listNames.Milestones.name,
-                                                  this.taskAllocationService.taskallocationComponent.milestoneList);
+      this.taskAllocationService.taskallocationComponent.milestoneList);
     milestoneObj.url = milestoneObj.url.replace(/{{status}}/gi, 'Active');
     milestoneObj.listName = this.constants.listNames.Milestones.name;
     milestoneObj.type = 'GET';
@@ -657,7 +670,7 @@ export class DragDropComponent implements OnInit {
 
     const submilestoneObj = Object.assign({}, this.queryConfig);
     submilestoneObj.url = this.spServices.getReadURL(this.constants.listNames.SubMilestones.name,
-                                                  this.taskAllocationService.taskallocationComponent.submilestonesList);
+      this.taskAllocationService.taskallocationComponent.submilestonesList);
     submilestoneObj.url = submilestoneObj.url.replace(/{{status}}/gi, 'Yes');
     submilestoneObj.listName = this.constants.listNames.SubMilestones.name;
     submilestoneObj.type = 'GET';
@@ -674,7 +687,7 @@ export class DragDropComponent implements OnInit {
 
     const tasksObj = Object.assign({}, this.queryConfig);
     tasksObj.url = this.spServices.getReadURL(this.constants.listNames.MilestoneTasks.name,
-                                                  this.taskAllocationService.taskallocationComponent.taskList);
+      this.taskAllocationService.taskallocationComponent.taskList);
     tasksObj.url = tasksObj.url.replace(/{{status}}/gi, 'Active');
     tasksObj.listName = this.constants.listNames.MilestoneTasks.name;
     tasksObj.type = 'GET';
@@ -1048,9 +1061,16 @@ export class DragDropComponent implements OnInit {
         return false;
       }
 
-      var count = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).length > 0 ?
-        this.milestonesGraph.nodes[this.milestoneIndex].allTasks.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
-          Math.max.apply(null, this.milestonesGraph.nodes[this.milestoneIndex].allTasks.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
+      if (!this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === originalType)) {
+        this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push({ type: originalType, tasks: [] })
+      }
+
+      const TaskOfType  = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === originalType).tasks;
+     
+
+      var count = TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).length > 0 ?
+      TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
+          Math.max.apply(null, TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
       const MilTask = this.sharedObject.oTaskAllocation.allTasks.find(c => c.Title === originalType);
       const CentrallyAllocated = MilTask !== undefined ? MilTask.IsCentrallyAllocated !== null ? MilTask.IsCentrallyAllocated : 'No' : 'No';
       var node = null;
@@ -1087,7 +1107,16 @@ export class DragDropComponent implements OnInit {
       }
       this.recentEventNode = node.id;
       node.label = node.label.replace(/[0-9]/g, '').trim() === 'Client Review' ? node.label.replace(/[0-9]/g, '').trim() : node.label;
-      this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push(node.label);
+     // this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push(node.label);
+
+      const existObject = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === node.taskType);
+      if (existObject) {
+        existObject.tasks.push(node.label);
+      }
+      else {
+        this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push({ type: node.taskType, tasks: [node.label] })
+      }
+
       subMilestone.task.nodes.push(node);
 
       subMilestone.task.nodes = [...subMilestone.task.nodes];
@@ -1263,7 +1292,14 @@ export class DragDropComponent implements OnInit {
     }
     this.previoustaskeventdd = node;
     this.recentEventNode = node.id;
-    this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push(node.label);
+    const existObject = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === node.taskType);
+    if (existObject) {
+      existObject.tasks.push(node.label);
+    }
+    else {
+      this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push({ type: node.taskType, tasks: [node.label] })
+    }
+    // this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push(node.label);
     this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.push(node);
     this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes = [...this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes];
   }
@@ -1408,9 +1444,9 @@ export class DragDropComponent implements OnInit {
             break;
         }
         const nodeKey = '.' + areaKey + ' g[id="' + this.recentEventNode + '"]';
-        
+
         const getNode: any = document.querySelector(nodeKey);
-        if(getNode) {
+        if (getNode) {
           getNode.scrollIntoViewIfNeeded();
         }
         this.recentEventNode = undefined;
@@ -1574,9 +1610,15 @@ export class DragDropComponent implements OnInit {
         return false;
       }
 
-      var count = this.milestonesGraph.nodes[milestoneIndex].allTasks.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).length > 0 ?
-        this.milestonesGraph.nodes[milestoneIndex].allTasks.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
-          Math.max.apply(null, this.milestonesGraph.nodes[milestoneIndex].allTasks.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
+      if (!this.milestonesGraph.nodes[milestoneIndex].allTasks.find(c => c.type === originalType)) {
+        this.milestonesGraph.nodes[milestoneIndex].allTasks.push({ type: originalType, tasks: [] })
+      }
+
+      const TaskOfType  = this.milestonesGraph.nodes[milestoneIndex].allTasks.find(c => c.type === originalType).tasks;
+
+      var count = TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).length > 0 ?
+      TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
+          Math.max.apply(null, TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
       const MilTask = this.sharedObject.oTaskAllocation.allTasks.find(c => c.Title === originalType);
       const CentrallyAllocated = MilTask !== undefined ? MilTask.IsCentrallyAllocated !== null ? MilTask.IsCentrallyAllocated : 'No' : 'No';
       var node = null;
@@ -1613,7 +1655,15 @@ export class DragDropComponent implements OnInit {
       }
 
       node.label = node.label.replace(/[0-9]/g, '').trim() === 'Client Review' ? node.label.replace(/[0-9]/g, '').trim() : node.label;
-      this.milestonesGraph.nodes[milestoneIndex].allTasks.push(node.label);
+      // this.milestonesGraph.nodes[milestoneIndex].allTasks.push(node.label);
+      const existObject = this.milestonesGraph.nodes[milestoneIndex].allTasks.find(c => c.type === node.taskType);
+      if (existObject) {
+        existObject.tasks.push(node.label);
+      }
+      else {
+        this.milestonesGraph.nodes[milestoneIndex].allTasks.push({ type: node.taskType, tasks: node.label })
+      }
+
       subMilestone.task.nodes.push(node);
 
       subMilestone.task.nodes = [...subMilestone.task.nodes];
