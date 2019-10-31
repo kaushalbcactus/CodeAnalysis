@@ -76,12 +76,11 @@ export class TaskDetailsDialogComponent implements OnInit {
 
     // const Comment = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
     // Comment.filter = Comment.filter.replace(/{{taskId}}/gi, taskId);
-    let response = await this.spServices.readItem(this.constants.listNames.Schedules.name, taskId);
-    response = this.response.length ? this.response : {};
+    const response = await this.spServices.readItem(this.constants.listNames.Schedules.name, taskId);
     // const CommentUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', Comment);
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, CommentUrl);
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    this.currentTask = response[0];
+    this.currentTask = response;
     this.getDocuments(this.currentTask);
   }
 
@@ -145,7 +144,7 @@ export class TaskDetailsDialogComponent implements OnInit {
     // this.allDocuments = this.response[0];
     const arrResult = await this.spServices.readFiles(completeFolderRelativeUrl);
     this.response = arrResult.length ? arrResult : [];
-
+    this.allDocuments = this.response;
     this.DocumentArray = this.allDocuments.filter(c => c.ListItemAllFields.TaskName === this.currentTask.Title);
 
     const Ids = this.DocumentArray.map(c => c.DocIds = c.ListItemAllFields.EditorId).filter((el, i, a) => i === a.indexOf(el));
