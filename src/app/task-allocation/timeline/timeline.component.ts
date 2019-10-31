@@ -2464,10 +2464,11 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const restructureMilstoneStr = this.oProjectDetails.allMilestones && this.oProjectDetails.allMilestones.length > 0 ?
       this.oProjectDetails.allMilestones.join(';#') : '';
 
-    const mile = updateMilestoneItems.find(c => c.data.pName === this.oProjectDetails.currentMilestone);
+    const mile = updateMilestoneItems.find(c => c.data.pName.split(' (')[0] === this.oProjectDetails.currentMilestone);
     const task = addTaskItems.filter(c => c.milestone === this.oProjectDetails.currentMilestone);
 
-    updatedCurrentMilestone = mile && mile.length && task && task.length ? true : false;
+    debugger;
+    updatedCurrentMilestone = mile && task && task.length ? true : false;
 
     const responseInLines = this.updateProjectInformation(updatedCurrentMilestone, restructureMilstoneStr, updatedResources, batchContents, changeSetId, batchGuid);
     if (responseInLines.length > 0) {
