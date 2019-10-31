@@ -238,12 +238,13 @@ export class BlockTimeDialogComponent implements OnInit {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
       return false;
     } else {
-
+      debugger;
       const obj = {
         __metadata: {
           // tslint:disable-next-line: object-literal-key-quotes
           'type': this.constants.listNames.LeaveCalendar.type
         },
+       
         Title: this.IsHalfDay ? this.sharedObject.currentUser.title + ' on half day leave' :
           this.sharedObject.currentUser.title + ' on leave',
         EventDate: new Date(this.datePipe.transform(this.eventDate, 'yyyy-MM-dd') + 'T09:00:00.000'),
