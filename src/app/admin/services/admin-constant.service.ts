@@ -40,6 +40,7 @@ export class AdminConstantService {
     GET_ACCOUNT: {
       select: 'ID,Title,Acronym,ListName,Market,ClientGroup',
       orderby: 'Title asc',
+      filter: "Active eq 'Yes'",
       top: 4900
     },
     GET_DELIVERABLE: {

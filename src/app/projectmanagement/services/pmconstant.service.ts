@@ -291,7 +291,7 @@ export class PmconstantService {
     TA: {
       select: 'Title',
       orderby: 'Title',
-      filter: "IsActive eq 'Yes'",
+      filter: "Active eq 'Yes'",
       top: 4900
     }
   };
