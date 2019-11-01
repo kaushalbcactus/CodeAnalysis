@@ -46,8 +46,8 @@ export class AppComponent {
   initSPLoggedInUser() {
     this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 103 : _spPageContextInfo.userId;
     this.globalService.currentUser.email = window.location.href.indexOf('localhost') > -1 ?
-      'maxwell.fargose@cactusglobal.com' : _spPageContextInfo.userEmail;
-    this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Maxwell' : _spPageContextInfo.userDisplayName;
+      'sneha.danduk@cactusglobal.com' : _spPageContextInfo.userEmail;
+    this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Sneha' : _spPageContextInfo.userDisplayName;
   }
   initSPComponentRedirection() {
     // tslint:disable:no-string-literal

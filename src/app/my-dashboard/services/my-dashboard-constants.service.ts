@@ -96,7 +96,7 @@ export class MyDashboardConstantsService {
     },
     TimeSpent: {
       select: 'ID,Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,DueDate,Status,ExpectedTime,TimeSpentPerDay,TimeSpentSubmitStatus',
-     // filter: 'ID eq {{taskId}}',
+      // filter: 'ID eq {{taskId}}',
     },
     Comments: {
       select: "ID,Title,Milestone,FileDirRef,NextTasks,PrevTasks,Status,ProjectCode,Task",
@@ -282,7 +282,7 @@ export class MyDashboardConstantsService {
     let status = '';
     const currentTask = Object.assign({}, this.mydashboardComponent.previousTaskStatus);
     currentTask.filter = currentTask.filter.replace(/{{taskId}}/gi, task.ID)
-                                           .replace(/{{userID}}/gi, this.sharedObject.currentUser.userId.toString());
+      .replace(/{{userID}}/gi, this.sharedObject.currentUser.userId.toString());
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, currentTask);
     for (const element of this.response) {
       if (element.AllowCompletion === 'No') {
@@ -378,7 +378,7 @@ export class MyDashboardConstantsService {
     // const projectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', project);
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectUrl);
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    return this.response.length > 0 ? this.response : {};
+    return this.response.length > 0 ? this.response[0] : {};
   }
 
 
@@ -702,10 +702,11 @@ export class MyDashboardConstantsService {
 
       }
     }
-    var nextTasks = this.NextPreviousTask !== undefined ? this.NextPreviousTask.filter(c => c.TaskType === "Next Task") : [];
-    var sendToClientPresent = false;
+
+    const nextTasks = this.NextPreviousTask !== undefined ? this.NextPreviousTask.filter(c => c.TaskType === 'Next Task') : [];
+    let sendToClientPresent = false;
     if (nextTasks.length > 0) {
-      sendToClientPresent = nextTasks.find(c => c.Task === "Send to client") !== undefined ? true : false;
+      sendToClientPresent = nextTasks.find(c => c.Task === 'Send to client') !== undefined ? true : false;
     }
 
 

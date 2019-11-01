@@ -364,9 +364,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         __metadata: { type: 'SP.ListItem' },
         Status: this.selectedTask.Task + ' Complete'
       };
-      const batchGuid = this.spServices.generateUUID();
-      const batchContents = new Array();
-      const changeSetId = this.spServices.generateUUID();
+      // const batchGuid = this.spServices.generateUUID();
+      // const batchContents = new Array();
+      // const changeSetId = this.spServices.generateUUID();
       const batchUrl = [];
       // var arrDocNames = this.selectedDocuments.map(c=> c = c.fileUrl.split('/')[7]);
       this.selectedDocuments.forEach(async element => {
@@ -473,7 +473,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   //   upload documents
   // **************************************************************************************************************************************
   async uploadDocuments(event, type) {
-
+  
     if (event.files.length) {
       let docFolder;
       const existingFiles = this.allDocuments.map(c => c.Name.toLowerCase());
@@ -571,7 +571,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   //   link uploaded documents to projects
   // ************************************************************************************************
 
-  LinkDocumentToProject(uploadedFiles) {
+  async LinkDocumentToProject(uploadedFiles) {
     const objPost = {
       __metadata: { type: 'SP.ListItem' },
       Status: '-',
@@ -601,7 +601,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     // const batchBodyContents = batchBodyContent.join('\r\n');
     // const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
     // const responseInLines = response.split('\n');
-    this.spServices.executeBatch(batchUrl);
+    await this.spServices.executeBatch(batchUrl);
     this.loadDraftDocs(this.selectedTab);
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Document updated successfully.' });
   }

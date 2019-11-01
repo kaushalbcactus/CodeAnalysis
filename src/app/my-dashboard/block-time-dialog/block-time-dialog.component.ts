@@ -238,7 +238,6 @@ export class BlockTimeDialogComponent implements OnInit {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please add Comments.' });
       return false;
     } else {
-
       const obj = {
         __metadata: {
           // tslint:disable-next-line: object-literal-key-quotes

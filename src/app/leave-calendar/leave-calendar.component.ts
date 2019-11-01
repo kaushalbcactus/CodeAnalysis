@@ -60,6 +60,12 @@ export class LeaveCalendarComponent implements OnInit {
         },
         day: {
           eventLimit: 4
+        },
+        dayGridMonth: {
+          columnHeaderFormat: {
+            weekday: 'long',
+
+          },
         }
       },
       defaultView: 'dayGridMonth',
@@ -77,13 +83,6 @@ export class LeaveCalendarComponent implements OnInit {
       buttonText: {
         today: 'current',
       },
-      // views: {
-      //   dayGridMonth: {
-      //     columnHeaderFormat: {
-      //       weekday: 'long',
-      //     },
-      //   }
-      // },
       eventMouseEnter: (event, jsEvent, view) => {
         event.el.Tooltip.show();
       },
