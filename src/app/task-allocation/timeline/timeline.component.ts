@@ -1030,7 +1030,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   public async assignUsers(allRetrievedTasks) {
 
-    debugger;
     for (let nCount = 0; nCount < this.milestoneData.length; nCount = nCount + 1) {
       let milestone = this.milestoneData[nCount];
       if (milestone.data.itemType === 'Client Review') {
@@ -1039,7 +1038,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         milestone.data.assignedUsers = [];
         const response = await await this.formatAssignedUser(assignedUsers);
         milestone.data.assignedUsers = response;
-        if(milestone.data.editMode){
+        if (milestone.data.editMode) {
           milestone.data.assignedUsers.forEach(element => {
             if (element.items.find(c => c.value.ID === milestone.data.AssignedTo.ID)) {
               milestone.data.AssignedTo = element.items.find(c => c.value.ID === milestone.data.AssignedTo.ID).value;
@@ -1056,7 +1055,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             submilestone.data.assignedUsers = [];
             const response = await await this.formatAssignedUser(assignedUsers);
             submilestone.data.assignedUsers = response;
-            if(submilestone.data.editMode){
+            if (submilestone.data.editMode) {
               submilestone.data.assignedUsers.forEach(element => {
                 if (element.items.find(c => c.value.ID === submilestone.data.AssignedTo.ID)) {
                   submilestone.data.AssignedTo = element.items.find(c => c.value.ID === submilestone.data.AssignedTo.ID).value;
@@ -1072,7 +1071,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               task.data.assignedUsers = [];
               const response = await await this.formatAssignedUser(assignedUsers);
               task.data.assignedUsers = response;
-              if(task.data.editMode){
+              if (task.data.editMode) {
                 task.data.assignedUsers.forEach(element => {
                   if (element.items.find(c => c.value.ID === task.data.AssignedTo.ID)) {
                     task.data.AssignedTo = element.items.find(c => c.value.ID === task.data.AssignedTo.ID).value;
@@ -1335,7 +1334,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
   editTask(task, rowNode) {
-    debugger;
+
     task.assignedUsers.forEach(element => {
 
       if (element.items.find(c => c.value.ID === task.AssignedTo.ID)) {
@@ -2947,12 +2946,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     const restructureMilstoneStr = this.oProjectDetails.allMilestones && this.oProjectDetails.allMilestones.length > 0 ?
       this.oProjectDetails.allMilestones.join(';#') : '';
-   
-      debugger;
     const mile = updateMilestoneItems.find(c => c.data.pName.split(' (')[0] === this.oProjectDetails.currentMilestone);
     const task = addTaskItems.filter(c => c.milestone === this.oProjectDetails.currentMilestone);
 
-    updatedCurrentMilestone = mile  && task && task.length ? true : false;
+    updatedCurrentMilestone = mile && task && task.length ? true : false;
 
     const responseInLines = await this.executeBulkRequests(updatedCurrentMilestone, restructureMilstoneStr,
       updatedResources, batchUrl);

@@ -364,9 +364,9 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
         __metadata: { type: 'SP.ListItem' },
         Status: this.selectedTask.Task + ' Complete'
       };
-      const batchGuid = this.spServices.generateUUID();
-      const batchContents = new Array();
-      const changeSetId = this.spServices.generateUUID();
+      // const batchGuid = this.spServices.generateUUID();
+      // const batchContents = new Array();
+      // const changeSetId = this.spServices.generateUUID();
       const batchUrl = [];
       // var arrDocNames = this.selectedDocuments.map(c=> c = c.fileUrl.split('/')[7]);
       this.selectedDocuments.forEach(async element => {
@@ -473,7 +473,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   //   upload documents
   // **************************************************************************************************************************************
   async uploadDocuments(event, type) {
-    debugger;
+  
     if (event.files.length) {
       let docFolder;
       const existingFiles = this.allDocuments.map(c => c.Name.toLowerCase());
