@@ -238,8 +238,8 @@ export class PmconstantService {
     PRACTICE_AREA: {
       select: 'Title',
       orderby: 'Title',
-      top: 4900,
-      filter: "IsActive eq 'Yes'"
+      filter: "IsActive eq 'Yes'",
+      top: 4900
     },
     CLIENT_LEGAL_ENTITY: {
       select: 'ID,Title,Acronym,Currency,InvoiceName,ListName,APAddress,TimeZone, SOWCounter, IsCentrallyAllocated, BillingEntity, ListName, '
@@ -276,6 +276,7 @@ export class PmconstantService {
     PROJECT_CONTANTCS: {
       select: 'ID,Title,ClientLegalEntity,Address,Designation,EmailAddress,FName,ID,LName,Phone, FullName',
       orderby: 'Title',
+      filter: "IsActive eq 'Yes'",
       top: 4900
     },
     PROJECT_TYPE: {
@@ -292,8 +293,8 @@ export class PmconstantService {
     TA: {
       select: 'Title',
       orderby: 'Title',
-      top: 4900,
       filter: "Active eq 'Yes'",
+      top: 4900
     }
   };
   public filterAction = {

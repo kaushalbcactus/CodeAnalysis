@@ -18,6 +18,7 @@ import { CopyPermissionComponent } from './admin/entitlement/copy-permission/cop
 import { AddUserToProjectsComponent } from './admin/entitlement/add-user-to-projects/add-user-to-projects.component';
 import { AddUserToSowComponent } from './admin/entitlement/add-user-to-sow/add-user-to-sow.component';
 import { GroupDescriptionComponent } from './admin/entitlement/group-description/group-description.component';
+import { AdminAuthGuard } from './auth/admin-auth.guard';
 
 const routes: Routes = [
   {
@@ -28,6 +29,7 @@ const routes: Routes = [
       {
         path: 'attribute',
         component: AttributeComponent,
+        canActivateChild: [AdminAuthGuard],
         children: [
           { path: '', redirectTo: 'bucketMasterData', pathMatch: 'prefix' },
           { path: 'bucketMasterData', component: BucketMasterdataComponent },
@@ -41,6 +43,7 @@ const routes: Routes = [
       {
         path: 'entitlement',
         component: EntitlementComponent,
+        canActivateChild: [AdminAuthGuard],
         children: [
           { path: '', redirectTo: 'userRoleMapping', pathMatch: 'prefix' },
           { path: 'userRoleMapping', component: UserRoleMappingComponent },
@@ -51,7 +54,7 @@ const routes: Routes = [
           { path: 'addGroupDescription', component: GroupDescriptionComponent }
         ]
       },
-      { path: 'clientMasterData', component: ClientMasterdataComponent },
+      { path: 'clientMasterData', component: ClientMasterdataComponent},
       { path: 'rules', component: RulesComponent },
       { path: 'referenceData', component: ReferenceDataComponent }
     ],
