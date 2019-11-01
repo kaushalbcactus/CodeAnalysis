@@ -238,6 +238,7 @@ export class PmconstantService {
     PRACTICE_AREA: {
       select: 'Title',
       orderby: 'Title',
+      filter: "IsActive eq 'Yes'",
       top: 4900
     },
     CLIENT_LEGAL_ENTITY: {
@@ -290,6 +291,7 @@ export class PmconstantService {
     TA: {
       select: 'Title',
       orderby: 'Title',
+      filter: "IsActive eq 'Yes'",
       top: 4900
     }
   };
