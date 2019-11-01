@@ -275,6 +275,7 @@ export class PmconstantService {
     PROJECT_CONTANTCS: {
       select: 'ID,Title,ClientLegalEntity,Address,Designation,EmailAddress,FName,ID,LName,Phone, FullName',
       orderby: 'Title',
+      filter: "IsActive eq 'Yes'",
       top: 4900
     },
     PROJECT_TYPE: {
