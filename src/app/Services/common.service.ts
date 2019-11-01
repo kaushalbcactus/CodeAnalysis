@@ -947,6 +947,11 @@ export class CommonService {
         })
     }
 
+    sortDataDateArray(array:any){
+     
+        return array.sort((a, b) => b.label - a.label)
+    }
+
     sortNumberArray(array: any) {
         return array.sort((a, b) => {
             if (parseFloat(a.label) && parseFloat(b.label)) {

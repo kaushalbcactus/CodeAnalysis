@@ -56,7 +56,7 @@ export class PmconstantService {
   public crTaskOptions = {
     select: 'ID,Title,Status, AssignedTo/ID,AssignedTo/Title,DueDate',
     expand: 'AssignedTo/ID,AssignedTo/Title',
-    filter: 'Title eq \'{0}\' or Title eq \'{1}\''
+    filter: 'Title eq \'{0}\''
   };
 
   public pInfoPendingAllocationIndiviualViewOptions = {
@@ -238,7 +238,8 @@ export class PmconstantService {
     PRACTICE_AREA: {
       select: 'Title',
       orderby: 'Title',
-      top: 4900
+      top: 4900,
+      filter: "IsActive eq 'Yes'"
     },
     CLIENT_LEGAL_ENTITY: {
       select: 'ID,Title,Acronym,Currency,InvoiceName,ListName,APAddress,TimeZone, SOWCounter, IsCentrallyAllocated, BillingEntity, ListName, '
@@ -258,7 +259,8 @@ export class PmconstantService {
     DELIVERY_TYPE: {
       select: 'Title,Acronym',
       orderby: 'Title',
-      top: 4900
+      top: 4900,
+      filter: "Active eq 'Yes'",
     },
     MILESTONE_TYPE: {
       select: 'Title,Mandatory',
@@ -290,7 +292,8 @@ export class PmconstantService {
     TA: {
       select: 'Title',
       orderby: 'Title',
-      top: 4900
+      top: 4900,
+      filter: "Active eq 'Yes'",
     }
   };
   public filterAction = {

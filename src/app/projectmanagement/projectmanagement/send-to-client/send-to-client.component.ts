@@ -209,13 +209,14 @@ export class SendToClientComponent implements OnInit {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
       await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
-      const projectInfoOptions = { Status: 'Author Review' };
-      const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
-      await this.spOperations.updateItem(this.Constant.listNames.ProjectInformation.name, projectID[0].ID, projectInfoOptions,
-        this.Constant.listNames.ProjectInformation.type);
+
       // check whether next task is null or not.
       // Update the next task columnn PreviousTaskClosureDate with current date and time.
       if (task.NextTasks) {
+        const projectInfoOptions = { Status: 'Author Review' };
+        const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
+        await this.spOperations.updateItem(this.Constant.listNames.ProjectInformation.name, projectID[0].ID, projectInfoOptions,
+          this.Constant.listNames.ProjectInformation.type);
         const nextOptions = { PreviousTaskClosureDate: new Date() };
         const nextTask = this.scArrays.nextTaskArray.filter(item => item.Title === task.NextTasks);
         if (nextTask && nextTask.length) {
@@ -396,7 +397,7 @@ export class SendToClientComponent implements OnInit {
 
         const preTaskObj = Object.assign({}, this.options);
         preTaskObj.url = this.spServices.getReadURL(this.Constant.listNames.Schedules.name, this.pmConstant.previousTaskOptions);
-        preTaskObj.url =  preTaskObj.url.replace('{0}', scObj.PreviousTask).replace('{1}', scObj.NextTasks);
+        preTaskObj.url = preTaskObj.url.replace('{0}', scObj.PreviousTask).replace('{1}', scObj.NextTasks);
         preTaskObj.listName = this.Constant.listNames.Schedules.name;
         preTaskObj.type = 'GET';
         batchUrl.push(preTaskObj);

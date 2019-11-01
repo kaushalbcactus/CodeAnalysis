@@ -1042,6 +1042,8 @@ export class UserProfileComponent implements OnInit {
         type: '',
         listName: ''
       };
+
+      debugger;
       // Not required to get the username Id in case of Edit user
       if (!this.showeditUser) {
         const userEmailId = addUserForm.value.username.EntityData.Email;
@@ -1486,9 +1488,9 @@ export class UserProfileComponent implements OnInit {
     }
     if (isEdit) {
       if (formObj.dateofexit) {
-        const dateOfExit = this.datePipe.transform(new Date(formObj.dateofexit), 'MMM dd yyyy');
-        const todayDate = this.datePipe.transform(new Date(), 'MMM dd yyyy');
-        if (dateOfExit <= todayDate) {
+        const dateOfExit = formObj.dateofexit ? new Date(formObj.dateofexit) : null;
+        const todayDate = new Date(new Date().setHours(0, 0, 0, 0));
+        if ( dateOfExit !== null && dateOfExit.getTime() <= todayDate.getTime()) {
           data.IsActive = this.adminConstants.LOGICAL_FIELD.NO;
         } else {
           data.IsActive = this.adminConstants.LOGICAL_FIELD.YES;

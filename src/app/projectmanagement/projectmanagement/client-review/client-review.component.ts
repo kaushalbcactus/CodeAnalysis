@@ -308,7 +308,7 @@ export class ClientReviewComponent implements OnInit {
 
         const preTaskObj = Object.assign({}, this.options);
         preTaskObj.url = this.spServices.getReadURL(this.Constant.listNames.Schedules.name, this.pmConstant.crTaskOptions);
-        preTaskObj.url =  preTaskObj.url.replace('{0}', crObj.PreviousTask);
+        preTaskObj.url = preTaskObj.url.replace('{0}', crObj.PreviousTask);
         preTaskObj.listName = this.Constant.listNames.Schedules.name;
         preTaskObj.type = 'GET';
         batchUrl.push(preTaskObj);
@@ -331,7 +331,7 @@ export class ClientReviewComponent implements OnInit {
         if (prevTask[0] && prevTask[0].length) {
           taskItem.PreviousTaskStatus = prevTask[0][0].Status;
           this.crArrays.previousTaskArray.push(prevTask[0]);
-          taskItem.DeliveryDate = prevTask[0][0].DueDate;
+          taskItem.DeliveryDate = prevTask[0][0].DueDate ? new Date(prevTask[0][0].DueDate) : null;
           taskItem.DeliveryDateFormat = this.datePipe.transform(new Date(prevTask[0][0].DueDate), 'MMM dd, yyyy, h:mm a');
           deliveryDateTempArray.push({ label: taskItem.DeliveryDate, value: taskItem.DeliveryDate });
         }
@@ -373,9 +373,10 @@ export class ClientReviewComponent implements OnInit {
     this.crArrays.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
     this.crArrays.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
     this.crArrays.DeliverableType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DeliverableType, value: a.DeliverableType }; return b; }).filter(ele => ele.label)));
-    this.crArrays.DueDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.DueDateFormat, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.DueDateFormat, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
+    this.crArrays.DueDate = this.commonService.sortDataDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.DueDateFormat, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.DueDateFormat, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
     this.crArrays.Milestone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Milestone, value: a.Milestone }; return b; }).filter(ele => ele.label)));
-    this.crArrays.DeliveryDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.DeliveryDate, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.DeliveryDate, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
+    this.crArrays.DeliveryDate = this.commonService.sortDataDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.DeliveryDate, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.DeliveryDate, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
+
   }
 
   uniqueArrayObj(array: any) {
@@ -407,7 +408,7 @@ export class ClientReviewComponent implements OnInit {
     });
     // for (const document in documents) {
     //   // if (documents[document].visiblePrevTaskDoc === true) {
-       
+
     // }
   }
   goToAllocationPage(task) {
