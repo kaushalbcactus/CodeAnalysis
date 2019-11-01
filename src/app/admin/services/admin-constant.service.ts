@@ -380,11 +380,26 @@ export class AdminConstantService {
   public EntitleMentMenu = {
     List: []
   }
-  
+
   public TabMenu = {
     ClientMaster: [],
     UserProfile: [],
     Attribute: [],
     Entitlement: []
+  }
+
+  public userRole = {
+    SPMAA: false,
+    SPMEA: false,
+    SPMPA: false,
+    MTeam: false,
+    SPTeam: false
+  }
+
+  public toastMsg = {
+    SPMAD: false,
+    SPMEA: false,
+    SPMAA: false,
+    EAPA: false
   }
 }

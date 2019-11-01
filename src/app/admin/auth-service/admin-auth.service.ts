@@ -3,6 +3,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { AdminConstantService } from '../services/admin-constant.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
+import { MessageService } from 'primeng/api';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,8 @@ export class AdminAuthService {
     private globalObject: GlobalService,
     private spOperationsServices: SPOperationService,
     private adminConstantService: AdminConstantService,
-    private constantsService: ConstantsService
+    private constantsService: ConstantsService,
+    public messageService: MessageService
   ) { }
 
   async getUserRole() {
@@ -28,7 +30,10 @@ export class AdminAuthService {
         { label: 'Client Master', routerLink: ['clientMasterData'] },
         { label: 'User Profile', routerLink: ['userProfile'] }
       ]
-      if (groups.indexOf('SPTeam') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('Attribute_Admin ') > -1) {
+      if (groups.indexOf('SPTeam') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('Attribute_Admin') > -1) {
+        if (groups.indexOf('Attribute_Admin') > -1) {
+          this.adminConstantService.userRole.SPMAA = true;
+        }
         this.adminConstantService.DefaultMenu.List.push(
           { label: 'Attribute', routerLink: ['attribute'] }
         )
@@ -44,7 +49,8 @@ export class AdminAuthService {
         // { routerLink: ['/admin/entitlement/addUserToSow'], label: 'Add User To Sow', value: 'AddUserToSow' },
         // { routerLink: ['/admin/entitlement/addUserToProjects'], label: 'Add User To Projects', value: 'AddUserToProjects' }
         this.adminConstantService.EntitleMentMenu.List = [];
-        if (groups.indexOf('Entitlement_Admin ') > -1) {
+        if (groups.indexOf('Entitlement_Admin') > -1) {
+          this.adminConstantService.userRole.SPMEA = true;
           this.adminConstantService.EntitleMentMenu.List.push(
             { label: 'User to Role Mapping', routerLink: ['userRoleMapping'] },
             { label: 'Role to User Mapping', routerLink: ['roleUserMapping'] },
@@ -52,7 +58,8 @@ export class AdminAuthService {
           )
         }
 
-        if (groups.indexOf('Permission_Admin ') > -1) {
+        if (groups.indexOf('Permission_Admin') > -1) {
+          this.adminConstantService.userRole.SPMPA = true;
           this.adminConstantService.EntitleMentMenu.List.push(
             { label: 'Add User To Sow', routerLink: ['addUserToSow'] },
             { label: 'Add User To Projects', routerLink: ['addUserToProjects'] },
@@ -60,6 +67,9 @@ export class AdminAuthService {
         }
 
         if (groups.indexOf('SPTeam') > -1 || groups.indexOf('Managers') > -1) {
+          this.adminConstantService.userRole.SPMEA = true;
+          this.adminConstantService.userRole.SPMPA = true;
+          this.adminConstantService.userRole.SPMAA = true;
           this.adminConstantService.EntitleMentMenu.List = [];
           this.adminConstantService.EntitleMentMenu.List.push(
             { label: 'User to Role Mapping', routerLink: ['userRoleMapping'] },
@@ -69,11 +79,17 @@ export class AdminAuthService {
             { label: 'Add User To Projects', routerLink: ['addUserToProjects'] },
           )
           if (groups.indexOf('SPTeam') > -1) {
+            this.adminConstantService.userRole.SPTeam = true;
             this.adminConstantService.EntitleMentMenu.List.push(
               { label: 'Add Group Description', routerLink: ['addGroupDescription'] }
             )
           }
+          if (groups.indexOf('Managers') > -1) {
+            this.adminConstantService.userRole.MTeam = true;
+          }
         }
+
+        console.log('this.adminConstantService.EntitleMentMenu.List ', this.adminConstantService.EntitleMentMenu.List);
 
       }
 
