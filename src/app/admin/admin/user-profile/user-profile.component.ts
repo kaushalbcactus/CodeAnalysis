@@ -1729,7 +1729,7 @@ export class UserProfileComponent implements OnInit {
     this.currUserObj = rowData;
     this.pMenuItems = [
       { label: 'Edit', command: (e) => this.showEditUserModal() },
-      { label: 'view', command: (e) => this.showRightViewUserModal() }
+      { label: 'View', command: (e) => this.showRightViewUserModal() }
     ];
     console.log(rowData);
   }
