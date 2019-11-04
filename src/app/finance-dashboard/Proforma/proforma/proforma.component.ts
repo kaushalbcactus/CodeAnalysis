@@ -155,7 +155,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
             if (res) {
                 this.projectInfoData = res;
-                console.log('PI Data ', this.projectInfoData);
+              // console.log('PI Data ', this.projectInfoData);
             }
         }))
     }
@@ -166,7 +166,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultPoData.subscribe((res) => {
             if (res) {
                 this.purchaseOrdersList = res;
-                console.log('PO Data ', this.purchaseOrdersList);
+              // console.log('PO Data ', this.purchaseOrdersList);
             }
         }))
     }
@@ -177,7 +177,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultPCData.subscribe((res) => {
             if (res) {
                 this.projectContactsData = res;
-                console.log('this.projectContactsData ', this.projectContactsData);
+              // console.log('this.projectContactsData ', this.projectContactsData);
                 // this.getPCForSentToAMForApproval();
             }
         }))
@@ -190,7 +190,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultUSSData.subscribe((res) => {
             if (res) {
                 this.usStatesData = res;
-                console.log('US States Data ', this.usStatesData);
+              // console.log('US States Data ', this.usStatesData);
             }
         }))
     }
@@ -202,7 +202,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultCUData.subscribe((res) => {
             if (res) {
                 this.currencyData = res;
-                console.log('currency Data ', this.currencyData);
+              // console.log('currency Data ', this.currencyData);
             }
         }))
     }
@@ -218,7 +218,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultCLEData.subscribe((res) => {
             if (res) {
                 this.cleData = res;
-                console.log('CLE Data ', this.cleData);
+              // console.log('CLE Data ', this.cleData);
             }
         }))
     }
@@ -254,7 +254,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultRCData.subscribe((res) => {
             if (res) {
                 this.rcData = res;
-                console.log('Resource Categorization ', this.rcData);
+              // console.log('Resource Categorization ', this.rcData);
             }
         }))
     }
@@ -487,11 +487,11 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     // On Row Selection
     onRowSelect(event) {
-        console.log('Event ', this.selectedRowData);
+      // console.log('Event ', this.selectedRowData);
     }
 
     checkSelectedRowData() {
-        console.log('Event ', this.selectedRowData);
+      // console.log('Event ', this.selectedRowData);
     }
 
     convertToExcelFile(cnf1) {
@@ -507,7 +507,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             accept: () => {
                 this.msgs = [{ severity: 'info', summary: 'Confirmed', detail: 'You have Confirmed' }];
                 // Call server service here
-                console.log('obj ', obj);
+              // console.log('obj ', obj);
                 this.onSubmit(obj.type);
             },
             reject: () => {
@@ -523,7 +523,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
     // Open popups
     openPopup(data, popUpData) {
-        console.log('Row data  ', data);
+      // console.log('Row data  ', data);
         let proformaSts: string = '';
         this.items = [];
         if (data.Status) {
@@ -562,7 +562,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         )
 
         if (this.items.length === 0) {
-            console.log('this.items ', this.items);
+          // console.log('this.items ', this.items);
             popUpData.visible = false;
         }
 
@@ -588,7 +588,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     openMenuContent(event, data) {
         // console.log(JSON.stringify(data));
         this.selectedRowItem = data;
-        console.log(event);
+      // console.log(event);
         this.confirmDialog.title = event.item.label;
         this.submitBtn.isClicked = false;
         this.formSubmit.isSubmit = false;
@@ -707,7 +707,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
 
     showHideState(val: any) {
-        console.log('val ', val);
+      // console.log('val ', val);
         this.isTemplate4US = val.value == "US" ? this.isTemplate4US = true : this.isTemplate4US = false;
         if (this.isTemplate4US) {
             this.createProforma_form.addControl('State', new FormControl('', Validators.required));
@@ -767,7 +767,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     getUniqueItem(data: any[]) {
         let uniqueitem = this.uniqueArrayObj1(data);
-        console.log('uniqueitem ', uniqueitem);
+      // console.log('uniqueitem ', uniqueitem);
         if (uniqueitem) {
             this.getPfPfbSow(uniqueitem);
         }
@@ -854,9 +854,9 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.pfresp = arrResults[0] ? arrResults[0] : [];
                 this.pfbresp = arrResults[1] ? arrResults[1] : [];
                 this.sowresp = arrResults[2] ? arrResults[2] : [];
-                console.log('this.pfresp ', this.pfresp);
-                console.log('this.pfbresp ', this.pfbresp);
-                console.log('this.sowresp ', this.sowresp);
+              // console.log('this.pfresp ', this.pfresp);
+              // console.log('this.pfbresp ', this.pfbresp);
+              // console.log('this.sowresp ', this.sowresp);
             }
             // });
 
@@ -1214,7 +1214,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (existingFile) {
             let file = existingFile[existingFile.length - 1];
             // let fileName = file.substr(0, file.indexOf('.'));
-            console.log('fileName  ', file);
+          // console.log('fileName  ', file);
             if (file === event.target.files[0].name) {
                 this.messageService.add({ key: 'proformaInfoToast', severity: 'info', summary: 'Info message', detail: 'This file name already exit.Please select another file name.', life: 4000 });
                 this.replaceProforma_form.reset();
@@ -1234,8 +1234,8 @@ export class ProformaComponent implements OnInit, OnDestroy {
             }
             this.fileReader.readAsArrayBuffer(this.selectedFile);
             this.fileReader.onload = () => {
-                console.log('selectedFile ', this.selectedFile);
-                console.log('this.fileReader  ', this.fileReader.result);
+              // console.log('selectedFile ', this.selectedFile);
+              // console.log('this.fileReader  ', this.fileReader.result);
                 let folderPath: string = '/Finance/Proforma/';
                 let cleListName = this.getCLEListNameFromCLE(this.selectedRowItem.ClientLegalEntity);
                 this.filePathUrl = this.spServices.getFileUploadUrl(this.globalService.sharePointPageObject.webRelativeUrl + '/' + cleListName + folderPath, this.selectedFile.name, true);
@@ -1296,7 +1296,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
 
     onCLIChange(data: any) {
-        console.log(data);
+      // console.log(data);
         if (data) {
             let cleItem = data.value;
             this.getPONumberFromCLE(data.value.Title);
@@ -1306,7 +1306,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
     selectedPOItem: any;
     onPOChange(data: any) {
-        console.log('Data ', data);
+      // console.log('Data ', data);
         this.selectedPOItem = data;
         this.createProforma_form.patchValue({
             Currency: data.value.Currency
@@ -1322,7 +1322,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.poNames.push(x);
             }
         });
-        console.log(this.poNames);
+      // console.log(this.poNames);
     }
 
     generateProformaNumber(cle: any) {
@@ -1364,11 +1364,11 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 this.listOfPOCNames.push(item)
             }
         });
-        console.log('this.listOfPOCNames ', this.listOfPOCNames);
+      // console.log('this.listOfPOCNames ', this.listOfPOCNames);
     }
 
     pocChange(val) {
-        console.log(val)
+      // console.log(val)
     }
 
     cancelFormSub(formType) {
@@ -1704,7 +1704,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     }
     enterPOAmtMsg: boolean = false;
     enteredPOAmt(val) {
-        console.log('val ', val);
+      // console.log('val ', val);
         let amt = parseInt(val);
         let poScheduled = parseFloat(this.selectedPOItem.value.TotalScheduled ? this.selectedPOItem.value.TotalScheduled : 0);
         let poInvoiced = parseFloat(this.selectedPOItem.value.TotalInvoiced ? this.selectedPOItem.value.TotalInvoiced : 0);
@@ -1794,14 +1794,14 @@ export class ProformaComponent implements OnInit, OnDestroy {
         } else if (this.proformaTable.filteredValue === null || this.proformaTable.filteredValue === undefined) {
             this.createColFieldValues(this.proformaRes);
         } else {
-            console.log('this.proformaTable ->  ', this.proformaTable);
+          // console.log('this.proformaTable ->  ', this.proformaTable);
         }
     }
 
     isEmpty(obj, firstColFilter) {
         for (var prop in obj) {
             if (obj.hasOwnProperty(prop) && firstColFilter[prop]) {
-                console.log(this.proformaColArray[prop]);
+              // console.log(this.proformaColArray[prop]);
             } else {
                 this.firstFilterCol(this.proformaTable.filteredValue, prop);
             }
@@ -1826,7 +1826,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 tempArr.push({ label: element, value: element });
             }
         }
-        console.log(tempArr);
+      // console.log(tempArr);
         this.proformaColArray[colName] = [...tempArr];
     }
 

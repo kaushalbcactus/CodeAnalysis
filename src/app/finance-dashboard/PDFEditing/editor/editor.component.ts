@@ -2089,7 +2089,7 @@ export class EditorComponent implements OnInit {
         if (getLi === null || getLi === undefined) {
             this.data = document.getElementById(id).innerHTML;
         } else {
-            console.log(getLi.firstElementChild.innerHTML);
+            // console.log(getLi.firstElementChild.innerHTML);
             this.data = getLi.firstElementChild.innerHTML;
         }
     }
@@ -2190,12 +2190,12 @@ export class EditorComponent implements OnInit {
             USInvoice.maincontent = USInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsteriskMessage\\]\\]', 'gi'), 'none');
             this.showAppendix = false;
         }
-        console.log(newArr);
+        // console.log(newArr);
 
         // const header = document.getElementById('header');
         let headerObj: any = this.headerstyle;
         headerObj = headerObj.replace('[[HeaderContent]]', USInvoice.headerCreate);
-        console.log('Header Html', headerObj);
+        // console.log('Header Html', headerObj);
 
         // const content = document.getElementById('main_content');
         let contentObj: string = this.contentStyle;
@@ -2207,23 +2207,23 @@ export class EditorComponent implements OnInit {
         } else {
             outerData = USInvoice.maincontent.replace('[[Appendix]]', appendix);
             contentObj = contentObj + outerData + '</body></html>';
-            console.log('Main Content Html', contentObj);
+            // console.log('Main Content Html', contentObj);
 
         }
-        console.log('Main Content Html', contentObj);
+        // console.log('Main Content Html', contentObj);
 
 
         const footer = document.getElementById('footer');
         let footerObj: any = this.footerStyle;
         footerObj = footerObj.replace('[[FooterContent]]', USInvoice.footerCreate);
-        console.log('Footer Html', footerObj);
+        // console.log('Footer Html', footerObj);
 
         this.originalInvoice = {};
         this.originalInvoice.Header = headerObj;
         this.originalInvoice.Content = contentObj;
         this.originalInvoice.Footer = footerObj;
 
-        console.log(this.originalInvoice.Content);
+        // console.log(this.originalInvoice.Content);
 
         this.address = '';
         this.clientContact = '';
@@ -2305,7 +2305,7 @@ export class EditorComponent implements OnInit {
         }
 
         this.USHtmlObject = USObject;
-        console.log(this.USHtmlObject);
+        // console.log(this.USHtmlObject);
 
         delete this.USHtmlObject.maincontent;
         delete this.USHtmlObject.headerCreate;
@@ -2318,7 +2318,7 @@ export class EditorComponent implements OnInit {
         obj.pdf = this.originalInvoice;
         obj.saveObj = this.USHtmlObject;
 
-        console.log(obj);
+        // console.log(obj);
 
         return obj;
 
@@ -2372,7 +2372,7 @@ export class EditorComponent implements OnInit {
         // const header = document.getElementById('header');
         let headerObj: any = this.headerstyle;
         headerObj = headerObj.replace('[[HeaderContent]]', JapanInvoice.headerCreate);
-        console.log('Header Html', headerObj);
+        // console.log('Header Html', headerObj);
 
         // const content = document.getElementById('main_content');
         let contentObj: string = this.contentStyle;
@@ -2384,7 +2384,7 @@ export class EditorComponent implements OnInit {
         } else {
             outerData = JapanInvoice.maincontent.replace('[[Appendix]]', appendix);
             contentObj = contentObj + outerData + '</body></html>';
-            console.log('Main Content Html', contentObj);
+            // console.log('Main Content Html', contentObj);
 
         }
 
@@ -2392,7 +2392,7 @@ export class EditorComponent implements OnInit {
         const footer = document.getElementById('footer');
         let footerObj: any = this.footerStyle;
         footerObj = footerObj.replace('[[FooterContent]]', JapanInvoice.footerCreate);
-        console.log('Footer Html', footerObj);
+        // console.log('Footer Html', footerObj);
 
         this.originalInvoice = {};
         this.originalInvoice.Header = headerObj;
@@ -2451,7 +2451,7 @@ export class EditorComponent implements OnInit {
         obj.pdf = this.originalInvoice;
         obj.saveObj = this.japanHtmlObject;
 
-        console.log(obj);
+        // console.log(obj);
         return obj;
     }
 
@@ -2492,22 +2492,22 @@ export class EditorComponent implements OnInit {
         if (invoiceData.address2 != null && invoiceData.address2.trim() !== ''
             && invoiceData.address2 !== undefined) {
             this.indAddress = this.indAddress + IndiaInvoice.address2;
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         }
         if (invoiceData.address3 != null && invoiceData.address3.trim() !== ''
             && invoiceData.address3 !== undefined) {
             this.indAddress = this.indAddress + IndiaInvoice.address3;
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         }
         if (invoiceData.address4 != null && invoiceData.address4.trim() !== ''
             && invoiceData.address4 !== undefined) {
             this.indAddress = this.indAddress + IndiaInvoice.address4;
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         }
 
         if (this.indAddress !== null && this.indAddress.trim() !== '' && this.indAddress !== undefined) {
             IndiaInvoice.maincontent = IndiaInvoice.maincontent.replace('[[AddressMulti]]', this.indAddress);
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         } else {
             IndiaInvoice.maincontent = IndiaInvoice.maincontent.replace('[[AddressMulti]]', this.indAddress);
         }
@@ -2537,7 +2537,7 @@ export class EditorComponent implements OnInit {
 
         let headerObj: any = this.headerstyle;
         headerObj = headerObj.replace('[[HeaderContent]]', IndiaInvoice.headerCreate);
-        console.log('Header Html', headerObj);
+        // console.log('Header Html', headerObj);
 
         // const content = document.getElementById('main_content');
         let contentObj: string = this.contentStyle;
@@ -2549,20 +2549,20 @@ export class EditorComponent implements OnInit {
         } else {
             outerData = IndiaInvoice.maincontent.replace('[[Appendix]]', appendix);
             contentObj = contentObj + outerData + '</body></html>';
-            console.log('Main Content Html', contentObj);
+            // console.log('Main Content Html', contentObj);
         }
 
         const footer = document.getElementById('footer');
         let footerObj: any = this.footerStyle;
         footerObj = footerObj.replace('[[FooterContent]]', IndiaInvoice.footerCreate);
-        console.log('Footer Html', footerObj);
+        // console.log('Footer Html', footerObj);
 
         this.originalInvoice = {};
         this.originalInvoice.Header = headerObj;
         this.originalInvoice.Content = contentObj;
         this.originalInvoice.Footer = footerObj;
 
-        console.log(headerObj);
+        // console.log(headerObj);
 
         this.indAddress = '';
         const IndiaObject: any = Object.assign({}, this.IndiaTemplate);
@@ -2601,22 +2601,22 @@ export class EditorComponent implements OnInit {
         if (invoiceData.address2 != null && invoiceData.address2.trim() !== ''
             && invoiceData.address2 !== undefined) {
             this.indAddress = this.indAddress + IndiaObject.address2;
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         }
         if (invoiceData.address3 != null && invoiceData.address3.trim() !== ''
             && invoiceData.address3 !== undefined) {
             this.indAddress = this.indAddress + IndiaObject.address3;
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         }
         if (invoiceData.address4 != null && invoiceData.address4.trim() !== ''
             && invoiceData.address4 !== undefined) {
             this.indAddress = this.indAddress + IndiaObject.address4;
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         }
 
         if (this.indAddress !== null && this.indAddress.trim() !== '' && this.indAddress !== undefined) {
             IndiaObject.contactDetails1 = IndiaObject.contactDetails1.replace('[[AddressMulti]]', this.indAddress);
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         } else {
             IndiaObject.contactDetails1 = IndiaObject.contactDetails1.replace('[[AddressMulti]]', this.indAddress);
         }
@@ -2650,23 +2650,23 @@ export class EditorComponent implements OnInit {
         obj.pdf = this.originalInvoice;
         obj.saveObj = this.indiaHtmlObject;
 
-        console.log(obj);
+        // console.log(obj);
         return obj;
     }
     widthDefineModal: boolean;
     getData(data: { htmldata: string; class: string; }) {
-        console.log(data);
+        // console.log(data);
         this.editor = false;
         const mainUl = document.getElementById(this.elementId);
         const getLi = mainUl.getElementsByTagName('li')[1];
-        console.log('data.htmldata ', data.htmldata);
-        console.log('data.class ', data.class);
+        // console.log('data.htmldata ', data.htmldata);
+        // console.log('data.class ', data.class);
         if (this.elementId === 'appendix') {
             document.getElementById(this.elementId).innerHTML = data.htmldata;
             const returnVal = this.extractData(data.htmldata);
-            if(returnVal) {
+            if (returnVal) {
                 this.widthDefineModal = true;
-            } 
+            }
             document.getElementById('appendix').parentElement.className = data.class;
         } else if (getLi === null || getLi === undefined) {
             document.getElementById(this.elementId).innerHTML = data.htmldata;
@@ -2685,29 +2685,29 @@ export class EditorComponent implements OnInit {
         oDiv.innerHTML = table;
         var oTable = oDiv.querySelector('table');
         if (oTable) {
-        this.appendixTableTh = oTable.rows[0].cells;
-        const tableHeader = [];
-        const tableRowData = [];
+            this.appendixTableTh = oTable.rows[0].cells;
+            const tableHeader = [];
+            const tableRowData = [];
 
-        if (oTable.rows[0].cells.length) {
-            for (let i = 0; i < oTable.rows[0].cells.length; i++) {
-                const element = oTable.rows[0].cells[i].innerText;
-                tableHeader.push(element);
+            if (oTable.rows[0].cells.length) {
+                for (let i = 0; i < oTable.rows[0].cells.length; i++) {
+                    const element = oTable.rows[0].cells[i].innerText;
+                    tableHeader.push(element);
+                }
             }
-        }
-        if (oTable.rows[1].cells.length) {
-            for (let j = 0; j < oTable.rows[1].cells.length; j++) {
-                const element = oTable.rows[1].cells[j].innerText;
-                tableRowData.push({ element, width: '' });
+            if (oTable.rows[1].cells.length) {
+                for (let j = 0; j < oTable.rows[1].cells.length; j++) {
+                    const element = oTable.rows[1].cells[j].innerText;
+                    tableRowData.push({ element, width: '' });
+                }
             }
+            this.appendixEditTbHeader = tableHeader;
+            this.appendixEditTbbody = tableRowData;
+            return true;
+        } else {
+            return false;
         }
-        this.appendixEditTbHeader = tableHeader;
-        this.appendixEditTbbody = tableRowData;
-        return true;
-    } else {
-        return false;
     }
-}
     errMsg: string;
     definedColWidth: number = 0;
     setWidth(type: string) {
@@ -2853,7 +2853,7 @@ export class EditorComponent implements OnInit {
         this.modifiedInvoice.Content = contentObj;
         this.modifiedInvoice.Footer = footerObj;
 
-        console.log(this.modifiedInvoice);
+        // console.log(this.modifiedInvoice);
 
         const obj: any = {};
         obj.pdf = this.modifiedInvoice;
@@ -2900,14 +2900,14 @@ export class EditorComponent implements OnInit {
             obj.saveObj = this.indiaHtmlObject;
         }
 
-        console.log(obj);
+        // console.log(obj);
 
         setTimeout(async () => {
             await this.fdShareDataService.callProformaInvoiceEdit(obj);
             this.displayJapan = false;
             this.displayUS = false;
             this.displayIndia = false;
-            this.messageService.add({ key: 'editToast', severity: 'success', summary: 'Success message', detail: this.fdConstantsService.fdComponent.selectedEditObject.Type + ' edited successfully.', life: 2000 });
+            this.messageService.add({ key: 'editToast', severity: 'success', summary: 'Success message', detail: this.fdConstantsService.fdComponent.selectedEditObject.Code + ', ' + this.fdConstantsService.fdComponent.selectedEditObject.Type + ' edited successfully.', life: 2000 });
         }, 300);
     }
 
@@ -3010,7 +3010,7 @@ export class EditorComponent implements OnInit {
         this.subscription.add(this.fdShareDataService.defaultPoData.subscribe((res) => {
             if (res) {
                 this.purchaseOrdersList = res;
-                console.log('PO Data ', this.purchaseOrdersList);
+                // console.log('PO Data ', this.purchaseOrdersList);
             }
         }))
     }
@@ -3021,7 +3021,7 @@ export class EditorComponent implements OnInit {
         this.subscription.add(this.fdShareDataService.defaultPCData.subscribe((res) => {
             if (res) {
                 this.projectContactsData = res;
-                console.log('this.projectContactsData ', this.projectContactsData);
+                // console.log('this.projectContactsData ', this.projectContactsData);
                 // this.getPCForSentToAMForApproval();
             }
         }))
@@ -3037,7 +3037,7 @@ export class EditorComponent implements OnInit {
         this.subscription.add(this.fdShareDataService.defaultCLEData.subscribe((res) => {
             if (res) {
                 this.cleData = res;
-                console.log('CLE Data ', this.cleData);
+                // console.log('CLE Data ', this.cleData);
             }
         }))
     }
@@ -3089,7 +3089,7 @@ export class EditorComponent implements OnInit {
         this.subscription.add(this.fdShareDataService.defaultPIData.subscribe((res) => {
             if (res) {
                 this.projectInfoData = res;
-                console.log('PI Data ', this.projectInfoData);
+                // console.log('PI Data ', this.projectInfoData);
             }
         }))
     }
