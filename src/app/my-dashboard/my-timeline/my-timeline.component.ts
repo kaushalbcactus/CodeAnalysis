@@ -429,20 +429,19 @@ export class MyTimelineComponent implements OnInit {
   
       // this.response  = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
       this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, +this.task.ID);
-      this.task = this.response.length ? this.response[0] : {};
+      this.task = this.response ? this.response : {};
       this.task.AssignedTo = this.sharedObject.currentUser.title;
-      this.task.TimeSpent = this.task.TimeSpent === null ? "00:00" : this.task.TimeSpent.replace('.', ':');
+      this.task.TimeSpent = this.task.TimeSpent === null ? '00:00' : this.task.TimeSpent.replace('.', ':');
       const data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === this.task.ProjectCode);
 
       if (data !== undefined) {
         this.task.ProjectName = data.WBJID !== null ? this.task.ProjectCode + '(' + data.WBJID + ')' : this.task.ProjectCode;
-      }
-      else {
+      } else {
         this.task.ProjectName = this.task.ProjectCode;
       }
 
-      if (this.task.Status === "Not Started") {
-        this.SelectedStatus = "Not Started";
+      if (this.task.Status === 'Not Started') {
+        this.SelectedStatus = 'Not Started';
         this.statusOptions = [
           { label: 'Not Started', value: 'Not Started' },
           { label: 'In Progress', value: 'In Progress' },
