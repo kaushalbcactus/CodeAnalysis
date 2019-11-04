@@ -1042,8 +1042,6 @@ export class UserProfileComponent implements OnInit {
         type: '',
         listName: ''
       };
-
-      debugger;
       // Not required to get the username Id in case of Edit user
       if (!this.showeditUser) {
         const userEmailId = addUserForm.value.username.EntityData.Email;
