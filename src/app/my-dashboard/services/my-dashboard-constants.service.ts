@@ -961,7 +961,7 @@ export class MyDashboardConstantsService {
   // }
 
 
-  callQMSPopup(currentTaskElement, qmsObj) {
+  async callQMSPopup(currentTaskElement, qmsObj) {
     var previousTaskFilter = '';
     var newValue = [];
     if (currentTaskElement.PrevTasks) {
@@ -979,22 +979,22 @@ export class MyDashboardConstantsService {
 
     var tempArray = [];
     var reviewDocArray = [];
-    var documents = this.common.getTaskDocument(folderUrl, documentsUrl);
+    var documents = await this.common.getTaskDocument(folderUrl, documentsUrl);
     for (var document in documents) {
       if (currentTaskElement.PrevTasks.indexOf(documents[document].ListItemAllFields.TaskName) > -1 && documents[document].ListItemAllFields.Status.indexOf('Complete') > -1) {
         tempArray.push(documents[document].ServerRelativeUrl);
       }
     }
-    var reviewDocuments = this.common.getTaskDocument(folderUrl, documentsUrl);
+    var reviewDocuments = await this.common.getTaskDocument(folderUrl, documentsUrl);
     for (var document in reviewDocuments) {
-      if (reviewDocuments[document].ListItemAllFields.TaskName === currentTaskElement.TaskName && reviewDocuments[document].ListItemAllFields.Status.indexOf('Complete') > -1) {
+      if (reviewDocuments[document].ListItemAllFields.TaskName === currentTaskElement.Title && reviewDocuments[document].ListItemAllFields.Status.indexOf('Complete') > -1) {
         reviewDocArray.push(reviewDocuments[document].ServerRelativeUrl);
       }
     }
     if (newValue.length === 1 && tempArray.length) {
       const taskObj = Object.assign({}, this.mydashboardComponent.TaskDetails);
       taskObj.filter = previousTaskFilter;
-      const previousItems = this.spServices.readItems(this.constants.listNames.Schedules.name, taskObj);
+      const previousItems = await this.spServices.readItems(this.constants.listNames.Schedules.name, taskObj);
       const obj = {
         documentURL: tempArray,
         resourceID: previousItems[0].AssignedTo.Id,
@@ -1003,7 +1003,7 @@ export class MyDashboardConstantsService {
         taskCompletionDate: previousItems[0].Actual_x0020_End_x0020_Date,
         reviewTask: {
           ID: currentTaskElement.ID,
-          Title: currentTaskElement.TaskName ? currentTaskElement.TaskName : currentTaskElement.Title,
+          Title: currentTaskElement.Title ? currentTaskElement.Title : currentTaskElement.Title,
           PrevTasks: currentTaskElement.PrevTasks,
           Rated: currentTaskElement.Rated
         },

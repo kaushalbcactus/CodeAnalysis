@@ -267,7 +267,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
     const pfItem = this.pfs.filter(p => p.ID === +pf.pfID);
     if (pfItem.length > 0) {
       pfItem[0].Title = pf.projectCode ? pf.projectCode : pfItem[0].Title;
-      pfItem[0].resources = pf.resources.results ? pf.resources.results.map(a => a.Title) : '';
+      pfItem[0].resources = pf.resources.results ? pf.resources.results.map(a => a.Title) : pf.resources ? pf.resources : '';
       pfItem[0].Status = pf.Status ? pf.Status : pfItem[0].Status;
     }
     this.bindTable(this.pfs);
