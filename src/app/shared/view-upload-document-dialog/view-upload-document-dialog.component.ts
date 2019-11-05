@@ -385,9 +385,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           updateObj.listName = listName;
           updateObj.type = 'PATCH';
           batchUrl.push(updateObj);
-          await this.spServices.updateItem(listName, +element.ListItemAllFields.ID, objPost);
+         // await this.spServices.updateItem(listName, +element.ListItemAllFields.ID, objPost);
           // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(objPost), false);
-
         }
       });
       if (bSelectedNewFiles) {

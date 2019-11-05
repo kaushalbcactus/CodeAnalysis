@@ -248,7 +248,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     if (this.allTasks.length > 0) {
 
-      milestones = this.allTasks[0].filter(c => c.FileSystemObjectType === 1);
+      milestones = this.allTasks.filter(c => c.FileSystemObjectType === 1);
       // milestones.sort(function (a, b) {
       //   const startDate = new Date(a.Actual_x0020_Start_x0020_Date);
       //   const dueDate = new Date(b.Actual_x0020_Start_x0020_Date);

@@ -245,7 +245,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     date.setDate(date.getDate() + days + (day === 6 ? 2 : +!day) + (Math.floor((days - 1 + (day % 6 || 1)) / 5) * 2));
     return date;
   }
- 
+
 
 
   // *************************************************************************************************************************************
@@ -304,7 +304,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
 
         data.push({
           Id: task.Id,
-          AssignedTo : task.AssignedTo,
+          AssignedTo: task.AssignedTo,
           StartDate: new Date(this.datePipe.transform(task.StartDate, 'MMM d, y, h:mm a')),
           DueDate: new Date(this.datePipe.transform(task.DueDate, 'MMM d, y, h:mm a')),
           ExportStartDate: new Date(this.datePipe.transform(task.StartDate, 'MMM d, y, h:mm a')),
@@ -576,7 +576,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   async getNextPreviousTaskDialog(task) {
 
     this.tableloaderenable = true;
-    const tasks = await this.getNextPreviousTask(task);
+    debugger;
+    let tasks = [];
+    if (task.NextTasks || task.PrevTasks) {
+      tasks = await this.getNextPreviousTask(task);
+    }
+
     this.tableloaderenable = false;
     const ref = this.dialogService.open(PreviosNextTasksDialogComponent, {
       data: {
