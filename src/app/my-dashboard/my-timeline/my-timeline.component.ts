@@ -186,14 +186,9 @@ export class MyTimelineComponent implements OnInit {
           self.taskName = eventInfo.event.title.split(':')[0];
           self.task = self.allTasks.find(c => c.Id === parseInt(eventInfo.event.id));
 
+          self.tasks = [];
           if (self.task.Task !== 'Adhoc') {
             self.taskdisplay = true;
-            self.tasks = await self.myDashboardConstantsService.getNextPreviousTask(self.task);
-            debugger
-            if (self.task.Status === 'Completed' || self.task.Status === 'Auto Closed') {
-              self.task.emailNotificationEnable = await self.myDashboardConstantsService.checkEmailNotificationEnable(self.task);
-
-            }
           } else {
 
             if (new Date(self.datePipe.transform(self.EnableEditDate, 'MMM dd, yyyy')).getTime() <= new Date(self.datePipe.transform(self.task.StartDate, 'MMM dd, yyyy')).getTime()) {
@@ -431,11 +426,32 @@ export class MyTimelineComponent implements OnInit {
       // TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, this.task.ID);
 
       // this.response  = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
-      this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, +this.task.ID);
-      this.task = this.response ? this.response : {};
-      this.task.AssignedTo = this.sharedObject.currentUser.title;
+       const mytasks = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTasks);
+       mytasks.filter = 'ID eq ' + +this.task.ID;
+
+      this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, mytasks);
+
+
+     // this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, +this.task.ID);
+
+
+      this.task = this.response ? this.response[0] : {};
+      //  this.task.AssignedTo = this.sharedObject.currentUser.title;
       this.task.TimeSpent = this.task.TimeSpent === null ? '00:00' : this.task.TimeSpent.replace('.', ':');
       const data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === this.task.ProjectCode);
+
+      let emailEnable = false;
+      if (this.task.Status === 'Completed' || this.task.Status === 'Auto Closed') {
+        emailEnable = await this.myDashboardConstantsService.checkEmailNotificationEnable(this.task);
+
+      }
+
+      if (this.task.Task !== 'Adhoc') {
+        this.tasks = await this.myDashboardConstantsService.getNextPreviousTask(this.task);
+        this.task.nextTasks = this.tasks ? this.tasks.filter(c => c.TaskType === 'Next Task') : [];
+      }
+
+      this.task.emailNotificationEnable = emailEnable;
 
       if (data !== undefined) {
         this.task.ProjectName = data.WBJID !== null ? this.task.ProjectCode + '(' + data.WBJID + ')' : this.task.ProjectCode;

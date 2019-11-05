@@ -385,7 +385,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           updateObj.listName = listName;
           updateObj.type = 'PATCH';
           batchUrl.push(updateObj);
-          this.spServices.updateItem(listName, +element.ListItemAllFields.ID, objPost);
+          await this.spServices.updateItem(listName, +element.ListItemAllFields.ID, objPost);
           // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(objPost), false);
 
         }
@@ -613,7 +613,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
     // ClosedTaskNotification
 
-    this.data.nextTasks.forEach(nextTask => {
+    task.nextTasks.forEach(nextTask => {
       const ArrayTo = [];
       const objEmailBody = [];
       objEmailBody.push({

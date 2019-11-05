@@ -247,14 +247,23 @@ export class TimelineComponent implements OnInit, OnDestroy {
     // if (this.allTasks.length > 0) {
 
     if (this.allTasks.length > 0) {
-      milestones = this.allTasks.filter(c => c.FileSystemObjectType === 1);
-      milestones.sort(function (a, b) {
-        const startDate = new Date(a.Actual_x0020_Start_x0020_Date);
-        const dueDate = new Date(b.Actual_x0020_Start_x0020_Date);
-        return startDate > dueDate ? 1 : -1;
-      });
-      var i = -1;
 
+      milestones = this.allTasks[0].filter(c => c.FileSystemObjectType === 1);
+      // milestones.sort(function (a, b) {
+      //   const startDate = new Date(a.Actual_x0020_Start_x0020_Date);
+      //   const dueDate = new Date(b.Actual_x0020_Start_x0020_Date);
+      //   return startDate > dueDate ? 1 : -1;
+      // });
+      var i = -1;
+      const arrMilestones = this.sharedObject.oTaskAllocation.oProjectDetails.allMilestones;
+
+      const milestonesList = [];
+
+      for (const mil of arrMilestones) {
+        const milestone = milestones.find(e => e.Title === mil);
+        milestonesList.push(milestone);
+      }
+      milestones = milestonesList;
       this.dbRecords = [];
 
       for (const milestone of milestones) {
@@ -1336,7 +1345,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
   editTask(task, rowNode) {
-  debugger;
+    debugger;
     task.assignedUsers.forEach(element => {
 
       if (element.items.find(c => c.value.ID === task.AssignedTo.ID)) {
@@ -1550,6 +1559,16 @@ export class TimelineComponent implements OnInit, OnDestroy {
         tempmilestoneId++;
         let tempmilestoneData = [];
         let milestoneedit = false;
+
+        //// RestructureMilestones.nodeOrder
+        const nodesNew = [];
+        for (const nodeOrder of RestructureMilestones.nodeOrder) {
+          const node = RestructureMilestones.nodes.find(e => e.id === nodeOrder);
+          nodesNew.push(node);
+        }
+        RestructureMilestones.nodes = nodesNew;
+
+
         RestructureMilestones.nodes.forEach(milestone => {
           let CRObj;
           let temptasks = [];
