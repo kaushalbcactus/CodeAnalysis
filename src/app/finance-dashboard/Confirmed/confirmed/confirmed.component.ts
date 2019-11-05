@@ -67,7 +67,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         url: '',
         type: '',
         listName: ''
-      };
+    };
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
     @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
 
@@ -95,8 +95,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         _applicationRef: ApplicationRef,
         zone: NgZone,
 
-    ) { 
-        
+    ) {
+
         // Browser back button disabled & bookmark issue solution
         history.pushState(null, null, window.location.href);
         platformLocation.onPopState(() => {
@@ -146,7 +146,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
             if (res) {
                 this.projectInfoData = res;
-                console.log('PI Data ', this.projectInfoData);
+                // console.log('PI Data ', this.projectInfoData);
             }
         }))
     }
@@ -157,7 +157,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultPoData.subscribe((res) => {
             if (res) {
                 this.purchaseOrdersList = res;
-                console.log('PO Data ', this.purchaseOrdersList);
+                // console.log('PO Data ', this.purchaseOrdersList);
             }
         }))
     }
@@ -168,7 +168,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultPCData.subscribe((res) => {
             if (res) {
                 this.projectContactsData = res;
-                console.log('this.projectContactsData ', this.projectContactsData);
+                // console.log('this.projectContactsData ', this.projectContactsData);
                 // this.getPCForSentToAMForApproval();
             }
         }))
@@ -190,13 +190,13 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     // US States
-   
+
     usStatesInfo() {
         this.usStatesData = [];
         this.subscription.add(this.fdDataShareServie.defaultUSSData.subscribe((res) => {
             if (res) {
                 this.usStatesData = res;
-                console.log('US States Data ', this.usStatesData);
+                // console.log('US States Data ', this.usStatesData);
             }
         }))
     }
@@ -208,7 +208,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultCUData.subscribe((res) => {
             if (res) {
                 this.currencyData = res;
-                console.log('currency Data ', this.currencyData);
+                // console.log('currency Data ', this.currencyData);
             }
         }))
     }
@@ -223,7 +223,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultCLEData.subscribe((res) => {
             if (res) {
                 this.cleData = res;
-                console.log('CLE Data ', this.cleData);
+                // console.log('CLE Data ', this.cleData);
             }
         }))
     }
@@ -234,7 +234,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultRCData.subscribe((res) => {
             if (res) {
                 this.rcData = res;
-                console.log('Resource Categorization ', this.rcData);
+                // console.log('Resource Categorization ', this.rcData);
             }
         }))
     }
@@ -303,7 +303,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     // Get Confirmed InvoiceItemList
-    
+
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         this.confirmedRes = [];
@@ -331,8 +331,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         const arrResults = res.length ? res : [];
         if (arrResults.length) {
             // this.formatData(arrResults);
-            this.getPOListItems(arrResults);
             this.confirmedILIarray = arrResults;
+            this.getPOListItems(arrResults);
         }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         // });
@@ -355,8 +355,14 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 this.purchaseOrders.push(poItem);
             }
         }
-        console.log('this.purchaseOrders ', this.purchaseOrders);
-        console.log('this.confirmedPOList ', this.confirmedPOList);
+        // this.selectedPurchaseNumber = this.selectedPurchaseNumber ? this.selectedPurchaseNumber : '';
+        // console.log('this.purchaseOrders ', this.purchaseOrders);
+        // console.log('this.confirmedPOList ', this.confirmedPOList);
+        if (this.selectedDDPO.hasOwnProperty('value')) {
+            this.selectedPurchaseNumber = this.purchaseOrders ? this.purchaseOrders.find(item => item.Id === this.selectedDDPO.value.ID) : '';
+            this.onChange(this.selectedDDPO);
+        }
+        // console.log('this.selectedPurchaseNumber ', this.selectedPurchaseNumber);
     }
 
     searchPOId(poId, myArray) {
@@ -382,6 +388,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     matchedILIArray: any = [];
+    selectedDDPO: any = {};
     onChange(data: any) {
         this.matchedILIArray = [];
         this.selectedAllRowData = [];
@@ -389,6 +396,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.selectedTotalAmt = 0;
         // console.log(data.value);
         let po = data.value;
+        this.selectedDDPO = data;
         console.log('po ', po);
         if (po) {
             if (po.hasOwnProperty('AmountRevenue') && po.hasOwnProperty('InvoicedRevenue')) {
@@ -614,8 +622,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     selectedTotalAmt: number = 0;
     selectedRowItemData: any = [];
     onRowSelect(event) {
-        console.log('Event ', event);
-        console.log('this.selectedAllRowData ', this.selectedAllRowData);
+        // console.log('Event ', event);
+        // console.log('this.selectedAllRowData ', this.selectedAllRowData);
         //this.selectedRowItemData.push(event.data);
         this.calculateData();
     }
@@ -631,12 +639,12 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     checkSelectedRowData() {
-        console.log('Event ', this.selectedRowItemData);
+        // console.log('Event ', this.selectedRowItemData);
     }
 
     onRowUnselect(event) {
         // console.log(event);
-        console.log('this.selectedAllRowData ', this.selectedAllRowData);
+        // console.log('this.selectedAllRowData ', this.selectedAllRowData);
 
         let rowUnselectIndex = this.selectedRowItemData.indexOf(event.data);
         this.selectedRowItemData.splice(rowUnselectIndex, 1);
@@ -646,7 +654,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     selectedAllRowData: any[] = [];
 
     handleData(event) {
-        console.log('this.selectedAllRowData ', this.selectedAllRowData);
+        // console.log('this.selectedAllRowData ', this.selectedAllRowData);
         if (this.selectedAllRowData.length && this.confirmedRes.length) {
             this.calculateData();
             this.selectedRowItemData = [];
@@ -656,13 +664,13 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     convertToExcelFile(cnf1) {
-        console.log('cnf ', cnf1);
+        // console.log('cnf ', cnf1);
         cnf1.exportCSV();
     }
 
     confirm1() {
         let pInfo = this.getPIByPC(this.selectedRowItem);
-        console.log('pInfo ', pInfo);
+        // console.log('pInfo ', pInfo);
         this.confirmationService.confirm({
             message: 'Are you sure that you want to revert the invoice from confirmed to scheduled status?',
             header: 'Confirmation',
@@ -686,7 +694,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
     // Open popups
     openPopup(data, popUpData) {
-        console.log('Row data  ', data);
+        // console.log('Row data  ', data);
         // console.log('pubSupportSts  ', pubSupportSts);
 
         this.items = [
@@ -702,9 +710,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     selectedRowItem: any;
     openMenuContent(event, data) {
         this.isHourlyProject = false;
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
         this.selectedRowItem = data;
-        console.log(event);
+        // console.log(event);
         this.confirmDialog.title = event.item.label;
         if (this.confirmDialog.title.toLowerCase() === 'revert invoice') {
             // this.confirm1();
@@ -715,7 +723,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 }
             }
 
-            console.log('pInfo ', pInfo);
+            // console.log('pInfo ', pInfo);
             this.revertInvModal = true;
         } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
             this.timeline.showTimeline(data.Id, 'FD', 'InvoiceLineItems');
@@ -782,7 +790,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     showHideState(val: any) {
-        console.log('val ', val);
+        // console.log('val ', val);
         if (val) {
             this.isTemplate4US = val.value === "US" ? true : false;
             if (this.isTemplate4US) {
@@ -811,7 +819,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 }
             }
         });
-        console.log('this.listOfPOCNames ', this.listOfPOCNames);
+        // console.log('this.listOfPOCNames ', this.listOfPOCNames);
         if (pocROW) {
             this.addToProforma_form.patchValue({
                 POCName: pocROW
@@ -821,7 +829,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     pocChange(val) {
-        console.log(val)
+        // console.log(val)
     }
 
     cancelFormSub(formType) {
@@ -840,7 +848,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
     selectedPOItem: any;
     onPOChange(data: any) {
-        console.log('Data ', data);
+        // console.log('Data ', data);
         this.selectedPOItem = data;
     }
 
@@ -853,7 +861,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 this.poNames.push(x);
             }
         });
-        console.log(this.poNames);
+        // console.log(this.poNames);
     }
 
     generateProformaNumber(cle: any) {
@@ -974,7 +982,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                     // const pfEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinances.update.replace('{{Id}}', pf.Id);
 
                     const pfObj = Object.assign({}, this.queryConfig);
-                    pfObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name,  pf.Id);
+                    pfObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, pf.Id);
                     pfObj.listName = this.constantService.listNames.ProjectFinances.name;
                     pfObj.type = 'PATCH';
                     pfObj.data = pfData;
@@ -1099,7 +1107,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             // const lineItemArray = [];
             const innerBatchUrl = [];
             this.selectedAllRowData.forEach(element => {
-                
+
                 const prfData = {
                     __metadata: {
                         type: this.constantService.listNames.InvoiceLineItems.type
@@ -1143,12 +1151,14 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             await this.spServices.executeBatch(innerBatchUrl);
             const projectAppendix = await this.createProjectAppendix(this.selectedAllRowData);
             await this.fdDataShareServie.callProformaCreation(retCall[0], this.cleData, this.projectContactsData,
-                                                              this.purchaseOrdersList, this.editorRef, projectAppendix);
+                this.purchaseOrdersList, this.editorRef, projectAppendix);
             this.proformaModal = false;
             this.isPSInnerLoaderHidden = true;
             this.reFetchData();
-            this.messageService.add({ key: 'custom', sticky: true, severity: 'success', summary: 'Proforma Added',
-                                      detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber });
+            this.messageService.add({
+                key: 'custom', sticky: true, severity: 'success', summary: 'Proforma Added',
+                detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber
+            });
 
         } else {
             // const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
@@ -1156,12 +1166,16 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             // const arrResults = res;
             // console.log('--oo ', arrResults);
             if (type === 'revertInvoice') {
-                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
-                                          detail: 'Reverted the invoice from Confirmed to Scheduled.', life: 2000 });
+                this.messageService.add({
+                    key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
+                    detail: 'Reverted the invoice from Confirmed to Scheduled.', life: 2000
+                });
                 this.reFetchData();
             } else if (type === 'editInvoice') {
-                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
-                                          detail: 'Invoice Updated.', life: 2000 });
+                this.messageService.add({
+                    key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
+                    detail: 'Invoice Updated.', life: 2000
+                });
                 this.reFetchData();
             }
             this.isPSInnerLoaderHidden = true;
@@ -1202,7 +1216,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             callProjects.forEach(element => {
                 const getPIData = Object.assign({}, options);
                 getPIData.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name,
-                                                           this.fdConstantsService.fdComponent.projectInfoCode);
+                    this.fdConstantsService.fdComponent.projectInfoCode);
                 getPIData.url = getPIData.url.replace('{{ProjectCode}}', element);
                 getPIData.listName = this.constantService.listNames.ProjectInformation.name;
                 getPIData.type = 'GET';
@@ -1223,7 +1237,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 appendix.cactusSpCode = project.ProjectCode ? project.ProjectCode : '';
                 appendix.title = project.Title ? project.Title : '';
             }
-            console.log('element ----> ', element);
+            // console.log('element ----> ', element);
             appendix.poc = element.POCName;
             appendix.amount = element.Amount;
             projectAppendix.push(appendix);
@@ -1240,7 +1254,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.poInfo();
             this.cleInfo();
 
-            this.getRequiredData();
+            await this.getRequiredData();
         }, 300);
     }
     onlyNumberKey(event) {
@@ -1252,7 +1266,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
     enterPOAmtMsg: boolean = false;
     enteredPOAmt(val) {
-        console.log('val ', val);
+        // console.log('val ', val);
         let amt = parseInt(val);
         let poScheduled = parseFloat(this.selectedPOItem.value.TotalScheduled ? this.selectedPOItem.value.TotalScheduled : 0);
         let poInvoiced = parseFloat(this.selectedPOItem.value.TotalInvoiced ? this.selectedPOItem.value.TotalInvoiced : 0);
