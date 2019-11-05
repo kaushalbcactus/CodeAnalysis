@@ -63,7 +63,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     this.data = this.config.data === undefined ? this.taskData : this.config.data;
     this.status = this.data.Status;
     this.enableNotification = this.data.emailNotificationEnable ? this.data.emailNotificationEnable : false;
-
     if (this.enableNotification) {
       this.getEmailTemplate();
     }
@@ -473,7 +472,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   //   upload documents
   // **************************************************************************************************************************************
   async uploadDocuments(event, type) {
-  
+
     if (event.files.length) {
       let docFolder;
       const existingFiles = this.allDocuments.map(c => c.Name.toLowerCase());

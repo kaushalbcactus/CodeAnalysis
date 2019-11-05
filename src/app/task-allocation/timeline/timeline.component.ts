@@ -1090,6 +1090,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   formatAssignedUser(assignedUsers) {
     const response = []
+
+    debugger;
     const UniqueUserType = assignedUsers.map(c => c.userType).filter((item, index) => assignedUsers.map(c => c.userType).indexOf(item) === index);
     console.log(assignedUsers)
 
@@ -1099,7 +1101,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       Users.forEach(user => {
 
         const tempUser = user.UserName ? user.UserName : user;
-        Items.push({ label: tempUser.Title, value: { ID: tempUser.ID, Title: tempUser.Title, Email: tempUser.Email, SkillText: tempUser.SkillText ? tempUser.SkillText : '' } }
+        Items.push({ label: tempUser.Title, value: { ID: tempUser.ID, Title: tempUser.Title, Email: tempUser.EMail ? tempUser.EMail : tempUser.Email, SkillText: tempUser.SkillText ? tempUser.SkillText : '' } }
         );
       });
       response.push({ label: retRes, items: Items });
@@ -1334,7 +1336,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
   editTask(task, rowNode) {
-
+  debugger;
     task.assignedUsers.forEach(element => {
 
       if (element.items.find(c => c.value.ID === task.AssignedTo.ID)) {
@@ -2722,6 +2724,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // tslint:enable
 
   async setMilestone(addTaskItems, updateTaskItems, addMilestoneItems, updateMilestoneItems) {
+
+    debugger;
     let updatedCurrentMilestone = false;
     let writers = [], arrWriterIDs = [],
       //arrWriterNames = [],
@@ -3045,6 +3049,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
 
     if (milestoneTask.assignedUserChanged && milestoneTask.status === 'Not Started') {
+      debugger;
       this.sendMail(this.oProjectDetails, milestoneTask, 'New User Assigned for Task'
         + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode);
       milestoneTask.assignedUserChanged = false;
@@ -3053,6 +3058,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (milestoneTask.IsCentrallyAllocated === 'Yes' && milestoneTask.status === 'Not Started') {
       milestoneTask.ActiveCA = 'Yes';
       if (bAdd) {
+        debugger
         //// send task creation email
         this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, 'New central task created'
           + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'New central task created');
@@ -3064,6 +3070,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         if (parseFloat(timeZone) !== 5.5) {
           milestoneTask.assignedUserTimeZone = 5.5;
         }
+        debugger
         //// send task deallocation email
         this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, 'Central task deallocated'
           + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'Central task deallocated');

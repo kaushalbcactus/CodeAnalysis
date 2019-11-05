@@ -273,6 +273,27 @@ export class MyDashboardConstantsService {
 
 
 
+  async checkEmailNotificationEnable(task) {
+    let EnableNotification = false;
+    if (task.Status === 'Completed' || task.Status === 'Auto Closed') {
+
+      let PastDate = await this.RemoveBusinessDays(new Date(), 2);
+
+      PastDate = new Date(PastDate.getFullYear(), PastDate.getMonth(), PastDate.getDate());
+
+      let TaskEndDate = task.Actual_x0020_End_x0020_Date ? new Date(task.Actual_x0020_End_x0020_Date) : new Date(task.DueDate);
+
+      TaskEndDate = new Date(TaskEndDate.getFullYear(), TaskEndDate.getMonth(), TaskEndDate.getDate());
+
+      EnableNotification = PastDate.getTime() <= TaskEndDate.getTime() ? true : false;
+
+    }
+    return EnableNotification;
+  }
+
+
+
+
   // *************************************************************************************************************************************
   //  get Previous Task Status
   // *************************************************************************************************************************************
@@ -738,72 +759,63 @@ export class MyDashboardConstantsService {
       batchUrl.push(nextTaskObj);
       // const tempendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(element.ID) + ")";
       // this.spServices.getChangeSetBodySC(batchContents, changeSetId, tempendPoint, JSON.stringify(data), false);
+      if (element.AssignedTo.EMail) {
+        var EmailTemplate = this.Emailtemplate.Content;
+        var objEmailBody = [];
 
-      var EmailTemplate = this.Emailtemplate.Content;
-      var objEmailBody = [];
+        objEmailBody.push({
+          "key": "@@Val1@@",
+          "value": task.ProjectCode
+        });
+        objEmailBody.push({
+          "key": "@@Val2@@",
+          "value": element.SubMilestones ? element.SubMilestones !== "Default" ? element.Title + " - " +
+            element.SubMilestones : element.Title : element.Title
+        });
+        objEmailBody.push({
+          "key": "@@Val3@@",
+          "value": element.AssignedTo.Title
+        });
+        objEmailBody.push({
+          "key": "@@Val4@@",
+          "value": element.Task
+        });
+        objEmailBody.push({
+          "key": "@@Val5@@",
+          "value": element.Milestone
+        });
+        objEmailBody.push({
+          "key": "@@Val6@@",
+          "value": element.StartDate
+        });
+        objEmailBody.push({
+          "key": "@@Val7@@",
+          "value": element.DueDate
+        });
+        objEmailBody.push({
+          "key": "@@Val8@@",
+          "value": task.TaskComments ? task.TaskComments : ''
+        });
+        objEmailBody.push({
+          "key": "@@Val0@@",
+          "value": element.ID
+        });
 
-      objEmailBody.push({
-        "key": "@@Val1@@",
-        "value": task.ProjectCode
-      });
-      objEmailBody.push({
-        "key": "@@Val2@@",
-        "value": element.SubMilestones ? element.SubMilestones !== "Default" ? element.Title + " - " + element.SubMilestones : element.Title : element.Title
-      });
-      objEmailBody.push({
-        "key": "@@Val3@@",
-        "value": element.AssignedTo.Title
-      });
-      objEmailBody.push({
-        "key": "@@Val4@@",
-        "value": element.Task
-      });
-      objEmailBody.push({
-        "key": "@@Val5@@",
-        "value": element.Milestone
-      });
-      objEmailBody.push({
-        "key": "@@Val6@@",
-        "value": element.StartDate
-      });
-      objEmailBody.push({
-        "key": "@@Val7@@",
-        "value": element.DueDate
-      });
-      objEmailBody.push({
-        "key": "@@Val8@@",
-        "value": task.TaskComments ? task.TaskComments : ''
-      });
-      objEmailBody.push({
-        "key": "@@Val0@@",
-        "value": element.ID
-      });
+        objEmailBody.forEach(obj => {
+          EmailTemplate = EmailTemplate.replace(RegExp(obj.key, 'gi'), obj.value);
+        });
 
-      objEmailBody.forEach(element => {
-        EmailTemplate = EmailTemplate.replace(RegExp(element.key, "gi"), element.value);
-      });
-      // const obj = {
-      //   'properties': {
-      //     '__metadata': {
-      //       'type': 'SP.Utilities.EmailProperties'
-      //     },
-      //     'To': {
-      //       'results': [element.AssignedTo.EMail]
-      //     },
-      //     'CC': {
-      //       'results': [this.sharedObject.currentUser.email]
-      //     },
-      //     'From': this.sharedObject.currentUser.email,
-      //     'Subject': mailSubject,
-      //     'Body': EmailTemplate
-      //   }
-      // };
-      const emailObj = Object.assign({}, this.queryConfig);
-      emailObj.data = this.spServices.getEmailData(element.AssignedTo.EMail, this.sharedObject.currentUser.email, mailSubject, EmailTemplate, this.sharedObject.currentUser.email);;
-      emailObj.url = this.spServices.getEmailURL();
-      batchUrl.push(emailObj);
-      // const emailUrl = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/SP.Utilities.Utility.SendEmail";
-      // this.spServices.getChangeSetBodySC(batchContents, changeSetId, emailUrl, JSON.stringify(obj), true);
+
+        console.log(EmailTemplate);
+        const emailObj = Object.assign({}, this.queryConfig);
+        const Emaildata = this.spServices.getEmailData(element.AssignedTo.EMail,
+          this.sharedObject.currentUser.email, mailSubject, EmailTemplate, this.sharedObject.currentUser.email);
+
+        emailObj.data = JSON.parse(Emaildata);
+        emailObj.url = this.spServices.getEmailURL();
+        emailObj.type = 'POST';
+        batchUrl.push(emailObj);
+      }
 
     });
 
@@ -1002,6 +1014,26 @@ export class MyDashboardConstantsService {
       qmsObj.openPopup(obj);
     }
   }
+
+
+
+  // *************************************************************************************************************************************
+  // remove days to get start date for previous days
+  // *************************************************************************************************************************************
+
+  RemoveBusinessDays(date, days) {
+
+    let tempDate = new Date(date);
+    while (days > 0) {
+
+      tempDate = new Date(tempDate.setDate(tempDate.getDate() - 1));
+      if (tempDate.getDay() !== 6 && tempDate.getDay() !== 0) {
+        days -= 1;
+      }
+    }
+    return tempDate;
+  }
+
 }
 
 

@@ -733,7 +733,7 @@ export class SPOperationService {
         'Subject': subj,
         'Body': body,
         'CC': {
-          results: []
+          'results': []
         }
       }
       // tslint:enable

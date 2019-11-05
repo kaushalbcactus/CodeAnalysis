@@ -215,7 +215,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
         endDate.getDay() === 0 ? new Date(endDate.setDate(endDate.getDate() - 2)) :
           new Date(endDate.setDate(endDate.getDate()));
 
-      startDate = this.RemoveBusinessDays(endDate, days - 1);
+      startDate = this.myDashboardConstantsService.RemoveBusinessDays(endDate, days - 1);
     } else if (nextLast === 'Custom') {
 
       startDate = this.rangeDates[0];
@@ -245,22 +245,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     date.setDate(date.getDate() + days + (day === 6 ? 2 : +!day) + (Math.floor((days - 1 + (day % 6 || 1)) / 5) * 2));
     return date;
   }
-  // *************************************************************************************************************************************
-  // remove days to get start date for previous days
-  // *************************************************************************************************************************************
-
-  RemoveBusinessDays(date, days) {
-
-    let tempDate = new Date(date);
-    while (days > 0) {
-
-      tempDate = new Date(tempDate.setDate(tempDate.getDate() - 1));
-      if (tempDate.getDay() !== 6 && tempDate.getDay() !== 0) {
-        days -= 1;
-      }
-    }
-    return tempDate;
-  }
+ 
 
 
   // *************************************************************************************************************************************
@@ -728,7 +713,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   async getAddUpdateDocument(task) {
 
     let NextTasks;
-    const enableEmail = await this.checkEmailNotificationEnable(task);
+    const enableEmail = await this.myDashboardConstantsService.checkEmailNotificationEnable(task);
     if (enableEmail) {
       NextTasks = await this.getNextPreviousTask(task);
     }
@@ -750,27 +735,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
 
     });
   }
-
-  async checkEmailNotificationEnable(task) {
-    let EnableNotification = false;
-    if (task.Status === 'Completed' || task.Status === 'Auto Closed') {
-
-      let PastDate = await this.RemoveBusinessDays(new Date(), 2);
-
-      PastDate = new Date(PastDate.getFullYear(), PastDate.getMonth(), PastDate.getDate());
-
-      let TaskEndDate = task.Actual_x0020_End_x0020_Date ? new Date(task.Actual_x0020_End_x0020_Date) : new Date(task.DueDate);
-
-      TaskEndDate = new Date(TaskEndDate.getFullYear(), TaskEndDate.getMonth(), TaskEndDate.getDate());
-
-      EnableNotification = PastDate.getTime() <= TaskEndDate.getTime() ? true : false;
-
-    }
-    return EnableNotification;
-  }
-
-
-
 
   // *************************************************************************************************************************************
   //  Mark as Complete

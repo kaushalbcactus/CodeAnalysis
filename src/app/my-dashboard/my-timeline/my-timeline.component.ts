@@ -189,9 +189,12 @@ export class MyTimelineComponent implements OnInit {
           if (self.task.Task !== 'Adhoc') {
             self.taskdisplay = true;
             self.tasks = await self.myDashboardConstantsService.getNextPreviousTask(self.task);
+            debugger
+            if (self.task.Status === 'Completed' || self.task.Status === 'Auto Closed') {
+              self.task.emailNotificationEnable = await self.myDashboardConstantsService.checkEmailNotificationEnable(self.task);
 
-          }
-          else {
+            }
+          } else {
 
             if (new Date(self.datePipe.transform(self.EnableEditDate, 'MMM dd, yyyy')).getTime() <= new Date(self.datePipe.transform(self.task.StartDate, 'MMM dd, yyyy')).getTime()) {
               var Type = self.task.Comments === 'Client meeting / client training' ? 'Client Meeting / Training' : self.task.Comments === 'Internal meeting' ? 'Internal Meeting' : self.task.Comments === 'Internal training' ? 'Training' : 'Admin';
@@ -208,15 +211,15 @@ export class MyTimelineComponent implements OnInit {
               { label: 'Not Started', value: 'Not Started' },
               { label: 'In Progress', value: 'In Progress' },
               { label: 'Completed', value: 'Completed' },
-            ]
-          }
-          else if (self.task.Status === "In Progress") {
+            ];
+          } else if (self.task.Status === "In Progress") {
             self.SelectedStatus = "In Progress";
             self.statusOptions = [
               { label: 'In Progress', value: 'In Progress' },
               { label: 'Completed', value: 'Completed' },
-            ]
+            ];
           }
+
           self.task.AssignedTo = self.sharedObject.currentUser.title;
 
           self.task.TimeSpent = self.task.TimeSpent === null ? "00:00" : self.task.TimeSpent.replace('.', ':');
@@ -275,7 +278,7 @@ export class MyTimelineComponent implements OnInit {
     }
 
     filterDates = await this.getStartEndDates(startDate, endDate);
-    const batchURL = [];   
+    const batchURL = [];
 
     //***********************************************************************************************
     // Get Tasks
@@ -285,8 +288,8 @@ export class MyTimelineComponent implements OnInit {
     let MyTimelineUrl = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimeline);
     MyTimelineUrl.filter = MyTimelineUrl.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
     MyTimelineUrl.filter += this.selectedType.name === 'Completed' ? MyTimelineUrl.filterCompleted : this.selectedType.name === 'Not Completed' ?
-                             MyTimelineUrl.filterNotCompleted : this.selectedType.name === 'Planned' ? MyTimelineUrl.filterPlanned : this.selectedType.name === 'Adhoc' ?
-                             MyTimelineUrl.filterAdhoc : MyTimelineUrl.filterAll;
+      MyTimelineUrl.filterNotCompleted : this.selectedType.name === 'Planned' ? MyTimelineUrl.filterPlanned : this.selectedType.name === 'Adhoc' ?
+        MyTimelineUrl.filterAdhoc : MyTimelineUrl.filterAll;
     //  MyTimeline.filter.substring(0, MyTimeline.filter.lastIndexOf("and"));
     MyTimelineUrl.filter += MyTimelineUrl.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
     MyTimelineObj.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name, MyTimelineUrl);
@@ -303,7 +306,7 @@ export class MyTimelineComponent implements OnInit {
     let MyLeavesUrl = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.LeaveCalendar);
     MyLeavesUrl.filter = MyLeavesUrl.filter.replace(/{{currentUser}}/gi, this.sharedObject.currentUser.userId.toString()).replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
 
-    myLeavesObj.url =  this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name, MyLeavesUrl);
+    myLeavesObj.url = this.spServices.getReadURL(this.constants.listNames.LeaveCalendar.name, MyLeavesUrl);
     myLeavesObj.listName = this.constants.listNames.LeaveCalendar.name;
     myLeavesObj.type = 'GET';
     batchURL.push(myLeavesObj);
@@ -426,7 +429,7 @@ export class MyTimelineComponent implements OnInit {
 
       // let TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
       // TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, this.task.ID);
-  
+
       // this.response  = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
       this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, +this.task.ID);
       this.task = this.response ? this.response : {};
@@ -585,7 +588,7 @@ export class MyTimelineComponent implements OnInit {
     if (this.step !== 0) {
       // let TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
       // TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, this.task.ID);
-  
+
       // this.response  = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
       this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, +this.task.ID);
 
@@ -618,7 +621,7 @@ export class MyTimelineComponent implements OnInit {
     task.Status = this.SelectedStatus;
     var stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
     const allowedStatus = ["Completed", "AllowCompletion", "Auto Closed"];
-    if(allowedStatus.includes(stval)) {
+    if (allowedStatus.includes(stval)) {
       if (task.Status === 'Completed' && !task.FinalDocSubmit) {
         this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'No Final Document Found' });
         task.Status = earlierStaus;
