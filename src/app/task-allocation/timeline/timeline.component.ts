@@ -1869,7 +1869,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   assignedToUserChanged(milestoneTask) {
     if (milestoneTask.AssignedTo) {
       milestoneTask.assignedUserChanged = true;
-      if (milestoneTask.AssignedTo.hasOwnProperty('ID')) {
+      if (milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID) {
         milestoneTask.IsCentrallyAllocated = 'No';
         // milestoneTask.ActiveCA = 'No';
         milestoneTask.skillLevel = this.commonService.getSkillName(milestoneTask.AssignedTo.SkillText);
@@ -3411,10 +3411,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
       // const errorDetail = callDetail;
 
       if (user !== 'SelectOne' && user !== '' && user != null) {
-        const userEmail = user.UserName ? user.UserName.EMail : user.EMail;
+        const userEmail = user.UserName ? user.UserName.EMail : user.Email;
         arrayTo.push(userEmail);
       }
-      this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody, fromUser.email);
+      this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
       // this.spServices.triggerMail(fromUser.email, 'TaskCreation', objEmailBody, mailSubject, arrayTo, errorDetail);
     }
   }

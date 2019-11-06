@@ -878,18 +878,18 @@ export class CACommonService {
         case 'QC':
         case 'Review-QC':
         case 'Inco-QC':
-          arrQualityCheckerIds.push(task.allocatedResource);
+          arrQualityCheckerIds.push(task.allocatedResource.ID);
           break;
         case 'Edit':
         case 'Review-Edit':
         case 'Inco-Edit':
         case 'Galley':
-          arrEditorsIds.push(task.allocatedResource);
+          arrEditorsIds.push(task.allocatedResource.ID);
           break;
         case 'Graphics':
         case 'Review-Graphics':
         case 'Inco-Graphics':
-          arrGraphicsIds.push(task.allocatedResource);
+          arrGraphicsIds.push(task.allocatedResource.ID);
           break;
       }
     }
