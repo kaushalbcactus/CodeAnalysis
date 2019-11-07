@@ -722,26 +722,26 @@ export class ManageFinanceComponent implements OnInit {
 
     // if (retPOInfo.poRevenue) {
     if (this.unassignedBudget[0].total === 0 && this.unassignedBudget[0].revenue === 0) {
-      retPOInfo.total = retPOInfo.total + retPOInfo.poRevenue + retPOInfo.oop + retPOInfo.tax;
+      retPOInfo.total = retPOInfo.poRevenue + retPOInfo.oop + retPOInfo.tax;
       retPOInfo.revenue = retPOInfo.revenue + retPOInfo.poRevenue;
       retPOInfo.oop = retPOInfo.oop + retPOInfo.oop;
       retPOInfo.tax = retPOInfo.tax + retPOInfo.tax;
     }
     if (this.unassignedBudget[0].total !== 0 && this.unassignedBudget[0].revenue !== 0) {
-      retPOInfo.total = retPOInfo.total + retPOInfo.poRevenue + retPOInfo.oop + retPOInfo.tax;
+      retPOInfo.total = retPOInfo.poRevenue + retPOInfo.oop + retPOInfo.tax;
       retPOInfo.revenue = retPOInfo.revenue + retPOInfo.poRevenue;
       retPOInfo.oop = retPOInfo.oop + retPOInfo.oop ? retPOInfo.oop : 0;
       retPOInfo.tax = retPOInfo.tax + retPOInfo.tax ? retPOInfo.tax : 0;
-      this.unassignedBudget[0].total = this.unassignedBudget[0].total - retPOInfo.poRevenue - retPOInfo.oop - retPOInfo.tax;
+      this.unassignedBudget[0].total = this.unassignedBudget[0].total - retPOInfo.poRevenue; //- retPOInfo.oop - retPOInfo.tax;
       this.unassignedBudget[0].revenue = this.unassignedBudget[0].revenue - retPOInfo.poRevenue;
-      this.unassignedBudget[0].oop = this.unassignedBudget[0].oop - retPOInfo.oop;
-      this.unassignedBudget[0].tax = this.unassignedBudget[0].tax - retPOInfo.tax;
+     // this.unassignedBudget[0].oop = this.unassignedBudget[0].oop - retPOInfo.oop;
+     // this.unassignedBudget[0].tax = this.unassignedBudget[0].tax - retPOInfo.tax;
     }
     // Add the value to Po header.
     this.poHeader.total = this.poHeader.total + retPOInfo.poRevenue;
     this.poHeader.revenue = this.poHeader.revenue + retPOInfo.poRevenue;
-    this.poHeader.tax = this.poHeader.tax + retPOInfo.tax;
-    this.poHeader.oop = this.poHeader.oop + retPOInfo.oop;
+    // this.poHeader.tax = this.poHeader.tax + retPOInfo.tax;
+    // this.poHeader.oop = this.poHeader.oop + retPOInfo.oop;
     // }
     retPOInfo.poRevenue = 0;
     retPOInfo.poTotal = 0;
