@@ -4,6 +4,7 @@ import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.com
 import { AuthGuard } from './auth/auth.guard';
 import { FdAuthGuard } from './finance-dashboard/fd-AuthGuard/fd-auth.guard';
 import { AdminAuthGuard } from './admin/auth/admin-auth.guard';
+import { QmsAuthGuard } from './qms/auth/qms-auth.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -15,8 +16,8 @@ const routes: Routes = [
   { path: 'myDashboard', canLoad: [AuthGuard], loadChildren: './my-dashboard/my-dashboard.module#MyDashboardModule' },
   { path: 'taskAllocation', canLoad: [AuthGuard], loadChildren: './task-allocation/task-allocation.module#TaskAllocationModule' },
   { path: 'financeDashboard', canLoad: [FdAuthGuard], loadChildren: './finance-dashboard/finance-dashboard.module#FinanceDashboardModule' },
-  { path: 'qms', loadChildren: './qms/qms.module#QmsModule' },
-  { path: 'centralallocation', loadChildren: './ca/ca.module#CAModule'},
+  { path: 'qms', canLoad: [QmsAuthGuard], loadChildren: './qms/qms.module#QmsModule' },
+  { path: 'centralallocation', loadChildren: './ca/ca.module#CAModule' },
   { path: 'capacityDashboard', loadChildren: './capacity-dashboard/capacity-dashboard.module#CapacityDashboardModule' },
   { path: 'leaveCalendar', loadChildren: './leave-calendar/leave-calendar.module#LeaveCalendarModule' },
   { path: '**', redirectTo: '/404' },

@@ -89,9 +89,9 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     _applicationRef: ApplicationRef,
     zone: NgZone
   ) {
-    this.router.routeReuseStrategy.shouldReuseRoute = function () {
-      return false;
-    }
+    // this.router.routeReuseStrategy.shouldReuseRoute = function () {
+    //   return false;
+    // }
     // this.navigationSubscription = this.router.events.subscribe((e: any) => {
     //   // If it is a NavigationEnd event re-initalise the component
     //   if (e instanceof NavigationEnd) {

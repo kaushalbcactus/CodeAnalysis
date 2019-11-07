@@ -61,9 +61,9 @@ export class ExternalComponent implements OnDestroy {
     private ref: ChangeDetectorRef,
     zone: NgZone
   ) {
-    this.router.routeReuseStrategy.shouldReuseRoute = function () {
-      return false;
-    }
+    // this.router.routeReuseStrategy.shouldReuseRoute = function () {
+    //   return false;
+    // }
     history.pushState(null, null, window.location.href);
     platformLocation.onPopState(() => {
       history.pushState(null, null, window.location.href);
