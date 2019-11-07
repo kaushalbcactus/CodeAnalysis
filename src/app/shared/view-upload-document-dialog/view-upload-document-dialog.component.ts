@@ -339,6 +339,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     Ids.forEach(element => {
       const userObj = Object.assign({}, this.queryConfig);
       userObj.url = this.spServices.getUserURL(element);
+      userObj.type = 'GET';
       batchUrl.push(userObj);
       // const url = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/_api/Web/GetUserById(' + element + ')';
       // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, url);
