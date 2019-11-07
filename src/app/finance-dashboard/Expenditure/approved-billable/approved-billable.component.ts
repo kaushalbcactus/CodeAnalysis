@@ -9,7 +9,6 @@ import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { CommonService } from '../../../Services/common.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
-import { NodeService } from '../../../node.service';
 import { Subscription } from 'rxjs';
 import { DataTable } from 'primeng/primeng';
 import { Router } from '@angular/router';

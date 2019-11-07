@@ -7,12 +7,10 @@ import { GlobalService } from '../../Services/global.service';
 import { FdConstantsService } from '../fdServices/fd-constants.service';
 import { SelectItem } from 'primeng/api';
 import { FDDataShareService } from '../fdServices/fd-shareData.service';
-import { NodeService } from 'src/app/node.service';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
 import { Subject, Observable, timer, Subscription } from 'rxjs';
-import { FdAuthService } from '../fd-AuthGuard/fd-auth.service';
 
 @Component({
     selector: 'app-expenditure',
@@ -81,7 +79,6 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         public fdConstantsService: FdConstantsService,
         private resolver: ComponentFactoryResolver,
         public fdDataShareServie: FDDataShareService,
-        private nodeService: NodeService,
         private datePipe: DatePipe,
         private router: Router,
         private commonService: CommonService,
