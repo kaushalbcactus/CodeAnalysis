@@ -21,7 +21,7 @@
 
 <!-- <button (click)="checkSelectedRowData()">Check Data</button> -->
 <div class="financeTable">
-    <p-table #pfc [columns]="proformaCols" [value]="proformaRes" [paginator]="true" [rows]="10" [(selection)]="selectedRowData" selectionMode="multiple" (onRowSelect)="onRowSelect($event)" exportFilename="Proformas">
+    <p-table #pfc [columns]="proformaCols" [value]="proformaRes" [paginator]="true" [rows]="10" [(selection)]="selectedRowData" selectionMode="multiple" (onRowSelect)="onRowSelect($event)" exportFilename="Proformas" [(first)]="pageNumber"  (onPage)="paginate($event)">
         <ng-template pTemplate="header" let-columns>
 
             <tr>

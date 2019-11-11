@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ElementRef, ApplicationRef, NgZone, TemplateRef, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
-import { Calendar } from 'primeng/primeng';
+import { Calendar, DataTable } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -63,9 +63,14 @@ export class ProformaComponent implements OnInit, OnDestroy {
     proformatTemplates: any = [];
     proformaAddressType: any = [];
     proformaTypes: any = [];
+   
+    pageNumber: number = 0;
+
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
     @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
+
+    @ViewChild('pfc', { static: false }) proformaTable: DataTable;
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
@@ -82,6 +87,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
+	private cdr: ChangeDetectorRef,
     ) { }
 
     async ngOnInit() {
@@ -179,6 +185,24 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 console.log('currency Data ', this.currencyData);
             }
         }))
+    }
+
+    setCurrentPage(n: number) {
+        let paging = {
+            first: ((n - 1) * this.proformaTable.rows),
+            rows: this.proformaTable.rows
+        };
+        // this.outInvTable.paginate(paging)
+        this.pageNumber = n;
+    }
+    currentPageNumber: number;
+    paginate(event) {
+        //event.first: Index of first record being displayed 
+        //event.rows: Number of rows to display in new page 
+        //event.page: Index of the new page 
+        //event.pageCount: Total number of pages 
+        this.currentPageNumber = event.first;
+        let pageIndex = event.first / event.rows + 1 // Index of the new page if event.page not defined.
     }
 
     // Client Legal Entity
@@ -1460,12 +1484,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (type === "Mark as Sent to Client" || type === "Reject Proforma") {
             let sts = '';
             sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: 'Status changed to "' + sts + '" Successfully.', life: 2000 });
+            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: this.selectedRowItem.ProformaNumber + ' ' + 'Status changed to "' + sts + '" Successfully.', life: 20000 });
             this.reFetchData(type);
         } else if (type === "createProforma") {
             this.proformaModal = false;
             await this.fdDataShareServie.callProformaCreation(arrResults[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, []);
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: 'Proforma Created.', life: 2000 });
+            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: this.selectedRowItem.ProformaNumber + ' ' + 'Proforma Created.', life: 20000 });
             this.reFetchData(type);
 
         } else if (type === "generateInvoice") {
@@ -1524,10 +1548,10 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 await this.spServices.executeJS(pdfService, pdfCall);
             }
             this.generateInvoiceModal = false;
-            this.messageService.add({ key: 'custom', sticky: true, severity: 'success', summary: 'Invoice Generated', detail: 'Invoice Number: ' + oInv.InvoiceNumber });
+            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Invoice Generated', detail: 'Invoice Number: ' + oInv.InvoiceNumber, life: 20000 });
             this.reFetchData(type);
         } else if (type === "replaceProforma") {
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: 'Success.', life: 2000 });
+            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: this.selectedRowItem.ProformaNumber + ' ' + 'Success.', life: 20000 });
             this.replaceProformaModal = false;
             this.reFetchData(type);
         }
@@ -1535,20 +1559,25 @@ export class ProformaComponent implements OnInit, OnDestroy {
 
     }
 
-    reFetchData(type: string) {
+    async reFetchData(type: string) {
         if (type === "Mark as Sent to Client" || type === "Reject Proforma" || type === "replaceProforma") {
-            this.getRequiredData();
+            await this.getRequiredData();
         } else if (type === 'createProforma' || type === 'generateInvoice') {
-            setTimeout(async () => {
-                // Refetch PO/CLE Data
-                // this.fdDataShareServie.clePoPiRes = [];
-                await this.fdDataShareServie.getClePO('proforma');
-                // Fetch latest PO & CLE
-                this.poInfo();
-                this.cleInfo();
-                this.getRequiredData();
-            }, 300);
+            // Refetch PO/CLE Data
+            // this.fdDataShareServie.clePoPiRes = [];
+            await this.fdDataShareServie.getClePO('proforma');
+            // Fetch latest PO & CLE
+            this.poInfo();
+            this.cleInfo();
+            await this.getRequiredData();
         }
+        // this.pageNumber = this.currentPageNumber;
+        this.cdr.detectChanges();
+        console.log('this.currentPageNumber ', this.currentPageNumber);
+        setTimeout(() => {
+            this.setCurrentPage(this.currentPageNumber);
+            console.log('this.pageNumber ', this.pageNumber);
+        }, 1000);
 
     }
     onlyNumberKey(event) {

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener } from '@angular/core';
 import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
-import { Calendar } from 'primeng/primeng';
+import { Calendar, DataTable } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -64,6 +64,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
     @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
 
+    @ViewChild('cnf', { static: false }) confirmTable: DataTable;
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
 
@@ -302,8 +303,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         arrResults = res;
         if (arrResults.length) {
             // this.formatData(arrResults);
-            this.getPOListItems(arrResults[0]);
             this.confirmedILIarray = arrResults[0];
+            this.getPOListItems(arrResults[0]);
         }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         // });
@@ -326,8 +327,14 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 this.purchaseOrders.push(poItem);
             }
         }
-        console.log('this.purchaseOrders ', this.purchaseOrders);
-        console.log('this.confirmedPOList ', this.confirmedPOList);
+        // this.selectedPurchaseNumber = this.selectedPurchaseNumber ? this.selectedPurchaseNumber : '';
+        // console.log('this.purchaseOrders ', this.purchaseOrders);
+        // console.log('this.confirmedPOList ', this.confirmedPOList);
+        if (this.selectedDDPO.hasOwnProperty('value')) {
+            this.selectedPurchaseNumber = this.purchaseOrders ? this.purchaseOrders.find(item => item.Id === this.selectedDDPO.value.ID) : '';
+            this.onChange(this.selectedDDPO);
+        }
+        // console.log('this.selectedPurchaseNumber ', this.selectedPurchaseNumber);
     }
 
     searchPOId(poId, myArray) {
@@ -353,6 +360,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     matchedILIArray: any = [];
+    selectedDDPO: any = {};
     onChange(data: any) {
         this.matchedILIArray = [];
         this.selectedAllRowData = [];
@@ -360,6 +368,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.selectedTotalAmt = 0;
         // console.log(data.value);
         let po = data.value;
+        this.selectedDDPO = data;
         console.log('po ', po);
         if (po) {
             if (po.hasOwnProperty('AmountRevenue') && po.hasOwnProperty('InvoicedRevenue')) {
@@ -1050,17 +1059,17 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.isPSInnerLoaderHidden = true;
             this.reFetchData();
             // this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Proforma added.', detail: '', life: 2000 });
-            this.messageService.add({ key: 'custom', sticky: true, severity: 'success', summary: 'Proforma Added', detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber });
+            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Proforma Added', detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber, life: 20000 });
 
         } else {
-            const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
-            const arrResults = res;
-            console.log('--oo ', arrResults);
+            await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
+            //const arrResults = res;
+            //console.log('--oo ', arrResults);
             if (type === "revertInvoice") {
-                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message', detail: 'Reverted the invoice from Confirmed to Scheduled.', life: 2000 });
+                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message', detail: 'Reverted the invoice from Confirmed to Scheduled.', life: 20000 });
                 this.reFetchData();
             } else if (type === "editInvoice") {
-                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice Updated.', life: 2000 });
+                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice Updated.', life: 20000 });
                 this.reFetchData();
             }
             this.isPSInnerLoaderHidden = true;
