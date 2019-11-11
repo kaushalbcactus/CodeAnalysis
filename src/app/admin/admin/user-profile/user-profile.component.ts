@@ -28,6 +28,7 @@ import { GlobalService } from 'src/app/Services/global.service';
  * This class is used to add/update user into a `Resource Categorization` list.
  */
 export class UserProfileComponent implements OnInit {
+  isUserSPMUPA: boolean;
   userProfileColumns = [];
   userProfileData = [];
   auditHistoryColumns = [];
@@ -308,7 +309,6 @@ export class UserProfileComponent implements OnInit {
    * Once the response return from REST Call, Iterate through each item and store into the
    * `userProfileData` array to display the result into Ng Prime table.
    */
-  isUserSPMUPA: boolean;
   async loadUserTable() {
     this.adminObject.isMainLoaderHidden = false;
 
