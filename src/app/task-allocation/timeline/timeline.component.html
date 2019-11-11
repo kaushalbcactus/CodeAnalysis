@@ -16,7 +16,7 @@
            ********************************************************************************************************** -->
         <div fxLayout="row" fxLayoutGap="20px" style="padding: 10px 0px 30px 0px;" fxLayoutAlign="space-around center">
 
-            <div *ngIf="(visualgraph === false && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress') && !projectDetails">
+            <div *ngIf="(visualgraph === false && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.deliverable !== 'FTE') && !projectDetails">
                 <button mat-raised-button type="button" (click)="showRestructure()">
                     <mat-icon>create</mat-icon> Restructure Project
                 </button>
@@ -95,7 +95,7 @@
                     </button>
                 </div>
 
-                <div *ngIf=" !visualgraph && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress'"
+                <div *ngIf=" !visualgraph && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress' && oProjectDetails.deliverable !== 'FTE'"
                     class="input-color" fxLayoutAlign="end center">
                     <button *ngIf="!projectDetails" mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks()">
                         <mat-icon>save</mat-icon> Save Tasks
@@ -155,7 +155,7 @@
                             <span style="color:#dc2038;cursor: pointer;" *ngIf="rowData.type ==='task'" (click)="ViewTaskDetails(rowData)"> {{rowData.pName}}</span>
 
                             <div id="nextMilestone" [title]=" rowData.type==='milestone' ? 'Set as Current Milestone':'Set as Current Sub-Milestone'" (click)=" setAsNextMilestoneCall(rowData,rowNode)" *ngIf="(rowData.isNext === true && !rowData.subMilestonePresent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isCurrent && !changeInRestructure) || (rowData.type==='submilestone' && rowData.isNext &&   !changeInRestructure)  "
-                                style="display: inline;" [hidden]=" (rowData.type==='milestone' && (oProjectDetails.status ==='In Discussion' || rowData.status === 'Completed' || rowData.pID === -1)) || (rowData.type==='submilestone' &&  rowData.status !== 'Not Confirmed') || projectDetails ">
+                                style="display: inline;" [hidden]=" (rowData.type==='milestone' && (oProjectDetails.status ==='In Discussion' || oProjectDetails.deliverable !== 'FTE' || rowData.status === 'Completed' || rowData.pID === -1)) || (rowData.type==='submilestone' &&  rowData.status !== 'Not Confirmed') || projectDetails ">
                                 <i class="pi pi-check" style="font-size: 2em;vertical-align: middle;"></i>
                             </div>
                         </td>
@@ -252,7 +252,7 @@
                             <!-- <ng-select *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone'" #assignedTo class="txtTask" [items]="rowData.assignedUsers" bindLabel="Title" placeholder="Select Resource" groupBy="userType" [(ngModel)]="rowData.AssignedTo"
                                 (change)="assignedToUserChanged(rowData)" appendTo="body"></ng-select> -->
                             <!-- {{rowData.AssignedTo |json}} -->
-                            <p-dropdown [style]="{'width':'100%'}" *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone'" #assignedTo class="txtTask" [options]="rowData.assignedUsers" [panelStyle]="{minWidth:'15em' }" [(ngModel)]="rowData.AssignedTo"
+                            <p-dropdown [style]="{'width':'100%'}" *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.itemType.indexOf('Slot') <= -1" #assignedTo class="txtTask" [options]="rowData.assignedUsers" [panelStyle]="{minWidth:'15em' }" [(ngModel)]="rowData.AssignedTo"
                                 placeholder="Select Resource" [showClear]="true" [group]="true" filter="true" (onChange)="assignedToUserChanged(rowData)">
                                 <ng-template let-group pTemplate="group">
                                     <span style="margin-left:.25em">{{group.label}}</span>

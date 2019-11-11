@@ -576,7 +576,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   async getNextPreviousTaskDialog(task) {
 
     this.tableloaderenable = true;
-    debugger;
+    // debugger;
     let tasks = [];
     if (task.NextTasks || task.PrevTasks) {
       tasks = await this.getNextPreviousTask(task);
