@@ -1156,8 +1156,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.isPSInnerLoaderHidden = true;
             this.reFetchData();
             this.messageService.add({
-                key: 'custom', sticky: true, severity: 'success', summary: 'Proforma Added',
-                detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber
+                key: 'custom',  severity: 'success', summary: 'Proforma Added',
+                detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber, life: 20000
             });
 
         } else {
@@ -1168,13 +1168,13 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             if (type === 'revertInvoice') {
                 this.messageService.add({
                     key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
-                    detail: 'Reverted the invoice from Confirmed to Scheduled.', life: 2000
+                    detail: 'Reverted the invoice from Confirmed to Scheduled.', life: 20000
                 });
                 this.reFetchData();
             } else if (type === 'editInvoice') {
                 this.messageService.add({
                     key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
-                    detail: 'Invoice Updated.', life: 2000
+                    detail: 'Invoice Updated.', life: 20000
                 });
                 this.reFetchData();
             }

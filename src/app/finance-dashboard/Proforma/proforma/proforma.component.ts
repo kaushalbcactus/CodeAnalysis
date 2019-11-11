@@ -1610,12 +1610,12 @@ export class ProformaComponent implements OnInit, OnDestroy {
         if (type === "Mark as Sent to Client" || type === "Reject Proforma") {
             let sts = '';
             sts = type === 'Mark as Sent to Client' ? 'Sent' : 'Rejected'
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: this.selectedRowItem.ProformaNumber + ' ' + 'Status changed to "' + sts + '" Successfully.', life: 4000 });
+            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: this.selectedRowItem.ProformaNumber + ' ' + 'Status changed to "' + sts + '" Successfully.', life: 20000 });
             this.reFetchData(type);
         } else if (type === "createProforma") {
             this.proformaModal = false;
             await this.fdDataShareServie.callProformaCreation(arrResults[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, []);
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: this.selectedRowItem.ProformaNumber + ' ' + 'Proforma Created.', life: 4000 });
+            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: this.selectedRowItem.ProformaNumber + ' ' + 'Proforma Created.', life: 20000 });
             this.reFetchData(type);
 
         } else if (type === "generateInvoice") {
@@ -1689,10 +1689,10 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 await this.spServices.executeJS(pdfService, pdfCall);
             }
             this.generateInvoiceModal = false;
-            this.messageService.add({ key: 'custom', sticky: true, severity: 'success', summary: 'Invoice Generated', detail: 'Invoice Number: ' + oInv.InvoiceNumber });
+            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Invoice Generated', detail: 'Invoice Number: ' + oInv.InvoiceNumber, life: 20000 });
             this.reFetchData(type);
         } else if (type === "replaceProforma") {
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: this.selectedRowItem.ProformaNumber + ' ' + 'Success.', life: 4000 });
+            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: this.selectedRowItem.ProformaNumber + ' ' + 'Success.', life: 20000 });
             this.replaceProformaModal = false;
             this.reFetchData(type);
         }

@@ -994,34 +994,34 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         if (type === "creditDebit") {
             this.messageService.add({
                 key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', life: 4000
+                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', life: 20000
             });
             this.creditOrDebitModal = false;
             this.reFetchData();
         } else if (type === "sentToAP") {
             this.messageService.add({
                 key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Invoice Status Changed.', life: 4000
+                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Invoice Status Changed.', life: 20000
             });
             this.sentToAPModal = false;
             this.reFetchData();
         } else if (type === "disputeInvoice") {
             this.messageService.add({
                 key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Submitted.', life: 4000
+                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Submitted.', life: 20000
             });
             this.disputeInvoiceModal = false;
         } else if (type === "paymentResoved") {
             this.messageService.add({
                 key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', life: 4000
+                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', life: 20000
             });
             this.paymentResovedModal = false;
             this.reFetchData();
         } else if (type === "replaceInvoice") {
             this.messageService.add({
                 key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', life: 4000
+                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', life: 20000
             });
             this.replaceInvoiceModal = false;
             this.reFetchData();
