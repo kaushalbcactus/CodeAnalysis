@@ -2888,8 +2888,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
       }
     }
-
-    this.oProjectDetails.allMilestones = listOfMilestones;
+    this.sharedObject.oTaskAllocation.oProjectDetails.allMilestones = listOfMilestones;
+    //this.oProjectDetails.allMilestones = listOfMilestones;
 
     this.getDeletedMilestoneTasks(updatedTasks, updatedMilestones);
     this.setMilestone(addedTasks, updatedTasks, addedMilestones, updatedMilestones);
