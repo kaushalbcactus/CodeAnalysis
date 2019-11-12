@@ -780,6 +780,11 @@ export class ProformaComponent implements OnInit, OnDestroy {
                 TaggedAmount: this.selectedRowItem.Amount,
                 IsTaggedFully: 'Yes'
             };
+        } else {
+            this.addILIObj = {
+                TaggedAmount: 0,
+                IsTaggedFully: 'No'
+            };
         }
         this.getUniqueItem(arrResults);
         // }
