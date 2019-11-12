@@ -627,7 +627,7 @@ export class PMCommonService {
     };
     if (isCreate) {
       data.SOWCode = addObj.SOWSelect.SOWCode;
-      data.Milestones = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.Milestones : '';
+      data.Milestones = addObj.Timeline.Standard.IsStandard ? Array.from(new Set(addObj.Timeline.Standard.Milestones)).join(';#') : '';
       data.DeliverableType = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.DeliverableType :
         addObj.Timeline.NonStandard.DeliverableType;
       data.ProjectType = addObj.ProjectAttributes.BilledBy;

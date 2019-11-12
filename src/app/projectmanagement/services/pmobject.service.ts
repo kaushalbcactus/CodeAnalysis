@@ -268,7 +268,7 @@ export class PMObjectService {
         standardArray: [],
         DeliverableType: '',
         SubDeliverable: '',
-        Milestones: '',
+        Milestones: [],
         ServiceLevel: '',
         MilestonesArray: [],
         TaskArray: []
