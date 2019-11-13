@@ -52,9 +52,9 @@ export class TaskAllocationConstantsService {
             top: 4500
         },
         taskList: {
-            select: 'Title,Status,IsCentrallyAllocated,DefaultSkill',
+            select: 'Title,Status,IsCentrallyAllocated,DefaultSkill,TaskType',
             orderby: 'SerialOrder asc',
-            filter: "Status eq '{{status}}'",
+            filter: "Status eq '{{status}}' and TaskType ne '{{TaskType}}'",
             top: 4500
         },
         milestone: {
