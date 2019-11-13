@@ -1,16 +1,17 @@
-<div fxLayout="row" fxLayoutAlign="space-between  center" >
+<div fxLayout="row" fxLayoutAlign="space-between  center">
+    <p-tabMenu [model]="items" fxFlex="97"></p-tabMenu>
 
-    <p-tabMenu [model]="items" fxFlex="97">
-    </p-tabMenu>
-    
-<i fxFlex="3" (click)="loadTimeBookingDialog()"  title="Time Booking" style="cursor: pointer; font-size: 2em;padding:2px;border-bottom:1px solid #C53E3E;" class="fa fa-calendar-plus-o" aria-hidden="true"></i>
-    
+    <p-button fxFlex="9" icon="pi pi-plus" iconPos="right" label="Create Task" *ngIf="true" (click)="createTask()"></p-button>
+
+    <i fxFlex="3" (click)="loadTimeBookingDialog()" title="Time Booking"
+        style="cursor: pointer; font-size: 2em;padding:2px;border-bottom:1px solid #C53E3E;"
+        class="fa fa-calendar-plus-o" aria-hidden="true"></i>
 </div>
 
 <p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'"
-position="bottom-center">
+    position="bottom-center">
 </p-toast>
 
-<router-outlet (activate)="onActivate($event) " #myOutlet="outlet"></router-outlet>
+<ng-container #createTaskcontainer (messageEvent)="receiveMessage($event)"></ng-container>
 
- 
+<router-outlet (activate)="onActivate($event) " #myOutlet="outlet"></router-outlet>

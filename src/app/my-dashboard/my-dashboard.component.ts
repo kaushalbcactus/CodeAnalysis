@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit, ViewChildren, QueryList, } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, ViewChildren, QueryList, ViewContainerRef, ComponentFactoryResolver, } from '@angular/core';
 import { MenuItem, DialogService, MessageService } from 'primeng/api';
 import { SPOperationService } from '../Services/spoperation.service';
 import { GlobalService } from '../Services/global.service';
@@ -6,8 +6,7 @@ import { ConstantsService } from '../Services/constants.service';
 import { MyDashboardConstantsService } from './services/my-dashboard-constants.service';
 import { Router } from '@angular/router';
 import { TimeBookingDialogComponent } from './time-booking-dialog/time-booking-dialog.component';
-
-
+import { CreateTaskComponent } from './fte/create-task/create-task.component';
 
 @Component({
   selector: 'app-my-dashboard',
@@ -16,8 +15,6 @@ import { TimeBookingDialogComponent } from './time-booking-dialog/time-booking-d
 
 })
 export class MyDashboardComponent implements OnInit {
-
-
 
   items: MenuItem[];
   activeItem: MenuItem;
@@ -32,13 +29,19 @@ export class MyDashboardComponent implements OnInit {
     listName: ''
   };
 
-  constructor(private constants: ConstantsService,
+  currentUserInfo: any;
+
+  @ViewChild('createTaskcontainer', { read: ViewContainerRef, static: true }) createTaskcontainer: ViewContainerRef;
+
+  constructor(
+    private constants: ConstantsService,
     public sharedObject: GlobalService,
     private spServices: SPOperationService,
     private myDashboardConstantsService: MyDashboardConstantsService,
     private router: Router,
     public dialogService: DialogService,
     public messageService: MessageService,
+    private componentFactoryResolver: ComponentFactoryResolver,
     // private commonService: CommonService,
   ) { }
 
@@ -52,9 +55,14 @@ export class MyDashboardComponent implements OnInit {
       { label: 'Search Projects', routerLink: ['search-projects'] }
     ];
 
-    // this.GetCurrentUser();
+    this.GetCurrentUser();
   }
 
+  message: string;
+  receiveMessage($event) {
+    this.message = $event;
+    alert(this.message);
+  }
 
   async onActivate(componentRef) {
 
@@ -63,6 +71,8 @@ export class MyDashboardComponent implements OnInit {
       await this.executeCommonCalls();
     }
     if (this.router.url.includes('my-current-tasks') || this.router.url.includes('my-completed-tasks')) {
+      this.myDashboardConstantsService.openTaskSelectedTab['event'] = 'Today';
+      this.myDashboardConstantsService.openTaskSelectedTab['days'] = 0;
       componentRef.GetDatabyDateSelection('Today', 0);
     }
   }
@@ -72,6 +82,7 @@ export class MyDashboardComponent implements OnInit {
     this.sharedObject.currentUser.userId = currentUser.Id;
     this.sharedObject.currentUser.email = currentUser.Email;
     this.sharedObject.currentUser.title = currentUser.Title;
+    this.currentUserInfo = currentUser;
   }
   // *************************************************************************************************************************************
   //  dialog for time booking 
@@ -100,10 +111,7 @@ export class MyDashboardComponent implements OnInit {
   }
 
   async executeCommonCalls() {
-
-
     this.firstload = false;
-
     // const batchGuid = this.spServices.generateUUID();
     // this.batchContents = new Array();
 
@@ -113,7 +121,7 @@ export class MyDashboardComponent implements OnInit {
     // **************************************************************************************************************************************
     const cleObj = Object.assign({}, this.queryConfig);
     cleObj.url = this.spServices.getReadURL(this.constants.listNames.ClientLegalEntity.name,
-                 this.myDashboardConstantsService.mydashboardComponent.ClientLegalEntitys);
+      this.myDashboardConstantsService.mydashboardComponent.ClientLegalEntitys);
     cleObj.listName = this.constants.listNames.ClientLegalEntity.name;
     cleObj.type = 'GET';
     batchUrl.push(cleObj);
@@ -126,7 +134,7 @@ export class MyDashboardComponent implements OnInit {
     // **************************************************************************************************************************************
     const rcObj = Object.assign({}, this.queryConfig);
     rcObj.url = this.spServices.getReadURL(this.constants.listNames.ResourceCategorization.name,
-                this.myDashboardConstantsService.mydashboardComponent.ResourceCategorization);
+      this.myDashboardConstantsService.mydashboardComponent.ResourceCategorization);
     rcObj.listName = this.constants.listNames.ResourceCategorization.name;
     rcObj.type = 'GET';
     batchUrl.push(rcObj);
@@ -141,11 +149,11 @@ export class MyDashboardComponent implements OnInit {
     // **************************************************************************************************************************************
     const prjContactsObj = Object.assign({}, this.queryConfig);
     prjContactsObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectContacts.name,
-                         this.myDashboardConstantsService.mydashboardComponent.ProjectContacts);
+      this.myDashboardConstantsService.mydashboardComponent.ProjectContacts);
     prjContactsObj.listName = this.constants.listNames.ProjectContacts.name;
     prjContactsObj.type = 'GET';
     batchUrl.push(prjContactsObj);
-    
+
     // const projectContactsUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectContacts.name + '', this.myDashboardConstantsService.mydashboardComponent.ProjectContacts);
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectContactsUrl);
 
@@ -156,11 +164,11 @@ export class MyDashboardComponent implements OnInit {
     // **************************************************************************************************************************************
     const piObj = Object.assign({}, this.queryConfig);
     piObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name,
-                this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
+      this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
     piObj.listName = this.constants.listNames.ProjectInformation.name;
     piObj.type = 'GET';
     batchUrl.push(piObj);
-    
+
     // const projectInformationUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectInformationUrl);
 
@@ -168,9 +176,19 @@ export class MyDashboardComponent implements OnInit {
     this.response = await this.spServices.executeBatch(batchUrl);
 
     this.sharedObject.DashboardData.ClientLegalEntity = this.response.length > 0 ? this.response[0].retItems : [];
-    this.sharedObject.DashboardData.ResourceCategorization =  this.response.length > 0 ? this.response[1].retItems : [];
-    this.sharedObject.DashboardData.ProjectContacts =  this.response.length > 0 ? this.response[2].retItems : [];
-    this.sharedObject.DashboardData.ProjectCodes =  this.response.length > 0 ? this.response[3].retItems : [];
+    this.sharedObject.DashboardData.ResourceCategorization = this.response.length > 0 ? this.response[1].retItems : [];
+    this.sharedObject.DashboardData.ProjectContacts = this.response.length > 0 ? this.response[2].retItems : [];
+    this.sharedObject.DashboardData.ProjectCodes = this.response.length > 0 ? this.response[3].retItems : [];
+  }
+
+  createTask() {
+    this.createTaskcontainer.clear();
+    const factory = this.componentFactoryResolver.resolveComponentFactory(CreateTaskComponent);
+    const componentRef = this.createTaskcontainer.createComponent(factory);
+    // componentRef.instance.events = this.selectedProject;
+    componentRef.instance.formType = 'createTask';
+    componentRef.instance.currentUserInfo = this.currentUserInfo;
+    // this.ref = componentRef;
   }
 
 }

@@ -60,7 +60,8 @@ export class MyTimelineComponent implements OnInit {
     type: '',
     listName: ''
   };
-  constructor(private myDashboardConstantsService: MyDashboardConstantsService,
+  constructor(
+    private myDashboardConstantsService: MyDashboardConstantsService,
     private constants: ConstantsService,
     public sharedObject: GlobalService,
     private spServices: SPOperationService,
@@ -88,9 +89,11 @@ export class MyTimelineComponent implements OnInit {
 
   }
 
+  // tslint:disable-next-line: use-life-cycle-interface
   ngAfterViewInit() {
     this.bindEvents();
   }
+
   ngOnInit() {
 
     this.CalendarLoader = true;
@@ -101,7 +104,7 @@ export class MyTimelineComponent implements OnInit {
       { name: 'Planned', value: 'Planned' },
       { name: 'Completed', value: 'Completed' },
       { name: 'Adhoc', value: 'Adhoc' },
-    ]
+    ];
     this.items = [
       { label: 'Leave', icon: 'fa fa-calendar-plus-o', command: (e) => this.loadBlockTimeDialog('Leave', undefined) },
       { label: 'Client Meeting / Training', icon: 'fa fa-handshake-o', command: (e) => this.loadBlockTimeDialog('Client Meeting / Training', undefined) },

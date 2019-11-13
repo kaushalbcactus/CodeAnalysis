@@ -565,7 +565,7 @@ export class CommonService {
 
             }
             if ((!task.AssignedTo) || (task.AssignedTo && (!task.AssignedTo.hasOwnProperty('ID') || (task.AssignedTo.hasOwnProperty('ID') && task.AssignedTo.ID === -1)))) {
-                task.AssignedTo = { ID: undefined, Title: oCentralGroup.Title, Email:undefined, SkillText: oCentralGroup.SkillText };
+                task.AssignedTo = { ID: undefined, Title: oCentralGroup.Title, Email: undefined, SkillText: oCentralGroup.SkillText };
                 task.pRes = oCentralGroup.Title;
             }
             filteredResources.push(oCentralGroup)
@@ -742,6 +742,21 @@ export class CommonService {
         } else {
             return '0:0';
         }
+    }
+
+    ConvertTimeformat(format, time) {
+        // var time = $("#starttime").val();
+        var hours = Number(time.match(/^(\d+)/)[1]);
+        var minutes = Number(time.match(/:(\d+)/)[1]);
+        var AMPM = time.match(/\s(.*)$/)[1];
+        if (AMPM.toLowerCase() === "pm" && hours < 12) hours = hours + 12;
+        if (AMPM.toLowerCase() === "am" && hours == 12) hours = hours - 12;
+        var sHours = hours.toString();
+        var sMinutes = minutes.toString();
+        if (hours < 10) sHours = "0" + sHours;
+        if (minutes < 10) sMinutes = "0" + sMinutes;
+        // alert(sHours + ":" + sMinutes);
+        return sHours + ":" + sMinutes;
     }
 
     ajax_subtractHrsMins(elem1, elem2) {
@@ -947,8 +962,8 @@ export class CommonService {
         })
     }
 
-    sortDataDateArray(array:any){
-     
+    sortDataDateArray(array: any) {
+
         return array.sort((a, b) => b.label - a.label)
     }
 

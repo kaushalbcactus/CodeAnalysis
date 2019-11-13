@@ -14,6 +14,7 @@ import { PreviosNextTasksDialogComponent } from '../previos-next-tasks-dialog/pr
 import { Table } from 'primeng/table';
 import { FeedbackPopupComponent } from '../../qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
+import { Subscription } from 'rxjs';
 
 
 interface DateObj {
@@ -30,6 +31,46 @@ interface DateObj {
 })
 
 export class MyCurrentCompletedTasksComponent implements OnInit {
+
+  // yearsRange = new Date().getFullYear() + ':' + (new Date().getFullYear() + 10);
+  constructor(
+    public myDashboardConstantsService: MyDashboardConstantsService,
+    private constants: ConstantsService,
+    public sharedObject: GlobalService,
+    private datePipe: DatePipe,
+    private spServices: SPOperationService,
+    private commonService: CommonService,
+    public messageService: MessageService,
+    private route: ActivatedRoute,
+    public dialogService: DialogService,
+    private confirmationService: ConfirmationService,
+    public spOperations: SPOperationService,
+    private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone,
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+    const obj = this.myDashboardConstantsService.openTaskSelectedTab;
+    console.log(obj);
+
+    this.subscription.add(this.myDashboardConstantsService.getOpenTaskTabValue().subscribe(data => {
+      console.log('in subscription ', data);
+      this.GetDatabyDateSelection(data.event, data.days);
+    }));
+
+  }
 
   selectedDueDate: DateObj;
   selectedStartDate: DateObj;
@@ -77,38 +118,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   tempselectedDate: string;
   tempClick: any;
 
-  // yearsRange = new Date().getFullYear() + ':' + (new Date().getFullYear() + 10);
-  constructor(
-    private myDashboardConstantsService: MyDashboardConstantsService,
-    private constants: ConstantsService,
-    public sharedObject: GlobalService,
-    private datePipe: DatePipe,
-    private spServices: SPOperationService,
-    private commonService: CommonService,
-    public messageService: MessageService,
-    private route: ActivatedRoute,
-    public dialogService: DialogService,
-    private confirmationService: ConfirmationService,
-    public spOperations: SPOperationService,
-    private cdr: ChangeDetectorRef,
-    private platformLocation: PlatformLocation,
-    private locationStrategy: LocationStrategy,
-    private readonly _router: Router,
-    _applicationRef: ApplicationRef,
-    zone: NgZone,
-  ) {
+  // List of Subscribers
+  private subscription: Subscription = new Subscription();
 
-    // Browser back button disabled & bookmark issue solution
-    history.pushState(null, null, window.location.href);
-    platformLocation.onPopState(() => {
-      history.pushState(null, null, window.location.href);
-    });
-
-    _router.events.subscribe((uri) => {
-      zone.run(() => _applicationRef.tick());
-    });
-
-  }
+  isOptionFilter: boolean;
 
   ngOnInit() {
     this.cols = [
@@ -123,7 +136,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       { field: 'TimeSpent', header: 'Time Spent', visibility: true, exportable: true },
     ];
     this.myDashboardConstantsService.getEmailTemplate();
-
   }
 
 
@@ -147,14 +159,16 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   // *************************************************************************************************************************************
 
   GetDatabyDateSelection(event, days) {
-    this.TabName = this.route.snapshot.data.type;
+    this.myDashboardConstantsService.openTaskSelectedTab['event'] = event;
+    this.myDashboardConstantsService.openTaskSelectedTab['days'] = days;
 
+    this.TabName = this.route.snapshot.data.type;
     this.days = days;
     this.selectedTab = event;
     this.selectedDate = days > 0 ? event + days : event;
+    this.myDashboardConstantsService.openTaskSelectedTab['selectedDate'] = 'Next7';
     this.rangeDates = event === 'Custom' ? this.rangeDates : null;
     if (event === 'Custom' && this.rangeDates !== null) {
-
       this.allTasks = [];
       this.loaderenable = true;
       this.rangeDates[1] = this.rangeDates[1] === null ? this.rangeDates[0] : this.rangeDates[1];
@@ -576,7 +590,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   async getNextPreviousTaskDialog(task) {
 
     this.tableloaderenable = true;
-    debugger;
     let tasks = [];
     if (task.NextTasks || task.PrevTasks) {
       tasks = await this.getNextPreviousTask(task);
@@ -803,6 +816,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     }
   }
 
+  test11() {
+    alert('Hey i am from open task');
+  }
+
 
   async callComplete(task) {
     task.Status = 'Completed';
@@ -826,20 +843,19 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     }
 
   }
-
-  isOptionFilter: boolean;
   optionFilter(event: any) {
     if (event.target.value) {
       this.isOptionFilter = false;
     }
   }
 
+  // tslint:disable-next-line: use-life-cycle-interface
   ngAfterViewChecked() {
     if (this.allTasks.length && this.isOptionFilter) {
-      let obj = {
+      const obj = {
         tableData: this.taskId,
         colFields: this.AllTaskColArray
-      }
+      };
       if (obj.tableData.filteredValue) {
         this.commonService.updateOptionValues(obj);
       } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
@@ -853,8 +869,11 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // tslint:disable-next-line: use-life-cycle-interface
   ngOnDestroy() {
-
+    if (this.subscription) {
+      this.subscription.unsubscribe()
+    }
   }
 
 

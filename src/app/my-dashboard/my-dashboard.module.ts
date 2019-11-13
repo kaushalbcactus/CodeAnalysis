@@ -40,6 +40,7 @@ import { TimelineModule } from '../timeline/timeline.module';
 import { SharedModule } from '../shared/shared.module';
 import { ViewUploadDocumentDialogComponent } from '../shared/view-upload-document-dialog/view-upload-document-dialog.component';
 import { ViewUploadDocumentModule } from '../shared/view-upload-document-dialog/view-upload-document.module';
+import { CreateTaskComponent } from './fte/create-task/create-task.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -60,7 +61,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     TimeBookingDialogComponent,
     ProjectDraftsComponent,
     MyprojectsComponent,
-    DisplayProjectsComponent],
+    DisplayProjectsComponent,
+    CreateTaskComponent],
   imports: [
     SharedModule,
     ViewUploadDocumentModule,
@@ -97,6 +99,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     BlockTimeDialogComponent,
     ProjectDraftsComponent,
     ViewUploadDocumentDialogComponent,
+    CreateTaskComponent
   ]
 })
 export class MyDashboardModule { }
