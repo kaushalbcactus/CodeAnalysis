@@ -965,7 +965,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         await this.getRequiredData();
         setTimeout(() => {
             this.cdr.detectChanges();
-            this.setCurrentPage(this.currentPageNumber);
+            this.setCurrentPage(this.currentPageNumber ? this.currentPageNumber : 0);
             this.cdr.detectChanges();
         },1000);
     }
