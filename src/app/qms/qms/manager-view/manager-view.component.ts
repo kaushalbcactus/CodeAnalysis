@@ -394,7 +394,8 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
 
   reloadPage(filterObj) {
     this.data.changeFilterObj(filterObj);
-    this.router.navigate([this.router.url]);
+    //this.router.navigate([this.router.url]);
+    this.initialiseManagerView();
   }
 
 

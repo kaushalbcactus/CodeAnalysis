@@ -7,9 +7,8 @@
       </div>
     </ng-template> -->
   </p-tabMenu>
-  <ng-template>
-    <app-filters #filters (callApplyFilter)="personalFeedbackCalled($event)"></app-filters>
-  </ng-template>
+
+  <app-filters #filters (callApplyFilter)="personalFeedbackCalled($event)"></app-filters>
   <div class="clear"></div>
   <router-outlet></router-outlet>
 </div>

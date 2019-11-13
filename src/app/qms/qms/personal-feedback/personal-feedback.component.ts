@@ -36,6 +36,6 @@ export class PersonalFeedbackComponent implements OnInit {
    */
   personalFeedbackCalled(filterObj) {
     this.data.changeFilterObj(filterObj);
-    this.router.navigate([this.router.url]);
+    //this.router.navigate([this.router.url]);
   }
 }
