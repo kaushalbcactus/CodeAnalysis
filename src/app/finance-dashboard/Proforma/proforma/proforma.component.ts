@@ -1489,7 +1489,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         } else if (type === "createProforma") {
             this.proformaModal = false;
             await this.fdDataShareServie.callProformaCreation(arrResults[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, []);
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: this.selectedRowItem.ProformaNumber + ' ' + 'Proforma Created.', life: 20000 });
+            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: arrResults[0].Title + ' ' + 'Proforma Created.', life: 20000 });
             this.reFetchData(type);
 
         } else if (type === "generateInvoice") {
