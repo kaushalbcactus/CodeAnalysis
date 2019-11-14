@@ -1620,7 +1620,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         } else if (type === "createProforma") {
             this.proformaModal = false;
             await this.fdDataShareServie.callProformaCreation(arrResults[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, []);
-            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: this.selectedRowItem.ProformaNumber + ' ' + 'Proforma Created.', life: 20000 });
+            this.messageService.add({ key: 'proformaSuccessToast', severity: 'success', summary: 'Success message', detail: arrResults[0].Title + ' ' + 'Proforma Created.', life: 20000 });
             this.reFetchData(type);
 
         } else if (type === "generateInvoice") {
@@ -1719,9 +1719,9 @@ export class ProformaComponent implements OnInit, OnDestroy {
         }
         // this.pageNumber = this.currentPageNumber;
         this.cdr.detectChanges();
-        console.log('this.currentPageNumber ', this.currentPageNumber);
+        console.log('this.currentPageNumber ', this.currentPageNumber ? this.currentPageNumber : 0);
         setTimeout(() => {
-            this.setCurrentPage(this.currentPageNumber);
+            this.setCurrentPage(this.currentPageNumber ? this.currentPageNumber : 0);
             console.log('this.pageNumber ', this.pageNumber);
         }, 1000);
 
