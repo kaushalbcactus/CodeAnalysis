@@ -75,7 +75,8 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-   this.initialiseFeedback();
+    this.qmsCommon.selectedComponent = this;
+    this.initialiseFeedback();
   }
 
   protected async initialiseFeedback() {
@@ -94,8 +95,8 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
     this.feedbackRows = [];
     this.showLoader();
     setTimeout(async () => {
-    this.data.filterObj.subscribe(filter => this.filterObj = filter);
-    this.applyFilters(this.filterObj);
+      this.data.filterObj.subscribe(filter => this.filterObj = filter);
+      this.applyFilters(this.filterObj);
     }, 500);
   }
 

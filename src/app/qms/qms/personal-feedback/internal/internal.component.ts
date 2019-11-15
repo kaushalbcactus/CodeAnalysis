@@ -7,6 +7,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { PlatformLocation, LocationStrategy } from '@angular/common';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { MessageService } from 'primeng/api';
+import { QMSCommonService } from '../../services/qmscommon.service';
 
 @Component({
   selector: 'app-internal',
@@ -25,6 +26,7 @@ export class InternalComponent implements OnInit, OnDestroy {
     private data: DataService,
     private router: Router,
     private qmsConstatsService: QMSConstantsService,
+    private qmsCommon : QMSCommonService,
     private messageService: MessageService,
     private platformLocation: PlatformLocation,
     private locationStrategy: LocationStrategy,
@@ -70,6 +72,7 @@ export class InternalComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.qmsCommon.selectedComponent = this;
     this.initialisePFInternal();
   }
 

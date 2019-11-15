@@ -74,6 +74,7 @@ export class ExternalComponent implements OnDestroy {
   }
 
   ngOnInit() {
+    this.qmsCommon.selectedComponent = this;
     this.initialisePFCD();
   }
 

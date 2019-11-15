@@ -74,6 +74,7 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.qmsCommon.selectedComponent = this;
     this.initialisePFPositive();
   }
 

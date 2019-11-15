@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { DataService } from '../../../Services/data.service';
 import { QMSConstantsService } from '../services/qmsconstants.service';
 import { MessageService } from 'primeng/api';
+import { QMSCommonService } from '../services/qmscommon.service';
 
 @Component({
   selector: 'app-personal-feedback',
@@ -22,7 +23,8 @@ export class PersonalFeedbackComponent implements OnInit {
     private router: Router,
     private data: DataService,
     private qmsConstatsService: QMSConstantsService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private qmsCommonService: QMSCommonService,
   ) { }
 
   ngOnInit() {
@@ -37,5 +39,20 @@ export class PersonalFeedbackComponent implements OnInit {
   personalFeedbackCalled(filterObj) {
     this.data.changeFilterObj(filterObj);
     //this.router.navigate([this.router.url]);
+    switch (this.router.url) {
+      case '/qms/personalFeedback/internalFeedback':
+          this.qmsCommonService.selectedComponent.initialisePFInternal();
+        break;
+      case '/qms/personalFeedback/externalFeedback':
+          this.qmsCommonService.selectedComponent.initialisePFCD();
+        break;
+      case '/qms/personalFeedback/positiveFeedback':
+          this.qmsCommonService.selectedComponent.initialisePFPositive();
+        break;
+      case '/qms/personalFeedback/feedbackByMe':
+          this.qmsCommonService.selectedComponent.initialiseFeedback();
+        break;
+    }
+    
   }
 }
