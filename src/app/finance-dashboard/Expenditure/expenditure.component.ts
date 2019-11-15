@@ -54,8 +54,14 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     // MenuList
     expenditureMenuList: any = [];
+    hBQuery: any = [];
     // hideDatesSectiuon: boolean = false;
-
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+    };
 
     @ViewChild("target", { static: true }) MyProp: ElementRef;
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
@@ -321,7 +327,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         console.log('this.currentUserInfoData  ', this.currentUserInfoData);
         this.groupInfo = await this.fdDataShareServie.getGroupInfo();
         this.groupITInfo = await this.fdDataShareServie.getITInfo();
-        this.getVendorFreelanceData();
+        await this.getVendorFreelanceData();
         await this.getMailContent();
         this.showHideREModal = true;
     }
@@ -350,29 +356,33 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
     freelancerVendersRes: any = [];
     async getVendorFreelanceData() {
-        let data = [
-            { query: this.spServices.getReadURL('' + this.constantService.listNames.VendorFreelancer.name + '', this.fdConstantsService.fdComponent.addUpdateFreelancer) },
-        ]
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        // let vfQuery = this.spServices.getReadURL('' + this.constantService.listNames.VendorFreelancer.name + '', this.fdConstantsService.fdComponent.addUpdateFreelancer);
+        // let data = [
+        //     { query: this.spServices.getReadURL('' + this.constantService.listNames.VendorFreelancer.name + 
+        //     '', this.fdConstantsService.fdComponent.addUpdateFreelancer) },
+        // ]
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        // // let vfQuery = this.spServices.getReadURL('' + this.constantService.listNames.VendorFreelancer.name +
+        //    '', this.fdConstantsService.fdComponent.addUpdateFreelancer);
 
-        let endPoints = data;
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element.query);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody);
-        arrResults = res;
-        if (arrResults.length) {
-            // console.log(arrResults);
-            this.freelancerVendersRes = arrResults[0];
-            console.log('this.freelancerVendersRes ', this.freelancerVendersRes);
-        }
+        // let endPoints = data;
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element.query);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody);
+        const vendorObj = Object.assign({}, this.fdConstantsService.fdComponent.addUpdateFreelancer);
+        const res = await this.spServices.readItems(this.constantService.listNames.VendorFreelancer.name, vendorObj);
+        const arrResults = res.length ? res : [];
+        // if (arrResults.length) {
+        // console.log(arrResults);
+        this.freelancerVendersRes = arrResults;
+        // console.log('this.freelancerVendersRes ', this.freelancerVendersRes);
+        // }
     }
 
     piCleData: any = [];
@@ -423,8 +433,8 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             listName: this.constantService.listNames.MailContent.name
         }]
         const res = await this.spServices.executeBatch(obj);
-        this.mailContentRes = res;
-        console.log('Mail Content res ', this.mailContentRes);
+        this.mailContentRes = res.length ? res[0].retItems : [];
+        // console.log('Mail Content res ', this.mailContentRes);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -490,7 +500,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     selectedPI: any = [];
     getPIByTitle(title, index) {
         let found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == title) {
+            if (x.ProjectCode === title) {
                 this.selectedPI[index] = x.CMLevel1.results;
                 console.log('this.selectedPI ', this.selectedPI);
                 return x;
@@ -511,40 +521,46 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     }
 
 
-    hBQuery: any = [];
+
     async getPFByTitle(ProjectCode: any, index: number) {
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        let obj = {
-            filter: this.fdConstantsService.fdComponent.projectFinances.filter.replace("{{ProjectCode}}", ProjectCode),
-            select: this.fdConstantsService.fdComponent.projectFinances.select,
-            top: this.fdConstantsService.fdComponent.projectFinances.top,
-            // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
-        }
-        const pfQuery = this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', obj);
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        const pfObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
+        pfObj.filter = pfObj.filter.replace('{{ProjectCode}}', ProjectCode);
+        const res = await this.spServices.readItems(this.constantService.listNames.ProjectFinances.name, pfObj);
+        // let obj = {
+        //     filter: this.fdConstantsService.fdComponent.projectFinances.filter.replace("{{ProjectCode}}", ProjectCode),
+        //     select: this.fdConstantsService.fdComponent.projectFinances.select,
+        //     top: this.fdConstantsService.fdComponent.projectFinances.top,
+        //     // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
+        // }
+        // const pfQuery = this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', obj);
 
-        let endPoints = [pfQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
+        // let endPoints = [pfQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
 
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody) //.subscribe(res => {
-        arrResults = res;
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody) //.subscribe(res => {
+        const arrResults = res.length ? res : [];
         if (arrResults.length) {
-            console.log(arrResults[0]);
-            if (!arrResults[0].length) {
-                this.messageService.add({ key: 'expenseInfoToast', severity: 'info', summary: 'Info message', detail: 'Currency not found for selected project / client.', life: 4000 });
+            // console.log(arrResults[0]);
+            if (!arrResults.length) {
+                this.messageService.add({
+                    key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'Currency not found for selected project / client.', life: 4000
+                });
                 this.totalLineItems[index] = {};
                 this.selectedPCArrays[index].ProjectCode = '';
                 this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
                 return;
             }
-            this.totalLineItems[index].projectItem = arrResults[0][0];
+            this.totalLineItems[index].projectItem = arrResults[0];
             // Check Is proejct code & amount are Enter
             this.projectClientIsEmpty = this.isEmpty(this.totalLineItems);
         }
@@ -705,37 +721,48 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
             if (!this.addSts) {
                 // this.totalLineItems[index].AmountPerProject = '';
-                this.messageService.add({ key: 'expenseInfoToast', severity: 'info', summary: 'Info message', detail: 'Your entered amount is less than actual Amount.', life: 4000 });
+                this.messageService.add({
+                    key: 'expenseInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'Your entered amount is less than actual Amount.', life: 4000
+                });
                 return;
             }
-            console.log('form is submitting ..... this.addExpenditure_form ', this.addExpenditure_form.value);
+            // console.log('form is submitting ..... this.addExpenditure_form ', this.addExpenditure_form.value);
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
             this.uploadFileData();
 
         } else if (type === 'createFreelancer') {
+            const batchUrl = [];
             this.formSubmit.isSubmit = true;
             if (this.createFreelancer_form.invalid || this.cvEmailIdFound) {
                 return;
             }
             this.submitBtn.isClicked = true;
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-            console.log('form is submitting ..... this.addExpenditure_form ', this.createFreelancer_form.value);
+            // console.log('form is submitting ..... this.addExpenditure_form ', this.createFreelancer_form.value);
             this.createFreelancer_form.get('BilledTo').setValue(this.createFreelancer_form.value.BilledTo.Title);
             this.createFreelancer_form.get('RecordType').setValue(this.createFreelancer_form.value.RecordType.value);
-            this.createFreelancer_form.value["__metadata"] = { type: 'SP.Data.VendorFreelancerListItem' };
+            this.createFreelancer_form.value['__metadata'] = { type: 'SP.Data.VendorFreelancerListItem' };
             const endpoint = this.fdConstantsService.fdComponent.addUpdateFreelancer.create;
-            let formValue: any = this.createFreelancer_form.value;
+            const formValue: any = this.createFreelancer_form.value;
             if (!formValue.ContractEndDate) {
                 formValue.ContractEndDate = null;
             }
-            let data = [
-                {
-                    objData: formValue,
-                    endpoint: endpoint,
-                    requestPost: true
-                }
-            ]
-            this.submitForm(data, type);
+
+            const getPrjContactItemData = Object.assign({}, this.queryConfig);
+            getPrjContactItemData.url = this.spServices.getReadURL(this.constantService.listNames.VendorFreelancer.name);
+            getPrjContactItemData.listName = this.constantService.listNames.VendorFreelancer.name;
+            getPrjContactItemData.type = 'POST';
+            getPrjContactItemData.data = formValue;
+            batchUrl.push(getPrjContactItemData);
+            // let data = [
+            //     {
+            //         objData: formValue,
+            //         endpoint: endpoint,
+            //         requestPost: true
+            //     }
+            // ]
+            this.submitForm(batchUrl, type);
         }
     }
     pcmLevels: any = [];
@@ -743,6 +770,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     submitExpediture() {
         if (this.fileUploadedUrl && this.caFileUploadedUrl) {
             this.finalAddEArray = [];
+            const batchUrl = [];
             for (let pi = 0; pi < this.totalLineItems.length; pi++) {
                 const element = this.totalLineItems[pi];
                 this.pcmLevels = [];
@@ -754,13 +782,13 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                     this.pcmLevels.push(element.ProjectCode.CMLevel2);
                 }
                 let finalAmt = element.AmountPerProject;
-                if (this.addExpenditure_form.value.Currency != element.projectItem.Currency) {
-                    let cc = this.getConversionRate(this.addExpenditure_form.value.Currency);
-                    let pcurrency = this.getConversionRate(element.projectItem.Currency);
-                    console.log('CC ', cc);
-                    console.log('pcurrency ', pcurrency);
-                    let amt = this.convertAmtToCC(parseFloat(cc), parseFloat(pcurrency), parseFloat(element.AmountPerProject));
-                    console.log('amt ----- ', amt);
+                if (this.addExpenditure_form.value.Currency !== element.projectItem.Currency) {
+                    const cc = this.getConversionRate(this.addExpenditure_form.value.Currency);
+                    const pcurrency = this.getConversionRate(element.projectItem.Currency);
+                    // console.log('CC ', cc);
+                    // console.log('pcurrency ', pcurrency);
+                    const amt = this.convertAmtToCC(parseFloat(cc), parseFloat(pcurrency), parseFloat(element.AmountPerProject));
+                    // console.log('amt ----- ', amt);
                     finalAmt = parseFloat(amt.toFixed(2));
                 }
                 this.finalAddEArray.push({
@@ -782,21 +810,27 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
                     // PayingEntity: this.addExpenditure_form.value.PayingEntity.Title,
                     RequestType: this.addExpenditure_form.value.PaymentRequest,
                     VendorFreelancer: this.addExpenditure_form.value.FreelancerVenderName.Id,
-                })
+                });
             }
 
-            let data = [];
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.create;
+            // let data = [];
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.create;
             for (let j = 0; j < this.finalAddEArray.length; j++) {
                 const element = this.finalAddEArray[j];
-                element["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
-                data.push({
-                    objData: element,
-                    endpoint: endpoint,
-                    requestPost: true,
-                })
+                element['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
+                // data.push({
+                //     objData: element,
+                //     endpoint: endpoint,
+                //     requestPost: true,
+                // })
+                const addExpenseObj = Object.assign({}, this.queryConfig);
+                addExpenseObj.url = this.spServices.getReadURL(this.constantService.listNames.SpendingInfo.name);
+                addExpenseObj.listName = this.constantService.listNames.SpendingInfo.name;
+                addExpenseObj.type = 'POST';
+                addExpenseObj.data = element;
+                batchUrl.push(addExpenseObj);
             }
-            this.submitForm(data, 'addExpenditure');
+            this.submitForm(batchUrl, 'addExpenditure');
         }
         console.log('finalAddEArray ', this.finalAddEArray);
     }
@@ -890,33 +924,41 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     }
 
     batchContents: any = [];
-    async submitForm(dataEndpointArray, type: string) {
-        this.batchContents = [];
-        const batchGuid = this.spServices.generateUUID();
-        const changeSetId = this.spServices.generateUUID();
-        // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        dataEndpointArray.forEach(element => {
-            if (element)
-                this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        });
-        this.batchContents.push('--changeset_' + changeSetId + '--');
-        const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        batchBodyContent.push('--batch_' + batchGuid + '--');
-        const sBatchData = batchBodyContent.join('\r\n');
-        const res = await this.spServices.getFDData(batchGuid, sBatchData);
-        // const res = await this.spServices.executeBatch(dataEndpointArray);
-        console.log('res ', res);
-        if (type === "addExpenditure") {
-            this.messageService.add({ key: 'expenseSuccessToast', severity: 'success', summary: 'Success message', detail: 'Expense created.', life: 2000 });
+    async submitForm(batchUrl, type: string) {
+        // this.batchContents = [];
+        // const batchGuid = this.spServices.generateUUID();
+        // const changeSetId = this.spServices.generateUUID();
+        // // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
+        // dataEndpointArray.forEach(element => {
+        //     if (element)
+        //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
+        // });
+        // this.batchContents.push('--changeset_' + changeSetId + '--');
+        // const batchBody = this.batchContents.join('\r\n');
+        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+        // batchBodyContent.push('--batch_' + batchGuid + '--');
+        // const sBatchData = batchBodyContent.join('\r\n');
+        // const res = await this.spServices.getFDData(batchGuid, sBatchData);
+        // // const res = await this.spServices.executeBatch(dataEndpointArray);
+        // console.log('res ', res);
+        let res = await this.spServices.executeBatch(batchUrl);
+        res = res.length ? res.map(a => a.retItems) : [];
+        if (type === 'addExpenditure') {
+            this.messageService.add({
+                key: 'expenseSuccessToast', severity: 'success', summary: 'Success message',
+                detail: 'Expense created.', life: 2000
+            });
             this.showHideREModal = false;
             for (let k = 0; k < res.length; k++) {
                 const element = res[k];
                 this.sendCreateExpenseMail(element);
             }
 
-        } else if (type === "createFreelancer") {
-            this.messageService.add({ key: 'expenseSuccessToast', severity: 'success', summary: 'Success message', detail: this.createFreelancer_form.value.RecordType + ' created.', life: 3000 })
+        } else if (type === 'createFreelancer') {
+            this.messageService.add({
+                key: 'expenseSuccessToast', severity: 'success', summary: 'Success message',
+                detail: this.createFreelancer_form.value.RecordType + ' created.', life: 3000
+            });
             this.cancelFormSub(type);
             this.getVendorFreelanceData();
         }
@@ -1018,29 +1060,35 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     }
 
     sendCreateExpenseMail(expense) {
-        let isCleData = this.getCleByPC(expense);
-        let val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.Title + ' (' + isCleData.ClientLegalEntity + ')' : expense.Title;
+        const isCleData = this.getCleByPC(expense);
+        const val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.Title + ' (' + isCleData.ClientLegalEntity + ')' :
+            expense.Title;
 
+        if (this.mailContentRes.length) {
+            const mailSubject = expense.Title + ": Expense Created";
+            let mailContent = this.mailContentRes[0].Content;
+            mailContent = this.replaceContent(mailContent, "@@Val9@@", this.currentUserInfoData.Title);
+            mailContent = this.replaceContent(mailContent, "@@Val8@@", !isCleData.hasOwnProperty('ClientLegalEntity') ?
+                "Client legal entity" : "Project");
+            mailContent = this.replaceContent(mailContent, "@@Val0@@", expense.ID);
+            mailContent = this.replaceContent(mailContent, "@@Val1@@", val1);
+            mailContent = this.replaceContent(mailContent, "@@Val2@@", expense.Category);
+            mailContent = this.replaceContent(mailContent, "@@Val4@@", expense.SpendType);
+            mailContent = this.replaceContent(mailContent, "@@Val5@@", expense.Currency + ' ' + parseFloat(expense.Amount).toFixed(2));
+            mailContent = this.replaceContent(mailContent, "@@Val6@@", expense.ClientAmount ? expense.ClientCurrency +
+                ' ' + parseFloat(expense.ClientAmount).toFixed(2) : '--');
+            mailContent = this.replaceContent(mailContent, "@@Val7@@", expense.Notes);
+            mailContent = this.replaceContent(mailContent, "@@Val10@@", this.globalService.sharePointPageObject.rootsite +
+                '' + expense.FileURL);
+            mailContent = this.replaceContent(mailContent, "@@Val11@@", this.globalService.sharePointPageObject.rootsite +
+                '' + expense.ClientApprovalFileURL);
+            mailContent = this.replaceContent(mailContent, "@@Val12@@", expense.RequestType);
 
-        var mailSubject = expense.Title + ": Expense Created";
-        let mailContent = this.mailContentRes[0].retItems[0].Content;
-        mailContent = this.replaceContent(mailContent, "@@Val9@@", this.currentUserInfoData.Title);
-        mailContent = this.replaceContent(mailContent, "@@Val8@@", !isCleData.hasOwnProperty('ClientLegalEntity') ? "Client legal entity" : "Project");
-        mailContent = this.replaceContent(mailContent, "@@Val0@@", expense.ID);
-        mailContent = this.replaceContent(mailContent, "@@Val1@@", val1);
-        mailContent = this.replaceContent(mailContent, "@@Val2@@", expense.Category);
-        mailContent = this.replaceContent(mailContent, "@@Val4@@", expense.SpendType);
-        mailContent = this.replaceContent(mailContent, "@@Val5@@", expense.Currency + ' ' + parseFloat(expense.Amount).toFixed(2));
-        mailContent = this.replaceContent(mailContent, "@@Val6@@", expense.ClientAmount ? expense.ClientCurrency + ' ' + parseFloat(expense.ClientAmount).toFixed(2) : '--');
-        mailContent = this.replaceContent(mailContent, "@@Val7@@", expense.Notes);
-        mailContent = this.replaceContent(mailContent, "@@Val10@@", this.globalService.sharePointPageObject.rootsite + '' + expense.FileURL);
-        mailContent = this.replaceContent(mailContent, "@@Val11@@", this.globalService.sharePointPageObject.rootsite + '' + expense.ClientApprovalFileURL);
-        mailContent = this.replaceContent(mailContent, "@@Val12@@", expense.RequestType);
-
-        var ccUser = [];
-        ccUser.push(this.currentUserInfoData.Email);
-        let tos = this.getTosList();
-        this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
+            const ccUser = [];
+            ccUser.push(this.currentUserInfoData.Email);
+            const tos = this.getTosList();
+            this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
+        }
         this.reFetchData();
     }
 

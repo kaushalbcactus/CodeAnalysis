@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ApplicationRef, NgZone } from '@angular/core';
 import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
 
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,6 +10,7 @@ import { TimelineComponent } from './timeline/timeline.component';
 import { CommonService } from '../Services/common.service';
 import { SPOperationService } from '../Services/spoperation.service';
 import { ResourcesComponent } from './resources/resources.component';
+import { PlatformLocation, LocationStrategy } from '@angular/common';
 
 @Component({
   selector: 'app-taskallocation',
@@ -67,7 +68,25 @@ export class TaskAllocationComponent implements OnInit {
     public globalObject: GlobalService,
     public taskAllocatinoService: TaskAllocationConstantsService,
     private commonService: CommonService,
-    public taskAllocationService: TaskAllocationConstantsService) { }
+    public taskAllocationService: TaskAllocationConstantsService,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+  }
 
   async ngOnInit() {
     await this.currentUserGroup();
@@ -87,10 +106,10 @@ export class TaskAllocationComponent implements OnInit {
 
 
   async currentUserGroup() {
-    const currentUser = await this.sPOperationService.getUserInfo(this.globalObject.sharePointPageObject.userId);
-    this.globalObject.currentUser.id = currentUser.Id;
-    this.globalObject.currentUser.email = currentUser.Email;
-    this.globalObject.currentUser.title = currentUser.Title;
+    const currentUser = await this.sPOperationService.getUserInfo(this.globalObject.currentUser.userId);
+    // this.globalObject.currentUser.userId = currentUser.Id;
+    // this.globalObject.currentUser.email = currentUser.Email;
+    // this.globalObject.currentUser.title = currentUser.Title;
 
     // const curruentUsrInfo = await this.spServices.getCurrentUser();
     this.globalObject.currentUser.loggedInUserInfo = currentUser.Groups.results;
@@ -114,6 +133,7 @@ export class TaskAllocationComponent implements OnInit {
   *******************************************************************/
 
   private async getProjectDetails() {
+
     this.errormessage = '';
     this.loaderenable = true;
     this.SearchView = false;
@@ -171,21 +191,20 @@ export class TaskAllocationComponent implements OnInit {
   // Central Group
   // ***********************************************************************************************************************************
   public async checkIfAccessAllowedToUser(code) {
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
     const checkAccessCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.checkAccess);
     checkAccessCall.filter = checkAccessCall.filter.replace(/{{code}}/gi, code);
-    const checkAccessUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', checkAccessCall);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, checkAccessUrl);
+    // const checkAccessUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', checkAccessCall);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, checkAccessUrl);
+    // const project = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    const project = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name,  checkAccessCall);
     let arrayOperationResources;
-
-    const project = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
     if (project.length > 0) {
-      arrayOperationResources = project[0][0].AllOperationresources.results != null ? project[0][0].AllOperationresources.results : '';
+      arrayOperationResources = project[0].AllOperationresources.results != null ? project[0].AllOperationresources.results : '';
       const operationalResouce = arrayOperationResources.length > 0 ? (arrayOperationResources.find
-        (c => c.ID === this.globalObject.sharePointPageObject.userId) !== undefined ?
-        arrayOperationResources.find(c => c.ID === this.globalObject.sharePointPageObject.userId) : '') : '';
+        (c => c.ID === this.globalObject.currentUser.userId) !== undefined ?
+        arrayOperationResources.find(c => c.ID === this.globalObject.currentUser.userId) : '') : '';
       if (operationalResouce) {
         return true;
       } else {

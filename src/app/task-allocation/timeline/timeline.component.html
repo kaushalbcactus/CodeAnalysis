@@ -6,6 +6,7 @@
 
 <p-toast [style]="{marginTop: '80px'}" position="top-center" key="tc" [modal]="true" [baseZIndex]="5000" closable="false"></p-toast>
 
+
 <div fxLayout="row" fxLayoutAlign="start center" style="width:100%;">
 
     <div *ngIf="GanttChartView" fxLayout="column" fxLayoutAlign="center start" style="margin-top: 1vh;width: 100%;">
@@ -17,8 +18,8 @@
 
             <div *ngIf="(visualgraph === false && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress') && !projectDetails">
                 <button mat-raised-button type="button" (click)="showRestructure()">
-          <mat-icon>create</mat-icon> Restructure Project
-        </button>
+                    <mat-icon>create</mat-icon> Restructure Project
+                </button>
 
             </div>
             <div fxLayout="row" id="timeline-header" fxLayoutAlign="center start">
@@ -49,10 +50,10 @@
             </div>
             <div>
                 <button type="button" mat-raised-button (click)="showVisualRepresentation()">
-          <mat-icon *ngIf="visualgraph === true"> table_chart</mat-icon>
-          <mat-icon *ngIf="visualgraph === false"> show_chart</mat-icon>
-          {{ visualgraph === false ? 'Visual Representation' : 'Table Representation' }}
-        </button>
+                    <mat-icon *ngIf="visualgraph === true"> table_chart</mat-icon>
+                    <mat-icon *ngIf="visualgraph === false"> show_chart</mat-icon>
+                    {{ visualgraph === false ? 'Visual Representation' : 'Table Representation' }}
+                </button>
             </div>
         </div>
 
@@ -90,15 +91,15 @@
             <div>
                 <div *ngIf="!visualgraph && changeInRestructure " class="input-color" fxLayoutAlign="end center" style="margin-right: 10px;">
                     <button *ngIf="!projectDetails" mat-raised-button type="button" (click)="CancelChanges(projectDetails,'discardAll')" [disabled]="disableSave">
-            <mat-icon>delete_forever</mat-icon> Discard All
-          </button>
+                        <mat-icon>delete_forever</mat-icon> Discard All
+                    </button>
                 </div>
 
                 <div *ngIf=" !visualgraph && oProjectDetails.status !== 'In Discussion' && oProjectDetails.status !== 'Closed' &&oProjectDetails.status !== 'Cancelled' && oProjectDetails.status !== 'Awaiting Cancel Approval' && oProjectDetails.status !== 'Pending Closure' && oProjectDetails.status !== 'Audit In Progress'"
                     class="input-color" fxLayoutAlign="end center">
                     <button *ngIf="!projectDetails" mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks()">
-            <mat-icon>save</mat-icon> Save Tasks
-          </button>
+                        <mat-icon>save</mat-icon> Save Tasks
+                    </button>
                 </div>
             </div>
 
@@ -109,7 +110,6 @@
             <div id="scInnerLoaderText">Loading...</div>
         </div>
 
-        <!-- <p-confirmDialog [style]="{width: '50vw'}"></p-confirmDialog> -->
 
         <p-confirmDialog #cd header="Confirmation" [style]="{width: '50vw'}" icon="pi pi-exclamation-triangle">
             <p-footer>
@@ -178,26 +178,30 @@
                             <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true  && rowData.itemType !=='Client Review'">{{rowData.pStart |  date:' d MMM, y, h:mm a' }}</span>
 
                             <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType ==='Client Review' ">
-                <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart" [disabledDays]="[0,6]"
-                  [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}"
-                  hideOnDateTimeSelect="true" [stepMinute]="15" [showIcon]="true" [showOnFocus]="false"
-                  [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')"
-                  appendTo="body"
-                  [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
-              </span>
+                                <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart"
+                                    [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
+                                    yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
+                                    [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
+                                    [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')" appendTo="body"
+                                    [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
+                                </p-calendar>
+                            </span>
                             <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Client Review' ">
-                <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart" [disabledDays]="[0,6]"
-                  [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}" 
-                  hideOnDateTimeSelect="true" [stepMinute]="15" [showIcon]="true" [showOnFocus]="false"
-                  [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')"
-                  appendTo="body"
-                  [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
-                <input [disabled]="rowData.tat" readonly [ngxTimepicker]="picker"
-                  [(ngModel)]="rowData.pUserStartTimePart"   class="timePicker">
-                  <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
-                <ngx-material-timepicker [preventOverlayClick]="true" (closed)="DateChangePart(rowData,'start')" #picker [ngxMaterialTimepickerTheme]="darkTheme"
-                  [minutesGap]="15"></ngx-material-timepicker>
-              </span>
+                                <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart"
+                                    [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
+                                    yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
+                                    [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
+                                    [yearNavigator]="true" (onClose)="DateChangePart(rowData,'start')" appendTo="body"
+                                    [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
+                                </p-calendar>
+                                <input [disabled]="rowData.tat" readonly [ngxTimepicker]="picker"
+                                    [(ngModel)]="rowData.pUserStartTimePart" class="timePicker">
+                                <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
+                                <ngx-material-timepicker [preventOverlayClick]="true"
+                                    (closed)="DateChangePart(rowData,'start')" #picker
+                                    [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
+                                </ngx-material-timepicker>
+                            </span>
 
                         </td>
                         <!-- End Date -->
@@ -206,41 +210,57 @@
                             <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true  && rowData.itemType !=='Client Review'">{{rowData.pEnd |  date:' d MMM, y, h:mm a' }}</span>
 
                             <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType ==='Client Review' ">
-                <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart" [disabledDays]="[0,6]"
-                  [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}"
-                  hideOnDateTimeSelect="true" [stepMinute]="15" [showIcon]="true" [showOnFocus]="false"
-                  [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'end')"
-                  appendTo="body"
-                  [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
+                                <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart"
+                                    [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
+                                    yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
+                                    [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
+                                    [yearNavigator]="true" (onClose)="DateChangePart(rowData,'end')" appendTo="body"
+                                    [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
+                                </p-calendar>
 
-              </span>
-                            <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Client Review' "> 
-                               
-                <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart" [disabledDays]="[0,6]"
-                  [readonlyInput]="true" dateFormat="dd M , yy" yearRange="{{yearsRange}}"  
-                  hideOnDateTimeSelect="true" [stepMinute]="15" [showIcon]="true" [showOnFocus]="false"
-                  [monthNavigator]="true" [yearNavigator]="true" (onClose)="DateChangePart(rowData,'end')"
-                  appendTo="body" 
-                  [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}"></p-calendar>
-                <input #inputDate [disabled]="rowData.tat" readonly [ngxTimepicker]="picker" [min]="rowData.pUserStartDatePart === rowData.pUserEndDatePart ? rowData.pUserStartTimePart :'12:00 am'" [(ngModel)]="rowData.pUserEndTimePart"
-                  class="timePicker">
-                  <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
-                <ngx-material-timepicker [preventOverlayClick]="true" (closed)="DateChangePart(rowData,'start')" #picker [ngxMaterialTimepickerTheme]="darkTheme"
-                  [minutesGap]="15"></ngx-material-timepicker>
-              </span>
+                            </span>
+                            <span *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Client Review' ">
+
+                                <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserEndDatePart"
+                                    [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
+                                    yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
+                                    [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
+                                    [yearNavigator]="true" (onClose)="DateChangePart(rowData,'end')" appendTo="body"
+                                    [inputStyle]="{'width': '78%', 'min-width': '78%','padding':'0px','border':'none'}">
+                                </p-calendar>
+                                <input #inputDate [disabled]="rowData.tat" readonly [ngxTimepicker]="picker"
+                                    [min]="rowData.pUserStartDatePart === rowData.pUserEndDatePart ? rowData.pUserStartTimePart :'12:00 am'"
+                                    [(ngModel)]="rowData.pUserEndTimePart" class="timePicker">
+                                <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
+                                <ngx-material-timepicker [preventOverlayClick]="true"
+                                    (closed)="DateChangePart(rowData,'start')" #picker
+                                    [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
+                                </ngx-material-timepicker>
+                            </span>
                         </td>
                         <!-- TaT -->
                         <td style="text-align: center">
                             <span *ngIf="rowData.type ==='milestone' || rowData.type ==='submilestone'">{{rowData.tatVal}}</span>
                             <span *ngIf="!rowData.editMode && rowData.type ==='task'">{{rowData.tat === true ? 'Yes' :'No'}}</span>
-                            <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task'" [disabled]=" rowData.pName ==='Client Review'" (onChange)="ChangeEndDate($event, rowData)" [(ngModel)]="rowData.pName ==='Client Review' ? 'Yes' : rowData.tat" binary="true"></p-checkbox>
+                            <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task'" [disabled]=" rowData.pName ==='Client Review'" (onChange)="ChangeEndDate($event, rowData)" [(ngModel)]="rowData.pName ==='Client Review' ? 'Yes' : rowData.tat" binary="true">
+                            </p-checkbox>
                         </td>
 
                         <!-- Assign To -->
                         <td>
                             <span *ngIf="!rowData.editMode"> {{rowData.pRes}}</span>
-                            <ng-select *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone'" #assignedTo class="txtTask" [items]="rowData.assignedUsers" bindLabel="Title" placeholder="Select Resource" groupBy="userType" [(ngModel)]="rowData.AssignedTo"
-                                (change)="assignedToUserChanged(rowData)" appendTo="body"></ng-select>
+                            <!-- <ng-select *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone'" #assignedTo class="txtTask" [items]="rowData.assignedUsers" bindLabel="Title" placeholder="Select Resource" groupBy="userType" [(ngModel)]="rowData.AssignedTo"
+                                (change)="assignedToUserChanged(rowData)" appendTo="body"></ng-select> -->
+                            <!-- {{rowData.AssignedTo |json}} -->
+                            <p-dropdown [style]="{'width':'100%'}" *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone'" #assignedTo class="txtTask" [options]="rowData.assignedUsers" [panelStyle]="{minWidth:'15em' }" [(ngModel)]="rowData.AssignedTo"
+                                placeholder="Select Resource" [showClear]="true" [group]="true" filter="true" (onChange)="assignedToUserChanged(rowData)">
+                                <ng-template let-group pTemplate="group">
+                                    <span style="margin-left:.25em">{{group.label}}</span>
+                                </ng-template>
+                                <ng-template let-item pTemplate="item">
+                                    <span style="margin-left:.25em">{{item.label}}</span>
+                                </ng-template>
+                            </p-dropdown>
                         </td>
                         <!-- Allow start -->
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
@@ -253,7 +273,7 @@
                         <!-- Disable cascade -->
 
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
-                            <span *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade ? 'Yes':'No'}}</span>
+                            <span *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
 
                             <p-inputSwitch *ngIf="rowData.editMode && rowData.type==='task' && rowData.itemType !== 'Client Review'" [(ngModel)]="rowData.DisableCascade"></p-inputSwitch>
 
@@ -271,13 +291,14 @@
                             </div> -->
                             <button *ngIf="rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && (rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') && !changeInRestructure"
                                 [hidden]="rowData.editMode === false" type="button" (click)="CancelChanges(rowData,'task')" style="line-height: 0px;height: 0px;" mat-icon-button title="Cancel">
-                <mat-icon> cancel</mat-icon>
-              </button>
+                                <mat-icon> cancel</mat-icon>
+                            </button>
 
                             <div *ngIf=" !rowData.editMode && rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' &&
                             (rowData.status !== 'Completed' && rowData.status !== 'Abandon' && rowData.status !== 'Auto Closed'
                               && rowData.status !== 'Hold') && !projectDetails" style="text-align: center;">
-                                <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu"></p-menu>
+                                <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu">
+                                </p-menu>
 
                                 <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData,rowNode, popupMenu);popupMenu.show($event);"></i>
                             </div>

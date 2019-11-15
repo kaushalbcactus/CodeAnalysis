@@ -78,7 +78,7 @@ legend {
 
   .tableLoader{
     position: fixed; /* or absolute */
-    top: 20%;
-    left: 50%;
+    /* top: 20%;
+    left: 50%; */
     z-index: 9999;
   }

@@ -1,16 +1,15 @@
-import { Component, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter, NgZone, ApplicationRef, ChangeDetectorRef } from '@angular/core';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';
 import { GlobalService } from '../../../Services/global.service';
-import { DatePipe } from '@angular/common';
+import { DatePipe, LocationStrategy, PlatformLocation } from '@angular/common';
 import { CommonService } from '../../../Services/common.service';
 import { FeedbackPopupComponent } from './feedback-popup/feedback-popup.component';
-import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { SPCommonService } from '../../../Services/spcommon.service';
 import { QMSConstantsService } from '../services/qmsconstants.service';
 import { QMSCommonService } from '../services/qmscommon.service';
 import { MessageService } from 'primeng/api';
+import { DataTable } from 'primeng/primeng';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reviewer-detail-view',
@@ -26,12 +25,14 @@ export class ReviewerDetailViewComponent implements OnInit {
   // For Reviewer pending tasks table
   @Output() myEvent = new EventEmitter<string>();
   @ViewChild(FeedbackPopupComponent, { static: true }) popup: FeedbackPopupComponent;
+  @ViewChild('rd', { static: false }) rdTable: DataTable;
+
   public hideLoader = true;
   public hideTable = false;
   RDColArray = {
-    Resource: [],
-    TaskTitle: [],
-    TaskCompletionDate: [],
+    resource: [],
+    taskTitle: [],
+    taskCompletionDate: [],
     Drafts: [],
     MyDrafts: []
   };
@@ -42,9 +43,41 @@ export class ReviewerDetailViewComponent implements OnInit {
     type: '',
     listName: ''
   };
-  constructor(private spService: SPOperationService, private globalConstant: ConstantsService,
-    public global: GlobalService, private datepipe: DatePipe, private qmsConstant: QMSConstantsService,
-    private common: CommonService, private qmsCommon: QMSCommonService, private messageService: MessageService) { }
+  navigationSubscription;
+  constructor(
+    private spService: SPOperationService,
+    private globalConstant: ConstantsService,
+    public global: GlobalService,
+    private datepipe: DatePipe,
+    private qmsConstant: QMSConstantsService,
+    private commonService: CommonService,
+    private qmsCommon: QMSCommonService,
+    private messageService: MessageService,
+    private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    this.navigationSubscription = _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+  }
+  ngOnDestroy() {
+    if (this.navigationSubscription) {
+      this.navigationSubscription.unsubscribe();
+    }
+  }
+
   //#endregion of Initialisation
   /**
    * Initial function
@@ -72,17 +105,22 @@ export class ReviewerDetailViewComponent implements OnInit {
 
   colFilters(colData) {
     // tslint:disable
-    this.RDColArray.Resource = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.resource, value: a.resource, filterValue: a.resource  }; return b; }));
-    this.RDColArray.TaskTitle = this.qmsCommon.uniqueArrayObj(colData.map(a => {  const b = {
-      label: a.taskTitle,
-      value: a.taskTitle,
-      filterValue: a.taskTitle};
-    return b; }));
-    this.RDColArray.TaskCompletionDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = { label: a.taskCompletionDate ? this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy'): "",
-      value: a.taskCompletionDate ? this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy') : "",
-      filterValue: a.taskCompletionDate ? new Date(a.taskCompletionDate) : "" }; return b;
-    }));
+    this.RDColArray.resource = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.resource, value: a.resource, filterValue: a.resource }; return b; }));
+    this.RDColArray.taskTitle = this.qmsCommon.uniqueArrayObj(colData.map(a => {
+      const b = {
+        label: a.taskTitle,
+        value: a.taskTitle,
+        filterValue: a.taskTitle
+      };
+      return b;
+    }).filter(ele => ele.label));
+    this.RDColArray.taskCompletionDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
+      const b = {
+        label: a.taskCompletionDate ? this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy') : "",
+        value: a.taskCompletionDate ? new Date(this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy')) : "",
+        filterValue: a.taskCompletionDate ? new Date(a.taskCompletionDate) : ""
+      }; return b;
+    }).filter(ele => ele.label));
   }
 
   /**
@@ -274,10 +312,10 @@ export class ReviewerDetailViewComponent implements OnInit {
       const subMilestones = element.SubMilestones ? element.SubMilestones : '';
       this.ReviewerDetail.push({
         resource: element.resource ? element.resource : '',
-        taskTitle: element.taskTitle ? subMilestones ? element.taskTitle + ' - ' +  subMilestones: element.taskTitle : '',
+        taskTitle: element.taskTitle ? subMilestones ? element.taskTitle + ' - ' + subMilestones : element.taskTitle : '',
         title: element.taskTitle,
         subMilestones,
-        taskCompletionDate: this.datepipe.transform(element.taskCompletionDate, 'MMM d, yyyy'),
+        taskCompletionDate: element.taskCompletionDate ? new Date(this.datepipe.transform(element.taskCompletionDate, 'MMM d, yyyy')) : '',
         docUrlHtmlTag: element.docUrlHtmlTag ? element.docUrlHtmlTag : '',
         docReviewUrlHtmlTag: element.docReviewUrlHtmlTag ? element.docReviewUrlHtmlTag : '',
         documentURL: element.documentURL,
@@ -288,7 +326,7 @@ export class ReviewerDetailViewComponent implements OnInit {
         reviewTask: element.reviewTask
       });
     });
-    this.colFilters( this.ReviewerDetail);
+    this.colFilters(this.ReviewerDetail);
   }
 
   //#endregion ForReviewer
@@ -302,12 +340,12 @@ export class ReviewerDetailViewComponent implements OnInit {
   }
 
   showToastMsg(type, msg, detail) {
-    this.messageService.add({severity: type, summary: msg, detail: detail});
+    this.messageService.add({ severity: type, summary: msg, detail: detail });
   }
 
-  
+
   exportToExcel(table, sheetname) {
-    this.common.tableToExcel(table, sheetname);
+    this.commonService.tableToExcel(table, sheetname);
   }
 
   showTable() {
@@ -319,5 +357,30 @@ export class ReviewerDetailViewComponent implements OnInit {
     this.hideTable = true;
     this.hideLoader = false;
   }
+
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.ReviewerDetail.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.rdTable,
+        colFields: this.RDColArray
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.colFilters(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
+    }
+  }
+
 }
 

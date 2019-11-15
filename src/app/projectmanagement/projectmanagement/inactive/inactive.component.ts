@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewEncapsulation, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { debounceTime } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -11,6 +11,8 @@ import { MenuItem } from 'primeng/api';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
+import { DataTable } from 'primeng/primeng';
+import { PlatformLocation, LocationStrategy } from '@angular/common';
 declare var $: any;
 @Component({
   selector: 'app-inactive',
@@ -20,10 +22,11 @@ declare var $: any;
 })
 export class InactiveComponent implements OnInit {
   tempClick: any;
+  @ViewChild('iapTableRef', { static: false }) iapTableRef: DataTable;
 
   displayedColumns: any[] = [
     { field: 'ProjectCode', header: 'Project Code' },
-    { field: 'shortTitle', header: 'Short Title' },
+    { field: 'ShortTitle', header: 'Short Title' },
     { field: 'ClientLegalEntity', header: 'Client' },
     { field: 'POC', header: 'POC' },
     { field: 'DeliverableType', header: 'Deliverable Type' },
@@ -34,7 +37,7 @@ export class InactiveComponent implements OnInit {
     { field: 'Status', header: 'Status' }];
   filterColumns: any[] = [
     { field: 'ProjectCode' },
-    { field: 'shortTitle' },
+    { field: 'ShortTitle' },
     { field: 'ClientLegalEntity' },
     { field: 'POC' },
     { field: 'DeliverableType' },
@@ -57,16 +60,26 @@ export class InactiveComponent implements OnInit {
   iapHideNoDataMessage = true;
   public iapArrays = {
     projectItems: [],
-    projectCodeArray: [],
-    shortTitleArray: [],
-    clientLegalEntityArray: [],
-    POCArray: [],
-    taArray: [],
-    moleculeArray: [],
-    primaryResourceArray: [],
-    deliveryTypeArray: [],
-    milestoneArray: [],
-    statusArray: []
+    ProjectCode: [],
+    ShortTitle: [],
+    ClientLegalEntity: [],
+    POC: [],
+    TA: [],
+    Molecule: [],
+    PrimaryResource: [],
+    DeliverableType: [],
+    Milestone: [],
+    Status: [],
+    // projectCodeArray: [],
+    // shortTitleArray: [],
+    // clientLegalEntityArray: [],
+    // POCArray: [],
+    // taArray: [],
+    // moleculeArray: [],
+    // primaryResourceArray: [],
+    // deliveryTypeArray: [],
+    // milestoneArray: [],
+    // statusArray: []
   };
   constructor(
     public globalObject: GlobalService,
@@ -77,7 +90,24 @@ export class InactiveComponent implements OnInit {
     private pmConstant: PmconstantService,
     public pmCommonService: PMCommonService,
     public router: Router,
-  ) { }
+    private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    _applicationRef: ApplicationRef,
+    zone: NgZone,
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+  }
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
   ngOnInit() {
     this.isIAPInnerLoaderHidden = false;
@@ -125,16 +155,16 @@ export class InactiveComponent implements OnInit {
     this.iapArrays.projectItems = this.pmObject.allProjectItems.filter(x =>
       x.Status === this.Constant.projectStatus.OnHold ||
       x.Status === this.Constant.projectStatus.InDiscussion);
-    const projectCodeTempArray = [];
-    const shortTitleTempArray = [];
-    const clientLegalEntityTempArray = [];
-    const POCTempArray = [];
-    const deliveryTypeTempArray = [];
-    const taTempArray = [];
-    const moleculeTempArray = [];
-    const primaryResourceTempArray = [];
-    const milestoneTempArray = [];
-    const statusTempArray = [];
+    // const projectCodeTempArray = [];
+    // const shortTitleTempArray = [];
+    // const clientLegalEntityTempArray = [];
+    // const POCTempArray = [];
+    // const deliveryTypeTempArray = [];
+    // const taTempArray = [];
+    // const moleculeTempArray = [];
+    // const primaryResourceTempArray = [];
+    // const milestoneTempArray = [];
+    // const statusTempArray = [];
     if (this.iapArrays.projectItems.length) {
       const tempPAArray = [];
       this.pmObject.countObj.iapCount = this.iapArrays.projectItems.length;
@@ -146,7 +176,7 @@ export class InactiveComponent implements OnInit {
         const paObj = $.extend(true, {}, this.pmObject.paObj);
         paObj.ID = task.ID;
         paObj.ProjectCode = task.ProjectCode;
-        paObj.shortTitle = task.WBJID;
+        paObj.ShortTitle = task.WBJID;
         paObj.WBJID = task.WBJID;
         paObj.ClientLegalEntity = task.ClientLegalEntity;
         paObj.DeliverableType = task.DeliverableType;
@@ -161,28 +191,32 @@ export class InactiveComponent implements OnInit {
         });
         paObj.POC = poc.length > 0 ? poc[0].FullName : '';
         // Adding the particular value into the array for sorting and filtering.
-        projectCodeTempArray.push({ label: paObj.ProjectCode, value: paObj.ProjectCode });
-        shortTitleTempArray.push({ label: paObj.shortTitle, value: paObj.shortTitle });
-        clientLegalEntityTempArray.push({ label: paObj.ClientLegalEntity, value: paObj.ClientLegalEntity });
-        POCTempArray.push({ label: paObj.POC, value: paObj.POC });
-        deliveryTypeTempArray.push({ label: paObj.DeliverableType, value: paObj.DeliverableType });
-        taTempArray.push({ label: paObj.TA, value: paObj.TA });
-        moleculeTempArray.push({ label: paObj.Molecule, value: paObj.Molecule });
-        primaryResourceTempArray.push({ label: paObj.PrimaryResourceText, value: paObj.PrimaryResourceText });
-        milestoneTempArray.push({ label: paObj.Milestone, value: paObj.Milestone });
-        statusTempArray.push({ label: paObj.Status, value: paObj.Status });
+        // projectCodeTempArray.push({ label: paObj.ProjectCode, value: paObj.ProjectCode });
+        // shortTitleTempArray.push({ label: paObj.ShortTitle, value: paObj.ShortTitle });
+        // clientLegalEntityTempArray.push({ label: paObj.ClientLegalEntity, value: paObj.ClientLegalEntity });
+        // POCTempArray.push({ label: paObj.POC, value: paObj.POC });
+        // deliveryTypeTempArray.push({ label: paObj.DeliverableType, value: paObj.DeliverableType });
+        // taTempArray.push({ label: paObj.TA, value: paObj.TA });
+        // moleculeTempArray.push({ label: paObj.Molecule, value: paObj.Molecule });
+        // primaryResourceTempArray.push({ label: paObj.PrimaryResourceText, value: paObj.PrimaryResourceText });
+        // milestoneTempArray.push({ label: paObj.Milestone, value: paObj.Milestone });
+        // statusTempArray.push({ label: paObj.Status, value: paObj.Status });
         tempPAArray.push(paObj);
       }
-      this.iapArrays.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
-      this.iapArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
-      this.iapArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
-      this.iapArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
-      this.iapArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
-      this.iapArrays.taArray = this.commonService.unique(taTempArray, 'value');
-      this.iapArrays.moleculeArray = this.commonService.unique(moleculeTempArray, 'value');
-      this.iapArrays.primaryResourceArray = this.commonService.unique(primaryResourceTempArray, 'value');
-      this.iapArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
-      this.iapArrays.statusArray = this.commonService.unique(statusTempArray, 'value');
+
+      if (tempPAArray.length) {
+        this.createColFieldValues(tempPAArray);
+      }
+      // this.iapArrays.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
+      // this.iapArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
+      // this.iapArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
+      // this.iapArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
+      // this.iapArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
+      // this.iapArrays.taArray = this.commonService.unique(taTempArray, 'value');
+      // this.iapArrays.moleculeArray = this.commonService.unique(moleculeTempArray, 'value');
+      // this.iapArrays.primaryResourceArray = this.commonService.unique(primaryResourceTempArray, 'value');
+      // this.iapArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
+      // this.iapArrays.statusArray = this.commonService.unique(statusTempArray, 'value');
       this.pmObject.inActiveProjectArray = tempPAArray;
       this.isIAPTableHidden = false;
       this.isIAPInnerLoaderHidden = true;
@@ -196,6 +230,32 @@ export class InactiveComponent implements OnInit {
     }
     this.commonService.setIframeHeight();
   }
+
+  createColFieldValues(resArray) {
+    this.iapArrays.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+    this.iapArrays.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
+    this.iapArrays.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+    this.iapArrays.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
+    this.iapArrays.TA = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.TA, value: a.TA }; return b; }).filter(ele => ele.label)));
+    this.iapArrays.Molecule = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Molecule, value: a.Molecule }; return b; }).filter(ele => ele.label)));
+    this.iapArrays.PrimaryResource = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PrimaryResource, value: a.PrimaryResource }; return b; }).filter(ele => ele.label)));
+    this.iapArrays.DeliverableType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DeliverableType, value: a.DeliverableType }; return b; }).filter(ele => ele.label)));
+    this.iapArrays.Milestone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Milestone, value: a.Milestone }; return b; }).filter(ele => ele.label)));
+    this.iapArrays.Status = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
+
+  }
+
+  uniqueArrayObj(array: any) {
+    let sts: any = '';
+    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
+      return {
+        label: label1,
+        value: array.find(s => s.label === label1).value
+      }
+    })
+  }
+
+
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
       '/allocation#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
@@ -237,6 +297,29 @@ export class InactiveComponent implements OnInit {
         this.tempClick.style.display = "none";
         this.tempClick = undefined;
       }
+    }
+  }
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.pmObject.inActiveProjectArray.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.iapTableRef,
+        colFields: this.iapArrays,
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.createColFieldValues(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
     }
   }
 }

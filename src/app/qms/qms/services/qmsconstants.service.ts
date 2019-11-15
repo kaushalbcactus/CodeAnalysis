@@ -8,6 +8,17 @@ import { GlobalService } from 'src/app/Services/global.service';
 export class QMSConstantsService {
 
   constructor(private globalConstant: ConstantsService, private global: GlobalService) { }
+
+  public qmsTab = {
+    list: []
+  }
+
+  public qmsToastMsg = {
+    hideManager:false,
+    hideAdmin:false,
+    hideReviewerTaskPending:false,
+  }
+
   //tslint:disable
   public common = {
     getAllResource: {
@@ -25,7 +36,7 @@ export class QMSConstantsService {
     reviewerPendingTaskURL: {
       select: 'ID, Title, Task, SubMilestones, ProjectCode, Status, Milestone, AssignedTo/ID, AssignedTo/Title,DueDate, PrevTasks, Rated',
       expand: 'AssignedTo/ID, AssignedTo/Title',
-      filter: "AssignedTo/ID eq '" + this.global.sharePointPageObject.userId + "' and (Status eq 'Completed' or Status eq 'Auto Closed')" +
+      filter: "AssignedTo/ID eq '" + this.global.currentUser.userId + "' and (Status eq 'Completed' or Status eq 'Auto Closed')" +
         " and startswith(Task,'Review-') and  DueDate ge '{{PrevMonthDate}}' and Rated eq 0",
       top: '{{TopCount}}'
     },
@@ -67,7 +78,7 @@ export class QMSConstantsService {
       getCurrentResource: {
         select: 'ID,UserName/ID,UserName/EMail,UserName/Title,UserName/Name,TimeZone/Title,Designation',
         expand: 'UserName,TimeZone',
-        filter: "IsActive eq 'Yes' and UserName/ID eq '" + this.global.sharePointPageObject.userId + "'",
+        filter: "IsActive eq 'Yes' and UserName/ID eq '" + this.global.currentUser.userId + "'",
         top: '1'
       },
       getScorecard: {
@@ -90,7 +101,7 @@ export class QMSConstantsService {
           'Resources/ID, IdentifiedResource/ID, IdentifiedResource/Title, SeverityLevel, BusinessImpact,Segregation,' +
           'Comments, RootCauseAnalysis, CorrectiveActions, PreventiveActions, IsActive',
         expand: 'IdentifiedResource, SentBy, Resources',
-        filter: "Status ne 'Deleted' and Resources/ID eq '" + this.global.sharePointPageObject.userId + "' and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
+        filter: "Status ne 'Deleted' and Resources/ID eq '" + this.global.currentUser.userId + "' and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
         top: '{{TopCount}}',
         orderby: 'SentDate desc'
       },
@@ -106,18 +117,18 @@ export class QMSConstantsService {
     },
     PositiveFeedbacks: {
       getPF: {
-      select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID, Resources/Title, DeliveryLeads/ID',
-      expand: 'SentBy, Resources, DeliveryLeads',
-      filter: "IsActive eq 1 and Status eq 'Accepted' and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
-      top: '{{TopCount}}',
-      orderby: 'SentDate desc'
+        select: 'ID, Title, FileID, FileURL, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID, Resources/Title, DeliveryLeads/ID',
+        expand: 'SentBy, Resources, DeliveryLeads',
+        filter: "IsActive eq 1 and Status eq 'Accepted' and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
+        top: '{{TopCount}}',
+        orderby: 'SentDate desc'
       }
     },
     FeebackByMe: {
       getScorecardByMe: {
         select: 'ID,Title, SubMilestones, Comments,Created, AssignedTo/ID, AssignedTo/Title, Author/ID, Author/Title, DocumentsUrl, FeedbackType, SubmissionDate, AverageRating',
         expand: 'AssignedTo, Author',
-        filter: "Author/ID eq '" + this.global.sharePointPageObject.userId + "' {{FeedbackTypeFilter}} and Created ge '{{startDate}}' and Created le '{{endDate}}' and  Validity ne 0",
+        filter: "Author/ID eq '" + this.global.currentUser.userId + "' {{FeedbackTypeFilter}} and Created ge '{{startDate}}' and Created le '{{endDate}}' and  Validity ne 0",
         top: '{{TopCount}}',
         orderby: 'Created desc'
       },
@@ -164,7 +175,7 @@ export class QMSConstantsService {
     getResources: {
       select: 'ID,UserName/ID,UserName/EMail,UserName/Title,UserName/Name,Designation, Manager/ID, Manager/Title, Tasks/ID, Tasks/Title',
       expand: 'UserName, Manager, Tasks',
-      filter: "IsActive eq 'Yes' and UserName/ID ne '" + this.global.sharePointPageObject.userId + "'",
+      filter: "IsActive eq 'Yes' and UserName/ID ne '" + this.global.currentUser.userId + "'",
       top: '{{TopCount}}',
       orderby: 'UserName/Title asc'
     },
@@ -172,10 +183,10 @@ export class QMSConstantsService {
       select: 'ID, Title, ProjectCode, SubMilestones, Status, Milestone, AssignedTo/ID, AssignedTo/Title, Actual_x0020_End_x0020_Date, PrevTasks, NextTasks, Rated, IsRated',
       expand: 'AssignedTo/ID, AssignedTo/Title',
       filter: "AssignedTo/ID eq '{{resourceID}}' and Task eq '{{TaskType}}' and (Status eq 'Completed' or Status eq 'Auto Closed')" +
-              " and  DueDate ge '{{PrevMonthDate}}'",
+        " and  DueDate ge '{{PrevMonthDate}}'",
       top: '{{TopCount}}'
     },
-    projectInformationUrl:{
+    projectInformationUrl: {
       select: 'ProjectCode, ProjectFolder',
       filter: "ProjectCode eq '{{projectCode}}'",
       top: '1'
@@ -186,17 +197,17 @@ export class QMSConstantsService {
     ClientDissatisfactionComponent: {
       getQC: {
         select: 'ID, Title, FileID, FileURL, IsActive, SentDate,SentBy/ID, SentBy/Title, Modified, Status, Category, Resources/ID,' +
-        'IdentifiedResource/ID, IdentifiedResource/Title, IdentifiedResource/EMail, SeverityLevel, BusinessImpact,Segregation,' +
-        'ASD/ID, TL/ID, CS/ID, Comments, RootCauseAnalysis, CorrectiveActions, PreventiveActions, RejectionComments',
+          'IdentifiedResource/ID, IdentifiedResource/Title, IdentifiedResource/EMail, SeverityLevel, BusinessImpact,Segregation,' +
+          'ASD/ID, TL/ID, CS/ID, Comments, RootCauseAnalysis, CorrectiveActions, PreventiveActions, RejectionComments',
         expand: 'IdentifiedResource, SentBy, Resources, ASD, TL, CS',
-        filter: "{{statusFilter}} SentDate ge '{{startDate}}' and SentDate le '{{endDate}}' and (ASD/ID eq '" + this.global.sharePointPageObject.userId + "')",
+        filter: "{{statusFilter}} SentDate ge '{{startDate}}' and SentDate le '{{endDate}}' and (ASD/ID eq '" + this.global.currentUser.userId + "')",
         top: '{{TopCount}}',
         orderby: 'SentDate desc'
       },
       getQCAdmin: {
         select: 'ID, Title, FileID, FileURL, IsActive, SentDate,SentBy/ID, SentBy/Title, Modified, Status, Category, Resources/ID,' +
-        'IdentifiedResource/ID, IdentifiedResource/Title, IdentifiedResource/EMail, SeverityLevel, BusinessImpact,Segregation,' +
-        'ASD/ID, TL/ID, CS/ID, Comments, RootCauseAnalysis, CorrectiveActions, PreventiveActions, RejectionComments',
+          'IdentifiedResource/ID, IdentifiedResource/Title, IdentifiedResource/EMail, SeverityLevel, BusinessImpact,Segregation,' +
+          'ASD/ID, TL/ID, CS/ID, Comments, RootCauseAnalysis, CorrectiveActions, PreventiveActions, RejectionComments',
         expand: 'IdentifiedResource, SentBy, Resources, ASD, TL, CS',
         filter: "{{statusFilter}} SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
         top: '{{TopCount}}',
@@ -205,51 +216,52 @@ export class QMSConstantsService {
       getRMCSOpsResourceUrl: {
         select: 'UserName/ID,UserName/EMail,UserName/Title, Tasks/ID, Tasks/Title',
         expand: 'UserName, Tasks',
-        filter: "IsActive eq 'Yes' and (PrimarySkill ne 'Writer' and PrimarySkill ne 'Editor' and"+
-        " PrimarySkill ne 'Graphics' and PrimarySkill ne 'Reviewer' and PrimarySkill ne 'Quality Check'"+
-        " and PrimarySkill ne 'Publication Support')",
+        filter: "IsActive eq 'Yes' and (PrimarySkill ne 'Writer' and PrimarySkill ne 'Editor' and" +
+          " PrimarySkill ne 'Graphics' and PrimarySkill ne 'Reviewer' and PrimarySkill ne 'Quality Check'" +
+          " and PrimarySkill ne 'Publication Support')",
         top: '4500',
         orderby: 'UserName/Title asc'
       },
       getSSResourceUrl: {
         select: 'UserName/ID,UserName/EMail,UserName/Title, Tasks/ID, Tasks/Title',
         expand: 'UserName, Tasks',
-        filter: "IsActive eq 'Yes' and (PrimarySkill eq 'Writer' or PrimarySkill eq 'Editor' or"+
-        " PrimarySkill eq 'Graphics' or PrimarySkill eq 'Reviewer' or PrimarySkill eq 'Quality Check'"+
-        " or PrimarySkill eq 'Publication Support')",
+        filter: "IsActive eq 'Yes' and (PrimarySkill eq 'Writer' or PrimarySkill eq 'Editor' or" +
+          " PrimarySkill eq 'Graphics' or PrimarySkill eq 'Reviewer' or PrimarySkill eq 'Quality Check'" +
+          " or PrimarySkill eq 'Publication Support')",
         top: '4500',
         orderby: 'UserName/Title asc'
       },
       getProject: {
-        select: 'ProjectCode,WBJID, DeliveryLevel1/ID,DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title, DeliveryLevel2/EMail, PrimaryResMembers/ID, PrimaryResMembers/Title,'+
-        'CMLevel1/ID,CMLevel1/Title, CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail, AllDeliveryResources/ID, AllDeliveryResources/Title, Milestone, BD/ID, BD/EMail',
+        select: 'ProjectCode,WBJID, DeliveryLevel1/ID,DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title, DeliveryLevel2/EMail, PrimaryResMembers/ID, PrimaryResMembers/Title,' +
+          'CMLevel1/ID,CMLevel1/Title, CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail, AllDeliveryResources/ID, AllDeliveryResources/Title, Milestone, BD/ID, BD/EMail',
         expand: 'DeliveryLevel1, DeliveryLevel2, PrimaryResMembers, CMLevel1, CMLevel2, AllDeliveryResources, BD',
         filter: "ProjectCode eq '{{projectCode}}'",
         top: '4900',
         orderby: 'ProjectCode'
       },
-      getClient:{
-        select: 'Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title, DeliveryLevel2/EMail,'+
-        'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID,  CMLevel2/Title,  CMLevel2/EMail',
+      getClient: {
+        select: 'Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title, DeliveryLevel2/EMail,' +
+          'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID,  CMLevel2/Title,  CMLevel2/EMail',
         expand: 'DeliveryLevel1, DeliveryLevel2, CMLevel1, CMLevel2',
-        filter: "Title eq '{{Title}}'",
+        filter: "IsActive eq 'Yes' and Title eq '{{Title}}'",
         top: '4900',
         orderby: 'Title'
       },
-      getOpenProjects:{
-        select: 'ProjectCode,WBJID, DeliveryLevel1/ID,DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title, DeliveryLevel2/EMail, PrimaryResMembers/ID, PrimaryResMembers/Title,'+
-        'CMLevel1/ID,CMLevel1/Title, CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail, AllDeliveryResources/ID, AllDeliveryResources/Title, Milestone, BD/ID, BD/EMail',
+      getOpenProjects: {
+        select: 'ProjectCode,WBJID, DeliveryLevel1/ID,DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title, DeliveryLevel2/EMail, PrimaryResMembers/ID, PrimaryResMembers/Title,' +
+          'CMLevel1/ID,CMLevel1/Title, CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail, AllDeliveryResources/ID, AllDeliveryResources/Title, Milestone, BD/ID, BD/EMail',
         expand: 'DeliveryLevel1, DeliveryLevel2, PrimaryResMembers, CMLevel1, CMLevel2, AllDeliveryResources, BD',
-        filter: "Status eq '" + this.globalConstant.projectStatus.AuthorReview + "' or Status eq '" + this.globalConstant.projectStatus.AuditInProgress + "'"+
-        "or Status eq '" + this.globalConstant.projectStatus.Unallocated + "' or Status eq '" + this.globalConstant.projectStatus.SentToAMForApproval + "'"+
-        "or Status eq '" + this.globalConstant.projectStatus.OnHold + "' or Status eq '" + this.globalConstant.projectStatus.ReadyForClient + "'"+
-        "or Status eq '" + this.globalConstant.projectStatus.PendingClosure + "' or Status eq '" + this.globalConstant.projectStatus.InProgress + "'",
+        filter: "Status eq '" + this.globalConstant.projectStatus.AuthorReview + "' or Status eq '" + this.globalConstant.projectStatus.AuditInProgress + "'" +
+          "or Status eq '" + this.globalConstant.projectStatus.Unallocated + "' or Status eq '" + this.globalConstant.projectStatus.SentToAMForApproval + "'" +
+          "or Status eq '" + this.globalConstant.projectStatus.OnHold + "' or Status eq '" + this.globalConstant.projectStatus.ReadyForClient + "'" +
+          "or Status eq '" + this.globalConstant.projectStatus.PendingClosure + "' or Status eq '" + this.globalConstant.projectStatus.InProgress + "'",
         top: '4900',
         orderby: 'ProjectCode'
       },
-      getClients:{
-        select: 'Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title, DeliveryLevel2/EMail,'+
-        'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID,  CMLevel2/Title,  CMLevel2/EMail',
+      getClients: {
+        select: 'Title, DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title, DeliveryLevel2/EMail,' +
+          'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID,  CMLevel2/Title,  CMLevel2/EMail',
+        filter: "IsActive eq 'Yes'",
         expand: 'DeliveryLevel1, DeliveryLevel2, CMLevel1, CMLevel2',
         top: '4900',
         orderby: 'Title'
@@ -259,15 +271,15 @@ export class QMSConstantsService {
       getPF: {
         select: 'ID, Title, FileID, FileURL, Status, IsActive, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID,Resources/Title, DeliveryLeads/ID',
         expand: 'SentBy, Resources, DeliveryLeads',
-        filter:"IsActive eq 1 and Status ne 'Accepted' and Status ne 'Rejected' and DeliveryLeads/ID eq '" + this.global.sharePointPageObject.userId + "'"+
-                " and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
+        filter: "IsActive eq 1 and Status ne 'Accepted' and Status ne 'Rejected' and DeliveryLeads/ID eq '" + this.global.currentUser.userId + "'" +
+          " and SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
         top: '4900',
         orderby: 'SentDate desc'
       },
-      getPFAdmin:{
+      getPFAdmin: {
         select: 'ID, Title, FileID, FileURL, Status, IsActive, SentDate,SentBy/ID, SentBy/Title, Modified, Resources/ID,Resources/Title, DeliveryLeads/ID',
         expand: 'SentBy, Resources, DeliveryLeads',
-        filter:"SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
+        filter: "SentDate ge '{{startDate}}' and SentDate le '{{endDate}}'",
         top: '4900',
         orderby: 'SentDate desc'
       }

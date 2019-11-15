@@ -25,7 +25,12 @@ export class MyDashboardComponent implements OnInit {
   response: any[];
 
   firstload: boolean = true;
-
+  public queryConfig = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
 
   constructor(private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -47,7 +52,7 @@ export class MyDashboardComponent implements OnInit {
       { label: 'Search Projects', routerLink: ['search-projects'] }
     ];
 
-    this.GetCurrentUser();
+    // this.GetCurrentUser();
   }
 
 
@@ -63,11 +68,8 @@ export class MyDashboardComponent implements OnInit {
   }
 
   async GetCurrentUser() {
-    var currentUser = await this.spServices.getUserInfo1(this.sharedObject.sharePointPageObject.userId.toString());
-
-
-    //currentUser = JSON.parse(currentUser);
-    this.sharedObject.currentUser.id = currentUser.Id;
+    const currentUser = await this.spServices.getUserInfo(this.sharedObject.currentUser.userId);
+    this.sharedObject.currentUser.userId = currentUser.Id;
     this.sharedObject.currentUser.email = currentUser.Email;
     this.sharedObject.currentUser.title = currentUser.Title;
   }
@@ -102,47 +104,73 @@ export class MyDashboardComponent implements OnInit {
 
     this.firstload = false;
 
-    const batchGuid = this.spServices.generateUUID();
-    this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
 
-
+    const batchUrl = [];
     // **************************************************************************************************************************************
     //  Get Client Legal Entities
     // **************************************************************************************************************************************
+    const cleObj = Object.assign({}, this.queryConfig);
+    cleObj.url = this.spServices.getReadURL(this.constants.listNames.ClientLegalEntity.name,
+                 this.myDashboardConstantsService.mydashboardComponent.ClientLegalEntitys);
+    cleObj.listName = this.constants.listNames.ClientLegalEntity.name;
+    cleObj.type = 'GET';
+    batchUrl.push(cleObj);
 
-    const clientLegalEntityUrl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', this.myDashboardConstantsService.mydashboardComponent.ClientLegalEntitys);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, clientLegalEntityUrl);
+    // const clientLegalEntityUrl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', this.myDashboardConstantsService.mydashboardComponent.ClientLegalEntitys);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, clientLegalEntityUrl);
 
     // **************************************************************************************************************************************
     //  Get All ResourceCategorization
     // **************************************************************************************************************************************
+    const rcObj = Object.assign({}, this.queryConfig);
+    rcObj.url = this.spServices.getReadURL(this.constants.listNames.ResourceCategorization.name,
+                this.myDashboardConstantsService.mydashboardComponent.ResourceCategorization);
+    rcObj.listName = this.constants.listNames.ResourceCategorization.name;
+    rcObj.type = 'GET';
+    batchUrl.push(rcObj);
 
-    const resourceCategorizationUrl = this.spServices.getReadURL('' + this.constants.listNames.ResourceCategorization.name + '', this.myDashboardConstantsService.mydashboardComponent.ResourceCategorization);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, resourceCategorizationUrl);
+    // const resourceCategorizationUrl = this.spServices.getReadURL('' + this.constants.listNames.ResourceCategorization.name + '', this.myDashboardConstantsService.mydashboardComponent.ResourceCategorization);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, resourceCategorizationUrl);
 
 
     //**************************************************************************************************************************************
 
     //  Get All ProjectContacts
     // **************************************************************************************************************************************
-    const projectContactsUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectContacts.name + '', this.myDashboardConstantsService.mydashboardComponent.ProjectContacts);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectContactsUrl);
+    const prjContactsObj = Object.assign({}, this.queryConfig);
+    prjContactsObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectContacts.name,
+                         this.myDashboardConstantsService.mydashboardComponent.ProjectContacts);
+    prjContactsObj.listName = this.constants.listNames.ProjectContacts.name;
+    prjContactsObj.type = 'GET';
+    batchUrl.push(prjContactsObj);
+    
+    // const projectContactsUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectContacts.name + '', this.myDashboardConstantsService.mydashboardComponent.ProjectContacts);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectContactsUrl);
 
 
     //**************************************************************************************************************************************
 
     //  Get All ProjectInformation
     // **************************************************************************************************************************************
-    const projectInformationUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectInformationUrl);
+    const piObj = Object.assign({}, this.queryConfig);
+    piObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name,
+                this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
+    piObj.listName = this.constants.listNames.ProjectInformation.name;
+    piObj.type = 'GET';
+    batchUrl.push(piObj);
+    
+    // const projectInformationUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectInformationUrl);
 
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.response = await this.spServices.executeBatch(batchUrl);
 
-    this.sharedObject.DashboardData.ClientLegalEntity = this.response[0];
-    this.sharedObject.DashboardData.ResourceCategorization = this.response[1];
-    this.sharedObject.DashboardData.ProjectContacts = this.response[2];
-    this.sharedObject.DashboardData.ProjectCodes = this.response[3];
-
+    this.sharedObject.DashboardData.ClientLegalEntity = this.response.length > 0 ? this.response[0].retItems : [];
+    this.sharedObject.DashboardData.ResourceCategorization =  this.response.length > 0 ? this.response[1].retItems : [];
+    this.sharedObject.DashboardData.ProjectContacts =  this.response.length > 0 ? this.response[2].retItems : [];
+    this.sharedObject.DashboardData.ProjectCodes =  this.response.length > 0 ? this.response[3].retItems : [];
   }
 
 }

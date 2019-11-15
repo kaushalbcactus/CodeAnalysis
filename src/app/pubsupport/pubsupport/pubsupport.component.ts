@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ViewContainerRef, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ViewContainerRef, ViewChild, HostListener, ApplicationRef, NgZone } from '@angular/core';
 import { MessageService, DialogService, ConfirmationService } from 'primeng/api';
 import { MenuItem } from 'primeng/components/common/menuitem';
 import { FormBuilder, FormGroup, Validators, FormControl, MaxLengthValidator } from '@angular/forms';
@@ -9,7 +9,7 @@ import { GlobalService } from '../../Services/global.service';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { CreateConferenceComponent } from './create-conference/create-conference.component';
 import { CreateJournalComponent } from './create-journal/create-journal.component';
-import { DatePipe, TitleCasePipe } from '@angular/common';
+import { DatePipe, TitleCasePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subject } from 'rxjs';
 import { AddAuthorComponent } from './add-author/add-author.component';
 import { AuthorDetailsComponent } from './author-details/author-details.component';
@@ -35,7 +35,11 @@ export class PubsupportComponent implements OnInit {
         private datePipe: DatePipe,
         private confirmationService: ConfirmationService,
         private componentFactoryResolver: ComponentFactoryResolver,
-        private titlecasePipe: TitleCasePipe
+        private titlecasePipe: TitleCasePipe,
+        private platformLocation: PlatformLocation,
+        private locationStrategy: LocationStrategy,
+        _applicationRef: ApplicationRef,
+        zone: NgZone,
     ) {
 
         this.router.routeReuseStrategy.shouldReuseRoute = () => {
@@ -57,6 +61,17 @@ export class PubsupportComponent implements OnInit {
             { name: 'Closed', code: 'Closed' }
         ];
         this.selectedOption = this.overAllValues[0];
+
+        // Browser back button disabled & bookmark issue solution
+        history.pushState(null, null, window.location.href);
+        platformLocation.onPopState(() => {
+            history.pushState(null, null, window.location.href);
+        });
+
+        router.events.subscribe((uri) => {
+            zone.run(() => _applicationRef.tick());
+        });
+
     }
 
     get isValidAddUpdateJCDetailsForm() {
@@ -330,7 +345,7 @@ export class PubsupportComponent implements OnInit {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         this.loggedInUserInfo = [];
         this.loggedInUserGroup = [];
-        const curruentUsrInfo = await this.spOperationsService.getUserInfo(this.globalObject.sharePointPageObject.userId);
+        const curruentUsrInfo = await this.spOperationsService.getUserInfo(this.globalObject.currentUser.userId);
         this.loggedInUserInfo = curruentUsrInfo.Groups.results;
         this.loggedInUserInfo.forEach(element => {
             if (element) {
@@ -363,7 +378,7 @@ export class PubsupportComponent implements OnInit {
             if (isManager) {
                 projectInfoEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.pubsupportService.pubsupportComponent.projectInfo);
             } else {
-                this.pubsupportService.pubsupportComponent.projectInfoUser.filter = this.pubsupportService.pubsupportComponent.projectInfoUser.filter.replace(/{{ID}}/gi, this.globalObject.sharePointPageObject.userId.toString());
+                this.pubsupportService.pubsupportComponent.projectInfoUser.filter = this.pubsupportService.pubsupportComponent.projectInfoUser.filter.replace(/{{ID}}/gi, this.globalObject.currentUser.userId.toString());
                 projectInfoEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.pubsupportService.pubsupportComponent.projectInfoUser);
             }
             arrEndPoints.push(projectInfoEndpoint);
@@ -620,7 +635,7 @@ export class PubsupportComponent implements OnInit {
         } else if (this.selectedModal === 'Edit Journal conference') {
             await this.getJCDetails(data);
             await this.getJCList(this.journal_Conf_data[0].element.EntryType);
-            this.addJCControls(this.journal_Conference_Edit_Detail_form, this.journal_Conf_data[0].element.EntryType,'Edit')
+            this.addJCControls(this.journal_Conference_Edit_Detail_form, this.journal_Conf_data[0].element.EntryType, 'Edit')
             this.setJCDetails(this.journal_Conf_data[0]);
             this.editJCDetailsModal = true;
             this.formatMilestone(this.milestonesList);
@@ -806,7 +821,7 @@ export class PubsupportComponent implements OnInit {
         }
         this.fileSourcePath = [];
         this.fileDestinationPath = [];
-        this.batchContents = [];
+        // this.batchContents = [];
         if (data) {
             const projectCodeData: any = data;
             const fileEndPoint = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + projectCodeData.ClientLegalEntity + '/' + projectCodeData.ProjectCode + '/Publication Support/Forms/';
@@ -1459,6 +1474,9 @@ export class PubsupportComponent implements OnInit {
         // tslint:disable-next-line: max-line-length
         const projEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.ProjectInformation.name, this.selectedProject.Id);
         const projObj: any = {
+            __metadata: {
+                type: this.constantService.listNames.ProjectInformation.type
+            },
             PubSupportStatus: 'Selected'
         };
         projObj.__metadata = { type: this.constantService.listNames.ProjectInformation.type };

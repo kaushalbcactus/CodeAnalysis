@@ -51,6 +51,7 @@ export class EditorComponent implements OnInit {
     USHtmlObject: any = {};
     showAppendix = false;
     serviceDetailHeader = '';
+    iliByPidRes: any = [];
     private subscription: Subscription = new Subscription();
     constructor(
         private common: CommonService,
@@ -2088,7 +2089,7 @@ export class EditorComponent implements OnInit {
         if (getLi === null || getLi === undefined) {
             this.data = document.getElementById(id).innerHTML;
         } else {
-            console.log(getLi.firstElementChild.innerHTML);
+            // console.log(getLi.firstElementChild.innerHTML);
             this.data = getLi.firstElementChild.innerHTML;
         }
     }
@@ -2189,12 +2190,12 @@ export class EditorComponent implements OnInit {
             USInvoice.maincontent = USInvoice.maincontent.replace(new RegExp('\\[\\[ShowAsteriskMessage\\]\\]', 'gi'), 'none');
             this.showAppendix = false;
         }
-        console.log(newArr);
+        // console.log(newArr);
 
         // const header = document.getElementById('header');
         let headerObj: any = this.headerstyle;
         headerObj = headerObj.replace('[[HeaderContent]]', USInvoice.headerCreate);
-        console.log('Header Html', headerObj);
+        // console.log('Header Html', headerObj);
 
         // const content = document.getElementById('main_content');
         let contentObj: string = this.contentStyle;
@@ -2206,23 +2207,23 @@ export class EditorComponent implements OnInit {
         } else {
             outerData = USInvoice.maincontent.replace('[[Appendix]]', appendix);
             contentObj = contentObj + outerData + '</body></html>';
-            console.log('Main Content Html', contentObj);
+            // console.log('Main Content Html', contentObj);
 
         }
-        console.log('Main Content Html', contentObj);
+        // console.log('Main Content Html', contentObj);
 
 
         const footer = document.getElementById('footer');
         let footerObj: any = this.footerStyle;
         footerObj = footerObj.replace('[[FooterContent]]', USInvoice.footerCreate);
-        console.log('Footer Html', footerObj);
+        // console.log('Footer Html', footerObj);
 
         this.originalInvoice = {};
         this.originalInvoice.Header = headerObj;
         this.originalInvoice.Content = contentObj;
         this.originalInvoice.Footer = footerObj;
 
-        console.log(this.originalInvoice.Content);
+        // console.log(this.originalInvoice.Content);
 
         this.address = '';
         this.clientContact = '';
@@ -2304,7 +2305,7 @@ export class EditorComponent implements OnInit {
         }
 
         this.USHtmlObject = USObject;
-        console.log(this.USHtmlObject);
+        // console.log(this.USHtmlObject);
 
         delete this.USHtmlObject.maincontent;
         delete this.USHtmlObject.headerCreate;
@@ -2317,7 +2318,7 @@ export class EditorComponent implements OnInit {
         obj.pdf = this.originalInvoice;
         obj.saveObj = this.USHtmlObject;
 
-        console.log(obj);
+        // console.log(obj);
 
         return obj;
 
@@ -2371,7 +2372,7 @@ export class EditorComponent implements OnInit {
         // const header = document.getElementById('header');
         let headerObj: any = this.headerstyle;
         headerObj = headerObj.replace('[[HeaderContent]]', JapanInvoice.headerCreate);
-        console.log('Header Html', headerObj);
+        // console.log('Header Html', headerObj);
 
         // const content = document.getElementById('main_content');
         let contentObj: string = this.contentStyle;
@@ -2383,7 +2384,7 @@ export class EditorComponent implements OnInit {
         } else {
             outerData = JapanInvoice.maincontent.replace('[[Appendix]]', appendix);
             contentObj = contentObj + outerData + '</body></html>';
-            console.log('Main Content Html', contentObj);
+            // console.log('Main Content Html', contentObj);
 
         }
 
@@ -2391,7 +2392,7 @@ export class EditorComponent implements OnInit {
         const footer = document.getElementById('footer');
         let footerObj: any = this.footerStyle;
         footerObj = footerObj.replace('[[FooterContent]]', JapanInvoice.footerCreate);
-        console.log('Footer Html', footerObj);
+        // console.log('Footer Html', footerObj);
 
         this.originalInvoice = {};
         this.originalInvoice.Header = headerObj;
@@ -2450,7 +2451,7 @@ export class EditorComponent implements OnInit {
         obj.pdf = this.originalInvoice;
         obj.saveObj = this.japanHtmlObject;
 
-        console.log(obj);
+        // console.log(obj);
         return obj;
     }
 
@@ -2491,22 +2492,22 @@ export class EditorComponent implements OnInit {
         if (invoiceData.address2 != null && invoiceData.address2.trim() !== ''
             && invoiceData.address2 !== undefined) {
             this.indAddress = this.indAddress + IndiaInvoice.address2;
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         }
         if (invoiceData.address3 != null && invoiceData.address3.trim() !== ''
             && invoiceData.address3 !== undefined) {
             this.indAddress = this.indAddress + IndiaInvoice.address3;
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         }
         if (invoiceData.address4 != null && invoiceData.address4.trim() !== ''
             && invoiceData.address4 !== undefined) {
             this.indAddress = this.indAddress + IndiaInvoice.address4;
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         }
 
         if (this.indAddress !== null && this.indAddress.trim() !== '' && this.indAddress !== undefined) {
             IndiaInvoice.maincontent = IndiaInvoice.maincontent.replace('[[AddressMulti]]', this.indAddress);
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         } else {
             IndiaInvoice.maincontent = IndiaInvoice.maincontent.replace('[[AddressMulti]]', this.indAddress);
         }
@@ -2536,7 +2537,7 @@ export class EditorComponent implements OnInit {
 
         let headerObj: any = this.headerstyle;
         headerObj = headerObj.replace('[[HeaderContent]]', IndiaInvoice.headerCreate);
-        console.log('Header Html', headerObj);
+        // console.log('Header Html', headerObj);
 
         // const content = document.getElementById('main_content');
         let contentObj: string = this.contentStyle;
@@ -2548,20 +2549,20 @@ export class EditorComponent implements OnInit {
         } else {
             outerData = IndiaInvoice.maincontent.replace('[[Appendix]]', appendix);
             contentObj = contentObj + outerData + '</body></html>';
-            console.log('Main Content Html', contentObj);
+            // console.log('Main Content Html', contentObj);
         }
 
         const footer = document.getElementById('footer');
         let footerObj: any = this.footerStyle;
         footerObj = footerObj.replace('[[FooterContent]]', IndiaInvoice.footerCreate);
-        console.log('Footer Html', footerObj);
+        // console.log('Footer Html', footerObj);
 
         this.originalInvoice = {};
         this.originalInvoice.Header = headerObj;
         this.originalInvoice.Content = contentObj;
         this.originalInvoice.Footer = footerObj;
 
-        console.log(headerObj);
+        // console.log(headerObj);
 
         this.indAddress = '';
         const IndiaObject: any = Object.assign({}, this.IndiaTemplate);
@@ -2600,22 +2601,22 @@ export class EditorComponent implements OnInit {
         if (invoiceData.address2 != null && invoiceData.address2.trim() !== ''
             && invoiceData.address2 !== undefined) {
             this.indAddress = this.indAddress + IndiaObject.address2;
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         }
         if (invoiceData.address3 != null && invoiceData.address3.trim() !== ''
             && invoiceData.address3 !== undefined) {
             this.indAddress = this.indAddress + IndiaObject.address3;
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         }
         if (invoiceData.address4 != null && invoiceData.address4.trim() !== ''
             && invoiceData.address4 !== undefined) {
             this.indAddress = this.indAddress + IndiaObject.address4;
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         }
 
         if (this.indAddress !== null && this.indAddress.trim() !== '' && this.indAddress !== undefined) {
             IndiaObject.contactDetails1 = IndiaObject.contactDetails1.replace('[[AddressMulti]]', this.indAddress);
-            console.log(this.indAddress);
+            // console.log(this.indAddress);
         } else {
             IndiaObject.contactDetails1 = IndiaObject.contactDetails1.replace('[[AddressMulti]]', this.indAddress);
         }
@@ -2649,23 +2650,23 @@ export class EditorComponent implements OnInit {
         obj.pdf = this.originalInvoice;
         obj.saveObj = this.indiaHtmlObject;
 
-        console.log(obj);
+        // console.log(obj);
         return obj;
     }
     widthDefineModal: boolean;
     getData(data: { htmldata: string; class: string; }) {
-        console.log(data);
+        // console.log(data);
         this.editor = false;
         const mainUl = document.getElementById(this.elementId);
         const getLi = mainUl.getElementsByTagName('li')[1];
-        console.log('data.htmldata ', data.htmldata);
-        console.log('data.class ', data.class);
+        // console.log('data.htmldata ', data.htmldata);
+        // console.log('data.class ', data.class);
         if (this.elementId === 'appendix') {
             document.getElementById(this.elementId).innerHTML = data.htmldata;
             const returnVal = this.extractData(data.htmldata);
-            if(returnVal) {
+            if (returnVal) {
                 this.widthDefineModal = true;
-            } 
+            }
             document.getElementById('appendix').parentElement.className = data.class;
         } else if (getLi === null || getLi === undefined) {
             document.getElementById(this.elementId).innerHTML = data.htmldata;
@@ -2852,7 +2853,7 @@ export class EditorComponent implements OnInit {
         this.modifiedInvoice.Content = contentObj;
         this.modifiedInvoice.Footer = footerObj;
 
-        console.log(this.modifiedInvoice);
+        // console.log(this.modifiedInvoice);
 
         const obj: any = {};
         obj.pdf = this.modifiedInvoice;
@@ -2899,7 +2900,7 @@ export class EditorComponent implements OnInit {
             obj.saveObj = this.indiaHtmlObject;
         }
 
-        console.log(obj);
+        // console.log(obj);
 
         setTimeout(async () => {
             await this.fdShareDataService.callProformaInvoiceEdit(obj);
@@ -2970,27 +2971,31 @@ export class EditorComponent implements OnInit {
         this.poInfo();
         this.projectContacts();
         const id = "2393";
-        const batchContents = new Array();
-        const batchGuid = this.spOperationsServices.generateUUID();
-        let invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.Proforma.name + '', this.fdConstantsService.fdComponent.proformaForUser);
-        invoicesQuery = invoicesQuery.replace('{{ItemID}}', id);
-        let endPoints = [invoicesQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spOperationsServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spOperationsServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        //console.log('REs in Confirmed Invoice ', res);
-        arrResults = res;
+        // const batchContents = new Array();
+        // const batchGuid = this.spOperationsServices.generateUUID();
+        const prfObj = Object.assign({}, this.fdConstantsService.fdComponent.proformaForUser);
+        prfObj.filter = prfObj.filter.replace('{{ItemID}}', id);
+        const res = await this.spOperationsServices.readItems(this.constantsService.listNames.Proforma.name, prfObj);
+        // let invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.Proforma.name +
+        //  '', this.fdConstantsService.fdComponent.proformaForUser);
+        // invoicesQuery = invoicesQuery.replace('{{ItemID}}', id);
+        // let endPoints = [invoicesQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spOperationsServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spOperationsServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        // console.log('REs in Confirmed Invoice ', res);
+        const arrResults = res.length ? res : [];
         if (arrResults.length) {
-            const prf = arrResults[0][0];
-            console.log(prf);
+            const prf = arrResults[0];
+            // console.log(prf);
             await this.getILIByPID(id);
-            console.log(this.iliByPidRes);
+            // console.log(this.iliByPidRes);
 
             const projectAppendix = await this.createProjectAppendix(this.iliByPidRes);
             await this.fdShareDataService.callProformaCreation(prf, this.cleData, this.projectContactsData, this.purchaseOrdersList, this, projectAppendix);
@@ -3005,7 +3010,7 @@ export class EditorComponent implements OnInit {
         this.subscription.add(this.fdShareDataService.defaultPoData.subscribe((res) => {
             if (res) {
                 this.purchaseOrdersList = res;
-                console.log('PO Data ', this.purchaseOrdersList);
+                // console.log('PO Data ', this.purchaseOrdersList);
             }
         }))
     }
@@ -3016,7 +3021,7 @@ export class EditorComponent implements OnInit {
         this.subscription.add(this.fdShareDataService.defaultPCData.subscribe((res) => {
             if (res) {
                 this.projectContactsData = res;
-                console.log('this.projectContactsData ', this.projectContactsData);
+                // console.log('this.projectContactsData ', this.projectContactsData);
                 // this.getPCForSentToAMForApproval();
             }
         }))
@@ -3032,39 +3037,45 @@ export class EditorComponent implements OnInit {
         this.subscription.add(this.fdShareDataService.defaultCLEData.subscribe((res) => {
             if (res) {
                 this.cleData = res;
-                console.log('CLE Data ', this.cleData);
+                // console.log('CLE Data ', this.cleData);
             }
         }))
     }
 
     // Generate Invoice Data start
-    iliByPidRes: any = [];
+
 
     async getILIByPID(id) {
 
-        const batchContents = new Array();
-        const batchGuid = this.spOperationsServices.generateUUID();
-        let invoicesQuery = '';
-        let obj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItem);
-        obj.filter = obj.filter.replace("{{ProformaLookup}}", id);
-        invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.InvoiceLineItems.name + '', obj);
-        // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
+        // const batchContents = new Array();
+        // const batchGuid = this.spOperationsServices.generateUUID();
+        // let invoicesQuery = '';
+        // let obj = {
+        //     filter: this.fdConstantsService.fdComponent.invoiceLineItem.filter.replace("{{ProformaLookup}}", id),
+        //     select: this.fdConstantsService.fdComponent.invoiceLineItem.select,
+        //     top: this.fdConstantsService.fdComponent.invoiceLineItem.top,
+        //     // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
+        // }
+        // invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.InvoiceLineItems.name + '', obj);
+        // // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
-        let endPoints = [invoicesQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spOperationsServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spOperationsServices.getFDData(batchGuid, userBatchBody);// .subscribe(res => {
-        arrResults = res;
-        if (arrResults.length) {
-            console.log(arrResults[0]);
-            this.iliByPidRes = arrResults[0] ? arrResults[0] : [];
-        }
+        // let endPoints = [invoicesQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spOperationsServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spOperationsServices.getFDData(batchGuid, userBatchBody);// .subscribe(res => {
+        const iliObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItem);
+        iliObj.filter = iliObj.filter.replace('{{ProformaLookup}}', id);
+        const res = await this.spOperationsServices.readItems(this.constantsService.listNames.InvoiceLineItems.name, iliObj);
+        const arrResults = res.length ? res : [];
+        // if (arrResults.length) {
+        this.iliByPidRes = arrResults;
+        // }
 
     }
 
@@ -3078,7 +3089,7 @@ export class EditorComponent implements OnInit {
         this.subscription.add(this.fdShareDataService.defaultPIData.subscribe((res) => {
             if (res) {
                 this.projectInfoData = res;
-                console.log('PI Data ', this.projectInfoData);
+                // console.log('PI Data ', this.projectInfoData);
             }
         }))
     }
@@ -3110,14 +3121,15 @@ export class EditorComponent implements OnInit {
                 url: '',
                 type: '',
                 listName: ''
-            }
+            };
 
             callProjects.forEach(element => {
-                var getPIData = Object.assign({}, options);
-                getPIData.url = this.spOperationsServices.getReadURL(this.constantsService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfoCode);
-                getPIData.url = getPIData.url.replace("{{ProjectCode}}", element);
+                const getPIData = Object.assign({}, options);
+                getPIData.url = this.spOperationsServices.getReadURL(this.constantsService.listNames.ProjectInformation.name,
+                    this.fdConstantsService.fdComponent.projectInfoCode);
+                getPIData.url = getPIData.url.replace('{{ProjectCode}}', element);
                 getPIData.listName = this.constantsService.listNames.ProjectInformation.name;
-                getPIData.type = "GET";
+                getPIData.type = 'GET';
                 batchURL.push(getPIData);
 
             });

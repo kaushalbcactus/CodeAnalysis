@@ -1,9 +1,13 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ApplicationRef, NgZone } from '@angular/core';
 import { GlobalService } from '../../../../Services/global.service';
 import { UserFeedbackComponent } from '../../user-feedback/user-feedback.component';
 import { CommonService } from '../../../../Services/common.service';
 import { DataService } from '../../../../Services/data.service';
 import { Router, NavigationEnd } from '@angular/router';
+import { PlatformLocation, LocationStrategy } from '@angular/common';
+import { QMSConstantsService } from '../../services/qmsconstants.service';
+import { MessageService } from 'primeng/api';
+import { QMSCommonService } from '../../services/qmscommon.service';
 
 @Component({
   selector: 'app-internal',
@@ -16,13 +20,35 @@ export class InternalComponent implements OnInit, OnDestroy {
   public globalInternalFeedback = this.global.personalFeedback.internal;
   private filterObj = {};
   public sub; navigationSubscription;
-  constructor(public global: GlobalService, public common: CommonService, private data: DataService, private router: Router) {
-    this.navigationSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.initialisePFInternal();
-      }
+  constructor(
+    public global: GlobalService,
+    public common: CommonService,
+    private data: DataService,
+    private router: Router,
+    private qmsConstatsService: QMSConstantsService,
+    private qmsCommon : QMSCommonService,
+    private messageService: MessageService,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+  ) {
+    // this.router.routeReuseStrategy.shouldReuseRoute = function () {
+    //   return false;
+    // }
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
     });
+
+    this.navigationSubscription = this.router.events.subscribe((e: any) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+    if ((this.qmsConstatsService.qmsToastMsg.hideManager || this.qmsConstatsService.qmsToastMsg.hideAdmin || this.qmsConstatsService.qmsToastMsg.hideReviewerTaskPending)) {
+      this.showToastMsg();
+    }
   }
 
   initialisePFInternal() {
@@ -30,7 +56,7 @@ export class InternalComponent implements OnInit, OnDestroy {
     this.data.filterObj.subscribe(filter => this.filterObj = filter);
     this.feedbackTable.applyFilters(this.filterObj);
     this.global.personalFeedback.internal.assignedTo = {
-      ID: this.global.sharePointPageObject.userId,
+      ID: this.global.currentUser.userId,
       title: this.global.currentUser.title,
       designation: this.global.currentUser.designation
     };
@@ -46,6 +72,21 @@ export class InternalComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.qmsCommon.selectedComponent = this;
+    this.initialisePFInternal();
+  }
+
+  showToastMsg() {
+    setTimeout(() => {
+      this.messageService.add({
+        key: 'qmsAuth', severity: 'info', life: 3000,
+        summary: 'Info Message', detail: 'You don\'\t have permission'
+      });
+      // this.qmsConstatsService.qmsToastMsg.hideManager = false;
+      this.qmsConstatsService.qmsToastMsg.hideManager = false;
+      this.qmsConstatsService.qmsToastMsg.hideAdmin = false;
+      this.qmsConstatsService.qmsToastMsg.hideReviewerTaskPending = false;
+    }, 300);
   }
 
   /**

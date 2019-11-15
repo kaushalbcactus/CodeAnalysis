@@ -1,3 +1,196 @@
-<p>
-  bucket-masterdata works!
-</p>
+<div class="mt-20">
+  <div class="p-grid addNew">
+    <div class="p-col-2">
+      <span class="ui-float-label">
+        <input id="float-input" type="text" [(ngModel)]="bucketData" pInputText />
+        <label for="float-input">Bucket</label>
+      </span>
+    </div>
+    <div class="p-col-2">
+      <p-button label="Add" type="button" (click)="addBucketData()"></p-button>
+    </div>
+  </div>
+</div>
+<div>
+  <a (click)="downloadExcel(bmd)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
+      aria-hidden="true"></i>
+  </a>
+</div>
+<div class="clearBoth"></div>
+<div class="tooltip-data-container adminTable">
+  <p-table #bmd [columns]="bucketDataColumns" [value]="bucketDataRows" exportFilename="Bucket Master Data"
+    [paginator]="true" [rows]="10" class="minFirstLastCol5Per">
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th class="width10Per">Sr.No.</th>
+        <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
+          {{col.header}}
+          <p-sortIcon *ngIf="col.header != '' " [field]="col.field" ariaLabel="Activate to sort"
+            ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order">
+          </p-sortIcon>
+        </th>
+        <th></th>
+      </tr>
+      <tr>
+        <th></th>
+        <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility">
+          <p-multiSelect *ngSwitchCase="'Bucket'" [style]="{'width':'100%'}" [options]="bucketDataColArray.Bucket"
+            defaultLabel="Bucket" (onChange)="bmd.filter($event.value, col.field, 'in')"
+            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+          <p-multiSelect *ngSwitchCase="'Client'" [style]="{'width':'100%'}" [options]="bucketDataColArray.Client"
+            defaultLabel="Client" (onChange)="bmd.filter($event.value, col.field, 'contains')"
+            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+          <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
+            [options]="bucketDataColArray.LastUpdated" defaultLabel="LastUpdated"
+            (onChange)="bmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+            filter="true" resetFilterOnHide="true"></p-multiSelect>
+          <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
+            [options]="bucketDataColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
+            (onChange)="bmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+            filter="true" resetFilterOnHide="true"></p-multiSelect>
+        </th>
+        <th></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+      <tr>
+        <td class="width10Per">{{ rowIndex+1 }}</td>
+        <td>
+          {{rowData.Bucket}}
+        </td>
+        <td><a class="brandColor noTextDecoration" href="javascript:void(0)"
+            (click)="displayClient(rowData.RowClientsArray)">{{rowData.PatClients}}</a>
+        </td>
+        <td>
+          {{rowData.LastUpdated | date:'MMM dd, yyyy'}}
+        </td>
+        <td>
+          {{rowData.LastUpdatedBy}}
+        </td>
+        <td>
+          <div>
+            <p-menu #menu [popup]="true" [model]="items" styleClass="borderMenu"></p-menu>
+            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+              (click)="menu.toggle($event);bucketMenu(rowData)"></i>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns>
+      <tr>
+        <td [attr.colspan]="columns.length">
+          No Data found
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+<div>
+  <!-- <h3 style="text-align: center;">Audit History</h3>
+<p-table #ah [columns]="auditHistoryColumns" [value]="auditHistoryRows" exportFilename="Audit History">
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th>Sr.No.</th>
+            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                {{col.header}}
+                <p-sortIcon [field]="col.field" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+            </th>
+        </tr>
+        <tr>
+            <th></th>
+            <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                <p-multiSelect *ngSwitchCase="'Action'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.Action" defaultLabel="Action" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'SubAction'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.SubAction" defaultLabel="SubAction" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>                                  
+                <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.ActionBy" defaultLabel="ActionBy" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" appendTo="body" [options]="auditHistoryArray.Date" defaultLabel="Date" (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr>
+            <td>{{ rowIndex+1 }}</td>
+            <td *ngFor="let col of columns">
+                <ng-container *ngIf="col.field != ''">
+                    {{rowData[col.field]}}
+                </ng-container>
+           </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage" let-columns>
+        <tr>
+            <td [attr.colspan]="columns.length">
+                No Data found
+            </td>
+        </tr>
+    </ng-template>
+  </p-table> -->
+  <p-dialog [(visible)]="viewClient" [modal]="true" appendTo="body" [style]="{width: '1000px'}">
+    <p-header>
+      List of Clients
+    </p-header>
+    <p-table [value]="viewClientArray" [scrollable]="true" scrollHeight="400px">
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th class="width10Per">
+            Sr.No
+          </th>
+          <th>
+            Client Name
+          </th>
+          <th>Effective Date</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr>
+          <td class="width10Per">
+            {{ rowIndex+1 }}
+          </td>
+          <td class="brandColor">
+            {{rowData.Title}}
+          </td>
+          <td>{{rowData.EffectiveDate | date:'MMM dd, yyyy'}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-dialog>
+  <p-dialog [(visible)]="editClient" [modal]="true" appendTo="body" [style]="{width: '1000px', height: '500px'}">
+    <p-header>
+      Edit Client
+    </p-header>
+    <p-table [value]="clientList" [(selection)]="selectedClient" dataKey="ID" [scrollable]="true" scrollHeight="400px">
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th class="width10Per">
+            Sr No.
+          </th>
+          <th class="width5Per">
+            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+          </th>
+          <th>
+            Clients
+          </th>
+          <th>Effective Date</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+        <tr [ngClass]="{'disableColor':rowData.isCheckboxDisabled}">
+          <td class="width10Per">{{ rowIndex+1 }}</td>
+          <td class="width5Per">
+            <p-tableCheckbox [disabled]="rowData.isCheckboxDisabled" [value]="rowData"></p-tableCheckbox>
+          </td>
+          <td>
+            {{rowData.Title}}
+          </td>
+          <td>
+            <p-calendar [(ngModel)]="rowData.EffectiveDate" [minDate]="min30Days" [showIcon]="true"
+              [maxDate]="minDateValue"   [showOnFocus]="false"   [monthNavigator]="true" [readonlyInput]="true">
+            </p-calendar>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <p-footer>
+      <button pButton label="Update" type="button" (click)="update()"></button>
+    </p-footer>
+  </p-dialog>
+  <p-messages [value]="msgs" key="confirm"></p-messages>

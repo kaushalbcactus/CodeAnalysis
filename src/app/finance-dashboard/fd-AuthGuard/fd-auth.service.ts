@@ -48,7 +48,7 @@ export class FdAuthService {
             { label: 'OOP', routerLink: ['oop'] },
         ]
 
-        this.globalObject.userInfo = await this.spOperationsServices.getUserInfo(this.globalObject.sharePointPageObject.userId);
+        this.globalObject.userInfo = await this.spOperationsServices.getUserInfo(this.globalObject.currentUser.userId);
         console.log('this.globalObject.userInfo ', this.globalObject.userInfo);
         // this.constantsService.loader.isPSInnerLoaderHidden = true;
         if (this.globalObject.userInfo.Groups.results.length) {

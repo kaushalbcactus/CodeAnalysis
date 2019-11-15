@@ -1,19 +1,25 @@
-import { Component, OnInit, OnDestroy, ViewEncapsulation, TemplateRef, ViewChild, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation, TemplateRef, ViewChild, HostListener, ElementRef, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { SelectItem, MenuItem, DialogService } from 'primeng/api';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { MessageService, ConfirmationService } from 'primeng/api';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TimeSpentDialogComponent } from '../time-spent-dialog/time-spent-dialog.component';
 import { AddEditCommentComponent } from '../add-edit-comment-dialog/add-edit-comment-dialog.component';
 import { PreviosNextTasksDialogComponent } from '../previos-next-tasks-dialog/previos-next-tasks-dialog.component';
 import { Table } from 'primeng/table';
 import { FeedbackPopupComponent } from '../../qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
+
+
+interface DateObj {
+  label: string;
+  value: string;
+}
 
 @Component({
   selector: 'app-my-current-completed-tasks',
@@ -22,7 +28,8 @@ import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-do
   providers: [DatePipe, MessageService, FeedbackPopupComponent],
 
 })
-export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
+
+export class MyCurrentCompletedTasksComponent implements OnInit {
 
   selectedDueDate: DateObj;
   selectedStartDate: DateObj;
@@ -30,7 +37,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
   public loderenable = false;
 
   @ViewChild('feedbackPopup', { static: true }) feedbackPopupComponent: FeedbackPopupComponent;
-  @ViewChild('taskId', { static: true }) taskId: Table;
+  @ViewChild('taskId', { static: false }) taskId: Table;
   showCalender: boolean;
   selectedDate: any;
   rangeDates: Date[];
@@ -82,13 +89,32 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     public dialogService: DialogService,
     private confirmationService: ConfirmationService,
-    public spOperations: SPOperationService) { }
+    public spOperations: SPOperationService,
+    private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone,
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+  }
 
   ngOnInit() {
     this.cols = [
       { field: 'MainStatus', header: 'Status', visibility: true, exportable: true },
-      { field: 'Status', header: 'Task Status', visibility: true, exportable: true },
-      { field: 'DisplayTitle', header: 'Task Name', visibility: true, exportable: true },
+      { field: 'TaskStatus', header: 'Task Status', visibility: true, exportable: true },
+      { field: 'TaskName', header: 'Task Name', visibility: true, exportable: true },
       { field: 'ExportStartDate', header: 'Start Date', visibility: false, exportable: true },
       { field: 'ExportDueDate', header: 'End Date', visibility: false, exportable: true },
       { field: 'StartDate', header: 'Start Date', visibility: true, exportable: false },
@@ -98,8 +124,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     ];
     this.myDashboardConstantsService.getEmailTemplate();
 
-  }
-  ngOnDestroy() {
   }
 
 
@@ -191,7 +215,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
         endDate.getDay() === 0 ? new Date(endDate.setDate(endDate.getDate() - 2)) :
           new Date(endDate.setDate(endDate.getDate()));
 
-      startDate = this.RemoveBusinessDays(endDate, days - 1);
+      startDate = this.myDashboardConstantsService.RemoveBusinessDays(endDate, days - 1);
     } else if (nextLast === 'Custom') {
 
       startDate = this.rangeDates[0];
@@ -221,22 +245,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     date.setDate(date.getDate() + days + (day === 6 ? 2 : +!day) + (Math.floor((days - 1 + (day % 6 || 1)) / 5) * 2));
     return date;
   }
-  // *************************************************************************************************************************************
-  // remove days to get start date for previous days
-  // *************************************************************************************************************************************
 
-  RemoveBusinessDays(date, days) {
-
-    let tempDate = new Date(date);
-    while (days > 0) {
-
-      tempDate = new Date(tempDate.setDate(tempDate.getDate() - 1));
-      if (tempDate.getDay() !== 6 && tempDate.getDay() !== 0) {
-        days -= 1;
-      }
-    }
-    return tempDate;
-  }
 
 
   // *************************************************************************************************************************************
@@ -245,79 +254,147 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   async getStatusFilterDropDownValue(status, filterDates) {
 
-
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
     const mytasks = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTasks);
-    mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
+    mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
     mytasks.filter += status === 'MyCompletedTask' ? mytasks.filterCompleted : mytasks.filterStatus;
     // mytasks.filter += mytasks.filterStatus;
     mytasks.filter += mytasks.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
-    const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', mytasks);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, mytasks);
 
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    this.allTasks = this.response[0] !== '' ? this.response[0] : [];
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+    // const mytasks = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTasks);
+    // mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
+    // mytasks.filter += status === 'MyCompletedTask' ? mytasks.filterCompleted : mytasks.filterStatus;
+    // // mytasks.filter += mytasks.filterStatus;
+    // mytasks.filter += mytasks.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
+    // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', mytasks);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
 
-    if (this.allTasks.length > 0) {
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    const res = this.response.length ? this.response : [];
 
-      this.allTasks.map(c => c.TimeSpent = c.TimeSpent === null ? 0 : c.TimeSpent.replace('.', ':'));
+    if (res.length > 0) {
+      const data = [];
+      res.forEach(task => {
 
-      this.allTasks.map(c => c.StartDate = new Date(this.datePipe.transform(c.StartDate, 'MMM d, y, h:mm a')));
-      this.allTasks.map(c => c.DueDate = new Date(this.datePipe.transform(c.DueDate, 'MMM d, y, h:mm a')));
-
-      this.allTasks.map(c => c.ExportStartDate = this.datePipe.transform(c.StartDate, 'MMM d, y, h:mm a'));
-
-      this.allTasks.map(c => c.ExportDueDate = this.datePipe.transform(c.DueDate, 'MMM d, y, h:mm a'));
-
-
-
-      if (this.TabName === 'MyCompletedTask') {
-        this.allTasks.filter(c => c.Status === 'Completed' || c.Status === 'Auto Closed').map(c => c.MainStatus = 'Closed');
-
-      } else {
-        this.allTasks.filter(c => c.Status === 'Not Started' || c.Status === 'In Progress').map(c => c.MainStatus = 'Not Completed');
-        this.allTasks.filter(c => c.Status === 'Not Confirmed').map(c => c.MainStatus = 'Planned');
-      }
-      if (this.sharedObject.DashboardData.ProjectCodes.length > 0) {
-        this.allTasks.forEach(element => {
-
-          const data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === element.ProjectCode);
-
-          if (data !== undefined) {
-            if (element.SubMilestones) {
-
-              if (element.SubMilestones === 'Default') {
-                element.DisplayTitle = element.Title + ' ( ' + data.WBJID + ')';
-              } else {
-                element.DisplayTitle = element.Title + ' - ' + element.SubMilestones + ' ( ' + data.WBJID + ')';
-              }
+        const TaskProject = this.sharedObject.DashboardData.ProjectCodes ? this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === task.ProjectCode) : null;
+        let DisplayTitle;
+        if (TaskProject !== undefined) {
+          if (task.SubMilestones) {
+            if (task.SubMilestones === 'Default') {
+              DisplayTitle = task.Title + ' ( ' + TaskProject.WBJID + ')';
             } else {
-              element.DisplayTitle = element.Title + ' (' + data.WBJID + ')';
+              DisplayTitle = task.Title + ' - ' + task.SubMilestones + ' ( ' + TaskProject.WBJID + ')';
             }
           } else {
-            if (element.SubMilestones) {
-              if (element.SubMilestones === 'Default') {
-                element.DisplayTitle = element.Title;
-              } else {
-                element.DisplayTitle = element.Title + ' - ' + element.SubMilestones;
-              }
-            } else {
-              element.DisplayTitle = element.Title;
-            }
+            DisplayTitle = task.Title + ' (' + TaskProject.WBJID + ')';
           }
-        });
-      }
+        } else {
+          if (task.SubMilestones) {
+            if (task.SubMilestones === 'Default') {
+              DisplayTitle = task.Title;
+            } else {
+              DisplayTitle = task.Title + ' - ' + task.SubMilestones;
+            }
+          } else {
+            DisplayTitle = task.Title;
+          }
+        }
 
-      this.AllTaskColArray = this.route.snapshot.data.type === 'MyCompletedTask' ?
-        { Status: [{ label: 'Closed', value: 'Closed' }], TaskStatus: [], TaskName: [], StartDate: [], DueDate: [] } :
-        { Status: [], TaskStatus: [], TaskName: [], StartDate: [], DueDate: [] };
-      this.createColFieldValues();
+        data.push({
+          Id: task.Id,
+          AssignedTo: task.AssignedTo,
+          StartDate: new Date(this.datePipe.transform(task.StartDate, 'MMM d, y, h:mm a')),
+          DueDate: new Date(this.datePipe.transform(task.DueDate, 'MMM d, y, h:mm a')),
+          ExportStartDate: new Date(this.datePipe.transform(task.StartDate, 'MMM d, y, h:mm a')),
+          ExportDueDate: new Date(this.datePipe.transform(task.DueDate, 'MMM d, y, h:mm a')),
+          TimeSpent: task.TimeSpent === null ? 0 : task.TimeSpent.replace('.', ':'),
+          TaskStatus: task.Status,
+          ExpectedTime: task.ExpectedTime,
+          // tslint:disable-next-line: max-line-length
+          MainStatus: task.Status === 'Completed' || task.Status === 'Auto Closed' ? 'Closed' : task.Status === 'Not Started' || task.Status === 'In Progress' ? 'Not Completed' : task.Status === 'Not Confirmed' ? 'Planned' : '',
+          DisplayTitle,
+          TaskName: DisplayTitle,
+          Actual_x0020_End_x0020_Date: task.Actual_x0020_End_x0020_Date,
+          Actual_x0020_Start_x0020_Date: task.Actual_x0020_Start_x0020_Date,
+          Comments: task.Comments,
+          FinalDocSubmit: task.FinalDocSubmit,
+          ID: task.Id,
+          IsCentrallyAllocated: task.IsCentrallyAllocated,
+          Milestone: task.Milestone,
+          NextTasks: task.NextTasks,
+          PrevTasks: task.PrevTasks,
+          ProjectCode: task.ProjectCode,
+          Status: task.Status,
+          SubMilestones: task.SubMilestones,
+          Task: task.Task,
+          TaskComments: task.TaskComments,
+          Title: task.Title
+        });
+      });
+      this.allTasks = data;
+
+      // this.allTasks.map(c => c.TimeSpent = c.TimeSpent === null ? 0 : c.TimeSpent.replace('.', ':'));
+
+      // this.allTasks.map(c => c.StartDate = new Date(this.datePipe.transform(c.StartDate, 'MMM d, y, h:mm a')));
+      // this.allTasks.map(c => c.DueDate = new Date(this.datePipe.transform(c.DueDate, 'MMM d, y, h:mm a')));
+
+      // this.allTasks.map(c => c.ExportStartDate = this.datePipe.transform(c.StartDate, 'MMM d, y, h:mm a'));
+
+      // this.allTasks.map(c => c.ExportDueDate = this.datePipe.transform(c.DueDate, 'MMM d, y, h:mm a'));
+
+
+
+      // if (this.TabName === 'MyCompletedTask') {
+      //   this.allTasks.filter(c => c.Status === 'Completed' || c.Status === 'Auto Closed').map(c => c.MainStatus = 'Closed');
+
+      // } else {
+      //   this.allTasks.filter(c => c.Status === 'Not Started' || c.Status === 'In Progress').map(c => c.MainStatus = 'Not Completed');
+      //   this.allTasks.filter(c => c.Status === 'Not Confirmed').map(c => c.MainStatus = 'Planned');
+      // }
+      // if (this.sharedObject.DashboardData.ProjectCodes.length > 0) {
+      //   this.allTasks.forEach(element => {
+
+      //     const data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === element.ProjectCode);
+
+      //     if (data !== undefined) {
+      //       if (element.SubMilestones) {
+      //         task
+      //         if (element.SubMilestones === 'Default') {
+      //           element.DisplayTitle = element.Title + ' ( ' + data.WBJID + ')';
+      //         } else {
+      //           element.DisplayTitle = element.Title + ' - ' + element.SubMilestones + ' ( ' + data.WBJID + ')';
+      //         }
+      //       } else {
+      //         element.DisplayTitle = element.Title + ' (' + data.WBJID + ')';
+      //       }
+      //     } else {
+      //       if (element.SubMilestones) {
+      //         if (element.SubMilestones === 'Default') {
+      //           element.DisplayTitle = element.Title;
+      //         } else {
+      //           element.DisplayTitle = element.Title + ' - ' + element.SubMilestones;
+      //         }
+      //       } else {
+      //         element.DisplayTitle = element.Title;
+      //       }
+      //     }
+      //   });
+      // }
+      this.initializeTableOptions();
 
     } else if (this.allTasks.length === 0) {
       this.loaderenable = false;
       this.thenBlock = this.taskId;
     }
+  }
+
+  initializeTableOptions() {
+    this.AllTaskColArray = this.route.snapshot.data.type === 'MyCompletedTask' ?
+      { MainStatus: [{ label: 'Closed', value: 'Closed' }], TaskStatus: [], TaskName: [], StartDate: [], DueDate: [] } :
+      { MainStatus: [], TaskStatus: [], TaskName: [], StartDate: [], DueDate: [] };
+    this.createColFieldValues(this.allTasks);
   }
 
   // *************************************************************************************************************************************
@@ -327,45 +404,42 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
 
 
-  createColFieldValues() {
-
-
+  createColFieldValues(resArray) {
     this.AllTaskColArray.TaskStatus = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj
-      (this.allTasks.map(a => { const b = { label: a.Status, value: a.Status }; return b; })));
+      (resArray.map(a => { const b = { label: a.TaskStatus, value: a.TaskStatus }; return b; })));
+
     this.AllTaskColArray.TaskName = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = {
           label:
             a.DisplayTitle, value: a.DisplayTitle
           // tslint:disable-next-line: align
         }; return b;
       })));
-    this.AllTaskColArray.Status = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => {
+    this.AllTaskColArray.MainStatus = this.commonService.sortData
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = {
           label:
             a.MainStatus, value: a.MainStatus
           // tslint:disable-next-line: align
         }; return b;
       })));
-    this.AllTaskColArray.StartDate.push.apply(this.AllTaskColArray.StartDate,
-      this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => {
-        const b = {
-          label:
-            // tslint:disable-next-line: align
-            this.datePipe.transform(a.StartDate, 'MMM d, y, h:mm a'), value: a.StartDate
+    this.AllTaskColArray.StartDate = this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
+      const b = {
+        label:
           // tslint:disable-next-line: align
-        }; return b;
-      })));
-    this.AllTaskColArray.DueDate.push.apply(this.AllTaskColArray.DueDate,
-      this.myDashboardConstantsService.uniqueArrayObj(this.allTasks.map(a => {
-        const b = {
-          label:
-            // tslint:disable-next-line: align
-            this.datePipe.transform(a.DueDate, 'MMM d, y, h:mm a'), value: a.DueDate
+          this.datePipe.transform(a.StartDate, 'MMM d, y, h:mm a'), value: a.StartDate
+        // tslint:disable-next-line: align
+      }; return b;
+    }));
+    this.AllTaskColArray.DueDate = this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
+      const b = {
+        label:
           // tslint:disable-next-line: align
-        }; return b;
-      })));
+          this.datePipe.transform(a.DueDate, 'MMM d, y, h:mm a'), value: a.DueDate
+        // tslint:disable-next-line: align
+      }; return b;
+    }));
 
     this.AllTaskColArray.StartDate = this.AllTaskColArray.StartDate.sort((a, b) =>
       new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
@@ -409,17 +483,20 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
       nextTaskFilter + ' or ' + previousTaskFilter : (nextTaskFilter === '' && previousTaskFilter !== '')
         ? previousTaskFilter : (nextTaskFilter !== '' && previousTaskFilter === '') ? nextTaskFilter : '';
 
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
 
+    // const previousNextTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTask);
+    // previousNextTask.filter = taskFilter;
+
+    // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousNextTask);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     const previousNextTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTask);
     previousNextTask.filter = taskFilter;
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTask);
 
-    const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousNextTask);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
-
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    this.tasks = this.response[0] !== '' ? this.response[0] : [];
+    this.tasks = this.response.length ? this.response : [];
 
     this.tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : '-');
     this.tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : '-');
@@ -446,7 +523,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     this.selectedindex = row;
     this.selectedType = type;
 
-    if (type === 'DisplayTitle') { // {
+    if (type === 'TaskName') { // {
       this.getNextPreviousTaskDialog(task);
     }
     // this.display = true;
@@ -499,7 +576,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
   async getNextPreviousTaskDialog(task) {
 
     this.tableloaderenable = true;
-    const tasks = await this.getNextPreviousTask(task);
+    debugger;
+    let tasks = [];
+    if (task.NextTasks || task.PrevTasks) {
+      tasks = await this.getNextPreviousTask(task);
+    }
+
     this.tableloaderenable = false;
     const ref = this.dialogService.open(PreviosNextTasksDialogComponent, {
       data: {
@@ -576,7 +658,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
       TaskComments: comment
     };
 
-    await this.spOperations.updateItem(this.constants.listNames.Schedules.name, task.ID, data, 'SP.Data.SchedulesListItem');
+    await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, data, 'SP.Data.SchedulesListItem');
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
   }
 
@@ -584,57 +666,48 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
   //  get Previous Task Status
   // ***************************************************************************************************
 
-  async getPrevTaskStatus(task) {
-    let status = '';
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+  // async getPrevTaskStatus(task) {
+  //   let status = '';
+  //   // this.batchContents = new Array();
+  //   // const batchGuid = this.spServices.generateUUID();
 
-    const previousTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousTaskStatus);
-    previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi,
-    this.sharedObject.sharePointPageObject.userId.toString());
+  //   // const previousTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousTaskStatus);
+  //   // previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi,
+  //   // this.sharedObject.sharePointPageObject.userId.toString());
 
-    const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
+  //   // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
+  //   // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
 
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+  //   // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+  //   const previousTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousTaskStatus);
+  //   previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
+  //   this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousTask);
+  //   this.response.forEach(async element => {
+  //     if (element.AllowCompletion === 'No') {
+  //       let previousTaskFilter = '';
+  //       if (element.PrevTasks) {
+  //         const previousTasks = task.PrevTasks.split(';#');
+  //         previousTasks.forEach((value, i) => {
+  //           previousTaskFilter += '(Title eq \'' + value + '\')';
+  //           previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
+  //         });
 
-    this.response[0].forEach(async element => {
-      if (element.AllowCompletion === 'No') {
-        let previousTaskFilter = '';
-        if (element.PrevTasks) {
-          const previousTasks = task.PrevTasks.split(';#');
-          previousTasks.forEach((value, i) => {
-            previousTaskFilter += '(Title eq \'' + value + '\')';
-            previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
-          });
+  //         const previousTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.taskStatus);
+  //         previousTask.filter = previousTaskFilter;
+  //         this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousTask);
+  //         this.response.forEach(element => {
+  //           status = element.Status;
+  //         });
 
-          this.batchContents = new Array();
-          // tslint:disable-next-line: no-shadowed-variable
-          const batchGuid = this.spServices.generateUUID();
-
-          // tslint:disable-next-line: no-shadowed-variable
-          const previousTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.taskStatus);
-          previousTask.filter = previousTaskFilter;
-
-          // tslint:disable-next-line: no-shadowed-variable
-          const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
-          this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
-
-          this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-          // tslint:disable-next-line: no-shadowed-variable
-          this.response[0].forEach(element => {
-            status = element.Status;
-          });
-
-        } else {
-          status = 'AllowCompletion';
-        }
-      } else {
-        status = 'AllowCompletion';
-      }
-    });
-    return status;
-  }
+  //       } else {
+  //         status = 'AllowCompletion';
+  //       }
+  //     } else {
+  //       status = 'AllowCompletion';
+  //     }
+  //   });
+  //   return status;
+  // }
 
 
   // *************************************************************************************************************************************
@@ -644,13 +717,17 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
 
   async getAddUpdateDocument(task) {
 
-
-    //  var status = await this.getPrevTaskStatus(task);
+    let NextTasks;
+    const enableEmail = await this.myDashboardConstantsService.checkEmailNotificationEnable(task);
+    if (enableEmail) {
+      NextTasks = await this.getNextPreviousTask(task);
+    }
 
     const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
       data: {
         task,
-        //  status:status,
+        emailNotificationEnable: enableEmail,
+        nextTasks: NextTasks ? NextTasks.filter(c => c.TaskType === 'Next Task') : []
       },
       header: task.DisplayTitle,
       width: '80vw',
@@ -664,35 +741,42 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     });
   }
 
-
   // *************************************************************************************************************************************
   //  Mark as Complete
   // *************************************************************************************************************************************
 
 
   async checkCompleteTask(task) {
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
 
-    const TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
-    TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, task.ID);
+    const allowedStatus = ['Completed', 'AllowCompletion', 'Auto Closed'];
+    // const TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
+    // TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, task.ID);
 
-    const TaskDetailsUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TaskDetails);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, TaskDetailsUrl);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    // this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
+    this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
+
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+
+    // const TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
+    // TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, task.ID);
+
+    // const TaskDetailsUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TaskDetails);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, TaskDetailsUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
 
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
 
-    task.TaskComments = this.response[0][0].TaskComments;
+    task.TaskComments = this.response.length ? this.response[0].TaskComments : '';
 
-    if (stval === 'Completed' || stval === 'AllowCompletion' || stval === 'Auto Closed') {
-
+    // if (stval === 'Completed' || stval === 'AllowCompletion' || stval === 'Auto Closed') {
+    if (allowedStatus.includes(stval)) {
       if (!task.FinalDocSubmit) {
         this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'No Final Document Found' });
         return false;
       }
-      if (this.response[0][0].TaskComments) {
+      if (task.TaskComments) {
 
         this.confirmationService.confirm({
           message: 'Are you sure that you want to proceed?',
@@ -712,7 +796,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
         this.getAddUpdateComment(task, true);
       }
     } else {
-      this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: 'Previous task should be completed.' });
+      this.messageService.add({
+        key: 'custom', severity: 'error', summary: 'Error Message',
+        detail: 'Previous task should be completed.'
+      });
     }
   }
 
@@ -728,8 +815,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
       this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
 
     } else {
-      this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message',
-      detail: task.Title + 'Task Updated Successfully.' });
+      this.messageService.add({
+        key: 'custom', severity: 'success', summary: 'Success Message',
+        detail: task.Title + 'Task Updated Successfully.'
+      });
       this.GetDatabyDateSelection(this.selectedTab, this.days);
       if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
         this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
@@ -737,13 +826,36 @@ export class MyCurrentCompletedTasksComponent implements OnInit, OnDestroy {
     }
 
   }
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.allTasks.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.taskId,
+        colFields: this.AllTaskColArray
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.createColFieldValues(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+    }
+    //  else {
+    //   this.initializeTableOptions();
+    // }
+    this.cdr.detectChanges();
+  }
+
+  ngOnDestroy() {
+
+  }
+
+
 }
-
-
-interface DateObj {
-  label: string;
-  value: string;
-}
-
-
-

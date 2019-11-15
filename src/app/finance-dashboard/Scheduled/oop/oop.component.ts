@@ -1,8 +1,8 @@
-import { Component, OnInit, ViewChild, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, SelectItem, MessageService } from 'primeng/api';
-import { Calendar } from 'primeng/primeng';
+import { Calendar, DataTable } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { formatDate, DatePipe } from '@angular/common';
+import { formatDate, DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -11,6 +11,7 @@ import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-oop',
@@ -59,7 +60,14 @@ export class OopComponent implements OnInit, OnDestroy {
         endDate: '',
     };
 
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+    };
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+    @ViewChild('oop', { static: false }) oopTable: DataTable;
     constructor(
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
@@ -72,12 +80,29 @@ export class OopComponent implements OnInit, OnDestroy {
         private messageService: MessageService,
         private commonService: CommonService,
         private spOperationsService: SPOperationService,
+        private cdr: ChangeDetectorRef,
+        private platformLocation: PlatformLocation,
+        private locationStrategy: LocationStrategy,
+        private readonly _router: Router,
+        _applicationRef: ApplicationRef,
+        zone: NgZone,
     ) {
         this.subscription.add(this.fdDataShareServie.getScheduleDateRange().subscribe(date => {
             this.DateRange = date;
             console.log('this.DateRange ', this.DateRange);
             this.getRequiredData();
         }));
+
+        // Browser back button disabled & bookmark issue solution
+        history.pushState(null, null, window.location.href);
+        platformLocation.onPopState(() => {
+            history.pushState(null, null, window.location.href);
+        });
+
+        _router.events.subscribe((uri) => {
+            zone.run(() => _applicationRef.tick());
+        });
+        
     }
 
     async ngOnInit() {
@@ -224,51 +249,52 @@ export class OopComponent implements OnInit, OnDestroy {
 
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
 
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
         let isManager = false;
         if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1) {
             isManager = true;
         }
-        let obj = Object.assign({}, isManager ? this.fdConstantsService.fdComponent.invoicesOOP : this.fdConstantsService.fdComponent.invoicesOOPCS);
+        const obj = Object.assign({}, isManager ? this.fdConstantsService.fdComponent.invoicesOOP :
+            this.fdConstantsService.fdComponent.invoicesOOPCS);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
         if (!isManager) {
-            obj.filter = obj.filter.replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
+            obj.filter = obj.filter.replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
-
+        const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, obj);
         // let obj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesOOP);
         // obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
-        const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);
-        // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
+        // const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', obj);
+        // // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
-        let endPoints = [invoicesQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        arrResults = res;
-        if (arrResults.length) {
-            for (let j = 0; j < arrResults.length; j++) {
-                const element = arrResults[j];
-                this.isPSInnerLoaderHidden = true;
-                this.formatData(element);
-            }
-        }
+        // let endPoints = [invoicesQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        const arrResults = res.length ? res : [];
+        // if (arrResults.length) {
+        // for (let j = 0; j < arrResults.length; j++) {
+        //     const element = arrResults[j];
+        this.isPSInnerLoaderHidden = true;
+        this.formatData(arrResults);
+        // }
+        // }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
     showMenu(element) {
         const project = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == element.Title) {
+            if (x.ProjectCode === element.Title) {
                 return x;
             }
-        })
+        });
 
         if (project) {
             return true;
@@ -339,7 +365,7 @@ export class OopComponent implements OnInit, OnDestroy {
             })
         }
         this.oopBasedRes = [...this.oopBasedRes];
-        this.createColFieldValues();
+        this.createColFieldValues(this.oopBasedRes);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -409,9 +435,9 @@ export class OopComponent implements OnInit, OnDestroy {
 
     oopColArray = {
         ProjectCode: [],
-        SOWCode: [],
+        SOWValue: [],
         ProjectMileStone: [],
-        PONumber: [],
+        POValues: [],
         ClientName: [],
         ScheduledDate: [],
         Amount: [],
@@ -419,17 +445,17 @@ export class OopComponent implements OnInit, OnDestroy {
         POC: [],
     }
 
-    createColFieldValues() {
-        this.oopColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.oopColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
-        this.oopColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
-        this.oopColArray.PONumber = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
-        this.oopColArray.ClientName = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }).filter(ele => ele.label)));
-        this.oopColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.oopColArray.POC = this.commonService.sortData(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
-        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
+    createColFieldValues(resArray) {
+        this.oopColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.SOWValue = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.ClientName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+        this.oopColArray.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
+        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
         this.oopColArray.ScheduledDate = scheduledDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        const amount = this.uniqueArrayObj(this.oopBasedRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
+        const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
         this.oopColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label')
     }
 
@@ -549,7 +575,7 @@ export class OopComponent implements OnInit, OnDestroy {
     goToProjectDetails(data: any) {
         console.log(data);
         window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
-        
+
     }
 
     // Update Form
@@ -617,77 +643,98 @@ export class OopComponent implements OnInit, OnDestroy {
 
     onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
+        const batchUrl = [];
         if (type === 'confirmInvoice') {
-            console.log('form is submitting .....');
+            // console.log('form is submitting .....');
             this.isPSInnerLoaderHidden = false;
-            let obj = {
+            const iliData = {
                 Status: 'Confirmed'
-            }
-            obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);
-            let data = [
-                {
-                    objData: obj,
-                    endpoint: endpoint,
-                    requestPost: false
-                }
-            ]
-            this.submitForm(data, type);
+            };
+            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);
+            // let data = [
+            //     {
+            //         objData: obj,
+            //         endpoint: endpoint,
+            //         requestPost: false
+            //     }
+            // ]
+            const invObj = Object.assign({}, this.queryConfig);
+            invObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
+            invObj.listName = this.constantService.listNames.InvoiceLineItems.name;
+            invObj.type = 'PATCH';
+            invObj.data = iliData;
+            batchUrl.push(invObj);
+            this.submitForm(batchUrl, type);
         } else if (type === 'editDeliverable') {
-            console.log('form is submitting .....', this.editOop_form.value);
+            // console.log('form is submitting .....', this.editOop_form.value);
             if (this.editOop_form.invalid) {
-                return
+                return;
             }
             this.isPSInnerLoaderHidden = false;
-            let obj1 = {
+            const iliData = {
                 AddressType: this.editOop_form.value.AddressType.value,
                 ScheduledDate: this.editOop_form.value.ScheduledDate,
                 MainPOC: this.editOop_form.value.POCName.ID
-            }
-            obj1['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);;
-            let data = [
-                {
-                    objData: obj1,
-                    endpoint: endpoint,
-                    requestPost: false
-                }
-            ]
-            this.submitForm(data, type);
+            };
+            iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            const invObj = Object.assign({}, this.queryConfig);
+            invObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
+            invObj.listName = this.constantService.listNames.InvoiceLineItems.name;
+            invObj.type = 'PATCH';
+            invObj.data = iliData;
+            batchUrl.push(invObj);
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);;
+            // let data = [
+            //     {
+            //         objData: obj1,
+            //         endpoint: endpoint,
+            //         requestPost: false
+            //     }
+            // ]
+            this.submitForm(batchUrl, type);
         }
     }
 
     batchContents: any = [];
-    async submitForm(dataEndpointArray, type: string) {
-        console.log('Form is submitting');
+    async submitForm(batchUrl, type: string) {
+        // console.log('Form is submitting');
 
-        this.batchContents = [];
-        const batchGuid = this.spServices.generateUUID();
-        const changeSetId = this.spServices.generateUUID();
+        // this.batchContents = [];
+        // const batchGuid = this.spServices.generateUUID();
+        // const changeSetId = this.spServices.generateUUID();
 
-        // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        console.log(' dataEndpointArray ', dataEndpointArray);
-        dataEndpointArray.forEach(element => {
-            if (element)
-                this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        });
+        // // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
+        // console.log(' dataEndpointArray ', dataEndpointArray);
+        // dataEndpointArray.forEach(element => {
+        //     if (element)
+        //         this.batchContents = [...this.batchContents,
+        //  ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
+        // });
 
-        console.log("this.batchContents ", JSON.stringify(this.batchContents));
+        // console.log("this.batchContents ", JSON.stringify(this.batchContents));
 
-        this.batchContents.push('--changeset_' + changeSetId + '--');
-        const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        batchBodyContent.push('--batch_' + batchGuid + '--');
-        const sBatchData = batchBodyContent.join('\r\n');
-        const res = this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
-        const arrResults = res;
-        console.log('--oo ', arrResults);
-        if (type === "confirmInvoice") {
-            this.messageService.add({ key: 'oopSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000 });
+        // this.batchContents.push('--changeset_' + changeSetId + '--');
+        // const batchBody = this.batchContents.join('\r\n');
+        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+        // batchBodyContent.push('--batch_' + batchGuid + '--');
+        // const sBatchData = batchBodyContent.join('\r\n');
+        // const res = this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
+        await this.spServices.executeBatch(batchUrl);
+        // const arrResults = res;
+        // console.log('--oo ', arrResults);
+        if (type === 'confirmInvoice') {
+            this.messageService.add({
+                key: 'oopSuccessToast', severity: 'success',
+                summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000
+            });
             this.sendCreateExpenseMail();
             this.reFetchData();
-        } else if (type === "editDeliverable") {
-            this.messageService.add({ key: 'oopSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice Updated.', life: 2000 })
+        } else if (type === 'editDeliverable') {
+            this.messageService.add({
+                key: 'oopSuccessToast', severity: 'success',
+                summary: 'Success message', detail: 'Invoice Updated.', life: 2000
+            });
             this.cancelFormSub('editDeliverable');
             this.reFetchData();
         }
@@ -700,19 +747,22 @@ export class OopComponent implements OnInit, OnDestroy {
     mailContentRes: any;
     async getApproveExpenseMailContent(type) {
         // const mailContentEndpoint = this.fdConstantsService.fdComponent.mailContent;
-        let mailContentEndpoint = {
-            filter: this.fdConstantsService.fdComponent.mailContent.filter.replace("{{MailType}}", type),
-            select: this.fdConstantsService.fdComponent.mailContent.select,
-            top: this.fdConstantsService.fdComponent.mailContent.top,
-        }
-        let obj = [{
-            url: this.spOperationsService.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
-            type: 'GET',
-            listName: this.constantService.listNames.MailContent.name
-        }]
-        const res = await this.spOperationsService.executeBatch(obj);
-        this.mailContentRes = res;
-        console.log('Approve Mail Content res ', this.mailContentRes);
+        const objMailContent = Object.assign({}, this.fdConstantsService.fdComponent.mailContent);
+        objMailContent.filter = objMailContent.filter.replace('{{MailType}}', type);
+        const res = await this.spServices.readItems(this.constantService.listNames.MailContent.name, objMailContent);
+        // let mailContentEndpoint = {
+        //     filter: this.fdConstantsService.fdComponent.mailContent.filter.replace("{{MailType}}", type),
+        //     select: this.fdConstantsService.fdComponent.mailContent.select,
+        //     top: this.fdConstantsService.fdComponent.mailContent.top,
+        // }
+        // let obj = [{
+        //     url: this.spOperationsService.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
+        //     type: 'GET',
+        //     listName: this.constantService.listNames.MailContent.name
+        // }]
+        // const res = await this.spOperationsService.executeBatch(obj);
+        this.mailContentRes = res.length ? res[0] : {};
+        // console.log('Approve Mail Content res ', this.mailContentRes);
     }
 
     replaceContent(mailContent, key, value) {
@@ -727,7 +777,7 @@ export class OopComponent implements OnInit, OnDestroy {
         // var mailTemplate =  data.Status === "Approved" ? "ApproveExpense" :  data.Status === "Cancelled" ? "CancelExpense" : "RejectExpense";
         var mailSubject = this.selectedRowItem.ProjectCode + "/" + this.selectedRowItem.ClientName + ": Confirmed line item for billing";
 
-        let mailContent = this.mailContentRes[0].retItems[0].Content;
+        let mailContent = this.mailContentRes.Content;
         mailContent = this.replaceContent(mailContent, "@@Val1@@", "Hello Invoice Team");
         mailContent = this.replaceContent(mailContent, "@@Val2@@", this.selectedRowItem.ProjectCode);
         mailContent = this.replaceContent(mailContent, "@@Val3@@", this.selectedRowItem.ClientName);
@@ -870,4 +920,28 @@ export class OopComponent implements OnInit, OnDestroy {
             }
         }
     }
+
+    isOptionFilter: boolean;
+    optionFilter(event: any) {
+        if (event.target.value) {
+            this.isOptionFilter = false;
+        }
+    }
+
+    ngAfterViewChecked() {
+        if (this.oopBasedRes.length && this.isOptionFilter) {
+            let obj = {
+                tableData: this.oopTable,
+                colFields: this.oopColArray
+            }
+            if (obj.tableData.filteredValue) {
+                this.commonService.updateOptionValues(obj);
+            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+                this.createColFieldValues(obj.tableData.value);
+                this.isOptionFilter = false;
+            }
+        }
+        this.cdr.detectChanges();
+    }
+
 }

@@ -44,7 +44,7 @@ export class TimeSpentDialogComponent implements OnInit {
     private constants: ConstantsService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
-    private spServices: SPOperationService, 
+    private spServices: SPOperationService,
     public messageService: MessageService,
   ) { }
 
@@ -58,7 +58,7 @@ export class TimeSpentDialogComponent implements OnInit {
       else {
         this.getDatesForTimespent(this.data);
       }
-    
+
       this.SelectedTabType = this.data.tab;
       this.modalloaderenable = true;
 
@@ -90,24 +90,25 @@ export class TimeSpentDialogComponent implements OnInit {
     // var previousStatus =  this.data.status;
     // if (previousStatus === "Completed" || previousStatus === "AllowCompletion" || previousStatus === "Auto Closed") {
 
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
 
     let TimeSpent = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TimeSpent);
-    TimeSpent.filter = TimeSpent.filter.replace(/{{taskId}}/gi, task.ID);
+    //TimeSpent.filter = TimeSpent.filter.replace(/{{taskId}}/gi, task.ID);
 
-    const myTimeSpentUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TimeSpent);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTimeSpentUrl);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    // const myTimeSpentUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TimeSpent);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTimeSpentUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID, TimeSpent);
 
-    this.currentTaskTimeSpent = this.response[0];
+    this.currentTaskTimeSpent = this.response;
     this.dateArray = [];
-    var todayDate = new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
-    var startDate = new Date(this.datePipe.transform(task.StartDate, 'MMM d, y'));
+    const todayDate = new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
+    let startDate = new Date(this.datePipe.transform(task.StartDate, 'MMM d, y'));
 
-   
-    if (this.currentTaskTimeSpent[0].TimeSpentPerDay) {
-      var timeSpentForTask = this.currentTaskTimeSpent[0].TimeSpentPerDay.split(/\n/);
+
+    if (this.currentTaskTimeSpent.TimeSpentPerDay) {
+      const timeSpentForTask = this.currentTaskTimeSpent.TimeSpentPerDay.split(/\n/);
 
       if (timeSpentForTask.indexOf("") > -1) {
         timeSpentForTask.splice(timeSpentForTask.indexOf(""), 1);
@@ -115,9 +116,9 @@ export class TimeSpentDialogComponent implements OnInit {
 
       startDate = timeSpentForTask[0].split(':')[0] === timeSpentForTask[0] ? new Date(timeSpentForTask[0].split('#')[0]) : new Date(timeSpentForTask[0].split(':')[0].replace(/,/g, ", "));
 
-      var endDate = this.SelectedTabType === 'MyCompletedTask' || task.Status ==="Completed" ? new Date(this.datePipe.transform(new Date(new Date(task.Actual_x0020_End_x0020_Date)), 'MMM d, y')) : new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
+      let endDate = this.SelectedTabType === 'MyCompletedTask' || task.Status === "Completed" ? new Date(this.datePipe.transform(new Date(new Date(task.Actual_x0020_End_x0020_Date)), 'MMM d, y')) : new Date(this.datePipe.transform(new Date(), 'MMM d, y'));
 
-      endDate = task.Status ==="Auto Closed" ?  new Date(this.datePipe.transform(task.DueDate, 'MMM d, y'))  :endDate;
+      endDate = task.Status === "Auto Closed" ? new Date(this.datePipe.transform(task.DueDate, 'MMM d, y')) : endDate;
 
       // var days = this.CalculateWorkingDays(startDate, endDate);
       this.dateArray = await this.CalculatePastBusinessDays(new Date(startDate), new Date(endDate));
@@ -126,17 +127,16 @@ export class TimeSpentDialogComponent implements OnInit {
     else {
       if (startDate > todayDate) {
 
-        if (this.SelectedTabType === 'MyCompletedTask' || task.Status ==="Completed" || task.Status ==="Auto Closed") {
+        if (this.SelectedTabType === 'MyCompletedTask' || task.Status === "Completed" || task.Status === "Auto Closed") {
 
-          endDate = task.Status ==="Auto Closed" ?  new Date(this.datePipe.transform(task.DueDate, 'MMM d, y'))  : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_End_x0020_Date), 'MMM d,y')));
+          endDate = task.Status === "Auto Closed" ? new Date(this.datePipe.transform(task.DueDate, 'MMM d, y')) : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_End_x0020_Date), 'MMM d,y')));
 
-          startDate =  task.Status ==="Auto Closed" ?  new Date(this.datePipe.transform(task.StartDate, 'MMM d, y'))  : startDate;
+          startDate = task.Status === "Auto Closed" ? new Date(this.datePipe.transform(task.StartDate, 'MMM d, y')) : startDate;
         }
-        else
-        {
+        else {
           startDate = await this.myDashboardConstantsService.CalculateminstartDateValue(todayDate, 3);
           var endDate = new Date(todayDate.setDate(todayDate.getDate()))
-         
+
         }
         this.dateArray = await this.CalculatePastBusinessDays(startDate, endDate);
         this.dateArray.reverse();
@@ -146,13 +146,13 @@ export class TimeSpentDialogComponent implements OnInit {
 
         startDate = await this.myDashboardConstantsService.CalculateminstartDateValue(StartDate, 3);
 
-        if (this.SelectedTabType === 'MyCompletedTask' || task.Status ==="Completed" || task.Status ==="Auto Closed") {
+        if (this.SelectedTabType === 'MyCompletedTask' || task.Status === "Completed" || task.Status === "Auto Closed") {
 
-          endDate = task.Status ==="Auto Closed" ?  new Date(this.datePipe.transform(task.DueDate, 'MMM d, y'))  : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_End_x0020_Date), 'MMM d,y')));
+          endDate = task.Status === "Auto Closed" ? new Date(this.datePipe.transform(task.DueDate, 'MMM d, y')) : new Date(new Date(this.datePipe.transform(new Date(task.Actual_x0020_End_x0020_Date), 'MMM d,y')));
 
-          startDate =  task.Status ==="Auto Closed" ?  new Date(this.datePipe.transform(task.StartDate, 'MMM d, y'))  : startDate;
+          startDate = task.Status === "Auto Closed" ? new Date(this.datePipe.transform(task.StartDate, 'MMM d, y')) : startDate;
 
-          this.dateArray = await this.CalculatePastBusinessDays(startDate,endDate);
+          this.dateArray = await this.CalculatePastBusinessDays(startDate, endDate);
           this.dateArray.reverse();
         }
         else {
@@ -164,8 +164,8 @@ export class TimeSpentDialogComponent implements OnInit {
 
 
     if (this.currentTaskTimeSpent !== undefined) {
-      if (this.currentTaskTimeSpent[0].TimeSpentPerDay !== null) {
-        var timeSpentForTask = this.currentTaskTimeSpent[0].TimeSpentPerDay.split(/\n/);
+      if (this.currentTaskTimeSpent.TimeSpentPerDay !== null) {
+        var timeSpentForTask = this.currentTaskTimeSpent.TimeSpentPerDay.split(/\n/);
 
         if (timeSpentForTask.indexOf("") > -1) {
           timeSpentForTask.splice(timeSpentForTask.indexOf(""), 1);
@@ -204,24 +204,24 @@ export class TimeSpentDialogComponent implements OnInit {
   // *************************************************************************************************************************************
 
   async CalculatePastBusinessDays(startDate, endDate) {
-  
+
     var businessDates = [];
     var enableEditDate = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 3);
     while (startDate <= endDate) {
       const copyDate = new Date(endDate.getTime());
-      if (copyDate >= new Date( this.datePipe.transform(enableEditDate,'MMM d,y')) && copyDate <= new Date()) {
+      if (copyDate >= new Date(this.datePipe.transform(enableEditDate, 'MMM d,y')) && copyDate <= new Date()) {
         businessDates.push({ actualDate: copyDate, date: this.datePipe.transform(copyDate, 'EE, MMM d, y'), time: '00:00', edited: true });
       }
       else {
         businessDates.push({ actualDate: copyDate, date: this.datePipe.transform(copyDate, 'EE, MMM d, y'), time: '00:00', edited: false });
       }
-      
+
       endDate = new Date(endDate.setDate(endDate.getDate() - 1));
     }
     return businessDates;
   }
 
-  
+
   // *************************************************************************************************************************************
   //  Calculate  working days
   // *************************************************************************************************************************************

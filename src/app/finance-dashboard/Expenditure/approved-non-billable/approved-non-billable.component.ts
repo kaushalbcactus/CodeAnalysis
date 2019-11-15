@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild, ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -7,9 +7,11 @@ import { GlobalService } from '../../../Services/global.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { CommonService } from '../../../Services/common.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { NodeService } from '../../../node.service';
 import { Subscription } from 'rxjs';
+import { DataTable } from 'primeng/primeng';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-approved-non-billable',
@@ -50,8 +52,14 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
-
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
+    @ViewChild('anb', { static: false }) approvedNBTable: DataTable;
 
     constructor(
         private messageService: MessageService,
@@ -63,13 +71,29 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         private commonService: CommonService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private nodeService: NodeService
+        private cdr: ChangeDetectorRef,
+        private platformLocation: PlatformLocation,
+        private locationStrategy: LocationStrategy,
+        private readonly _router: Router,
+        _applicationRef: ApplicationRef,
+        zone: NgZone,
     ) {
         this.subscription.add(this.fdDataShareServie.getDateRange().subscribe(date => {
             this.DateRange = date;
             console.log('this.DateRange ', this.DateRange);
             this.getRequiredData();
         }));
+
+        // Browser back button disabled & bookmark issue solution
+        history.pushState(null, null, window.location.href);
+        platformLocation.onPopState(() => {
+            history.pushState(null, null, window.location.href);
+        });
+
+        _router.events.subscribe((uri) => {
+            zone.run(() => _applicationRef.tick());
+        });
+
     }
 
     async ngOnInit() {
@@ -160,7 +184,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
             { field: 'Status', header: 'Status', visibility: true },
             { field: 'ApproverComments', header: 'Approver Comments', visibility: true },
             { field: 'ModifiedDateFormat', header: 'Approval / Billable Date', visibility: false },
-            { field: 'Modified', header: 'Approval / Billable Date', visibility: true, exportable: false },
+            { field: 'ModifiedDate', header: 'Approval / Billable Date', visibility: true, exportable: false },
 
             { field: 'Category', header: 'Category', visibility: false },
             { field: 'RequestType', header: 'Request Type', visibility: false },
@@ -188,36 +212,57 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     // On load get Required Data
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
 
-        // let obj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForNonBillable);
-        // obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
+        // // let obj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForNonBillable);
+        // // obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
 
-        let speInfoObj
+        // let speInfoObj
+        // const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
+        // if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('ExpenseApprovers') > -1) {
+        //     speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForNonBillable);
+        //     speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
+        //                                          .replace('{{EndDate}}', this.DateRange.endDate);
+        // }
+        // else {
+        //     speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForNonBillableCS);
+        //     speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
+        // .replace('{{EndDate}}', this.DateRange.endDate).replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
+        // }
+
+
+        // const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
+        // let endPoints = [sinfoEndpoint];
+        // let userBatchBody;
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        // const arrResults = res;
+        // console.log('--oo ', arrResults);
+        // this.formatData(arrResults[0]);
+        let speInfoObj;
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
         if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('ExpenseApprovers') > -1) {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForNonBillable);
-            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
-        }
-        else {
+            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
+                .replace('{{EndDate}}', this.DateRange.endDate);
+        } else {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForNonBillableCS);
-            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate).replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
+            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
+                .replace('{{EndDate}}', this.DateRange.endDate)
+                .replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
-
-        const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
-        let endPoints = [sinfoEndpoint];
-        let userBatchBody;
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        const arrResults = res;
-        console.log('--oo ', arrResults);
-        this.formatData(arrResults[0]);
+        const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
+        const arrResults = res.length ? res : [];
+        this.formatData(arrResults);
+        this.isPSInnerLoaderHidden = true;
+        this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         this.isPSInnerLoaderHidden = true;
         // });
 
@@ -247,7 +292,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 DateCreated: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
                 Notes: element.Notes,
                 Created: this.datePipe.transform(element.Created, 'MMM dd, yyyy, hh:mm a'),
-                Modified: new Date(this.datePipe.transform(element.Modified, 'MMM dd, yyyy')), // 
+                ModifiedDate: new Date(this.datePipe.transform(element.Modified, 'MMM dd, yyyy')), // 
                 ModifiedDateFormat: this.datePipe.transform(element.Modified, 'MMM dd, yyyy, hh:mm a'),
                 CreatedBy: element.Author ? element.Author.Title : '',
                 ModifiedBy: element.Editor ? element.Editor.Title : '',
@@ -274,7 +319,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         }
         this.approvedNonBillableRes = [...this.approvedNonBillableRes];
         this.isPSInnerLoaderHidden = true;
-        this.createColFieldValues();
+        this.createColFieldValues(this.approvedNonBillableRes);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -316,26 +361,26 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         Status: [],
     }
 
-    createColFieldValues() {
-        this.anonBillableColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.Category = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
-        const clientAmount = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
+    createColFieldValues(resArray) {
+        this.anonBillableColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.Category = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
+        const clientAmount = this.uniqueArrayObj(resArray.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
         this.anonBillableColArray.ClientAmount = this.fdDataShareServie.customSort(clientAmount, 1, 'label');
-        this.anonBillableColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.PaymentMode = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.PaymentMode, value: a.PaymentMode }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.PayingEntity = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.PayingEntity, value: a.PayingEntity }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.Status = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.Number = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Number, value: a.Number }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.PaymentDate = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }).filter(ele => ele.label));
-        const modified = this.commonService.sortDateArray(this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b; }).filter(ele => ele.label)));
-        this.anonBillableColArray.Modified = modified.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        this.anonBillableColArray.Created = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.Created, value: a.Created }; return b; }).filter(ele => ele.label));
-        // this.anonBillableColArray.SOWCode = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label));
-        // this.anonBillableColArray.DateCreated = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.DateCreated, value: a.DateCreated }; return b; }).filter(ele => ele.label));
-        // this.anonBillableColArray.ModifiedDate = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
-        // this.anonBillableColArray.ModifiedDate = this.uniqueArrayObj(this.approvedNonBillableRes.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
+        this.anonBillableColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.PaymentMode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PaymentMode, value: a.PaymentMode }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.PayingEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PayingEntity, value: a.PayingEntity }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.Status = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.Number = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Number, value: a.Number }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.PaymentDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }).filter(ele => ele.label));
+        const modified = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ModifiedDate, 'MMM dd, yyyy'), value: a.ModifiedDate }; return b; }).filter(ele => ele.label)));
+        this.anonBillableColArray.ModifiedDate = modified.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
+        this.anonBillableColArray.Created = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Created, value: a.Created }; return b; }).filter(ele => ele.label));
+        // this.anonBillableColArray.SOWCode = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label));
+        // this.anonBillableColArray.DateCreated = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DateCreated, value: a.DateCreated }; return b; }).filter(ele => ele.label));
+        // this.anonBillableColArray.ModifiedDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
+        // this.anonBillableColArray.ModifiedDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
     }
 
     uniqueArrayObj(array: any) {
@@ -508,11 +553,16 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     }
 
     async uploadFileData(type: string) {
+       
+        // this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
-        if (res.ServerRelativeUrl) {
-            this.fileUploadedUrl = res.ServerRelativeUrl ;
+        if (res) {
+            this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
+            // console.log('this.fileUploadedUrl ', this.fileUploadedUrl);
             if (this.fileUploadedUrl) {
-                let speInfoObj = {
+                const batchUrl = [];
+                const speInfoData = {
+                    __metadata : {type : this.constantService.listNames.SpendingInfo.type},
                     // PayingEntity: this.markAsPayment_form.value.PayingEntity.Title,
                     Number: this.markAsPayment_form.value.Number,
                     DateSpend: this.markAsPayment_form.value.DateSpend,
@@ -520,19 +570,27 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                     // ApproverComments: this.markAsPayment_form.value.ApproverComments,
                     ApproverFileUrl: this.fileUploadedUrl,
                     Status: 'Approved'
-                }
-                speInfoObj["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
-                let data = [];
-                for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
-                    const element = this.selectedAllRowsItem[j];
-                    const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);;
-                    data.push({
-                        objData: speInfoObj,
-                        endpoint: spEndpoint,
-                        requestPost: false
-                    })
-                }
-                this.submitForm(data, type);
+                };
+                // speInfoData['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
+                // let data = [];
+                this.selectedAllRowsItem.forEach(element => {
+                    const spendingInfoObj = Object.assign({}, this.queryConfig);
+                    spendingInfoObj.url = this.spServices.getItemURL(this.constantService.listNames.SpendingInfo.name, element.Id);
+                    spendingInfoObj.listName = this.constantService.listNames.SpendingInfo.name;
+                    spendingInfoObj.type = 'PATCH';
+                    spendingInfoObj.data = speInfoData;
+                    batchUrl.push(spendingInfoObj);
+                });
+                // for (let j = 0; j < this.selectedAllRowsItem.length; j++) {
+                //     const element = this.selectedAllRowsItem[j];
+                //     const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}", element.Id);
+                //     data.push({
+                //         objData: speInfoObj,
+                //         endpoint: spEndpoint,
+                //         requestPost: false
+                //     })
+                // }
+                this.submitForm(batchUrl, type);
             }
         } else if (res.hasError) {
             this.isPSInnerLoaderHidden = true;
@@ -541,29 +599,32 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         }
     }
 
-    batchContents: any = [];
-    async submitForm(dataEndpointArray, type: string) {
-        console.log('Form is submitting');
-        this.batchContents = [];
-        const batchGuid = this.spServices.generateUUID();
-        const changeSetId = this.spServices.generateUUID();
+    // batchContents: any = [];
+    async submitForm(batchUrl, type: string) {
+        // console.log('Form is submitting');
+        // this.batchContents = [];
+        // const batchGuid = this.spServices.generateUUID();
+        // const changeSetId = this.spServices.generateUUID();
         // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        console.log(' dataEndpointArray ', dataEndpointArray);
-        dataEndpointArray.forEach(element => {
-            if (element)
-                this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        });
+        // console.log(' dataEndpointArray ', dataEndpointArray);
+        // dataEndpointArray.forEach(element => {
+        //     if (element)
+        //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId,
+        //       element.endpoint, JSON.stringify(element.objData), element.requestPost)];
+        // });
 
-        this.batchContents.push('--changeset_' + changeSetId + '--');
-        const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        batchBodyContent.push('--batch_' + batchGuid + '--');
-        const sBatchData = batchBodyContent.join('\r\n');
-        const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
-        const arrResults = res;
-        console.log('--oo ', arrResults);
+        // this.batchContents.push('--changeset_' + changeSetId + '--');
+        // const batchBody = this.batchContents.join('\r\n');
+        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+        // batchBodyContent.push('--batch_' + batchGuid + '--');
+        // const sBatchData = batchBodyContent.join('\r\n');
+        // const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
+        await this.spServices.executeBatch(batchUrl);
+        // const arrResults = res;
+        // console.log('--oo ', arrResults);
         if (type === 'markAsPayment_form') {
-            this.messageService.add({ key: 'approvedNonBToast', severity: 'success', summary: 'Success message', detail: 'Payment marked.', life: 2000 });
+            this.messageService.add({ key: 'approvedNonBToast', severity: 'success', summary: 'Success message',
+                                     detail: 'Payment marked.', life: 2000 });
             this.markAsPaymentModal = false;
             this.reFetchData();
         }
@@ -604,6 +665,29 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 this.tempClick = undefined;
             }
         }
+    }
+
+    isOptionFilter: boolean;
+    optionFilter(event: any) {
+        if (event.target.value) {
+            this.isOptionFilter = false;
+        }
+    }
+
+    ngAfterViewChecked() {
+        if (this.approvedNonBillableRes.length && this.isOptionFilter) {
+            let obj = {
+                tableData: this.approvedNBTable,
+                colFields: this.anonBillableColArray
+            }
+            if (obj.tableData.filteredValue) {
+                this.commonService.updateOptionValues(obj);
+            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+                this.createColFieldValues(obj.tableData.value);
+                this.isOptionFilter = false;
+            }
+        }
+        this.cdr.detectChanges();
     }
 
 }

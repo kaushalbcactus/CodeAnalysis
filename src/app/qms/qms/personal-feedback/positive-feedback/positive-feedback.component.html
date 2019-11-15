@@ -19,19 +19,22 @@
           </tr>
           <tr>
             <th *ngFor="let col of columns" [ngSwitch]="col.field">
-                <p-multiSelect *ngSwitchCase="'ID'" [style]="{'width':'100%'}" [options]="PFColArray.ID" defaultLabel="ID" (onChange)="pf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'Title'" [style]="{'width':'100%'}"  [options]="PFColArray.Title" defaultLabel="Title" (onChange)="pf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'SentDate'" [style]="{'width':'100%'}"  [options]="PFColArray.SentDate" defaultLabel="Sent Date" (onChange)="pf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                <p-multiSelect *ngSwitchCase="'SentBy'" [style]="{'width':'100%'}"  [options]="PFColArray.SentBy" defaultLabel="Sent By" (onChange)="pf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'ID'" [style]="{'width':'100%'}" [options]="PFColArray.ID"  defaultLabel="ID" [maxSelectedLabels]="1" (onChange)="pf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'Title'" [style]="{'width':'100%'}"  [options]="PFColArray.Title" defaultLabel="Title" [maxSelectedLabels]="1" (onChange)="pf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'SentDate'" [style]="{'width':'100%'}"  [options]="PFColArray.SentDate" defaultLabel="Sent Date" [maxSelectedLabels]="1" (onChange)="pf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                <p-multiSelect *ngSwitchCase="'SentBy'" [style]="{'width':'100%'}"  [options]="PFColArray.SentBy" defaultLabel="Sent By" [maxSelectedLabels]="1" (onChange)="pf.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
             </th>
             </tr>
       </ng-template>
       <ng-template pTemplate="body" let-rowData let-columns="columns">
           <tr>
               <td *ngFor="let col of columns">
-                  <ng-container *ngIf="col.field != 'Title' &&  col.field != ''">
+                  <ng-container *ngIf="col.field != 'Title' &&  col.field != ''  &&  col.field !== 'SentDate'">
                       {{rowData[col.field]}}
                   </ng-container>
+                  <ng-container *ngIf="col.field === 'SentDate'">
+                    {{rowData[col.field] | date:'MMM d, yyyy' }}
+                    </ng-container>
                   <ng-container *ngIf="col.field == 'Title'">
                       <a [href]="rowData['fileUrl']" download> {{rowData[col.field]}}</a>
                   </ng-container>
@@ -40,7 +43,7 @@
       </ng-template>
       <ng-template pTemplate="emptymessage" let-columns>
         <tr>
-            <td [attr.colspan]="columns.length">
+            <td [attr.colspan]="5">
                 No Data found
             </td>
         </tr>

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { debounceTime } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -11,6 +11,8 @@ import { MenuItem } from 'primeng/api';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
+import { Table } from 'primeng/table';
+import { PlatformLocation, LocationStrategy } from '@angular/common';
 declare var $: any;
 @Component({
   selector: 'app-pending-allocation',
@@ -22,7 +24,7 @@ export class PendingAllocationComponent implements OnInit {
 
   displayedColumns: any[] = [
     { field: 'ProjectCode', header: 'Project Code' },
-    { field: 'shortTitle', header: 'Short Title' },
+    { field: 'ShortTitle', header: 'Short Title' },
     { field: 'ClientLegalEntity', header: 'Client' },
     { field: 'POC', header: 'POC' },
     { field: 'DeliverableType', header: 'Deliverable Type' },
@@ -35,7 +37,7 @@ export class PendingAllocationComponent implements OnInit {
   filterColumns: any[] = [
     { field: 'ProjectCode' },
     { field: 'ClientLegalEntity' },
-    { field: 'shortTitle' },
+    { field: 'ShortTitle' },
     { field: 'POC' },
     { field: 'DeliverableType' },
     { field: 'TA' },
@@ -57,18 +59,28 @@ export class PendingAllocationComponent implements OnInit {
   paHideNoDataMessage = true;
   public paArrays = {
     projectItems: [],
-    projectCodeArray: [],
-    shortTitleArray: [],
-    clientLegalEntityArray: [],
-    POCArray: [],
-    taArray: [],
-    moleculeArray: [],
-    primaryResourceArray: [],
-    deliveryTypeArray: [],
-    milestoneArray: [],
-    statusArray: []
+    ProjectCode: [],
+    ShortTitle: [],
+    ClientLegalEntity: [],
+    TA: [],
+    Molecule: [],
+    PrimaryResMembers: [],
+    POC: [],
+    DeliverableType: [],
+    Milestone: [],
+    Status: [],
+    // shortTitleArray: [],
+    // clientLegalEntityArray: [],
+    // POCArray: [],
+    // taArray: [],
+    // moleculeArray: [],
+    // primaryResourceArray: [],
+    // deliveryTypeArray: [],
+    // milestoneArray: [],
+    // statusArray: []
   };
   @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+  @ViewChild('paTableRef', { static: false }) paTableRef: Table;
   constructor(
     public globalObject: GlobalService,
     private commonService: CommonService,
@@ -77,7 +89,25 @@ export class PendingAllocationComponent implements OnInit {
     public pmObject: PMObjectService,
     private pmConstant: PmconstantService,
     public pmCommonService: PMCommonService,
-    public router: Router) { }
+    public router: Router,
+    private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    _applicationRef: ApplicationRef,
+    zone: NgZone,
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+  }
 
   ngOnInit() {
     this.isPAInnerLoaderHidden = false;
@@ -144,7 +174,7 @@ export class PendingAllocationComponent implements OnInit {
         const paObj = $.extend(true, {}, this.pmObject.paObj);
         paObj.ID = task.ID;
         paObj.ProjectCode = task.ProjectCode;
-        paObj.shortTitle = task.WBJID;
+        paObj.ShortTitle = task.WBJID;
         paObj.WBJID = task.WBJID;
         paObj.ClientLegalEntity = task.ClientLegalEntity;
         paObj.DeliverableType = task.DeliverableType;
@@ -159,7 +189,7 @@ export class PendingAllocationComponent implements OnInit {
         paObj.POC = poc.length > 0 ? poc[0].FullName : '';
         // Adding the particular value into the array for sorting and filtering.
         projectCodeTempArray.push({ label: paObj.ProjectCode, value: paObj.ProjectCode });
-        shortTitleTempArray.push({ label: paObj.shortTitle, value: paObj.shortTitle });
+        shortTitleTempArray.push({ label: paObj.ShortTitle, value: paObj.ShortTitle });
         clientLegalEntityTempArray.push({ label: paObj.ClientLegalEntity, value: paObj.ClientLegalEntity });
         POCTempArray.push({ label: paObj.POC, value: paObj.POC });
         deliveryTypeTempArray.push({ label: paObj.DeliverableType, value: paObj.DeliverableType });
@@ -170,16 +200,19 @@ export class PendingAllocationComponent implements OnInit {
         statusTempArray.push({ label: paObj.Status, value: paObj.Status });
         tempPAArray.push(paObj);
       }
-      this.paArrays.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
-      this.paArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
-      this.paArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
-      this.paArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
-      this.paArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
-      this.paArrays.taArray = this.commonService.unique(taTempArray, 'value');
-      this.paArrays.moleculeArray = this.commonService.unique(moleculeTempArray, 'value');
-      this.paArrays.primaryResourceArray = this.commonService.unique(primaryResourceTempArray, 'value');
-      this.paArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
-      this.paArrays.statusArray = this.commonService.unique(statusTempArray, 'value');
+      if (tempPAArray.length) {
+        this.createColFieldValues(tempPAArray);
+      }
+      // this.paArrays.ProjectCode = this.commonService.unique(projectCodeTempArray, 'value');
+      // this.paArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
+      // this.paArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
+      // this.paArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
+      // this.paArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
+      // this.paArrays.taArray = this.commonService.unique(taTempArray, 'value');
+      // this.paArrays.moleculeArray = this.commonService.unique(moleculeTempArray, 'value');
+      // this.paArrays.primaryResourceArray = this.commonService.unique(primaryResourceTempArray, 'value');
+      // this.paArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
+      // this.paArrays.statusArray = this.commonService.unique(statusTempArray, 'value');
       this.pmObject.pendingAllocationArray = tempPAArray;
       this.isPATableHidden = false;
       this.isPAInnerLoaderHidden = true;
@@ -193,6 +226,44 @@ export class PendingAllocationComponent implements OnInit {
     }
     this.commonService.setIframeHeight();
   }
+
+  createColFieldValues(resArray) {
+
+    this.paArrays.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+    this.paArrays.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
+    this.paArrays.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+    this.paArrays.TA = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.TA, value: a.TA }; return b; }).filter(ele => ele.label)));
+    this.paArrays.Molecule = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Molecule, value: a.Molecule }; return b; }).filter(ele => ele.label)));
+    // this.paArrays.PrimaryResMembers = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PrimaryResMembers, value: a.PrimaryResMembers }; return b; }).filter(ele => ele.label)));
+    this.paArrays.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
+    this.paArrays.DeliverableType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DeliverableType, value: a.DeliverableType }; return b; }).filter(ele => ele.label)));
+    this.paArrays.Milestone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Milestone, value: a.Milestone }; return b; }).filter(ele => ele.label)));
+    this.paArrays.Status = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
+
+
+
+    // const RevenueBudget = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.RevenueBudget, value: a.RevenueBudget }; return b; }).filter(ele => ele.label));
+    // this.paArrays.RevenueBudget = this.commonService.customSort(RevenueBudget, 'label', 1);
+    // const OOPBudget = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.OOPBudget, value: a.OOPBudget }; return b; }).filter(ele => ele.label));
+
+
+    // this.allSOW.ModifiedDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ModifiedDateFormat, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.ModifiedDateFormat, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
+
+    // const modifiedDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ModifiedDate, "MMM dd, yyyy, h:mm a"), value: a.ModifiedDate }; return b; }).filter(ele => ele.label)));
+    // this.allSOW.ModifiedDate = modifiedDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label);
+  }
+
+  uniqueArrayObj(array: any) {
+    let sts: any = '';
+    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
+      const keys = {
+        label: label1,
+        value: array.find(s => s.label === label1).value
+      };
+      return keys ? keys : '';
+    });
+  }
+
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
       '/allocation#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
@@ -233,4 +304,30 @@ export class PendingAllocationComponent implements OnInit {
       }
     }
   }
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.pmObject.pendingAllocationArray.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.paTableRef,
+        colFields: this.paArrays
+        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.createColFieldValues(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+    }
+    this.cdr.detectChanges();
+  }
+
+
 }

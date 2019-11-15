@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild } from '@angular/core';
+
+import { Component, OnInit, OnDestroy, HostListener, ElementRef, ViewChild,ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
@@ -7,9 +8,11 @@ import { GlobalService } from '../../../Services/global.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { CommonService } from '../../../Services/common.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { NodeService } from '../../../node.service';
 import { Subscription } from 'rxjs';
+import { DataTable } from 'primeng/primeng';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-approved-billable',
@@ -51,11 +54,17 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     };
 
     freelancerVendersRes: any = [];
-
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
 
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
+    @ViewChild('ab', { static: false }) approvedBTable: DataTable;
 
     constructor(
         private messageService: MessageService,
@@ -67,12 +76,28 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         private commonService: CommonService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private nodeService: NodeService) {
+        private cdr: ChangeDetectorRef,
+        private platformLocation: PlatformLocation,
+        private locationStrategy: LocationStrategy,
+        private readonly _router: Router,
+        _applicationRef: ApplicationRef,
+        zone: NgZone,
+        ) {
         this.subscription.add(this.fdDataShareServie.getDateRange().subscribe(date => {
             this.DateRange = date;
             console.log('this.DateRange ', this.DateRange);
             this.getRequiredData();
         }));
+
+        // Browser back button disabled & bookmark issue solution
+        history.pushState(null, null, window.location.href);
+        platformLocation.onPopState(() => {
+            history.pushState(null, null, window.location.href);
+        });
+
+        _router.events.subscribe((uri) => {
+            zone.run(() => _applicationRef.tick());
+        });
     }
 
     async ngOnInit() {
@@ -256,37 +281,38 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     // On load get Required Data
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
 
         // let obj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForBillable);
         // obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
 
-        let speInfoObj
+        let speInfoObj;
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
         if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('ExpenseApprovers') > -1) {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForBillable);
-            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
-        }
-        else {
+            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
+                                                 .replace('{{EndDate}}', this.DateRange.endDate);
+        } else {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForBillableCS);
-            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate).replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
+            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
+                                                 .replace('{{EndDate}}', this.DateRange.endDate)
+                                                 .replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
+        const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
+        // const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
+        // let endPoints = [sinfoEndpoint];
+        // let userBatchBody;
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
 
-        const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
-        let endPoints = [sinfoEndpoint];
-        let userBatchBody;
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        const arrResults = res;
-        console.log('--oo ', arrResults);
-        this.formatData(arrResults[0]);
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        const arrResults = res.length ? res : [];
+        this.formatData(arrResults);
         this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         // });
@@ -352,7 +378,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         }
         this.approvedBillableRes = [...this.approvedBillableRes];
         this.isPSInnerLoaderHidden = true;
-        this.createColFieldValues();
+        this.createColFieldValues(this.approvedBillableRes);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -386,31 +412,31 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         Status: [],
     }
 
-    createColFieldValues() {
+    createColFieldValues(resArray) {
 
-        this.appBillableColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.appBillableColArray.Category = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
-        this.appBillableColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
-        const clientAmount = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
+        this.appBillableColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.Category = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
+        const clientAmount = this.uniqueArrayObj(resArray.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
         this.appBillableColArray.ClientAmount = this.fdDataShareServie.customSort(clientAmount, 1, 'label');
-        this.appBillableColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
 
-        this.appBillableColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
-        this.appBillableColArray.RequestType = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.RequestType, value: a.RequestType }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.RequestType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.RequestType, value: a.RequestType }; return b; }).filter(ele => ele.label)));
 
-        this.appBillableColArray.PaymentMode = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.PaymentMode, value: a.PaymentMode }; return b; }).filter(ele => ele.label)));
-        this.appBillableColArray.PayingEntity = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.PayingEntity, value: a.PayingEntity }; return b; }).filter(ele => ele.label)));
-        this.appBillableColArray.Status = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.PaymentMode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PaymentMode, value: a.PaymentMode }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.PayingEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PayingEntity, value: a.PayingEntity }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.Status = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
 
-        this.appBillableColArray.Number = this.commonService.sortData(this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Number, value: a.Number }; return b; }).filter(ele => ele.label)));
-        this.appBillableColArray.PaymentDate = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }).filter(ele => ele.label));
-        this.appBillableColArray.Modified = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }).filter(ele => ele.label));
-        this.appBillableColArray.Created = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.Created, value: a.Created }; return b; }).filter(ele => ele.label));
+        this.appBillableColArray.Number = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Number, value: a.Number }; return b; }).filter(ele => ele.label)));
+        this.appBillableColArray.PaymentDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DateSpend, value: a.DateSpend }; return b; }).filter(ele => ele.label));
+        this.appBillableColArray.Modified = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }).filter(ele => ele.label));
+        this.appBillableColArray.Created = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Created, value: a.Created }; return b; }).filter(ele => ele.label));
 
-        this.appBillableColArray.SOWCode = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label));
-        // this.appBillableColArray.DateCreated = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.DateCreated, value: a.DateCreated }; return b; }).filter(ele => ele.label));
-        // this.appBillableColArray.ModifiedDate = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
-        // this.appBillableColArray.ModifiedDate = this.uniqueArrayObj(this.approvedBillableRes.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
+        this.appBillableColArray.SOWCode = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label));
+        // this.appBillableColArray.DateCreated = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DateCreated, value: a.DateCreated }; return b; }).filter(ele => ele.label));
+        // this.appBillableColArray.ModifiedDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
+        // this.appBillableColArray.ModifiedDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedDate, value: a.ModifiedDate }; return b; }).filter(ele => ele.label));
     }
 
     uniqueArrayObj(array: any) {
@@ -714,8 +740,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     async getPfPfb() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         this.hBQuery = [];
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
+        const batchUrl = [];
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
 
         this.projectInfoLineItem = this.getPInfoByPC();
         this.pcmLevels = [];
@@ -725,38 +752,72 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 this.pcmLevels.push(element);
             }
             this.pcmLevels.push(this.projectInfoLineItem.CMLevel2);
-            console.log('this.pcmLevels ', this.pcmLevels);
+            // console.log('this.pcmLevels ', this.pcmLevels);
         }
 
         // PF
-        let pfObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
-        pfObj.filter = pfObj.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode);
-        this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', pfObj));
+        const pfObj = Object.assign({}, this.queryConfig);
+        pfObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name,
+                                               this.fdConstantsService.fdComponent.projectFinances);
+        pfObj.url = pfObj.url.replace('{{ProjectCode}}', this.scheduleOopInvoice_form.getRawValue().ProjectCode);
+        pfObj.listName = this.constantService.listNames.ProjectFinances.name;
+        pfObj.type = 'GET';
+        batchUrl.push(pfObj);
+        // let obj = {
+        //     filter: this.fdConstantsService.fdComponent.projectFinances.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode),
+        //     select: this.fdConstantsService.fdComponent.projectFinances.select,
+        //     top: this.fdConstantsService.fdComponent.projectFinances.top,
+        //     // orderby: this.fdConstantsService.fdComponent.projectFinances.orderby
+        // }
+        // this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinances.name + '', obj));
 
         // PFB
-        let pfbObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO);
-        pfbObj.filter = pfbObj.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode).replace("{{PO}}", this.poItem.Id);
-        this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinanceBreakup.name + '', pfbObj));
+        const pfbObj = Object.assign({}, this.queryConfig);
+        pfbObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectFinanceBreakup.name,
+                                               this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO);
+        pfbObj.url = pfbObj.url.replace('{{ProjectCode}}', this.scheduleOopInvoice_form.getRawValue().ProjectCode)
+                             .replace('{{PO}}', this.poItem.Id);
+        pfbObj.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
+        pfbObj.type = 'GET';
+        batchUrl.push(pfbObj);
+        // let pfbObj = {
+        //     filter: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode).replace("{{PO}}", this.poItem.Id),
+        //     select: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.select,
+        //     top: this.fdConstantsService.fdComponent.projectFinanceBreakupFromPO.top,
+        // }
+        // this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectFinanceBreakup.name + '', pfbObj));
 
         // PBB
-        let pbbObj = Object.assign({}, this.fdConstantsService.fdComponent.projectBudgetBreakup);
-        pbbObj.filter = pbbObj.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode);
-        this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectBudgetBreakup.name + '', pbbObj));
+        const pbbObj = Object.assign({}, this.queryConfig);
+        pbbObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectBudgetBreakup.name,
+                                               this.fdConstantsService.fdComponent.projectBudgetBreakup);
+        pbbObj.url = pbbObj.url.replace('{{ProjectCode}}', this.scheduleOopInvoice_form.getRawValue().ProjectCode);
+        pbbObj.listName = this.constantService.listNames.ProjectBudgetBreakup.name;
+        pbbObj.type = 'GET';
+        batchUrl.push(pbbObj);
 
-        let endPoints = this.hBQuery;
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
+        // let pbbObj = {
+        //     filter: this.fdConstantsService.fdComponent.projectBudgetBreakup.filter.replace("{{ProjectCode}}", this.scheduleOopInvoice_form.getRawValue().ProjectCode),
+        //     select: this.fdConstantsService.fdComponent.projectBudgetBreakup.select,
+        //     // top: this.fdConstantsService.fdComponent.projectFinanceBreakup.top,
+        // }
+        // this.hBQuery.push(this.spServices.getReadURL('' + this.constantService.listNames.ProjectBudgetBreakup.name + '', pbbObj));
 
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        arrResults = res;
+
+        // let endPoints = this.hBQuery;
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        const res = await this.spServices.executeBatch(batchUrl);
+        const arrResults = res.length ? res.map(a => a.retItems) : [];
         if (arrResults.length) {
-            console.log('arrResults ', arrResults);
             this.pfListItem = arrResults[0];
             this.pfbListItem = arrResults[1];
             this.pbbListItem = arrResults[2];
@@ -952,7 +1013,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 return;
             }
             console.log('form is submitting ..... for selected row Item i.e ', this.scheduleOopInvoice_form.getRawValue());
-            let obj = {
+            const obj = {
                 Title: this.scheduleOopInvoice_form.getRawValue().ProjectCode,
                 PO: this.scheduleOopInvoice_form.getRawValue().PONumber.Id,
                 ScheduleType: this.scheduleOopInvoice_form.getRawValue().ScheduledType,
@@ -1016,9 +1077,9 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                     listName: this.constantService.listNames.ProjectBudgetBreakup.name
                 });
             }
-            console.log('pfbb ', pfbb);
+            // console.log('pfbb ', pfbb);
 
-            console.log('data ', data);
+            // console.log('data ', data);
 
             this.isPSInnerLoaderHidden = false;
             this.submitForm(data, type);
@@ -1028,12 +1089,12 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 return;
             }
             this.isPSInnerLoaderHidden = false;
-            console.log('form is submitting ..... for selected row Item i.e ', this.markAsPayment_form.value);
+            // console.log('form is submitting ..... for selected row Item i.e ', this.markAsPayment_form.value);
             this.uploadFileData(type);
         }
     }
 
-    batchContents: any = [];
+    // batchContents: any = [];
     async submitForm(dataEndpointArray, type: string) {
         console.log('Form is submitting');
 
@@ -1055,7 +1116,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         // const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
         // batchBodyContent.push('--batch_' + batchGuid + '--');
         // const sBatchData = batchBodyContent.join('\r\n');
-        var res = await this.spServices.executeBatch(dataEndpointArray);
+        const res = await this.spServices.executeBatch(dataEndpointArray);
         // await this.spServices.getData(batchGuid, sBatchData).subscribe(res => {
 
 
@@ -1136,6 +1197,30 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 this.tempClick = undefined;
             }
         }
+    }
+
+    isOptionFilter: boolean;
+    optionFilter(event: any) {
+        if (event.target.value) {
+            this.isOptionFilter = false;
+        }
+    }
+
+
+    ngAfterViewChecked() {
+        if (this.approvedBillableRes.length && this.isOptionFilter) {
+            let obj = {
+                tableData: this.approvedBTable,
+                colFields: this.appBillableColArray
+         }
+            if (obj.tableData.filteredValue) {
+                this.commonService.updateOptionValues(obj);
+            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+                this.createColFieldValues(obj.tableData.value);
+                this.isOptionFilter = false;
+            }
+        }
+        this.cdr.detectChanges();
     }
 
 }

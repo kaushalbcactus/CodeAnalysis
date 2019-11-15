@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, MessageService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -6,11 +6,12 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
 import { Router } from '@angular/router';
+import { DataTable } from 'primeng/primeng';
 
 
 @Component({
@@ -69,6 +70,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
 
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
     @ViewChild('popupMenu', { static: true }) popupMenu;
+    @ViewChild('pi', { static: false }) paidInvTable: DataTable;
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
 
@@ -83,8 +85,26 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
-        private router: Router
-    ) { }
+        private router: Router,
+        private cdr: ChangeDetectorRef,
+        private platformLocation: PlatformLocation,
+        private locationStrategy: LocationStrategy,
+        private readonly _router: Router,
+        _applicationRef: ApplicationRef,
+        zone: NgZone,
+    ) {
+
+        // Browser back button disabled & bookmark issue solution
+        history.pushState(null, null, window.location.href);
+        platformLocation.onPopState(() => {
+            history.pushState(null, null, window.location.href);
+        });
+
+        _router.events.subscribe((uri) => {
+            zone.run(() => _applicationRef.tick());
+        });
+
+    }
 
     ngOnInit() {
         let today = new Date();
@@ -100,7 +120,8 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         // this.fdDataShareServie.DateRange = this.DateRange;
 
         //Get  User Info 
-        this.currentUserInfo();
+        const currentUserId = this.globalService.currentUser.userId;
+        this.currentUserInfo(currentUserId);
 
         // POC & PO Number
         // this.projectInfo();
@@ -111,7 +132,6 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         this.currencyInfo();
         this.resourceCInfo();
         this.createOutstandingInvoiceCols();
-        // this.getOutstandingData();
 
         // Create FOrm Field
         this.createPaymentResovedFormField();
@@ -314,52 +334,47 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
     // Logged In user Info
     loggedInUserInfo: any = [];
     loggedInUserGroup: any = [];
-    async currentUserInfo() {
+    async currentUserInfo(userId) {
         this.loggedInUserInfo = [];
         this.loggedInUserGroup = [];
-        let curruentUsrInfo = await this.spServices.getCurrentUser();
-        this.loggedInUserInfo = curruentUsrInfo.d.Groups.results;
-        console.log('loggedInUserInfo ', this.loggedInUserInfo);
-
+        //let curruentUsrInfo = await this.spServices.getCurrentUser();
+        let currentUsrInfo = await this.spServices.getUserInfo(userId);
+        this.loggedInUserInfo = currentUsrInfo.Groups.results;
         this.loggedInUserInfo.forEach(element => {
             if (element) {
                 this.loggedInUserGroup.push(element.LoginName);
             }
         });
-        if (this.loggedInUserGroup.findIndex(c => (c === "Managers" || c === 'Project-FullAccess')) != -1) {
-            // this.getProjectInfoData(true);
-        } else {
-            // this.getProjectInfoData(false);
-        }
     }
 
     // Get Proformas InvoiceItemList
     outstandingInv: any = [];
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        let invoicesQuery = '';
-        let obj = Object.assign({}, this.fdConstantsService.fdComponent.paidInvoices);
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        // let invoicesQuery = '';
+        const obj = Object.assign({}, this.fdConstantsService.fdComponent.paidInvoices);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
-        invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name + '', obj);
+        const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, obj);
+        // invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name + '', obj);
 
-        let endPoints = [invoicesQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        console.log('REs in Paid Invoice ', res);
-        arrResults = res;
-        if (arrResults.length) {
-            this.formatData(arrResults[0]);
-            console.log(arrResults);
-        }
+        // let endPoints = [invoicesQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        // console.log('REs in Paid Invoice ', res);
+        const arrResults = res.length ? res : [];
+        // if (arrResults.length) {
+        this.formatData(arrResults);
+        // console.log(arrResults);
+        // }
         this.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
@@ -425,7 +440,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         }
         this.paidInvoicesRes = [...this.paidInvoicesRes];
         this.isPSInnerLoaderHidden = true;
-        this.createColFieldValues();
+        this.createColFieldValues(this.paidInvoicesRes);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -456,36 +471,6 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         return found ? found.FName + ' ' + found.LName : ''
     }
 
-    getOutstandingData() {
-        this.paidInvoicesRes = [
-            {
-                id: 1,
-                InvoiceStatus: 'Status',
-                InvoiceNumber: 11233,
-                PONumber: '11223344',
-                POName: 'Ashish P',
-                ClientLegalEntity: 'ASDFRED2-23-1SSS',
-                InvoiceDate: '12/1/2018 ',
-                Amount: '556.71',
-                Currency: 'INR',
-                POC: 'Test',
-            },
-            {
-                id: 1,
-                InvoiceStatus: 'Status -1',
-                InvoiceNumber: 11345,
-                PONumber: '2233455',
-                POName: 'PO Name',
-                ClientLegalEntity: 'TURYD63-S-A23-1SSS',
-                InvoiceDate: '14/09/2019',
-                Amount: '123.71',
-                Currency: 'INR',
-                POC: 'Test poc',
-            }
-        ]
-        this.createColFieldValues();
-    }
-
     outInvoiceColArray = {
         InvoiceStatus: [],
         InvoiceNumber: [],
@@ -499,19 +484,19 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         ModifiedBy: []
     }
 
-    createColFieldValues() {
-        this.outInvoiceColArray.InvoiceStatus = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }).filter(ele => ele.label));
-        this.outInvoiceColArray.InvoiceNumber = this.commonService.sortData(this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }).filter(ele => ele.label)));
-        // this.outInvoiceColArray.PONumber this.commonService.sortData(= this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
-        const invoiceDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: this.datePipe.transform(a.InvoiceDate, "MMM dd, yyyy"), value: a.InvoiceDate }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.ModifiedBy = this.commonService.sortData(this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label)));
+    createColFieldValues(resArray) {
+        this.outInvoiceColArray.InvoiceStatus = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceStatus, value: a.InvoiceStatus }; return b; }).filter(ele => ele.label));
+        this.outInvoiceColArray.InvoiceNumber = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.InvoiceNumber, value: a.InvoiceNumber }; return b; }).filter(ele => ele.label)));
+        // this.outInvoiceColArray.PONumber this.commonService.sortData(= this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+        const invoiceDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.InvoiceDate, "MMM dd, yyyy"), value: a.InvoiceDate }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.ModifiedBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label)));
         this.outInvoiceColArray.InvoiceDate = invoiceDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        const amount = this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
+        const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
         this.outInvoiceColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
-        this.outInvoiceColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.outInvoiceColArray.POC = this.commonService.sortData(this.uniqueArrayObj(this.paidInvoicesRes.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+        this.outInvoiceColArray.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
     }
 
     uniqueArrayObj(array: any) {
@@ -716,5 +701,30 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
             }
         }
     }
+
+    isOptionFilter: boolean;
+    optionFilter(event: any) {
+        if (event.target.value) {
+            this.isOptionFilter = false;
+        }
+    }
+
+    ngAfterViewChecked() {
+        if (this.paidInvoicesRes.length && this.isOptionFilter) {
+            let obj = {
+                tableData: this.paidInvTable,
+                colFields: this.outInvoiceColArray
+            }
+            if (obj.tableData.filteredValue) {
+                this.commonService.updateOptionValues(obj);
+            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+                this.createColFieldValues(obj.tableData.value);
+                this.isOptionFilter = false;
+            }
+        }
+        this.cdr.detectChanges();
+    }
+
+
 
 }

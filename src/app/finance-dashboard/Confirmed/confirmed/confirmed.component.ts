@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
 import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { Calendar, DataTable } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
@@ -7,7 +7,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
-import { formatDate, DatePipe } from '@angular/common';
+import { formatDate, DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
@@ -42,25 +42,32 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
     formSubmit: any = {
         isSubmit: false
-    }
+    };
     submitBtn: any = {
         isClicked: false
-    }
+    };
 
     // PoBalance Obj
     po: any = {
         oopBalance: '',
         revenuBalance: ''
-    }
+    };
 
     // Loader
     isPSInnerLoaderHidden: boolean = true;
 
     // Right side bar
     rightSideBar: boolean = false;
-
+    confirmedILIarray: any = [];
+    usStatesData: any = [];
     selectedPurchaseNumber: any;
     minProformaDate: Date = new Date();
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+    };
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
     @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
 
@@ -80,8 +87,27 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
-        private router: Router
-    ) { }
+        private router: Router,
+        private cdr: ChangeDetectorRef,
+        private platformLocation: PlatformLocation,
+        private locationStrategy: LocationStrategy,
+        private readonly _router: Router,
+        _applicationRef: ApplicationRef,
+        zone: NgZone,
+
+    ) {
+
+        // Browser back button disabled & bookmark issue solution
+        history.pushState(null, null, window.location.href);
+        platformLocation.onPopState(() => {
+            history.pushState(null, null, window.location.href);
+        });
+
+        _router.events.subscribe((uri) => {
+            zone.run(() => _applicationRef.tick());
+        });
+
+    }
 
     async ngOnInit() {
 
@@ -120,7 +146,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
             if (res) {
                 this.projectInfoData = res;
-                console.log('PI Data ', this.projectInfoData);
+                // console.log('PI Data ', this.projectInfoData);
             }
         }))
     }
@@ -131,7 +157,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultPoData.subscribe((res) => {
             if (res) {
                 this.purchaseOrdersList = res;
-                console.log('PO Data ', this.purchaseOrdersList);
+                // console.log('PO Data ', this.purchaseOrdersList);
             }
         }))
     }
@@ -142,7 +168,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultPCData.subscribe((res) => {
             if (res) {
                 this.projectContactsData = res;
-                console.log('this.projectContactsData ', this.projectContactsData);
+                // console.log('this.projectContactsData ', this.projectContactsData);
                 // this.getPCForSentToAMForApproval();
             }
         }))
@@ -164,13 +190,13 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     // US States
-    usStatesData: any = [];
+
     usStatesInfo() {
         this.usStatesData = [];
         this.subscription.add(this.fdDataShareServie.defaultUSSData.subscribe((res) => {
             if (res) {
                 this.usStatesData = res;
-                console.log('US States Data ', this.usStatesData);
+                // console.log('US States Data ', this.usStatesData);
             }
         }))
     }
@@ -182,7 +208,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultCUData.subscribe((res) => {
             if (res) {
                 this.currencyData = res;
-                console.log('currency Data ', this.currencyData);
+                // console.log('currency Data ', this.currencyData);
             }
         }))
     }
@@ -197,7 +223,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultCLEData.subscribe((res) => {
             if (res) {
                 this.cleData = res;
-                console.log('CLE Data ', this.cleData);
+                // console.log('CLE Data ', this.cleData);
             }
         }))
     }
@@ -208,7 +234,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultRCData.subscribe((res) => {
             if (res) {
                 this.rcData = res;
-                console.log('Resource Categorization ', this.rcData);
+                // console.log('Resource Categorization ', this.rcData);
             }
         }))
     }
@@ -277,34 +303,36 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     // Get Confirmed InvoiceItemList
-    confirmedILIarray: any = [];
+
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         this.confirmedRes = [];
         this.po = {};
         this.selectedAllRowData = [];
         this.selectedTotalAmt = 0;
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', this.fdConstantsService.fdComponent.invoiceLineItems);
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        // const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '',
+        // this.fdConstantsService.fdComponent.invoiceLineItems);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
-
-        let endPoints = [invoicesQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        console.log('REs in Confirmed Invoice ', res);
-        arrResults = res;
+        const invoiceObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItems);
+        const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, invoiceObj);
+        // let endPoints = [invoicesQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        // console.log('REs in Confirmed Invoice ', res);
+        const arrResults = res.length ? res : [];
         if (arrResults.length) {
             // this.formatData(arrResults);
-            this.confirmedILIarray = arrResults[0];
-            this.getPOListItems(arrResults[0]);
+            this.confirmedILIarray = arrResults;
+            this.getPOListItems(arrResults);
         }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         // });
@@ -466,7 +494,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 ModifiedBy: element.Editor ? element.Editor.Title : ''
             })
         }
-        this.createColFieldValues();
+        this.createColFieldValues(this.confirmedRes);
     }
 
     getProject(pc: any) {
@@ -500,7 +528,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
     // Project Client
     getCLEObj(cle: any) {
-        let found = this.cleData.find((x) => { return x.Title == cle });
+        const found = this.cleData.find((x) => x.Title === cle);
         return found ? found : '';
     }
 
@@ -560,22 +588,22 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         POCName: []
     }
 
-    createColFieldValues() {
-        this.confirmedInColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.confirmedInColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
-        this.confirmedInColArray.ProjectMileStone = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label));
-        this.confirmedInColArray.POName = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label));
-        this.confirmedInColArray.ClientLegalEntity = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label));
-        this.confirmedInColArray.PONumber = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label));
+    createColFieldValues(resArray) {
+        this.confirmedInColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.confirmedInColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
+        this.confirmedInColArray.ProjectMileStone = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label));
+        this.confirmedInColArray.POName = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label));
+        this.confirmedInColArray.ClientLegalEntity = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label));
+        this.confirmedInColArray.PONumber = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label));
 
-        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
+        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
         this.confirmedInColArray.ScheduledDate = scheduledDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
 
-        this.confirmedInColArray.ScheduleType = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ScheduleType, value: a.ScheduleType }; return b; }).filter(ele => ele.label)));
-        const amount = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: parseFloat(a.Amount), value: a.Amount }; return b; }).filter(ele => ele.label));
+        this.confirmedInColArray.ScheduleType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ScheduleType, value: a.ScheduleType }; return b; }).filter(ele => ele.label)));
+        const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: parseFloat(a.Amount), value: a.Amount }; return b; }).filter(ele => ele.label));
         this.confirmedInColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
-        this.confirmedInColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.confirmedInColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
+        this.confirmedInColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+        this.confirmedInColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
     }
 
     uniqueArrayObj(array: any) {
@@ -594,8 +622,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     selectedTotalAmt: number = 0;
     selectedRowItemData: any = [];
     onRowSelect(event) {
-        console.log('Event ', event);
-        console.log('this.selectedAllRowData ', this.selectedAllRowData);
+        // console.log('Event ', event);
+        // console.log('this.selectedAllRowData ', this.selectedAllRowData);
         //this.selectedRowItemData.push(event.data);
         this.calculateData();
     }
@@ -611,12 +639,12 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     checkSelectedRowData() {
-        console.log('Event ', this.selectedRowItemData);
+        // console.log('Event ', this.selectedRowItemData);
     }
 
     onRowUnselect(event) {
         // console.log(event);
-        console.log('this.selectedAllRowData ', this.selectedAllRowData);
+        // console.log('this.selectedAllRowData ', this.selectedAllRowData);
 
         let rowUnselectIndex = this.selectedRowItemData.indexOf(event.data);
         this.selectedRowItemData.splice(rowUnselectIndex, 1);
@@ -626,7 +654,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     selectedAllRowData: any[] = [];
 
     handleData(event) {
-        console.log('this.selectedAllRowData ', this.selectedAllRowData);
+        // console.log('this.selectedAllRowData ', this.selectedAllRowData);
         if (this.selectedAllRowData.length && this.confirmedRes.length) {
             this.calculateData();
             this.selectedRowItemData = [];
@@ -636,13 +664,13 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     convertToExcelFile(cnf1) {
-        console.log('cnf ', cnf1);
+        // console.log('cnf ', cnf1);
         cnf1.exportCSV();
     }
 
     confirm1() {
         let pInfo = this.getPIByPC(this.selectedRowItem);
-        console.log('pInfo ', pInfo);
+        // console.log('pInfo ', pInfo);
         this.confirmationService.confirm({
             message: 'Are you sure that you want to revert the invoice from confirmed to scheduled status?',
             header: 'Confirmation',
@@ -666,7 +694,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
     // Open popups
     openPopup(data, popUpData) {
-        console.log('Row data  ', data);
+        // console.log('Row data  ', data);
         // console.log('pubSupportSts  ', pubSupportSts);
 
         this.items = [
@@ -682,9 +710,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     selectedRowItem: any;
     openMenuContent(event, data) {
         this.isHourlyProject = false;
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
         this.selectedRowItem = data;
-        console.log(event);
+        // console.log(event);
         this.confirmDialog.title = event.item.label;
         if (this.confirmDialog.title.toLowerCase() === 'revert invoice') {
             // this.confirm1();
@@ -695,7 +723,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 }
             }
 
-            console.log('pInfo ', pInfo);
+            // console.log('pInfo ', pInfo);
             this.revertInvModal = true;
         } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
             this.timeline.showTimeline(data.Id, 'FD', 'InvoiceLineItems');
@@ -762,7 +790,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     showHideState(val: any) {
-        console.log('val ', val);
+        // console.log('val ', val);
         if (val) {
             this.isTemplate4US = val.value === "US" ? true : false;
             if (this.isTemplate4US) {
@@ -791,7 +819,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 }
             }
         });
-        console.log('this.listOfPOCNames ', this.listOfPOCNames);
+        // console.log('this.listOfPOCNames ', this.listOfPOCNames);
         if (pocROW) {
             this.addToProforma_form.patchValue({
                 POCName: pocROW
@@ -801,7 +829,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     pocChange(val) {
-        console.log(val)
+        // console.log(val)
     }
 
     cancelFormSub(formType) {
@@ -820,7 +848,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
     selectedPOItem: any;
     onPOChange(data: any) {
-        console.log('Data ', data);
+        // console.log('Data ', data);
         this.selectedPOItem = data;
     }
 
@@ -833,7 +861,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 this.poNames.push(x);
             }
         });
-        console.log(this.poNames);
+        // console.log(this.poNames);
     }
 
     generateProformaNumber(cle: any) {
@@ -867,87 +895,127 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     getPIByPC(pc) {
-        let found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == pc.ProjectCode) {
+        const found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode === pc.ProjectCode) {
                 return x;
             }
-        })
+        });
         return found ? found : '';
     }
 
     async getPFByPC() {
-        let pfobj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
+        const pfobj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
         pfobj.filter = pfobj.filter.replace('{{ProjectCode}}', this.selectedRowItem.ProjectCode);
-        let obj = [{
-            url: this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name, pfobj),
-            type: 'GET',
-            listName: this.constantService.listNames.ProjectFinances
-        }]
-        const res = await this.spServices.executeBatch(obj);
-        return res[0].retItems[0];
+        let response = await this.spServices.readItems(this.constantService.listNames.ProjectFinances.name, pfobj);
+        response = response.length ? response : [];
+        // let obj = [{
+        //     url: this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name, pfobj),
+        //     type: 'GET',
+        //     listName: this.constantService.listNames.ProjectFinances
+        // }]
+        // const res = await this.spServices.executeBatch(obj);
+        return response;
     }
 
     async onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
         if (type === 'revertInvoice') {
-            let data = [];
+            // const data = [];
+            const batchUrl = [];
             this.isPSInnerLoaderHidden = false;
             this.revertInvModal = false;
-            console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
-            let obj = {
+            // console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
+            const iliData = {
+                __metadata: {
+                    type: this.constantService.listNames.InvoiceLineItems.type
+                },
                 Status: 'Scheduled'
-            }
-            obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);
+            };
+            // obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+            // tslint:disable-next-line: max-line-length
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);
+            const iliObj = Object.assign({}, this.queryConfig);
+            iliObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, this.selectedRowItem.Id);
+            iliObj.listName = this.constantService.listNames.InvoiceLineItems.name;
+            iliObj.type = 'PATCH';
+            iliObj.data = iliData;
+            batchUrl.push(iliObj);
+
             if (this.isHourlyProject) {
-                let pInfo = this.getPIByPC(this.selectedRowItem);
+                const pInfo = this.getPIByPC(this.selectedRowItem);
                 // Update PI
-                let piObj = {
-                    ProjectType: "Deliverable-Writing",
-                    IsApproved: "No"
-                }
-                piObj['__metadata'] = { type: 'SP.Data.ProjectInformationListItem' };
-                const piEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectInformation.update.replace("{{Id}}", pInfo.Id);
-                data.push({
-                    objData: piObj,
-                    endpoint: piEndpoint,
-                    requestPost: false
-                });
+                const piData = {
+                    __metadata: {
+                        type: this.constantService.listNames.ProjectInformation.type
+                    },
+                    ProjectType: 'Deliverable-Writing',
+                    IsApproved: 'No'
+                };
+                // piObj['__metadata'] = { type: 'SP.Data.ProjectInformationListItem' };
+                // const piEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectInformation.update.replace("{{Id}}", pInfo.Id);
+
+                const piObj = Object.assign({}, this.queryConfig);
+                piObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectInformation.name, pInfo.Id);
+                piObj.listName = this.constantService.listNames.ProjectInformation.name;
+                piObj.type = 'PATCH';
+                piObj.data = piData;
+                batchUrl.push(iliObj);
+
+                // data.push({
+                //     objData: piObj,
+                //     endpoint: piEndpoint,
+                //     requestPost: false
+                // });
 
                 // Update PF
-                let pf = await this.getPFByPC();
-                console.log('pf ', pf);
-                if (pf) {
-                    let pfObj = {
+                const pf = await this.getPFByPC();
+                // console.log('pf ', pf);
+                if (pf.length) {
+                    const pfData = {
+                        __metadata: {
+                            type: this.constantService.listNames.ProjectFinances.type
+                        },
                         Budget: this.selectedRowItem.Amount,
                         RevenueBudget: this.selectedRowItem.Amount
-                    }
-                    pfObj['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
-                    const pfEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinances.update.replace("{{Id}}", pf.Id);
-                    data.push({
-                        objData: pfObj,
-                        endpoint: pfEndpoint,
-                        requestPost: false
-                    });
+                    };
+                    // pfObj['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
+                    // const pfEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinances.update.replace('{{Id}}', pf.Id);
+
+                    const pfObj = Object.assign({}, this.queryConfig);
+                    pfObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, pf.Id);
+                    pfObj.listName = this.constantService.listNames.ProjectFinances.name;
+                    pfObj.type = 'PATCH';
+                    pfObj.data = pfData;
+
+                    batchUrl.push(iliObj);
+                    // data.push({
+                    //     objData: pfObj,
+                    //     endpoint: pfEndpoint,
+                    //     requestPost: false
+                    // });
                 }
 
             }
-            data.push({
-                objData: obj,
-                endpoint: endpoint,
-                requestPost: false
-            })
-            this.submitForm(data, type);
+            // data.push({
+            //     objData: obj,
+            //     endpoint: endpoint,
+            //     requestPost: false
+            // })
+            this.submitForm(batchUrl, type);
 
         } else if (type === 'add2Proforma') {
+            const batchUrl = [];
             if (this.addToProforma_form.invalid) {
                 return;
             }
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
-            console.log('form is submitting ..... & Form data is ', this.addToProforma_form.getRawValue());
-            let obj: any = {};
-            obj = {
+            // console.log('form is submitting ..... & Form data is ', this.addToProforma_form.getRawValue());
+            // let obj: any = {};
+            const prfData = {
+                __metadata: {
+                    type: this.constantService.listNames.Proforma.type
+                },
                 ClientLegalEntity: this.addToProforma_form.getRawValue().ClientLegalEntity,
                 PO: this.selectedPurchaseNumber.ID, // this.addToProforma_form.value.POName.Id,
                 MainPOC: this.addToProforma_form.value.POCName.ID,
@@ -962,33 +1030,47 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 AdditionalInfo: this.addToProforma_form.value.AdditionalComments,
                 ProformaDate: this.addToProforma_form.value.ProformaDate,
                 Status: 'Created'
-            }
-            console.log('obj ', obj);
-            obj['__metadata'] = { type: 'SP.Data.ProformaListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateProforma.createProforma;
-
+            };
+            // console.log('obj ', obj);
+            // obj['__metadata'] = { type: 'SP.Data.ProformaListItem' };
+            // const endpoint = this.fdConstantsService.fdComponent.addUpdateProforma.createProforma;
+            const proformaObj = Object.assign({}, this.queryConfig);
+            proformaObj.url = this.spServices.getReadURL(this.constantService.listNames.Proforma.name);
+            proformaObj.listName = this.constantService.listNames.Proforma.name;
+            proformaObj.type = 'POST';
+            proformaObj.data = prfData;
+            batchUrl.push(proformaObj);
             // Get Cle
-            let currentCle = this.getCLEObj(obj.ClientLegalEntity);
-            let cleObj = {
+            const currentCle = this.getCLEObj(prfData.ClientLegalEntity);
+            const cleData = {
+                __metadata: {
+                    type: this.constantService.listNames.ClientLegalEntity.type
+                },
                 ID: currentCle.Id,
                 ProformaCounter: currentCle.ProformaCounter ? currentCle.ProformaCounter + 1 : 1
-            }
-            cleObj['__metadata'] = { type: 'SP.Data.ClientLegalEntityListItem' };
-            const cleEndpoint = this.fdConstantsService.fdComponent.addUpdateClientLegalEntity.update.replace('{{Id}}', currentCle.Id);
+            };
+            // cleObj['__metadata'] = { type: 'SP.Data.ClientLegalEntityListItem' };
+            // const cleEndpoint = this.fdConstantsService.fdComponent.addUpdateClientLegalEntity.update.replace('{{Id}}', currentCle.Id);
 
-            let data = [
-                {
-                    objData: obj,
-                    endpoint: endpoint,
-                    requestPost: true
-                },
-                {
-                    objData: cleObj,
-                    endpoint: cleEndpoint,
-                    requestPost: false
-                }
-            ];
-            this.submitForm(data, type);
+            const cleObj = Object.assign({}, this.queryConfig);
+            cleObj.url = this.spServices.getItemURL(this.constantService.listNames.ClientLegalEntity.name, currentCle.Id);
+            cleObj.listName = this.constantService.listNames.ClientLegalEntity.name;
+            cleObj.type = 'PATCH';
+            cleObj.data = cleData;
+            batchUrl.push(cleObj);
+            // let data = [
+            //     {
+            //         objData: obj,
+            //         endpoint: endpoint,
+            //         requestPost: true
+            //     },
+            //     {
+            //         objData: cleObj,
+            //         endpoint: cleEndpoint,
+            //         requestPost: false
+            //     }
+            // ];
+            this.submitForm(batchUrl, type);
             // setInterval(() => {
             //     this.isPSInnerLoaderHidden = true;
             // }, 5000);
@@ -996,80 +1078,104 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     batchContents: any = [];
-    async submitForm(dataEndpointArray, type: string) {
-        console.log('Form is submitting');
+    async submitForm(batchUrl, type: string) {
+        // console.log('Form is submitting');
 
-        this.batchContents = [];
-        const batchGuid = this.spServices.generateUUID();
-        const changeSetId = this.spServices.generateUUID();
+        // this.batchContents = [];
+        // const batchGuid = this.spServices.generateUUID();
+        // const changeSetId = this.spServices.generateUUID();
 
         // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        console.log(' dataEndpointArray ', dataEndpointArray);
-        dataEndpointArray.forEach(element => {
-            if (element)
-                this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        });
+        // console.log(' dataEndpointArray ', dataEndpointArray);
+        // dataEndpointArray.forEach(element => {
+        //     if (element)
+        //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
+        // });
 
-        console.log("this.batchContents ", JSON.stringify(this.batchContents));
+        // console.log("this.batchContents ", JSON.stringify(this.batchContents));
 
-        this.batchContents.push('--changeset_' + changeSetId + '--');
-        const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        batchBodyContent.push('--batch_' + batchGuid + '--');
-        const sBatchData = batchBodyContent.join('\r\n');
+        // this.batchContents.push('--changeset_' + changeSetId + '--');
+        // const batchBody = this.batchContents.join('\r\n');
+        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+        // batchBodyContent.push('--batch_' + batchGuid + '--');
+        // const sBatchData = batchBodyContent.join('\r\n');
 
         if (type === 'add2Proforma') {
-            var retCall = await this.spServices.getFDData(batchGuid, sBatchData);
-            var lineItemArray = []
+            // var retCall = await this.spServices.getFDData(batchGuid, sBatchData);
+            let retCall = await this.spServices.executeBatch(batchUrl);
+            retCall = retCall.length ? retCall.map(a => a.retItems) : [];
+            // const lineItemArray = [];
+            const innerBatchUrl = [];
             this.selectedAllRowData.forEach(element => {
-                let obj = {
+
+                const prfData = {
+                    __metadata: {
+                        type: this.constantService.listNames.InvoiceLineItems.type
+                    },
                     Status: 'Proforma Created',
                     ProformaLookup: retCall[0].ID
-                }
-                obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-                const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", element.Id);
-                lineItemArray.push(
-                    {
-                        objData: obj,
-                        endpoint: endpoint,
-                        requestPost: false
-                    }
-                )
+                };
+                // obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
+                // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", element.Id);
+                // lineItemArray.push(
+                //     {
+                //         objData: obj,
+                //         endpoint: endpoint,
+                //         requestPost: false
+                //     }
+                // )
+                const prfObj = Object.assign({}, this.queryConfig);
+                prfObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, element.Id);
+                prfObj.listName = this.constantService.listNames.InvoiceLineItems.name;
+                prfObj.type = 'PATCH';
+                prfObj.data = prfData;
+                innerBatchUrl.push(prfObj);
             });
 
-            this.batchContents = [];
-            const batchGuidNew = this.spServices.generateUUID();
-            const changeSetId = this.spServices.generateUUID();
-            lineItemArray.forEach(element => {
-                if (element)
-                    this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-            });
+            // this.batchContents = [];
+            // const batchGuidNew = this.spServices.generateUUID();
+            // const changeSetId = this.spServices.generateUUID();
+            // lineItemArray.forEach(element => {
+            //     if (element)
+            //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
+            // });
 
-            console.log("this.batchContents ", JSON.stringify(this.batchContents));
+            // console.log("this.batchContents ", JSON.stringify(this.batchContents));
 
-            this.batchContents.push('--changeset_' + changeSetId + '--');
-            const batchBody = this.batchContents.join('\r\n');
-            const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuidNew, changeSetId);
-            batchBodyContent.push('--batch_' + batchGuidNew + '--');
-            const sBatchDataNew = batchBodyContent.join('\r\n');
-            await this.spServices.getFDData(batchGuidNew, sBatchDataNew);
+            // this.batchContents.push('--changeset_' + changeSetId + '--');
+            // const batchBody = this.batchContents.join('\r\n');
+            // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuidNew, changeSetId);
+            // batchBodyContent.push('--batch_' + batchGuidNew + '--');
+            // const sBatchDataNew = batchBodyContent.join('\r\n');
+            // await this.spServices.getFDData(batchGuidNew, sBatchDataNew);
+            await this.spServices.executeBatch(innerBatchUrl);
             const projectAppendix = await this.createProjectAppendix(this.selectedAllRowData);
-            await this.fdDataShareServie.callProformaCreation(retCall[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, projectAppendix);
+            await this.fdDataShareServie.callProformaCreation(retCall[0], this.cleData, this.projectContactsData,
+                this.purchaseOrdersList, this.editorRef, projectAppendix);
             this.proformaModal = false;
             this.isPSInnerLoaderHidden = true;
             this.reFetchData();
-            // this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Proforma added.', detail: '', life: 2000 });
-            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Proforma Added', detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber, life: 20000 });
+            this.messageService.add({
+                key: 'custom',  severity: 'success', summary: 'Proforma Added',
+                detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber, life: 20000
+            });
 
         } else {
-            await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
-            //const arrResults = res;
-            //console.log('--oo ', arrResults);
-            if (type === "revertInvoice") {
-                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message', detail: 'Reverted the invoice from Confirmed to Scheduled.', life: 20000 });
+            // const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
+            await this.spServices.executeBatch(batchUrl);
+            // const arrResults = res;
+            // console.log('--oo ', arrResults);
+            if (type === 'revertInvoice') {
+                this.messageService.add({
+                    key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
+                    detail: 'Reverted the invoice from Confirmed to Scheduled.', life: 20000
+                });
                 this.reFetchData();
-            } else if (type === "editInvoice") {
-                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice Updated.', life: 20000 });
+            } else if (type === 'editInvoice') {
+                this.messageService.add({
+                    key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
+                    detail: 'Invoice Updated.', life: 20000
+                });
                 this.reFetchData();
             }
             this.isPSInnerLoaderHidden = true;
@@ -1092,8 +1198,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 if (project) {
                     projects.push(project);
                     projectProcessed.push(project.ProjectCode);
-                }
-                else {
+                } else {
                     callProjects.push(element.ProjectCode);
                 }
             }
@@ -1109,13 +1214,13 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             }
 
             callProjects.forEach(element => {
-                var getPIData = Object.assign({}, options);
-                getPIData.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfoCode);
-                getPIData.url = getPIData.url.replace("{{ProjectCode}}", element);
+                const getPIData = Object.assign({}, options);
+                getPIData.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name,
+                    this.fdConstantsService.fdComponent.projectInfoCode);
+                getPIData.url = getPIData.url.replace('{{ProjectCode}}', element);
                 getPIData.listName = this.constantService.listNames.ProjectInformation.name;
-                getPIData.type = "GET";
+                getPIData.type = 'GET';
                 batchURL.push(getPIData);
-
             });
 
             retProjects = await this.spServices.executeBatch(batchURL);
@@ -1132,7 +1237,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 appendix.cactusSpCode = project.ProjectCode ? project.ProjectCode : '';
                 appendix.title = project.Title ? project.Title : '';
             }
-            console.log('element ----> ', element);
+            // console.log('element ----> ', element);
             appendix.poc = element.POCName;
             appendix.amount = element.Amount;
             projectAppendix.push(appendix);
@@ -1149,7 +1254,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.poInfo();
             this.cleInfo();
 
-            this.getRequiredData();
+            await this.getRequiredData();
         }, 300);
     }
     onlyNumberKey(event) {
@@ -1161,7 +1266,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
     enterPOAmtMsg: boolean = false;
     enteredPOAmt(val) {
-        console.log('val ', val);
+        // console.log('val ', val);
         let amt = parseInt(val);
         let poScheduled = parseFloat(this.selectedPOItem.value.TotalScheduled ? this.selectedPOItem.value.TotalScheduled : 0);
         let poInvoiced = parseFloat(this.selectedPOItem.value.TotalInvoiced ? this.selectedPOItem.value.TotalInvoiced : 0);
@@ -1211,6 +1316,30 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 this.tempClick = undefined;
             }
         }
+    }
+
+    isOptionFilter: boolean;
+    optionFilter(event: any) {
+        if (event.target.value) {
+            this.isOptionFilter = false;
+        }
+    }
+
+    ngAfterViewChecked() {
+        if (this.confirmedRes.length && this.isOptionFilter) {
+            let obj = {
+                tableData: this.confirmTable,
+                colFields: this.confirmedInColArray
+            }
+            if (obj.tableData.filteredValue) {
+                this.commonService.updateOptionValues(obj);
+                this.cdr.detectChanges();
+            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+                this.createColFieldValues(obj.tableData.value);
+                this.isOptionFilter = false;
+            }
+        }
+        this.cdr.detectChanges();
     }
 
 }
