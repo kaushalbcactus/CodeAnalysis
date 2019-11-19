@@ -52,6 +52,7 @@ export class NonStandardprojectComponent implements OnInit {
   public selectedResource;
   public ngNonStandardProposedStartDate;
   public ngNonStandardProposedEndDate;
+  minDateValue;
   public queryConfig = {
     data: null,
     url: '',
@@ -73,6 +74,12 @@ export class NonStandardprojectComponent implements OnInit {
         this.setFieldProperties();
         this.setDropdownField();
       }
+      if (this.pmObject.addProject.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
+        this.minDateValue = new Date(new Date().setDate(new Date().getDate() - 1));
+      } else {
+        const todayDate = new Date();
+        this.minDateValue = new Date(todayDate.setFullYear(todayDate.getFullYear(), todayDate.getMonth() - 60));
+      }
     }, this.pmConstant.TIME_OUT);
     this.isNonStandardLoaderHidden = true;
     this.isNonStandardTableHidden = false;
@@ -87,7 +94,7 @@ export class NonStandardprojectComponent implements OnInit {
     let sYear = oCurrentDate.getFullYear();
     sYear = oCurrentDate.getMonth() > 2 ? sYear + 1 : sYear;
 
-    const projectPerYearObj = Object.assign({},this.queryConfig);
+    const projectPerYearObj = Object.assign({}, this.queryConfig);
     projectPerYearObj.url = this.spService.getReadURL(this.constants.listNames.ProjectPerYear.name, this.pmConstant.TIMELINE_QUERY.PROJECT_PER_YEAR);
     projectPerYearObj.url = projectPerYearObj.url.replace('{0}', '' + sYear);
     projectPerYearObj.listName = this.constants.listNames.ProjectPerYear.name;
@@ -98,7 +105,7 @@ export class NonStandardprojectComponent implements OnInit {
     // const projectYearUpdatedEndPoint = projectYearEndPoint.replace('{0}', '' + sYear);
     // this.spService.getBatchBodyGet(batchContents, batchGuid, projectYearUpdatedEndPoint);
 
-    const clientObj = Object.assign({},this.queryConfig);
+    const clientObj = Object.assign({}, this.queryConfig);
     clientObj.url = this.spService.getReadURL(this.constants.listNames.ClientLegalEntity.name, this.pmConstant.TIMELINE_QUERY.CLIENT_LEGAL_ENTITY);
     clientObj.listName = this.constants.listNames.ClientLegalEntity.name;
     clientObj.type = 'GET';
@@ -108,7 +115,7 @@ export class NonStandardprojectComponent implements OnInit {
     //   this.pmConstant.TIMELINE_QUERY.CLIENT_LEGAL_ENTITY);
     // this.spService.getBatchBodyGet(batchContents, batchGuid, clientEndPoint);
 
-    const deliveryTypeObj = Object.assign({},this.queryConfig);
+    const deliveryTypeObj = Object.assign({}, this.queryConfig);
     deliveryTypeObj.url = this.spService.getReadURL(this.constants.listNames.DeliverableType.name, this.pmConstant.TIMELINE_QUERY.DELIVERY_TYPE);
     deliveryTypeObj.listName = this.constants.listNames.DeliverableType.name;
     deliveryTypeObj.type = 'GET';
@@ -118,7 +125,7 @@ export class NonStandardprojectComponent implements OnInit {
     //   this.pmConstant.TIMELINE_QUERY.DELIVERY_TYPE);
     // this.spService.getBatchBodyGet(batchContents, batchGuid, deliveryTypeEndPoint);
 
-    const subdeliveryTypeObj = Object.assign({},this.queryConfig);
+    const subdeliveryTypeObj = Object.assign({}, this.queryConfig);
     subdeliveryTypeObj.url = this.spService.getReadURL(this.constants.listNames.SubDeliverables.name, this.pmConstant.TIMELINE_QUERY.NON_STANDARD_SUB_TYPE);
     subdeliveryTypeObj.listName = this.constants.listNames.SubDeliverables.name;
     subdeliveryTypeObj.type = 'GET';
@@ -128,7 +135,7 @@ export class NonStandardprojectComponent implements OnInit {
     //   this.pmConstant.TIMELINE_QUERY.NON_STANDARD_SUB_TYPE);
     // this.spService.getBatchBodyGet(batchContents, batchGuid, subTypeEndPoint);
 
-    const servicesObj = Object.assign({},this.queryConfig);
+    const servicesObj = Object.assign({}, this.queryConfig);
     servicesObj.url = this.spService.getReadURL(this.constants.listNames.Services.name, this.pmConstant.TIMELINE_QUERY.NON_STANDARD_SERVICE);
     servicesObj.listName = this.constants.listNames.Services.name;
     servicesObj.type = 'GET';
@@ -137,8 +144,8 @@ export class NonStandardprojectComponent implements OnInit {
     // const servicesUrlEndPoint = this.spService.getReadURL('' + this.constants.listNames.Services.name + '',
     //   this.pmConstant.TIMELINE_QUERY.NON_STANDARD_SERVICE);
     // this.spService.getBatchBodyGet(batchContents, batchGuid, servicesUrlEndPoint);
-    
-    const resourcesObj = Object.assign({},this.queryConfig);
+
+    const resourcesObj = Object.assign({}, this.queryConfig);
     resourcesObj.url = this.spService.getReadURL(this.constants.listNames.ResourceCategorization.name, this.pmConstant.TIMELINE_QUERY.NON_STANDARD_RESOURCE_CATEGORIZATION);
     resourcesObj.listName = this.constants.listNames.ResourceCategorization.name;
     resourcesObj.type = 'GET';
@@ -183,7 +190,14 @@ export class NonStandardprojectComponent implements OnInit {
   }
   onDeliverableTypeChange() {
     this.changedProjectCode(this.selectedDeliverableType);
-    const resourcesArray = this.pmCommonService.getResourceByMatrix(this.pmObject.nonStandardPMResponse[5], this.selectedDeliverableType);
+    const retResourceArray = this.pmObject.nonStandardPMResponse[5];
+    let newArray = [];
+    if (this.pmObject.addProject.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
+      newArray = retResourceArray.filter(obj => obj.IsFTE === 'Yes');
+    } else {
+      newArray = retResourceArray;
+    }
+    const resourcesArray = this.pmCommonService.getResourceByMatrix(newArray, this.selectedDeliverableType);
     this.nonStandardResourceName = this.pmCommonService.bindGroupDropdown(resourcesArray);
   }
   onSelectedServicesChange() {
@@ -281,6 +295,16 @@ export class NonStandardprojectComponent implements OnInit {
         });
         return false;
       }
+      if (this.pmObject.addProject.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
+        this.pmObject.addProject.Timeline.NonStandard.months = this.pmCommonService.getMonths(this.ngNonStandardProposedStartDate, this.ngNonStandardProposedEndDate);
+        if (this.pmObject.addProject.Timeline.NonStandard.months.length > 12) {
+          this.messageService.add({
+            key: 'custom', severity: 'error',
+            summary: 'Error Message', detail: 'FTE Project cannot be created more than 1 year.'
+          });
+          return false;
+        }
+      }
     }
     return true;
   }
@@ -301,7 +325,7 @@ export class NonStandardprojectComponent implements OnInit {
       $('#nonStandardTimeline').attr("checked", "checked");
       this.pmObject.isStandardChecked = false;
     }
-    if(this.pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked) {
+    if (this.pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked) {
       this.disableField();
     }
     if (this.pmObject.addProject.Timeline.NonStandard.ProposedStartDate) {
@@ -326,7 +350,7 @@ export class NonStandardprojectComponent implements OnInit {
     }
     if (this.pmObject.addProject.Timeline.NonStandard.ResourceName) {
       const resource: any = this.pmObject.addProject.Timeline.NonStandard.ResourceName;
-      if(resource) {
+      if (resource) {
         this.registerNonStandardResourceName = [{ label: resource.Title, value: resource.Title }];
       }
     }
