@@ -7,11 +7,9 @@ import { SearchProjectsComponent } from './search-projects/search-projects.compo
 import { MyCurrentCompletedTasksComponent } from './my-current-completed-tasks/my-current-completed-tasks.component';
 import { SOWComponent } from '../projectmanagement/projectmanagement/sow/sow.component';
 import { PMResolve } from '../projectmanagement/PMResolve';
-// import { AllProjectsComponent } from '../projectmanagement/projectmanagement/all-projects/all-projects.component';
 import { MyprojectsComponent } from './myprojects/myprojects.component';
 
 const routes: Routes = [
-
   {
     path: '', component: MyDashboardComponent,
     children: [
@@ -22,8 +20,8 @@ const routes: Routes = [
       { path: 'my-sow', component: SOWComponent, resolve: { pmData: PMResolve } },
       { path: 'my-completed-tasks', component: MyCurrentCompletedTasksComponent, data: { type: 'MyCompletedTask' } },
       { path: 'search-projects', component: SearchProjectsComponent },
-    ],
-  },
+    ]
+  }
 ];
 
 

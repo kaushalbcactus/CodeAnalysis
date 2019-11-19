@@ -1,0 +1,8 @@
+.redLight{
+    background-color: #C53E3E !important;
+    border: 1px solid;
+}
+
+.ui-dialog > .ui-dialog-titlebar > span > .ui-dialog-title{
+    text-align: center !important;
+}
