@@ -23,6 +23,7 @@ export class MyDashboardConstantsService {
   Emailtemplate: any;
 
   private OpenTaskSelectedTab = new Subject<any>();
+  private TimelineSelectedTab = new Subject<any>();
 
   constructor(
     private constants: ConstantsService,
@@ -90,14 +91,19 @@ export class MyDashboardConstantsService {
       top: "4500"
     },
     FTEProjectInformations: {
-      select: 'ID,Title,ProjectCode,Status,ClientLegalEntity,Milestones,WBJID,ProjectFolder,ServiceLevel',
-      filter: "ProjectType eq 'FTE' and (Status eq 'Author Review' or Status eq 'In Progress' or Status eq 'Ready for Client' or Status eq 'Unallocated') and PrimaryResMembersId eq {{userId}} ",
+      select: 'ID,Title,ProjectCode,Status,ClientLegalEntity,Milestones,Milestone,WBJID,ProjectFolder,ServiceLevel',
+      filter: "ProjectType eq 'FTE-Writing' and (Status eq 'Author Review' or Status eq 'In Progress' or Status eq 'Ready for Client' or Status eq 'Unallocated') and PrimaryResMembersId eq {{userId}} ",
       orderby: "ProjectCode asc",
       top: "4500"
     },
     FTESchedulesSubMilestones: {
       select: 'ID,Title,ProjectCode,SubMilestones',
       filter: "ProjectCode eq '{{ProjectCode}}' and Title eq '{{Milestone}}'",
+      top: "4500"
+    },
+    FTESchedulesTask: {
+      select: 'ID,Title,ProjectCode,SubMilestones',
+      filter: "ProjectCode eq '{{ProjectCode}}' and Milestone eq '{{Milestone}}'",
       top: "4500"
     },
     previousNextTask: {
@@ -252,6 +258,16 @@ export class MyDashboardConstantsService {
 
   getOpenTaskTabValue(): Observable<any> {
     return this.OpenTaskSelectedTab.asObservable();
+  }
+
+  // My Timeline
+  // For current task
+  setTimelineTabValue(data: any) {
+    this.TimelineSelectedTab.next(data);
+  }
+
+  getTimelineTabValue(): Observable<any> {
+    return this.TimelineSelectedTab.asObservable();
   }
 
   // *************************************************************************************************************************************

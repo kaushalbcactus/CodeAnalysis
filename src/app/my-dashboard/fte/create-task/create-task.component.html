@@ -40,9 +40,9 @@
         Sub milestones:
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-4">
-        <p-dropdown resetFilterOnHide="true" editable="true" [options]="subMilestonesList"
-          placeholder="Select or create sub milestone" [style]="{'width':'100%'}" formControlName="SubMilestones"
-          optionLabel="label" [showClear]="true" (onChange)="onChangeDD($event.value, 'SubMilestone')">
+        <p-dropdown resetFilterOnHide="true" editable="true" [options]="subMilestonesList" placeholder=""
+          [style]="{'width':'100%'}" formControlName="SubMilestones" optionLabel="label" [showClear]="true"
+          (onChange)="onChangeDD($event.value, 'SubMilestone')" (input)="onSearchChange($event.target.value)">
         </p-dropdown>
         <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.SubMilestones.errors">
           <div style="color: red;">Sub Milestone is required.</div>
@@ -55,10 +55,10 @@
         Start Date:
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-6">
-        <p-calendar [style]="{'min-width':'100%','width': '17em !important'}" [minDate]="minDateValue"
+        <p-calendar [style]="{'border': '1px solid !important'}" [minDate]="minDateValue"
           placeholder="Select Start Date" formControlName="StartDate" [maxDate]="maxDate" [disabledDays]="[0,6]"
           dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
-          [yearNavigator]="true">
+          (onClose)="onCloseStartDate()" [yearNavigator]="true">
         </p-calendar>
         <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.StartDate.errors">
           <div style="color: red;">Start Date is required.</div>
@@ -114,12 +114,28 @@
       </div>
     </div>
 
+    <div class="ui-g">
+      <div class="ui-g-12 ui-md-6 ui-lg-2">
+        Scope:
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-7">
+        <textarea [rows]="5" [cols]="60" formControlName="Comments" pInputTextarea maxlength="100"></textarea>
+        <span>{{this.create_task_form.value.Comments.length}} / 100</span>
+        <div *ngIf="this.create_task_form.value.Comments.length >= 100 ">
+            <span style="color: red;">Task scope maximum length is 100</span>
+        </div>
+        <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.Comments.errors">
+          <div style="color: red;">Task scope is required.</div>
+        </div>
+      </div>
+    </div>
+
   </form>
 
   <p-footer>
-    <button pButton type="button" label="Create" [disabled]="submitBtn.isClicked"
+    <button pButton type="button" label="Create" [disabled]="submitBtn.isClicked" class="redLight"
       (click)="onFormSubmit('createTask')"></button>
-    <button pButton type="button" label="Cancel" (click)="cancelFormSub('createTask')"></button>
+    <button pButton type="button" label="Cancel" class="redLight" (click)="cancelFormSub('createTask')"></button>
   </p-footer>
 
 </p-dialog>

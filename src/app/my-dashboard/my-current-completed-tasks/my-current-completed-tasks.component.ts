@@ -32,6 +32,9 @@ interface DateObj {
 
 export class MyCurrentCompletedTasksComponent implements OnInit {
 
+  // List of Subscribers
+  private subscription: Subscription = new Subscription();
+
   // yearsRange = new Date().getFullYear() + ':' + (new Date().getFullYear() + 10);
   constructor(
     public myDashboardConstantsService: MyDashboardConstantsService,
@@ -69,7 +72,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       console.log('in subscription ', data);
       this.GetDatabyDateSelection(data.event, data.days);
     }));
-
+    
   }
 
   selectedDueDate: DateObj;
@@ -118,8 +121,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   tempselectedDate: string;
   tempClick: any;
 
-  // List of Subscribers
-  private subscription: Subscription = new Subscription();
 
   isOptionFilter: boolean;
 
@@ -159,14 +160,13 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   // *************************************************************************************************************************************
 
   GetDatabyDateSelection(event, days) {
-    this.myDashboardConstantsService.openTaskSelectedTab['event'] = event;
-    this.myDashboardConstantsService.openTaskSelectedTab['days'] = days;
+    // this.myDashboardConstantsService.openTaskSelectedTab['event'] = event;
+    // this.myDashboardConstantsService.openTaskSelectedTab['days'] = days;
 
     this.TabName = this.route.snapshot.data.type;
     this.days = days;
     this.selectedTab = event;
     this.selectedDate = days > 0 ? event + days : event;
-    this.myDashboardConstantsService.openTaskSelectedTab['selectedDate'] = 'Next7';
     this.rangeDates = event === 'Custom' ? this.rangeDates : null;
     if (event === 'Custom' && this.rangeDates !== null) {
       this.allTasks = [];

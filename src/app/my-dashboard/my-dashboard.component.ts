@@ -7,6 +7,7 @@ import { MyDashboardConstantsService } from './services/my-dashboard-constants.s
 import { Router } from '@angular/router';
 import { TimeBookingDialogComponent } from './time-booking-dialog/time-booking-dialog.component';
 import { CreateTaskComponent } from './fte/create-task/create-task.component';
+import { CommonService } from '../Services/common.service';
 
 @Component({
   selector: 'app-my-dashboard',
@@ -29,6 +30,8 @@ export class MyDashboardComponent implements OnInit {
     listName: ''
   };
 
+  isUserFTE: boolean;
+
   currentUserInfo: any;
 
   @ViewChild('createTaskcontainer', { read: ViewContainerRef, static: true }) createTaskcontainer: ViewContainerRef;
@@ -42,7 +45,7 @@ export class MyDashboardComponent implements OnInit {
     public dialogService: DialogService,
     public messageService: MessageService,
     private componentFactoryResolver: ComponentFactoryResolver,
-    // private commonService: CommonService,
+    private constantsService: ConstantsService,
   ) { }
 
   ngOnInit() {
@@ -54,20 +57,11 @@ export class MyDashboardComponent implements OnInit {
       { label: 'My Completed Tasks', routerLink: ['my-completed-tasks'] },
       { label: 'Search Projects', routerLink: ['search-projects'] }
     ];
-
     this.GetCurrentUser();
   }
 
-  message: string;
-  receiveMessage($event) {
-    this.message = $event;
-    alert(this.message);
-  }
-
   async onActivate(componentRef) {
-
     if (this.firstload) {
-
       await this.executeCommonCalls();
     }
     if (this.router.url.includes('my-current-tasks') || this.router.url.includes('my-completed-tasks')) {
@@ -102,7 +96,10 @@ export class MyDashboardComponent implements OnInit {
     });
     ref.onClose.subscribe(async (TimeBookingobjCount: any) => {
       if (TimeBookingobjCount > 0) {
-        this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Time booking updated successfully.' });
+        this.messageService.add({
+          key: 'custom', severity: 'success', summary: 'Success Message',
+          detail: 'Time booking updated successfully.'
+        });
       }
       // else if (TimeBookingobjCount === 0) {
       //   this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Please Enter Time Spent.' });
@@ -177,6 +174,9 @@ export class MyDashboardComponent implements OnInit {
 
     this.sharedObject.DashboardData.ClientLegalEntity = this.response.length > 0 ? this.response[0].retItems : [];
     this.sharedObject.DashboardData.ResourceCategorization = this.response.length > 0 ? this.response[1].retItems : [];
+    const currentUserResCat = this.sharedObject.DashboardData.ResourceCategorization.filter((item) => item.UserName.ID === this.sharedObject.currentUser.userId);
+    this.isUserFTE = currentUserResCat[0].IsFTE;
+    console.log(this.isUserFTE);
     this.sharedObject.DashboardData.ProjectContacts = this.response.length > 0 ? this.response[2].retItems : [];
     this.sharedObject.DashboardData.ProjectCodes = this.response.length > 0 ? this.response[3].retItems : [];
   }

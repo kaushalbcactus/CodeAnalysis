@@ -1,7 +1,10 @@
-<div fxLayout="row" fxLayoutAlign="space-between  center">
+<div fxLayout="row" fxLayoutAlign="space-between center">
     <p-tabMenu [model]="items" fxFlex="97"></p-tabMenu>
 
-    <p-button fxFlex="9" icon="pi pi-plus" iconPos="right" label="Create Task" *ngIf="true" (click)="createTask()"></p-button>
+    <i fxFlex="3" title="Create Task" *ngIf="isUserFTE" (click)="createTask()"
+        style="cursor: pointer; font-size: 2em;padding:2px;border-bottom:1px solid #C53E3E;" class="fa fa-user"
+        aria-hidden="true">
+    </i>
 
     <i fxFlex="3" (click)="loadTimeBookingDialog()" title="Time Booking"
         style="cursor: pointer; font-size: 2em;padding:2px;border-bottom:1px solid #C53E3E;"

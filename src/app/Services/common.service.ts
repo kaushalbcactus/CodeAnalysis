@@ -561,7 +561,7 @@ export class CommonService {
         return item;
     }
 
-    
+
 
     convertToHrsMins(hours) {
         if (hours != null) {
@@ -645,7 +645,7 @@ export class CommonService {
         prjResObj.listName = this.constants.listNames.ProjectInformation.name;
         prjResObj.type = 'GET';
         batchUrl.push(prjResObj);
-       
+
         let budgetObj = Object.assign({}, this.queryConfig);
         budgetObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectFinances.name, this.taskAllocationService.taskallocationComponent.Budgets);
         budgetObj.url = budgetObj.url.replace(/{{ProjectCode}}/gi, projectCode);
@@ -657,7 +657,7 @@ export class CommonService {
             // ***********************************************************************************************************************************
             // Resources
             // ***********************************************************************************************************************************
-         
+
             let resourceObj = Object.assign({}, this.queryConfig);
             resourceObj.url = this.spServices.getReadURL(this.constants.listNames.ResourceCategorization.name, this.taskAllocationService.taskallocationComponent.Resources);
             resourceObj.url = resourceObj.url.replace(/{{enable}}/gi, 'Yes');
@@ -668,7 +668,7 @@ export class CommonService {
             // ***********************************************************************************************************************************
             // Central Group
             // ***********************************************************************************************************************************
-         
+
             let grpResourceObj = Object.assign({}, this.queryConfig);
             grpResourceObj.url = this.spServices.getGroupURL(this.constants.Groups.CDAdmin);
             grpResourceObj.listName = this.constants.Groups.CDAdmin;
