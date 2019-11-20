@@ -42,9 +42,9 @@ export class FinanceManagementComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.loadFinanceManagementInit();
   }
-  loadFinanceManagementInit() {
+  async loadFinanceManagementInit() {
+    await this.pmCommon.setBilledBy();
     setTimeout(() => {
-      this.pmCommon.setBilledBy();
       const sow = this.pmObject.allSOWItems.filter(objt => objt.SOWCode === this.pmObject.addProject.SOWSelect.SOWCode);
       if (sow && sow.length) {
         this.clientLegalEntity = sow[0].ClientLegalEntity;

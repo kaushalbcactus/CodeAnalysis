@@ -50,9 +50,9 @@ export class ProjectAttributesComponent implements OnInit {
     private router: Router,
     private dataService: DataService
   ) { }
-  ngOnInit() {
+  async ngOnInit() {
     this.initForm();
-    this.pmCommonService.setBilledBy();
+    await this.pmCommonService.setBilledBy();
     this.isProjectAttributeLoaderHidden = false;
     this.isProjectAttributeTableHidden = true;
     setTimeout(() => {

@@ -353,7 +353,7 @@ export class PmconstantService {
     },
     NON_STANDARD_RESOURCE_CATEGORIZATION: {
       // tslint:disable-next-line:max-line-length
-      select: 'ID,MaxHrs,PrimarySkill,UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title',
+      select: 'ID,MaxHrs,PrimarySkill,UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title,IsFTE',
       // tslint:disable-next-line:max-line-length
       expand: 'UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title',
       filter: 'IsActive eq \'Yes\' and SkillLevel/Title ne null',
@@ -369,7 +369,8 @@ export class PmconstantService {
     SEND_TO_CLIENT: 'Send to client',
     USER_AVAILABLE: 'Available',
     CLIENT_REVIEW: 'Client Review',
-    FOLLOW_UP: 'Follow up'
+    FOLLOW_UP: 'Follow up',
+    BLOCKING: 'Blocking'
   };
 
   public endDate = {
@@ -463,11 +464,17 @@ export class PmconstantService {
         + ' InvoiceDate, MainPOC, FileURL',
       filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and IsTaggedFully eq \'No\'',
       top: 4500
+    },
+    GET_PROJECT_TYPE: {
+      select: 'ID,Title,IsActive',
+      filter: 'IsActive eq \'{{isActive}}\'',
+      top: 4500,
+      orderby: 'Title asc'
     }
   };
   public QUERY = {
     GET_TIMESPENT: {
-      select: 'ID, Title, Task,TimeSpent, Status',
+      select: 'ID, Title, Task,TimeSpent, Status,SubMilestones,Milestone',
       filter: 'ProjectCode eq \'{{projectCode}}\''
     },
     PROJECT_BUDGET_BREAKUP_BY_PROJECTCODE: {
@@ -530,11 +537,15 @@ export class PmconstantService {
       select: 'ID,Title,POLookup,ProjectNumber,Amount, AmountRevenue, AmountOOP, AmountTax, TotalScheduled, ScheduledRevenue',
       filter: 'ProjectNumber eq \'{{projectCode}}\' and Status eq \'Active\''
     },
+    GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE: {
+      select: 'ID,Title,Milestone,Status,Task,ProjectCode',
+      filter: 'ProjectCode eq \'{{projectCode}}\''
+    }
   };
   public PROJECT_TYPE = {
     HOURLY: { display: 'Hourly', value: 'Hours-Rolling' },
-    // HOURLY: 'Hours-Rolling',
-    DELIVERABLE: { display: 'Deliverable', value: 'Deliverable-Writing' }
+    DELIVERABLE: { display: 'Deliverable', value: 'Deliverable-Writing' },
+    FTE: { display: 'FTE', value: 'FTE-Writing' }
   };
   public TIME_OUT = 500;
   public PROJECT_CANCELLED_REASON = {
@@ -568,4 +579,6 @@ export class PmconstantService {
     RELATIONSHIP: 'Client discount - relationship',
     INPUT_ERROR: 'Input error',
   };
+  public MONTH_NAMES = ['January', 'February', 'March', 'April', 'May',
+    'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 }
