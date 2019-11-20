@@ -1452,7 +1452,6 @@ export class ManageFinanceComponent implements OnInit {
           });
         });
       }
-
       this.existPODataArray = this.poData;
       this.showPo = true;
       this.pmObject.isMainLoaderHidden = true;
@@ -1677,7 +1676,8 @@ export class ManageFinanceComponent implements OnInit {
         if (projectFinaceData.RevenueBudget !== currentBudget.RevenueBudget
           || projectFinaceData.ScheduledRevenue !== currentBudget.ScheduledRevenue
           || projectFinaceData.InvoicedRevenue !== currentBudget.InvoicedRevenue
-          || projectFinaceData.BudgetHrs !== currentBudget.BudgetHrs) {
+          || projectFinaceData.BudgetHrs !== currentBudget.BudgetHrs
+          || this.unassignedBudget[0].revenue !== 0) {
           const projectFinaceUpdate = Object.assign({}, options);
           projectFinaceUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectFinances.name,
             +this.existBudgetArray.retItems[0].ID);

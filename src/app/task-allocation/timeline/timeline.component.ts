@@ -3433,7 +3433,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     for (const user of users) {
       arrayTo.push(user.Email);
     }
-    this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody, fromUser.email);
+    this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
     // this.spServices.triggerMail(fromUser.email, 'CentralTaskCreation', objEmailBody, mailSubject, arrayTo, callDetail);
 
   }
