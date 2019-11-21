@@ -84,7 +84,7 @@ export class MyTimelineComponent implements OnInit {
   };
 
   constructor(
-    private myDashboardConstantsService: MyDashboardConstantsService,
+    public myDashboardConstantsService: MyDashboardConstantsService,
     private constants: ConstantsService,
     public sharedObject: GlobalService,
     private spServices: SPOperationService,
@@ -489,7 +489,7 @@ export class MyTimelineComponent implements OnInit {
       }
 
       if (this.task.Task !== 'Adhoc') {
-        this.tasks = await this.myDashboardConstantsService.getNextPreviousTask(this.task);
+        this.tasks = await this.myDashboardConstantsService.getNextPreviousTask1(this.task);
         this.task.nextTasks = this.tasks ? this.tasks.filter(c => c.TaskType === 'Next Task') : [];
       }
 
@@ -713,13 +713,16 @@ export class MyTimelineComponent implements OnInit {
               this.SelectedStatus = undefined;
               this.taskdisplay = false;
               this.CalendarLoader = true;
-              var response = await this.myDashboardConstantsService.CompleteTask(task);
+              const response = await this.myDashboardConstantsService.CompleteTask(task);
 
               if (response) {
                 this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
 
               } else {
-                this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task updated successfully.' });
+                this.messageService.add({
+                  key: 'custom', severity: 'success', summary: 'Success Message',
+                  detail: task.Title + 'Task updated successfully.'
+                });
 
                 if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1 && task.Status === 'Completed') {
                   this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);

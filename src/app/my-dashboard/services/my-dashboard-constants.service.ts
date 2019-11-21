@@ -12,6 +12,7 @@ import { Subject, Observable } from 'rxjs';
 })
 export class MyDashboardConstantsService {
   tasks: any[];
+  previousNextTaskChildRes: any[];
   batchContents: any[];
   response: any[];
   NextPreviousTask: any[];
@@ -42,6 +43,10 @@ export class MyDashboardConstantsService {
 
   mydashboardComponent = {
 
+    user: {
+      isUserFTE: false,
+    },
+
     common: {
       getAllResource: {
         select: 'ID,UserName/ID,UserName/EMail,UserName/Title,UserName/Name,TimeZone/Title,Designation, Manager/ID, Manager/Title, Tasks/ID, Tasks/Title',
@@ -56,7 +61,7 @@ export class MyDashboardConstantsService {
     },
     MyTasks: {
 
-      select: 'ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones, IsCentrallyAllocated,AssignedTo/Title,AssignedTo/EMail',
+      select: 'ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones, IsCentrallyAllocated,ParentSlot,AssignedTo/Title,AssignedTo/EMail',
       orderby: 'DueDate asc',
       filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and (Task ne 'Time Booking') and",
       filterStatus: "(Status ne 'Completed') and (Status ne 'Auto Closed')  and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
@@ -64,7 +69,7 @@ export class MyDashboardConstantsService {
       // filterPlanned:"(Status eq 'Not Confirmed')",
       filterCompleted: "(Status eq 'Completed' or Status eq 'Auto Closed') and (Task ne 'Adhoc')",
       filterDate: "and((StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}') or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}') or (StartDate le '{{startDateString}}' and DueDate ge '{{endDateString}}'))",
-      expand: "AssignedTo/Title"
+      expand: 'AssignedTo/Title'
 
     },
     ClientLegalEntitys: {
@@ -107,19 +112,29 @@ export class MyDashboardConstantsService {
       top: "4500"
     },
     previousNextTask: {
-      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
+      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
       filter: '',
-      expand: "AssignedTo/Title"
+      expand: 'AssignedTo/Title'
+    },
+    previousNextTaskParent: {
+      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
+      filter: 'ID eq {{ParentSlotId}}',
+      expand: 'AssignedTo/Title'
+    },
+    nextPreviousTaskChild: {
+      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
+      filter: "ParentSlot eq {{ParentSlotId}} and Status ne 'Deleted'",
+      expand: 'AssignedTo/Title'
     },
     previousTaskStatus: {
       select: 'ID,Title,Status,NextTasks,Task,AllowCompletion,PrevTasks,AssignedTo/Title',
       filter: "ID eq {{taskId}} and AssignedTo eq {{userID}} ",
-      expand: "AssignedTo/Title"
+      expand: 'AssignedTo/Title'
     },
     taskStatus: {
       select: 'ID,Title,Status,Task,NextTasks,PrevTasks,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
       filter: '',
-      expand: "AssignedTo/Title"
+      expand: 'AssignedTo/Title'
     },
     TimeSpent: {
       select: 'ID,Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,DueDate,Status,ExpectedTime,TimeSpentPerDay,TimeSpentSubmitStatus',
@@ -271,26 +286,148 @@ export class MyDashboardConstantsService {
   }
 
   // *************************************************************************************************************************************
-  // Get Next Previous task from current task 
+  // Get Next Previous task from current task
   // *************************************************************************************************************************************
-  async getNextPreviousTask(task) {
+
+  async getNextPreviousTask1(task) {
     this.tasks = [];
-    var nextTaskFilter = '';
-    var previousTaskFilter = '';
-    if (task.NextTasks) {
-      var nextTasks = task.NextTasks.split(";#");
-      nextTasks.forEach(function (value, i) {
+    let nextTaskFilter = '';
+    let previousTaskFilter = '';
+    let nextTasks;
+    let previousTasks;
+    let currentTaskNextTask = task.NextTasks;
+    let currentTaskPrevTask = task.PrevTasks;
+
+    if (task.ParentSlot) {
+      const parentPreviousNextTask = Object.assign({}, this.mydashboardComponent.previousNextTaskParent);
+      parentPreviousNextTask.filter = parentPreviousNextTask.filter.replace('{{ParentSlotId}}', task.ParentSlot);
+      const parentNPTasks = await this.spServices.readItems(this.constants.listNames.Schedules.name, parentPreviousNextTask);
+      console.log(parentNPTasks);
+      const parentNPTask = parentNPTasks.length ? parentNPTasks[0] : [];
+      if (!currentTaskNextTask) {
+        currentTaskNextTask = parentNPTask.NextTasks;
+      }
+      if (!currentTaskPrevTask) {
+        currentTaskPrevTask = parentNPTask.PrevTasks;
+      }
+    }
+
+    if (currentTaskNextTask) {
+      nextTasks = currentTaskNextTask.split(';#');
+      nextTasks.forEach((value, i) => {
+        // tslint:disable-next-line: quotemark
         nextTaskFilter += "(Title eq '" + value + "')";
-        nextTaskFilter += i < nextTasks.length - 1 ? " or " : '';
+        nextTaskFilter += i < nextTasks.length - 1 ? ' or ' : '';
+      });
+    }
+    if (currentTaskPrevTask) {
+      previousTasks = currentTaskPrevTask.split(';#');
+      previousTasks.forEach((value, i) => {
+        previousTaskFilter += '(Title eq \'' + value + '\')';
+        previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
+      });
+    }
+
+    const taskFilter = (nextTaskFilter !== '' && previousTaskFilter !== '') ?
+      nextTaskFilter + ' or ' + previousTaskFilter : (nextTaskFilter === '' && previousTaskFilter !== '')
+        ? previousTaskFilter : (nextTaskFilter !== '' && previousTaskFilter === '') ? nextTaskFilter : '';
+
+
+    const previousNextTask = Object.assign({}, this.mydashboardComponent.previousNextTask);
+    previousNextTask.filter = taskFilter;
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTask);
+
+    this.tasks = this.response.length ? this.response : [];
+
+
+    if (currentTaskNextTask) {
+      this.tasks.filter(c => nextTasks.includes(c.Title)).map(c => c.TaskType = 'Next Task');
+    }
+    if (currentTaskPrevTask) {
+      this.tasks.filter(c => previousTasks.includes(c.Title)).map(c => c.TaskType = 'Previous Task');
+    }
+
+    this.previousNextTaskChildRes = [];
+    for (const ele of this.tasks) {
+      if (ele.IsCentrallyAllocated === 'Yes') {
+        let previousNextTaskChild: any = [];
+        previousNextTaskChild = Object.assign({}, this.mydashboardComponent.nextPreviousTaskChild);
+        previousNextTaskChild.filter = previousNextTaskChild.filter.replace('{{ParentSlotId}}', ele.ID.toString());
+        let res: any = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTaskChild);
+        if (res.hasError) {
+          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: res.message.value });
+          return;
+        }
+        res = res.length ? res : [];
+        res.forEach(element => {
+          if (!element.NextTasks) {
+            element.TaskType = 'Prev Task';
+            this.previousNextTaskChildRes.push(element);
+          }
+          if (!element.PrevTasks) {
+            element.TaskType = 'Next Task';
+            this.previousNextTaskChildRes.push(element);
+          }
+        });
+      } else if (ele.IsCentrallyAllocated === 'No') {
+        this.previousNextTaskChildRes.push(ele);
+      }
+    }
+
+    this.tasks = this.previousNextTaskChildRes.length ? this.previousNextTaskChildRes : this.tasks;
+
+    console.log('previousNextTaskChildRes ', this.previousNextTaskChildRes);
+
+    this.tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : '-');
+    this.tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : '-');
+
+    return this.tasks;
+  }
+
+  async getNextPreviousTask2(task) {
+    this.tasks = [];
+    let nextTaskFilter = '';
+    let previousTaskFilter = '';
+
+    let nextTasks;
+    let previousTasks;
+    let currentTaskNextTask = task.NextTasks;
+    let currentTaskPrevTask = task.PrevTasks;
+
+    // if (task.NextTasks) {
+    //   var nextTasks = task.NextTasks.split(';#');
+    //   nextTasks.forEach(function (value, i) {
+    //     nextTaskFilter += "(Title eq '" + value + "')";
+    //     nextTaskFilter += i < nextTasks.length - 1 ? " or " : '';
+    //   });
+    // }
+    // if (task.PrevTasks) {
+    //   var previousTasks = task.PrevTasks.split(";#");
+    //   previousTasks.forEach(function (value, i) {
+    //     previousTaskFilter += "(Title eq '" + value + "')";
+    //     previousTaskFilter += i < previousTasks.length - 1 ? " or " : '';
+    //   });
+    // }
+
+
+    if (task.NextTasks) {
+      nextTasks = task.NextTasks.split(';#');
+      nextTasks.forEach((value, i) => {
+        // tslint:disable-next-line: quotemark
+        nextTaskFilter += "(Title eq '" + value + "')";
+        nextTaskFilter += i < nextTasks.length - 1 ? ' or ' : '';
       });
     }
     if (task.PrevTasks) {
-      var previousTasks = task.PrevTasks.split(";#");
-      previousTasks.forEach(function (value, i) {
-        previousTaskFilter += "(Title eq '" + value + "')";
-        previousTaskFilter += i < previousTasks.length - 1 ? " or " : '';
+      previousTasks = task.PrevTasks.split(';#');
+      previousTasks.forEach((value, i) => {
+        previousTaskFilter += '(Title eq \'' + value + '\')';
+        previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
       });
     }
+
+
+
 
     var taskFilter = (nextTaskFilter !== '' && previousTaskFilter !== '') ? nextTaskFilter + " or " + previousTaskFilter : (nextTaskFilter === '' && previousTaskFilter !== '') ? previousTaskFilter : (nextTaskFilter !== '' && previousTaskFilter === '') ? nextTaskFilter : '';
 
@@ -379,28 +516,25 @@ export class MyDashboardConstantsService {
 
 
   // **************************************************************************************************************************************
-  //  Complete Task 
+  //  Complete Task
   // **************************************************************************************************************************************
 
 
   async CompleteTask(task) {
-    var response;
+    let response;
     this.projectInfo = await this.getCurrentTaskProjectInformation(task.ProjectCode);
-    this.NextPreviousTask = await this.getNextPreviousTask(task);
+    this.NextPreviousTask = await this.getNextPreviousTask1(task);
     const allowedTasks = ['Galley', 'Submission Pkg', 'Submit', 'Journal Selection', 'Journal Requirement'];
     if (allowedTasks.includes(task.Task)) {
       await this.GetAllDocuments(task);
-      var isJcIdFound = await this.getJCIDS(task);
+      const isJcIdFound = await this.getJCIDS(task);
       if (!isJcIdFound) {
-        response = "Task can't be closed as no submission details are found."
+        response = 'Task can\'t be closed as no submission details are found.';
         return response;
-      }
-      else {
-
+      } else {
         response = await this.saveTask(task, true);
       }
-    }
-    else {
+    } else {
       response = await this.saveTask(task, false);
     }
     return response;
@@ -412,26 +546,14 @@ export class MyDashboardConstantsService {
   // **************************************************************************************************************************************
 
   async GetAllDocuments(task) {
-
     this.DocumentArray = [];
-    var documentsUrl = "/Drafts/Internal/" + task.Milestone;
-    var completeFolderRelativeUrl = "";
+    const documentsUrl = "/Drafts/Internal/" + task.Milestone;
+    let completeFolderRelativeUrl = '';
     completeFolderRelativeUrl = this.projectInfo.ProjectFolder + documentsUrl;
     this.response = await this.spServices.readFiles(completeFolderRelativeUrl);
-    // var Url = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/_api/web/getfolderbyserverrelativeurl('" + completeFolderRelativeUrl + "')/Files?$expand=ListItemAllFields";
-
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
-
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Url);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
     this.allDocuments = this.response.length > 0 ? this.response : [];
-
     this.allDocuments.map(c => c.isFileMarkedAsFinal = c.ListItemAllFields.Status.split(" ").splice(-1)[0] === "Complete" ? true : false);
     this.DocumentArray = this.allDocuments.filter(c => c.ListItemAllFields.TaskName === task.Title && c.isFileMarkedAsFinal);
-
-
   }
   // **************************************************************************************************************************************
   //  Get  current project information
@@ -958,41 +1080,37 @@ export class MyDashboardConstantsService {
     return tempminDateValue;
   }
 
-  //*************************************************************************************************
-  //  Calculate difference between 2 dates 
-  //*************************************************************************************************
+  // *************************************************************************************************
+  //  Calculate difference between 2 dates
+  // *************************************************************************************************
 
   differenceBetweenHours(startDateTime, endDateTime) {
-    var diff = new Date(endDateTime).getTime() - new Date(startDateTime).getTime();
-    var hours = Math.floor(diff / 1000 / 60 / 60);
+    let diff = new Date(endDateTime).getTime() - new Date(startDateTime).getTime();
+    const hours = Math.floor(diff / 1000 / 60 / 60);
     diff -= hours * 1000 * 60 * 60;
-    var minutes = Math.floor(diff / 1000 / 60);
-
+    const minutes = Math.floor(diff / 1000 / 60);
     return (hours < 9 ? "0" : "") + hours + ":" + (minutes < 9 ? "0" : "") + minutes;
-
   }
 
 
 
-  //*************************************************************************************************
-  //  Return unique objects  string 
-  //*************************************************************************************************
+  // *************************************************************************************************
+  //  Return unique objects  string
+  // *************************************************************************************************
 
   uniqueArrayObj(array: any) {
-
     let sts: any = '';
     return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
       return {
         label: label1,
         value: array.find(s => s.label === label1).value,
-
-      }
+      };
     });
   }
 
-  //*************************************************************************************************
-  //   Get Task Documents
-  //*************************************************************************************************
+  // *************************************************************************************************
+  // Get Task Documents
+  // *************************************************************************************************
 
 
   // async getTaskDocument(folderUrl, documentUrl) {
@@ -1009,31 +1127,31 @@ export class MyDashboardConstantsService {
 
 
   async callQMSPopup(currentTaskElement, qmsObj) {
-    var previousTaskFilter = '';
-    var newValue = [];
+    let previousTaskFilter = '';
+    let newValue = [];
     if (currentTaskElement.PrevTasks) {
       newValue = currentTaskElement.PrevTasks.split(";#");
-      for (var i = 0; i < newValue.length; i++) {
+      for (let i = 0; i < newValue.length; i++) {
         previousTaskFilter += "(Title eq '" + newValue[i] + "')";
-        if (i != newValue.length - 1) {
+        if (i !== newValue.length - 1) {
           previousTaskFilter += " or "
         }
       }
     }
     const project = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === currentTaskElement.ProjectCode);
-    var folderUrl = project.ProjectFolder;
-    var documentsUrl = "/Drafts/Internal/" + currentTaskElement.Milestone;
+    const folderUrl = project.ProjectFolder;
+    const documentsUrl = "/Drafts/Internal/" + currentTaskElement.Milestone;
 
-    var tempArray = [];
-    var reviewDocArray = [];
-    var documents = await this.common.getTaskDocument(folderUrl, documentsUrl);
-    for (var document in documents) {
-      if (currentTaskElement.PrevTasks.indexOf(documents[document].ListItemAllFields.TaskName) > -1 && documents[document].ListItemAllFields.Status.indexOf('Complete') > -1) {
-        tempArray.push(documents[document].ServerRelativeUrl);
+    const tempArray = [];
+    const reviewDocArray = [];
+    const documents = await this.common.getTaskDocument(folderUrl, documentsUrl);
+    for (const doc in documents) {
+      if (currentTaskElement.PrevTasks.indexOf(documents[doc].ListItemAllFields.TaskName) > -1 && documents[doc].ListItemAllFields.Status.indexOf('Complete') > -1) {
+        tempArray.push(documents[doc].ServerRelativeUrl);
       }
     }
-    var reviewDocuments = await this.common.getTaskDocument(folderUrl, documentsUrl);
-    for (var document in reviewDocuments) {
+    const reviewDocuments = await this.common.getTaskDocument(folderUrl, documentsUrl);
+    for (const document in reviewDocuments) {
       if (reviewDocuments[document].ListItemAllFields.TaskName === currentTaskElement.Title && reviewDocuments[document].ListItemAllFields.Status.indexOf('Complete') > -1) {
         reviewDocArray.push(reviewDocuments[document].ServerRelativeUrl);
       }

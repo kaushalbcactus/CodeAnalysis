@@ -117,8 +117,11 @@
     <div class="timeLineButton" fxLayout="row" fxLayoutAlign="end center">
 
 
-
-        <button type="button" pButton icon="pi pi-save" id="saveTime" style="margin-right:5px" (click)="UpdateTask()"
+        <button *ngIf="!myDashboardConstantsService.mydashboardComponent.user.isUserFTE" type="button" pButton
+            icon="pi pi-save" id="saveTime" style="margin-right:5px" (click)="UpdateTask()"
+            [disabled]="task.Status === SelectedStatus  ||  SelectedStatus === undefined" label="Update"></button>
+        <button *ngIf="myDashboardConstantsService.mydashboardComponent.user.isUserFTE" type="button" pButton
+            icon="pi pi-save" id="saveTime" style="margin-right:5px" (click)="UpdateTask()"
             [disabled]="task.Status === 'Completed'  ||  SelectedStatus === undefined" label="Update"></button>
         <button type="button" pButton icon="pi pi-times" (click)="cancel();taskdisplay=false" label="Cancel"
             class="ui-button-secondary" style="background-color:ghostwhite;"></button>
@@ -190,9 +193,13 @@
                         </tr>
                         <tr>
                             <th>Start Date:</th>
-                            <!-- <td>{{task.StartDate | date :'medium'}}</td> -->
-                            <td *ngIf="SelectedStatus !== 'Not Started'">{{task.StartDate | date :'medium'}}</td>
-                            <td *ngIf="SelectedStatus === 'Not Started' && task.StartTime">
+                            <td *ngIf="!myDashboardConstantsService.mydashboardComponent.user.isUserFTE">
+                                {{task.StartDate | date :'medium'}}</td>
+                            <td
+                                *ngIf="myDashboardConstantsService.mydashboardComponent.user.isUserFTE && SelectedStatus !== 'Not Started'">
+                                {{task.StartDate | date :'medium'}}</td>
+                            <td
+                                *ngIf="myDashboardConstantsService.mydashboardComponent.user.isUserFTE && SelectedStatus === 'Not Started' && task.StartTime">
                                 <p-calendar [(ngModel)]="task.StartDate" appendTo="body" dateFormat="M dd, yy"
                                     (onClose)="onCloseStartDate()" [disabledDays]="[0,6]" [yearNavigator]="true"
                                     yearRange="{{yearRangePastNext}}" placeholder="Select Start Date">
@@ -208,9 +215,15 @@
                                 </ngx-material-timepicker>
                             </td>
                             <th>End Date:</th>
-                            <td *ngIf="SelectedStatus === 'Completed' && task.DueDate">{{task.DueDate | date :'medium'}}
+                            <td *ngIf="!myDashboardConstantsService.mydashboardComponent.user.isUserFTE">
+                                {{task.DueDate | date :'medium'}}
                             </td>
-                            <td *ngIf="SelectedStatus !== 'Completed' && task.DueTime">
+                            <td
+                                *ngIf="myDashboardConstantsService.mydashboardComponent.user.isUserFTE && SelectedStatus === 'Completed' && task.DueDate">
+                                {{task.DueDate | date :'medium'}}
+                            </td>
+                            <td
+                                *ngIf="myDashboardConstantsService.mydashboardComponent.user.isUserFTE && SelectedStatus !== 'Completed' && task.DueTime">
                                 <p-calendar [style]="{'border': '1px solid !important'}" placeholder="Select Due Date"
                                     [minDate]="task.StartDate" [(ngModel)]="task.DueDate" [disabledDays]="[0,6]"
                                     dateFormat="M dd, yy" appendTo="body" [monthNavigator]="true" [yearNavigator]="true"

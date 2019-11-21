@@ -54,7 +54,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
 
   items: MenuItem[];
   activeItem: MenuItem;
-  ngOnInit() {
+  async ngOnInit() {
 
     this.loaderenable = true;
     this.DocumentArray = [];
@@ -65,6 +65,15 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       this.getEmailTemplate();
     }
     this.selectedTask = this.config.data ? this.data.task ? this.data.task : this.data : this.taskData;
+    if (this.selectedTask.ParentSlot) {
+      const slotPNTask = await this.myDashboardConstantsService.getNextPreviousTask1(this.selectedTask);
+      const slotPTasks = slotPNTask.filter(ele => ele.TaskType === 'Previous Task');
+      slotPTasks.forEach((element, i) => {
+        this.selectedTask.PrevTasks = this.selectedTask.PrevTasks ? this.selectedTask.PrevTasks : '';
+        this.selectedTask.PrevTasks += element.Title;
+        this.selectedTask.PrevTasks += i < slotPTasks.length - 1 ? ';#' : '';
+      });
+    }
 
     if (this.selectedTask.PrevTasks) {
       this.items = [
@@ -383,7 +392,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           updateObj.listName = listName;
           updateObj.type = 'PATCH';
           batchUrl.push(updateObj);
-         // await this.spServices.updateItem(listName, +element.ListItemAllFields.ID, objPost);
+          // await this.spServices.updateItem(listName, +element.ListItemAllFields.ID, objPost);
           // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(objPost), false);
         }
       });
