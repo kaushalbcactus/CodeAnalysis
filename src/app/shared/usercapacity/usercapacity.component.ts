@@ -191,19 +191,15 @@ export class UsercapacityComponent implements OnInit {
             oUser.userName = userDetail[0].UserName.Title;
             oUser.maxHrs = userDetail[0].UserName.MaxHrs ? userDetail[0].UserName.MaxHrs : userDetail[0].MaxHrs;
             this.fetchData(oUser, startDateString, endDateString, batchUrl);
-            //batchUrl = [...batchUrl, ...taskBatchUrl];
             oCapacity.arrUserDetails.push(oUser);
           }
         }
       }
     }
 
-    // batchContents.push('--batch_' + batchGuid + '--');
-    // const userBatchBody = batchContents.join('\r\n');
-    // const arruserResults = this.executeBatchRequest(batchUrl);
+    
     let arruserResults = await this.spService.executeBatch(batchUrl);
     arruserResults = arruserResults.length ? arruserResults.map(a => a.retItems) : [];
-    // const batchContentsLeaves = new Array();
 
     const batchURL = [];
     const options = {
@@ -212,25 +208,6 @@ export class UsercapacityComponent implements OnInit {
       type: '',
       listName: ''
     };
-
-    // const leaveCalendar = {
-    //   // tslint:disable 
-    //   select: "ID,EventDate,EndDate,IsHalfDay",
-    //   filter: "(UserName/Id eq {{userId}} and IsActive eq 'Yes' ) and((EventDate ge '{{startDateString}}' and EventDate le '{{endDateString}}') or (EndDate ge '{{startDateString}}' and EndDate le '{{endDateString}}') or (EventDate le '{{startDateString}}' and EndDate ge '{{endDateString}}'))",
-    //   orderby: "Created",
-    //   top: 4500
-    //   // tslint:enable
-    // };
-    // const availableHrs = {
-    //   // tslint:disable 
-    //   select: "ID,ResourceID,WeekStartDate,WeekEndDate,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday,MondayLeave,TuesdayLeave,WednesdayLeave,ThursdayLeave,FridayLeave",
-    //   filter: "ResourceID eq {{ResourceId}} and((WeekStartDate ge '{{startDateString}}' and WeekStartDate le '{{endDateString}}') or (WeekEndDate ge '{{startDateString}}' and WeekEndDate le '{{endDateString}}') or (WeekStartDate le '{{startDateString}}' and WeekEndDate ge '{{endDateString}}'))",
-    //   orderby: "WeekStartDate asc",
-    //   top: 4500
-    //   // tslint:enable
-    // };
-
-
 
     for (const indexUser in oCapacity.arrUserDetails) {
       if (oCapacity.arrUserDetails.hasOwnProperty(indexUser)) {
@@ -275,38 +252,8 @@ export class UsercapacityComponent implements OnInit {
         availableHrsGet.listName = this.globalConstantService.listNames.AvailableHours.name;
         batchURL.push(availableHrsGet);
 
-
-        // var endpoint = this.globalService.sharePointPageObject.webAbsoluteUrl
-        //   + "/_api/web/lists/getbytitle('" + this.leaveCalendar + "')/items?$select=ID,EventDate,EndDate,IsHalfDay&$top=4500&$orderby=Created&$filter=(Author/Id eq " + oCapacity.arrUserDetails[indexUser].uid + ")and(" +
-        //   "(EventDate ge '" + startDateString + "' and EventDate le '" + endDateString + "') or (EndDate ge '" + startDateString + "' and EndDate le '" + endDateString + "') or (EventDate le '" + startDateString + "' and EndDate ge '" + endDateString + "'))";
-        // this.spService.getBatchBodyGet(batchContentsLeaves, batchGuid, endpoint);
       }
     }
-
-    // batchContentsLeaves.push('--batch_' + batchGuid + '--');
-    // var batchBody = batchContentsLeaves.join('\r\n');
-    // var arrLeaves = this.executeBatchRequest(batchGuid, batchBody);
-
-    // const batchURL = [];
-    // const options = {
-    //   data: null,
-    //   url: '',
-    //   type: '',
-    //   listName: ''
-    // };
-
-    // selectedUsers.forEach(user => {
-
-    //   const availableHrsGet = Object.assign({}, options);
-    //   const availableHrsQuery = Object.assign({}, availableHrs);
-    //   availableHrsGet.url = this.spService.getReadURL('' + this.globalConstantService.listNames.AvailableHours.name +
-    //     '', availableHrsQuery);
-    //   availableHrsGet.url = availableHrsGet.url.replace(/{{ResourceId}}/gi, user.ID).replace(/{{startDateString}}/gi, startDateString).replace(/{{endDateString}}/gi, endDateString);
-    //   availableHrsGet.type = 'GET';
-    //   availableHrsGet.listName = this.globalConstantService.listNames.AvailableHours.name;
-    //   batchURL.push(availableHrsGet);
-    // });
-
     let arrResults = await this.spService.executeBatch(batchURL);
     arrResults = arrResults.length ? arrResults : [];
     if (arrResults) {
@@ -532,7 +479,8 @@ export class UsercapacityComponent implements OnInit {
                 status: oUser.tasks[j].Status,
                 totalAllocatedTime: TotalAllocatedTime,
                 displayTotalAllocatedTime: TotalAllocatedTime !== null ? oUser.tasks[j].Task !== 'Adhoc' ?
-                  TotalAllocatedTime : TotalAllocatedTime.replace('.', ':') : TotalAllocatedTime
+                  TotalAllocatedTime : TotalAllocatedTime.replace('.', ':') : TotalAllocatedTime,
+                parentSlot : oUser.tasks[j].parentSlot ? oUser.tasks[j].parentSlot : ''
               };
               tasksDetails.push(objTask);
               const taskHrsMinObject = {

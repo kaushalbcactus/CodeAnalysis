@@ -53,8 +53,9 @@ export class TaskAllocationCommonService {
     const allocatedResources = [];
     let similarTasksUsers = [];
     let checkSkillLevel = false;
+    const taskType = task.itemType.replace(/Slot/g, '');
     similarTasksUsers = allTasks.filter(function (objt) {
-      return objt.itemType === task.itemType;
+      return objt.itemType === taskType;
     });
     similarTasksUsers.forEach(element => {
       if (element.AssignedTo && element.AssignedTo.hasOwnProperty('ID')) {
@@ -70,7 +71,7 @@ export class TaskAllocationCommonService {
       const checkExclusion = this.isUserAllowed(element, prjDetails);
       if (checkExclusion) {
         const taskMatchingUsers = element.Tasks.results.filter(function (objt) {
-          return objt.Title === task.itemType;
+          return objt.Title === taskType;
         });
         if (taskMatchingUsers.length > 0) {
           if (task.SkillLevel && element.SkillLevel) {
