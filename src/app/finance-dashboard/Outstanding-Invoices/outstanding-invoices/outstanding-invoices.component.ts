@@ -1033,7 +1033,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     async reFetchData() {
         await this.getRequiredData();
         setTimeout(() => {
-            this.setCurrentPage(this.currentPageNumber);
+            this.setCurrentPage(this.currentPageNumber ? this.currentPageNumber : 0);
         }, 1000);
     }
 

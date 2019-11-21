@@ -1717,9 +1717,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             this.cleInfo();
             await this.getRequiredData();
         }
-        // this.pageNumber = this.currentPageNumber;
         this.cdr.detectChanges();
-        console.log('this.currentPageNumber ', this.currentPageNumber ? this.currentPageNumber : 0);
         setTimeout(() => {
             this.setCurrentPage(this.currentPageNumber ? this.currentPageNumber : 0);
             console.log('this.pageNumber ', this.pageNumber);

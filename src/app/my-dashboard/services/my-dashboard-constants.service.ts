@@ -806,7 +806,7 @@ export class MyDashboardConstantsService {
         });
 
 
-        console.log(EmailTemplate);
+        //console.log(EmailTemplate);
         const emailObj = Object.assign({}, this.queryConfig);
         const Emaildata = this.spServices.getEmailData(element.AssignedTo.EMail,
           this.sharedObject.currentUser.email, mailSubject, EmailTemplate, this.sharedObject.currentUser.email);

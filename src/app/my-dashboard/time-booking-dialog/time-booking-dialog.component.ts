@@ -165,7 +165,7 @@ export class TimeBookingDialogComponent implements OnInit {
       (this.MainminDate.getDate() < 10 ? '0' + this.MainminDate.getDate() : this.MainminDate.getDate()) + 'T23:59:00.000Z';
 
     AllMilestones.filter = AllMilestones.filter.replace(/{{projectCode}}/gi, projectCode).replace(/{{DateString}}/gi, EndDate);
-    this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, AllMilestones);
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, AllMilestones);
     // const AllMilestonesUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', AllMilestones);
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, AllMilestonesUrl);
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);

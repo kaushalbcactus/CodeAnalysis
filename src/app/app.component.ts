@@ -44,7 +44,7 @@ export class AppComponent {
   }
 
   initSPLoggedInUser() {
-    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 98 : _spPageContextInfo.userId;
+    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 9 : _spPageContextInfo.userId;
     this.globalService.currentUser.email = window.location.href.indexOf('localhost') > -1 ?
       'sneha.dandhuk@cactusglobal.com' : _spPageContextInfo.userEmail;
     this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'sneha' : _spPageContextInfo.userDisplayName;
