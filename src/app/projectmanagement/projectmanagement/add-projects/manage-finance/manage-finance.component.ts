@@ -526,7 +526,7 @@ export class ManageFinanceComponent implements OnInit {
       } else {
         if (this.updatedBudget < 0) {
           this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGET;
-          return
+          return;
         }
       }
 
@@ -701,7 +701,8 @@ export class ManageFinanceComponent implements OnInit {
     const poIndex = this.poData.findIndex(item => item.poInfo[0].poId === this.selectedPo);
     const retPOInfo = this.poData[poIndex].poInfo[0];
     const reservePO = this.poArray.find(item => item.ID === this.selectedPo);
-    const poExistItem = this.existPOArray && this.existPOArray.retItems ? this.existPOArray.retItems.find(poObj => poObj.Id === this.poData[poIndex].Id) : null;
+    const poExistItem = this.existPOArray && this.existPOArray.retItems ?
+      this.existPOArray.retItems.find(poObj => poObj.Id === this.poData[poIndex].Id) : null;
     if (!retPOInfo.poRevenue) {
       this.messageService.add({
         key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
@@ -709,7 +710,8 @@ export class ManageFinanceComponent implements OnInit {
       });
     }
 
-    const nAvailableToTag = reservePO.AmountRevenue - reservePO.RevenueLinked + (poExistItem ? (poExistItem.AmountRevenue - retPOInfo.revenue) : 0);
+    const nAvailableToTag = reservePO.AmountRevenue - reservePO.RevenueLinked +
+      (poExistItem ? (poExistItem.AmountRevenue - retPOInfo.revenue) : 0);
 
     if (nAvailableToTag < retPOInfo.poRevenue) {
       this.messageService.add({
@@ -957,9 +959,7 @@ export class ManageFinanceComponent implements OnInit {
           }
         }
         this.invoiceObj.amount = amount;
-        //if(amount === 0) {
         this.invoiceObj.isInvoiceItemConfirm = false;
-        //}
         this.invoiceObj.poc = this.addPOForm.value.primarypoc;
         this.invoiceObj.pocText = this.pmCommonService.extractNamefromPOC([this.invoiceObj.poc]);
         this.invoiceObj.address = this.addPOForm.value.address;
@@ -1435,7 +1435,8 @@ export class ManageFinanceComponent implements OnInit {
 
 
       ///// Remove all buttons if there is approval pending
-      const budgetPending = this.existPBBBudgetArray.retItems.find(e => e.Status === this.constant.projectBudgetBreakupList.status.ApprovalPending);
+      const budgetPending = this.existPBBBudgetArray.retItems.find(e =>
+        e.Status === this.constant.projectBudgetBreakupList.status.ApprovalPending);
       if ((this.projectStatus !== this.constant.projectList.status.InDiscussion && budgetPending)
         || this.projectStatus === this.constant.projectList.status.Closed
         || this.projectStatus === this.constant.projectList.status.Cancelled) {
@@ -1513,8 +1514,8 @@ export class ManageFinanceComponent implements OnInit {
   }
   async commitInvoiceItem(rowData) {
     const groupInfo = await this.spServices.getGroupInfo('Invoice_Team');
-    var approvers = groupInfo.results;
-    var arrayTo = [];
+    const approvers = groupInfo.results;
+    const arrayTo = [];
     if (approvers.length) {
       for (const i in approvers) {
         if (approvers[i].Email !== undefined && approvers[i].Email !== '') {

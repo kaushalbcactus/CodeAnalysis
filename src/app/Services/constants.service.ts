@@ -383,7 +383,8 @@ export class ConstantsService {
     REJECTED: 'Rejected',
     IN_PROGRESS: 'In Progress',
     ON_HOLD: 'On Hold',
-    AUTO_CLOSED: 'Auto Closed'
+    AUTO_CLOSED: 'Auto Closed',
+    COMPLETED: 'Completed'
   };
   public SKILL_LEVEL = {
     WRITER: 'Writer',

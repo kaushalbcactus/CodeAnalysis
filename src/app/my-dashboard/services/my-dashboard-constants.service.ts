@@ -5,6 +5,7 @@ import { DatePipe } from '@angular/common';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { MessageService } from 'primeng/api';
 import { CommonService } from 'src/app/Services/common.service';
+import { Subject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +22,9 @@ export class MyDashboardConstantsService {
   jcId: any;
   Emailtemplate: any;
 
+  private OpenTaskSelectedTab = new Subject<any>();
+  private TimelineSelectedTab = new Subject<any>();
+
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -28,6 +32,13 @@ export class MyDashboardConstantsService {
     private spServices: SPOperationService,
     public messageService: MessageService,
     public common: CommonService) { }
+
+
+  public openTaskSelectedTab = {
+    event: '',
+    days: 0,
+    selectedDate: ''
+  };
 
   mydashboardComponent = {
 
@@ -63,7 +74,7 @@ export class MyDashboardConstantsService {
       top: 4500
     },
     ResourceCategorization: {
-      select: 'ID,UserName/ID,UserName/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,Designation,PrimarySkill,SkillLevel/ID,SkillLevel/Title,TimeZone/ID,TimeZone/Title,IsActive',
+      select: 'ID,UserName/ID,UserName/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,Designation,PrimarySkill,SkillLevel/ID,SkillLevel/Title,TimeZone/ID,TimeZone/Title,IsActive,IsFTE',
       expand: 'UserName/ID,UserName/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,SkillLevel/ID,SkillLevel/Title,TimeZone/ID,TimeZone/Title',
       filter: "IsActive eq 'Yes'",
       orderby: "UserName/Title",
@@ -77,6 +88,22 @@ export class MyDashboardConstantsService {
       select: 'ID,Title,ProjectCode,Status,ClientLegalEntity,Milestones,WBJID,ProjectFolder',
       filter: "(Status eq 'Author Review' or Status eq 'In Progress' or Status eq 'Ready for Client' or Status eq 'Unallocated')",
       orderby: "ProjectCode asc",
+      top: "4500"
+    },
+    FTEProjectInformations: {
+      select: 'ID,Title,ProjectCode,Status,ClientLegalEntity,Milestones,Milestone,WBJID,ProjectFolder,ServiceLevel',
+      filter: "ProjectType eq 'FTE-Writing' and (Status eq 'Author Review' or Status eq 'In Progress' or Status eq 'Ready for Client' or Status eq 'Unallocated') and PrimaryResMembersId eq {{userId}} ",
+      orderby: "ProjectCode asc",
+      top: "4500"
+    },
+    FTESchedulesSubMilestones: {
+      select: 'ID,Title,ProjectCode,SubMilestones',
+      filter: "ProjectCode eq '{{ProjectCode}}' and Title eq '{{Milestone}}'",
+      top: "4500"
+    },
+    FTESchedulesTask: {
+      select: 'ID,Title,ProjectCode,SubMilestones',
+      filter: "ProjectCode eq '{{ProjectCode}}' and Milestone eq '{{Milestone}}'",
       top: "4500"
     },
     previousNextTask: {
@@ -210,7 +237,7 @@ export class MyDashboardConstantsService {
       filter: "ID eq {{projectId}}",
     },
 
-  }
+  };
 
   // var endpoint = _spPageContextInfo.webAbsoluteUrl
   // +"/_api/web/lists/getbytitle('" + ListNames.LeaveCalendar + "')/items?$select=ID,EventDate,EndDate,IsHalfDay&$top=4500&$orderby=Created&$filter=(Author/Id eq "+oCapacity.arrUserDetails[indexUser].uid+")and("+
@@ -223,6 +250,26 @@ export class MyDashboardConstantsService {
     type: '',
     listName: ''
   };
+
+  // For current task
+  setOpenTaskTabValue(data: any) {
+    this.OpenTaskSelectedTab.next(data);
+  }
+
+  getOpenTaskTabValue(): Observable<any> {
+    return this.OpenTaskSelectedTab.asObservable();
+  }
+
+  // My Timeline
+  // For current task
+  setTimelineTabValue(data: any) {
+    this.TimelineSelectedTab.next(data);
+  }
+
+  getTimelineTabValue(): Observable<any> {
+    return this.TimelineSelectedTab.asObservable();
+  }
+
   // *************************************************************************************************************************************
   // Get Next Previous task from current task 
   // *************************************************************************************************************************************

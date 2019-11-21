@@ -1,7 +1,6 @@
 import { Component, OnInit, EventEmitter, Output, Input, SimpleChanges, OnDestroy } from '@angular/core';
 import { MenuItem, DynamicDialogConfig, MessageService } from 'primeng/api';
 import { DatePipe } from '@angular/common';
-import { NodeService } from 'src/app/node.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -51,7 +50,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     private spServices: SPOperationService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
-    private nodeService: NodeService,
     private spOperations: SPOperationService) { }
 
   items: MenuItem[];
@@ -452,14 +450,14 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   downloadFile() {
     if (this.selectedDocuments.length > 0) {
       if (this.selectedTask.DisplayTitle) {
-        this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTask.DisplayTitle);
+        this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTask.DisplayTitle);
       } else if (this.selectedTask.ProjectName) {
-        this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl),
+        this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl),
           this.selectedTask.ProjectName + ' ' + this.selectedTask.Milestone + ' ' + this.selectedTask.Task);
       } else {
         const downloadName = this.selectedTask.WBJID ? this.selectedTask.ProjectCode + ' (' +
           this.selectedTask.WBJID + ' )' : this.selectedTask.ProjectCode;
-        this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), downloadName);
+        this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), downloadName);
       }
 
     } else {

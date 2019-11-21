@@ -282,7 +282,8 @@ export class PMObjectService {
         ProposedStartDate: null,
         ProposedEndDate: null,
         IsRegisterButtonClicked: false,
-        ProjectBudgetHours: 0
+        ProjectBudgetHours: 0,
+        months: []
       }
     },
     FinanceManagement: {

@@ -8,7 +8,6 @@ import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
-import { NodeService } from 'src/app/node.service';
 import { Subscription } from 'rxjs';
 import { DataTable } from 'primeng/primeng';
 import { Router } from '@angular/router';
@@ -53,7 +52,6 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
         private cdr: ChangeDetectorRef,
-        private nodeService: NodeService,
         private platformLocation: PlatformLocation,
         private locationStrategy: LocationStrategy,
         private readonly _router: Router,

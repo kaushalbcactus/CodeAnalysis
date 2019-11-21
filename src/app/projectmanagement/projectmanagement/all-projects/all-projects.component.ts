@@ -1306,7 +1306,7 @@ export class AllProjectsComponent implements OnInit {
       type: '',
       listName: ''
     };
-    const piUdateData = {
+    const piUdateData: any = {
       __metadata: {
         type: this.constants.listNames.ProjectInformation.type
       },
@@ -1314,6 +1314,21 @@ export class AllProjectsComponent implements OnInit {
       PrevStatus: selectedProjectObj.Status,
       ActualStartDate: new Date()
     };
+    // logic to set current milestone for FTE-Writing project.
+    if (selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.FTE.value) {
+      const todayDate = new Date();
+      const monthNames = this.pmConstant.MONTH_NAMES;
+      const todayMonthsName = monthNames[todayDate.getMonth()];
+      selectedProjectObj.monthName = todayMonthsName;
+      if (selectedProjectObj.Milestones) {
+        const firstMilestone = selectedProjectObj.Milestones.split(';#');
+        if (firstMilestone[0] === todayMonthsName) {
+          piUdateData.Milestone = firstMilestone[0];
+          piUdateData.Status = this.constants.projectStatus.InProgress;
+          this.changeMilestoneStatusFTE(selectedProjectObj);
+        }
+      }
+    }
     const piUpdate = Object.assign({}, options);
     piUpdate.data = piUdateData;
     piUpdate.listName = this.constants.listNames.ProjectInformation.name;
@@ -1350,6 +1365,56 @@ export class AllProjectsComponent implements OnInit {
         this.router.navigate(['/projectMgmt/allProjects']);
       }
     }, this.pmConstant.TIME_OUT);
+  }
+
+  async changeMilestoneStatusFTE(selectedProjectObj) {
+    const scheduleFilter = Object.assign({}, this.pmConstant.QUERY.GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE);
+    scheduleFilter.filter = scheduleFilter.filter.replace(/{{projectCode}}/gi, selectedProjectObj.ProjectCode);
+    const sResult = await this.spServices.readItems(this.constants.listNames.Schedules.name, scheduleFilter);
+    if (sResult && sResult.length > 0) {
+      const filterResult = sResult.filter(a => a.Title.indexOf(selectedProjectObj.monthName) > -1);
+      const batchURL = [];
+      const options = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
+      const statusUpdateScheduleList = {
+        __metadata: {
+          type: this.constants.listNames.Schedules.type
+        },
+        Status: this.constants.STATUS.IN_PROGRESS
+      };
+      const statusCompletedScheduleList = {
+        __metadata: {
+          type: this.constants.listNames.Schedules.type
+        },
+        Status: this.constants.STATUS.COMPLETED
+      };
+      filterResult.forEach(element => {
+        if (element.Task !== this.pmConstant.task.BLOCKING) {
+          const scheduleStatusUpdate = Object.assign({}, options);
+          scheduleStatusUpdate.data = statusUpdateScheduleList;
+          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+          scheduleStatusUpdate.type = 'PATCH';
+          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scheduleStatusUpdate);
+        } else {
+          const scheduleStatusUpdate = Object.assign({}, options);
+          scheduleStatusUpdate.data = statusCompletedScheduleList;
+          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+          scheduleStatusUpdate.type = 'PATCH';
+          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scheduleStatusUpdate);
+        }
+      });
+      if (batchURL.length) {
+        await this.spServices.executeBatch(batchURL);
+      }
+    }
   }
   async changeProjectStatusAuditInProgress(selectedProjectObj) {
     const projectFinanceID = this.toUpdateIds[1] && this.toUpdateIds[1].retItems && this.toUpdateIds[1].retItems.length ?
@@ -1518,17 +1583,36 @@ export class AllProjectsComponent implements OnInit {
         type: '',
         listName: ''
       };
+      console.log(sResult);
       sResult.forEach(task => {
         if (!(task.Task === this.pmConstant.task.FOLLOW_UP && task.Task === this.pmConstant.task.SEND_TO_CLIENT)) {
           totalSpentTime += task.TimeSpent ? this.timeToMins(task.TimeSpent) : 0;
         }
         if (isScheduleListStatusUpdated) {
+          let newSubmilestones = task.SubMilestones;
+          if (task.SubMilestones && task.Milestone === 'Select one') {
+            newSubmilestones = '';
+            const replaceString = task.SubMilestones.indexOf(';#') > -1 ? task.SubMilestones.split(';#') : [];
+            replaceString.forEach(element => {
+              if (element) {
+                const subMilestoneTaskEle = element.split(':');
+                if (subMilestoneTaskEle.length && subMilestoneTaskEle[2] === this.constants.STATUS.IN_PROGRESS) {
+                  subMilestoneTaskEle[2] = this.constants.STATUS.COMPLETED;
+                }
+                if (subMilestoneTaskEle[2] === this.constants.STATUS.COMPLETED) {
+                  element = subMilestoneTaskEle.join(':');
+                  newSubmilestones += element + ';#';
+                }
+              }
+            });
+          }
           if (task.Status === this.constants.STATUS.NOT_CONFIRMED) {
             const scheduleData = {
               __metadata: {
                 type: this.constants.listNames.Schedules.type
               },
               Status: this.constants.STATUS.DELETED,
+              SubMilestones: newSubmilestones
             };
             const invoiceUpdate = Object.assign({}, options);
             invoiceUpdate.data = scheduleData;
@@ -1546,7 +1630,8 @@ export class AllProjectsComponent implements OnInit {
                 type: this.constants.listNames.Schedules.type
               },
               Status: this.constants.STATUS.AUTO_CLOSED,
-              ActiveCA: 'No'
+              ActiveCA: 'No',
+              SubMilestones: newSubmilestones
             };
             const invoiceUpdate = Object.assign({}, options);
             invoiceUpdate.data = scheduleData;
@@ -2068,9 +2153,6 @@ export class AllProjectsComponent implements OnInit {
 
     return resultArray;
   }
-
-
-
   getVendorNameById(freelancerVendersRes, ele) {
     const found = freelancerVendersRes.find((x) => {
       if (x.ID === ele.VendorFreelancer) {

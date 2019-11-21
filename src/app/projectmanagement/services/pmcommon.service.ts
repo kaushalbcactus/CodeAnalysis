@@ -565,14 +565,14 @@ export class PMCommonService {
     let objProjectTask = '';
     const allOperationId = [];
     allOperationId.push(this.pmObject.currLoginInfo.Id);
-    addObj.ProjectAttributes.ActiveCM1 = addObj.ProjectAttributes.ActiveCM1.filter(function (el) {
+    addObj.ProjectAttributes.ActiveCM1 = addObj.ProjectAttributes.ActiveCM1.filter((el) => {
       return el != null;
     });
     addObj.ProjectAttributes.ActiveCM1.forEach(element => {
       allOperationId.push(element);
     });
     if (addObj.ProjectAttributes.ActiveDelivery1 && addObj.ProjectAttributes.ActiveDelivery1.length) {
-      addObj.ProjectAttributes.ActiveDelivery1 = addObj.ProjectAttributes.ActiveDelivery1.filter(function (el) {
+      addObj.ProjectAttributes.ActiveDelivery1 = addObj.ProjectAttributes.ActiveDelivery1.filter((el) => {
         return el != null;
       });
       addObj.ProjectAttributes.ActiveDelivery1.forEach(element => {
@@ -627,7 +627,15 @@ export class PMCommonService {
     };
     if (isCreate) {
       data.SOWCode = addObj.SOWSelect.SOWCode;
-      data.Milestones = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.Milestones : '';
+      // data.Milestones = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.Milestones : '';
+      if (addObj.Timeline.Standard.IsStandard) {
+        data.Milestones = addObj.Timeline.Standard.Milestones;
+      }
+      // changes for FTE Projects.
+      if (addObj.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
+        const monthNameArray = this.pmObject.addProject.Timeline.NonStandard.months.map(a => a.monthName);
+        data.Milestones = monthNameArray.join(';#');
+      }
       data.DeliverableType = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.DeliverableType :
         addObj.Timeline.NonStandard.DeliverableType;
       data.ProjectType = addObj.ProjectAttributes.BilledBy;
@@ -891,11 +899,24 @@ export class PMCommonService {
     this.pmObject.addProject.FinanceManagement.isBudgetRateAdded = false;
     this.pmObject.addProject.SOWSelect.GlobalFilterValue = '';
   }
-  setBilledBy() {
-    this.pmObject.billedBy = [
-      { label: this.pmConstant.PROJECT_TYPE.DELIVERABLE.display, value: this.pmConstant.PROJECT_TYPE.DELIVERABLE.value },
-      { label: this.pmConstant.PROJECT_TYPE.HOURLY.display, value: this.pmConstant.PROJECT_TYPE.HOURLY.value }
-    ];
+  async setBilledBy() {
+    // this.pmObject.billedBy = [
+    //   { label: this.pmConstant.PROJECT_TYPE.DELIVERABLE.display, value: this.pmConstant.PROJECT_TYPE.DELIVERABLE.value },
+    //   { label: this.pmConstant.PROJECT_TYPE.HOURLY.display, value: this.pmConstant.PROJECT_TYPE.HOURLY.value }
+    // ];
+    this.pmObject.billedBy = [];
+    // get items from project contacts type.
+    const contentFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.GET_PROJECT_TYPE);
+    // tslint:disable-next-line:max-line-length
+    contentFilter.filter = contentFilter.filter.replace(/{{isActive}}/gi, 'Yes');
+    const sResults = await this.spServices.readItems(this.constant.listNames.ProjectType.name, contentFilter);
+    if (sResults && sResults.length) {
+      const tempResult = [];
+      sResults.forEach(element => {
+        tempResult.push({ label: element.Title.split('-')[0], value: element.Title });
+      });
+      this.pmObject.billedBy = tempResult;
+    }
   }
   async validateAndSave() {
     this.pmObject.isMainLoaderHidden = false;
@@ -1415,10 +1436,17 @@ export class PMCommonService {
       batchResults = await this.spServices.executeBatch(batchURL);
       finalArray = [...finalArray, ...batchResults];
     }
+    // Logic for creating Milestone and Task for FTE-Writing.
+    if (this.pmObject.addProject.FinanceManagement.BilledBy ===
+      this.pmConstant.PROJECT_TYPE.FTE.value) {
+      batchResults = await this.createFTEMilestones(response);
+      finalArray = [...finalArray, ...batchResults];
+    }
     await this.moveMilestoneAndTask(finalArray);
   }
   async moveMilestoneAndTask(results) {
-    if (results && results.length && this.pmObject.addProject.Timeline.Standard.IsStandard) {
+    if (results && results.length && (this.pmObject.addProject.Timeline.Standard.IsStandard ||
+      this.pmObject.addProject.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value)) {
       let batchURL = [];
       let batchResults = [];
       let finalArray = [];
@@ -1495,6 +1523,85 @@ export class PMCommonService {
     //     this.router.navigate(['/projectMgmt/allProjects']);
     //   }
     // }, this.pmConstant.TIME_OUT);
+  }
+  async createFTEMilestones(response) {
+    const monthObjArray = this.pmObject.addProject.Timeline.NonStandard.months;
+    const options = {
+      data: null,
+      url: '',
+      type: '',
+      listName: ''
+    };
+    const batchURL = [];
+    const projectCode = this.pmObject.addProject.ProjectAttributes.ProjectCode;
+    monthObjArray.forEach(element => {
+      const milestonedata = this.getFTEMilestoneData(element, projectCode);
+      const milestoneCreate = Object.assign({}, options);
+      milestoneCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+      milestoneCreate.data = milestonedata;
+      milestoneCreate.type = 'POST';
+      milestoneCreate.listName = this.constant.listNames.Schedules.name;
+      batchURL.push(milestoneCreate);
+      // create the milestone folder.
+      const milestoneFolderBody = {
+        __metadata: { type: 'SP.Folder' },
+        ServerRelativeUrl: response[11].listName + '/' + element.monthName
+      };
+      const createForderObj = Object.assign({}, options);
+      createForderObj.data = milestoneFolderBody;
+      // createForderObj.listName = element;
+      createForderObj.type = 'POST';
+      createForderObj.url = this.spServices.getFolderCreationURL();
+      batchURL.push(createForderObj);
+      // create FTE Task.
+      const taskdata = this.getFTETask(element, projectCode);
+      const taskCreate = Object.assign({}, options);
+      taskCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+      taskCreate.data = taskdata;
+      taskCreate.type = 'POST';
+      taskCreate.listName = this.constant.listNames.Schedules.name;
+      batchURL.push(taskCreate);
+    });
+    if (batchURL.length) {
+      const results = await this.spServices.executeBatch(batchURL);
+      return results;
+    }
+  }
+  getFTEMilestoneData(fteObj, projectCode) {
+    const data = {
+      __metadata: { type: this.constant.listNames.Schedules.type },
+      Actual_x0020_Start_x0020_Date: fteObj.monthStartDay,
+      Actual_x0020_End_x0020_Date: fteObj.monthEndDay,
+      StartDate: fteObj.monthStartDay,
+      DueDate: fteObj.monthEndDay,
+      Status: this.constant.STATUS.NOT_CONFIRMED,
+      ProjectCode: projectCode,
+      Title: fteObj.monthName,
+      FileSystemObjectType: 1,
+      ContentTypeId: '0x0120'
+    };
+    return data;
+  }
+  getFTETask(fteObj, projectCode) {
+    const businessDay = this.commonService.calcBusinessDays(fteObj.monthStartDay, fteObj.monthEndDay);
+    const resourceObj: any = this.pmObject.addProject.Timeline.NonStandard.ResourceName;
+    const data: any = {
+      __metadata: { type: this.constant.listNames.Schedules.type },
+      StartDate: fteObj.monthStartDay,
+      DueDate: fteObj.monthEndDay,
+      ExpectedTime: '' + businessDay * resourceObj.MaxHrs,
+      TimeZone: '' + resourceObj.TimeZone.Title,
+      TATBusinessDays: businessDay,
+      Status: this.constant.STATUS.NOT_CONFIRMED,
+      Title: projectCode + ' ' + fteObj.monthName + ' ' + this.pmConstant.task.BLOCKING,
+      ProjectCode: projectCode,
+      Task: this.pmConstant.task.BLOCKING,
+      Milestone: fteObj.monthName,
+      AssignedToId: resourceObj.UserName.ID,
+      IsCentrallyAllocated: 'No',
+      ActiveCA: 'No'
+    };
+    return data;
   }
   /**
    * This function is used to get the milestone obj.
@@ -1702,5 +1809,40 @@ export class PMCommonService {
       return result;
     });
     return data;
+  }
+  monthDifference(dateFrom, dateTo) {
+    return dateTo.getMonth() - dateFrom.getMonth() +
+      (12 * (dateTo.getFullYear() - dateFrom.getFullYear()));
+  }
+  getMonths(fromDate, toDate) { /// https://jsfiddle.net/fvkcxsdb/1/
+    const fromYear = fromDate.getFullYear();
+    const fromMonth = fromDate.getMonth();
+    const toYear = toDate.getFullYear();
+    const toMonth = toDate.getMonth();
+    const months = [];
+    const monthNames = this.pmConstant.MONTH_NAMES;
+    for (let year = fromYear; year <= toYear; year++) {
+      let month = year === fromYear ? fromMonth : 0;
+      const monthLimit = year === toYear ? toMonth : 11;
+      for (; month <= monthLimit; month++) {
+        // const monthStartDay = new Date(year, month, 1);
+        // const monthEndDay = new Date(year, month + 1, 0);
+        let monthStartDay = new Date();
+        let monthEndDay = new Date();
+        if (month === fromMonth) {
+          monthStartDay = new Date(year, month, fromDate.getDate());
+        } else {
+          monthStartDay = new Date(year, month, 1);
+        }
+        if (month === toMonth) {
+          monthEndDay = new Date(year, month, toDate.getDate());
+        } else {
+          monthEndDay = new Date(year, month + 1, 0);
+        }
+        const monthName = monthNames[month];
+        months.push({ year, month, monthName, monthStartDay, monthEndDay });
+      }
+    }
+    return months;
   }
 }
