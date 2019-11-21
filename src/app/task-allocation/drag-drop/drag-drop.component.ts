@@ -127,18 +127,15 @@ export class DragDropComponent implements OnInit {
                 IsCentrallyAllocated: element.data.IsCentrallyAllocated,
                 status: element.data.status,
               };
-
-              if (element.children === undefined) {
-                this.submilestoneIndex = 0;
-                this.onPageLoad(temp1);
-              } else {
+              element.children = element.children ? element.children.filter(t => !t.data.parentSlot) : [];
+              if (element.children.length) {
                 if (temp1.position !== undefined) {
                   this.tempSubmileArray.push(temp1);
                 }
                 // tslint:disable-next-line: no-shadowed-variable
-                element.children.forEach(element => {
+                element.children.forEach(obj => {
                   if (temp1.status === undefined || temp1.status !== 'Not Confirmed' || temp1.status !== 'Not Started') {
-                    temp1.status = element.data.status;
+                    temp1.status = obj.data.status;
                   }
                 });
                 this.onDrop(temp1, element.data.type, true);
@@ -164,7 +161,9 @@ export class DragDropComponent implements OnInit {
                   links = this.loadLinks(element.data, links).splice(0);
                 });
                 this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [...links];
-
+              } else {
+                this.submilestoneIndex = 0;
+                this.onPageLoad(temp1);
               }
 
             });
@@ -437,7 +436,7 @@ export class DragDropComponent implements OnInit {
         previousnode = miletype === 'milestone' ? this.milestonesGraph.nodes.map(c => c.id).filter(c => !this.milestonesGraph.links.map(c => c.source).includes(c)) : this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.map(c => c.id).filter(c => !this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.map(c => c.source).includes(c));
       }
 
-      
+
       var node = {
         id: previousnode === null ? '1' : (parseInt(previousnode[previousnode.length - 1]) + 1).toString(),
         dbId: event.id !== undefined ? event.id : 0,
@@ -485,7 +484,7 @@ export class DragDropComponent implements OnInit {
       }
     }
     else {
-      
+
       node = {
         id: '1',
         dbId: event.id !== undefined ? event.id : 0,
@@ -1007,8 +1006,8 @@ export class DragDropComponent implements OnInit {
 
   onTaskDrop(event) {
     const MilTask = this.sharedObject.oTaskAllocation.allTasks.find(c => c.Title === event.data);
-    const originalType = MilTask.TaskType === 'Both' || MilTask.TaskType === 'Slot' ?  event.data.charAt(0) + 'Slot' : event.data;
-    event.data = event.data === 'Send to client' ? 'SC' : MilTask.TaskType === 'Both' || MilTask.TaskType === 'Slot' ?  event.data.charAt(0) + 'Slot' : event.data;
+    const originalType = event.data; // MilTask.TaskType === 'Both' || MilTask.TaskType === 'Slot' ?  event.data.charAt(0) + 'Slot' : event.data;
+    event.data = event.data === 'Send to client' ? 'SC' : event.data; // MilTask.TaskType === 'Both' || MilTask.TaskType === 'Slot' ?  event.data.charAt(0) + 'Slot' : event.data;
     if (this.selectedSubMilestone !== 'Default' && event.data === 'Client Review') {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Drop Client Review only in Default submilestone.' });
       return false;
@@ -1016,7 +1015,7 @@ export class DragDropComponent implements OnInit {
     else if ((this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length > 1 && this.selectedSubMilestone !== 'Default') || this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length === 1 || (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length > 1 && this.selectedSubMilestone === 'Default' && event.data === 'Client Review')) {
       var subMilestone = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex];
       const CentrallyAllocated = MilTask !== undefined ? MilTask.IsCentrallyAllocated !== null ? MilTask.IsCentrallyAllocated : 'No' : 'No';
-     
+
       var clPresnet = subMilestone.task.nodes.find(e => (e.taskType === 'Client Review' && event.data === 'Client Review'));
       if (clPresnet) {
         this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Client Review already present' });
@@ -1024,23 +1023,22 @@ export class DragDropComponent implements OnInit {
       }
 
       if (!this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === originalType)) {
-        this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push({ type: originalType, tasks: [], slotType: MilTask.TaskType})
+        this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push({ type: originalType, tasks: [], slotType: MilTask.TaskType })
       }
 
-      const TaskOfType  = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === originalType).tasks;
+      const TaskOfType = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === originalType).tasks;
       var count = TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).length > 0 ?
-      TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
+        TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
           Math.max.apply(null, TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
-     let node = null;
-     const label = count > 0 ? event.data + ' ' + (count + 1) : event.data
-      if (subMilestone.task.nodes.length) {        
+      let node = null;
+      const label = count > 0 ? event.data + ' ' + (count + 1) : event.data
+      if (subMilestone.task.nodes.length) {
         node = {
           id: (this.getMaxNodeID() + 1).toString(),
           dbId: event.id !== undefined ? event.id : 0,
           label: label,
-          //position: this.previoustaskeventdd !== null ? 'x' + (parseInt(this.previoustaskeventdd.id) + 1) : previoustasknode !== undefined ?   'x'+(parseInt(previoustasknode[previoustasknode.length-1]) + 1).toString():'x100',
           color: '#e2e2e2',
-          taskType: MilTask.TaskType === 'Both' ? MilTask.DefaultSkill : originalType,
+          taskType:  originalType, //MilTask.TaskType === 'Both' ? MilTask.DefaultSkill :
           top: 0,
           left: 0,
           status: 'Not Saved',
@@ -1054,9 +1052,8 @@ export class DragDropComponent implements OnInit {
           id: '1',
           dbId: event.id !== undefined ? event.id : 0,
           label: label,
-          //position: 'x1',
           color: '#e2e2e2',
-          taskType: MilTask.TaskType === 'Both' ? MilTask.DefaultSkill : originalType,
+          taskType: originalType, //MilTask.TaskType === 'Both' ? MilTask.DefaultSkill : 
           top: 0,
           left: 0,
           status: 'Not Saved',
@@ -1067,14 +1064,14 @@ export class DragDropComponent implements OnInit {
       }
       this.recentEventNode = node.id;
       node.label = node.label.replace(/[0-9]/g, '').trim() === 'Client Review' ? node.label.replace(/[0-9]/g, '').trim() : node.label;
-     // this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push(node.label);
+      // this.milestonesGraph.nodes[this.milestoneIndex].allTasks.push(node.label);
 
       let existObject = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === node.taskType);
-      if(MilTask.TaskType === 'Both'){ 
-        existObject = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === node.label);
-      } else {
-        existObject = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === node.taskType);
-      }
+      // if(MilTask.TaskType === 'Both'){ 
+      //   existObject = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === node.label);
+      // } else {
+      existObject = this.milestonesGraph.nodes[this.milestoneIndex].allTasks.find(c => c.type === node.taskType);
+      // }
       if (existObject) {
         existObject.tasks.push(node.label);
       }
@@ -1555,10 +1552,10 @@ export class DragDropComponent implements OnInit {
         this.milestonesGraph.nodes[milestoneIndex].allTasks.push({ type: originalType, tasks: [] })
       }
 
-      const TaskOfType  = this.milestonesGraph.nodes[milestoneIndex].allTasks.find(c => c.type === originalType).tasks;
+      const TaskOfType = this.milestonesGraph.nodes[milestoneIndex].allTasks.find(c => c.type === originalType).tasks;
 
       var count = TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).length > 0 ?
-      TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
+        TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
           Math.max.apply(null, TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
       const MilTask = this.sharedObject.oTaskAllocation.allTasks.find(c => c.Title === originalType);
       const CentrallyAllocated = MilTask !== undefined ? MilTask.IsCentrallyAllocated !== null ? MilTask.IsCentrallyAllocated : 'No' : 'No';
