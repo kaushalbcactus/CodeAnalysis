@@ -722,14 +722,15 @@ export class ManageFinanceComponent implements OnInit {
 
     // if (retPOInfo.poRevenue) {
     if (this.unassignedBudget[0].total === 0 && this.unassignedBudget[0].revenue === 0) {
-      retPOInfo.total = retPOInfo.poRevenue + retPOInfo.oop + retPOInfo.tax;
       retPOInfo.revenue = retPOInfo.revenue + retPOInfo.poRevenue;
-      retPOInfo.oop = retPOInfo.oop + retPOInfo.oop;
-      retPOInfo.tax = retPOInfo.tax + retPOInfo.tax;
+      retPOInfo.total = retPOInfo.revenue + retPOInfo.oop + retPOInfo.tax;
+      retPOInfo.oop = retPOInfo.oop + retPOInfo.oop ? retPOInfo.oop : 0;
+      retPOInfo.tax = retPOInfo.tax + retPOInfo.tax ? retPOInfo.tax : 0;
     }
     if (this.unassignedBudget[0].total !== 0 && this.unassignedBudget[0].revenue !== 0) {
-      retPOInfo.total = retPOInfo.poRevenue + retPOInfo.oop + retPOInfo.tax;
+     
       retPOInfo.revenue = retPOInfo.revenue + retPOInfo.poRevenue;
+      retPOInfo.total = retPOInfo.revenue + retPOInfo.oop + retPOInfo.tax;
       retPOInfo.oop = retPOInfo.oop + retPOInfo.oop ? retPOInfo.oop : 0;
       retPOInfo.tax = retPOInfo.tax + retPOInfo.tax ? retPOInfo.tax : 0;
       this.unassignedBudget[0].total = this.unassignedBudget[0].total - retPOInfo.poRevenue; //- retPOInfo.oop - retPOInfo.tax;
