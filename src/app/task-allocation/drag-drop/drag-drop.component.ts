@@ -1006,8 +1006,8 @@ export class DragDropComponent implements OnInit {
 
   onTaskDrop(event) {
     const MilTask = this.sharedObject.oTaskAllocation.allTasks.find(c => c.Title === event.data);
-    const originalType = event.data; // MilTask.TaskType === 'Both' || MilTask.TaskType === 'Slot' ?  event.data.charAt(0) + 'Slot' : event.data;
-    event.data = event.data === 'Send to client' ? 'SC' : event.data; // MilTask.TaskType === 'Both' || MilTask.TaskType === 'Slot' ?  event.data.charAt(0) + 'Slot' : event.data;
+    const originalType = event.data; 
+    event.data = event.data === 'Send to client' ? 'SC' : event.data;
     if (this.selectedSubMilestone !== 'Default' && event.data === 'Client Review') {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Drop Client Review only in Default submilestone.' });
       return false;

@@ -416,10 +416,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
             const excludeSlotsListForHrs = [];
             for (const milestoneTask of milestoneTasks) {
               taskName = '';
-              if (milestoneTask.CentralAllocationDone === 'Yes') {
-                if (milestoneTask.Task.indexOf('Slot') > -1) {
+              if (milestoneTask.CentralAllocationDone === 'Yes' && milestoneTask.IsCentrallyAllocated === 'Yes') {
+                // if (milestoneTask.Task.indexOf('Slot') > -1) {
                   excludeSlotsListForHrs.push(milestoneTask.ID);
-                }
+                // }
               } else {
                 if (milestoneTask.ParentSlot) {
                   excludeSlotsListForHrs.push(milestoneTask.ID);
@@ -500,9 +500,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'pMile': 0,
                     'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title !== undefined ? milestoneTask.AssignedTo.Title : '--' : ' -- ',
                     'pComp': milestoneTask.Status === 'Not Confirmed' ? 0 : (milestoneTask.Status === 'Completed' ? 100 : milestoneTask.Status === 'In Progress' ? 50 : 0),
-                    'pGroup': milestoneTask.Task.toLowerCase().indexOf('slot') > -1 ? 1 : 0,
+                    'pGroup': milestoneTask.IsCentrallyAllocated === 'Yes' ? 1 : 0,
                     'pParent': milestoneTask.ParentSlot ? milestoneTask.ParentSlot : parseInt("1200000" + milestone.Id + index),
-                    'pOpen': milestoneTask.Task.toLowerCase().indexOf('slot') > -1 ? 0 : 1,
+                    'pOpen': milestoneTask.IsCentrallyAllocated === 'Yes' ? 0 : 1,
                     'pDepend': '',
                     'pCaption': '',
                     'pNotes': milestoneTask.Status,
@@ -538,7 +538,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
                     'deallocateCentral': false,
                     'parentSlot': milestoneTask.ParentSlot ? milestoneTask.ParentSlot : '',
-                    'slotType': milestoneTask.Task.toLowerCase().indexOf('slot') > -1 ? 'Slot' : 'Task',
+                    'slotType': milestoneTask.IsCentrallyAllocated === 'Yes' ? 'Slot' : 'Task',
                     'DisableCascade': milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes' ? true : false,
                     'slotColor': 'white',
                     'deallocateSlot': false
@@ -551,7 +551,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     // const tempObj = { 'data': GanttTaskObj };
                     // tempSubmilestones.push(tempObj);
                     let tempObj = {};
-                    if (GanttTaskObj.itemType.indexOf('Slot') > -1) {
+                    if (GanttTaskObj.IsCentrallyAllocated === 'Yes') {
                       const dummyExistingSlot = tempSubmilestones.find(s => s.data.pID === GanttTaskObj.pID);
                       if (dummyExistingSlot) {
                         dummyExistingSlot.data = Object.assign({}, GanttTaskObj);
@@ -611,10 +611,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
             const excludeSlotsListForHrs = [];
             for (const milestoneTask of DefaultTasks) {
               taskName = '';
-              if (milestoneTask.CentralAllocationDone === 'Yes') {
-                if (milestoneTask.Task.indexOf('Slot') > -1) {
+              if (milestoneTask.CentralAllocationDone === 'Yes' && milestoneTask.IsCentrallyAllocated === 'Yes') {
+                // if (milestoneTask.Task.indexOf('Slot') > -1) {
                   excludeSlotsListForHrs.push(milestoneTask.ID);
-                }
+                // }
               } else {
                 if (milestoneTask.ParentSlot) {
                   excludeSlotsListForHrs.push(milestoneTask.ID);
@@ -694,9 +694,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'pMile': 0,
                     'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title ? milestoneTask.AssignedTo.Title : ' -- ' : ' -- ',
                     'pComp': milestoneTask.Status === 'Not Confirmed' ? 0 : (milestoneTask.Status === 'Completed' ? 100 : milestoneTask.Status === 'In Progress' ? 50 : 0),
-                    'pGroup': milestoneTask.Task.toLowerCase().indexOf('slot') > -1 ? 1 : 0,
+                    'pGroup': milestoneTask.IsCentrallyAllocated === 'Yes' ? 1 : 0,
                     'pParent': milestoneTask.Task === 'Client Review' ? 0 : milestoneTask.ParentSlot ? milestoneTask.ParentSlot : milestone.Id,
-                    'pOpen': milestoneTask.Task.toLowerCase().indexOf('slot') > -1 ? 0 : 1,
+                    'pOpen': milestoneTask.IsCentrallyAllocated === 'Yes' ? 0 : 1,
                     'pDepend': '',
                     'pCaption': '',
                     'pNotes': milestoneTask.Status,
@@ -733,7 +733,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
                     'deallocateCentral': false,
                     'parentSlot': milestoneTask.ParentSlot ? milestoneTask.ParentSlot : '',
-                    'slotType': milestoneTask.Task.toLowerCase().indexOf('slot') > -1 ? 'Slot' : 'Task',
+                    'slotType': milestoneTask.IsCentrallyAllocated === 'Yes' ? 'Slot' : 'Task',
                     'DisableCascade': milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes' ? true : false,
                     'slotColor': 'white',
                     'deallocateSlot': false
@@ -746,7 +746,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
                   if (GanttTaskObj.itemType !== 'Client Review') {
                     let tempObj = {};
-                    if (GanttTaskObj.itemType.indexOf('Slot') > -1) {
+                    if (GanttTaskObj.IsCentrallyAllocated === 'Yes') {
                       const dummyExistingSlot = submile.find(s => s.data.pID === GanttTaskObj.pID);
                       if (dummyExistingSlot) {
                         dummyExistingSlot.data = Object.assign({}, GanttTaskObj);
@@ -894,10 +894,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
           for (const milestoneTask of milestoneTasks) {
             taskName = '';
 
-            if (milestoneTask.CentralAllocationDone === 'Yes') {
-              if (milestoneTask.Task.indexOf('Slot') > -1) {
+            if (milestoneTask.CentralAllocationDone === 'Yes' && milestoneTask.IsCentrallyAllocated === 'Yes') {
+              // if (milestoneTask.Task.indexOf('Slot') > -1) {
                 excludeSlotsListForHrs.push(milestoneTask.ID);
-              }
+              // }
             } else {
               if (milestoneTask.ParentSlot) {
                 excludeSlotsListForHrs.push(milestoneTask.ID);
@@ -977,9 +977,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   'pMile': 0,
                   'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title ? milestoneTask.AssignedTo.Title : ' -- ' : ' -- ',
                   'pComp': milestoneTask.Status === 'Not Confirmed' ? 0 : (milestoneTask.Status === 'Completed' ? 100 : milestoneTask.Status === 'In Progress' ? 50 : 0),
-                  'pGroup': milestoneTask.Task.toLowerCase().indexOf('slot') > -1 ? 1 : 0,
+                  'pGroup': milestoneTask.IsCentrallyAllocated === 'Yes' ? 1 : 0,
                   'pParent': milestoneTask.Task === 'Client Review' ? 0 : milestoneTask.ParentSlot ? milestoneTask.ParentSlot : milestone.Id,
-                  'pOpen': milestoneTask.Task.toLowerCase().indexOf('slot') > -1 ? 0 : 1,
+                  'pOpen': milestoneTask.IsCentrallyAllocated === 'Yes' ? 0 : 1,
                   'pDepend': milestoneTask.Task === 'Client Review' ? i : '',
                   'pCaption': '',
                   'pNotes': milestoneTask.Status,
@@ -1016,7 +1016,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   'deallocateCentral': false,
                   'parentSlot': milestoneTask.ParentSlot ? milestoneTask.ParentSlot : '',
                   'DisableCascade': milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes' ? true : false,
-                  'slotType': milestoneTask.Task.toLowerCase().indexOf('slot') > -1 ? 'Slot' : 'Task',
+                  'slotType': milestoneTask.IsCentrallyAllocated === 'Yes' ? 'Slot' : 'Task',
                   'slotColor': 'white',
                   'deallocateSlot': false
                 };
@@ -1036,7 +1036,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   // const tempObj = { 'data': GanttTaskObj };
                   // tempSubmilestones.push(tempObj);
                   let tempObj = {};
-                  if (GanttTaskObj.itemType.indexOf('Slot') > -1) {
+                  if (GanttTaskObj.IsCentrallyAllocated === 'Yes') {
                     const dummyExistingSlot = tempSubmilestones.find(s => s.data.pID === GanttTaskObj.pID);
                     if (dummyExistingSlot) {
                       dummyExistingSlot.data = Object.assign({}, GanttTaskObj);
@@ -2376,14 +2376,15 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   async compareSlotSubTasksTimeline(sentPrevNode, element, subMilestonePosition, selectedMil) {
-    const slot = this.milestoneData[selectedMil].children.find(st => st.data.pID === sentPrevNode.pID);
-    let slotFirstTask = slot ? slot.children.filter(st => !st.data.previousTask) : [];
+    const slot = subMilestonePosition === 0 ? this.milestoneData[selectedMil].children.find(st => st.data.pName === sentPrevNode.pName) :
+                 this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.pName === sentPrevNode.pName);
+    let slotFirstTask = slot ? slot.children ? slot.children.filter(st => !st.data.previousTask) : [] : [];
     if (slotFirstTask.length) {
-      if (sentPrevNode.pUserStart > slotFirstTask[0].data.pUserStart) {
-        sentPrevNode.slotColor = "#FF3E56";
-      } else {
-        sentPrevNode.slotColor = "#6EDC6C";
-      }
+      // if (sentPrevNode.pStart > slotFirstTask[0].data.pStart) {
+      //   sentPrevNode.slotColor = "#FF3E56";
+      // } else {
+      //   sentPrevNode.slotColor = "#6EDC6C";
+      // }
       slot.children.forEach(async subTask => {
         if (!subTask.data.DisableCascade) {
           if (!subTask.data.previousTask) {
@@ -2391,18 +2392,17 @@ export class TimelineComponent implements OnInit, OnDestroy {
           }
           if (!subTask.data.nextTask) {
             await this.cascadeNextTask(subTask, element, subMilestonePosition, selectedMil);
-            // if (subTask.data.pEnd > slot.data.pEnd) {
-            slot.data.pUserEnd = this.checkEndDate(subTask.data.pUserEnd, 0);
-            slot.data.pUserEndDatePart = this.getDatePart(slot.data.pUserEnd);
-            slot.data.pUserEndTimePart = this.getTimePart(slot.data.pUserEnd);
-            slot.data.pEnd = this.commonService.calcTimeForDifferentTimeZone(slot.data.pUserEnd,
-              slot.data.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-            // }
+            // slot.data.pUserEnd = this.checkEndDate(subTask.data.pUserEnd, 0);
+            // slot.data.pUserEndDatePart = this.getDatePart(slot.data.pUserEnd);
+            // slot.data.pUserEndTimePart = this.getTimePart(slot.data.pUserEnd);
+            // slot.data.pEnd = this.commonService.calcTimeForDifferentTimeZone(slot.data.pUserEnd,
+            //   slot.data.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+           
           }
         }
       });
       if (slotFirstTask[0].data.AssignedTo.ID && slotFirstTask[0].data.AssignedTo.ID !== -1) {
-        await this.checkTaskResourceAvailability(slot, selectedMil)
+        await this.checkTaskResourceAvailability(slot, subMilestonePosition, selectedMil)
       }
     } else {
       // if slot does not have any child
@@ -2410,9 +2410,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
   }
 
-  async checkTaskResourceAvailability(slot, selectedMil) {
+  async checkTaskResourceAvailability(slot, subMilestonePosition, selectedMil) {
     let deallocateSlot = false;
-    const oldSlot = this.tempmilestoneData[selectedMil].children.find(s => s.data.pID === slot.data.pID);
+    const oldSlot = subMilestonePosition === 0 ? this.tempmilestoneData[selectedMil].children.find(s => s.data.pName === slot.data.pName) : 
+                    this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.pName === slot.data.pName);
     const slotTasks = slot.children;
     for (const task of slotTasks) {
       if (task.data.AssignedTo.ID && task.data.AssignedTo.ID !== -1) {
@@ -2426,14 +2427,14 @@ export class TimelineComponent implements OnInit, OnDestroy {
             || (task.data.pUserStart <= tsk.StartDate && task.data.pUserEnd >= tsk.StartDate)
             || (task.data.pUserStart >= tsk.StartDate && task.data.pUserEnd <= tsk.DueDate));
         });
-        retTask = retTask.filter(t => t.ID !== task.data.parentSlot && t.ParentSlot !== task.data.parentSlot && t.Task.indexOf('Slot') > -1);
+        retTask = retTask.filter(t => t.ID !== task.data.parentSlot && t.ParentSlot !== task.data.parentSlot);
         if (retTask.length || deallocateSlot) {
+          slot.slotColor = "#FF3E56";
           deallocateSlot = true;
           task.data.deallocateCentral = true;
           task.data.previousAssignedUser = task.data.AssignedTo.ID ? task.data.AssignedTo.ID : '-1';
-          // this.sendCentralTaskMail(this.oProjectDetails, task, 'Central task deallocated'
-          //   + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'Central task deallocated', 'CentralTaskCreation');
         } else {
+          slot.slotColor = "#6EDC6C";
           deallocateSlot = false;
         }
       }
@@ -2457,7 +2458,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       milestoneMailObj.preEndDate = this.datepipe.transform(oldSlot.data.pEnd, 'MMM dd yyyy hh:mm:ss a');
       milestoneMailObj.newStDate = this.datepipe.transform(slot.data.pStart, 'MMM dd yyyy hh:mm:ss a');
       milestoneMailObj.newEndDate = this.datepipe.transform(slot.data.pEnd, 'MMM dd yyyy hh:mm:ss a');
-      milestoneMailObj.assginedTo = slot.data.skillLevel;
+      milestoneMailObj.assginedTo = '--';
       this.reallocationMailData.push(milestoneMailObj);
       const oldSubTasks = oldSlot.children;
 
@@ -2486,7 +2487,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
   async cascadeNextTask(previousNode, nextNode, subMilestonePosition, selectedMil) {
     const nodeData = nextNode.hasOwnProperty('data') ? nextNode.data : nextNode;
     const prevNodeData = previousNode.hasOwnProperty('data') ? previousNode.data : previousNode;
-    // prevNodeData.pEnd = prevNodeData.slotType === 'Slot' ? prevNodeData.pStart : prevNodeData.pEnd;
     const prevNodeEndDate = ((prevNodeData.slotType === 'Slot' && !prevNodeData.clickedInput && nodeData.parentSlot)
       || (prevNodeData.slotType === 'Slot' && prevNodeData.clickedInput && prevNodeData.clickedInput === 'start' && nodeData.parentSlot) ?
       new Date(prevNodeData.pStart) : new Date(prevNodeData.pEnd));
@@ -2967,25 +2967,24 @@ export class TimelineComponent implements OnInit, OnDestroy {
       milestoneTask.assignedUserChanged = false;
     }
 
-    if (milestoneTask.IsCentrallyAllocated === 'Yes' && milestoneTask.status === 'Not Started') {
+    if (bAdd && milestoneTask.IsCentrallyAllocated === 'Yes') {
       milestoneTask.ActiveCA = 'Yes';
-      // if (bAdd) {
-      //   // debugger
-      //   //// send task creation email
-      //   this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, 'New central task created'
-      //     + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'New central task created');
-      // } else
-      if (!bAdd && milestoneTask.CentralAllocationDone === 'Yes' && milestoneTask.deallocateCentral) {
-        milestoneTask.CentralAllocationDone = 'No';
-        milestoneTask.AssignedTo.ID = -1;
-        const timeZone = milestoneTask.assignedUserTimeZone;
-        if (parseFloat(timeZone) !== 5.5) {
-          milestoneTask.assignedUserTimeZone = 5.5;
-        }
+    }
+    if (!bAdd && milestoneTask.CentralAllocationDone === 'Yes' && milestoneTask.deallocateCentral
+      && milestoneTask.status === 'Not Started') {
+      milestoneTask.CentralAllocationDone = 'No';
+      milestoneTask.AssignedTo.ID = -1;
+      milestoneTask.ActiveCA = 'No';
+      const timeZone = milestoneTask.assignedUserTimeZone;
+      if (parseFloat(timeZone) !== 5.5) {
+        milestoneTask.assignedUserTimeZone = 5.5;
+      }
+      if (milestoneTask.IsCentrallyAllocated === 'No') {
         this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, 'Central task deallocated'
           + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'Central task deallocated', 'CentralTaskCreation');
       }
     }
+    // }
     if (bAdd) {
       const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
       milestoneTask.itemType = milestoneTask.itemType;
@@ -3067,23 +3066,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   setMilestoneForAddUpdate(sentMilestone, bAdd) {
     let currentMilestone = sentMilestone.data;
-    // let arrSubMil = [];
-    // if (sentMilestone.children !== undefined) {
-    //   for (var nCountSub = 0; nCountSub < sentMilestone.children.length; nCountSub = nCountSub + 1) {
-    //     var submilestone = sentMilestone.children[nCountSub];
-    //     submilestone.data.status = submilestone.data.status === 'Not Saved' ? 'Not Confirmed' : submilestone.data.status;
-    //     if (submilestone.data.type !== 'task') {
-    //       arrSubMil.push(submilestone.data.pName + ':' + submilestone.data.position + ':' + submilestone.data.status);
-    //     }
-    //   }
-    // }
-    // if (arrSubMil.length) {
-    //   currentMilestone.submilestone = arrSubMil.join(';#');
-    // }
-    // else {
-    //   currentMilestone.submilestone = '';
-    // }
-    // const batchUrl = [];
     let url = '';
     let data = {};
     currentMilestone.submilestone = this.getSubMilestoneStatus(sentMilestone, '').join(';#');
@@ -3125,12 +3107,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
         ContentTypeId: "0x0120",
         SubMilestones: currentMilestone.submilestone
       };
-      // const addMilObj = Object.assign({}, this.queryConfig);
-      // addMilObj.url = this.spServices.getReadURL(this.constants.listNames.Schedules.name);
-      // addMilObj.listName = this.constants.listNames.Schedules.name;
-      // addMilObj.type = 'POST';
-      // addMilObj.data = addData;
-      // batchUrl.push(addMilObj);
       url = this.spServices.getReadURL(this.constants.listNames.Schedules.name);
       data = addData;
     }
