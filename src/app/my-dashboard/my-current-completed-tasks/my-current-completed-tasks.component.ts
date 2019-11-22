@@ -14,6 +14,7 @@ import { PreviosNextTasksDialogComponent } from '../previos-next-tasks-dialog/pr
 import { Table } from 'primeng/table';
 import { FeedbackPopupComponent } from '../../qms/qms/reviewer-detail-view/feedback-popup/feedback-popup.component';
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
+import { Subscription } from 'rxjs';
 
 
 interface DateObj {
@@ -30,6 +31,49 @@ interface DateObj {
 })
 
 export class MyCurrentCompletedTasksComponent implements OnInit {
+
+  // yearsRange = new Date().getFullYear() + ':' + (new Date().getFullYear() + 10);
+  constructor(
+    public myDashboardConstantsService: MyDashboardConstantsService,
+    private constants: ConstantsService,
+    public sharedObject: GlobalService,
+    private datePipe: DatePipe,
+    private spServices: SPOperationService,
+    private commonService: CommonService,
+    public messageService: MessageService,
+    private route: ActivatedRoute,
+    public dialogService: DialogService,
+    private confirmationService: ConfirmationService,
+    public spOperations: SPOperationService,
+    private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone,
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    _router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+    const obj = this.myDashboardConstantsService.openTaskSelectedTab;
+    console.log(obj);
+
+    this.subscription.add(this.myDashboardConstantsService.getOpenTaskTabValue().subscribe(data => {
+      console.log('in subscription ', data);
+      this.GetDatabyDateSelection(data.event, data.days);
+    }));
+
+  }
+
+  // List of Subscribers
+  private subscription: Subscription = new Subscription();
 
   selectedDueDate: DateObj;
   selectedStartDate: DateObj;
@@ -77,38 +121,17 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   tempselectedDate: string;
   tempClick: any;
 
-  // yearsRange = new Date().getFullYear() + ':' + (new Date().getFullYear() + 10);
-  constructor(
-    private myDashboardConstantsService: MyDashboardConstantsService,
-    private constants: ConstantsService,
-    public sharedObject: GlobalService,
-    private datePipe: DatePipe,
-    private spServices: SPOperationService,
-    private commonService: CommonService,
-    public messageService: MessageService,
-    private route: ActivatedRoute,
-    public dialogService: DialogService,
-    private confirmationService: ConfirmationService,
-    public spOperations: SPOperationService,
-    private cdr: ChangeDetectorRef,
-    private platformLocation: PlatformLocation,
-    private locationStrategy: LocationStrategy,
-    private readonly _router: Router,
-    _applicationRef: ApplicationRef,
-    zone: NgZone,
-  ) {
 
-    // Browser back button disabled & bookmark issue solution
-    history.pushState(null, null, window.location.href);
-    platformLocation.onPopState(() => {
-      history.pushState(null, null, window.location.href);
-    });
+  isOptionFilter: boolean;
 
-    _router.events.subscribe((uri) => {
-      zone.run(() => _applicationRef.tick());
-    });
+  previousNextTaskChildRes: any = [];
 
-  }
+  options = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
 
   ngOnInit() {
     this.cols = [
@@ -123,7 +146,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       { field: 'TimeSpent', header: 'Time Spent', visibility: true, exportable: true },
     ];
     this.myDashboardConstantsService.getEmailTemplate();
-
   }
 
 
@@ -147,14 +169,15 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   // *************************************************************************************************************************************
 
   GetDatabyDateSelection(event, days) {
-    this.TabName = this.route.snapshot.data.type;
+    // this.myDashboardConstantsService.openTaskSelectedTab['event'] = event;
+    // this.myDashboardConstantsService.openTaskSelectedTab['days'] = days;
 
+    this.TabName = this.route.snapshot.data.type;
     this.days = days;
     this.selectedTab = event;
     this.selectedDate = days > 0 ? event + days : event;
     this.rangeDates = event === 'Custom' ? this.rangeDates : null;
     if (event === 'Custom' && this.rangeDates !== null) {
-
       this.allTasks = [];
       this.loaderenable = true;
       this.rangeDates[1] = this.rangeDates[1] === null ? this.rangeDates[0] : this.rangeDates[1];
@@ -330,7 +353,8 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
           SubMilestones: task.SubMilestones,
           Task: task.Task,
           TaskComments: task.TaskComments,
-          Title: task.Title
+          Title: task.Title,
+          ParentSlot: task.ParentSlot
         });
       });
       this.allTasks = data;
@@ -463,16 +487,46 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     let previousTaskFilter = '';
     let nextTasks;
     let previousTasks;
-    if (task.NextTasks) {
-      nextTasks = task.NextTasks.split(';#');
+    let currentTaskNextTask = task.NextTasks;
+    let currentTaskPrevTask = task.PrevTasks;
+
+    if (task.ParentSlot) {
+      // const parentIds = this.tasks.filter(item => item.ParentSlot);
+      // if (parentIds.length) {
+      // let parentPreviousNextTask: any = [];
+      // parentIds.forEach(ele => {
+      const parentPreviousNextTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTaskParent);
+      parentPreviousNextTask.filter = parentPreviousNextTask.filter.replace('{{ParentSlotId}}', task.ParentSlot);
+      // });
+      const parentNPTasks = await this.spServices.readItems(this.constants.listNames.Schedules.name, parentPreviousNextTask);
+      console.log(parentNPTasks);
+      const parentNPTask = parentNPTasks.length ? parentNPTasks[0] : [];
+      if (!currentTaskNextTask) {
+        currentTaskNextTask = parentNPTask.NextTasks;
+      }
+      if (!currentTaskPrevTask) {
+        currentTaskPrevTask = parentNPTask.PrevTasks;
+      }
+      // const pNextTasks = parentNPTask.filter((item) => { if (item.PrevTasks === null) { item['TaskType'] = 'Next task'; return item; } });
+      // this.tasks = this.tasks.concat(pNextTasks);
+      // console.log('pNextTasks ', pNextTasks);
+      // const pPrevTasks = parentNPTask.filter((item) => { if (item.NextTasks === null) { item['TaskType'] = 'Prev task'; return item; } });
+      // this.tasks = this.tasks.concat(pPrevTasks);
+      // console.log('pPrevTasks ', pPrevTasks);
+      // }
+    }
+
+
+    if (currentTaskNextTask) {
+      nextTasks = currentTaskNextTask.split(';#');
       nextTasks.forEach((value, i) => {
         // tslint:disable-next-line: quotemark
         nextTaskFilter += "(Title eq '" + value + "')";
         nextTaskFilter += i < nextTasks.length - 1 ? ' or ' : '';
       });
     }
-    if (task.PrevTasks) {
-      previousTasks = task.PrevTasks.split(';#');
+    if (currentTaskPrevTask) {
+      previousTasks = currentTaskPrevTask.split(';#');
       previousTasks.forEach((value, i) => {
         previousTaskFilter += '(Title eq \'' + value + '\')';
         previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
@@ -483,33 +537,58 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       nextTaskFilter + ' or ' + previousTaskFilter : (nextTaskFilter === '' && previousTaskFilter !== '')
         ? previousTaskFilter : (nextTaskFilter !== '' && previousTaskFilter === '') ? nextTaskFilter : '';
 
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
 
-    // const previousNextTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTask);
-    // previousNextTask.filter = taskFilter;
-
-    // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousNextTask);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     const previousNextTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTask);
     previousNextTask.filter = taskFilter;
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTask);
 
     this.tasks = this.response.length ? this.response : [];
 
-    this.tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : '-');
-    this.tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : '-');
 
-    if (task.NextTasks) {
+    if (currentTaskNextTask) {
       this.tasks.filter(c => nextTasks.includes(c.Title)).map(c => c.TaskType = 'Next Task');
     }
-    if (task.PrevTasks) {
+    if (currentTaskPrevTask) {
       this.tasks.filter(c => previousTasks.includes(c.Title)).map(c => c.TaskType = 'Previous Task');
     }
 
+    this.previousNextTaskChildRes = [];
+    for (const ele of this.tasks) {
+      if (ele.IsCentrallyAllocated === 'Yes') {
+        let previousNextTaskChild: any = [];
+        previousNextTaskChild = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.nextPreviousTaskChild);
+        previousNextTaskChild.filter = previousNextTaskChild.filter.replace('{{ParentSlotId}}', ele.ID.toString());
+        let res: any = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTaskChild);
+        if (res.hasError) {
+          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: res.message.value });
+          return;
+        }
+        res = res.length ? res : [];
+        res.forEach(element => {
+          if (!element.NextTasks) {
+            element.TaskType = 'Prev Task';
+            this.previousNextTaskChildRes.push(element);
+          }
+          if (!element.PrevTasks) {
+            element.TaskType = 'Next Task';
+            this.previousNextTaskChildRes.push(element);
+          }
+        });
+      } else if (ele.IsCentrallyAllocated === 'No') {
+        this.previousNextTaskChildRes.push(ele);
+      }
+    }
+
+    this.tasks = this.previousNextTaskChildRes.length ? this.previousNextTaskChildRes : this.tasks;
+
+    console.log('previousNextTaskChildRes ', this.previousNextTaskChildRes);
+
+    this.tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : '-');
+    this.tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : '-');
+
     return this.tasks;
   }
+
 
 
   // *************************************************************************************************************************************
@@ -519,7 +598,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   async showDialog(task, type, row) {
 
     this.modalloaderenable = true;
-    this.selectedTask = task.DisplayTitle;
+    this.selectedTask = this.formatModalTitle(task);
     this.selectedindex = row;
     this.selectedType = type;
 
@@ -550,7 +629,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
         tab: this.TabName
 
       },
-      header: task.DisplayTitle,
+      header: this.formatModalTitle(task),
       width: '90vw',
       contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
       closable: false,
@@ -567,6 +646,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     });
   }
 
+  formatModalTitle(task) {
+    const formatedSubmilestones = task.SubMilestones ? task.SubMilestones.replace(/[0-9]/g, '') : '';
+    const modalTitle = task.DisplayTitle.replace(task.SubMilestones ? task.SubMilestones : '', formatedSubmilestones);
+    return modalTitle;
+  }
+
 
   // *************************************************************************************************************************************
   // load component for  next previous tasks
@@ -576,10 +661,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   async getNextPreviousTaskDialog(task) {
 
     this.tableloaderenable = true;
-    debugger;
     let tasks = [];
     if (task.NextTasks || task.PrevTasks) {
-      tasks = await this.getNextPreviousTask(task);
+      // tasks = await this.getNextPreviousTask(task);
+      tasks = await this.myDashboardConstantsService.getNextPreviousTask1(task);
     }
 
     this.tableloaderenable = false;
@@ -588,7 +673,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
         task,
         allTasks: tasks,
       },
-      header: task.DisplayTitle,
+      header: this.formatModalTitle(task),
       width: '90vw',
 
     });
@@ -609,7 +694,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
         task,
         MarkComplete: IsMarkComplete,
       },
-      header: task.DisplayTitle,
+      header: this.formatModalTitle(task),
       closable: false,
       width: '80vw',
     });
@@ -720,7 +805,8 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     let NextTasks;
     const enableEmail = await this.myDashboardConstantsService.checkEmailNotificationEnable(task);
     if (enableEmail) {
-      NextTasks = await this.getNextPreviousTask(task);
+      // NextTasks = await this.getNextPreviousTask(task);
+      NextTasks = await this.myDashboardConstantsService.getNextPreviousTask1(task);
     }
 
     const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
@@ -729,7 +815,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
         emailNotificationEnable: enableEmail,
         nextTasks: NextTasks ? NextTasks.filter(c => c.TaskType === 'Next Task') : []
       },
-      header: task.DisplayTitle,
+      header: this.formatModalTitle(task),
       width: '80vw',
       contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
     });
@@ -745,29 +831,62 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   //  Mark as Complete
   // *************************************************************************************************************************************
 
+  async getCurrentAndParentTask(task: any) {
+    const batchURL = [];
+    const parentTaskObj = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTaskParent);
+    parentTaskObj.filter = parentTaskObj.filter.replace(/{{ParentSlotId}}/g, task.ParentSlot);
+    batchURL.push({
+      data: null,
+      url: this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', parentTaskObj),
+      type: 'GET',
+      listName: this.constants.listNames.Schedules.name
+    });
+
+    const currentTaskObj = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTaskParent);
+    currentTaskObj.filter = currentTaskObj.filter.replace(/{{ParentSlotId}}/g, task.ID);
+    batchURL.push({
+      data: null,
+      url: this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', currentTaskObj),
+      type: 'GET',
+      listName: this.constants.listNames.Schedules.name
+    });
+    const currentParentTasks = await this.spServices.executeBatch(batchURL);
+    const parentTaskRes = currentParentTasks.length ? currentParentTasks[0].retItems[0] : [];
+    const currentTaskRes = currentParentTasks.length ? currentParentTasks[1].retItems[0] : [];
+    if (!currentTaskRes.NextTasks) {
+      if (parentTaskRes.Status !== 'Completed') {
+        parentTaskRes.Status = 'Completed';
+      } else {
+        return false;
+      }
+    } else if (!currentTaskRes.PrevTasks) {
+      if (parentTaskRes.Status !== 'In Progress') {
+        parentTaskRes.Status = 'In Progress';
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+
+    const postbatchURL = [];
+    const parentTaskPostObj = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTaskParent);
+    parentTaskObj.filter = parentTaskObj.filter.replace(/{{ParentSlotId}}/g, parentTaskRes[0].ID);
+    postbatchURL.push({
+      data: parentTaskPostObj,
+      url: this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', parentTaskPostObj),
+      type: 'POST',
+      listName: this.constants.listNames.Schedules.name
+    });
+    const parentTasksSts = await this.spServices.executeBatch(postbatchURL);
+
+  }
+
 
   async checkCompleteTask(task) {
-
     const allowedStatus = ['Completed', 'AllowCompletion', 'Auto Closed'];
-    // const TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
-    // TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, task.ID);
-
-    // this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, TaskDetails);
     this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
-
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
-
-    // const TaskDetails = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
-    // TaskDetails.filter = TaskDetails.filter.replace(/{{taskId}}/gi, task.ID);
-
-    // const TaskDetailsUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TaskDetails);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, TaskDetailsUrl);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
-
     task.TaskComments = this.response.length ? this.response[0].TaskComments : '';
 
     // if (stval === 'Completed' || stval === 'AllowCompletion' || stval === 'Auto Closed') {
@@ -803,12 +922,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     }
   }
 
-
   async callComplete(task) {
     task.Status = 'Completed';
+    if (task.ParentSlot) {
+      this.getCurrentAndParentTask(task);
+    }
     const response = await this.myDashboardConstantsService.CompleteTask(task);
-
-
     if (response) {
       this.loaderenable = false;
       this.GetDatabyDateSelection(this.selectedTab, this.days);
@@ -817,7 +936,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     } else {
       this.messageService.add({
         key: 'custom', severity: 'success', summary: 'Success Message',
-        detail: task.Title + 'Task Updated Successfully.'
+        detail: task.Title + ' - Task Updated Successfully.'
       });
       this.GetDatabyDateSelection(this.selectedTab, this.days);
       if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
@@ -827,19 +946,19 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
 
   }
 
-  isOptionFilter: boolean;
   optionFilter(event: any) {
     if (event.target.value) {
       this.isOptionFilter = false;
     }
   }
 
+  // tslint:disable-next-line: use-life-cycle-interface
   ngAfterViewChecked() {
     if (this.allTasks.length && this.isOptionFilter) {
-      let obj = {
+      const obj = {
         tableData: this.taskId,
         colFields: this.AllTaskColArray
-      }
+      };
       if (obj.tableData.filteredValue) {
         this.commonService.updateOptionValues(obj);
       } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
@@ -847,14 +966,14 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
         this.isOptionFilter = false;
       }
     }
-    //  else {
-    //   this.initializeTableOptions();
-    // }
     this.cdr.detectChanges();
   }
 
+  // tslint:disable-next-line: use-life-cycle-interface
   ngOnDestroy() {
-
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
 

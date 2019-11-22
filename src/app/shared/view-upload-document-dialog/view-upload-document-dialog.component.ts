@@ -1,7 +1,6 @@
 import { Component, OnInit, EventEmitter, Output, Input, SimpleChanges, OnDestroy } from '@angular/core';
 import { MenuItem, DynamicDialogConfig, MessageService } from 'primeng/api';
 import { DatePipe } from '@angular/common';
-import { NodeService } from 'src/app/node.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -51,12 +50,11 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     private spServices: SPOperationService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
-    private nodeService: NodeService,
     private spOperations: SPOperationService) { }
 
   items: MenuItem[];
   activeItem: MenuItem;
-  ngOnInit() {
+  async ngOnInit() {
 
     this.loaderenable = true;
     this.DocumentArray = [];
@@ -67,6 +65,15 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       this.getEmailTemplate();
     }
     this.selectedTask = this.config.data ? this.data.task ? this.data.task : this.data : this.taskData;
+    if (this.selectedTask.ParentSlot) {
+      const slotPNTask = await this.myDashboardConstantsService.getNextPreviousTask1(this.selectedTask);
+      const slotPTasks = slotPNTask.filter(ele => ele.TaskType === 'Previous Task');
+      slotPTasks.forEach((element, i) => {
+        this.selectedTask.PrevTasks = this.selectedTask.PrevTasks ? this.selectedTask.PrevTasks : '';
+        this.selectedTask.PrevTasks += element.Title;
+        this.selectedTask.PrevTasks += i < slotPTasks.length - 1 ? ';#' : '';
+      });
+    }
 
     if (this.selectedTask.PrevTasks) {
       this.items = [
@@ -385,7 +392,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
           updateObj.listName = listName;
           updateObj.type = 'PATCH';
           batchUrl.push(updateObj);
-         // await this.spServices.updateItem(listName, +element.ListItemAllFields.ID, objPost);
+          // await this.spServices.updateItem(listName, +element.ListItemAllFields.ID, objPost);
           // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(objPost), false);
         }
       });
@@ -452,14 +459,14 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
   downloadFile() {
     if (this.selectedDocuments.length > 0) {
       if (this.selectedTask.DisplayTitle) {
-        this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTask.DisplayTitle);
+        this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTask.DisplayTitle);
       } else if (this.selectedTask.ProjectName) {
-        this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl),
+        this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl),
           this.selectedTask.ProjectName + ' ' + this.selectedTask.Milestone + ' ' + this.selectedTask.Task);
       } else {
         const downloadName = this.selectedTask.WBJID ? this.selectedTask.ProjectCode + ' (' +
           this.selectedTask.WBJID + ' )' : this.selectedTask.ProjectCode;
-        this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), downloadName);
+        this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), downloadName);
       }
 
     } else {

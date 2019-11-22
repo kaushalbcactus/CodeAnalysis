@@ -4,7 +4,6 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { DatePipe } from '@angular/common';
-import { NodeService } from 'src/app/node.service';
 import { GlobalService } from 'src/app/Services/global.service';
 
 @Component({
@@ -46,7 +45,7 @@ export class TaskDetailsDialogComponent implements OnInit {
     private datePipe: DatePipe,
     public sharedObject: GlobalService,
     public messageService: MessageService,
-    private nodeService: NodeService) { }
+    ) { }
 
   ngOnInit() {
 
@@ -210,7 +209,7 @@ export class TaskDetailsDialogComponent implements OnInit {
 
   downloadFile() {
     if (this.selectedDocuments.length > 0) {
-      this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.currentTask.Title);
+      this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.currentTask.Title);
     } else {
       this.messageService.add({
         key: 'task-details', severity: 'warn', summary: 'Warning Message',

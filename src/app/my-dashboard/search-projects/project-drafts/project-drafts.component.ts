@@ -5,7 +5,6 @@ import { MyDashboardConstantsService } from '../../services/my-dashboard-constan
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { DatePipe } from '@angular/common';
-import { NodeService } from 'src/app/node.service';
 
 @Component({
   selector: 'app-project-drafts',
@@ -48,7 +47,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
     private spServices: SPOperationService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
-    private nodeService: NodeService) { }
+    ) { }
 
   items: MenuItem[];
   activeItem: MenuItem;
@@ -240,7 +239,7 @@ export class ProjectDraftsComponent implements OnInit, OnDestroy {
 
     if (this.selectedDocuments.length > 0) {
 
-      this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTab);
+      this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.selectedTab);
     } else {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Select Files.', life: 4000 });
     }
