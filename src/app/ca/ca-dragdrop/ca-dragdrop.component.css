@@ -1,0 +1,85 @@
+::ng-deep .storagebutton {
+    top: 15px;
+    right: 30px;
+    position: fixed;
+}
+
+.SaveButton {
+    background-color: #db1721;
+    border: 1px solid #db1721;
+}
+
+.SaveButton:enabled:hover {
+    background-color: #b3171f;
+    border: 1px solid #b3171f;
+}
+
+.task-item>span {
+    padding: 5px;
+    background-color: #cdcdcd;
+    font-size: 14px;
+    margin: 5px;
+    cursor: pointer;
+    min-width: 90px;
+    text-align: center;
+}
+
+::ng-deep #milestonetext {
+    font: 21px bold arial;
+}
+
+#dropZone {
+    border: 2px dashed #bbb;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    text-align: center;
+    font: 14pt bold arial;
+    color: #bbb;
+}
+
+::ng-deep .ngx-charts-outer {
+    margin: auto;
+    border: 1px dashed #db1721;
+}
+
+::ng-deep .TaskPanel {
+    border: 1px solid #cdcdcd;
+    border-radius: 4px;
+    padding: 0px 0px 0px 5px;
+    margin: 0px 0px 5px 0px;
+}
+
+#graphInnerLoader {
+    border: 10px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 10px solid red;
+    border-bottom: 10px solid red;
+    width: 100px;
+    height: 100px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#graphInnerLoaderText {
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, "Helvetica", ""arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
+}
+
+.refreshGraph {
+    position: absolute;
+    BACKGROUND: bottom;
+}
