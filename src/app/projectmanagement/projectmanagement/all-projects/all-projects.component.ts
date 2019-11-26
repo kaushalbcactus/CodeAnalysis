@@ -184,8 +184,53 @@ export class AllProjectsComponent implements OnInit {
 
     this.isApprovalAction = true;
     this.reloadAllProject();
+    // setInterval( this.checkEarlyTaskCompleted, 20000);
+    // this.checkEarlyTaskCompleted();
+    setInterval(() => {
+      this.checkEarlyTaskCompleted();
+    }, 50000);
   }
-
+  async checkEarlyTaskCompleted() {
+    const completedTaskFilter = this.pmConstant.QUERY.GET_EARLY_TASK_COMPLETED;
+    const sResult = await this.spServices.readItems(this.constants.listNames.EarlyTaskCompleteNotifications.name, completedTaskFilter);
+    if (sResult && sResult.length) {
+      console.log(sResult);
+      let remainingUserId = [];
+      let earlyTask;
+      for (const element of sResult) {
+        if (element.ProjectCS && element.ProjectCS.results && element.ProjectCS.results.length) {
+          const projectCSArray = element.ProjectCS.results;
+          const userIndex = projectCSArray.findIndex(x => x.ID === this.globalObject.currentUser.userId);
+          if (userIndex > -1) {
+            projectCSArray.forEach(csElement => {
+              if (csElement.ID === this.globalObject.currentUser.userId) {
+                this.messageService.add({
+                  key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+                  detail: 'Early task ' + element.Title + ' has completed successfully.'
+                });
+              }
+            });
+            remainingUserId = projectCSArray.filter(x => x.ID !== this.globalObject.currentUser.userId).map(x => x.ID);
+          }
+          if (remainingUserId.length) {
+            earlyTask = {
+              ProjectCSId: {
+                results: remainingUserId
+              }
+            };
+            const retResults = await this.spServices.updateItem(this.constants.listNames.EarlyTaskCompleteNotifications.name,
+              element.ID, earlyTask, this.constants.listNames.EarlyTaskCompleteNotifications.type);
+          }
+        } else {
+          earlyTask = {
+            IsActive: 'Yes'
+          };
+          const retResults = await this.spServices.updateItem(this.constants.listNames.EarlyTaskCompleteNotifications.name,
+            element.ID, earlyTask, this.constants.listNames.EarlyTaskCompleteNotifications.type);
+        }
+      }
+    }
+  }
   navigateToSOW(oProject) {
     this.pmObject.columnFilter.SOWCode = [oProject.SOWCode];
     this.router.navigate(['/projectMgmt/allSOW']);
@@ -1002,7 +1047,7 @@ export class AllProjectsComponent implements OnInit {
       }
     }
   }
-  sendApprovalEmailToManager(selectedProjectObj, reason, ) {
+  sendApprovalEmailToManager(selectedProjectObj, reason) {
     const projectFinanceObj = this.toUpdateIds[1] && this.toUpdateIds[1].retItems && this.toUpdateIds[1].retItems.length ?
       this.toUpdateIds[1].retItems[0] : [];
     const subjectVal = 'Request to cancel the project';
