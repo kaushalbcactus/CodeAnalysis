@@ -18,11 +18,12 @@ import { CustomMaterialModule } from '../shared/material.module';
 import { NgxGraphModule } from '@swimlane/ngx-graph';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { CaComponent } from './ca.component';
 
 
 
 @NgModule({
-  declarations: [UnallocatedAllocatedTasksComponent, CaDragdropComponent],
+  declarations: [UnallocatedAllocatedTasksComponent, CaDragdropComponent, CaComponent],
   imports: [
     CommonModule,
     PrimengModule,
