@@ -14,6 +14,8 @@ export class QMSCommonService {
     listName: ''
   };
 
+  public selectedComponent: any;
+
   constructor(private spService: SPOperationService, private messageService: MessageService) { }
   /**
    * Fetch tasks documents

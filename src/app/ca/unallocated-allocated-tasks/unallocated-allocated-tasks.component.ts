@@ -174,7 +174,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   // *****************************************************************************************************
 
 
-  private async getProperties() {
+  async getProperties() {
 
     this.expandedRows = {};
     this.loaderenable = true;

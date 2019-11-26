@@ -1985,7 +1985,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (milestoneTask.AssignedTo) {
       this.updateNextPreviousTasks(milestoneTask);
       milestoneTask.assignedUserChanged = true;
-      if (milestoneTask.AssignedTo.hasOwnProperty('ID')) {
+      if (milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID) {
         milestoneTask.IsCentrallyAllocated = 'No';
         // milestoneTask.ActiveCA = 'No';
         milestoneTask.skillLevel = this.taskAllocateCommonService.getSkillName(milestoneTask.AssignedTo.SkillText);
@@ -3164,10 +3164,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
       // const errorDetail = callDetail;
 
       if (user !== 'SelectOne' && user !== '' && user != null) {
-        const userEmail = user.UserName ? user.UserName.EMail : user.EMail;
+        const userEmail = user.UserName ? user.UserName.EMail : user.Email;
         arrayTo.push(userEmail);
       }
-      this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody, fromUser.email);
+      this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
       // this.spServices.triggerMail(fromUser.email, 'TaskCreation', objEmailBody, mailSubject, arrayTo, errorDetail);
     }
   }
@@ -3201,7 +3201,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     for (const user of users) {
       arrayTo.push(user.Email);
     }
-    this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody, fromUser.email);
+    this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
     // this.spServices.triggerMail(fromUser.email, 'CentralTaskCreation', objEmailBody, mailSubject, arrayTo, callDetail);
 
   }
@@ -3303,7 +3303,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.oProjectDetails.allMilestones = listOfMilestones;
+    this.sharedObject.oTaskAllocation.oProjectDetails.allMilestones = listOfMilestones;
 
     this.getDeletedMilestoneTasks(updatedTasks, updatedMilestones);
     this.setMilestone(addedTasks, updatedTasks, addedMilestones, updatedMilestones);

@@ -61,7 +61,7 @@ export class AdminAuthService {
         if (groups.indexOf('Permission_Admin') > -1) {
           this.adminConstantService.userRole.SPMPA = true;
           this.adminConstantService.EntitleMentMenu.List.push(
-            { label: 'Add User To Sow', routerLink: ['addUserToSow'] },
+            { label: 'Add User To SOW', routerLink: ['addUserToSow'] },
             { label: 'Add User To Projects', routerLink: ['addUserToProjects'] },
           )
         }
@@ -75,7 +75,7 @@ export class AdminAuthService {
             { label: 'User to Role Mapping', routerLink: ['userRoleMapping'] },
             { label: 'Role to User Mapping', routerLink: ['roleUserMapping'] },
             { label: 'Copy Permission', routerLink: ['copyPermission'] },
-            { label: 'Add User To Sow', routerLink: ['addUserToSow'] },
+            { label: 'Add User To SOW', routerLink: ['addUserToSow'] },
             { label: 'Add User To Projects', routerLink: ['addUserToProjects'] },
           )
           if (groups.indexOf('SPTeam') > -1) {

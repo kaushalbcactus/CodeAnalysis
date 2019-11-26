@@ -12,32 +12,43 @@
         <form #searchForm="ngForm" [formGroup]="searchCapacityForm" (ngSubmit)="onSubmit()">
             <div class="p-col-12 p-justify-between p-align-center" style="padding: 20px 0px 20px 0px;">
                 <span class="p-col-2 ui-float-label ui-fluid">
-    <p-multiSelect [options]="Buckets" formControlName="bucket"  (onChange)="onChange($event,'bucket')" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()"   defaultLabel="Select Bucket"  [style]="{width:'100%'}"></p-multiSelect>
-    <label for="float-input" class="mainlable">Bucket</label>
-  </span>
+                    <p-multiSelect [options]="Buckets" formControlName="bucket" (onChange)="onChange($event,'bucket')" 
+                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Bucket"  
+                    [style]="{width:'100%'}">
+                    </p-multiSelect>
+                    <label for="float-input" class="mainlable">Bucket</label>
+                </span>
 
                 <span class="p-col-2 ui-float-label ui-fluid">
-      <p-multiSelect [options]="PracticeAreas" formControlName="practicearea"   (onChange)="onChange($event,'practicearea')"  
-      resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()"   defaultLabel="Select options"  [style]="{width:'100%'}"></p-multiSelect>
-      <label for="float-input" class="mainlable">Practice Area</label>
-    </span>
+                    <p-multiSelect [options]="PracticeAreas" formControlName="practicearea"   (onChange)="onChange($event,'practicearea')"  
+                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Practice Area"  
+                    [style]="{width:'100%'}"></p-multiSelect>
+                    <label for="float-input" class="mainlable">Practice Area</label>
+                </span>
                 <span class="p-col-2 ui-float-label ui-fluid">
-        <p-multiSelect [options]="Skills" formControlName="skill" (onChange)="onChange($event,'skill')" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()"   defaultLabel="Select Skill"  [style]="{width:'100%'}"></p-multiSelect>
-        <label for="float-input" class="mainlable">Skill</label>
-      </span>
+                    <p-multiSelect [options]="Skills" formControlName="skill" (onChange)="onChange($event,'skill')" 
+                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Skill"  
+                    [style]="{width:'100%'}"></p-multiSelect>
+                    <label for="float-input" class="mainlable">Skill</label>
+                </span>
                 <span class="p-col-2 ui-float-label ui-fluid">
-          <p-multiSelect [options]="Resources" formControlName="resources" (onChange)="onChange($event,'resource')"  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()"   defaultLabel="Select Resource"  [style]="{width:'100%'}"></p-multiSelect>
-          <label for="float-input" class="mainlable">Resources</label>
-        </span>
+                    <p-multiSelect [options]="Resources" formControlName="resources" (onChange)="onChange($event,'resource')" 
+                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource"  
+                    [style]="{width:'100%'}"></p-multiSelect>
+                    <label for="float-input" class="mainlable">Resources</label>
+                </span>
                 <span class="p-col-3 ui-float-label ui-fluid">
-                <p-calendar formControlName="rangeDates" selectionMode="range"  [style]="{'width':'100%'}" numberOfMonths='1' dateFormat="M dd, yy" [showIcon]="true" [disabledDays]="[0,6]" [readonlyInput]="true" placeholder="Select Custom Dates"
-                [style]="{'cursor': 'pointer'}"  [required]="true"></p-calendar>
-            <label for="float-input" style="top: -.75em;" class="mainlable">Custom Dates</label>
-          </span>
+                    <p-calendar formControlName="rangeDates" selectionMode="range" [style]="{'width':'100%'}"
+                        numberOfMonths='1' dateFormat="M dd, yy" [showIcon]="true" [disabledDays]="[0,6]"
+                        [readonlyInput]="true" placeholder="Select Custom Dates" [style]="{'cursor': 'pointer'}"
+                        [required]="true"></p-calendar>
+                    <label for="float-input" style="top: -.75em;" class="mainlable">Custom Dates</label>
+                </span>
 
                 <!-- <p-footer> -->
                 <button pButton type="submit" icon="pi pi-search" class="ui-button-raised ui-button-danger"></button>
-                <button pButton type="button" icon="pi pi-refresh" style="margin-left: 4px !important;" class="ui-button-raised ui-button-danger" (click)="onChange($event,'');searchForm.reset()"></button>
+                <button pButton type="button" icon="pi pi-refresh" style="margin-left: 4px !important;"
+                    class="ui-button-raised ui-button-danger" (click)="onChange($event,'');searchForm.reset()"></button>
                 <!-- </p-footer> -->
             </div>
         </form>
@@ -45,13 +56,9 @@
 
     </p-card>
     <p-card class="p-col" [hidden]="!fetchDataloader">
-
-
-
         <div class="p-grid">
             <div class="col-3 ui-card-title" style="font-size: 15px;">Selected User Capacity</div>
             <div class="col-5 ui-card-title p-col-align-center p-justify-between">
-
                 <div>
                     <span style="float: left;font-size: 14px;padding-right: 10px;"> Days : </span>
                     <div class="input-color">
@@ -66,10 +73,7 @@
                         <label>Leave / Not Working </label>
                         <div class="color-box" style="background-color: #808080;"></div>
                     </div>
-
                 </div>
-
-
             </div>
             <div class="col-4 ui-card-title p-col-align-center p-justify-between">
                 <div>
@@ -84,8 +88,6 @@
                     </div>
 
                 </div>
-
-
             </div>
         </div>
 
@@ -93,9 +95,5 @@
             <app-usercapacity #InitialUserCapacity></app-usercapacity>
         </div>
 
-
     </p-card>
-
-
-
 </div>

@@ -80,7 +80,18 @@ export class AddUserToSowComponent implements OnInit {
    */
   ngOnInit() {
     this.loadUsers();
+    if (this.adminConstants.toastMsg.EA) {
+      this.showToastMsg();
+    }
   }
+
+  showToastMsg() {
+    this.messageService.add({
+      key: 'adminAuth', severity: 'info', sticky: true,
+      summary: 'Info Message', detail: 'You don\'\t have permission,please contact SP Team.'
+    });
+  }
+
   /**
    * construct a request to SharePoint based API using REST-CALL to provide the result based on query.
    *
@@ -360,7 +371,7 @@ export class AddUserToSowComponent implements OnInit {
           batchURL.push(sowUpdate);
         }
       });
-      
+
       if (batchURL && batchURL.length) {
         const updateResult = await this.spServices.executeBatch(batchURL);
         this.messageService.add({

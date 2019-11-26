@@ -3,6 +3,10 @@
     border: 1px solid;
 }
 
-.ui-dialog > .ui-dialog-titlebar > span > .ui-dialog-title{
+::ng-deep body .ui-dialog .ui-dialog-titlebar {
     text-align: center !important;
+}
+
+::ng-deep p-calendar > span > .ui-inputtext, .ui-inputtext:enabled:focus:not(.ui-state-error) {
+    border: 1px solid #a6a6a6 !important;
 }

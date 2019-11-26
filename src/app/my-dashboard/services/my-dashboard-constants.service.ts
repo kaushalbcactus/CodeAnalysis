@@ -63,7 +63,7 @@ export class MyDashboardConstantsService {
 
       select: 'ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones, IsCentrallyAllocated,ParentSlot,AssignedTo/Title,AssignedTo/EMail',
       orderby: 'DueDate asc',
-      filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and (Task ne 'Time Booking') and",
+      filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and (Task ne 'Time Booking') and (Task ne 'Blocking') and ",
       filterStatus: "(Status ne 'Completed') and (Status ne 'Auto Closed')  and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
       // filterNotCompleted: "(Status ne 'Completed') and (Status ne 'Not Confirmed') and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
       // filterPlanned:"(Status eq 'Not Confirmed')",
@@ -156,6 +156,11 @@ export class MyDashboardConstantsService {
       select: 'ID,Title,ProjectCode,ProjectFolder,Milestone,Milestones,WBJID,IsPubSupport,ClientLegalEntity,PrimaryPOC,Status,DeliverableType',
       filter: "ProjectCode eq '{{projectCode}}'"
     },
+    projectInfoByPC: {
+      select: 'ID,Title,ProjectCode,CMLevel1/ID',
+      expand: 'CMLevel1/ID',
+      filter: "ProjectCode eq '{{ProjectCode}}'"
+    },
     SubmissionPkg: {
       select: 'ID,Title,JCID,SubmissionDate,SubmissionURL,SubmissionPkgURL,DecisionURL,DecisionDate,Decision,Status',
       filter: "Title eq '{{projectCode}}' and Status eq '{{Status}}'",
@@ -183,7 +188,7 @@ export class MyDashboardConstantsService {
     MyTimeline: {
       select: "ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,SubMilestones",
       orderby: "DueDate asc",
-      filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and  (Task ne 'Time Booking') and ",
+      filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and  (Task ne 'Time Booking') and (Task ne 'Blocking') and ",
       filterNotCompleted: "(Status ne 'Completed') and (Status ne 'Not Confirmed') and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
       filterPlanned: "(Status eq 'Not Confirmed')",
       filterCompleted: "(Task ne 'Adhoc') and ((Status eq 'Completed' ) or (Status eq 'Auto Closed'))",
@@ -289,7 +294,7 @@ export class MyDashboardConstantsService {
   // Get Next Previous task from current task
   // *************************************************************************************************************************************
 
-  async getNextPreviousTask1(task) {
+  async getNextPreviousTask(task) {
     this.tasks = [];
     let nextTaskFilter = '';
     let previousTaskFilter = '';
@@ -332,7 +337,9 @@ export class MyDashboardConstantsService {
       nextTaskFilter + ' or ' + previousTaskFilter : (nextTaskFilter === '' && previousTaskFilter !== '')
         ? previousTaskFilter : (nextTaskFilter !== '' && previousTaskFilter === '') ? nextTaskFilter : '';
 
-
+    if (!taskFilter) {
+      return [];
+    }
     const previousNextTask = Object.assign({}, this.mydashboardComponent.previousNextTask);
     previousNextTask.filter = taskFilter;
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTask);
@@ -369,6 +376,10 @@ export class MyDashboardConstantsService {
             this.previousNextTaskChildRes.push(element);
           }
         });
+        if (!res.length) {
+          this.previousNextTaskChildRes.push(ele);
+        }
+
       } else if (ele.IsCentrallyAllocated === 'No') {
         this.previousNextTaskChildRes.push(ele);
       }
@@ -380,77 +391,6 @@ export class MyDashboardConstantsService {
 
     this.tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : '-');
     this.tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : '-');
-
-    return this.tasks;
-  }
-
-  async getNextPreviousTask2(task) {
-    this.tasks = [];
-    let nextTaskFilter = '';
-    let previousTaskFilter = '';
-
-    let nextTasks;
-    let previousTasks;
-    let currentTaskNextTask = task.NextTasks;
-    let currentTaskPrevTask = task.PrevTasks;
-
-    // if (task.NextTasks) {
-    //   var nextTasks = task.NextTasks.split(';#');
-    //   nextTasks.forEach(function (value, i) {
-    //     nextTaskFilter += "(Title eq '" + value + "')";
-    //     nextTaskFilter += i < nextTasks.length - 1 ? " or " : '';
-    //   });
-    // }
-    // if (task.PrevTasks) {
-    //   var previousTasks = task.PrevTasks.split(";#");
-    //   previousTasks.forEach(function (value, i) {
-    //     previousTaskFilter += "(Title eq '" + value + "')";
-    //     previousTaskFilter += i < previousTasks.length - 1 ? " or " : '';
-    //   });
-    // }
-
-
-    if (task.NextTasks) {
-      nextTasks = task.NextTasks.split(';#');
-      nextTasks.forEach((value, i) => {
-        // tslint:disable-next-line: quotemark
-        nextTaskFilter += "(Title eq '" + value + "')";
-        nextTaskFilter += i < nextTasks.length - 1 ? ' or ' : '';
-      });
-    }
-    if (task.PrevTasks) {
-      previousTasks = task.PrevTasks.split(';#');
-      previousTasks.forEach((value, i) => {
-        previousTaskFilter += '(Title eq \'' + value + '\')';
-        previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
-      });
-    }
-
-
-
-
-    var taskFilter = (nextTaskFilter !== '' && previousTaskFilter !== '') ? nextTaskFilter + " or " + previousTaskFilter : (nextTaskFilter === '' && previousTaskFilter !== '') ? previousTaskFilter : (nextTaskFilter !== '' && previousTaskFilter === '') ? nextTaskFilter : '';
-
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
-
-    let previousNextTask = Object.assign({}, this.mydashboardComponent.previousNextTask);
-    previousNextTask.filter = taskFilter;
-    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTask);
-    // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousNextTask);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
-
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    this.tasks = this.response.length > 0 ? this.response : [];
-
-    this.tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : "-");
-    this.tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : "-");
-
-    if (task.NextTasks)
-      this.tasks.filter(c => nextTasks.includes(c.Title)).map(c => c.TaskType = "Next Task");
-    if (task.PrevTasks)
-      this.tasks.filter(c => previousTasks.includes(c.Title)).map(c => c.TaskType = "Previous Task");
-
 
     return this.tasks;
   }
@@ -523,7 +463,7 @@ export class MyDashboardConstantsService {
   async CompleteTask(task) {
     let response;
     this.projectInfo = await this.getCurrentTaskProjectInformation(task.ProjectCode);
-    this.NextPreviousTask = await this.getNextPreviousTask1(task);
+    this.NextPreviousTask = await this.getNextPreviousTask(task);
     const allowedTasks = ['Galley', 'Submission Pkg', 'Submit', 'Journal Selection', 'Journal Requirement'];
     if (allowedTasks.includes(task.Task)) {
       await this.GetAllDocuments(task);
@@ -975,7 +915,7 @@ export class MyDashboardConstantsService {
         });
 
 
-        console.log(EmailTemplate);
+        //console.log(EmailTemplate);
         const emailObj = Object.assign({}, this.queryConfig);
         const Emaildata = this.spServices.getEmailData(element.AssignedTo.EMail,
           this.sharedObject.currentUser.email, mailSubject, EmailTemplate, this.sharedObject.currentUser.email);

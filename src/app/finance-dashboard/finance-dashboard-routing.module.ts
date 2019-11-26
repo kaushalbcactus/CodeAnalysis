@@ -45,8 +45,8 @@ const routes: Routes = [
                 component: ScheduledComponent,
                 canActivateChild: [FdAuthGuard],
                 children: [
-                    { path: '', redirectTo: 'deliverable-based', pathMatch: 'full' },
-                    { path: 'deliverable-based', component: DeliverableBasedComponent },
+                    { path: '', redirectTo: 'deliverablebased-fte', pathMatch: 'full' },
+                    { path: 'deliverablebased-fte', component: DeliverableBasedComponent },
                     { path: 'hourly-based', component: HourlyBasedComponent },
                     { path: 'oop', component: OopComponent },
                     // { path: 'approvedNonBillable', component: ApprovedNonBillableComponent },

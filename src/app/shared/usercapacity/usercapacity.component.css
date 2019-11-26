@@ -112,7 +112,7 @@
     border: none;
 }
 
-#capacityTable>thead>tr>td:first-child {
+#capacityTable>thead>tr>th:first-child {
     padding: 0px;
     background-color: transparent;
 }
@@ -235,19 +235,19 @@
     padding: 0px !important;
 }
 
-#capacityTable>thead>tr>td:first-child,
+#capacityTable>thead>tr>th:first-child,
 .capacityBody tr.UserTasksRow table tr:first-child>td:first-child {
     padding: 3px;
     width: 6%;
 }
 
 .capacityBody #TasksPerDay>thead>tr>td,
-#capacityTable>thead>tr>td,
+#capacityTable>thead>tr>th,
 table#milestoneTasks thead td {
     font-weight: bold;
 }
 
-#capacityTable>thead>tr>td {
+#capacityTable>thead>tr>th {
     text-align: center;
 }
 
@@ -353,4 +353,9 @@ tr[class$="taskrow"]+tr>td
 #capacityTable .unallocated,
 #capacityTable .allocated {
     font-size: 12px;
+}
+
+#capacityTable > thead > tr > th {
+    position: sticky;
+    top: 0px;
 }

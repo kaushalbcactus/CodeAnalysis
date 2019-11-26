@@ -159,6 +159,10 @@ export class ConstantsService {
       name: 'Schedules',
       type: 'SP.Data.SchedulesListItem'
     },
+    EarlyTaskComplete: {
+      name: 'EarlyTaskCompleteNotification',
+      type: 'SP.Data.EarlyTaskCompleteNotification'
+    },
     LeaveCalendar: {
       name: 'Leave Calendar',
       type: 'SP.Data.Leave_x0020_CalendarListItem'
@@ -333,6 +337,7 @@ export class ConstantsService {
     QMSAdmin: 'QMS_Admin',
     QMSLeaders: 'QMS_Leaders',
     CDAdmin: 'CD_Admin',
+    CAAdmin: 'CA_Admin',
     PFAdmin: 'PF_Admin',
     MANAGERS: 'Managers',
     PROJECT_FULL_ACCESS: 'Project-FullAccess',

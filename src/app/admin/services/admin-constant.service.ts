@@ -401,6 +401,7 @@ export class AdminConstantService {
     SPMAD: false,
     SPMEA: false,
     SPMAA: false,
-    EAPA: false
+    EAPA: false,
+    EA: false
   }
 }

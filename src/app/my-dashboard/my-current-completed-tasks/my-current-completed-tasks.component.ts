@@ -507,13 +507,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       if (!currentTaskPrevTask) {
         currentTaskPrevTask = parentNPTask.PrevTasks;
       }
-      // const pNextTasks = parentNPTask.filter((item) => { if (item.PrevTasks === null) { item['TaskType'] = 'Next task'; return item; } });
-      // this.tasks = this.tasks.concat(pNextTasks);
-      // console.log('pNextTasks ', pNextTasks);
-      // const pPrevTasks = parentNPTask.filter((item) => { if (item.NextTasks === null) { item['TaskType'] = 'Prev task'; return item; } });
-      // this.tasks = this.tasks.concat(pPrevTasks);
-      // console.log('pPrevTasks ', pPrevTasks);
-      // }
     }
 
 
@@ -664,7 +657,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     let tasks = [];
     if (task.NextTasks || task.PrevTasks) {
       // tasks = await this.getNextPreviousTask(task);
-      tasks = await this.myDashboardConstantsService.getNextPreviousTask1(task);
+      tasks = await this.myDashboardConstantsService.getNextPreviousTask(task);
     }
 
     this.tableloaderenable = false;
@@ -806,7 +799,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     const enableEmail = await this.myDashboardConstantsService.checkEmailNotificationEnable(task);
     if (enableEmail) {
       // NextTasks = await this.getNextPreviousTask(task);
-      NextTasks = await this.myDashboardConstantsService.getNextPreviousTask1(task);
+      NextTasks = await this.myDashboardConstantsService.getNextPreviousTask(task);
     }
 
     const ref = this.dialogService.open(ViewUploadDocumentDialogComponent, {
@@ -831,8 +824,24 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   //  Mark as Complete
   // *************************************************************************************************************************************
 
+  getCSDetails(res) {
+    const pcmLevels = [];
+    // if (res.hasOwnProperty('CMLevel2')) {
+    //   pcmLevels.push(res.CMLevel2);
+    // }
+    if (res.hasOwnProperty('CMLevel1') && res.CMLevel1.hasOwnProperty('results') && res.CMLevel1.results.length) {
+      for (const ele of res.CMLevel1.results) {
+        pcmLevels.push(ele);
+      }
+      return pcmLevels;
+    } else {
+      return [];
+    }
+  }
+
   async getCurrentAndParentTask(task: any) {
-    const batchURL = [];
+    let batchURL = [];
+    // Parent Task
     const parentTaskObj = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTaskParent);
     parentTaskObj.filter = parentTaskObj.filter.replace(/{{ParentSlotId}}/g, task.ParentSlot);
     batchURL.push({
@@ -842,6 +851,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       listName: this.constants.listNames.Schedules.name
     });
 
+    // Current Task
     const currentTaskObj = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTaskParent);
     currentTaskObj.filter = currentTaskObj.filter.replace(/{{ParentSlotId}}/g, task.ID);
     batchURL.push({
@@ -850,12 +860,45 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       type: 'GET',
       listName: this.constants.listNames.Schedules.name
     });
+
+    // Project Information
+    const projectInfObj = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfoByPC);
+    projectInfObj.filter = projectInfObj.filter.replace(/{{ProjectCode}}/g, task.ProjectCode);
+    batchURL.push({
+      data: null,
+      url: this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', projectInfObj),
+      type: 'GET',
+      listName: this.constants.listNames.ProjectInformation.name
+    });
+
+
     const currentParentTasks = await this.spServices.executeBatch(batchURL);
     const parentTaskRes = currentParentTasks.length ? currentParentTasks[0].retItems[0] : [];
     const currentTaskRes = currentParentTasks.length ? currentParentTasks[1].retItems[0] : [];
+    const projInfoRes = currentParentTasks.length ? currentParentTasks[2].retItems[0] : [];
     if (!currentTaskRes.NextTasks) {
       if (parentTaskRes.Status !== 'Completed') {
+        const ctDueDate = new Date(this.datePipe.transform(currentTaskRes.DueDate, 'MMM d, y h:mm a'));
+        const todayDate = new Date();
+        const pcmLevels: any[] = this.getCSDetails(projInfoRes);
+        if (ctDueDate > todayDate) {
+          const earlyTaskCompleteObj = {
+            Title: currentTaskRes.Title,
+            ProjectCode: currentTaskRes.ProjectCode,
+            ProjectCSId: { results: pcmLevels.map(x => x.ID) },
+            IsActive: 'Yes'
+          };
+          batchURL = [];
+          batchURL.push({
+            data: earlyTaskCompleteObj,
+            url: this.spServices.getReadURL('' + this.constants.listNames.EarlyTaskComplete.name + '', earlyTaskCompleteObj),
+            type: 'POST',
+            listName: this.constants.listNames.EarlyTaskComplete.name
+          });
+          const res = await this.spServices.executeBatch(batchURL);
+        }
         parentTaskRes.Status = 'Completed';
+        parentTaskRes.ActiveCA = 'No';
       } else {
         return false;
       }
@@ -873,7 +916,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     const parentTaskPostObj = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTaskParent);
     parentTaskObj.filter = parentTaskObj.filter.replace(/{{ParentSlotId}}/g, parentTaskRes[0].ID);
     postbatchURL.push({
-      data: parentTaskPostObj,
+      data: parentTaskRes,
       url: this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', parentTaskPostObj),
       type: 'POST',
       listName: this.constants.listNames.Schedules.name
@@ -925,7 +968,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   async callComplete(task) {
     task.Status = 'Completed';
     if (task.ParentSlot) {
-      this.getCurrentAndParentTask(task);
+      await this.getCurrentAndParentTask(task);
     }
     const response = await this.myDashboardConstantsService.CompleteTask(task);
     if (response) {

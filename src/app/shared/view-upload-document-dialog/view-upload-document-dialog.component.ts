@@ -66,7 +66,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     }
     this.selectedTask = this.config.data ? this.data.task ? this.data.task : this.data : this.taskData;
     if (this.selectedTask.ParentSlot) {
-      const slotPNTask = await this.myDashboardConstantsService.getNextPreviousTask1(this.selectedTask);
+      const slotPNTask = await this.myDashboardConstantsService.getNextPreviousTask(this.selectedTask);
       const slotPTasks = slotPNTask.filter(ele => ele.TaskType === 'Previous Task');
       slotPTasks.forEach((element, i) => {
         this.selectedTask.PrevTasks = this.selectedTask.PrevTasks ? this.selectedTask.PrevTasks : '';
@@ -346,6 +346,7 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     Ids.forEach(element => {
       const userObj = Object.assign({}, this.queryConfig);
       userObj.url = this.spServices.getUserURL(element);
+      userObj.type = 'GET';
       batchUrl.push(userObj);
       // const url = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/_api/Web/GetUserById(' + element + ')';
       // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, url);

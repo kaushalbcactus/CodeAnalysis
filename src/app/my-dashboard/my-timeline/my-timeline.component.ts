@@ -489,7 +489,7 @@ export class MyTimelineComponent implements OnInit {
       }
 
       if (this.task.Task !== 'Adhoc') {
-        this.tasks = await this.myDashboardConstantsService.getNextPreviousTask1(this.task);
+        this.tasks = await this.myDashboardConstantsService.getNextPreviousTask(this.task);
         this.task.nextTasks = this.tasks ? this.tasks.filter(c => c.TaskType === 'Next Task') : [];
       }
 
@@ -678,7 +678,7 @@ export class MyTimelineComponent implements OnInit {
       // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, TaskDetailsUrl);
       // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
-      this.task = this.response.length ? this.response[0] : {};
+      this.task = this.response;
       this.task.AssignedTo = this.sharedObject.currentUser.title;
       this.task.TimeSpent = this.task.TimeSpent ? "00:00" : this.task.TimeSpent.replace('.', ':');
       const data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === this.task.ProjectCode);

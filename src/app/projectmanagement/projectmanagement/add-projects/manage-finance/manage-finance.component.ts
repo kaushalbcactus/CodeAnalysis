@@ -724,26 +724,27 @@ export class ManageFinanceComponent implements OnInit {
 
     // if (retPOInfo.poRevenue) {
     if (this.unassignedBudget[0].total === 0 && this.unassignedBudget[0].revenue === 0) {
-      retPOInfo.total = retPOInfo.total + retPOInfo.poRevenue + retPOInfo.oop + retPOInfo.tax;
       retPOInfo.revenue = retPOInfo.revenue + retPOInfo.poRevenue;
-      retPOInfo.oop = retPOInfo.oop + retPOInfo.oop;
-      retPOInfo.tax = retPOInfo.tax + retPOInfo.tax;
-    }
-    if (this.unassignedBudget[0].total !== 0 && this.unassignedBudget[0].revenue !== 0) {
-      retPOInfo.total = retPOInfo.total + retPOInfo.poRevenue + retPOInfo.oop + retPOInfo.tax;
-      retPOInfo.revenue = retPOInfo.revenue + retPOInfo.poRevenue;
+      retPOInfo.total = retPOInfo.revenue + retPOInfo.oop + retPOInfo.tax;
       retPOInfo.oop = retPOInfo.oop + retPOInfo.oop ? retPOInfo.oop : 0;
       retPOInfo.tax = retPOInfo.tax + retPOInfo.tax ? retPOInfo.tax : 0;
-      this.unassignedBudget[0].total = this.unassignedBudget[0].total - retPOInfo.poRevenue - retPOInfo.oop - retPOInfo.tax;
+    }
+    if (this.unassignedBudget[0].total !== 0 && this.unassignedBudget[0].revenue !== 0) {
+     
+      retPOInfo.revenue = retPOInfo.revenue + retPOInfo.poRevenue;
+      retPOInfo.total = retPOInfo.revenue + retPOInfo.oop + retPOInfo.tax;
+      retPOInfo.oop = retPOInfo.oop + retPOInfo.oop ? retPOInfo.oop : 0;
+      retPOInfo.tax = retPOInfo.tax + retPOInfo.tax ? retPOInfo.tax : 0;
+      this.unassignedBudget[0].total = this.unassignedBudget[0].total - retPOInfo.poRevenue; //- retPOInfo.oop - retPOInfo.tax;
       this.unassignedBudget[0].revenue = this.unassignedBudget[0].revenue - retPOInfo.poRevenue;
-      this.unassignedBudget[0].oop = this.unassignedBudget[0].oop - retPOInfo.oop;
-      this.unassignedBudget[0].tax = this.unassignedBudget[0].tax - retPOInfo.tax;
+     // this.unassignedBudget[0].oop = this.unassignedBudget[0].oop - retPOInfo.oop;
+     // this.unassignedBudget[0].tax = this.unassignedBudget[0].tax - retPOInfo.tax;
     }
     // Add the value to Po header.
     this.poHeader.total = this.poHeader.total + retPOInfo.poRevenue;
     this.poHeader.revenue = this.poHeader.revenue + retPOInfo.poRevenue;
-    this.poHeader.tax = this.poHeader.tax + retPOInfo.tax;
-    this.poHeader.oop = this.poHeader.oop + retPOInfo.oop;
+    // this.poHeader.tax = this.poHeader.tax + retPOInfo.tax;
+    // this.poHeader.oop = this.poHeader.oop + retPOInfo.oop;
     // }
     retPOInfo.poRevenue = 0;
     retPOInfo.poTotal = 0;
@@ -1453,7 +1454,6 @@ export class ManageFinanceComponent implements OnInit {
           });
         });
       }
-
       this.existPODataArray = this.poData;
       this.showPo = true;
       this.pmObject.isMainLoaderHidden = true;
@@ -1678,7 +1678,8 @@ export class ManageFinanceComponent implements OnInit {
         if (projectFinaceData.RevenueBudget !== currentBudget.RevenueBudget
           || projectFinaceData.ScheduledRevenue !== currentBudget.ScheduledRevenue
           || projectFinaceData.InvoicedRevenue !== currentBudget.InvoicedRevenue
-          || projectFinaceData.BudgetHrs !== currentBudget.BudgetHrs) {
+          || projectFinaceData.BudgetHrs !== currentBudget.BudgetHrs
+          || this.unassignedBudget[0].revenue !== 0) {
           const projectFinaceUpdate = Object.assign({}, options);
           projectFinaceUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectFinances.name,
             +this.existBudgetArray.retItems[0].ID);

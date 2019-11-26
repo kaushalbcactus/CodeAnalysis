@@ -628,14 +628,16 @@ export class PMCommonService {
     if (isCreate) {
       data.SOWCode = addObj.SOWSelect.SOWCode;
       // data.Milestones = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.Milestones : '';
+      data.Milestones = '';
       if (addObj.Timeline.Standard.IsStandard) {
-        data.Milestones = addObj.Timeline.Standard.Milestones;
+        data.Milestones = Array.from(new Set(addObj.Timeline.Standard.Milestones)).join(';#');
       }
       // changes for FTE Projects.
       if (addObj.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
         const monthNameArray = this.pmObject.addProject.Timeline.NonStandard.months.map(a => a.monthName);
         data.Milestones = monthNameArray.join(';#');
       }
+      //data.Milestones = addObj.Timeline.Standard.IsStandard ? Array.from(new Set(addObj.Timeline.Standard.Milestones)).join(';#') : '';
       data.DeliverableType = addObj.Timeline.Standard.IsStandard ? addObj.Timeline.Standard.DeliverableType :
         addObj.Timeline.NonStandard.DeliverableType;
       data.ProjectType = addObj.ProjectAttributes.BilledBy;
