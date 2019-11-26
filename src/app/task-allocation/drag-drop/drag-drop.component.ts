@@ -5,6 +5,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { TaskAllocationConstantsService } from '../services/task-allocation-constants.service';
 import * as shape from 'd3-shape';
+import { TaskAllocationCommonService } from '../services/task-allocation-common.service';
 declare var $: any;
 @Component({
   selector: 'app-drag-drop',
@@ -78,7 +79,8 @@ export class DragDropComponent implements OnInit {
     private spServices: SPOperationService,
     private constants: ConstantsService,
     private taskAllocationService: TaskAllocationConstantsService,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+    private taskCommonService : TaskAllocationCommonService) { }
 
   ngOnInit() {
     this.initialLoad = true;
@@ -252,7 +254,6 @@ export class DragDropComponent implements OnInit {
                 }
               }
             } else {
-
               ScPresent = ScPresent === false ? (submilestone.task.nodes.find(c => c.taskType ===
                 'Send to client') !== undefined ? true : false) : true;
 
@@ -293,8 +294,12 @@ export class DragDropComponent implements OnInit {
             }
 
             let circularPresent = false;
+            const linksArray = [];
             if (submilestone.task.links.length > 0) {
               submilestone.task.links.forEach(link => {
+                const paths = this.taskCommonService.getPaths(link.source, link.target, submilestone, link.source, []);
+                linksArray.push(paths);
+                console.log(linksArray);
                 if (circularPresent === false) {
                   const currentPath = link.source;
                   const target = link.target;
@@ -312,7 +317,7 @@ export class DragDropComponent implements OnInit {
             }
           });
 
-          if (ScPresent === false && errorM === 0) {
+          if (ScPresent === false && milestone.allsubmilestones.length <= 1 && errorM === 0) {
             errorM++;
             this.messageService.add({
               key: 'custom', severity: 'warn', summary: 'Warning Message',
@@ -1404,14 +1409,7 @@ export class DragDropComponent implements OnInit {
           var nodeWidth = Math.ceil(outerHtmlElement.getBBox().width);
           if (nodeWidth > this.minWidth) {
             this.width = nodeWidth + 150;
-            // setTimeout(() => {
-            //   var elmnt = document.getElementById('MilestoneChart');
-            //   if (elmnt !== null) {
-            //     elmnt.scrollLeft = this.width - this.minWidth;
-            //   }
-            //   this.grapLoading = false;
-            // }, 500);
-            //this.moveToScrollView(this.resizeGraph);
+          
           }
           else {
             this.width = this.minWidth;
@@ -1453,19 +1451,7 @@ export class DragDropComponent implements OnInit {
               this.subMilestoneHeight = nodeHeight + 150;
             }
           }
-          // if (changeGraph) {
-          //   // setTimeout(() => {
-          //   //   var elmnt = document.getElementById('SubMilestoneChart');
-          //   //   if (elmnt !== null) {
-          //   //     elmnt.scrollLeft = this.subMilestoneWidth - this.minWidth;
-          //   //     elmnt.scrollTop = this.subMilestoneHeight - this.subMilestoneMaxHeight;
-          //   //   }
-          //   //   this.grapLoading = false;
-          //   // }, 500);
-          //   this.grapLoading = false;
-          //   this.moveToScrollView(this.resizeGraph);
-          // }
-          // else {
+        
           this.grapLoading = false;
           this.moveToScrollView(this.resizeGraph);
           // }
@@ -1505,17 +1491,7 @@ export class DragDropComponent implements OnInit {
               this.taskHeight = nodeHeight + 200;
             }
           }
-          // if (changeTaskGraph) {
-          //   // setTimeout(() => {
-          //   //   var elmnt = document.getElementById('taskChart');
-          //   //   if (elmnt !== null) {
-          //   //     elmnt.scrollLeft = this.subMilestoneWidth - this.minWidth;
-          //   //     elmnt.scrollTop = this.subMilestoneHeight - this.subMilestoneMaxHeight;
-          //   //   }
-          //   //   this.grapLoading = false;
-          //   // }, 500);
-          // }
-          // else {
+        
           this.grapLoading = false;
           this.moveToScrollView(this.resizeGraph);
           //  }

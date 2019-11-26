@@ -278,7 +278,7 @@
                                 *ngIf="rowData.type ==='milestone' || rowData.type ==='submilestone'">{{rowData.tatVal}}</span>
                             <span
                                 *ngIf="!rowData.editMode && rowData.type ==='task' ">{{rowData.tat === true ? 'Yes' :'No'}}</span>
-                            <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task' && rowData.IsCentrallyAllocated === 'No'"
+                            <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task' && (rowData.IsCentrallyAllocated === 'No' || rowData.slotType === 'Both')  "
                                 [disabled]=" rowData.pName ==='Client Review'"
                                 (onChange)="ChangeEndDate($event, rowData)"
                                 [(ngModel)]="rowData.pName ==='Client Review' ? 'Yes' : rowData.tat" binary="true">
@@ -288,11 +288,8 @@
                         <!-- Assign To -->
                         <td>
                             <span *ngIf="!rowData.editMode"> {{rowData.pRes}}</span>
-                            <!-- <ng-select *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone'" #assignedTo class="txtTask" [items]="rowData.assignedUsers" bindLabel="Title" placeholder="Select Resource" groupBy="userType" [(ngModel)]="rowData.AssignedTo"
-                                (change)="assignedToUserChanged(rowData)" appendTo="body"></ng-select> -->
-                            <!-- {{rowData.AssignedTo |json}} -->
                             <p-dropdown [style]="{'width':'100%'}"
-                                *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.IsCentrallyAllocated === 'No'"
+                                *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.status!= 'In Progress' && (rowData.IsCentrallyAllocated === 'No' || rowData.slotType === 'Both')"
                                 #assignedTo class="txtTask" [options]="rowData.assignedUsers"
                                 [panelStyle]="{minWidth:'15em' }" [(ngModel)]="rowData.AssignedTo"
                                 placeholder="Select Resource" [showClear]="true" [group]="true" filter="true"
@@ -308,7 +305,7 @@
                         <!-- Allow start -->
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
                             <span
-                                *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone' && rowData.IsCentrallyAllocated === 'No') ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
+                                *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated === 'No' || rowData.slotType === 'Both')) ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
 
                             <p-inputSwitch
                                 *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client') && rowData.IsCentrallyAllocated === 'No'"
@@ -333,11 +330,7 @@
 
                         <!-- Menu option -->
                         <td [style.backgroundColor]="rowData.color">
-                            <!-- <div *ngIf="(rowData.type === 'milestone' && rowData.type === 'submilestone' ) && ((rowData.isCurrent || rowData.isFuture) && rowData.status  !== 'Completed') ">
-                                <button type="button" [hidden]="rowData.editMode === false" (click)="CancelChanges(rowData,'milestone')" style="line-height: 0px;height: 0px;" mat-icon-button title="Cancel">
-                  <mat-icon> cancel</mat-icon>
-                </button>
-                            </div> -->
+                         
                             <button
                                 *ngIf="rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && (rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') && !changeInRestructure"
                                 [hidden]="rowData.editMode === false" type="button"

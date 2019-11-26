@@ -302,6 +302,10 @@ export class ConstantsService {
     CLEBucketMapping: {
       name: 'CLEBucketMapping',
       type: 'SP.Data.CLEBucketMappingListItem'
+    },
+    EarlyTaskCompleteNotifications : {
+      name: 'EarlyTaskCompleteNotifications',
+      type: 'SP.Data.EarlyTaskCompleteNotificationsListItem'
     }
   };
 

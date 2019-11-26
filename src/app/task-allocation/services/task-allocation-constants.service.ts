@@ -83,6 +83,11 @@ export class TaskAllocationConstantsService {
         },
         getUserFromGroup: {
             UserFromGroup: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/sitegroups/getByName('{{groupName}}')/Users"
+        },
+        earlyTaskNotification: {
+            select: 'ID',
+            filter: "IsActive eq 'Yes' and ProjectCode eq '{{projectCode}}'",
+            top: 4500
         }
     };
 }
