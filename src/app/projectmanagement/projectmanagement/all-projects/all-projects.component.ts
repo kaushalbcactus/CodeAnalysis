@@ -2446,6 +2446,7 @@ export class AllProjectsComponent implements OnInit {
       this.providedProjectCode = '';
       this.pmObject.tabMenuItems[0].label = 'All Projects (0)';
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+      this.createColFieldValues([]);
     }
   }
 
