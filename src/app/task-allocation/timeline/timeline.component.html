@@ -158,16 +158,16 @@
                 <ng-template pTemplate="body" let-rowNode let-rowData="rowData">
                     <!-- [ttContextMenuRow]="rowNode" -->
                     <tr *ngIf="(rowData.status !== 'Deleted')" class="milestoneTable"
-                        [style.font-weight]="rowData.type === 'milestone' || rowData.type === 'submilestone' || rowData.pName ==='Client Review' || (rowData.slotType && rowData.slotType === 'Slot')? '700':''">
+                        [style.font-weight]="rowData.type === 'milestone' || rowData.type === 'submilestone' || rowData.pName ==='Client Review' || rowData.IsCentrallyAllocated === 'Yes' ? '700':''">
                         <!-- task Name -->
                         <td [style.text-align]="'left'"
                             [style.padding-left.px]="rowData.pName ==='Client Review' ? '20':''"
                             [style.backgroundColor]="rowData.slotColor">
                             <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-                            <span *ngIf="rowData.type !=='task' || rowData.slotType === 'Slot'">
+                            <span *ngIf="rowData.type !=='task' || rowData.IsCentrallyAllocated === 'Yes'">
                                 {{rowData.pName}}</span>
                             <span style="color:#dc2038;cursor: pointer;"
-                                *ngIf="rowData.type ==='task' && rowData.slotType !== 'Slot' "
+                                *ngIf="rowData.type ==='task' && rowData.IsCentrallyAllocated === 'No' "
                                 (click)="ViewTaskDetails(rowData)"> {{rowData.pName}}</span>
 
                             <div id="nextMilestone"
@@ -277,8 +277,8 @@
                             <span
                                 *ngIf="rowData.type ==='milestone' || rowData.type ==='submilestone'">{{rowData.tatVal}}</span>
                             <span
-                                *ngIf="!rowData.editMode && rowData.type ==='task'">{{rowData.tat === true ? 'Yes' :'No'}}</span>
-                            <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task'"
+                                *ngIf="!rowData.editMode && rowData.type ==='task' ">{{rowData.tat === true ? 'Yes' :'No'}}</span>
+                            <p-checkbox *ngIf="rowData.editMode && rowData.type === 'task' && (rowData.IsCentrallyAllocated === 'No' || rowData.slotType === 'Both')  "
                                 [disabled]=" rowData.pName ==='Client Review'"
                                 (onChange)="ChangeEndDate($event, rowData)"
                                 [(ngModel)]="rowData.pName ==='Client Review' ? 'Yes' : rowData.tat" binary="true">
@@ -288,11 +288,8 @@
                         <!-- Assign To -->
                         <td>
                             <span *ngIf="!rowData.editMode"> {{rowData.pRes}}</span>
-                            <!-- <ng-select *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone'" #assignedTo class="txtTask" [items]="rowData.assignedUsers" bindLabel="Title" placeholder="Select Resource" groupBy="userType" [(ngModel)]="rowData.AssignedTo"
-                                (change)="assignedToUserChanged(rowData)" appendTo="body"></ng-select> -->
-                            <!-- {{rowData.AssignedTo |json}} -->
                             <p-dropdown [style]="{'width':'100%'}"
-                                *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.slotType !== 'Slot'"
+                                *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.status!= 'In Progress' && (rowData.IsCentrallyAllocated === 'No' || rowData.slotType === 'Both')"
                                 #assignedTo class="txtTask" [options]="rowData.assignedUsers"
                                 [panelStyle]="{minWidth:'15em' }" [(ngModel)]="rowData.AssignedTo"
                                 placeholder="Select Resource" [showClear]="true" [group]="true" filter="true"
@@ -308,10 +305,10 @@
                         <!-- Allow start -->
                         <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
                             <span
-                                *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone' && rowData.slotType !== 'Slot') ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
+                                *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated === 'No' || rowData.slotType === 'Both')) ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
 
                             <p-inputSwitch
-                                *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client') && rowData.slotType !== 'Slot'"
+                                *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client') && rowData.IsCentrallyAllocated === 'No'"
                                 [(ngModel)]="rowData.allowStart"></p-inputSwitch>
 
                             <!-- <p-checkbox *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.pName !=='Client Review' && rowData.pName !=='SC')" [(ngModel)]="rowData.allowStart" binary="true"></p-checkbox> -->
@@ -333,11 +330,7 @@
 
                         <!-- Menu option -->
                         <td [style.backgroundColor]="rowData.color">
-                            <!-- <div *ngIf="(rowData.type === 'milestone' && rowData.type === 'submilestone' ) && ((rowData.isCurrent || rowData.isFuture) && rowData.status  !== 'Completed') ">
-                                <button type="button" [hidden]="rowData.editMode === false" (click)="CancelChanges(rowData,'milestone')" style="line-height: 0px;height: 0px;" mat-icon-button title="Cancel">
-                  <mat-icon> cancel</mat-icon>
-                </button>
-                            </div> -->
+                         
                             <button
                                 *ngIf="rowData.type === 'task' && rowData.milestoneStatus !== 'Completed' && (rowData.status !== 'Completed' && rowData.status !=='Abandon' && rowData.status !=='Auto Closed' && rowData.status !=='Hold' && rowData.status !== 'Not Saved') && !changeInRestructure"
                                 [hidden]="rowData.editMode === false" type="button"
@@ -414,23 +407,97 @@
 
 </div>
 <div #reallocationMailTableID>
-    <table id="reallocationMailTablea" class="w580" width="580" cellpadding="5" cellspacing="0" border="1" hidden="true">
+    <table class="w580" width="580" cellpadding="5" cellspacing="0" border="0" hidden="true">
         <thead>
-            <th> Name </th>
-            <th> Previous Start Date </th>
-            <th> Previous End Date </th>
-            <th> New Start Date </th>
-            <th> New End Date </th>
-            <th> Assigned To </th>
+            <tr style="border-collapse:collapse;">
+                <td width="150" class="fullBorder boldHeadres"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                        Name
+                    </div>
+                </td>
+                <td width="150" class="fullBorder boldHeadres"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                        Previous Start Date
+                    </div>
+                </td>
+                <td width="150" class="fullBorder boldHeadres"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                        Previous End Date
+                    </div>
+                </td>
+                <td width="150" class="fullBorder boldHeadres"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                        New Start Date
+                    </div>
+                </td>
+                <td width="150" class="fullBorder boldHeadres"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                        New End Date
+                    </div>
+                </td>
+                <td width="150" class="fullBorder boldHeadres"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;font-weight:bold;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                        Assigned To
+                    </div>
+                </td>
+            </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let item of reallocationMailData;trackBy:trackByFn">
-                <td>{{item.taskName}}</td>
-                <td>{{item.preStDate }}</td>
-                <td>{{item.preEndDate}}</td>
-                <td>{{item.newStDate }}</td>
-                <td>{{item.newEndDate}}</td>
-                <td>{{item.assginedTo}}</td>
+            <tr style="border-collapse:collapse;" *ngFor="let item of reallocationMailData;trackBy:trackByFn">
+                <td width="300" class="noLeftTopBorder"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                        {{item.taskName}}
+                    </div>
+                </td>
+                <td width="300" class="noLeftTopBorder"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                        {{item.preStDate }}
+                    </div>
+                </td>
+                <td width="300" class="noLeftTopBorder"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                        {{item.preEndDate}}
+                    </div>
+                </td>
+                <td width="300" class="noLeftTopBorder"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                        {{item.newStDate }}
+                    </div>
+                </td>
+                <td width="300" class="noLeftTopBorder"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                        {{item.newEndDate}}
+                    </div>
+                </td>
+                <td width="300" class="noLeftTopBorder"
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    <div align="left" class="table-Attr-content"
+                        style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
+                        {{item.assginedTo}}
+                    </div>
+                </td>
             </tr>
         </tbody>
     </table>
