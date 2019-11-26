@@ -6,7 +6,6 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { DynamicDialogConfig, MessageService, DialogService } from 'primeng/api';
 import { CAGlobalService } from 'src/app/ca/caservices/caglobal.service';
 import { CACommonService } from 'src/app/ca/caservices/cacommon.service';
-import { Alert } from 'selenium-webdriver';
 import { SharedConstantsService } from '../services/shared-constants.service';
 import { MilestoneTasksDialogComponent } from './milestone-tasks-dialog/milestone-tasks-dialog.component';
 
@@ -80,9 +79,6 @@ export class UsercapacityComponent implements OnInit {
 
 
   async Onload(data) {
-
-
-
     this.messageService.add({
       key: 'myKey1', severity: 'warn', sticky: true,
       summary: 'Info Message', detail: 'Fetching data...'
@@ -125,6 +121,7 @@ export class UsercapacityComponent implements OnInit {
   getHtmlContent() {
     return this.elRef.nativeElement.innerHTML;
   }
+
   getMonday(d, NextLast, weeks) {
     d = new Date(d);
     const day = d.getDay(),
@@ -132,6 +129,7 @@ export class UsercapacityComponent implements OnInit {
         d.getDate() - (7 * weeks) : d.getDate()) - day + (day === 0 ? -6 : 1); // adjust when day is sunday
     return new Date(d.setDate(diff));
   }
+
   getDates(startDate, stopDate) {
     const objDates = {
       dateStringArray: [],
@@ -149,6 +147,7 @@ export class UsercapacityComponent implements OnInit {
     }
     return objDates;
   }
+
   async applyFilter(startDate, endDate, selectedUsers) {
     const oCapacity = {
       arrUserDetails: [],
@@ -197,7 +196,7 @@ export class UsercapacityComponent implements OnInit {
       }
     }
 
-    
+
     let arruserResults = await this.spService.executeBatch(batchUrl);
     arruserResults = arruserResults.length ? arruserResults.map(a => a.retItems) : [];
 
@@ -469,6 +468,7 @@ export class UsercapacityComponent implements OnInit {
                 projectCode: oUser.tasks[j].Title !== null ? oUser.tasks[j].Title.split(' ')[0] : '',
                 milestone: oUser.tasks[j].Milestone,
                 SubMilestones: oUser.tasks[j].SubMilestones,
+                task: oUser.tasks[j].Task,
                 shortTitle: '',
                 milestoneDeadline: '',
                 startDate: oUser.tasks[j].StartDate,
@@ -480,7 +480,7 @@ export class UsercapacityComponent implements OnInit {
                 totalAllocatedTime: TotalAllocatedTime,
                 displayTotalAllocatedTime: TotalAllocatedTime !== null ? oUser.tasks[j].Task !== 'Adhoc' ?
                   TotalAllocatedTime : TotalAllocatedTime.replace('.', ':') : TotalAllocatedTime,
-                parentSlot : oUser.tasks[j].parentSlot ? oUser.tasks[j].parentSlot : ''
+                parentSlot: oUser.tasks[j].parentSlot ? oUser.tasks[j].parentSlot : ''
               };
               tasksDetails.push(objTask);
               const taskHrsMinObject = {
@@ -501,21 +501,30 @@ export class UsercapacityComponent implements OnInit {
         objTotalAllocatedPerUser.timeMins = oUser.dates[i].totalTimeAllocatedPerDay.indexOf(':')
           ? oUser.dates[i].totalTimeAllocatedPerDay.split(':')[1] : 0;
         arrTotalAllocatedPerUser.push(objTotalAllocatedPerUser);
-        oUser.dates[i].availableHrs = this.commonservice.ajax_subtractHrsMins(
-          this.commonservice.convertToHrsMins('' + oUser.dates[i].maxAvailableHours),
-          totalTimeAllocatedPerDay.length > 0 ? totalTimeAllocatedPerDay.replace(':', '.') : 0);
-        oUser.dates[i].displayAvailableHrs = oUser.dates[i].availableHrs.toString();
-        if (+oUser.dates[i].availableHrs.replace(':', '.') > 0) {
-          objTotalAvailablePerUser.timeHrs = oUser.dates[i].availableHrs.split(':')[0];
-          objTotalAvailablePerUser.timeMins = oUser.dates[i].availableHrs.split(':')[1];
-          arrTotalAvailablePerUser.push(objTotalAvailablePerUser);
-        }
-        oUser.dates[i].taskCount = taskCount;
-        if (+oUser.dates[i].availableHrs.replace(':', '.') <= 0) {
+
+        const av = tasksDetails.filter(k => k.task === 'Blocking');
+        if (av.length) {
+          oUser.dates[i].availableHrs = '0:0';
+          oUser.dates[i].displayAvailableHrs = oUser.dates[i].availableHrs;
           oUser.dates[i].userCapacity = 'NotAvailable';
-        } else if (+oUser.dates[i].availableHrs.replace(':', '.') > 0) {
-          oUser.dates[i].userCapacity = 'Available';
+        } else {
+          oUser.dates[i].availableHrs = this.commonservice.ajax_subtractHrsMins(
+            this.commonservice.convertToHrsMins('' + oUser.dates[i].maxAvailableHours),
+            totalTimeAllocatedPerDay.length > 0 ? totalTimeAllocatedPerDay.replace(':', '.') : 0);
+          oUser.dates[i].displayAvailableHrs = oUser.dates[i].availableHrs.toString();
+          if (+oUser.dates[i].availableHrs.replace(':', '.') > 0) {
+            objTotalAvailablePerUser.timeHrs = oUser.dates[i].availableHrs.split(':')[0];
+            objTotalAvailablePerUser.timeMins = oUser.dates[i].availableHrs.split(':')[1];
+            arrTotalAvailablePerUser.push(objTotalAvailablePerUser);
+          }
+          if (+oUser.dates[i].availableHrs.replace(':', '.') <= 0) {
+            oUser.dates[i].userCapacity = 'NotAvailable';
+          } else if (+oUser.dates[i].availableHrs.replace(':', '.') > 0) {
+            oUser.dates[i].userCapacity = 'Available';
+          }
         }
+
+        oUser.dates[i].taskCount = taskCount;
         if (bLeave) {
           oUser.dates[i].totalTimeAllocatedPerDay = 0;
           oUser.dates[i].availableHrs = 0;
@@ -744,9 +753,6 @@ export class UsercapacityComponent implements OnInit {
         this.messageService.clear('myKey1');
       }, 500);
     }
-
-
-
 
   }
 

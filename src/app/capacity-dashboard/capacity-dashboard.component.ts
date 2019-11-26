@@ -17,7 +17,6 @@ import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.compo
 
 })
 export class CapacityDashboardComponent implements OnInit {
-  cars: SelectItem[];
   rangeDates: Date[];
   @ViewChildren('cmp') components: QueryList<MultiSelect>;
   @ViewChild('InitialUserCapacity', { static: true }) userCapacity: UsercapacityComponent;
@@ -36,18 +35,6 @@ export class CapacityDashboardComponent implements OnInit {
     private spServices: SPOperationService,
     private commonService: CommonService,
     private constants: ConstantsService) {
-    this.cars = [
-      { label: 'Audi', value: 'Audi' },
-      { label: 'BMW', value: 'BMW' },
-      { label: 'Fiat', value: 'Fiat' },
-      { label: 'Ford', value: 'Ford' },
-      { label: 'Honda', value: 'Honda' },
-      { label: 'Jaguar', value: 'Jaguar' },
-      { label: 'Mercedes', value: 'Mercedes' },
-      { label: 'Renault', value: 'Renault' },
-      { label: 'VW', value: 'VW' },
-      { label: 'Volvo', value: 'Volvo' },
-    ];
   }
 
   searchCapacityForm = this.fb.group({
@@ -64,8 +51,6 @@ export class CapacityDashboardComponent implements OnInit {
 
 
   async GetResources() {
-
-
     const batchURL = [];
     const options = {
       data: null,
@@ -183,8 +168,6 @@ export class CapacityDashboardComponent implements OnInit {
       // tslint:disable-next-line: no-string-literal
       this.searchCapacityForm.controls['resources'].setValue(null);
 
-
-
     } else if (arrayType === 'skill') {
       // tslint:disable-next-line: no-string-literal
       this.searchCapacityForm.controls['resources'].setValue(null);
@@ -222,18 +205,15 @@ export class CapacityDashboardComponent implements OnInit {
 
 
   async onSubmit() {
-
     if (!this.searchCapacityForm.valid) {
       if (!this.searchCapacityForm.value.resources) {
         this.messageService.add({ key: 'toastMessage', severity: 'warn', summary: 'Warn Message', detail: 'Please select Resource.' });
       } else {
         this.messageService.add({ key: 'toastMessage', severity: 'warn', summary: 'Warn Message', detail: 'Please select dates.' });
       }
-
       return false;
 
     } else {
-
       this.fetchDataloader = true;
       const data = {
         task: { resources: this.searchCapacityForm.value.resources },
@@ -246,8 +226,6 @@ export class CapacityDashboardComponent implements OnInit {
       this.userCapacity.loaderenable = true;
       this.userCapacityEnable = true;
       this.userCapacity.Onload(data);
-
-
     }
 
   }

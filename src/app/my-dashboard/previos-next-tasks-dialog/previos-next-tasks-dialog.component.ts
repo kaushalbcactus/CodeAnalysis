@@ -11,15 +11,16 @@ export class PreviosNextTasksDialogComponent implements OnInit {
   modalloaderenable: boolean;
   tasks: any;
 
-  constructor(public config: DynamicDialogConfig, ) { }
+  constructor(
+    public config: DynamicDialogConfig
+  ) { }
 
   ngOnInit() {
-
-
     this.data = this.config.data;
-
     if (this.data !== undefined) {
-      this.tasks = this.data.allTasks;
+      const localTasks = this.data.allTasks;
+      localTasks.sort((a, b) => <any>new Date(a.StartDate) - <any>new Date(b.StartDate));
+      this.tasks = localTasks;
       this.modalloaderenable = true;
     }
 

@@ -489,7 +489,7 @@ export class MyTimelineComponent implements OnInit {
       }
 
       if (this.task.Task !== 'Adhoc') {
-        this.tasks = await this.myDashboardConstantsService.getNextPreviousTask1(this.task);
+        this.tasks = await this.myDashboardConstantsService.getNextPreviousTask(this.task);
         this.task.nextTasks = this.tasks ? this.tasks.filter(c => c.TaskType === 'Next Task') : [];
       }
 
