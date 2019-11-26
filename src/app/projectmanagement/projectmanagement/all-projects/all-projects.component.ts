@@ -1435,8 +1435,16 @@ export class AllProjectsComponent implements OnInit {
         },
         Status: this.constants.STATUS.COMPLETED
       };
+      const statusNotStartedScheduleList = {
+        __metadata: {
+          type: this.constants.listNames.Schedules.type
+        },
+        Status: this.constants.STATUS.NOT_STARTED
+      };
       filterResult.forEach(element => {
-        if (element.Task !== this.pmConstant.task.BLOCKING) {
+        if (element.Task !== this.pmConstant.task.BLOCKING ||
+          element.Task !== this.pmConstant.task.TRAINING ||
+          element.Task !== this.pmConstant.task.MEETING) {
           const scheduleStatusUpdate = Object.assign({}, options);
           scheduleStatusUpdate.data = statusUpdateScheduleList;
           scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
@@ -1444,9 +1452,17 @@ export class AllProjectsComponent implements OnInit {
           scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
             element.ID);
           batchURL.push(scheduleStatusUpdate);
-        } else {
+        } else if (element.Task === this.pmConstant.task.BLOCKING) {
           const scheduleStatusUpdate = Object.assign({}, options);
           scheduleStatusUpdate.data = statusCompletedScheduleList;
+          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+          scheduleStatusUpdate.type = 'PATCH';
+          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scheduleStatusUpdate);
+        } else {
+          const scheduleStatusUpdate = Object.assign({}, options);
+          scheduleStatusUpdate.data = statusNotStartedScheduleList;
           scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
           scheduleStatusUpdate.type = 'PATCH';
           scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
