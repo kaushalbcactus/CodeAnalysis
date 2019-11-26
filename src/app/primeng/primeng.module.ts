@@ -17,6 +17,7 @@ import { TabViewModule } from 'primeng/tabview';
 import {
   MenubarModule, OverlayPanelModule, InputTextareaModule, InputTextModule, AutoComplete, TieredMenuModule
 } from 'primeng/primeng';
+import { DragDropModule } from 'primeng/dragdrop';
 import { CalendarModule } from 'primeng/calendar';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ContextMenuModule } from 'primeng/contextmenu';
@@ -80,7 +81,7 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     AutoCompleteModule,
     TooltipModule,
     TieredMenuModule,
-    InputSwitchModule
+    InputSwitchModule, DragDropModule
   ],
   providers: [ConfirmationService, DialogService, MessageService]
 })

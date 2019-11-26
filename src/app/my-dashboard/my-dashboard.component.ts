@@ -176,6 +176,7 @@ export class MyDashboardComponent implements OnInit {
     this.sharedObject.DashboardData.ResourceCategorization = this.response.length > 0 ? this.response[1].retItems : [];
     const currentUserResCat = this.sharedObject.DashboardData.ResourceCategorization.filter((item) => item.UserName.ID === this.sharedObject.currentUser.userId);
     this.isUserFTE = currentUserResCat[0].IsFTE;
+    this.myDashboardConstantsService.mydashboardComponent.user.isUserFTE = this.isUserFTE;
     console.log(this.isUserFTE);
     this.sharedObject.DashboardData.ProjectContacts = this.response.length > 0 ? this.response[2].retItems : [];
     this.sharedObject.DashboardData.ProjectCodes = this.response.length > 0 ? this.response[3].retItems : [];

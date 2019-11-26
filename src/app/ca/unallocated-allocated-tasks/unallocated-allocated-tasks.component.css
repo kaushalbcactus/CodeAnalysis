@@ -44,6 +44,75 @@
     top: 35px !important;
 }
 
+::ng-deep body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight,
+::ng-deep body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item-group.ui-state-highlight {
+    background-color: #C53E3E !important;
+}
+
+::ng-deep body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight>span {
+    color: #ffffff !important;
+}
+
+::ng-deep .mainfilter>div>div>div.ui-dropdown-items-wrapper>ul>p-dropdownitem>li {
+    padding: 0.429em 0.857em !important;
+}
+
+::ng-deep body .ui-dropdown:not(.ui-state-disabled).ui-state-focus {
+    border-color: #C53E3E !important;
+}
+
+::ng-deep .subtaskTable>div {
+    margin: 0px !important;
+}
+
+#modalInnerLoader {
+    border: 5px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 5px solid red;
+    border-bottom: 5px solid red;
+    width: 50px;
+    height: 50px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#modalInnerLoaderText {
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, "Helvetica", ""arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
+}
+
+::ng-deep .ui-datepicker-trigger.ui-calendar-button {
+    width: 2.357em !important;
+    padding: 2px !important;
+    background-color: #c53e3e !important;
+    border: 1px solid #c53e3e !important;
+}
+
+::ng-deep .timePicker {
+    width: 30% !important;
+    padding: 5px !important;
+    border: 1px solid #a6a6a6 !important;
+    border-radius: 4px !important;
+}
+
+::ng-deep .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider {
+    background-color: #c53e3e !important;
+}
+
 
 /* 
 ::ng-deep .ui-menu.ui-menu-dynamic {

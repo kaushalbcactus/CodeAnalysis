@@ -17,7 +17,7 @@ export class TaskAllocationConstantsService {
     };
     taskallocationComponent = {
         projectResources: {
-            select: 'ID,ProjectCode,Milestone,Status,PrevStatus,WBJID,ProjectFolder,Milestones,TA,DeliverableType,ClientLegalEntity, Writers/ID,Writers/Name,Writers/Title,Reviewers/ID,Reviewers/Name,Reviewers/Title,QC/ID,QC/Name,QC/Title, Editors/ID,Editors/Name,Editors/Title,PSMembers/ID,PSMembers/Name,PSMembers/Title, GraphicsMembers/ID,GraphicsMembers/Name,GraphicsMembers/Title, PrimaryResMembers/ID,PrimaryResMembers/Name,PrimaryResMembers/Title, AllDeliveryResources/ID, AllDeliveryResources/Name, AllDeliveryResources/Title,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail',
+            select: 'ID,ProjectCode,Milestone,Status,PrevStatus,WBJID,ProjectFolder,Milestones,TA,DeliverableType,ClientLegalEntity,ProjectType, Writers/ID,Writers/Name,Writers/Title,Reviewers/ID,Reviewers/Name,Reviewers/Title,QC/ID,QC/Name,QC/Title, Editors/ID,Editors/Name,Editors/Title,PSMembers/ID,PSMembers/Name,PSMembers/Title, GraphicsMembers/ID,GraphicsMembers/Name,GraphicsMembers/Title, PrimaryResMembers/ID,PrimaryResMembers/Name,PrimaryResMembers/Title, AllDeliveryResources/ID, AllDeliveryResources/Name, AllDeliveryResources/Title,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail',
             expand: 'Writers/ID,Writers/Name,Writers/Title,Reviewers/ID,Reviewers/Name,Reviewers/Title,QC/ID,QC/Name,QC/Title, Editors/ID,Editors/Name,Editors/Title,PSMembers/ID,PSMembers/Name,PSMembers/Title, GraphicsMembers/ID,GraphicsMembers/Name,GraphicsMembers/Title, PrimaryResMembers/ID,PrimaryResMembers/Name,PrimaryResMembers/Title,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,CMLevel2/EMail,AllDeliveryResources/ID,AllDeliveryResources/Name,AllDeliveryResources/Title',
             filter: "ProjectCode eq '{{ProjectCode}}'",
             top: 4500
@@ -25,7 +25,7 @@ export class TaskAllocationConstantsService {
         Resources: {
             select: "ID,MaxHrs,PrimarySkill,UserName/ID,UserName/EMail,UserName/Title,UserName/Name,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title",
             expand: "UserName/ID,UserName/EMail,UserName/Title,UserName/Name,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title",
-            filter: "IsActive eq '{{enable}}'",
+            filter: "IsActive eq '{{enable}}' and TAVisibility ne 'No'",
             orderby: "UserName/Title asc",
             top: 4500
         },
@@ -58,7 +58,7 @@ export class TaskAllocationConstantsService {
             top: 4500
         },
         milestone: {
-            select: 'ID,Title,Task,SkillLevel,TATStatus,Comments,Status,AllowCompletion,NextTasks,FileSystemObjectType,ExpectedTime,PrevTasks,Milestone,SubMilestones,TimeSpent,StartDate,DueDate,PreviousTaskClosureDate,IsCentrallyAllocated,CentralAllocationDone,Actual_x0020_End_x0020_Date,Actual_x0020_Start_x0020_Date,TaskPosition,AssignedTo/ID,AssignedTo/Name,AssignedTo/Title,AssignedTo/EMail, ActiveCA,DisableCascade',
+            select: 'ID,Title,Task,SkillLevel,TATStatus,Comments,Status,AllowCompletion,NextTasks,FileSystemObjectType,ExpectedTime,PrevTasks,Milestone,SubMilestones,TimeSpent,StartDate,DueDate,PreviousTaskClosureDate,IsCentrallyAllocated,CentralAllocationDone,Actual_x0020_End_x0020_Date,Actual_x0020_Start_x0020_Date,TaskPosition,AssignedTo/ID,AssignedTo/Name,AssignedTo/Title,AssignedTo/EMail, ActiveCA,DisableCascade, ParentSlot',
             orderby: 'StartDate asc',
             expand: 'AssignedTo/ID,AssignedTo/Name,AssignedTo/Title,AssignedTo/EMail',
             filter: "ProjectCode eq '{{projectCode}}'",
@@ -83,6 +83,11 @@ export class TaskAllocationConstantsService {
         },
         getUserFromGroup: {
             UserFromGroup: this.globalObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/sitegroups/getByName('{{groupName}}')/Users"
+        },
+        earlyTaskNotification: {
+            select: 'ID',
+            filter: "IsActive eq 'Yes' and ProjectCode eq '{{projectCode}}'",
+            top: 4500
         }
     };
 }
