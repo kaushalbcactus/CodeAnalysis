@@ -670,8 +670,8 @@ export class CommonService {
             // ***********************************************************************************************************************************
 
             let grpResourceObj = Object.assign({}, this.queryConfig);
-            grpResourceObj.url = this.spServices.getGroupURL(this.constants.Groups.CDAdmin);
-            grpResourceObj.listName = this.constants.Groups.CDAdmin;
+            grpResourceObj.url = this.spServices.getGroupURL(this.constants.Groups.CAAdmin);
+            grpResourceObj.listName = this.constants.Groups.CAAdmin;
             grpResourceObj.type = 'GET';
             batchUrl.push(grpResourceObj);
         }

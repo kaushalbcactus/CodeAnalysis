@@ -337,6 +337,7 @@ export class ConstantsService {
     QMSAdmin: 'QMS_Admin',
     QMSLeaders: 'QMS_Leaders',
     CDAdmin: 'CD_Admin',
+    CAAdmin: 'CA_Admin',
     PFAdmin: 'PF_Admin',
     MANAGERS: 'Managers',
     PROJECT_FULL_ACCESS: 'Project-FullAccess',

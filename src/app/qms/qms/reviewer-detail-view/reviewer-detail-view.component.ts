@@ -113,14 +113,14 @@ export class ReviewerDetailViewComponent implements OnInit {
         filterValue: a.taskTitle
       };
       return b;
-    }));
+    }).filter(ele => ele.label));
     this.RDColArray.taskCompletionDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
       const b = {
         label: a.taskCompletionDate ? this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy') : "",
         value: a.taskCompletionDate ? new Date(this.datepipe.transform(a.taskCompletionDate, 'MMM d, yyyy')) : "",
         filterValue: a.taskCompletionDate ? new Date(a.taskCompletionDate) : ""
       }; return b;
-    }));
+    }).filter(ele => ele.label));
   }
 
   /**
@@ -315,7 +315,7 @@ export class ReviewerDetailViewComponent implements OnInit {
         taskTitle: element.taskTitle ? subMilestones ? element.taskTitle + ' - ' + subMilestones : element.taskTitle : '',
         title: element.taskTitle,
         subMilestones,
-        taskCompletionDate: new Date(this.datepipe.transform(element.taskCompletionDate, 'MMM d, yyyy')),
+        taskCompletionDate: element.taskCompletionDate ? new Date(this.datepipe.transform(element.taskCompletionDate, 'MMM d, yyyy')) : '',
         docUrlHtmlTag: element.docUrlHtmlTag ? element.docUrlHtmlTag : '',
         docReviewUrlHtmlTag: element.docReviewUrlHtmlTag ? element.docReviewUrlHtmlTag : '',
         documentURL: element.documentURL,

@@ -476,7 +476,7 @@ export class AllProjectsComponent implements OnInit {
           (projObj.ModifiedDate), 'MMM dd yyyy hh:mm:ss aa') : null;
         projObj.PrimaryPOC = task.PrimaryPOC;
         projObj.PrimaryPOCText = this.pmCommonService.extractNamefromPOC([projObj.PrimaryPOC]);
-        projObj.POC = projObj.PrimaryPOCText;
+        projObj.POC = projObj.PrimaryPOCText[0];
         projObj.AdditionalPOC = task.POC ? task.POC.split(';#') : [];
         projObj.AdditionalPOCText = this.pmCommonService.extractNamefromPOC(task.POC ? task.POC.split(';#') : []);
         projObj.ProjectFolder = task.ProjectFolder;
@@ -634,8 +634,8 @@ export class AllProjectsComponent implements OnInit {
     this.allProjects.Status = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
     this.allProjects.TA = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.TA, value: a.TA }; return b; }).filter(ele => ele.label)));
     this.allProjects.Molecule = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Molecule, value: a.Molecule }; return b; }).filter(ele => ele.label)));
-    const pocArray = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC[0], value: a.POC[0] }; return b; }).filter(ele => ele.label));
-    this.allProjects.POC = this.commonService.sortData(pocArray);
+    const poc1 = resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label);
+    this.allProjects.POC = this.commonService.sortData(this.uniqueArrayObj(poc1));
   }
 
   async approveRejectBudgetReduction(selectedStatus, projectObj) {

@@ -28,6 +28,8 @@ import { CommonService } from 'src/app/Services/common.service';
  *
  */
 export class ClientMasterdataComponent implements OnInit {
+  isUserSPMCA: boolean;
+  isUserPO: boolean;
   clientList = [];
   isBucketEffectiveDateActive = false;
   clientMasterDataColumns = [];
@@ -294,12 +296,16 @@ export class ClientMasterdataComponent implements OnInit {
       zone.run(() => applicationRef.tick());
     });
 
-    if (this.adminConstants.toastMsg.SPMAA || this.adminConstants.toastMsg.EAPA) {
-      this.messageService.clear();
-      this.messageService.add({
-        key: 'adminAuth', severity: 'info', sticky: true,
-        summary: 'Info Message', detail: 'You don\'\t have permission,please contact SP Team.'
-      });
+    if (this.adminConstants.toastMsg.SPMAA || this.adminConstants.toastMsg.SPMAD || this.adminConstants.toastMsg.EAPA) {
+      // this.messageService.clear();
+      setTimeout(() => {
+        this.messageService.add({
+          key: 'adminAuth1', severity: 'info', sticky: true,
+          summary: 'Info Message', detail: 'You don\'\t have permission,please contact SP Team.'
+        });
+        this.adminConstants.toastMsg.SPMAD = false;
+        this.adminConstants.toastMsg.EAPA = false;
+      }, 300);
     }
   }
   /**
@@ -383,8 +389,6 @@ export class ClientMasterdataComponent implements OnInit {
    * The table have option for sorting, pagination, edit and delete the client legal entity.
    *
    */
-  isUserSPMCA: boolean;
-  isUserPO: boolean;
   async loadClientTable() {
     this.constantsService.loader.isPSInnerLoaderHidden = false;
     // this.constantsService.loader.isPSInnerLoaderHidden = false;
@@ -712,18 +716,14 @@ export class ClientMasterdataComponent implements OnInit {
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
           this.dropdown.CMLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
-          if (role === this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel1) {
-            break;
-          }
+          break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.CMLevel2:
           this.dropdown.CMLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
           break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_1:
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
           this.dropdown.DeliveryLevel1Array.push({ label: element.UserName.Title, value: element.UserName.ID });
-          if (role === this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_1) {
-            break;
-          }
+          break;
         case this.adminConstants.RESOURCE_CATEGORY_CONSTANT.DELIVERY_LEVEL_2:
           this.dropdown.DeliveryLevel2Array.push({ label: element.UserName.Title, value: element.UserName.ID });
           break;
@@ -1404,7 +1404,7 @@ export class ClientMasterdataComponent implements OnInit {
     this.subDivisionItems = [];
     this.subDivisionItems.push(
       { label: 'Edit', command: (e) => this.showEditSubDivision() }
-    )
+    );
     if (this.isUserSPMCA) {
       this.subDivisionItems.push(
         { label: 'Delete', command: (e) => this.deleteSubDivision() }
@@ -1690,7 +1690,7 @@ export class ClientMasterdataComponent implements OnInit {
     } else {
       this.pocItems = [
         { label: 'Edit', command: (e) => this.showEditPOC() }
-      ]
+      ];
     }
   }
   /**
@@ -2394,7 +2394,7 @@ export class ClientMasterdataComponent implements OnInit {
     } else {
       this.poItems = [
         { label: 'Edit', command: (e) => this.showEditPOModal() },
-      ]
+      ];
     }
   }
   /**

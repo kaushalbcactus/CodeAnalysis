@@ -12,18 +12,18 @@
     <table [hidden]="loaderenable" class=" table-bordered table-striped header-fixed" id="capacityTable">
         <thead class="tableHeader">
             <tr>
-                <td>
+                <th>
                     Res(s) / Date(s)
-                </td>
-                <td title="{{date | date : 'EEE d MMM yyyy'}}" *ngFor="let date of oCapacity.arrDateFormat">
+                </th>
+                <th title="{{date | date : 'EEE d MMM yyyy'}}" *ngFor="let date of oCapacity.arrDateFormat">
                     {{date | date : "d MMM"}}
-                </td>
-                <td class="unallocated">
+                </th>
+                <th class="unallocated">
                     Total Un-Allocated
-                </td>
-                <td class="allocated">
+                </th>
+                <th class="allocated">
                     Total Allocated
-                </td>
+                </th>
             </tr>
         </thead>
         <tbody class="capacityBody">

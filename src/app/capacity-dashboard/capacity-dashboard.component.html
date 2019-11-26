@@ -12,30 +12,29 @@
         <form #searchForm="ngForm" [formGroup]="searchCapacityForm" (ngSubmit)="onSubmit()">
             <div class="p-col-12 p-justify-between p-align-center" style="padding: 20px 0px 20px 0px;">
                 <span class="p-col-2 ui-float-label ui-fluid">
-                    <p-multiSelect [options]="Buckets" formControlName="bucket" (onChange)="onChange($event,'bucket')"
-                        resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Bucket"
-                        [style]="{width:'100%'}"></p-multiSelect>
+                    <p-multiSelect [options]="Buckets" formControlName="bucket" (onChange)="onChange($event,'bucket')" 
+                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Bucket"  
+                    [style]="{width:'100%'}">
+                    </p-multiSelect>
                     <label for="float-input" class="mainlable">Bucket</label>
                 </span>
 
                 <span class="p-col-2 ui-float-label ui-fluid">
-                    <p-multiSelect [options]="PracticeAreas" formControlName="practicearea"
-                        (onChange)="onChange($event,'practicearea')" resetFilterOnHide="true"
-                        (keydown.enter)="$event.preventDefault()" defaultLabel="Select options"
-                        [style]="{width:'100%'}"></p-multiSelect>
+                    <p-multiSelect [options]="PracticeAreas" formControlName="practicearea"   (onChange)="onChange($event,'practicearea')"  
+                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Practice Area"  
+                    [style]="{width:'100%'}"></p-multiSelect>
                     <label for="float-input" class="mainlable">Practice Area</label>
                 </span>
                 <span class="p-col-2 ui-float-label ui-fluid">
-                    <p-multiSelect [options]="Skills" formControlName="skill" (onChange)="onChange($event,'skill')"
-                        resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Skill"
-                        [style]="{width:'100%'}"></p-multiSelect>
+                    <p-multiSelect [options]="Skills" formControlName="skill" (onChange)="onChange($event,'skill')" 
+                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Skill"  
+                    [style]="{width:'100%'}"></p-multiSelect>
                     <label for="float-input" class="mainlable">Skill</label>
                 </span>
                 <span class="p-col-2 ui-float-label ui-fluid">
-                    <p-multiSelect [options]="Resources" formControlName="resources"
-                        (onChange)="onChange($event,'resource')" resetFilterOnHide="true"
-                        (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource"
-                        [style]="{width:'100%'}"></p-multiSelect>
+                    <p-multiSelect [options]="Resources" formControlName="resources" (onChange)="onChange($event,'resource')" 
+                    resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" defaultLabel="Select Resource"  
+                    [style]="{width:'100%'}"></p-multiSelect>
                     <label for="float-input" class="mainlable">Resources</label>
                 </span>
                 <span class="p-col-3 ui-float-label ui-fluid">

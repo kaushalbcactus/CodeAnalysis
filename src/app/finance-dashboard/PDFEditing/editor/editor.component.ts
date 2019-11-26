@@ -2907,7 +2907,7 @@ export class EditorComponent implements OnInit {
             this.displayJapan = false;
             this.displayUS = false;
             this.displayIndia = false;
-            this.messageService.add({ key: 'editToast', severity: 'success', summary: 'Success message', detail: this.fdConstantsService.fdComponent.selectedEditObject.Code + ', ' + this.fdConstantsService.fdComponent.selectedEditObject.Type + ' edited successfully.', life: 2000 });
+            this.messageService.add({ key: 'editToast', severity: 'success', summary: 'Success message', detail: this.fdConstantsService.fdComponent.selectedEditObject.Code + ', ' + this.fdConstantsService.fdComponent.selectedEditObject.Type + ' edited successfully.', life: 20000 });
         }, 300);
     }
 

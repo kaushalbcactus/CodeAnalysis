@@ -63,6 +63,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         type: '',
         listName: ''
     };
+    pageNumber: number = 0;
     // Loader
     isPSInnerLoaderHidden: boolean = false;
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
@@ -92,7 +93,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         _applicationRef: ApplicationRef,
         zone: NgZone,
 
-    ) { 
+    ) {
         // Browser back button disabled & bookmark issue solution
         history.pushState(null, null, window.location.href);
         platformLocation.onPopState(() => {
@@ -129,6 +130,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
         // Get details
         this.getRequiredData();
+        this.setCurrentPage(0); //will set table to given page number
     }
 
     //  Purchase Order Number
@@ -175,6 +177,24 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
                 console.log('Resource Categorization ', this.rcData);
             }
         }))
+    }
+
+    setCurrentPage(n: number) {
+        let paging = {
+            first: ((n - 1) * this.outInvTable.rows),
+            rows: this.outInvTable.rows
+        };
+        // this.outInvTable.paginate(paging)
+        this.pageNumber = n;
+    }
+    currentPageNumber: number;
+    paginate(event) {
+        //event.first: Index of first record being displayed 
+        //event.rows: Number of rows to display in new page 
+        //event.page: Index of the new page 
+        //event.pageCount: Total number of pages 
+        this.currentPageNumber = event.first;
+        let pageIndex = event.first / event.rows + 1 // Index of the new page if event.page not defined.
     }
 
     getReasons() {
@@ -974,34 +994,34 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         if (type === "creditDebit") {
             this.messageService.add({
                 key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: 'Success.', life: 2000
+                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', life: 20000
             });
             this.creditOrDebitModal = false;
             this.reFetchData();
         } else if (type === "sentToAP") {
             this.messageService.add({
                 key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: 'Invoice Status Changed.', life: 2000
+                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Invoice Status Changed.', life: 20000
             });
             this.sentToAPModal = false;
             this.reFetchData();
         } else if (type === "disputeInvoice") {
             this.messageService.add({
                 key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: 'Submitted.', life: 2000
+                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Submitted.', life: 20000
             });
             this.disputeInvoiceModal = false;
         } else if (type === "paymentResoved") {
             this.messageService.add({
                 key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: 'Success.', life: 2000
+                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', life: 20000
             });
             this.paymentResovedModal = false;
             this.reFetchData();
         } else if (type === "replaceInvoice") {
             this.messageService.add({
                 key: 'outstandingSuccessToast', severity: 'success', summary: 'Success message',
-                detail: 'Success.', life: 2000
+                detail: this.selectedRowItem.InvoiceNumber + ' ' + 'Success.', life: 20000
             });
             this.replaceInvoiceModal = false;
             this.reFetchData();
@@ -1010,9 +1030,10 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         // });
     }
 
-    reFetchData() {
+    async reFetchData() {
+        await this.getRequiredData();
         setTimeout(() => {
-            this.getRequiredData();
+            this.setCurrentPage(this.currentPageNumber ? this.currentPageNumber : 0);
         }, 1000);
     }
 

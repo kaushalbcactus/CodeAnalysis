@@ -14,6 +14,7 @@ import { CFPositiveFeedbackComponent } from './qms/client-feedback/cfpositive-fe
 import { AdminComponent } from './qms/admin/admin.component';
 import { AdminViewComponent } from './qms/admin/admin-view/admin-view.component';
 import { ScorecardsComponent } from './qms/admin/scorecards/scorecards.component';
+import { QmsAuthGuard } from './auth/qms-auth.guard';
 
 const routes: Routes = [
   {
@@ -32,8 +33,8 @@ const routes: Routes = [
           { path: 'feedbackByMe', component: FeedbackBymeComponent }
         ]
       },
-      { path: 'pendingFeedback', component: ReviewerDetailViewComponent },
-      { path: 'managerView', component: ManagerViewComponent },
+      { path: 'pendingFeedback', component: ReviewerDetailViewComponent, canActivate: [QmsAuthGuard] },
+      { path: 'managerView', component: ManagerViewComponent, canActivate: [QmsAuthGuard] },
       {
         path: 'clientFeedback',
         component: ClientFeedbackComponent,
@@ -46,6 +47,7 @@ const routes: Routes = [
       {
         path: 'adminView',
         component: AdminComponent,
+        canActivate: [QmsAuthGuard],
         children: [
           { path: '', redirectTo: 'retrospectiveFeedback', pathMatch: 'prefix' },
           { path: 'retrospectiveFeedback', component: AdminViewComponent },

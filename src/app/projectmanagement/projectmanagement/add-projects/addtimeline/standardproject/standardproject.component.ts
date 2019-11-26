@@ -611,7 +611,7 @@ export class StandardprojectComponent implements OnInit {
    * This method generate the milestone.
    */
   private async generateSkillMilestones() {
-    this.pmObject.addProject.Timeline.Standard.Milestones = '';
+    this.pmObject.addProject.Timeline.Standard.Milestones = [];
     let startDate = this.calcBusinessNextDate(new Date(), 1);
     if (this.ngStandardProposedStartDate) {
       startDate = this.ngStandardProposedStartDate;
@@ -696,10 +696,10 @@ export class StandardprojectComponent implements OnInit {
       milestoneObj.data.clientReviewStartDate = this.setDefaultAMHours(this.calcBusinessNextDate(milestoneObj.data.EndDate, 1));
       milestoneObj.data.clientReviewEndDate = this.setDefaultPMHours(this.calcBusinessNextDate(milestoneObj.data.clientReviewStartDate, milestoneObj.data.ClientReviewDays === 1 ? 0 : milestoneObj.data.ClientReviewDays));
       this.standardFiles.push(milestoneObj);
-      this.pmObject.addProject.Timeline.Standard.Milestones += milestoneObj.MilestoneName;
-      if (index < orginalMilestone.length - 1) {
-        this.pmObject.addProject.Timeline.Standard.Milestones += ';#';
-      }
+      this.pmObject.addProject.Timeline.Standard.Milestones.push(milestoneObj.MilestoneName);
+      // if (index < orginalMilestone.length - 1) {
+      //   this.pmObject.addProject.Timeline.Standard.Milestones += ';#';
+      // }
       StartDate = this.setClientReview(milestoneObj, true);
       if (index < orginalMilestone.length) {
         index++;

@@ -77,9 +77,9 @@ export class CDComponent implements OnInit, OnDestroy {
     zone: NgZone
   ) {
 
-    this.router.routeReuseStrategy.shouldReuseRoute = function () {
-      return false;
-    }
+    // this.router.routeReuseStrategy.shouldReuseRoute = function () {
+    //   return false;
+    // }
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
     platformLocation.onPopState(() => {

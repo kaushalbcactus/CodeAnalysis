@@ -104,102 +104,124 @@ export class CapacityDashboardComponent implements OnInit {
     console.log(arrResults);
   }
 
+  filterData(callType, dataType) {
+    const arrValue = this.AlldbResources;
+    let bucket = this.searchCapacityForm.controls['bucket'].value;
+    let practiceArea = this.searchCapacityForm.controls['practicearea'].value;
+    let skill = this.searchCapacityForm.controls['skill'].value;
+    bucket = bucket ? bucket : [];
+    practiceArea = practiceArea ? practiceArea : [];
+    skill = skill ? skill : [];
+    let res;
+    switch (callType) {
+      case 'bucket':
+        res = bucket.length ? arrValue.filter(c => bucket.includes(c.Bucket)) : arrValue;
+        switch (dataType) {
+          case 'skill':
+            res = practiceArea.length ? res.filter(c => practiceArea.includes(c.Practice_x0020_Area)) : res;
+            break;
+          case 'resource':
+            res = practiceArea.length ? res.filter(c => practiceArea.includes(c.Practice_x0020_Area)) : res;
+            res = skill.length ? res.filter(c => skill.includes(c.PrimarySkill)) : res;
+            break;
+        }
+        break;
+      case 'practicearea':
+        res = bucket.length ? arrValue.filter(c => bucket.includes(c.Bucket)) : arrValue;
+        res = practiceArea.length ? res.filter(c => practiceArea.includes(c.Practice_x0020_Area)) : res;
+        switch (dataType) {
+          case 'resource':
+            res = skill.length ? res.filter(c => skill.includes(c.PrimarySkill)) : res;
+            break;
+        }
+        break;
+      case 'skill':
+        res = bucket.length ? arrValue.filter(c => bucket.includes(c.Bucket)) : arrValue;
+        res = practiceArea.length ? res.filter(c => practiceArea.includes(c.Practice_x0020_Area)) : res;
+        res = skill.length ? res.filter(c => skill.includes(c.PrimarySkill)) : res;
+        break;
+    }
+
+    return res;
+  }
 
   onChange(event, arrayType) {
     this.fetchDataloader = false;
     if (arrayType === 'bucket') {
 
-      this.PracticeAreas = event.value.length > 0 ? this.commonService.sortData(this.sharedObject.unique
-        (this.AlldbResources.filter(c => event.value.includes(c.Bucket)).filter(c => c.Practice_x0020_Area !== null).map(o => new Object({
-          label: o.Practice_x0020_Area,
-          value: o.Practice_x0020_Area
-        })), ['label'])) : this.commonService.sortData(this.sharedObject.unique
-          (this.AlldbResources.filter(c => c.Practice_x0020_Area !== null).map(o => new Object({
-            label: o.Practice_x0020_Area,
-            value: o.Practice_x0020_Area
-          })), ['label']));
+      const practiceAreas = event.value.length > 0 ? Array.from(new Set(this.filterData('bucket', 'practicearea')
+        .filter(c => c.Practice_x0020_Area !== null).map(o => o.Practice_x0020_Area))) : [];
 
-      this.Skills = event.value.length > 0 ? this.commonService.sortData(this.sharedObject.unique(
-        this.AlldbResources.filter(c => event.value.includes(c.Bucket)).filter(c => c.PrimarySkill !== null).map(o => new Object({
-          label: o.PrimarySkill,
-          value: o.PrimarySkill
-        })), ['label'])) : this.commonService.sortData(this.sharedObject.unique(
-          this.AlldbResources.filter(c => c.PrimarySkill !== null).map(o => new Object({
-            label: o.PrimarySkill,
-            value: o.PrimarySkill
-          })), ['label']));
+      const skills = event.value.length > 0 ? Array.from(new Set(this.filterData('bucket', 'skill')
+        .filter(c => c.PrimarySkill !== null).map(o => o.PrimarySkill))) : [];
 
-      this.Resources = event.value.length > 0 ? this.commonService.sortData(
-        this.AlldbResources.filter(c => event.value.includes(c.Bucket)).filter(c => c.UserName.Title !== null).map(o =>
-          new Object({ label: o.UserName.Title, value: o }))) : this.commonService.sortData
-          (this.AlldbResources.filter(c => c.UserName.Title !== null).map(o =>
-            new Object({ label: o.UserName.Title, value: o })));
+      const resources = event.value.length > 0 ? this.commonService.sortData(
+        this.filterData('bucket', 'resource').filter(c => c.UserName.Title !== null).map(o =>
+          new Object({ label: o.UserName.Title, value: o }))) : [];
 
-
+      const resValues = resources.map(({ value }) => value); // this.Resources.map(o => o.value);
       // tslint:disable-next-line: no-string-literal
-      this.searchCapacityForm.controls['practicearea'].setValue(null);
+      //this.searchCapacityForm.controls['practicearea'].setValue(null);
       // tslint:disable-next-line: no-string-literal
-      this.searchCapacityForm.controls['skill'].setValue(null);
+      //this.searchCapacityForm.controls['skill'].setValue(null);
       // tslint:disable-next-line: no-string-literal
-      this.searchCapacityForm.controls['resources'].setValue(null);
+      this.searchCapacityForm.patchValue({ practicearea: practiceAreas, skill: skills, resources: resValues });
 
 
     } else if (arrayType === 'practicearea') {
 
-      this.Skills = event.value.length > 0 ? this.commonService.sortData(this.sharedObject.unique(
-        this.AlldbResources.filter(c => event.value.includes(c.Practice_x0020_Area)).filter(c =>
-          c.PrimarySkill !== null).map(o => new Object({
-            label: o.PrimarySkill,
-            value: o.PrimarySkill
-          })), ['label'])) : this.commonService.sortData(this.sharedObject.unique(
-            this.AlldbResources.filter(c => c.PrimarySkill !== null).map(o => new Object({
-              label: o.PrimarySkill,
-              value: o.PrimarySkill
-            })), ['label']));
+      const skills = event.value.length > 0 ? Array.from(new Set(this.filterData('practicearea', 'skill')
+        .filter(c => c.PrimarySkill !== null).map(o => o.PrimarySkill))) : [];
 
-      this.Resources = event.value.length > 0 ? this.commonService.sortData(
-        this.AlldbResources.filter(c => event.value.includes(c.Practice_x0020_Area)).filter(c => c.UserName.Title !== null).map(o =>
+      const resources = event.value.length > 0 ? this.commonService.sortData(
+        this.filterData('practicearea', 'resource').filter(c => c.UserName.Title !== null).map(o =>
           new Object({ label: o.UserName.Title, value: o }))) : this.commonService.sortData
           (this.AlldbResources.filter(c => c.UserName.Title !== null).map(o =>
             new Object({ label: o.UserName.Title, value: o })));
 
       // tslint:disable-next-line: no-string-literal
-      this.searchCapacityForm.controls['skill'].setValue(null);
+      //this.searchCapacityForm.controls['skill'].setValue(null);
       // tslint:disable-next-line: no-string-literal
-      this.searchCapacityForm.controls['resources'].setValue(null);
+      //this.searchCapacityForm.controls['resources'].setValue(this.Resources);
 
+      const resValues = resources.map(({ value }) => value);
+      this.searchCapacityForm.patchValue({ skill: skills, resources: resValues });
     } else if (arrayType === 'skill') {
       // tslint:disable-next-line: no-string-literal
-      this.searchCapacityForm.controls['resources'].setValue(null);
-
-      this.Resources = event.value.length > 0 ? this.commonService.sortData(
-        this.AlldbResources.filter(c => event.value.includes(c.PrimarySkill)).filter(c => c.UserName.Title !== null).map(o =>
+      const resources = event.value.length > 0 ? this.commonService.sortData(
+        this.filterData('skill', 'resource').filter(c => c.UserName.Title !== null).map(o =>
           new Object({ label: o.UserName.Title, value: o }))) : this.commonService.sortData
           (this.AlldbResources.filter(c => c.UserName.Title !== null).map(o =>
             new Object({ label: o.UserName.Title, value: o })));
+
+      //this.searchCapacityForm.controls['resources'].setValue(this.Resources);
+      const resValues = resources.map(({ value }) => value);
+      this.searchCapacityForm.patchValue({ resources: resValues });
 
     } else if (arrayType === 'resource') {
 
     } else {
-      this.Buckets = this.commonService.sortData(this.sharedObject.unique(this.AlldbResources.filter(c => c.Bucket !== null).map(
-        o => new Object({ label: o.Bucket, value: o.Bucket })), ['label']));
+      // this.Buckets = this.commonService.sortData(this.sharedObject.unique(this.AlldbResources.filter(c => c.Bucket !== null).map(
+      //   o => new Object({ label: o.Bucket, value: o.Bucket })), ['label']));
 
-      this.PracticeAreas = this.commonService.sortData(this.sharedObject.unique
-        (this.AlldbResources.filter(c => c.Practice_x0020_Area !== null).map(o => new Object({
-          label: o.Practice_x0020_Area,
-          value: o.Practice_x0020_Area,
-        })), ['label']));
+      // this.PracticeAreas = this.commonService.sortData(this.sharedObject.unique
+      //   (this.AlldbResources.filter(c => c.Practice_x0020_Area !== null).map(o => new Object({
+      //     label: o.Practice_x0020_Area,
+      //     value: o.Practice_x0020_Area,
+      //   })), ['label']));
 
-      this.Skills = this.commonService.sortData(this.sharedObject.unique
-        (this.AlldbResources.filter(c => c.PrimarySkill !== null).map(o => new Object({
-          label: o.PrimarySkill,
-          value: o.PrimarySkill
-        })), ['label']));
+      // this.Skills = this.commonService.sortData(this.sharedObject.unique
+      //   (this.AlldbResources.filter(c => c.PrimarySkill !== null).map(o => new Object({
+      //     label: o.PrimarySkill,
+      //     value: o.PrimarySkill
+      //   })), ['label']));
 
-      this.Resources = this.AlldbResources.filter(c => c.UserName.Title !== null)
-        .map(o => new Object({ label: o.UserName.Title, value: o }));
+      // this.Resources = this.AlldbResources.filter(c => c.UserName.Title !== null)
+      //   .map(o => new Object({ label: o.UserName.Title, value: o }));
+
+      //this.searchCapacityForm.patchValue({ resources: null });
+      this.searchCapacityForm.patchValue({ bucket: [], practicearea: [], skill: [], resources: [] });
     }
-
 
   }
 
