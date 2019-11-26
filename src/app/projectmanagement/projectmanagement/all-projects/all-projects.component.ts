@@ -184,11 +184,9 @@ export class AllProjectsComponent implements OnInit {
 
     this.isApprovalAction = true;
     this.reloadAllProject();
-    // setInterval( this.checkEarlyTaskCompleted, 20000);
-    // this.checkEarlyTaskCompleted();
     setInterval(() => {
       this.checkEarlyTaskCompleted();
-    }, 50000);
+    }, 150000);
   }
   async checkEarlyTaskCompleted() {
     const completedTaskFilter = this.pmConstant.QUERY.GET_EARLY_TASK_COMPLETED;
