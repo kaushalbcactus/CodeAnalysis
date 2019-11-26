@@ -80,7 +80,7 @@ export class DragDropComponent implements OnInit {
     private constants: ConstantsService,
     private taskAllocationService: TaskAllocationConstantsService,
     private messageService: MessageService,
-    private taskCommonService : TaskAllocationCommonService) { }
+    private taskCommonService: TaskAllocationCommonService) { }
 
   ngOnInit() {
     this.initialLoad = true;
@@ -226,10 +226,9 @@ export class DragDropComponent implements OnInit {
     let errorM = 0;
     let ScPresent = false;
     if (this.milestonesGraph.nodes.length > 0) {
-      this.milestonesGraph.nodes.forEach(milestone => {
-
+      for (const milestone of this.milestonesGraph.nodes) {
         if (milestone.status !== 'Completed') {
-          milestone.submilestone.nodes.forEach(submilestone => {
+          milestone.submilestone.nodes.forEach(async submilestone => {
             if (submilestone.task.nodes.length === 0) {
               if (errorM <= 0) {
                 errorM++;
@@ -296,16 +295,14 @@ export class DragDropComponent implements OnInit {
             let circularPresent = false;
             const linksArray = [];
             if (submilestone.task.links.length > 0) {
-              submilestone.task.links.forEach(link => {
-                const paths = this.taskCommonService.getPaths(link.source, link.target, submilestone, link.source, []);
-                linksArray.push(paths);
-                console.log(linksArray);
+              for (const link of submilestone.task.links) {
+                // const paths = await this.taskCommonService.getPaths(link.source, link.target, submilestone);
                 if (circularPresent === false) {
                   const currentPath = link.source;
                   const target = link.target;
                   circularPresent = this.getNextTarget(link.source, target, submilestone, currentPath, circularPresent);
                 }
-              });
+              }
               if (circularPresent) {
                 errorM++;
                 this.messageService.add({
@@ -328,7 +325,9 @@ export class DragDropComponent implements OnInit {
         }
 
         ScPresent = false;
-      });
+      }
+      // this.milestonesGraph.nodes.forEach(milestone => {
+      // });
 
       if (errorM <= 0) {
         this.NodePosition();
@@ -1011,7 +1010,7 @@ export class DragDropComponent implements OnInit {
 
   onTaskDrop(event) {
     const MilTask = this.sharedObject.oTaskAllocation.allTasks.find(c => c.Title === event.data);
-    const originalType = event.data; 
+    const originalType = event.data;
     event.data = event.data === 'Send to client' ? 'SC' : event.data;
     if (this.selectedSubMilestone !== 'Default' && event.data === 'Client Review') {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Drop Client Review only in Default submilestone.' });
@@ -1043,7 +1042,7 @@ export class DragDropComponent implements OnInit {
           dbId: event.id !== undefined ? event.id : 0,
           label: label,
           color: '#e2e2e2',
-          taskType:  originalType, //MilTask.TaskType === 'Both' ? MilTask.DefaultSkill :
+          taskType: originalType, //MilTask.TaskType === 'Both' ? MilTask.DefaultSkill :
           top: 0,
           left: 0,
           status: 'Not Saved',
@@ -1409,7 +1408,7 @@ export class DragDropComponent implements OnInit {
           var nodeWidth = Math.ceil(outerHtmlElement.getBBox().width);
           if (nodeWidth > this.minWidth) {
             this.width = nodeWidth + 150;
-          
+
           }
           else {
             this.width = this.minWidth;
@@ -1451,7 +1450,7 @@ export class DragDropComponent implements OnInit {
               this.subMilestoneHeight = nodeHeight + 150;
             }
           }
-        
+
           this.grapLoading = false;
           this.moveToScrollView(this.resizeGraph);
           // }
@@ -1491,7 +1490,7 @@ export class DragDropComponent implements OnInit {
               this.taskHeight = nodeHeight + 200;
             }
           }
-        
+
           this.grapLoading = false;
           this.moveToScrollView(this.resizeGraph);
           //  }
