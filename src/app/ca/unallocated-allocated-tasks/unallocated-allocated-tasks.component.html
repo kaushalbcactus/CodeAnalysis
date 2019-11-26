@@ -19,7 +19,7 @@
 <div class="p-grid p-justify-between" style="margin: 0px;">
     <p-dropdown [options]="DropdownOptions" class="mainfilter" [(ngModel)]="selectedTab" (onChange)="getProperties()"></p-dropdown>
 
-    <button mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks()">
+    <button mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks(taskTable)">
     <mat-icon>save</mat-icon> Save 
 </button>
 </div>
@@ -72,7 +72,7 @@
                 <td>{{task.clientName}}</td>
                 <td><a style="color:#C53E3E;" href="{{globalService.sharePointPageObject.webAbsoluteUrl}}/allocation#/taskAllocation?ProjectCode={{task.projectCode}}" target="_blank">{{task.projectCode}}</a> <br /> ({{task.projectName}}) </td>
                 <td> {{task.milestone}} <span *ngIf="task.SubMilestones && task.SubMilestones !=='Default'"> -  {{task.SubMilestones}}</span></td>
-                <td>{{task.task}}</td>
+                <td>{{task.displaytask}}</td>
                 <td>{{task.deliveryType}}</td>
                 <td>{{task.estimatedTime}}</td>
                 <td>{{task.startTime | date : 'd MMM, yyyy, hh:mm a'}}</td>
@@ -160,7 +160,7 @@
                                 <!-- Start Date -->
                                 <td style="padding: 5px;">
 
-                                    <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode">{{rowData.startTime |  date:' d MMM, y, h:mm a' }}</span>
+                                    <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode">{{rowData.UserStart |  date:' d MMM, y, h:mm a' }}</span>
                                     <span *ngIf="rowData.editMode" style="display: flex;">
                                         <p-calendar id="calenderIcon" [(ngModel)]="rowData.UserStartDatePart"
                                             [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
@@ -182,7 +182,7 @@
                                 <!-- End Date -->
                                 <td style="padding: 5px;">
 
-                                    <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode">{{rowData.endTime |  date:' d MMM, y, h:mm a' }}</span>
+                                    <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode">{{rowData.UserEnd |  date:' d MMM, y, h:mm a' }}</span>
                                     <span *ngIf="rowData.editMode" style="display: flex;">
         
                                         <p-calendar id="calenderIcon" [(ngModel)]="rowData.UserEndDatePart"
@@ -204,9 +204,9 @@
                                 </td>
                                 <!-- Assign To -->
                                 <td>
-                                    <span *ngIf="!rowData.editMode"> {{rowData.pRes}}</span>
+                                    <span *ngIf="!rowData.editMode"> {{rowData.assignedTo.Title}}</span>
                                     <p-dropdown #allocateResource *ngIf="rowData.editMode" class="resourceDropdown" [options]="rowData.displayselectedResources" [panelStyle]="{minWidth:'25em' }" [(ngModel)]="rowData.allocatedResource" placeholder="Select Resource" [group]="true" filter="true"
-                                        placeholder="Select Resource" (onShow)="fetchResources(rowData, allocateResource)" (onHide)="EditSlotEnable(rowData,Slot)" [style]="{'width':'100%'}">
+                                        placeholder="Select Resource" (onShow)="fetchResources(rowData,false, allocateResource)" (onHide)="EditSlotEnable(rowData,Slot)" [style]="{'width':'100%'}">
                                         <ng-template let-group pTemplate="group">
                                             <span style="margin-left:.25em">{{group.label}}</span>
                                         </ng-template>
@@ -243,7 +243,7 @@
 
                                 <!-- Menu option -->
                                 <td>
-                                    <div *ngIf=" rowData.editMode">
+                                    <div>
                                         <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu"></p-menu>
 
                                         <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
@@ -273,7 +273,7 @@
 <p-dialog header="{{taskTitle}}" [closable]="false" [modal]="true" styleClass="ScopeComment" [style]="{width: '700px', minWidth: '600px'}" [(visible)]="displayCommentenable">
 
     <div [hidden]="modalloaderenable" class="p-grid p-dir-col p-justify-between">
-        <p-card class="p-col">
+        <p-card class="p-col" *ngIf="taskType ==='Slot'">
             <p-header style="padding: 0.5em;font-size: 1.2em;color: #af0b14;font-weight: 600; width: 100%;"><i class="fa fa-commenting" aria-hidden="true"></i>&nbsp;&nbsp; Task Previous Comments</p-header>
             <div>
                 <span *ngIf="!caGlobal.taskPreviousComment" style="color: #c53e3e;font-size: 1em;">* No comments present for task.         

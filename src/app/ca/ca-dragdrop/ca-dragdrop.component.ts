@@ -192,7 +192,7 @@ export class CaDragdropComponent implements OnInit {
         taskType: originalType,
         top: 0,
         left: 0,
-        Status: 'Not Saved',
+        status: 'Not Saved',
         IsCentrallyAllocated: 'Yes',
         SkillLevel: Task !== undefined ? Task.DefaultSkill !== null ? Task.DefaultSkill : '' : '',
         projectCode: this.data.projectCode
@@ -207,7 +207,7 @@ export class CaDragdropComponent implements OnInit {
         taskType: originalType,
         top: 0,
         left: 0,
-        Status: 'Not Saved',
+        status: 'Not Saved',
         IsCentrallyAllocated: 'Yes',
         SkillLevel: Task !== undefined ? Task.DefaultSkill !== null ? Task.DefaultSkill : '' : '',
         projectCode: this.data.projectCode
@@ -298,7 +298,7 @@ export class CaDragdropComponent implements OnInit {
       taskType: originalType,
       top: 0,
       left: 0,
-      Status: event.Status,
+      status: event.status ? event.status : 'Not Saved',
       IsCentrallyAllocated: event.IsCentrallyAllocated,
       SkillLevel: Task !== undefined ? Task.DefaultSkill !== null ? Task.DefaultSkill : '' : '',
       projectCode: this.data.projectCode
@@ -633,7 +633,8 @@ export class CaDragdropComponent implements OnInit {
       const obj = {
         nodes: this.nodes,
         links: this.links,
-        nodeOrder: this.nodeOrder
+        nodeOrder: this.nodeOrder,
+        dbSlots : this.response
       };
       this.data.MilestoneAllTasks = JSON.parse(JSON.stringify(this.TempMilestoneAllTasks));
       this.ref.close(obj);

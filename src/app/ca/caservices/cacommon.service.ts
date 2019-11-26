@@ -331,6 +331,7 @@ export class CACommonService {
     scObj.milestone = task.Milestone;
     scObj.SubMilestones = task.SubMilestones;
     scObj.task = task.Task;
+    scObj.displaytask = $.trim(task.Title.replace(scObj.projectCode + '', '').replace(scObj.milestone + '', ''));
     scObj.timezone = task.TimeZone;
     scObj.title = task.Title;
     scObj.taskName = $.trim(task.Title.replace(scObj.projectCode + '', '').replace(scObj.milestone + '', ''));
@@ -688,7 +689,6 @@ export class CACommonService {
         }
         const TaskType = milTask.Task;
         const taskName = $.trim(milTask.Title.replace(milTask.ProjectCode + '', '').replace(milTask.Milestone + '', ''));
-        debugger;
         if (task.MilestoneAllTasks.length > 0 && task.MilestoneAllTasks.find(c => c.type === TaskType)) {
           task.MilestoneAllTasks.find(c => c.type === TaskType).tasks.push(taskName);
         }
@@ -940,6 +940,84 @@ export class CACommonService {
   }
 
 
+  async CAResourceAllocation(task, projectInformationList) {
+
+    const projectObj = Object.assign({}, this.caConstantService.projectQueryOptions);
+    projectObj.filterByCode = projectObj.filterByCode.replace(/{{projectCode}}/gi, task.projectCode);
+    projectObj.filter = projectObj.filterByCode;
+    const arrResults = await this.spServices.readItems(this.globalConstantService.listNames.ProjectInformation.name, projectObj);
+    const project = arrResults.length > 0 ? arrResults[0] : {}
+    // const project = await this.getProjectDetailsByCode(projectInformationList, task.projectCode);
+
+    let arrWriterIDs = [], arrQualityCheckerIds = [], arrEditorsIds = [], arrGraphicsIds = [], arrPubSupportIds = [], arrReviewers = [];
+    //  writers = [],
+    //   arrWriterNames = [],
+    //   qualityChecker = [],
+
+    //   arrQCNames = [],
+    //   editors = [], 
+    //   arrEditorsNames = [],
+    //   graphics = [], 
+    //   arrGraphicsNames = [],
+    //   pubSupport = [], 
+    //   arrPubSupportNames = [],
+    //   reviewers = [], 
+    //   arrReviewesNames = [],
+    let arrPrimaryResourcesIds = [];
+
+    arrWriterIDs = this.getIDFromItem(project.Writers);
+    arrReviewers = this.getIDFromItem(project.Reviewers);
+    arrEditorsIds = this.getIDFromItem(project.Editors);
+    arrQualityCheckerIds = this.getIDFromItem(project.QC);
+    arrGraphicsIds = this.getIDFromItem(project.GraphicsMembers);
+    arrPubSupportIds = this.getIDFromItem(project.PSMembers);
+    arrPrimaryResourcesIds = this.getIDFromItem(project.PrimaryResMembers);
+
+    if (task.allocatedResource && task.allocatedResource !== -1) {
+      switch (task.task) {
+        case 'QC':
+        case 'Review-QC':
+        case 'Inco-QC':
+          arrQualityCheckerIds.push(task.allocatedResource);
+          break;
+        case 'Edit':
+        case 'Review-Edit':
+        case 'Inco-Edit':
+        case 'Galley':
+          arrEditorsIds.push(task.allocatedResource);
+          break;
+        case 'Graphics':
+        case 'Review-Graphics':
+        case 'Inco-Graphics':
+          arrGraphicsIds.push(task.allocatedResource);
+          break;
+      }
+    }
+
+    const updatedResources = {
+      editor: { results: [...arrEditorsIds] },
+      graphicsMembers: { results: [...arrGraphicsIds] },
+      qualityChecker: { results: [...arrQualityCheckerIds] },
+      allDeliveryRes: []
+    };
+
+    updatedResources.allDeliveryRes = [...arrWriterIDs, ...updatedResources.editor.results,
+    ...updatedResources.graphicsMembers.results, ...updatedResources.qualityChecker.results,
+    ...arrReviewers, ...arrPubSupportIds,
+    ...arrPrimaryResourcesIds];
+
+    let updateProjectRes = {};
+    updateProjectRes = {
+      EditorsId: { results: updatedResources.editor.results },
+      AllDeliveryResourcesId: { results: updatedResources.allDeliveryRes },
+      QCId: { results: updatedResources.qualityChecker.results },
+      GraphicsMembersId: { results: updatedResources.graphicsMembers.results },
+    };
+    // this.spServices.update(projectInformationList, project.ID, updateProjectRes, 'SP.Data.ProjectInformationListItem');
+    await this.spServices.updateItem(this.globalConstantService.listNames.ProjectInformation.name, project.ID, updateProjectRes, this.globalConstantService.listNames.ProjectInformation.type);
+  }
+
+
 
   getIDFromItem(objItem) {
     let arrData = [];
@@ -952,6 +1030,8 @@ export class CACommonService {
 
 
   async GetAllTasksMilestones(taskName) {
+
+    debugger;
     if(this.alldbConstantTasks.length == 0)
     {
       const batchUrl = [];
@@ -985,7 +1065,7 @@ export class CACommonService {
     const batchUrl = [];
     const tasksObj = Object.assign({}, this.queryConfig);
     const SlotTasks = Object.assign({}, this.caConstantService.scheduleQueryOptions);
-    SlotTasks.filter += SlotTasks.filterParentSlot;
+    SlotTasks.filter = SlotTasks.filterTask;
     tasksObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.Schedules.name, SlotTasks);
     tasksObj.url = tasksObj.url.replace(/{{ParentSlotId}}/gi, event.data ? event.data.id : event);
     tasksObj.listName = this.globalConstantService.listNames.Schedules.name;
@@ -1006,6 +1086,6 @@ export class CACommonService {
 
 
 
-    return Response;
+    return response;
   }
 }
