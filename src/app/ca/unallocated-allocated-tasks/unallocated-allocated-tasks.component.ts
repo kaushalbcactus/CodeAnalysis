@@ -10,12 +10,28 @@ import { Table } from 'primeng/table';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
-import { DialogService, ConfirmationService, MessageService, MenuItem } from 'primeng/primeng';
+import { DialogService, ConfirmationService, MessageService, MenuItem, SelectItem } from 'primeng/primeng';
+import { CaDragdropComponent } from '../ca-dragdrop/ca-dragdrop.component';
+import { async } from '@angular/core/testing';
+import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 
 @Component({
   selector: 'app-unallocated-allocated-tasks',
   templateUrl: './unallocated-allocated-tasks.component.html',
   styleUrls: ['./unallocated-allocated-tasks.component.css'],
+  //   animations: [
+  //     trigger('rowExpansionTrigger', [
+  //         state('void', style({
+  //             transform: 'translateX(-10%)',
+  //             opacity: 0
+  //         })),
+  //         state('active', style({
+  //             transform: 'translateX(0)',
+  //             opacity: 1
+  //         })),
+  //         transition('* <=> *', animate('400ms cubic-bezier(0.86, 0, 0.07, 1)'))
+  //     ])
+  // ],
   providers: [UsercapacityComponent]
 })
 export class UnallocatedAllocatedTasksComponent implements OnInit {
@@ -27,13 +43,41 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   @ViewChild('taskTable', { static: true }) taskTable: Table;
   TableBlock: Table;
   taskMenu: MenuItem[];
-  selectedTab: string;
+  selectedTab = 'unallocated';
   taskTitle = '';
   displayCommentenable: boolean;
   selectedButton: any;
   selectedUser: any;
   modalloaderenable: boolean;
   loderenable: boolean;
+  DropdownOptions: SelectItem[];
+  disableSave = true;
+  public queryConfig = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
+  darkTheme: NgxMaterialTimepickerTheme = {
+    container: {
+      bodyBackgroundColor: '#424242',
+      buttonColor: '#fff'
+    },
+    dial: {
+      dialBackgroundColor: '#555',
+    },
+    clockFace: {
+      clockFaceBackgroundColor: '#555',
+      clockHandColor: '#C53E3E ',
+      clockFaceTimeInactiveColor: '#fff'
+    }
+  };
+  response: any[];
+  SlotTasks: any;
+  allConstantTasks: any[];
+  expandedRows: any = {};
+  storeTask: any;
+  taskType: string;
   constructor(
     private spServices: SPOperationService,
     private globalConstant: ConstantsService,
@@ -49,7 +93,12 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     private messageService: MessageService,
     private commonService: CommonService,
     private cdr: ChangeDetectorRef,
-  ) { }
+    public datepipe: DatePipe,
+  ) {
+    this.DropdownOptions = [{ label: 'All', value: 'All' },
+    { label: 'Unallocated', value: 'unallocated' },
+    { label: 'Allocated', value: 'allocated' }];
+  }
 
   public caArrays = {
     clientLegalEntityArray: [],
@@ -62,6 +111,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     endTimeArray: []
   };
 
+
+
   private scheduleList = this.globalConstant.listNames.Schedules.name;
   private resourceCategorizationList = this.globalConstant.listNames.ResourceCategorization.name;
   private projectInformationList = this.globalConstant.listNames.ProjectInformation.name;
@@ -73,12 +124,13 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   public projects = [];
   public schedulesItems = [];
   public selectOpened = false;
+  public dbRecords = [];
   public openedSelect;
   public openedTask;
   public currentAllocatedTask;
   public taskAssignedTo = false;
   completeTaskArray = [];
-
+  subTaskloaderenable = false;
   displayedColumns: any[] = [
     { field: 'clientName', header: 'Client' },
     { field: 'projectCode', header: 'Project' },
@@ -107,12 +159,13 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   ngOnInit() {
     this.caGlobal.loading = true;
     this.caGlobal.totalRecords = 0;
-    this.selectedTab = this.route.snapshot.data.type;
     this.modalloaderenable = false;
     this.loderenable = false;
-    setTimeout(() => {
-      this.getProperties();
+    setTimeout(async () => {
+      await this.getProperties();
     }, 100);
+
+    this.globalService.currentUser.timeZone = this.commonService.getCurrentUserTimeZone();
 
   }
 
@@ -123,6 +176,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   private async getProperties() {
 
+    this.expandedRows = {};
     this.loaderenable = true;
     const taskCounter = 0;
     this.caGlobal.loading = true;
@@ -140,13 +194,19 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       startTimeTempArray: [],
       endTimeTempArray: []
     };
-    const mainQuery = this.selectedTab === 'allocated' ?
-      Object.assign({}, this.caConstant.scheduleAllocatedQueryOptions) : Object.assign({}, this.caConstant.scheduleQueryOptions);
 
+    const mainQuery = this.selectedTab === 'allocated' ?
+      Object.assign({}, this.caConstant.scheduleAllocatedQueryOptions) : this.selectedTab === 'unallocated' ?
+        Object.assign({}, this.caConstant.scheduleUnAllocatedQueryOptions) : Object.assign({}, this.caConstant.scheduleQueryOptions);
+
+    if (!this.selectedTab) {
+      mainQuery.filter += mainQuery.filterSlot;
+    }
     const arrResults = await this.caCommonService.getItems(mainQuery);
     this.resourceList = arrResults[0];
     this.projects = arrResults[1];
     this.schedulesItems = arrResults[2];
+
     if (this.schedulesItems && this.schedulesItems.length) {
       for (const task of this.schedulesItems) {
         this.caCommonService.getCaProperties(taskCounter, schedulesItemFetch, task, this.projects,
@@ -170,13 +230,13 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         (acTempArrays.startTimeTempArray, 'value'), 'value');
       this.caArrays.endTimeArray = this.caCommonService.sortByDate(this.commonService.unique
         (acTempArrays.endTimeTempArray, 'value'), 'value');
-
       this.caGlobal.totalRecords = this.completeTaskArray.length;
       this.caGlobal.dataSource = this.completeTaskArray.slice(0, 30);
       if (this.selectedTab !== 'allocated') {
         this.caGlobal.dataSource.map(c => c.allocatedResource = null);
       }
 
+      this.dbRecords = JSON.parse(JSON.stringify(this.completeTaskArray));
     }
     this.caGlobal.loading = false;
     this.loaderenable = false;
@@ -188,8 +248,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       return {
         label: label1,
         value: array.find(s => s.label === label1).value
-      }
-    })
+      };
+    });
   }
 
   lazyLoadTask(event) {
@@ -202,34 +262,56 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
   openPopup(data) {
-    if (this.selectedTab === 'allocated') {
-      if (data.isEditEnabled) {
+    console.log(data);
+    if (data.Type === 'Slot') {
+      if (data.editMode) {
         this.taskMenu = [
-          { label: 'Edit Assgined To', icon: 'pi pi-fwpi pi-pencil', command: (e) => this.enabledAllocateSelect(data) },
-          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) }
-
+          { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
+          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) },
+          { label: 'Cancel Changes', icon: 'pi pi-fw pi-times', command: (e) => this.cancelledAllchanges(data) },
         ];
       } else {
-        this.taskMenu = [
-          { label: 'Cancel Assgined To', icon: 'pi pi-fw pi-times', command: (e) => this.cancelledAllocatedSelect(data) },
-          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) }
 
+        this.taskMenu = [
+          { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
+          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) }
         ];
       }
     } else {
-      if (data.task !== 'QC' && data.task !== 'Edit' && data.task !== 'Graphics') {
+      if (data.editMode) {
         this.taskMenu = [
-          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) },
-          { label: 'Delete Task', icon: 'pi pi-fw pi-trash', command: (e) => this.deleteTask(data, this.taskTable ) }
+          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) }
         ];
       } else {
         this.taskMenu = [
+          { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(data) },
           { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) }
         ];
       }
     }
-
   }
+
+
+  editTask(data) {
+    data.editMode = true;
+    this.fetchResources(data, true);
+  }
+
+
+  cancelledAllchanges(data) {
+
+    delete data.SlotTasks;
+    this.expandedRows[data.id] = false;
+    data.editMode = false;
+    // const index = this.dbRecords.indexOf(this.dbRecords.find(c => c.id === data.id));
+    // if (index > -1) {
+
+    //   const Slot = this.dbRecords.find(c => c.id === data.id);
+    //   this.caGlobal.dataSource.splice(index, 1, Slot);
+    //   this.expandedRows[data.id] = false;
+    // }
+  }
+
 
   // ****************************************************************************************************
   // Enable Edit to reselect User on Allocated task
@@ -256,37 +338,22 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   getAllocateTaskScope(task) {
 
+    debugger;
     this.displayCommentenable = true;
     this.taskTitle = task.title;
-    const index = this.completeTaskArray.findIndex(item => item.id === task.id);
-    this.caGlobal.taskScope = this.completeTaskArray[index].taskScope ? this.completeTaskArray[index].taskScope : '';
-    this.caGlobal.taskPreviousComment = this.completeTaskArray[index].prevTaskComments ?
-      this.completeTaskArray[index].prevTaskComments : '';
-    this.caGlobal.curTaskScope = this.completeTaskArray[index];
-
+    this.taskType = task.Type && task.Type === 'Slot' ? task.Type : 'Task';
+    this.caGlobal.taskScope = task.taskScope ? task.taskScope : '';
+    this.caGlobal.taskPreviousComment = task.prevTaskComments ?
+      task.prevTaskComments : '';
+    this.caGlobal.curTaskScope = task;
   }
   // ****************************************************************************************************
   // Save Task Scope
   // *****************************************************************************************************
-
-
   saveTaskScope(task, comments) {
-
-    this.messageService.add({
-      key: 'tc', severity: 'warn', sticky: true,
-      summary: 'Info Message', detail: 'updating...'
-    });
-    this.caCommonService.saveTaskScopeComments(task, comments);
-
-    setTimeout(() => {
-      this.getProperties();
-      this.messageService.clear('tc');
-      this.messageService.add({
-        severity: 'success', summary: 'Success Message',
-        detail: 'The comments - ' + comments + ' has saved Successfully'
-      });
-    }, 400);
+    task.taskScope = comments;
   }
+
   onClear(task) {
     task.allocatedResource = null;
   }
@@ -296,13 +363,15 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   //  fetch resources on select resource feild
   // *****************************************************************************************************
 
-  fetchResources(task) {
+  fetchResources(task, EditEnable) {
     if (!this.selectOpened) {
       this.messageService.add({
         key: 'tc', severity: 'warn', sticky: true,
         summary: 'Info Message', detail: 'Fetching available resources...'
       });
       setTimeout(async () => {
+
+        debugger;
         const setResourcesExtn = $.extend(true, [], task.resources);
         const startTime = new Date(new Date(task.startTime).setHours(0, 0, 0, 0));
         const endTime = new Date(new Date(task.endTime).setHours(23, 59, 59, 0));
@@ -349,6 +418,16 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           }
           this.selectedUser = null;
         }
+
+
+        task.allocatedResource = task.displayselectedResources[0] ?
+          task.displayselectedResources[0].items.find(c => c.value.UserName.ID === task.assignedTo.ID) ?
+            task.displayselectedResources[0].items.find(c => c.value.UserName.ID === task.assignedTo.ID).value : '' : '';
+
+        if (EditEnable) {
+          task.previousAssignedUser = task.assignedTo.ID;
+        }
+
       }, 500);
     }
   }
@@ -419,63 +498,72 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.openedTask = task;
   }
 
+  async EditSlotEnable(rowData, Slot) {
+
+    Slot.editMode = true;
+    Slot.edited = true;
+    rowData.edited = true;
+    this.disableSave = false;
+
+  }
+
   // ****************************************************************************************************
   // Save Task
   // *****************************************************************************************************
 
 
-  async saveTask(task, unt) {
-    if (!this.selectOpened && task.allocatedResource !== '') {
-      if (!this.selectOpened && task.allocatedResource) {
-        const currentScheduleTask = await this.spServices.readItem(this.scheduleList, task.id);
-        if (currentScheduleTask) {
-          if (new Date(task.startDate).getTime() === new Date(currentScheduleTask.StartDate).getTime() &&
-            new Date(task.dueDate).getTime() === new Date(currentScheduleTask.DueDate).getTime()) {
-            const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource.UserName.ID);
-            let resourceTimeZone = this.resourceList[indexRes].TimeZone.Title;
-            resourceTimeZone = resourceTimeZone ? resourceTimeZone : '5.5';
-            if (parseFloat(task.timezone) === parseFloat(resourceTimeZone)) {
-              this.messageService.add({
-                severity: 'info', summary: 'Info Message',
-                detail: 'Updating Task..'
-              });
-              setTimeout(() => {
-                this.completeEqualTask(task, unt, false);
-              }, 500);
-            } else {
-              const newStartTime = this.caCommonService.calcTimeForDifferentTimeZone(task.startDate, task.timezone, resourceTimeZone);
-              const newEndTime = this.caCommonService.calcTimeForDifferentTimeZone(task.dueDate, task.timezone, resourceTimeZone);
-              // tslint:disable-next-line: quotemark
-              if (window.confirm("Task '" + task.title + "' will be allocated to " + this.resourceList
-              // tslint:disable-next-line: max-line-length
-              [indexRes].UserName.Title + 'from' + this.datePipe.transform(newStartTime, 'MMM dd yyyy hh:mm:ss aa') + ' to ' + this.datePipe.transform(newEndTime, 'MMM dd yyyy hh:mm:ss aa') + ' in his/her timezone. Do you want to continue ?')) {
-                this.messageService.add({
-                  severity: 'info', summary: 'Info Message',
-                  detail: 'Updating Task..'
-                });
-                task.newStartDate = newStartTime;
-                task.newDueDate = newEndTime;
-                task.userTimeZone = resourceTimeZone;
-                setTimeout(() => {
-                  this.completeEqualTask(task, unt, true);
-                }, 500);
-              } else {
-                this.onClear(task);
-              }
-            }
-          } else {
-            this.messageService.add({
-              severity: 'info', summary: 'Info Message',
-              detail: 'Start and EndDate is not matched for this ' + task.title + '. Hence page is refreshed in 30 sec.'
-            });
-            setTimeout(() => {
-              location.reload();
-            }, 3000);
-          }
-        }
-      }
-    }
-  }
+  // async saveTask(task, unt) {
+  //   if (!this.selectOpened && task.allocatedResource !== '') {
+  //     if (!this.selectOpened && task.allocatedResource) {
+  //       const currentScheduleTask = await this.spServices.readItem(this.scheduleList, task.id);
+  //       if (currentScheduleTask) {
+  //         if (new Date(task.startDate).getTime() === new Date(currentScheduleTask.StartDate).getTime() &&
+  //           new Date(task.dueDate).getTime() === new Date(currentScheduleTask.DueDate).getTime()) {
+  //           const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource.UserName.ID);
+  //           let resourceTimeZone = this.resourceList[indexRes].TimeZone.Title;
+  //           resourceTimeZone = resourceTimeZone ? resourceTimeZone : '5.5';
+  //           if (parseFloat(task.timezone) === parseFloat(resourceTimeZone)) {
+  //             this.messageService.add({
+  //               severity: 'info', summary: 'Info Message',
+  //               detail: 'Updating Task..'
+  //             });
+  //             setTimeout(() => {
+  //               this.completeEqualTask(task, unt, false);
+  //             }, 500);
+  //           } else {
+  //             const newStartTime = this.caCommonService.calcTimeForDifferentTimeZone(task.startDate, task.timezone, resourceTimeZone);
+  //             const newEndTime = this.caCommonService.calcTimeForDifferentTimeZone(task.dueDate, task.timezone, resourceTimeZone);
+  //             // tslint:disable-next-line: quotemark
+  //             if (window.confirm("Task '" + task.title + "' will be allocated to " + this.resourceList
+  //             // tslint:disable-next-line: max-line-length
+  //             [indexRes].UserName.Title + 'from' + this.datePipe.transform(newStartTime, 'MMM dd yyyy hh:mm:ss aa') + ' to ' + this.datePipe.transform(newEndTime, 'MMM dd yyyy hh:mm:ss aa') + ' in his/her timezone. Do you want to continue ?')) {
+  //               this.messageService.add({
+  //                 severity: 'info', summary: 'Info Message',
+  //                 detail: 'Updating Task..'
+  //               });
+  //               task.newStartDate = newStartTime;
+  //               task.newDueDate = newEndTime;
+  //               task.userTimeZone = resourceTimeZone;
+  //               setTimeout(() => {
+  //                 this.completeEqualTask(task, unt, true);
+  //               }, 500);
+  //             } else {
+  //               this.onClear(task);
+  //             }
+  //           }
+  //         } else {
+  //           this.messageService.add({
+  //             severity: 'info', summary: 'Info Message',
+  //             detail: 'Start and EndDate is not matched for this ' + task.title + '. Hence page is refreshed in 30 sec.'
+  //           });
+  //           setTimeout(() => {
+  //             location.reload();
+  //           }, 3000);
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
   // tslint:disable
 
   // ****************************************************************************************************
@@ -677,6 +765,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   // hide popup menu on production
   // *****************************************************************************************************
 
+
+
   @HostListener('document:click', ['$event'])
   clickout(event) {
     if (event.target.className === 'pi pi-ellipsis-v') {
@@ -734,19 +824,901 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     }
   }
 
-  // ngAfterViewChecked() {
-  //   if (this.caGlobal.dataSource.length && this.isOptionFilter) {
-  //     let obj = {
-  //       tableData: this.taskTable,
-  //       colFields: this.caArrays
-  //     }
-  //     if (obj.tableData.filteredValue) {
-  //       this.commonService.updateOptionValues(obj);
-  //     } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
-  //       this.createColFieldValues(obj.tableData.value);
-  //       this.isOptionFilter = false;
-  //     }
-  //     this.cdr.detectChanges();
-  //   }
-  // }
+  showRestructureCA(RowData) {
+    this.loaderenable = true;
+    const ref = this.dialogService.open(CaDragdropComponent, {
+
+      data: {
+        slot: RowData,
+      },
+      header: 'Central Allocation',
+      width: '100vw',
+      height: '100vh',
+      contentStyle: { height: '90vh', overflow: 'auto' },
+      closable: false,
+    });
+    ref.onClose.subscribe(async (RestructureTasks: any) => {
+      debugger
+      if (RestructureTasks) {
+
+        let SlotTasks = [];
+        if (RowData.SlotTasks) {
+          SlotTasks = JSON.parse(JSON.stringify(RowData.SlotTasks));
+        }
+        RowData.SlotTasks = [];
+        RowData.dbSlotTasks = RestructureTasks.dbSlots;
+        const nodesNew = [];
+        for (const nodeOrder of RestructureTasks.nodeOrder) {
+          const node = RestructureTasks.nodes.find(e => e.id === nodeOrder);
+          nodesNew.push(node);
+        }
+        RestructureTasks.nodes = nodesNew;
+        RestructureTasks.nodes.forEach(async task => {
+
+          const nextTasks = RestructureTasks.nodes.filter(c => RestructureTasks.links.filter(e => e.source ===
+            task.id).map(d => d.target).includes(c.id)).map(c => c.label).join(';');
+
+          const previousTasks = RestructureTasks.nodes.filter(c => RestructureTasks.links.filter(e => e.target ===
+            task.id).map(d => d.source).includes(c.id)).map(c => c.label).join(';');
+
+          task.startDate = RowData.startDate;
+          task.dueDate = RowData.startDate;
+          if (SlotTasks.find(c => c.taskName === task.taskName)) {
+            task = SlotTasks.find(c => c.taskName === task.taskName);
+          } else {
+            task.status = 'Not Saved';
+          }
+          task.previousTasks = previousTasks === '' ? null : previousTasks;
+          task.nextTasks = nextTasks === '' ? null : nextTasks;
+          const obj = this.GetTask(task, false);
+          obj.editMode = true;
+          RowData.SlotTasks.push(obj);
+          RowData.editMode = true;
+          RowData.subTaskloaderenable = false;
+        });
+
+        this.expandedRows[RowData.id] = true;
+      } else {
+
+        if (!RowData.SlotTasks) {
+
+          RowData.SlotTasks = [];
+          const obj = this.GetTask(RowData, false);
+          const tasks = await this.GetAllConstantTasks(obj.task);
+          obj.taskName = tasks.length > 0 ? tasks[0] : obj.taskName;
+          obj.isEditEnabled = true;
+          obj.edited = true;
+          RowData.SlotTasks.push(obj);
+          RowData.subTaskloaderenable = false;
+        }
+      }
+    });
+
+  }
+
+
+
+
+
+  async OnRowExpand(event) {
+
+    event.data.subTaskloaderenable = true;
+    if (event.data.SlotTasks) {
+      if (event.data.SlotTasks.length === 1 && event.data.SlotTasks[0].id === undefined) {
+        event.data.SlotTasks[0].editMode = true;
+        event.data.SlotTasks[0].edited = true;
+      }
+      event.data.subTaskloaderenable = false;
+    } else {
+      event.data.SlotTasks = [];
+      event.data.dbSlotTasks = [];
+      const response = await this.caCommonService.getSlotTasks(event);
+      if (response.length > 0) {
+        response.forEach(element => {
+          const obj = this.GetTask(element, true);
+          event.data.SlotTasks.push(obj);
+          event.data.dbSlotTasks.push(element);
+        });
+        event.data.subTaskloaderenable = false;
+      } else {
+        const tasks = await this.GetAllConstantTasks(event.data.task);
+        event.data.taskName = tasks.length > 0 ? tasks[0] : event.data.taskName;
+        const obj = this.GetTask(event.data, false);
+        obj.editMode = true;
+        obj.edited = true;
+        obj.status = 'Not Saved';
+        event.data.SlotTasks.push(obj);
+        event.data.subTaskloaderenable = false;
+      }
+    }
+    console.log(event.data.SlotTasks);
+  }
+
+  modelChanged(event, Slot) {
+    event.editMode = true;
+    event.edited = true;
+    Slot.editMode = true;
+    this.disableSave = false;
+  }
+
+  async GetAllConstantTasks(taskName) {
+    let allConstantTasks = [];
+    allConstantTasks = await this.caCommonService.GetAllTasksMilestones(taskName);
+    return allConstantTasks.map(c => c.Title);
+  }
+
+  GetTask(task, IsdbTask) {
+    const taskObj = $.extend(true, {}, this.caGlobal.caObject);
+    const hrsMinObject = {
+      timeHrs: task.TimeSpent != null ? task.TimeSpent.indexOf('.') > -1 ?
+        task.TimeSpent.split('.')[0] : task.TimeSpent : '00',
+      timeMins: task.TimeSpent != null ?
+        task.TimeSpent.indexOf('.') > -1 ? task.TimeSpent.split('.')[1] : '00' : 0
+    };
+    task.projectCode = task.projectCode ? task.projectCode : task.ProjectCode;
+    const projectItem = this.projects.filter((proj) => proj.ProjectCode === task.projectCode);
+    const resourcesList = $.extend(true, [], this.resourceList);
+    if (!task.taskName) {
+      task.taskName = $.trim(task.Title.replace(task.ProjectCode + '', '').replace(task.Milestone + '', ''));
+    }
+    const resPool = this.caCommonService.getResourceByMatrix(resourcesList, task.taskName ? task.taskName : task.label, task.SkillLevel,
+      projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
+
+
+    const AssignedUserTimeZone = task.AssignedTo ? resourcesList.filter((objt) => {
+      return task.AssignedTo.ID === objt.UserName.ID;
+    }) : [];
+    task.assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
+      ? AssignedUserTimeZone[0].TimeZone.Title ?
+        AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
+
+    const convertedStartDate = task.startDate ? this.commonService.calcTimeForDifferentTimeZone(new Date(task.startDate),
+      this.globalService.currentUser.timeZone, task.assignedUserTimeZone) :
+      this.commonService.calcTimeForDifferentTimeZone(new Date(task.StartDate),
+        this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
+    task.jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(convertedStartDate,
+      task.assignedUserTimeZone, this.globalService.currentUser.timeZone);
+    const convertedEndDate = task.dueDate ? this.commonService.calcTimeForDifferentTimeZone(new Date(task.dueDate),
+      this.globalService.currentUser.timeZone, task.assignedUserTimeZone) :
+      this.commonService.calcTimeForDifferentTimeZone(new Date(task.DueDate),
+        this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
+    task.jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(convertedEndDate,
+      task.assignedUserTimeZone, this.globalService.currentUser.timeZone);
+
+    const SelectedResources = [];
+    const resExt = $.extend(true, [], resPool);
+    for (const retRes of resExt) {
+      retRes.timeAvailable = 0;
+      retRes.Color = 'green';
+      SelectedResources.push(retRes);
+    }
+
+    taskObj.id = task.ID;
+    taskObj.task = task.Type && task.Type === 'Slot' ? task.taskName : task.task ? task.task : task.Task;
+    taskObj.timezone = task.timezone ? task.timezone : task.Timezone;
+    taskObj.title = task.Title;
+    taskObj.projectCode = task.projectCode ? task.projectCode : task.ProjectCode;
+    taskObj.NextTasks = task.nextTasks ? task.nextTasks : task.NextTasks;
+    taskObj.PrevTasks = task.PrevTasks ? task.PrevTasks : task.prevTasks;
+    taskObj.milestone = task.milestone ? task.milestone : task.Milestone;
+    taskObj.taskName = task.taskName;
+    taskObj.estimatedTime = task.estimatedTime ? task.estimatedTime : task.ExpectedTime ? task.ExpectedTime : '0';
+    taskObj.startTime = task.startDate ? task.startDate : task.StartDate;
+    taskObj.endTime = task.dueDate ? task.dueDate : task.DueDate;
+    taskObj.startDate = task.startDate ? new Date(task.startDate) : new Date(task.StartDate);
+    taskObj.dueDate = task.dueDate ? new Date(task.dueDate) : new Date(task.DueDate);
+    taskObj.UserStart = task.startDate ? new Date(task.startDate) : new Date(task.StartDate);
+    taskObj.UserEnd = task.dueDate ? new Date(task.dueDate) : new Date(task.DueDate);
+    taskObj.spentTime = this.commonService.ajax_addHrsMins([hrsMinObject]);
+    taskObj.UserStartDatePart = this.getDatePart(convertedStartDate);
+    taskObj.UserStartTimePart = this.getTimePart(convertedStartDate);
+    taskObj.UserEndDatePart = this.getDatePart(convertedEndDate);
+    taskObj.UserEndTimePart = this.getTimePart(convertedEndDate);
+    taskObj.taskScope = task.Comments;
+    taskObj.allocatedResource = '';
+    taskObj.assignedTo = task.assignedTo ? task.assignedTo : task.AssignedTo ? task.AssignedTo : [];
+    taskObj.resources = $.extend(true, [], resPool);
+    taskObj.selectedResources = [];
+    taskObj.mileStoneTask = [];
+    taskObj.projectTask = [];
+    taskObj.status = task.status ? task.status : task.Status;
+    taskObj.CentralAllocationDone = task.CentralAllocationDone;
+    taskObj.assignedUserTimeZone = task.assignedUserTimeZone;
+    taskObj.allowStart = task.AllowCompletion === true || task.AllowCompletion === 'Yes' ? true : false;
+    taskObj.DisableCascade = task.DisableCascade && task.DisableCascade === 'Yes' ? true : false;
+    taskObj.displayselectedResources = [];
+
+    if (IsdbTask) {
+      taskObj.NextTasks = taskObj.NextTasks ? taskObj.NextTasks.replace(new RegExp(taskObj.projectCode + ' ', 'g'), '')
+        .replace(new RegExp(taskObj.milestone + ' ', 'g'), '').replace(/#/gi, '') : null;
+
+      taskObj.PrevTasks = taskObj.PrevTasks ? taskObj.PrevTasks.replace(new RegExp(taskObj.projectCode + ' ', 'g'), '')
+        .replace(new RegExp(taskObj.milestone + ' ', 'g'), '').replace(/#/gi, '') : null;
+    }
+
+    return taskObj;
+  }
+
+  getDatePart(date) {
+    const newDate = new Date(date);
+    return new Date(this.datepipe.transform(newDate, 'MMM d, y'));
+  }
+
+  getTimePart(date) {
+    const newDate = new Date(date);
+    return this.datepipe.transform(newDate, 'hh:mm a');
+  }
+
+
+  DateChangePart(Node, Slot, type) {
+    Node.UserStart = new Date(this.datepipe.transform(Node.UserStartDatePart, 'MMM d, y') + ' ' + Node.UserStartTimePart);
+    Node.UserEnd = new Date(this.datepipe.transform(Node.UserEndDatePart, 'MMM d, y') + ' ' + Node.UserEndTimePart);
+    Slot.editMode = true;
+    this.DateChange(Node, Slot, type);
+    this.disableSave = false;
+  }
+  //tslint:disable
+  DateChange(Node, Slot, type) {
+    let previousNode = undefined;
+    Slot.SlotTasks.forEach(task => {
+      if (Node === task) {
+        this.changeDateOfEditedTask(task, type);
+        previousNode = task;
+        const nextTasks = previousNode.NextTasks ? previousNode.NextTasks.split(';') : [];
+        if (nextTasks) {
+          this.cascadeNextTask(nextTasks, Slot, previousNode);
+        }
+
+      }
+    });
+  }
+
+  async cascadeNextTask(nextTasks, Slot, previousNode) {
+
+    nextTasks.forEach(element => {
+
+      const nextNode = Slot.SlotTasks.find(c => c.taskName === element);
+      if (new Date(previousNode.UserEnd) > new Date(nextNode.UserStart) && !nextNode.DisableCascade) {
+        this.cascadeNode(previousNode, Slot, nextNode);
+      }
+    });
+  }
+
+
+  async cascadeNode(previousNode, Slot, currentnode) {
+
+    const startDate = currentnode.startDate;
+    const endDate = currentnode.dueDate;
+    var workingHours = this.workingHoursBetweenDates(startDate, endDate);
+    currentnode.startDate = previousNode.dueDate;
+    currentnode.UserStart = this.commonService.calcTimeForDifferentTimeZone(currentnode.startDate,
+      this.globalService.currentUser.timeZone, currentnode.assignedUserTimeZone);
+    currentnode.UserStart = currentnode.UserStart.getHours() >= 19 ?
+      this.checkStartDate(new Date(currentnode.UserStart.getFullYear(), currentnode.UserStart.getMonth(), (currentnode.UserStart.getDate() + 1), 9, 0)) :
+      currentnode.UserStart;
+    currentnode.UserEnd = this.checkEndDate(currentnode.UserStart, workingHours);
+    currentnode.UserStartDatePart = this.getDatePart(currentnode.UserStart);
+    currentnode.UserStartTimePart = this.getTimePart(currentnode.UserStart);
+    currentnode.UserEndDatePart = this.getDatePart(currentnode.UserEnd);
+    currentnode.UserEndTimePart = this.getTimePart(currentnode.UserEnd);
+    currentnode.startDate = this.commonService.calcTimeForDifferentTimeZone(currentnode.UserStart,
+      currentnode.assignedUserTimeZone, this.globalService.currentUser.timeZone);
+    currentnode.dueDate = this.commonService.calcTimeForDifferentTimeZone(currentnode.UserEnd,
+      currentnode.assignedUserTimeZone, this.globalService.currentUser.timeZone);
+    currentnode.edited = true;
+    currentnode.pRes = currentnode.skillLevel;
+    const nextTasks = currentnode.NextTasks ? currentnode.NextTasks.split(';') : [];
+    if (nextTasks) {
+      this.cascadeNextTask(nextTasks, Slot, currentnode);
+    }
+  }
+
+  changeDateOfEditedTask(node, type) {
+    node.UserStart = node.UserStart;
+    node.UserEnd = type === 'start' && node.UserStart > node.UserEnd ? node.UserStart : node.UserEnd;
+    node.UserStartDatePart = this.getDatePart(node.UserStart);
+    node.UserStartTimePart = this.getTimePart(node.UserStart);
+    node.UserEndDatePart = this.getDatePart(node.UserEnd);
+    node.UserEndTimePart = this.getTimePart(node.UserEnd);
+
+    node.startDate = this.commonService.calcTimeForDifferentTimeZone(node.UserStart,
+      node.assignedUserTimeZone, this.globalService.currentUser.timeZone);
+    node.dueDate = this.commonService.calcTimeForDifferentTimeZone(node.UserEnd,
+      node.assignedUserTimeZone, this.globalService.currentUser.timeZone);
+    node.edited = true;
+    node.pRes = node.skillLevel;
+
+
+    //node.tatVal = this.commonService.calcBusinessDays(new Date(node.pStart), new Date(node.pEnd));
+  }
+  workingHoursBetweenDates(start, end) {
+    let count = 0;
+    for (let i = start.valueOf(); i < end.valueOf(); i = (start.setMinutes(start.getMinutes() + 1)).valueOf()) {
+      if (start.getDay() !== 0 && start.getDay() !== 6 && start.getHours() >= 9 && start.getHours() < 19) {
+        count++;
+      }
+    }
+    return count / 60;
+  }
+
+  // **************************************************************************************************
+  // Check Start Date
+  // *************************************************************************************************
+
+
+  private checkStartDate(date) {
+    date.setDate(date.getDay() === 6 ? date.getDate() + 2 : date.getDay() === 0 ? date.getDate() + 1 : date.getDate() + 0);
+    return new Date(date);
+  }
+
+
+  // *************************************************************************************************************************************
+  // Calculate  End  Date  after working hours difference
+  // *************************************************************************************************************************************
+
+
+  checkEndDate(start, workingHours) {
+    let count = 0;
+    let EndDate = new Date(start);
+    let CaculateDate = new Date(start);
+    const workHours = workingHours * 60;
+    while (count < workHours) {
+
+      if (EndDate.getDay() !== 0 && EndDate.getDay() !== 6 && EndDate.getHours() >= 9 && EndDate.getHours() < 19) {
+        EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
+        CaculateDate = new Date(EndDate);
+      } else if (EndDate.getHours() === 19 && EndDate.getMinutes() === 0) {
+
+        CaculateDate = new Date(EndDate);
+        EndDate = new Date(EndDate.setMinutes(EndDate.getMinutes() + 1));
+        count--;
+      } else {
+        EndDate = new Date(EndDate.getFullYear(), EndDate.getMonth(), (EndDate.getDate() + 1), 9, 0);
+        CaculateDate = new Date(EndDate);
+        count--;
+      }
+
+      if (EndDate.getHours() >= 9 && EndDate.getHours() <= 19) { count++; }
+    }
+    return CaculateDate;
+  }
+
+
+  async saveTasks(unt) {
+
+    this.disableSave = true;
+    const isValid = await this.validate();
+
+    if (isValid) {
+      this.loaderenable = true;
+      setTimeout(() => {
+        this.generateSaveTasks(unt);
+      }, 300);
+    }
+    else {
+      this.disableSave = false;
+    }
+
+  }
+
+
+  async validate() {
+    const EditedSlots = this.completeTaskArray.filter(c => c.editMode === true);
+
+    for (const slot of EditedSlots) {
+      if (slot.SlotTasks) {
+        const checkTaskAllocatedTime = slot.SlotTasks.filter(e => (e.estimatedTime === '' || +e.estimatedTime === 0)
+          && e.status !== 'Completed');
+        // tslint:enable
+        if (checkTaskAllocatedTime.length > 0) {
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            detail: 'Allocated time for task cannot be equal or less than 0 for '
+              + slot.milestone + ' - ' + checkTaskAllocatedTime[0].task
+          });
+          return false;
+        }
+
+        const compareDates = slot.SlotTasks.filter(e => (e.UserEnd <= e.UserStart && e.status !== 'Completed'));
+        if (compareDates.length > 0) {
+
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            detail: 'End date should be greater than start date of ' + compareDates[0].taskName + ' task of ' +
+              slot.milestone + ' - ' + slot.task
+          });
+          return false;
+        }
+
+
+        let validateAllocation = true;
+        slot.SlotTasks.forEach(element => {
+          if (element.edited) {
+            const title = element.allocatedResource ? element.allocatedResource.Title : null;
+            if (!title) {
+              validateAllocation = false;
+            }
+          }
+
+        });
+        if (!validateAllocation) {
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            detail: 'All tasks of ' + slot.milestone + ' - ' + slot.task + ' should be assigned to   resource.'
+          });
+          return false;
+        }
+        const errorPresnet = this.validateTaskDates(slot.SlotTasks, slot);
+        if (errorPresnet) {
+          return false;
+        }
+
+        const compareTaskDates = slot.SlotTasks.filter(e => (slot.startDate > e.UserStart && e.status !== 'Completed'));
+        if (compareTaskDates.length > 0) {
+
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            // tslint:disable-next-line: max-line-length
+            detail: 'start date of ' + compareTaskDates[0].taskName + ' task  should be greater than start date of ' + slot.milestone + ' - ' + slot.task
+          });
+          return false;
+        }
+
+        const compareTaskEndDates = slot.SlotTasks.filter(e => (slot.dueDate < e.UserEnd && e.status !== 'Completed'));
+        if (compareTaskEndDates.length > 0) {
+
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            // tslint:disable-next-line: max-line-length
+            detail: 'end date of ' + compareTaskEndDates[0].taskName + ' task  should be less than end date of ' + slot.milestone + ' - ' + slot.task
+          });
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+
+
+
+
+  validateTaskDates(AllTasks, slot) {
+    let errorPresnet = false;
+    const taskCount = AllTasks.length;
+    for (let i = 0; i < taskCount; i = i + 1) {
+      // AllTasks.forEach(task => {
+      const task = AllTasks[i];
+      if (task.NextTasks && task.status !== 'Completed'
+        && task.status !== 'Auto Closed' && task.status !== 'Deleted') {
+        const nextTasks = task.NextTasks.split(';');
+        const AllNextTasks = AllTasks.filter(c => (nextTasks.indexOf(c.taskName) > -1));
+
+        const SDTask = AllNextTasks.find(c => c.startDate < task.dueDate && c.status !== 'Completed'
+          && c.status !== 'Auto Closed' && c.status !== 'Deleted' && c.allowStart === false);
+        if (SDTask) {
+          // this.errorMessageCount++;
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            detail: 'Start Date of ' + SDTask.taskName + '  should be greater than end date of ' +
+              task.taskName + ' in ' + slot.milestone + ' - ' + slot.task,
+          });
+          errorPresnet = true;
+          break;
+          // this.taskerrorMessage = 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName;
+        }
+      }
+    }
+    return errorPresnet;
+    // });
+  }
+
+
+
+
+  // tslint:enable
+
+
+  public async generateSaveTasks(unt) {
+    debugger;
+    const dbAddTasks = [];
+    const dbUpdateTasks = [];
+    let addedTasks = [];
+    let updatedTasks = [];
+    const updateSlot = [];
+    const ProjectInformationObj = [];
+    // let writers = [], arrWriterIDs = [],
+    //   qualityChecker = [],
+    //   arrQualityCheckerIds = [],
+    //   editors = [], arrEditorsIds = [],
+    //   graphics = [], arrGraphicsIds = [],
+    //   pubSupport = [], arrPubSupportIds = [],
+    //   reviewers = [], arrReviewers = [],
+    //   arrPrimaryResourcesIds = [], addTasks = [], updateTasks = [], addMilestones = [], updateMilestones = [];
+    // const projectFolder = this.oProjectDetails.projectFolder;
+    // this.oProjectDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
+    // const batchUrl = [];
+    // arrWriterIDs = this.getIDFromItem(this.oProjectDetails.writer);
+    // arrReviewers = this.getIDFromItem(this.oProjectDetails.reviewer);
+    // arrEditorsIds = this.getIDFromItem(this.oProjectDetails.editor);
+    // arrQualityCheckerIds = this.getIDFromItem(this.oProjectDetails.qualityChecker);
+    // arrGraphicsIds = this.getIDFromItem(this.oProjectDetails.graphicsMembers);
+    // arrPubSupportIds = this.getIDFromItem(this.oProjectDetails.pubSupportMembers);
+    // arrPrimaryResourcesIds = this.getIDFromItem(this.oProjectDetails.primaryResources);
+    const EditedSlots = this.completeTaskArray.filter(c => c.editMode === true);
+    for (const slot of EditedSlots) {
+      if (slot.SlotTasks) {
+        updateSlot.push(slot);
+        addedTasks = slot.SlotTasks.filter(e => e.status === 'Not Saved');
+        updatedTasks = slot.SlotTasks.filter(e => e.status !== 'Completed' && e.status !== 'Not Saved' && e.edited);
+        debugger;
+        if (ProjectInformationObj) {
+          const project = ProjectInformationObj.find(c => c.projectCode === slot.projectCode);
+          if (!project) {
+
+            const batchUrl = [];
+            const tasksObj = Object.assign({}, this.queryConfig);
+            tasksObj.url = this.spServices.getReadURL(this.globalConstant.listNames.projectInfo.name,
+              this.caConstant.projectResources);
+            tasksObj.url = tasksObj.url.replace(/{{ProjectCode}}/gi, slot.projectCode);
+            tasksObj.listName = this.globalConstant.listNames.projectInfo.name;
+            tasksObj.type = 'GET';
+            batchUrl.push(tasksObj);
+            const arrResult = await this.spServices.executeBatch(batchUrl);
+            const oProjectDetails = arrResult.length ? arrResult[0].retItems[0] : [];
+
+
+
+            // const oProjectDetails = this.projects.find(c => c.ProjectCode === slot.projectCode);
+            const arrEditorsIds = this.getIDFromItem(oProjectDetails.Editors);
+            const arrQualityCheckerIds = this.getIDFromItem(oProjectDetails.QC);
+            const arrGraphicsIds = this.getIDFromItem(oProjectDetails.GraphicsMembers);
+            const arrPubSupportIds = this.getIDFromItem(oProjectDetails.PSMembers);
+            const arrallDeliveryIds = this.getIDFromItem(oProjectDetails.AllDeliveryResources);
+            ProjectInformationObj.push({
+              projectCode: slot.projectCode,
+              projectId: oProjectDetails.ID,
+              items: {
+                arrEditorsIds, arrQualityCheckerIds, arrGraphicsIds, arrPubSupportIds, arrallDeliveryIds,
+                qualityChecker: [], editors: [], graphics: [], pubSupport: []
+              }
+            });
+          }
+        }
+
+        const tempProject = ProjectInformationObj.find(c => c.projectCode === slot.projectCode).items;
+        if (slot.dbSlots) {
+          this.getSlotDeletedTasks(slot.SlotTasks, updatedTasks, slot.dbSlots);
+        }
+        addedTasks.forEach(task => {
+
+          debugger;
+          if (task.allocatedResource && task.allocatedResource.UserName.hasOwnProperty('ID') && task.allocatedResource.UserName.ID !== -1) {
+            switch (task.task) {
+              case 'QC':
+              case 'Review-QC':
+              case 'Inco-QC':
+                tempProject.qualityChecker.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
+                tempProject.arrQualityCheckerIds.push(task.allocatedResource.UserName.ID);
+                break;
+              case 'Edit':
+              case 'Review-Edit':
+              case 'Inco-Edit':
+                tempProject.editors.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
+                tempProject.arrEditorsIds.push(task.allocatedResource.UserName.ID);
+                break;
+              case 'Graphics':
+              case 'Review-Graphics':
+              case 'Inco-Graphics':
+                tempProject.graphics.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
+                tempProject.arrGraphicsIds.push(task.allocatedResource.UserName.ID);
+                break;
+              case 'Submit':
+              case 'Galley':
+                tempProject.pubSupport.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
+                tempProject.arrPubSupportIds.push(task.allocatedResource.UserName.ID);
+                break;
+            }
+          }
+          dbAddTasks.push(this.setSlotTaskForAddUpdate(task, slot, true));
+        });
+        updatedTasks.forEach(task => {
+
+          if (task.allocatedResource && task.allocatedResource.UserName.hasOwnProperty('ID') && task.allocatedResource.UserName.ID !== -1) {
+            switch (task.task) {
+              case 'QC':
+              case 'Review-QC':
+              case 'Inco-QC':
+                tempProject.qualityChecker.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
+                tempProject.arrQualityCheckerIds.push(task.allocatedResource.UserName.ID);
+                break;
+              case 'Edit':
+              case 'Review-Edit':
+              case 'Inco-Edit':
+                tempProject.editors.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
+                tempProject.arrEditorsIds.push(task.allocatedResource.UserName.ID);
+                break;
+              case 'Graphics':
+              case 'Review-Graphics':
+              case 'Inco-Graphics':
+                tempProject.graphics.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
+                tempProject.arrGraphicsIds.push(task.allocatedResource.UserName.ID);
+                break;
+              case 'Submit':
+              case 'Galley':
+                tempProject.pubSupport.push({ ID: task.allocatedResource.UserName.ID, Name: task.allocatedResource.UserName.Title });
+                tempProject.arrPubSupportIds.push(task.allocatedResource.UserName.ID);
+                break;
+
+            }
+          }
+
+          dbUpdateTasks.push(this.setSlotTaskForAddUpdate(task, slot, false));
+        });
+
+      }
+    }
+
+    const UpdateProjectInfo = [];
+    for (const project of ProjectInformationObj) {
+
+
+      project.items.arrEditorsIds = project.items.arrEditorsIds.filter((el) => {
+        return el != null;
+      });
+      project.items.arrGraphicsIds = project.items.arrGraphicsIds.filter((el) => {
+        return el != null;
+      });
+      project.items.arrQualityCheckerIds = project.items.arrQualityCheckerIds.filter((el) => {
+        return el != null;
+      });
+
+      project.items.arrPubSupportIds = project.items.arrPubSupportIds.filter((el) => {
+        return el != null;
+      });
+
+      project.items.allDeliveryRes = project.items.arrallDeliveryIds.filter((el) => {
+        return el != null;
+      });
+
+      const updatedResources = {
+
+        editor: { results: [...project.items.arrEditorsIds] },
+        graphicsMembers: { results: [...project.items.arrGraphicsIds] },
+        qualityChecker: { results: [...project.items.arrQualityCheckerIds] },
+        pubSupportMembers: { results: [...project.items.arrPubSupportIds] },
+        allDeliveryRes: []
+      };
+
+      updatedResources.allDeliveryRes = [...updatedResources.editor.results,
+      ...updatedResources.graphicsMembers.results, ...updatedResources.qualityChecker.results,
+      ...updatedResources.pubSupportMembers.results, ...project.items.allDeliveryRes];
+      UpdateProjectInfo.push({ projectID: project.projectId, updatedResources });
+    }
+    this.completeSaveTask(dbAddTasks, dbUpdateTasks, updateSlot, UpdateProjectInfo, unt);
+  }
+
+  getIDFromItem(objItem) {
+    let arrData = [];
+    if (objItem.hasOwnProperty('results')) {
+      arrData = objItem.results.map(a => a.ID);
+    }
+
+    return arrData;
+  }
+
+  getSlotDeletedTasks(SlotTasks, updatedTasks, dbSlotTasks) {
+    const UpdatesTaskIds = SlotTasks.filter(c => c.id !== undefined && c.id > 0).map(c => c.id);
+    const DeletedTask = dbSlotTasks.filter((item) => {
+      return UpdatesTaskIds.indexOf(item.id) === -1;
+    });
+    if (DeletedTask) {
+      DeletedTask.forEach(task => {
+        task.previousTask = '';
+        task.nextTask = '';
+        task.status = 'Deleted';
+        updatedTasks.push(task);
+      });
+    }
+  }
+
+  async completeSaveTask(addedTasks, updatedTasks, updateSlot, UpdateProjectInfo, unt) {
+    const batchUrl = [];
+    for (const tasks of addedTasks) {
+      // this.spServices.getChangeSetBodySC(batchContents, changeSetId, tasks.url, tasks.body, true);
+      const TaskObj = Object.assign({}, this.queryConfig);
+      TaskObj.url = tasks.url;
+      TaskObj.listName = this.globalConstant.listNames.Schedules.name;
+      TaskObj.type = 'POST';
+      TaskObj.data = tasks.body;
+      batchUrl.push(TaskObj);
+    }
+
+    for (const tasks of updatedTasks) {
+      const taskObj = Object.assign({}, this.queryConfig);
+      taskObj.url = tasks.url;
+      taskObj.listName = this.globalConstant.listNames.Schedules.name;
+      taskObj.type = 'PATCH';
+      taskObj.data = tasks.body;
+      batchUrl.push(taskObj);
+    }
+
+    for (const slot of updateSlot) {
+      const updateProjectBody = {
+        __metadata: { type: 'SP.Data.SchedulesListItem' },
+        CentralAllocationDone: 'Yes',
+      };
+      if (!slot.Id) {
+        slot.Id = slot.id;
+      }
+      const taskObj = Object.assign({}, this.queryConfig);
+      taskObj.url = this.spServices.getItemURL(this.globalConstant.listNames.Schedules.name, +slot.Id);
+      taskObj.data = updateProjectBody;
+      taskObj.listName = this.globalConstant.listNames.Schedules.name;
+      taskObj.type = 'PATCH';
+      batchUrl.push(taskObj);
+    }
+
+
+    const responseInLines = await this.executeBulkRequests(UpdateProjectInfo, batchUrl);
+    if (responseInLines.length > 0) {
+      let counter = 0;
+      const endIndex = addedTasks.length;
+      const respBatchUrl = [];
+      for (const resp of responseInLines) {
+        debugger;
+        // tslint:disable: max-line-length
+        const fileUrl = this.globalService.sharePointPageObject.serverRelativeUrl + '/Lists/' + this.globalConstant.listNames.Schedules.name + '/' + resp.ID + '_.000';
+        let moveFileUrl = this.globalService.sharePointPageObject.serverRelativeUrl + '/Lists/' + this.globalConstant.listNames.Schedules.name + '/' + resp.ProjectCode;
+        if (counter < endIndex) {
+          moveFileUrl = moveFileUrl + '/' + resp.Milestone + '/' + resp.ID + '_.000';
+          const url = this.globalService.sharePointPageObject.webAbsoluteUrl + "/_api/web/getfilebyserverrelativeurl('" + fileUrl + "')/moveto(newurl='" + moveFileUrl + "',flags=1)";
+          // this.spServices.getChangeSetBodyMove(batchContents, changeSetId, url);
+          const moveItemObj = Object.assign({}, this.queryConfig);
+          moveItemObj.url = url; // this.spServices.getMoveURL(fileUrl, moveFileUrl);
+          moveItemObj.listName = 'Move Item';
+          moveItemObj.type = 'POST';
+          respBatchUrl.push(moveItemObj);
+        } else {
+          break;
+        }
+
+        counter = counter + 1;
+      }
+      await this.spServices.executeBatch(respBatchUrl);
+    }
+    // this.reallocationMailArray.forEach(mail => {
+    //   this.sendReallocationCentralTaskMail(mail.project, mail.slot, mail.data, mail.subject);
+    // });
+
+    await this.getProperties();
+
+
+
+    debugger;
+
+    this.messageService.add({
+      severity: 'success', summary: 'Success Message',
+      detail: ' Slots updated Sucessfully '
+    });
+
+    if (unt) {
+      this.caGlobal.loading = true;
+      this.caCommonService.filterAction(unt.sortField, unt.sortOrder, unt.filters.hasOwnProperty('global') ?
+        unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
+        this.completeTaskArray, this.filterColumns);
+    }
+  }
+
+
+
+  async executeBulkRequests(UpdateProjectInfo, batchUrl) {
+
+    for (const project of UpdateProjectInfo) {
+      let updateProjectRes = {};
+      const projectID = project.projectID;
+      updateProjectRes = {
+        __metadata: { type: 'SP.Data.ProjectInformationListItem' },
+
+        EditorsId: { results: project.updatedResources.editor.results },
+        AllDeliveryResourcesId: { results: project.updatedResources.allDeliveryRes },
+        QCId: { results: project.updatedResources.qualityChecker.results },
+        GraphicsMembersId: { results: project.updatedResources.graphicsMembers.results },
+        PSMembersId: { results: project.updatedResources.pubSupportMembers.results },
+      };
+      const updatePrjObj = Object.assign({}, this.queryConfig);
+      updatePrjObj.url = this.spServices.getItemURL(this.globalConstant.listNames.ProjectInformation.name, +projectID);
+      updatePrjObj.listName = this.globalConstant.listNames.ProjectInformation.name;
+      updatePrjObj.type = 'PATCH';
+      updatePrjObj.data = updateProjectRes;
+      batchUrl.push(updatePrjObj);
+    }
+
+    let response = await this.spServices.executeBatch(batchUrl);
+    response = response.length ? response.map(a => a.retItems) : [];
+    return response;
+  }
+
+  setSlotTaskForAddUpdate(task, slot, bAdd) {
+    let url = '';
+    let data = {};
+    if (task.status === 'Not Saved') {
+      task.status = 'Not Started';
+    }
+    if (bAdd) {
+
+      const addData = {
+        __metadata: { type: 'SP.Data.SchedulesListItem' },
+        StartDate: task.startDate,
+        DueDate: task.dueDate,
+        ExpectedTime: '' + task.estimatedTime,
+        AllowCompletion: task.allowStart === true ? 'Yes' : 'No',
+        TATStatus: 'No',
+        AssignedToId: task.allocatedResource ? task.allocatedResource.UserName.hasOwnProperty('ID') ?
+          task.allocatedResource.UserName.ID : -1 : -1,
+        TimeZone: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
+          ? task.allocatedResource.TimeZone.Title : '+5.5' : '+5.5',
+        Comments: task.taskScope,
+        Status: task.status,
+        NextTasks: this.setPreviousAndNext(task.nextTask, slot.milestone, slot.projectCode),
+        PrevTasks: this.setPreviousAndNext(task.previousTask, slot.milestone, slot.projectCode),
+        ParentSlot: slot.id ? slot.id : slot.Id,
+        // NextTasks: task.nextTasks,
+        // PrevTasks: task.PrevTasks,
+        ProjectCode: slot.projectCode,
+        Task: task.task,
+        Milestone: slot.milestone,
+        SubMilestones: slot.submilestone,
+        Title: slot.projectCode + ' ' + slot.milestone + ' ' + task.taskName,
+        SkillLevel: task.skillLevel,
+        CentralAllocationDone: 'Yes',
+        DisableCascade: task.DisableCascade === true ? 'Yes' : 'No'
+      };
+      url = this.spServices.getReadURL(this.globalConstant.listNames.Schedules.name);
+      data = addData;
+    } else {
+      const updateData = {
+        __metadata: { type: 'SP.Data.SchedulesListItem' },
+        StartDate: task.startDate,
+        DueDate: task.dueDate,
+        ExpectedTime: '' + task.budgetHours,
+        AllowCompletion: task.allowStart === true ? 'Yes' : 'No',
+        AssignedToId: task.allocatedResource ? task.allocatedResource.UserName.hasOwnProperty('ID') ?
+          task.allocatedResource.UserName.ID : -1 : -1,
+        TimeZone: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
+          ? task.allocatedResource.TimeZone.hasOwnProperty('Title') : '+5.5' : '+5.5',
+        Comments: task.taskScope ? task.taskScope : '',
+        Status: task.status,
+        NextTasks: this.setPreviousAndNext(task.nextTask, slot.milestone, slot.projectCode),
+        PrevTasks: this.setPreviousAndNext(task.previousTask, slot.milestone, slot.projectCode),
+        SkillLevel: task.skillLevel,
+        DisableCascade: task.DisableCascade === true ? 'Yes' : 'No',
+        PreviousAssignedUserId: task.previousAssignedUser ? task.previousAssignedUser : '-1'
+      };
+      url = this.spServices.getItemURL(this.globalConstant.listNames.Schedules.name, +task.id);
+      data = updateData;
+    }
+    return {
+      body: data,
+      url
+    };
+  }
+
+  setPreviousAndNext(sText, sMilestone, sProject) {
+    let sVal = '';
+
+    if (sText) {
+      const arrVal = sText.split(';');
+      const arrNewVal = [];
+      for (const val of arrVal) {
+        arrNewVal.push(sProject + ' ' + sMilestone + ' ' + val);
+      }
+
+      sVal = arrNewVal.join(';#');
+    }
+
+    return sVal;
+  }
+
+
 }

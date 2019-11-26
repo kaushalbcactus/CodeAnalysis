@@ -12,7 +12,7 @@ export class TaskAllocationCommonService {
     const prjDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
     const cmL1 = prjDetails.cmLevel1.results ? prjDetails.cmLevel1.results : [];
     const cmL2 = prjDetails.cmLevel2 ? prjDetails.cmLevel2 : [];
-    const cm = [...cmL1, ...cmL2].filter(function(item, i, ar) { return ar.indexOf(item) === i; });
+    const cm = [...cmL1, ...cmL2].filter(function (item, i, ar) { return ar.indexOf(item) === i; });
     const filteredResources = [];
     if (task.IsCentrallyAllocated === 'Yes') {
       const oCentralGroup = {
@@ -174,4 +174,32 @@ export class TaskAllocationCommonService {
     return deliveryExcUsers.length <= 0 && taExcUsers.length <= 0 ? true : false;
   }
 
+  fetchTaskName(tasksString, projectCode, milestone) {
+    let tasksName = null;
+    if (tasksString) {
+      const tasks = tasksString.split(';#');
+      const tasksNames = tasks.map(element => {
+        return element.replace(projectCode + ' ', '').replace(milestone + ' ', '');
+      });
+      tasksName = tasksNames.join(';');
+    }
+    return tasksName;
+  }
+
+  getPaths(source, target, submilestone, currentPath, arrLinks) {
+    if (arrLinks.indexOf(source) < 0) {
+      currentPath = currentPath + ',' + target;
+      const targetLinks = submilestone.task.links.filter(c => c.source === target).map(c => c.target);
+      const allPaths = currentPath.split(',');
+      if (targetLinks.length) {
+        arrLinks = [...arrLinks, ...allPaths];
+      }
+      let newTargets = allPaths.slice(0);
+      newTargets = newTargets.filter((el, i, a) => i === a.indexOf(el));
+      targetLinks.forEach(newTarget => {
+        this.getPaths(target, newTarget, submilestone, currentPath, arrLinks);
+      });
+    }
+    return arrLinks;
+  }
 }

@@ -370,7 +370,9 @@ export class PmconstantService {
     USER_AVAILABLE: 'Available',
     CLIENT_REVIEW: 'Client Review',
     FOLLOW_UP: 'Follow up',
-    BLOCKING: 'Blocking'
+    BLOCKING: 'Blocking',
+    MEETING: 'Meeting',
+    TRAINING: 'Training'
   };
 
   public endDate = {
@@ -540,6 +542,11 @@ export class PmconstantService {
     GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE: {
       select: 'ID,Title,Milestone,Status,Task,ProjectCode',
       filter: 'ProjectCode eq \'{{projectCode}}\''
+    },
+    GET_EARLY_TASK_COMPLETED: {
+      select: 'ID,Title,ProjectCode,IsActive,ProjectCS/ID,ProjectCS/Title',
+      expand: 'ProjectCS/ID,ProjectCS/Title',
+      filter: 'IsActive eq \'Yes\''
     }
   };
   public PROJECT_TYPE = {

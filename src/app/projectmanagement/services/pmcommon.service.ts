@@ -1554,13 +1554,30 @@ export class PMCommonService {
       createForderObj.url = this.spServices.getFolderCreationURL();
       batchURL.push(createForderObj);
       // create FTE Task.
-      const taskdata = this.getFTETask(element, projectCode);
-      const taskCreate = Object.assign({}, options);
-      taskCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
-      taskCreate.data = taskdata;
-      taskCreate.type = 'POST';
-      taskCreate.listName = this.constant.listNames.Schedules.name;
-      batchURL.push(taskCreate);
+      const taskBlockingdata = this.getFTETask(element, projectCode, this.pmConstant.task.BLOCKING);
+      const taskBlockingCreate = Object.assign({}, options);
+      taskBlockingCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+      taskBlockingCreate.data = taskBlockingdata;
+      taskBlockingCreate.type = 'POST';
+      taskBlockingCreate.listName = this.constant.listNames.Schedules.name;
+      batchURL.push(taskBlockingCreate);
+
+      // create Meeting Task
+      const taskMeetingdata = this.getFTETask(element, projectCode, this.pmConstant.task.MEETING);
+      const taskMeetingCreate = Object.assign({}, options);
+      taskMeetingCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+      taskMeetingCreate.data = taskMeetingdata;
+      taskMeetingCreate.type = 'POST';
+      taskMeetingCreate.listName = this.constant.listNames.Schedules.name;
+      batchURL.push(taskMeetingCreate);
+      // Create Training Task
+      const taskTrainingdata = this.getFTETask(element, projectCode, this.pmConstant.task.TRAINING);
+      const taskTrainingCreate = Object.assign({}, options);
+      taskTrainingCreate.url = this.spServices.getReadURL(this.constant.listNames.Schedules.name, null);
+      taskTrainingCreate.data = taskTrainingdata;
+      taskTrainingCreate.type = 'POST';
+      taskTrainingCreate.listName = this.constant.listNames.Schedules.name;
+      batchURL.push(taskTrainingCreate);
     });
     if (batchURL.length) {
       const results = await this.spServices.executeBatch(batchURL);
@@ -1582,25 +1599,64 @@ export class PMCommonService {
     };
     return data;
   }
-  getFTETask(fteObj, projectCode) {
+  getFTETask(fteObj, projectCode, taskType) {
     const businessDay = this.commonService.calcBusinessDays(fteObj.monthStartDay, fteObj.monthEndDay);
     const resourceObj: any = this.pmObject.addProject.Timeline.NonStandard.ResourceName;
-    const data: any = {
-      __metadata: { type: this.constant.listNames.Schedules.type },
-      StartDate: fteObj.monthStartDay,
-      DueDate: fteObj.monthEndDay,
-      ExpectedTime: '' + businessDay * resourceObj.MaxHrs,
-      TimeZone: '' + resourceObj.TimeZone.Title,
-      TATBusinessDays: businessDay,
-      Status: this.constant.STATUS.NOT_CONFIRMED,
-      Title: projectCode + ' ' + fteObj.monthName + ' ' + this.pmConstant.task.BLOCKING,
-      ProjectCode: projectCode,
-      Task: this.pmConstant.task.BLOCKING,
-      Milestone: fteObj.monthName,
-      AssignedToId: resourceObj.UserName.ID,
-      IsCentrallyAllocated: 'No',
-      ActiveCA: 'No'
-    };
+    let data: any;
+    if (taskType === this.pmConstant.task.BLOCKING) {
+      data = {
+        __metadata: { type: this.constant.listNames.Schedules.type },
+        StartDate: fteObj.monthStartDay,
+        DueDate: fteObj.monthEndDay,
+        ExpectedTime: '' + businessDay * resourceObj.MaxHrs,
+        TimeZone: '' + resourceObj.TimeZone.Title,
+        TATBusinessDays: businessDay,
+        Status: this.constant.STATUS.NOT_CONFIRMED,
+        Title: projectCode + ' ' + fteObj.monthName + ' ' + this.pmConstant.task.BLOCKING,
+        ProjectCode: projectCode,
+        Task: this.pmConstant.task.BLOCKING,
+        Milestone: fteObj.monthName,
+        AssignedToId: resourceObj.UserName.ID,
+        IsCentrallyAllocated: 'No',
+        ActiveCA: 'No'
+      };
+    }
+    if (taskType === this.pmConstant.task.MEETING) {
+      data = {
+        __metadata: { type: this.constant.listNames.Schedules.type },
+        StartDate: fteObj.monthStartDay,
+        DueDate: fteObj.monthStartDay,
+        ExpectedTime: '' + 0,
+        TimeZone: '' + resourceObj.TimeZone.Title,
+        TATBusinessDays: 0,
+        Status: this.constant.STATUS.NOT_CONFIRMED,
+        Title: projectCode + ' ' + fteObj.monthName + ' ' + this.pmConstant.task.MEETING,
+        ProjectCode: projectCode,
+        Task: this.pmConstant.task.MEETING,
+        Milestone: fteObj.monthName,
+        AssignedToId: resourceObj.UserName.ID,
+        IsCentrallyAllocated: 'No',
+        ActiveCA: 'No'
+      };
+    }
+    if (taskType === this.pmConstant.task.TRAINING) {
+      data = {
+        __metadata: { type: this.constant.listNames.Schedules.type },
+        StartDate: fteObj.monthStartDay,
+        DueDate: fteObj.monthStartDay,
+        ExpectedTime: '' + 0,
+        TimeZone: '' + resourceObj.TimeZone.Title,
+        TATBusinessDays: 0,
+        Status: this.constant.STATUS.NOT_CONFIRMED,
+        Title: projectCode + ' ' + fteObj.monthName + ' ' + this.pmConstant.task.TRAINING,
+        ProjectCode: projectCode,
+        Task: this.pmConstant.task.TRAINING,
+        Milestone: fteObj.monthName,
+        AssignedToId: resourceObj.UserName.ID,
+        IsCentrallyAllocated: 'No',
+        ActiveCA: 'No'
+      };
+    }
     return data;
   }
   /**

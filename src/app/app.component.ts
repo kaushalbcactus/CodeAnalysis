@@ -44,10 +44,10 @@ export class AppComponent {
   }
 
   initSPLoggedInUser() {
-    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 286 : _spPageContextInfo.userId;
+    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 287 : _spPageContextInfo.userId;
     this.globalService.currentUser.email = window.location.href.indexOf('localhost') > -1 ?
-      'sneha.dandhuk@cactusglobal.com' : _spPageContextInfo.userEmail;
-    this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Aashish' : _spPageContextInfo.userDisplayName;
+      'maxwell.fargose@cactusglobal.com' : _spPageContextInfo.userEmail;
+    this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Maxwell' : _spPageContextInfo.userDisplayName;
   }
   initSPComponentRedirection() {
     // tslint:disable:no-string-literal

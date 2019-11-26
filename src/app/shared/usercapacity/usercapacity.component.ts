@@ -330,7 +330,6 @@ export class UsercapacityComponent implements OnInit {
   fetchTasks(oUser, tasks) {
     for (const index in tasks) {
       if (tasks.hasOwnProperty(index)) {
-        tasks[index].ProjectCode = tasks[index].Title.split(' ')[0];
         tasks[index].TotalAllocated = tasks[index].Task !== 'Adhoc' ?
           this.commonservice.convertToHrsMins('' + tasks[index].ExpectedTime).replace('.', ':')
           : tasks[index].TimeSpent.replace('.', ':');
