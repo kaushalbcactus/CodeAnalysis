@@ -159,9 +159,10 @@ export class SendToClientComponent implements OnInit {
     const tempArray = [];
     const documentsUrl = '/Drafts/Internal/' + task.Milestone;
     const documents = await this.commonService.getTaskDocument(task.ProjectFolder, documentsUrl);
+    const prevTask = task.PreviousTask.split(';#');
     documents.forEach(document => {
 
-      if (task.PreviousTask.indexOf(document.ListItemAllFields.TaskName) > -1 && document.ListItemAllFields.Status.indexOf('Complete') > -1) {
+      if (prevTask.indexOf(document.ListItemAllFields.TaskName) > -1 && document.ListItemAllFields.Status.indexOf('Complete') > -1) {
         const docObj = {
           url: '',
           fileName: ''
