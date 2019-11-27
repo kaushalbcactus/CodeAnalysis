@@ -78,6 +78,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   expandedRows: any = {};
   storeTask: any;
   taskType: string;
+  emailTemplate = undefined;
   constructor(
     private spServices: SPOperationService,
     private globalConstant: ConstantsService,
@@ -132,29 +133,29 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   completeTaskArray = [];
   subTaskloaderenable = false;
   displayedColumns: any[] = [
-    { field: 'clientName', header: 'Client' },
-    { field: 'projectCode', header: 'Project' },
-    { field: 'milestone', header: 'Milestone' },
-    { field: 'taskName', header: 'Task' },
-    { field: 'deliveryType', header: 'Deliverable' },
-    { field: 'estimatedTime', header: 'Hrs' },
-    { field: 'startDateText', header: 'Start Time' },
-    { field: 'dueDateText', header: 'End Time' }];
+    { field: 'ClientName', header: 'Client' },
+    { field: 'ProjectCode', header: 'Project' },
+    { field: 'Milestone', header: 'Milestone' },
+    { field: 'TaskName', header: 'Task' },
+    { field: 'DeliveryType', header: 'Deliverable' },
+    { field: 'EstimatedTime', header: 'Hrs' },
+    { field: 'StartDateText', header: 'Start Time' },
+    { field: 'DueDateText', header: 'End Time' }];
 
   filterColumns: any[] = [
-    { field: 'clientName' },
-    { field: 'projectCode' },
-    { field: 'projectName' },
-    { field: 'milestone' },
-    { field: 'taskName' },
-    { field: 'deliveryType' },
-    { field: 'estimatedTime' },
-    { field: 'startDateText' },
-    { field: 'dueDateText' },
-    { field: 'nextTaskStartDateText' },
-    { field: 'lastTaskEndDateText' },
-    { field: 'sendToClientDateText' },
-    { field: 'assignedTo' }
+    { field: 'ClientName' },
+    { field: 'ProjectCode' },
+    { field: 'ProjectName' },
+    { field: 'Milestone' },
+    { field: 'TaskName' },
+    { field: 'DeliveryType' },
+    { field: 'EstimatedTime' },
+    { field: 'StartDateText' },
+    { field: 'DueDateText' },
+    { field: 'NextTaskStartDateText' },
+    { field: 'LastTaskEndDateText' },
+    { field: 'SendToClientDateText' },
+    { field: 'AssignedTo' }
   ];
   ngOnInit() {
     this.caGlobal.loading = true;
@@ -373,8 +374,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
         debugger;
         const setResourcesExtn = $.extend(true, [], task.resources);
-        const startTime = new Date(new Date(task.startTime).setHours(0, 0, 0, 0));
-        const endTime = new Date(new Date(task.endTime).setHours(23, 59, 59, 0));
+        const startTime = new Date(new Date(task.StartTime).setHours(0, 0, 0, 0));
+        const endTime = new Date(new Date(task.EndTime).setHours(23, 59, 59, 0));
         const oCapacity = await this.usercapacityComponent.applyFilterReturn(startTime, endTime,
           setResourcesExtn);
         task.capacity = oCapacity;
@@ -419,13 +420,13 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           this.selectedUser = null;
         }
 
-
-        task.allocatedResource = task.displayselectedResources[0] ?
-          task.displayselectedResources[0].items.find(c => c.value.UserName.ID === task.assignedTo.ID) ?
-            task.displayselectedResources[0].items.find(c => c.value.UserName.ID === task.assignedTo.ID).value : '' : '';
-
+        if (task.allocatedResource === '') {
+          task.allocatedResource = task.displayselectedResources[0] ?
+            task.displayselectedResources[0].items.find(c => c.value.UserName.ID === task.AssignedTo.ID) ?
+              task.displayselectedResources[0].items.find(c => c.value.UserName.ID === task.AssignedTo.ID).value : '' : '';
+        }
         if (EditEnable) {
-          task.previousAssignedUser = task.assignedTo.ID;
+          task.previousAssignedUser = task.AssignedTo.ID;
         }
 
       }, 500);
@@ -504,7 +505,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     Slot.edited = true;
     rowData.edited = true;
     this.disableSave = false;
+  }
 
+  assignedToUserChanged(rowData) {
+    rowData.assignedUserChanged = true;
   }
 
   // ****************************************************************************************************
@@ -571,95 +575,153 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   // *****************************************************************************************************
 
 
-  async completeEqualTask(task, unt, istimeZoneUpdate) {
-    // tslint:disable-next-line: object-literal-key-quotes
-    const options = { 'AssignedToId': task.allocatedResource.UserName.ID, 'CentralAllocationDone': 'Yes' };
-    // tslint:disable-next-line: object-literal-key-quotes
-    const timezoneOptions = { 'AssignedToId': task.allocatedResource.UserName.ID, 'CentralAllocationDone': 'Yes', 'TimeZone': task.userTimeZone };
-    //// Save task and remove task from list 
-    if (istimeZoneUpdate) {
-      await this.spServices.updateItem(this.scheduleList, task.id, timezoneOptions, this.globalConstant.listNames.Schedules.type)
-      // this.spServices.update(this.scheduleList, task.id, timezoneOptions, 'SP.Data.SchedulesListItem');
-    } else {
-      await this.spServices.updateItem(this.scheduleList, task.id, options, this.globalConstant.listNames.Schedules.type)
-      // this.spServices.update(this.scheduleList, task.id, options, 'SP.Data.SchedulesListItem');
-    }
+  // async completeEqualTask(task, unt, istimeZoneUpdate) {
+  //   // tslint:disable-next-line: object-literal-key-quotes
+  //   const options = { 'AssignedToId': task.allocatedResource.UserName.ID, 'CentralAllocationDone': 'Yes' };
+  //   // tslint:disable-next-line: object-literal-key-quotes
+  //   const timezoneOptions = { 'AssignedToId': task.allocatedResource.UserName.ID, 'CentralAllocationDone': 'Yes', 'TimeZone': task.userTimeZone };
+  //   //// Save task and remove task from list 
+  //   if (istimeZoneUpdate) {
+  //     await this.spServices.updateItem(this.scheduleList, task.id, timezoneOptions, this.globalConstant.listNames.Schedules.type)
+  //     // this.spServices.update(this.scheduleList, task.id, timezoneOptions, 'SP.Data.SchedulesListItem');
+  //   } else {
+  //     await this.spServices.updateItem(this.scheduleList, task.id, options, this.globalConstant.listNames.Schedules.type)
+  //     // this.spServices.update(this.scheduleList, task.id, options, 'SP.Data.SchedulesListItem');
+  //   }
 
-    await this.caCommonService.ResourceAllocation(task, this.projectInformationList);
-    const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource.UserName.ID);
-    const mailSubject = task.projectCode + '(' + task.projectName + ')' + ': Task created';
-    const objEmailBody = [];
-    objEmailBody.push({
-      'key': '@@Val3@@',
-      'value': this.resourceList[indexRes].UserName.Title
-    });
-    objEmailBody.push({
-      'key': '@@Val1@@', // Project Code
-      'value': task.projectCode
-    });
-    objEmailBody.push({
-      'key': '@@Val2@@', // Task Name
-      'value': task.SubMilestones && task.SubMilestones !== 'Default' ? task.title + ' - ' + task.SubMilestones : task.title
-    });
-    objEmailBody.push({
-      'key': '@@Val4@@', // Task Type
-      'value': task.task
-    });
-    objEmailBody.push({
-      'key': '@@Val5@@', // Milestone
-      'value': task.milestone
-    });
-    if (istimeZoneUpdate) {
-      objEmailBody.push({
-        'key': '@@Val6@@', // new Start Date
-        'value': this.datePipe.transform(task.newStartDate, 'MMM dd yyyy hh:mm:ss aa')
-      });
-      objEmailBody.push({
-        'key': '@@Val7@@', // new End Date
-        'value': this.datePipe.transform(task.newDueDate, 'MMM dd yyyy hh:mm:ss aa')
-      });
-    } else {
-      objEmailBody.push({
-        'key': '@@Val6@@', // Start Date
-        'value': this.datePipe.transform(task.startDate, 'MMM dd yyyy hh:mm:ss aa')
-      });
-      objEmailBody.push({
-        'key': '@@Val7@@', // End Date
-        'value': this.datePipe.transform(task.dueDate, 'MMM dd yyyy hh:mm:ss aa')
-      });
-    }
-    objEmailBody.push({
-      'key': '@@Val9@@', // Scope
-      'value': task.taskScope ? task.taskScope : ''
-    });
-    //// Send allocation email
-    this.caCommonService.triggerMail(this.resourceList[indexRes].UserName.EMail, this.globalService.currentUser.email,
-      '', 'TaskCreation', objEmailBody, mailSubject);
+  //   await this.caCommonService.ResourceAllocation(task, this.projectInformationList);
+  //   const indexRes = this.resourceList.findIndex(item => item.UserName.ID === task.allocatedResource.UserName.ID);
+  //   const mailSubject = task.projectCode + '(' + task.projectName + ')' + ': Task created';
+  //   const objEmailBody = [];
+  //   objEmailBody.push({
+  //     'key': '@@Val3@@',
+  //     'value': this.resourceList[indexRes].UserName.Title
+  //   });
+  //   objEmailBody.push({
+  //     'key': '@@Val1@@', // Project Code
+  //     'value': task.projectCode
+  //   });
+  //   objEmailBody.push({
+  //     'key': '@@Val2@@', // Task Name
+  //     'value': task.SubMilestones && task.SubMilestones !== 'Default' ? task.title + ' - ' + task.SubMilestones : task.title
+  //   });
+  //   objEmailBody.push({
+  //     'key': '@@Val4@@', // Task Type
+  //     'value': task.task
+  //   });
+  //   objEmailBody.push({
+  //     'key': '@@Val5@@', // Milestone
+  //     'value': task.milestone
+  //   });
+  //   if (istimeZoneUpdate) {
+  //     objEmailBody.push({
+  //       'key': '@@Val6@@', // new Start Date
+  //       'value': this.datePipe.transform(task.newStartDate, 'MMM dd yyyy hh:mm:ss aa')
+  //     });
+  //     objEmailBody.push({
+  //       'key': '@@Val7@@', // new End Date
+  //       'value': this.datePipe.transform(task.newDueDate, 'MMM dd yyyy hh:mm:ss aa')
+  //     });
+  //   } else {
+  //     objEmailBody.push({
+  //       'key': '@@Val6@@', // Start Date
+  //       'value': this.datePipe.transform(task.startDate, 'MMM dd yyyy hh:mm:ss aa')
+  //     });
+  //     objEmailBody.push({
+  //       'key': '@@Val7@@', // End Date
+  //       'value': this.datePipe.transform(task.dueDate, 'MMM dd yyyy hh:mm:ss aa')
+  //     });
+  //   }
+  //   objEmailBody.push({
+  //     'key': '@@Val9@@', // Scope
+  //     'value': task.taskScope ? task.taskScope : ''
+  //   });
+  //   //// Send allocation email
+  //   this.caCommonService.triggerMail(this.resourceList[indexRes].UserName.EMail, this.globalService.currentUser.email,
+  //     '', 'TaskCreation', objEmailBody, mailSubject);
 
-    this.messageService.add({
-      severity: 'success', summary: 'Success Message',
-      detail: task.title + ' allocated to ' + this.resourceList[indexRes].UserName.Title
-    });
-    const index = this.completeTaskArray.findIndex(item => item.id === task.id);
-    // this.completeTaskArray.splice(index,1);
-    if (this.selectedTab === 'allocated') {
-      this.completeTaskArray[index].isEditEnabled = true;
-      this.completeTaskArray[index].assignedTo = this.resourceList[indexRes].UserName.Title;
-      this.completeTaskArray[index].isAllocatedSelectHidden = true;
-      this.completeTaskArray[index].isAssignedToHidden = false;
-      this.completeTaskArray[index].editImageUrl = this.globalService.imageSrcURL.editImageURL;
-    } else {
-      this.completeTaskArray.splice(index, 1);
-      this.caGlobal.loading = true;
-    }
-    if (unt) {
-      this.caGlobal.loading = true;
-      this.caCommonService.filterAction(unt.sortField, unt.sortOrder, unt.filters.hasOwnProperty('global') ?
-        unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
-        this.completeTaskArray, this.filterColumns);
+  //   this.messageService.add({
+  //     severity: 'success', summary: 'Success Message',
+  //     detail: task.title + ' allocated to ' + this.resourceList[indexRes].UserName.Title
+  //   });
+  //   const index = this.completeTaskArray.findIndex(item => item.id === task.id);
+  //   // this.completeTaskArray.splice(index,1);
+  //   if (this.selectedTab === 'allocated') {
+  //     this.completeTaskArray[index].isEditEnabled = true;
+  //     this.completeTaskArray[index].assignedTo = this.resourceList[indexRes].UserName.Title;
+  //     this.completeTaskArray[index].isAllocatedSelectHidden = true;
+  //     this.completeTaskArray[index].isAssignedToHidden = false;
+  //     this.completeTaskArray[index].editImageUrl = this.globalService.imageSrcURL.editImageURL;
+  //   } else {
+  //     this.completeTaskArray.splice(index, 1);
+  //     this.caGlobal.loading = true;
+  //   }
+  //   if (unt) {
+  //     this.caGlobal.loading = true;
+  //     this.caCommonService.filterAction(unt.sortField, unt.sortOrder, unt.filters.hasOwnProperty('global') ?
+  //       unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
+  //       this.completeTaskArray, this.filterColumns);
+  //   }
+  // }
+
+
+  // *************************************************************************************************
+  //  Get Email Body
+  // **************************************************************************************************
+
+
+
+  async sendMail(task, slot) {
+    if (task.allocatedResource && task.allocatedResource.UserName.hasOwnProperty('ID') && task.allocatedResource.UserName.ID !== -1) {
+      const fromUser = this.globalService.currentUser.email;
+      const user = task.allocatedResource.UserName;
+      const mailSubject = task.ProjectCode + '(' + slot.ProjectName + ')' + ': Task created';
+      const objEmailBody = await this.getsendEmailObjBody(task, 'TaskCreation');
+      const arrayTo = [];
+
+      if (user !== 'SelectOne' && user !== '' && user != null) {
+        const userEmail = user.EMail;
+        arrayTo.push(userEmail);
+      }
+      this.spServices.sendMail(arrayTo.join(','), fromUser, mailSubject, objEmailBody);
     }
   }
 
+
+  async getsendEmailObjBody(milestoneTask, templateName) {
+
+    if (!this.emailTemplate) {
+      this.emailTemplate = await this.GetEmailTemplate(templateName);
+    }
+
+    let mailContent = this.emailTemplate;
+    mailContent = this.replaceContent(mailContent, "@@Val3@@", milestoneTask.allocatedResource && milestoneTask.allocatedResource.UserName ? milestoneTask.allocatedResource.UserName.Title : milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title : undefined);
+    mailContent = this.replaceContent(mailContent, "@@Val1@@", milestoneTask.ProjectCode);
+    mailContent = this.replaceContent(mailContent, "@@Val2@@", milestoneTask.SubMilestones && milestoneTask.SubMilestones !== 'Default' ? milestoneTask.Title + ' - ' + milestoneTask.SubMilestones : milestoneTask.Title);
+    mailContent = this.replaceContent(mailContent, "@@Val4@@", milestoneTask.Task);
+    mailContent = this.replaceContent(mailContent, "@@Val5@@", milestoneTask.Milestone);
+    mailContent = this.replaceContent(mailContent, "@@Val6@@", this.datepipe.transform(milestoneTask.StartDate, 'MMM dd yyyy hh:mm:ss a'));
+    mailContent = this.replaceContent(mailContent, "@@Val7@@", this.datepipe.transform(milestoneTask.DueDate, 'MMM dd yyyy hh:mm:ss a'));
+    mailContent = this.replaceContent(mailContent, "@@Val9@@", milestoneTask.TaskScope ? milestoneTask.TaskScope : '');
+    return mailContent;
+  }
+
+  async GetEmailTemplate(templateName) {
+    let mailContent = {};
+
+    const mailObj = this.caConstant.getMailTemplate;
+    mailObj.filter = mailObj.filter.replace('{{templateName}}', templateName);
+    const templateData = await this.spServices.readItems(this.globalConstant.listNames.MailContent.name,
+      mailObj);
+    mailContent = templateData.length > 0 ? templateData[0].Content : [];
+    return mailContent;
+  }
+
+
+
+  replaceContent(mailContent, key, value) {
+    return mailContent.replace(new RegExp(key, 'g'), value);
+  }
 
   // ****************************************************************************************************
   // Delete Task 
@@ -709,7 +771,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
   // ****************************************************************************************************
-  // This method will update the scheduled list which status Deleted.
+  // This method will update the scheduled list which Status Deleted.
   // This method will also updates the Next and previous task.
   // *****************************************************************************************************
 
@@ -866,7 +928,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           if (SlotTasks.find(c => c.taskName === task.taskName)) {
             task = SlotTasks.find(c => c.taskName === task.taskName);
           } else {
-            task.status = 'Not Saved';
+            task.Status = 'Not Saved';
           }
           task.previousTasks = previousTasks === '' ? null : previousTasks;
           task.nextTasks = nextTasks === '' ? null : nextTasks;
@@ -884,8 +946,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
           RowData.SlotTasks = [];
           const obj = this.GetTask(RowData, false);
-          const tasks = await this.GetAllConstantTasks(obj.task);
-          obj.taskName = tasks.length > 0 ? tasks[0] : obj.taskName;
+          const tasks = await this.GetAllConstantTasks(obj.Task);
+          obj.TaskName = tasks.length > 0 ? tasks[0] : obj.TaskName;
           obj.isEditEnabled = true;
           obj.edited = true;
           RowData.SlotTasks.push(obj);
@@ -901,7 +963,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
   async OnRowExpand(event) {
-
+    debugger;
     event.data.subTaskloaderenable = true;
     if (event.data.SlotTasks) {
       if (event.data.SlotTasks.length === 1 && event.data.SlotTasks[0].id === undefined) {
@@ -921,12 +983,12 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         });
         event.data.subTaskloaderenable = false;
       } else {
-        const tasks = await this.GetAllConstantTasks(event.data.task);
-        event.data.taskName = tasks.length > 0 ? tasks[0] : event.data.taskName;
+        const tasks = await this.GetAllConstantTasks(event.data.Task);
+        event.data.TaskName = tasks.length > 0 ? tasks[0] : event.data.TaskName;
         const obj = this.GetTask(event.data, false);
         obj.editMode = true;
         obj.edited = true;
-        obj.status = 'Not Saved';
+        obj.Status = 'Not Saved';
         event.data.SlotTasks.push(obj);
         event.data.subTaskloaderenable = false;
       }
@@ -948,6 +1010,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
   GetTask(task, IsdbTask) {
+
+    debugger;
     const taskObj = $.extend(true, {}, this.caGlobal.caObject);
     const hrsMinObject = {
       timeHrs: task.TimeSpent != null ? task.TimeSpent.indexOf('.') > -1 ?
@@ -958,10 +1022,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     task.projectCode = task.projectCode ? task.projectCode : task.ProjectCode;
     const projectItem = this.projects.filter((proj) => proj.ProjectCode === task.projectCode);
     const resourcesList = $.extend(true, [], this.resourceList);
-    if (!task.taskName) {
-      task.taskName = $.trim(task.Title.replace(task.ProjectCode + '', '').replace(task.Milestone + '', ''));
+    if (!task.TaskName) {
+      task.TaskName = $.trim(task.Title.replace(task.ProjectCode + '', '').replace(task.Milestone + '', ''));
     }
-    const resPool = this.caCommonService.getResourceByMatrix(resourcesList, task.taskName ? task.taskName : task.label, task.SkillLevel,
+    const resPool = this.caCommonService.getResourceByMatrix(resourcesList, task.TaskName ? task.TaskName : task.label, task.SkillLevel,
       projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
 
 
@@ -972,13 +1036,13 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       ? AssignedUserTimeZone[0].TimeZone.Title ?
         AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
 
-    const convertedStartDate = task.startDate ? this.commonService.calcTimeForDifferentTimeZone(new Date(task.startDate),
+    const convertedStartDate = task.StartDate ? this.commonService.calcTimeForDifferentTimeZone(new Date(task.StartDate),
       this.globalService.currentUser.timeZone, task.assignedUserTimeZone) :
       this.commonService.calcTimeForDifferentTimeZone(new Date(task.StartDate),
         this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
     task.jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(convertedStartDate,
       task.assignedUserTimeZone, this.globalService.currentUser.timeZone);
-    const convertedEndDate = task.dueDate ? this.commonService.calcTimeForDifferentTimeZone(new Date(task.dueDate),
+    const convertedEndDate = task.DueDate ? this.commonService.calcTimeForDifferentTimeZone(new Date(task.DueDate),
       this.globalService.currentUser.timeZone, task.assignedUserTimeZone) :
       this.commonService.calcTimeForDifferentTimeZone(new Date(task.DueDate),
         this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
@@ -993,47 +1057,49 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       SelectedResources.push(retRes);
     }
 
-    taskObj.id = task.ID;
-    taskObj.task = task.Type && task.Type === 'Slot' ? task.taskName : task.task ? task.task : task.Task;
-    taskObj.timezone = task.timezone ? task.timezone : task.Timezone;
-    taskObj.title = task.Title;
-    taskObj.projectCode = task.projectCode ? task.projectCode : task.ProjectCode;
+    taskObj.Id = task.ID;
+    taskObj.Task = task.Type && task.Type === 'Slot' ? task.TaskName : task.task ? task.task : task.Task;
+    taskObj.Timezone = task.timezone ? task.timezone : task.TimeZone;
+    taskObj.Title = task.Title;
+    taskObj.ProjectCode = task.projectCode ? task.projectCode : task.ProjectCode;
     taskObj.NextTasks = task.nextTasks ? task.nextTasks : task.NextTasks;
     taskObj.PrevTasks = task.PrevTasks ? task.PrevTasks : task.prevTasks;
-    taskObj.milestone = task.milestone ? task.milestone : task.Milestone;
-    taskObj.taskName = task.taskName;
-    taskObj.estimatedTime = task.estimatedTime ? task.estimatedTime : task.ExpectedTime ? task.ExpectedTime : '0';
-    taskObj.startTime = task.startDate ? task.startDate : task.StartDate;
-    taskObj.endTime = task.dueDate ? task.dueDate : task.DueDate;
-    taskObj.startDate = task.startDate ? new Date(task.startDate) : new Date(task.StartDate);
-    taskObj.dueDate = task.dueDate ? new Date(task.dueDate) : new Date(task.DueDate);
+    taskObj.Milestone = task.milestone ? task.milestone : task.Milestone;
+    taskObj.TaskName = task.TaskName;
+    taskObj.EstimatedTime = task.estimatedTime ? task.estimatedTime : task.ExpectedTime ? task.ExpectedTime : '0';
+    taskObj.StartTime = task.startDate ? task.startDate : task.StartDate;
+    taskObj.EndTime = task.dueDate ? task.dueDate : task.DueDate;
+    taskObj.StartDate = task.startDate ? new Date(task.startDate) : new Date(task.StartDate);
+    taskObj.DueDate = task.dueDate ? new Date(task.dueDate) : new Date(task.DueDate);
     taskObj.UserStart = task.startDate ? new Date(task.startDate) : new Date(task.StartDate);
     taskObj.UserEnd = task.dueDate ? new Date(task.dueDate) : new Date(task.DueDate);
-    taskObj.spentTime = this.commonService.ajax_addHrsMins([hrsMinObject]);
+    taskObj.ProjectName = task.ProjectName;
+    taskObj.SpentTime = this.commonService.ajax_addHrsMins([hrsMinObject]);
     taskObj.UserStartDatePart = this.getDatePart(convertedStartDate);
     taskObj.UserStartTimePart = this.getTimePart(convertedStartDate);
     taskObj.UserEndDatePart = this.getDatePart(convertedEndDate);
     taskObj.UserEndTimePart = this.getTimePart(convertedEndDate);
-    taskObj.taskScope = task.Comments;
+    taskObj.TaskScope = task.Comments;
     taskObj.allocatedResource = '';
-    taskObj.assignedTo = task.assignedTo ? task.assignedTo : task.AssignedTo ? task.AssignedTo : [];
+    taskObj.AssignedTo = task.assignedTo ? task.assignedTo : task.AssignedTo ? task.AssignedTo : [];
     taskObj.resources = $.extend(true, [], resPool);
     taskObj.selectedResources = [];
     taskObj.mileStoneTask = [];
     taskObj.projectTask = [];
-    taskObj.status = task.status ? task.status : task.Status;
+    taskObj.Status = task.status ? task.status : task.Status;
     taskObj.CentralAllocationDone = task.CentralAllocationDone;
-    taskObj.assignedUserTimeZone = task.assignedUserTimeZone;
+    taskObj.AssignedUserTimeZone = task.assignedUserTimeZone;
     taskObj.allowStart = task.AllowCompletion === true || task.AllowCompletion === 'Yes' ? true : false;
     taskObj.DisableCascade = task.DisableCascade && task.DisableCascade === 'Yes' ? true : false;
     taskObj.displayselectedResources = [];
+    taskObj.SubMilestones = task.SubMilestones;
 
     if (IsdbTask) {
-      taskObj.NextTasks = taskObj.NextTasks ? taskObj.NextTasks.replace(new RegExp(taskObj.projectCode + ' ', 'g'), '')
-        .replace(new RegExp(taskObj.milestone + ' ', 'g'), '').replace(/#/gi, '') : null;
+      taskObj.NextTasks = taskObj.NextTasks ? taskObj.NextTasks.replace(new RegExp(taskObj.ProjectCode + ' ', 'g'), '')
+        .replace(new RegExp(taskObj.Milestone + ' ', 'g'), '').replace(/#/gi, '') : null;
 
-      taskObj.PrevTasks = taskObj.PrevTasks ? taskObj.PrevTasks.replace(new RegExp(taskObj.projectCode + ' ', 'g'), '')
-        .replace(new RegExp(taskObj.milestone + ' ', 'g'), '').replace(/#/gi, '') : null;
+      taskObj.PrevTasks = taskObj.PrevTasks ? taskObj.PrevTasks.replace(new RegExp(taskObj.ProjectCode + ' ', 'g'), '')
+        .replace(new RegExp(taskObj.Milestone + ' ', 'g'), '').replace(/#/gi, '') : null;
     }
 
     return taskObj;
@@ -1077,7 +1143,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     nextTasks.forEach(element => {
 
-      const nextNode = Slot.SlotTasks.find(c => c.taskName === element);
+      const nextNode = Slot.SlotTasks.find(c => c.TaskName === element);
       if (new Date(previousNode.UserEnd) > new Date(nextNode.UserStart) && !nextNode.DisableCascade) {
         this.cascadeNode(previousNode, Slot, nextNode);
       }
@@ -1192,6 +1258,11 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (isValid) {
       this.loaderenable = true;
       setTimeout(() => {
+
+        this.messageService.add({
+          key: 'tc', severity: 'warn', sticky: true,
+          summary: 'Info Message', detail: 'Updating...'
+        });
         this.generateSaveTasks(unt);
       }, 300);
     }
@@ -1208,7 +1279,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     for (const slot of EditedSlots) {
       if (slot.SlotTasks) {
         const checkTaskAllocatedTime = slot.SlotTasks.filter(e => (e.estimatedTime === '' || +e.estimatedTime === 0)
-          && e.status !== 'Completed');
+          && e.Status !== 'Completed');
         // tslint:enable
         if (checkTaskAllocatedTime.length > 0) {
           this.messageService.add({
@@ -1219,12 +1290,12 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           return false;
         }
 
-        const compareDates = slot.SlotTasks.filter(e => (e.UserEnd <= e.UserStart && e.status !== 'Completed'));
+        const compareDates = slot.SlotTasks.filter(e => (e.UserEnd <= e.UserStart && e.Status !== 'Completed'));
         if (compareDates.length > 0) {
 
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'End date should be greater than start date of ' + compareDates[0].taskName + ' task of ' +
+            detail: 'End date should be greater than start date of ' + compareDates[0].TaskName + ' task of ' +
               slot.milestone + ' - ' + slot.task
           });
           return false;
@@ -1253,24 +1324,24 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           return false;
         }
 
-        const compareTaskDates = slot.SlotTasks.filter(e => (slot.startDate > e.UserStart && e.status !== 'Completed'));
+        const compareTaskDates = slot.SlotTasks.filter(e => (slot.startDate > e.UserStart && e.Status !== 'Completed'));
         if (compareTaskDates.length > 0) {
 
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
             // tslint:disable-next-line: max-line-length
-            detail: 'start date of ' + compareTaskDates[0].taskName + ' task  should be greater than start date of ' + slot.milestone + ' - ' + slot.task
+            detail: 'start date of ' + compareTaskDates[0].TaskName + ' task  should be greater than start date of ' + slot.milestone + ' - ' + slot.task
           });
           return false;
         }
 
-        const compareTaskEndDates = slot.SlotTasks.filter(e => (slot.dueDate < e.UserEnd && e.status !== 'Completed'));
+        const compareTaskEndDates = slot.SlotTasks.filter(e => (slot.dueDate < e.UserEnd && e.Status !== 'Completed'));
         if (compareTaskEndDates.length > 0) {
 
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
             // tslint:disable-next-line: max-line-length
-            detail: 'end date of ' + compareTaskEndDates[0].taskName + ' task  should be less than end date of ' + slot.milestone + ' - ' + slot.task
+            detail: 'end date of ' + compareTaskEndDates[0].TaskName + ' task  should be less than end date of ' + slot.milestone + ' - ' + slot.task
           });
           return false;
         }
@@ -1289,19 +1360,19 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     for (let i = 0; i < taskCount; i = i + 1) {
       // AllTasks.forEach(task => {
       const task = AllTasks[i];
-      if (task.NextTasks && task.status !== 'Completed'
-        && task.status !== 'Auto Closed' && task.status !== 'Deleted') {
+      if (task.NextTasks && task.Status !== 'Completed'
+        && task.Status !== 'Auto Closed' && task.Status !== 'Deleted') {
         const nextTasks = task.NextTasks.split(';');
-        const AllNextTasks = AllTasks.filter(c => (nextTasks.indexOf(c.taskName) > -1));
+        const AllNextTasks = AllTasks.filter(c => (nextTasks.indexOf(c.TaskName) > -1));
 
-        const SDTask = AllNextTasks.find(c => c.startDate < task.dueDate && c.status !== 'Completed'
-          && c.status !== 'Auto Closed' && c.status !== 'Deleted' && c.allowStart === false);
+        const SDTask = AllNextTasks.find(c => c.startDate < task.dueDate && c.Status !== 'Completed'
+          && c.Status !== 'Auto Closed' && c.Status !== 'Deleted' && c.allowStart === false);
         if (SDTask) {
           // this.errorMessageCount++;
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Start Date of ' + SDTask.taskName + '  should be greater than end date of ' +
-              task.taskName + ' in ' + slot.milestone + ' - ' + slot.task,
+            detail: 'Start Date of ' + SDTask.TaskName + '  should be greater than end date of ' +
+              task.TaskName + ' in ' + slot.Milestone + ' - ' + slot.Task,
           });
           errorPresnet = true;
           break;
@@ -1349,34 +1420,31 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     for (const slot of EditedSlots) {
       if (slot.SlotTasks) {
         updateSlot.push(slot);
-        addedTasks = slot.SlotTasks.filter(e => e.status === 'Not Saved');
-        updatedTasks = slot.SlotTasks.filter(e => e.status !== 'Completed' && e.status !== 'Not Saved' && e.edited);
+        addedTasks = slot.SlotTasks.filter(e => e.Status === 'Not Saved');
+        updatedTasks = slot.SlotTasks.filter(e => e.Status !== 'Completed' && e.Status !== 'Not Saved' && e.edited);
         debugger;
         if (ProjectInformationObj) {
-          const project = ProjectInformationObj.find(c => c.projectCode === slot.projectCode);
+          const project = ProjectInformationObj.find(c => c.projectCode === slot.ProjectCode);
           if (!project) {
 
             const batchUrl = [];
             const tasksObj = Object.assign({}, this.queryConfig);
             tasksObj.url = this.spServices.getReadURL(this.globalConstant.listNames.projectInfo.name,
               this.caConstant.projectResources);
-            tasksObj.url = tasksObj.url.replace(/{{ProjectCode}}/gi, slot.projectCode);
+            tasksObj.url = tasksObj.url.replace(/{{ProjectCode}}/gi, slot.ProjectCode);
             tasksObj.listName = this.globalConstant.listNames.projectInfo.name;
             tasksObj.type = 'GET';
             batchUrl.push(tasksObj);
             const arrResult = await this.spServices.executeBatch(batchUrl);
             const oProjectDetails = arrResult.length ? arrResult[0].retItems[0] : [];
 
-
-
-            // const oProjectDetails = this.projects.find(c => c.ProjectCode === slot.projectCode);
             const arrEditorsIds = this.getIDFromItem(oProjectDetails.Editors);
             const arrQualityCheckerIds = this.getIDFromItem(oProjectDetails.QC);
             const arrGraphicsIds = this.getIDFromItem(oProjectDetails.GraphicsMembers);
             const arrPubSupportIds = this.getIDFromItem(oProjectDetails.PSMembers);
             const arrallDeliveryIds = this.getIDFromItem(oProjectDetails.AllDeliveryResources);
             ProjectInformationObj.push({
-              projectCode: slot.projectCode,
+              projectCode: slot.ProjectCode,
               projectId: oProjectDetails.ID,
               items: {
                 arrEditorsIds, arrQualityCheckerIds, arrGraphicsIds, arrPubSupportIds, arrallDeliveryIds,
@@ -1386,7 +1454,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           }
         }
 
-        const tempProject = ProjectInformationObj.find(c => c.projectCode === slot.projectCode).items;
+        const tempProject = ProjectInformationObj.find(c => c.projectCode === slot.ProjectCode).items;
         if (slot.dbSlots) {
           this.getSlotDeletedTasks(slot.SlotTasks, updatedTasks, slot.dbSlots);
         }
@@ -1516,7 +1584,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       DeletedTask.forEach(task => {
         task.previousTask = '';
         task.nextTask = '';
-        task.status = 'Deleted';
+        task.Status = 'Deleted';
         updatedTasks.push(task);
       });
     }
@@ -1591,6 +1659,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     //   this.sendReallocationCentralTaskMail(mail.project, mail.slot, mail.data, mail.subject);
     // });
 
+    this.messageService.clear();
+
     await this.getProperties();
 
 
@@ -1642,35 +1712,40 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   setSlotTaskForAddUpdate(task, slot, bAdd) {
     let url = '';
     let data = {};
-    if (task.status === 'Not Saved') {
-      task.status = 'Not Started';
+    if (task.Status === 'Not Saved') {
+      task.Status = 'Not Started';
     }
+
+    if (task.assignedUserChanged && task.Status === 'Not Started') {
+      // debugger;
+      this.sendMail(task, slot);
+      task.assignedUserChanged = false;
+    }
+
+
+
     if (bAdd) {
 
       const addData = {
         __metadata: { type: 'SP.Data.SchedulesListItem' },
-        StartDate: task.startDate,
-        DueDate: task.dueDate,
-        ExpectedTime: '' + task.estimatedTime,
+        StartDate: task.StartDate,
+        DueDate: task.DueDate,
+        ExpectedTime: '' + task.EstimatedTime,
         AllowCompletion: task.allowStart === true ? 'Yes' : 'No',
-        TATStatus: 'No',
         AssignedToId: task.allocatedResource ? task.allocatedResource.UserName.hasOwnProperty('ID') ?
           task.allocatedResource.UserName.ID : -1 : -1,
         TimeZone: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
           ? task.allocatedResource.TimeZone.Title : '+5.5' : '+5.5',
         Comments: task.taskScope,
-        Status: task.status,
-        NextTasks: this.setPreviousAndNext(task.nextTask, slot.milestone, slot.projectCode),
-        PrevTasks: this.setPreviousAndNext(task.previousTask, slot.milestone, slot.projectCode),
+        Status: task.Status,
+        NextTasks: this.setPreviousAndNext(task.nextTask, slot.milestone, slot.ProjectCode),
+        PrevTasks: this.setPreviousAndNext(task.previousTask, slot.milestone, slot.ProjectCode),
         ParentSlot: slot.id ? slot.id : slot.Id,
-        // NextTasks: task.nextTasks,
-        // PrevTasks: task.PrevTasks,
-        ProjectCode: slot.projectCode,
-        Task: task.task,
-        Milestone: slot.milestone,
-        SubMilestones: slot.submilestone,
-        Title: slot.projectCode + ' ' + slot.milestone + ' ' + task.taskName,
-        SkillLevel: task.skillLevel,
+        ProjectCode: slot.ProjectCode,
+        Task: task.Task,
+        Milestone: slot.Milestone,
+        SubMilestones: slot.SubMilestones,
+        Title: slot.ProjectCode + ' ' + slot.Milestone + ' ' + task.TaskName,
         CentralAllocationDone: 'Yes',
         DisableCascade: task.DisableCascade === true ? 'Yes' : 'No'
       };
@@ -1679,19 +1754,18 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     } else {
       const updateData = {
         __metadata: { type: 'SP.Data.SchedulesListItem' },
-        StartDate: task.startDate,
-        DueDate: task.dueDate,
-        ExpectedTime: '' + task.budgetHours,
+        StartDate: task.StartDate,
+        DueDate: task.DueDate,
+        ExpectedTime: '' + task.EstimatedTime,
         AllowCompletion: task.allowStart === true ? 'Yes' : 'No',
         AssignedToId: task.allocatedResource ? task.allocatedResource.UserName.hasOwnProperty('ID') ?
           task.allocatedResource.UserName.ID : -1 : -1,
         TimeZone: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
           ? task.allocatedResource.TimeZone.hasOwnProperty('Title') : '+5.5' : '+5.5',
         Comments: task.taskScope ? task.taskScope : '',
-        Status: task.status,
-        NextTasks: this.setPreviousAndNext(task.nextTask, slot.milestone, slot.projectCode),
-        PrevTasks: this.setPreviousAndNext(task.previousTask, slot.milestone, slot.projectCode),
-        SkillLevel: task.skillLevel,
+        Status: task.Status,
+        NextTasks: this.setPreviousAndNext(task.nextTask, slot.milestone, slot.ProjectCode),
+        PrevTasks: this.setPreviousAndNext(task.previousTask, slot.milestone, slot.ProjectCode),
         DisableCascade: task.DisableCascade === true ? 'Yes' : 'No',
         PreviousAssignedUserId: task.previousAssignedUser ? task.previousAssignedUser : '-1'
       };

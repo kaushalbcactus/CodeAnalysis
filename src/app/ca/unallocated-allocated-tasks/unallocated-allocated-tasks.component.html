@@ -25,7 +25,7 @@
 </div>
 
 <div class="allocatedUnallocatedTable" [hidden]='loderenable'>
-    <p-table #taskTable dataKey="id" [columns]="displayedColumns" [value]="caGlobal.dataSource" [paginator]="true" [rows]="30" [lazy]="true" (onLazyLoad)="lazyLoadTask($event)" rowExpandMode="multiple" [loading]="caGlobal.loading" [style]="{'font-size':'13px'}"
+    <p-table #taskTable dataKey="Id" [columns]="displayedColumns" [value]="caGlobal.dataSource" [paginator]="true" [rows]="30" [lazy]="true" (onLazyLoad)="lazyLoadTask($event)" rowExpandMode="multiple" [loading]="caGlobal.loading" [style]="{'font-size':'13px'}"
         [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)" [lazyLoadOnInit]="false" [totalRecords]="caGlobal.totalRecords">
         <ng-template pTemplate="header" let-columns>
             <tr>
@@ -45,14 +45,14 @@
             <tr>
                 <th></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
-                    <p-multiSelect *ngSwitchCase="'clientName'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.clientLegalEntityArray" defaultLabel="All" class="clientName" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'projectCode'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.projectCodeArray" defaultLabel="All" class="projectCode" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'milestone'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.milestoneArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'taskName'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.taskArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'deliveryType'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.deliveryTypeArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'estimatedTime'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.allocatedArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'startDateText'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.startTimeArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'dueDateText'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.endTimeArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ClientName'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.clientLegalEntityArray" defaultLabel="All" class="ClientName" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ProjectCode'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.projectCodeArray" defaultLabel="All" class="projectCode" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Milestone'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.milestoneArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'TaskName'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.taskArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'DeliveryType'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.deliveryTypeArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'EstimatedTime'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.allocatedArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'StartDateText'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.startTimeArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'DueDateText'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.endTimeArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
                 </th>
                 <th colspan="4">
                     <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
@@ -69,17 +69,17 @@
                         <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
                     </a>
                 </td>
-                <td>{{task.clientName}}</td>
-                <td><a style="color:#C53E3E;" href="{{globalService.sharePointPageObject.webAbsoluteUrl}}/allocation#/taskAllocation?ProjectCode={{task.projectCode}}" target="_blank">{{task.projectCode}}</a> <br /> ({{task.projectName}}) </td>
-                <td> {{task.milestone}} <span *ngIf="task.SubMilestones && task.SubMilestones !=='Default'"> -  {{task.SubMilestones}}</span></td>
-                <td>{{task.displaytask}}</td>
-                <td>{{task.deliveryType}}</td>
-                <td>{{task.estimatedTime}}</td>
-                <td>{{task.startTime | date : 'd MMM, yyyy, hh:mm a'}}</td>
-                <td>{{task.endTime | date : 'd MMM, yyyy, hh:mm a'}}</td>
-                <td>{{task.nextTaskStartDateText}}</td>
-                <td>{{task.lastTaskEndDateText}}</td>
-                <td>{{task.sendToClientDateText}}</td>
+                <td>{{task.ClientName}}</td>
+                <td><a style="color:#C53E3E;" href="{{globalService.sharePointPageObject.webAbsoluteUrl}}/allocation#/taskAllocation?ProjectCode={{task.ProjectCode}}" target="_blank">{{task.ProjectCode}}</a> <br /> ({{task.ProjectName}}) </td>
+                <td> {{task.Milestone}} <span *ngIf="task.SubMilestones && task.SubMilestones !=='Default'"> -  {{task.SubMilestones}}</span></td>
+                <td>{{task.Displaytask}}</td>
+                <td>{{task.DeliveryType}}</td>
+                <td>{{task.EstimatedTime}}</td>
+                <td>{{task.StartTime | date : 'd MMM, yyyy, hh:mm a'}}</td>
+                <td>{{task.EndTime | date : 'd MMM, yyyy, hh:mm a'}}</td>
+                <td>{{task.NextTaskStartDateText}}</td>
+                <td>{{task.LastTaskEndDateText}}</td>
+                <td>{{task.SendToClientDateText}}</td>
                 <!-- <td *ngIf="selectedTab ==='allocated'" class="ui-fluid">
 
                     <p-dropdown [hidden]="!task.isAssignedToHidden" #allocateResource class="resourceDropdown" [options]="task.displayselectedResources" [panelStyle]="{minWidth:'25em' }" [(ngModel)]="task.allocatedResource" placeholder="Select Resource" [group]="true" filter="true"
@@ -147,20 +147,20 @@
                             <tr class="milestoneTable" *ngIf="!Slot.subTaskloaderenable">
                                 <!-- task Name -->
                                 <td [style.text-align]="'left'">
-                                    <span> {{rowData.taskName}}</span>
+                                    <span> {{rowData.TaskName}}</span>
                                 </td>
                                 <!-- Budget Hrs -->
                                 <td style="text-align: center;">
-                                    <span *ngIf="!rowData.editMode">{{rowData.estimatedTime}}</span>
-                                    <input type="number" class="form-control budgetHr" required="required" min="0" value="0" onchange="validity.valid||(value='0');" step="0.25" *ngIf=" rowData.editMode" required="required" [id]="rowData.ID" (ngModelChange)="modelChanged(rowData,Slot)" [(ngModel)]="rowData.estimatedTime">
+                                    <span *ngIf="!rowData.editMode">{{rowData.EstimatedTime}}</span>
+                                    <input type="number" class="form-control budgetHr" required="required" min="0" value="0" onchange="validity.valid||(value='0');" step="0.25" *ngIf=" rowData.editMode" required="required" [id]="rowData.ID" (ngModelChange)="modelChanged(rowData,Slot)" [(ngModel)]="rowData.EstimatedTime">
                                 </td>
 
                                 <!-- spent Hrs -->
-                                <td style="text-align: center;">{{rowData.spentTime}}</td>
+                                <td style="text-align: center;">{{rowData.SpentTime}}</td>
                                 <!-- Start Date -->
                                 <td style="padding: 5px;">
 
-                                    <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode">{{rowData.UserStart |  date:' d MMM, y, h:mm a' }}</span>
+                                    <span [title]="rowData.UserStart |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode">{{rowData.UserStart |  date:' d MMM, y, h:mm a' }}</span>
                                     <span *ngIf="rowData.editMode" style="display: flex;">
                                         <p-calendar id="calenderIcon" [(ngModel)]="rowData.UserStartDatePart"
                                             [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
@@ -204,9 +204,9 @@
                                 </td>
                                 <!-- Assign To -->
                                 <td>
-                                    <span *ngIf="!rowData.editMode"> {{rowData.assignedTo.Title}}</span>
+                                    <span *ngIf="!rowData.editMode"> {{rowData.AssignedTo.Title}}</span>
                                     <p-dropdown #allocateResource *ngIf="rowData.editMode" class="resourceDropdown" [options]="rowData.displayselectedResources" [panelStyle]="{minWidth:'25em' }" [(ngModel)]="rowData.allocatedResource" placeholder="Select Resource" [group]="true" filter="true"
-                                        placeholder="Select Resource" (onShow)="fetchResources(rowData,false, allocateResource)" (onHide)="EditSlotEnable(rowData,Slot)" [style]="{'width':'100%'}">
+                                        placeholder="Select Resource" (onShow)="fetchResources(rowData,false, allocateResource)" (onHide)="EditSlotEnable(rowData,Slot)" (onChange)="assignedToUserChanged(rowData)" [style]="{'width':'100%'}">
                                         <ng-template let-group pTemplate="group">
                                             <span style="margin-left:.25em">{{group.label}}</span>
                                         </ng-template>

@@ -77,7 +77,7 @@ export class CaDragdropComponent implements OnInit {
 
   async GetAllConstantTasks() {
 
-    this.allConstantTasks = await this.caCommonService.GetAllTasksMilestones(this.data.task);
+    this.allConstantTasks = await this.caCommonService.GetAllTasksMilestones(this.data.Task);
     this.arrConstantTasks = this.allConstantTasks.map(c => c.Title);
     this.mainloaderenable = false;
   }
@@ -192,7 +192,7 @@ export class CaDragdropComponent implements OnInit {
         taskType: originalType,
         top: 0,
         left: 0,
-        status: 'Not Saved',
+        Status: 'Not Saved',
         IsCentrallyAllocated: 'Yes',
         SkillLevel: Task !== undefined ? Task.DefaultSkill !== null ? Task.DefaultSkill : '' : '',
         projectCode: this.data.projectCode
@@ -207,7 +207,7 @@ export class CaDragdropComponent implements OnInit {
         taskType: originalType,
         top: 0,
         left: 0,
-        status: 'Not Saved',
+        Status: 'Not Saved',
         IsCentrallyAllocated: 'Yes',
         SkillLevel: Task !== undefined ? Task.DefaultSkill !== null ? Task.DefaultSkill : '' : '',
         projectCode: this.data.projectCode
@@ -298,7 +298,7 @@ export class CaDragdropComponent implements OnInit {
       taskType: originalType,
       top: 0,
       left: 0,
-      status: event.status ? event.status : 'Not Saved',
+      Status: event.Status ? event.Status : 'Not Saved',
       IsCentrallyAllocated: event.IsCentrallyAllocated,
       SkillLevel: Task !== undefined ? Task.DefaultSkill !== null ? Task.DefaultSkill : '' : '',
       projectCode: this.data.projectCode

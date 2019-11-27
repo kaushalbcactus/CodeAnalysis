@@ -324,37 +324,37 @@ export class CACommonService {
     }
     const resourcesList = $.extend(true, [], resourceList);
     const resPool = this.getResourceByMatrix(resourcesList, task.Task, task.SkillLevel, projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
-    scObj.id = task.ID;
-    scObj.clientName = projectItem[0].ClientLegalEntity;
-    scObj.projectCode = task.ProjectCode;
-    scObj.projectManagementURL = scObj.projectName = projectItem[0].WBJID;
-    scObj.milestone = task.Milestone;
+    scObj.Id = task.ID;
+    scObj.ClientName = projectItem[0].ClientLegalEntity;
+    scObj.ProjectCode = task.ProjectCode;
+    scObj.ProjectManagementURL = scObj.ProjectName = projectItem[0].WBJID;
+    scObj.Milestone = task.Milestone;
     scObj.SubMilestones = task.SubMilestones;
-    scObj.task = task.Task;
-    scObj.displaytask = $.trim(task.Title.replace(scObj.projectCode + '', '').replace(scObj.milestone + '', ''));
-    scObj.timezone = task.TimeZone;
-    scObj.title = task.Title;
-    scObj.taskName = $.trim(task.Title.replace(scObj.projectCode + '', '').replace(scObj.milestone + '', ''));
-    scObj.deliveryType = projectItem[0].DeliverableType;
-    scObj.estimatedTime = task.ExpectedTime;
-    scObj.startTime = task.StartDate;
-    scObj.endTime = task.DueDate;
-    scObj.startDate = new Date(task.StartDate);
-    scObj.dueDate = new Date(task.DueDate);
-    scObj.startDateText = this.datePipe.transform(scObj.startDate, 'd MMM, yyyy, hh:mm a');
-    scObj.dueDateText = this.datePipe.transform(scObj.dueDate, 'd MMM, yyyy, hh:mm a');
-    scObj.nextTaskStartDate = new Date(); // nextTaskItem[0].StartDate;
-    scObj.lastTaskEndDate = new Date(); // prevTaskItem[0].StartDate;
+    scObj.Task = task.Task;
+    scObj.Displaytask = $.trim(task.Title.replace(scObj.ProjectCode + '', '').replace(scObj.Milestone + '', ''));
+    scObj.Timezone = task.TimeZone;
+    scObj.Title = task.Title;
+    scObj.TaskName = $.trim(task.Title.replace(scObj.ProjectCode + '', '').replace(scObj.Milestone + '', ''));
+    scObj.DeliveryType = projectItem[0].DeliverableType;
+    scObj.EstimatedTime = task.ExpectedTime;
+    scObj.StartTime = task.StartDate;
+    scObj.EndTime = task.DueDate;
+    scObj.StartDate = new Date(task.StartDate);
+    scObj.DueDate = new Date(task.DueDate);
+    scObj.StartDateText = this.datePipe.transform(scObj.StartDate, 'd MMM, yyyy, hh:mm a');
+    scObj.DueDateText = this.datePipe.transform(scObj.DueDate, 'd MMM, yyyy, hh:mm a');
+    scObj.NextTaskStartDate = new Date(); // nextTaskItem[0].StartDate;
+    scObj.LastTaskEndDate = new Date(); // prevTaskItem[0].StartDate;
     scObj.sendToClientDate = new Date(); // sentToClientItem[0].StartDate;
-    scObj.nextTaskStartDateText = '';
-    scObj.lastTaskEndDateText = '';
-    scObj.sendToClientDateText = '';
+    scObj.NextTaskStartDateText = '';
+    scObj.LastTaskEndDateText = '';
+    scObj.SendToClientDateText = '';
     scObj.NextTasks = task.NextTasks ? task.NextTasks : '';
     scObj.PrevTasks = task.PrevTasks ? task.PrevTasks : '';
-    scObj.taskScope = task.Comments;
-    scObj.prevTaskComments = '';
+    scObj.TaskScope = task.Comments;
+    scObj.PrevTaskComments = '';
     scObj.allocatedResource = '';
-    scObj.assignedTo = task.AssignedTo.Title;
+    scObj.AssignedTo = task.AssignedTo.Title;
     scObj.isAllocatedSelectHidden = true;
     scObj.isAssignedToHidden = false;
     scObj.isEditEnabled = true;
@@ -368,14 +368,14 @@ export class CACommonService {
     scObj.Type = 'Slot';
     scObj.editMode = false;
     scObj.CentralAllocationDone = task.CentralAllocationDone;
-    scTempArrays.clientLegalEntityTempArray.push({ label: scObj.clientName, value: scObj.clientName });
-    scTempArrays.projectCodeTempArray.push({ label: scObj.projectCode, value: scObj.projectCode });
-    scTempArrays.milestoneTempArray.push({ label: scObj.milestone, value: scObj.milestone });
-    scTempArrays.taskTempArray.push({ label: scObj.task, value: scObj.task });
-    scTempArrays.deliveryTypeTempArray.push({ label: scObj.deliveryType, value: scObj.deliveryType });
-    scTempArrays.allocatedTempArray.push({ label: scObj.estimatedTime, value: scObj.estimatedTime });
-    scTempArrays.startTimeTempArray.push({ label: scObj.startDateText, value: scObj.startDate });
-    scTempArrays.endTimeTempArray.push({ label: scObj.dueDateText, value: scObj.dueDate });
+    scTempArrays.clientLegalEntityTempArray.push({ label: scObj.ClientName, value: scObj.ClientName });
+    scTempArrays.projectCodeTempArray.push({ label: scObj.ProjectCode, value: scObj.ProjectCode });
+    scTempArrays.milestoneTempArray.push({ label: scObj.Milestone, value: scObj.Milestone });
+    scTempArrays.taskTempArray.push({ label: scObj.Task, value: scObj.Task });
+    scTempArrays.deliveryTypeTempArray.push({ label: scObj.DeliveryType, value: scObj.DeliveryType });
+    scTempArrays.allocatedTempArray.push({ label: scObj.EstimatedTime, value: scObj.EstimatedTime });
+    scTempArrays.startTimeTempArray.push({ label: scObj.StartDateText, value: scObj.StartDate });
+    scTempArrays.endTimeTempArray.push({ label: scObj.DueDateText, value: scObj.DueDate });
     const resExt = $.extend(true, [], resPool);
     for (const retRes of resExt) {
       retRes.timeAvailable = 0;
@@ -570,6 +570,8 @@ export class CACommonService {
    * @param deliverableType 
    */
   getResourceByMatrix(filterResource, task, skillLevel, clientLegalEntity, ta, deliverableType) {
+
+    debugger;
     const deliverable = deliverableType;
     const resources = filterResource;
     const filteredResources = [];
@@ -670,9 +672,11 @@ export class CACommonService {
    * @param arrMilestoneTasks 
    */
   getMiscDates(task, arrMilestoneTasks) {
-    task.projectTask = arrMilestoneTasks;
+
+    debugger;
+    task.ProjectTask = arrMilestoneTasks;
     task.MilestoneAllTasks = [];
-    const oReturnedProjectMil = arrMilestoneTasks.filter(function (milTask) { return (milTask.projectCode === task.projectCode && milTask.milestone === task.milestone) });
+    const oReturnedProjectMil = arrMilestoneTasks.filter(function (milTask) { return (milTask.projectCode === task.ProjectCode && milTask.milestone === task.Milestone) });
     if (oReturnedProjectMil && oReturnedProjectMil.length) {
       const milTasks = oReturnedProjectMil[0].MilestoneTasks;
 
@@ -684,16 +688,16 @@ export class CACommonService {
         let taskArr = [];
 
         taskArr = milTask.PrevTasks ? milTask.PrevTasks.split(";#") : [];
-        if (taskArr.indexOf(task.title) > -1) {
+        if (taskArr.indexOf(task.Title) > -1) {
           nextTasks.push(milTask);
         }
         const TaskType = milTask.Task;
-        const taskName = $.trim(milTask.Title.replace(milTask.ProjectCode + '', '').replace(milTask.Milestone + '', ''));
+        const TaskName = $.trim(milTask.Title.replace(milTask.ProjectCode + '', '').replace(milTask.Milestone + '', ''));
         if (task.MilestoneAllTasks.length > 0 && task.MilestoneAllTasks.find(c => c.type === TaskType)) {
-          task.MilestoneAllTasks.find(c => c.type === TaskType).tasks.push(taskName);
+          task.MilestoneAllTasks.find(c => c.type === TaskType).tasks.push(TaskName);
         }
         else {
-          task.MilestoneAllTasks.push({ type: TaskType, tasks: [taskName] });
+          task.MilestoneAllTasks.push({ type: TaskType, tasks: [TaskName] });
         }
 
       });
@@ -701,8 +705,8 @@ export class CACommonService {
         nextTasks.sort(function (a, b) {
           return a.StartDate - b.StartDate;
         });
-        task.nextTaskStartDate = nextTasks[0].StartDate;
-        task.nextTaskStartDateText = this.datePipe.transform(task.nextTaskStartDate, 'd MMM, yyyy, hh:mm a');
+        task.NextTaskStartDate = nextTasks[0].StartDate;
+        task.NextTaskStartDateText = this.datePipe.transform(task.NextTaskStartDate, 'd MMM, yyyy, hh:mm a');
 
       }
       const prevTasks = [];
@@ -716,12 +720,12 @@ export class CACommonService {
       prevTasks.forEach(milTask => {
         task.prevTaskComments = task.prevTaskComments ? task.prevTaskComments + "<br/>" + milTask.TaskComments : milTask.TaskComments;
       });
-      let currentTraverseTask = task.title;
+      let currentTraverseTask = task.Title;
       let scTask = this.getSCTask(currentTraverseTask, milTasks);
 
       if (scTask && scTask.length) {
-        task.sendToClientDate = scTask[0].StartDate;
-        task.sendToClientDateText = this.datePipe.transform(task.sendToClientDate, 'd MMM, yyyy, hh:mm a');
+        task.SendToClientDate = scTask[0].StartDate;
+        task.SendToClientDateText = this.datePipe.transform(task.SendToClientDate, 'd MMM, yyyy, hh:mm a');
         const prevTasks = [];
         milTasks.forEach(milTask => {
           let taskArr = [];
@@ -734,8 +738,8 @@ export class CACommonService {
           prevTasks.sort(function (a, b) {
             return b.DueDate - a.DueDate;
           });
-          task.lastTaskEndDate = prevTasks[0].DueDate;
-          task.lastTaskEndDateText = this.datePipe.transform(task.lastTaskEndDate, 'd MMM, yyyy, hh:mm a');
+          task.LastTaskEndDate = prevTasks[0].DueDate;
+          task.LastTaskEndDateText = this.datePipe.transform(task.LastTaskEndDate, 'd MMM, yyyy, hh:mm a');
         }
       }
 
@@ -1067,7 +1071,7 @@ export class CACommonService {
     const SlotTasks = Object.assign({}, this.caConstantService.scheduleQueryOptions);
     SlotTasks.filter = SlotTasks.filterTask;
     tasksObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.Schedules.name, SlotTasks);
-    tasksObj.url = tasksObj.url.replace(/{{ParentSlotId}}/gi, event.data ? event.data.id : event);
+    tasksObj.url = tasksObj.url.replace(/{{ParentSlotId}}/gi, event.data ? event.data.Id : event);
     tasksObj.listName = this.globalConstantService.listNames.Schedules.name;
     tasksObj.type = 'GET';
     batchUrl.push(tasksObj);

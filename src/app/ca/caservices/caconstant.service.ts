@@ -85,6 +85,12 @@ export class CAConstantService {
     top: 4500
   };
 
+
+  public getMailTemplate =  {
+    select: 'Content',
+    filter: "Title eq '{{templateName}}'"
+}
+
   // tslint:enable
 
 }
