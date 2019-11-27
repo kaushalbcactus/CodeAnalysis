@@ -47,6 +47,7 @@ export class CaDragdropComponent implements OnInit {
   taskDown = null;
   TempMilestoneAllTasks = [];
   nodeOrder = [];
+  slotTasks: any;
   constructor(
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
@@ -96,6 +97,8 @@ export class CaDragdropComponent implements OnInit {
 
     } else {
       this.response = await this.caCommonService.getSlotTasks(this.data);
+debugger;
+      this.slotTasks = this.response;
       if (this.response.length > 0) {
 
         this.response.forEach(async element => {
@@ -187,7 +190,7 @@ export class CaDragdropComponent implements OnInit {
         id: (this.getMaxNodeID() + 1).toString(),
         dbId: event && event.id !== undefined ? event.id : 0,
         label: count > 0 ? Task.Title + ' ' + (count + 1) : Task.Title,
-        taskName: count > 0 ? Task.Title + ' ' + (count + 1) : Task.Title,
+        TaskName: count > 0 ? Task.Title + ' ' + (count + 1) : Task.Title,
         color: '#e2e2e2',
         taskType: originalType,
         top: 0,
@@ -195,14 +198,14 @@ export class CaDragdropComponent implements OnInit {
         Status: 'Not Saved',
         IsCentrallyAllocated: 'Yes',
         SkillLevel: Task !== undefined ? Task.DefaultSkill !== null ? Task.DefaultSkill : '' : '',
-        projectCode: this.data.projectCode
+        projectCode: this.data.ProjectCode
       };
     } else {
       node = {
         id: '1',
         dbId: event && event.id !== undefined ? event.id : 0,
         label: count > 0 ? Task.Title + ' ' + (count + 1) : Task.Title,
-        taskName: count > 0 ? Task.Title + ' ' + (count + 1) : Task.Title,
+        TaskName: count > 0 ? Task.Title + ' ' + (count + 1) : Task.Title,
         color: '#e2e2e2',
         taskType: originalType,
         top: 0,
@@ -210,7 +213,7 @@ export class CaDragdropComponent implements OnInit {
         Status: 'Not Saved',
         IsCentrallyAllocated: 'Yes',
         SkillLevel: Task !== undefined ? Task.DefaultSkill !== null ? Task.DefaultSkill : '' : '',
-        projectCode: this.data.projectCode
+        projectCode: this.data.ProjectCode
       };
     }
     this.recentEventNode = node.id;
@@ -282,26 +285,24 @@ export class CaDragdropComponent implements OnInit {
 
   onPageLoad(event) {
 
-    const Task = this.allConstantTasks.find(c => c.Title === event.taskName.replace(/[0-9]/g, '')
+    const Task = this.allConstantTasks.find(c => c.Title === event.TaskName.replace(/[0-9]/g, '')
       .replace(/\s+$/, ''));
     const originalType = Task.Title;
     let node = null;
     // tslint:enable
-
+debugger;
     node = {
       // tslint:disable-next-line: radix
       id: this.nodes.length > 0 ? (parseInt(this.recentEventNode) + 1).toString() : '1',
-      dbId: event && event.id !== undefined ? event.id : 0,
-      label: event.taskName,
-      taskName: event.taskName,
+      dbId: event && event.Id !== undefined ? event.Id : 0,
+      label: event.TaskName,
+      TaskName: event.TaskName,
       color: '#e2e2e2',
       taskType: originalType,
       top: 0,
       left: 0,
       Status: event.Status ? event.Status : 'Not Saved',
-      IsCentrallyAllocated: event.IsCentrallyAllocated,
-      SkillLevel: Task !== undefined ? Task.DefaultSkill !== null ? Task.DefaultSkill : '' : '',
-      projectCode: this.data.projectCode
+      projectCode: this.data.ProjectCode
     };
 
     this.recentEventNode = node.id;
@@ -323,7 +324,7 @@ export class CaDragdropComponent implements OnInit {
 
     const nodes = this.nodes;
 
-    const currentNode = nodes.find(e => e.label === event.taskName);
+    const currentNode = nodes.find(e => e.label === event.TaskName);
     preTasks.forEach(element => {
       const prevNode = nodes.find(e => e.label === element);
       if (prevNode) {

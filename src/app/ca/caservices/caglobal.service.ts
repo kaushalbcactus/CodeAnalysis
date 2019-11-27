@@ -39,6 +39,7 @@ export class CAGlobalService {
     DisableCascade: false,
     displayselectedResources: [],
     allowStart: false,
+    PreviousAssignedUser: undefined,
     ProjectCode: '',
     ProjectManagementURL: '',
     SubMilestones: '',

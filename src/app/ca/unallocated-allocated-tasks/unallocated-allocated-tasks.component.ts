@@ -295,7 +295,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   editTask(data) {
     data.editMode = true;
-    this.fetchResources(data, true);
+    this.fetchResources(data);
   }
 
 
@@ -343,7 +343,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.displayCommentenable = true;
     this.taskTitle = task.title;
     this.taskType = task.Type && task.Type === 'Slot' ? task.Type : 'Task';
-    this.caGlobal.taskScope = task.taskScope ? task.taskScope : '';
+    this.caGlobal.taskScope = task.TaskScope ? task.TaskScope : '';
     this.caGlobal.taskPreviousComment = task.prevTaskComments ?
       task.prevTaskComments : '';
     this.caGlobal.curTaskScope = task;
@@ -352,7 +352,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   // Save Task Scope
   // *****************************************************************************************************
   saveTaskScope(task, comments) {
-    task.taskScope = comments;
+    task.TaskScope = comments;
   }
 
   onClear(task) {
@@ -364,7 +364,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   //  fetch resources on select resource feild
   // *****************************************************************************************************
 
-  fetchResources(task, EditEnable) {
+  fetchResources(task) {
     if (!this.selectOpened) {
       this.messageService.add({
         key: 'tc', severity: 'warn', sticky: true,
@@ -420,17 +420,39 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           this.selectedUser = null;
         }
 
-        if (task.allocatedResource === '') {
-          task.allocatedResource = task.displayselectedResources[0] ?
-            task.displayselectedResources[0].items.find(c => c.value.UserName.ID === task.AssignedTo.ID) ?
-              task.displayselectedResources[0].items.find(c => c.value.UserName.ID === task.AssignedTo.ID).value : '' : '';
+
+        if (task.displayselectedResources.length > 1) {
+          const response = await this.SortByGroupAssignTo(task.displayselectedResources);
+          task.displayselectedResources = response;
         }
-        if (EditEnable) {
-          task.previousAssignedUser = task.AssignedTo.ID;
+
+        if (task.displayselectedResources) {
+          task.displayselectedResources.map(c => c.items).forEach(element => {
+            if (task.allocatedResource === '') {
+              task.allocatedResource = element.find(c => c.value.UserName.ID === task.AssignedTo.ID) ?
+                element.find(c => c.value.UserName.ID === task.AssignedTo.ID).value : '';
+              return true;
+            }
+          });
         }
+
 
       }, 500);
     }
+  }
+
+
+  async SortByGroupAssignTo(displayselectedResources) {
+    const resource = [];
+    const GroupList = ['Previously Assigned', 'Best Fit', 'Recommended', 'Other'];
+    GroupList.forEach(element => {
+      const obj = displayselectedResources.find(c => c.label === element);
+      if (obj) {
+        resource.push(obj);
+      }
+
+    });
+    return resource;
   }
 
 
@@ -634,7 +656,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   //   }
   //   objEmailBody.push({
   //     'key': '@@Val9@@', // Scope
-  //     'value': task.taskScope ? task.taskScope : ''
+  //     'value': task.TaskScope ? task.TaskScope : ''
   //   });
   //   //// Send allocation email
   //   this.caCommonService.triggerMail(this.resourceList[indexRes].UserName.EMail, this.globalService.currentUser.email,
@@ -923,14 +945,14 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           const previousTasks = RestructureTasks.nodes.filter(c => RestructureTasks.links.filter(e => e.target ===
             task.id).map(d => d.source).includes(c.id)).map(c => c.label).join(';');
 
-          task.startDate = RowData.startDate;
-          task.dueDate = RowData.startDate;
-          if (SlotTasks.find(c => c.taskName === task.taskName)) {
-            task = SlotTasks.find(c => c.taskName === task.taskName);
+          task.StartDate = RowData.StartDate;
+          task.DueDate = RowData.StartDate;
+          if (SlotTasks.find(c => c.TaskName === task.TaskName && c.Id === task.dbId)) {
+            task = SlotTasks.find(c => c.TaskName === task.TaskName && c.Id === task.dbId);
           } else {
             task.Status = 'Not Saved';
           }
-          task.previousTasks = previousTasks === '' ? null : previousTasks;
+          task.PrevTasks = previousTasks === '' ? null : previousTasks;
           task.nextTasks = nextTasks === '' ? null : nextTasks;
           const obj = this.GetTask(task, false);
           obj.editMode = true;
@@ -939,7 +961,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           RowData.subTaskloaderenable = false;
         });
 
-        this.expandedRows[RowData.id] = true;
+        this.expandedRows[RowData.Id] = true;
       } else {
 
         if (!RowData.SlotTasks) {
@@ -1028,26 +1050,42 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     const resPool = this.caCommonService.getResourceByMatrix(resourcesList, task.TaskName ? task.TaskName : task.label, task.SkillLevel,
       projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
 
+    if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1) {
+
+      let ExistingUser = resPool.find(c => c.UserName.ID === task.PreviousAssignedUser.ID && c.Title === task.PreviousAssignedUser.Title);
+      if (ExistingUser) {
+        ExistingUser.userType = 'Previously Assigned';
+      } else {
+        ExistingUser = resourcesList.find(c => c.UserName.ID === task.PreviousAssignedUser.ID &&
+          c.Title === task.PreviousAssignedUser.Title);
+        if (ExistingUser) {
+          ExistingUser.userType = 'Previously Assigned';
+          resPool.push(ExistingUser);
+        }
+      }
+
+    }
+
 
     const AssignedUserTimeZone = task.AssignedTo ? resourcesList.filter((objt) => {
       return task.AssignedTo.ID === objt.UserName.ID;
     }) : [];
-    task.assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
+    task.AssignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
       ? AssignedUserTimeZone[0].TimeZone.Title ?
         AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
 
     const convertedStartDate = task.StartDate ? this.commonService.calcTimeForDifferentTimeZone(new Date(task.StartDate),
-      this.globalService.currentUser.timeZone, task.assignedUserTimeZone) :
+      this.globalService.currentUser.timeZone, task.AssignedUserTimeZone) :
       this.commonService.calcTimeForDifferentTimeZone(new Date(task.StartDate),
-        this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
+        this.globalService.currentUser.timeZone, task.AssignedUserTimeZone);
     task.jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(convertedStartDate,
-      task.assignedUserTimeZone, this.globalService.currentUser.timeZone);
+      task.AssignedUserTimeZone, this.globalService.currentUser.timeZone);
     const convertedEndDate = task.DueDate ? this.commonService.calcTimeForDifferentTimeZone(new Date(task.DueDate),
-      this.globalService.currentUser.timeZone, task.assignedUserTimeZone) :
+      this.globalService.currentUser.timeZone, task.AssignedUserTimeZone) :
       this.commonService.calcTimeForDifferentTimeZone(new Date(task.DueDate),
-        this.globalService.currentUser.timeZone, task.assignedUserTimeZone);
+        this.globalService.currentUser.timeZone, task.AssignedUserTimeZone);
     task.jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(convertedEndDate,
-      task.assignedUserTimeZone, this.globalService.currentUser.timeZone);
+      task.AssignedUserTimeZone, this.globalService.currentUser.timeZone);
 
     const SelectedResources = [];
     const resExt = $.extend(true, [], resPool);
@@ -1088,10 +1126,11 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.projectTask = [];
     taskObj.Status = task.status ? task.status : task.Status;
     taskObj.CentralAllocationDone = task.CentralAllocationDone;
-    taskObj.AssignedUserTimeZone = task.assignedUserTimeZone;
+    taskObj.AssignedUserTimeZone = task.AssignedUserTimeZone;
     taskObj.allowStart = task.AllowCompletion === true || task.AllowCompletion === 'Yes' ? true : false;
     taskObj.DisableCascade = task.DisableCascade && task.DisableCascade === 'Yes' ? true : false;
     taskObj.displayselectedResources = [];
+    taskObj.PreviousAssignedUser = task.PreviousAssignedUser;
     taskObj.SubMilestones = task.SubMilestones;
 
     if (IsdbTask) {
@@ -1119,6 +1158,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   DateChangePart(Node, Slot, type) {
     Node.UserStart = new Date(this.datepipe.transform(Node.UserStartDatePart, 'MMM d, y') + ' ' + Node.UserStartTimePart);
     Node.UserEnd = new Date(this.datepipe.transform(Node.UserEndDatePart, 'MMM d, y') + ' ' + Node.UserEndTimePart);
+
+    Node.StartDate = Node.UserStart;
+    Node.DueDate = Node.UserEnd;
     Slot.editMode = true;
     this.DateChange(Node, Slot, type);
     this.disableSave = false;
@@ -1144,7 +1186,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     nextTasks.forEach(element => {
 
       const nextNode = Slot.SlotTasks.find(c => c.TaskName === element);
-      if (new Date(previousNode.UserEnd) > new Date(nextNode.UserStart) && !nextNode.DisableCascade) {
+      if (new Date(previousNode.UserEnd) > new Date(nextNode.StartDate) && !nextNode.DisableCascade) {
         this.cascadeNode(previousNode, Slot, nextNode);
       }
     });
@@ -1153,12 +1195,12 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   async cascadeNode(previousNode, Slot, currentnode) {
 
-    const startDate = currentnode.startDate;
-    const endDate = currentnode.dueDate;
+    const startDate = currentnode.StartDate;
+    const endDate = currentnode.DueDate;
     var workingHours = this.workingHoursBetweenDates(startDate, endDate);
-    currentnode.startDate = previousNode.dueDate;
-    currentnode.UserStart = this.commonService.calcTimeForDifferentTimeZone(currentnode.startDate,
-      this.globalService.currentUser.timeZone, currentnode.assignedUserTimeZone);
+    currentnode.StartDate = previousNode.DueDate;
+    currentnode.UserStart = this.commonService.calcTimeForDifferentTimeZone(currentnode.StartDate,
+      this.globalService.currentUser.timeZone, currentnode.AssignedUserTimeZone);
     currentnode.UserStart = currentnode.UserStart.getHours() >= 19 ?
       this.checkStartDate(new Date(currentnode.UserStart.getFullYear(), currentnode.UserStart.getMonth(), (currentnode.UserStart.getDate() + 1), 9, 0)) :
       currentnode.UserStart;
@@ -1167,10 +1209,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     currentnode.UserStartTimePart = this.getTimePart(currentnode.UserStart);
     currentnode.UserEndDatePart = this.getDatePart(currentnode.UserEnd);
     currentnode.UserEndTimePart = this.getTimePart(currentnode.UserEnd);
-    currentnode.startDate = this.commonService.calcTimeForDifferentTimeZone(currentnode.UserStart,
-      currentnode.assignedUserTimeZone, this.globalService.currentUser.timeZone);
-    currentnode.dueDate = this.commonService.calcTimeForDifferentTimeZone(currentnode.UserEnd,
-      currentnode.assignedUserTimeZone, this.globalService.currentUser.timeZone);
+    currentnode.StartDate = this.commonService.calcTimeForDifferentTimeZone(currentnode.UserStart,
+      currentnode.AssignedUserTimeZone, this.globalService.currentUser.timeZone);
+    currentnode.DueDate = this.commonService.calcTimeForDifferentTimeZone(currentnode.UserEnd,
+      currentnode.AssignedUserTimeZone, this.globalService.currentUser.timeZone);
     currentnode.edited = true;
     currentnode.pRes = currentnode.skillLevel;
     const nextTasks = currentnode.NextTasks ? currentnode.NextTasks.split(';') : [];
@@ -1188,9 +1230,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     node.UserEndTimePart = this.getTimePart(node.UserEnd);
 
     node.startDate = this.commonService.calcTimeForDifferentTimeZone(node.UserStart,
-      node.assignedUserTimeZone, this.globalService.currentUser.timeZone);
+      node.AssignedUserTimeZone, this.globalService.currentUser.timeZone);
     node.dueDate = this.commonService.calcTimeForDifferentTimeZone(node.UserEnd,
-      node.assignedUserTimeZone, this.globalService.currentUser.timeZone);
+      node.AssignedUserTimeZone, this.globalService.currentUser.timeZone);
     node.edited = true;
     node.pRes = node.skillLevel;
 
@@ -1278,14 +1320,14 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     for (const slot of EditedSlots) {
       if (slot.SlotTasks) {
-        const checkTaskAllocatedTime = slot.SlotTasks.filter(e => (e.estimatedTime === '' || +e.estimatedTime === 0)
+        const checkTaskAllocatedTime = slot.SlotTasks.filter(e => (e.EstimatedTime === '' || +e.EstimatedTime === 0)
           && e.Status !== 'Completed');
         // tslint:enable
         if (checkTaskAllocatedTime.length > 0) {
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
             detail: 'Allocated time for task cannot be equal or less than 0 for '
-              + slot.milestone + ' - ' + checkTaskAllocatedTime[0].task
+              + slot.Milestone + ' - ' + checkTaskAllocatedTime[0].Task
           });
           return false;
         }
@@ -1296,7 +1338,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
             detail: 'End date should be greater than start date of ' + compareDates[0].TaskName + ' task of ' +
-              slot.milestone + ' - ' + slot.task
+              slot.Milestone + ' - ' + slot.Task
           });
           return false;
         }
@@ -1315,7 +1357,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         if (!validateAllocation) {
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'All tasks of ' + slot.milestone + ' - ' + slot.task + ' should be assigned to   resource.'
+            detail: 'All tasks of ' + slot.Milestone + ' - ' + slot.Task + ' should be assigned to   resource.'
           });
           return false;
         }
@@ -1330,18 +1372,18 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
             // tslint:disable-next-line: max-line-length
-            detail: 'start date of ' + compareTaskDates[0].TaskName + ' task  should be greater than start date of ' + slot.milestone + ' - ' + slot.task
+            detail: 'start date of ' + compareTaskDates[0].TaskName + ' task  should be greater than start date of ' + slot.Milestone + ' - ' + slot.Task
           });
           return false;
         }
 
-        const compareTaskEndDates = slot.SlotTasks.filter(e => (slot.dueDate < e.UserEnd && e.Status !== 'Completed'));
+        const compareTaskEndDates = slot.SlotTasks.filter(e => (slot.DueDate < e.UserEnd && e.Status !== 'Completed'));
         if (compareTaskEndDates.length > 0) {
 
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
             // tslint:disable-next-line: max-line-length
-            detail: 'end date of ' + compareTaskEndDates[0].TaskName + ' task  should be less than end date of ' + slot.milestone + ' - ' + slot.task
+            detail: 'end date of ' + compareTaskEndDates[0].TaskName + ' task  should be less than end date of ' + slot.Milestone + ' - ' + slot.Task
           });
           return false;
         }
@@ -1365,7 +1407,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         const nextTasks = task.NextTasks.split(';');
         const AllNextTasks = AllTasks.filter(c => (nextTasks.indexOf(c.TaskName) > -1));
 
-        const SDTask = AllNextTasks.find(c => c.startDate < task.dueDate && c.Status !== 'Completed'
+        const SDTask = AllNextTasks.find(c => c.StartDate < task.DueDate && c.Status !== 'Completed'
           && c.Status !== 'Auto Closed' && c.Status !== 'Deleted' && c.allowStart === false);
         if (SDTask) {
           // this.errorMessageCount++;
@@ -1493,7 +1535,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         updatedTasks.forEach(task => {
 
           if (task.allocatedResource && task.allocatedResource.UserName.hasOwnProperty('ID') && task.allocatedResource.UserName.ID !== -1) {
-            switch (task.task) {
+            switch (task.Task) {
               case 'QC':
               case 'Review-QC':
               case 'Inco-QC':
@@ -1736,10 +1778,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           task.allocatedResource.UserName.ID : -1 : -1,
         TimeZone: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
           ? task.allocatedResource.TimeZone.Title : '+5.5' : '+5.5',
-        Comments: task.taskScope,
+        Comments: task.TaskScope,
         Status: task.Status,
-        NextTasks: this.setPreviousAndNext(task.nextTask, slot.milestone, slot.ProjectCode),
-        PrevTasks: this.setPreviousAndNext(task.previousTask, slot.milestone, slot.ProjectCode),
+        NextTasks: this.setPreviousAndNext(task.nextTask, slot.Milestone, slot.ProjectCode),
+        PrevTasks: this.setPreviousAndNext(task.previousTask, slot.Milestone, slot.ProjectCode),
         ParentSlot: slot.id ? slot.id : slot.Id,
         ProjectCode: slot.ProjectCode,
         Task: task.Task,
@@ -1747,6 +1789,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         SubMilestones: slot.SubMilestones,
         Title: slot.ProjectCode + ' ' + slot.Milestone + ' ' + task.TaskName,
         CentralAllocationDone: 'Yes',
+        IsCentrallyAllocated: 'No',
         DisableCascade: task.DisableCascade === true ? 'Yes' : 'No'
       };
       url = this.spServices.getReadURL(this.globalConstant.listNames.Schedules.name);
@@ -1754,6 +1797,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     } else {
       const updateData = {
         __metadata: { type: 'SP.Data.SchedulesListItem' },
+        ID: task.Id,
         StartDate: task.StartDate,
         DueDate: task.DueDate,
         ExpectedTime: '' + task.EstimatedTime,
@@ -1761,15 +1805,15 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         AssignedToId: task.allocatedResource ? task.allocatedResource.UserName.hasOwnProperty('ID') ?
           task.allocatedResource.UserName.ID : -1 : -1,
         TimeZone: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
-          ? task.allocatedResource.TimeZone.hasOwnProperty('Title') : '+5.5' : '+5.5',
-        Comments: task.taskScope ? task.taskScope : '',
+          ? task.allocatedResource.TimeZone.Title : '+5.5' : '+5.5',
+        Comments: task.TaskScope ? task.TaskScope : '',
         Status: task.Status,
-        NextTasks: this.setPreviousAndNext(task.nextTask, slot.milestone, slot.ProjectCode),
-        PrevTasks: this.setPreviousAndNext(task.previousTask, slot.milestone, slot.ProjectCode),
+        NextTasks: this.setPreviousAndNext(task.nextTask, slot.Milestone, slot.ProjectCode),
+        PrevTasks: this.setPreviousAndNext(task.previousTask, slot.Milestone, slot.ProjectCode),
+        IsCentrallyAllocated: 'No',
         DisableCascade: task.DisableCascade === true ? 'Yes' : 'No',
-        PreviousAssignedUserId: task.previousAssignedUser ? task.previousAssignedUser : '-1'
       };
-      url = this.spServices.getItemURL(this.globalConstant.listNames.Schedules.name, +task.id);
+      url = this.spServices.getItemURL(this.globalConstant.listNames.Schedules.name, +task.Id);
       data = updateData;
     }
     return {
