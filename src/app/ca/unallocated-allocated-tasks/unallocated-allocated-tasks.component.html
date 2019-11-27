@@ -206,7 +206,7 @@
                                 <td>
                                     <span *ngIf="!rowData.editMode"> {{rowData.AssignedTo.Title}}</span>
                                     <p-dropdown #allocateResource *ngIf="rowData.editMode" class="resourceDropdown" [options]="rowData.displayselectedResources" [panelStyle]="{minWidth:'25em' }" [(ngModel)]="rowData.allocatedResource" placeholder="Select Resource" [group]="true" filter="true"
-                                        placeholder="Select Resource" (onShow)="fetchResources(rowData,false, allocateResource)" (onHide)="EditSlotEnable(rowData,Slot)" (onChange)="assignedToUserChanged(rowData)" [style]="{'width':'100%'}">
+                                        placeholder="Select Resource" (onShow)="fetchResources(rowData,allocateResource)" (onHide)="EditSlotEnable(rowData,Slot)" (onChange)="assignedToUserChanged(rowData)" [style]="{'width':'100%'}">
                                         <ng-template let-group pTemplate="group">
                                             <span style="margin-left:.25em">{{group.label}}</span>
                                         </ng-template>

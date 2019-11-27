@@ -607,10 +607,12 @@ export class CACommonService {
             filteredResources.push(element);
           } else {
             element.userType = 'Other';
+
             filteredResources.push(element);
           }
           element.Title = element.UserName.Title;
         }
+       
       });
       return filteredResources;
     }
@@ -621,7 +623,7 @@ export class CACommonService {
    * @param task 
    */
   sortResources(filteredResources, task) {
-    if (task.projectTask) {
+    if (task.projectTask.length > 0) {
       const projectTaskFilter = task.projectTask.filter(function (projObj) {
         return projObj.projectCode === task.projectCode;
       });
@@ -1036,8 +1038,7 @@ export class CACommonService {
   async GetAllTasksMilestones(taskName) {
 
     debugger;
-    if(this.alldbConstantTasks.length == 0)
-    {
+    if (this.alldbConstantTasks.length == 0) {
       const batchUrl = [];
       const tasksObj = Object.assign({}, this.queryConfig);
       tasksObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.MilestoneTasks.name,
@@ -1050,10 +1051,10 @@ export class CACommonService {
       const response = arrResult.length ? arrResult[0].retItems : [];
       this.alldbConstantTasks = response;
     }
-   
+
     let allConstantTasks = [];
     const SlotId = this.alldbConstantTasks.find(c => c.Title === taskName) ?
-    this.alldbConstantTasks.find(c => c.Title === taskName).ID : 0;
+      this.alldbConstantTasks.find(c => c.Title === taskName).ID : 0;
     if (SlotId > 0) {
       allConstantTasks = this.alldbConstantTasks.filter(c => c.ParentSlot === SlotId).sort(
         // tslint:disable-next-line: arrow-return-shorthand
@@ -1071,7 +1072,7 @@ export class CACommonService {
     const SlotTasks = Object.assign({}, this.caConstantService.scheduleQueryOptions);
     SlotTasks.filter = SlotTasks.filterTask;
     tasksObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.Schedules.name, SlotTasks);
-    tasksObj.url = tasksObj.url.replace(/{{ParentSlotId}}/gi, event.data ? event.data.Id : event);
+    tasksObj.url = tasksObj.url.replace(/{{ParentSlotId}}/gi, event.data ? event.data.Id : event.Id);
     tasksObj.listName = this.globalConstantService.listNames.Schedules.name;
     tasksObj.type = 'GET';
     batchUrl.push(tasksObj);
