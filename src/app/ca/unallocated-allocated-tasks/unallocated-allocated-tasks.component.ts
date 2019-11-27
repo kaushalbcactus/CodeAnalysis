@@ -428,11 +428,11 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
         if (task.displayselectedResources) {
           task.displayselectedResources.map(c => c.items).forEach(element => {
-            if (task.allocatedResource === '') {
-              task.allocatedResource = element.find(c => c.value.UserName.ID === task.AssignedTo.ID) ?
-                element.find(c => c.value.UserName.ID === task.AssignedTo.ID).value : '';
-              return true;
-            }
+
+            task.allocatedResource = element.find(c => c.value.UserName.ID === task.AssignedTo.ID) ?
+              element.find(c => c.value.UserName.ID === task.AssignedTo.ID).value : task.allocatedResource;
+
+
           });
         }
 
