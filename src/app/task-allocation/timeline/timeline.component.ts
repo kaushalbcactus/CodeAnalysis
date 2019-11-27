@@ -2047,7 +2047,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   async updateNextPreviousTasks(milestoneTask) {
     const currentTask = milestoneTask;
-    const milestone = this.milestoneData.find(m => m.data.pName === milestoneTask.milestone);
+    const milestone = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ?
+    // tslint:disable: max-line-length
+    this.milestoneData.find(m => m.data.pName === milestoneTask.milestone + ' (Current)') : this.milestoneData.find(m => m.data.pName === milestoneTask.milestone);
     let subMilestone: TreeNode;
     // tslint:disable: max-line-length
     subMilestone = currentTask.submilestone ? milestone.children.find(t => t.data.pName === currentTask.submilestone) : milestone;
