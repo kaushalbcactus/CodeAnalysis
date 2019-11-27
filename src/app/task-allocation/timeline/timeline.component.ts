@@ -1418,8 +1418,20 @@ export class TimelineComponent implements OnInit, OnDestroy {
               task.data.pUserEndDatePart = this.getDatePart(task.data.pUserEnd);
               task.data.pUserEndTimePart = this.getTimePart(task.data.pUserEnd);
               task.data.tatVal = this.commonService.calcBusinessDays(new Date(task.data.pStart), new Date(task.data.pEnd));
+              if (task.children !== undefined && task.children.length > 0) {
+                task.children.forEach(subTask => {
+                  subTask.data.pStart = new Date(subTask.data.pStart);
+                  subTask.data.pEnd = new Date(subTask.data.pEnd);
+                  subTask.data.pUserStart = new Date(subTask.data.pUserStart);
+                  subTask.data.pUserEnd = new Date(subTask.data.pUserEnd);
+                  subTask.data.pUserStartDatePart = this.getDatePart(subTask.data.pUserStart);
+                  subTask.data.pUserStartTimePart = this.getTimePart(subTask.data.pUserStart);
+                  subTask.data.pUserEndDatePart = this.getDatePart(subTask.data.pUserEnd);
+                  subTask.data.pUserEndTimePart = this.getTimePart(subTask.data.pUserEnd);
+                  subTask.data.tatVal = this.commonService.calcBusinessDays(new Date(subTask.data.pStart), new Date(subTask.data.pEnd));
+                });
+              }
             });
-
             const subMiledb = submilestone.children.filter(c => c.data.pName.toLowerCase().indexOf
               ('adhoc') === -1 && c.data.pName.toLowerCase().indexOf('tb') === -1 && !c.data.parentSlot);
             if (subMiledb.length) {
@@ -2395,25 +2407,26 @@ export class TimelineComponent implements OnInit, OnDestroy {
       this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.pName === sentPrevNode.pName);
     let slotFirstTask = slot ? slot.children ? slot.children.filter(st => !st.data.previousTask) : [] : [];
     if (slotFirstTask.length) {
-      slot.children
-      let childIndex = 0;
-      for (const subTask of slot.children) {
-        if (!subTask.data.DisableCascade) {
-          if (!subTask.data.previousTask) {
-            await this.cascadeNextTask(slot, subTask, subMilestonePosition, selectedMil);
+      if (slot.data.pStart > slotFirstTask[0].data.pStart) {
+        let childIndex = 0;
+        for (const subTask of slot.children) {
+          if (!subTask.data.DisableCascade) {
+            if (!subTask.data.previousTask) {
+              await this.cascadeNextTask(slot, subTask, subMilestonePosition, selectedMil);
+            }
+            if (subTask.data.nextTask) {
+              await this.cascadeNode(subTask, slot.children[childIndex + 1]);
+            }
+            else {
+              // await this.cascadeNextTask(subTask, element, subMilestonePosition, selectedMil);
+              await this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
+            }
           }
-          if (subTask.data.nextTask) {
-            await this.cascadeNode(subTask, slot.children[childIndex + 1]);
-          }
-          else {
-            // await this.cascadeNextTask(subTask, element, subMilestonePosition, selectedMil);
-            await this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
-          }
+          childIndex++;
         }
-        childIndex++;
-      }
-      if (slotFirstTask[0].data.AssignedTo.ID && slotFirstTask[0].data.AssignedTo.ID !== -1) {
-        await this.checkTaskResourceAvailability(slot, subMilestonePosition, selectedMil)
+        if (slotFirstTask[0].data.AssignedTo.ID && slotFirstTask[0].data.AssignedTo.ID !== -1) {
+          await this.checkTaskResourceAvailability(slot, subMilestonePosition, selectedMil);
+        }
       }
     } else {
       // if slot does not have any child
@@ -2447,6 +2460,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         } else {
           slot.data.slotColor = "#6EDC6C";
           deallocateSlot = false;
+          task.data.deallocateCentral = false;
         }
       }
     }
@@ -2985,7 +2999,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       && milestoneTask.status === 'Not Started') {
       milestoneTask.CentralAllocationDone = 'No';
       milestoneTask.AssignedTo.ID = -1;
-      milestoneTask.ActiveCA = 'No';
+      milestoneTask.ActiveCA = milestoneTask.IsCentrallyAllocated === 'Yes' ? 'Yes' : 'No';
       const timeZone = milestoneTask.assignedUserTimeZone;
       if (parseFloat(timeZone) !== 5.5) {
         milestoneTask.assignedUserTimeZone = 5.5;
@@ -2995,7 +3009,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
           + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'Central task deallocated', 'CentralTaskCreation');
       }
     }
-    // }
     if (bAdd) {
       const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
       milestoneTask.itemType = milestoneTask.itemType;
@@ -3048,7 +3061,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         CentralAllocationDone: milestoneTask.CentralAllocationDone,
         ActiveCA: milestoneTask.ActiveCA,
         DisableCascade: milestoneTask.DisableCascade === true ? 'Yes' : 'No',
-        PreviousAssignedUserId: milestoneTask.previousAssignedUser ? milestoneTask.previousAssignedUser : '-1'
+        PreviousAssignedUserId: milestoneTask.previousAssignedUser ? milestoneTask.previousAssignedUser : -1
       };
       url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +milestoneTask.pID);
       data = updateData;
@@ -3258,10 +3271,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
     for (var nCount = 0; nCount < this.milestoneData.length; nCount = nCount + 1) {
       var milestone = this.milestoneData[nCount];
       let deletedMilestone = this.deletedMilestones.filter(m => m.Title === milestone.data.pName);
-      if(deletedMilestone.length > 0 ) {
+      if (deletedMilestone.length > 0) {
         milestone.data.pID = deletedMilestone[0].ID
         milestone.data.added = false;
-      }      
+      }
       if (milestone.data.type === 'milestone') {
         listOfMilestones.push(milestone.data.pName.split(' (')[0]);
       }
@@ -3286,7 +3299,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
             if (submilestone.data.edited === true) {
               if (submilestone.data.type === 'task') {
                 if (submilestone.data.added == true) {
-
                   submilestone.data.status = milestone.data.status === 'In Progress' ? 'Not Started' : submilestone.data.status;
                   addedTasks.push(submilestone.data);
                 }
@@ -3297,17 +3309,26 @@ export class TimelineComponent implements OnInit, OnDestroy {
               if (submilestone.children !== undefined) {
                 for (var nCountTask = 0; nCountTask < submilestone.children.length; nCountTask = nCountTask + 1) {
                   var task = submilestone.children[nCountTask];
-                  //  if(task.data.edited === true) {
                   if (task.data.added == true) {
-
                     task.data.status = submilestone.data.status === 'In Progress' ? 'Not Started' : submilestone.data.status === 'Not Saved' ? 'Not Confirmed' : task.data.status;
-
                     addedTasks.push(task.data);
                   }
                   else {
                     updatedTasks.push(task.data);
                   }
-                  //  }
+                  if (task.children) {
+                    for (var nSubTaskTaskCount = 0; nSubTaskTaskCount < task.children.length; nSubTaskTaskCount = nSubTaskTaskCount + 1) {
+                      var subtask = task.children[nSubTaskTaskCount];
+                      if (subtask.data.added == true) {
+                        subtask.data.status = subtask.data.status;
+                        addedTasks.push(subtask.data);
+                      }
+                      else {
+                        updatedTasks.push(subtask.data);
+                      }
+
+                    }
+                  }
                 }
               }
             }
