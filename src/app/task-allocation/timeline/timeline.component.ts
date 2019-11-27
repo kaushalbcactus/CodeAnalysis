@@ -144,6 +144,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   dbRecords: any[];
   reallocationMailData = [];
   reallocationMailArray = [];
+  deletedMilestones = [];
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -244,6 +245,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (this.allTasks.length > 0) {
 
       milestones = this.allTasks.filter(c => c.FileSystemObjectType === 1);
+      this.deletedMilestones = milestones.filter(m => m.Status === 'Deleted');
       var i = -1;
       const arrMilestones = this.sharedObject.oTaskAllocation.oProjectDetails.allMilestones;
 
@@ -2039,49 +2041,55 @@ export class TimelineComponent implements OnInit, OnDestroy {
     subMilestone = currentTask.submilestone ? milestone.children.find(t => t.data.pName === currentTask.submilestone) : milestone;
     if (milestoneTask.slotType === 'Both' && milestoneTask.AssignedTo.ID) {
       milestoneTask.itemType = milestoneTask.itemType.replace(/Slot/g, '');
-      const nextTasks = milestoneTask.nextTask.split(';#');
+      // const taskCount = milestone.children.filter(t => t.data.itemType === milestoneTask.itemType);
+      // milestoneTask.pName = milestoneTask.pName.match(/\d+$/) ? milestoneTask.pName.split(' ' + milestoneTask.pName.match(/\d+$/)[0]) : milestoneTask.pName;
+      // milestoneTask.pName = taskCount.length > 1 ?  milestoneTask.pName.replace(/Slot/g, '') + ' ' + taskCount :  milestoneTask.pName.replace(/Slot/g, '');
+      const nextTasks = milestoneTask.nextTask.split(';');
       if (milestoneTask.nextTask) {
         nextTasks.forEach(task => {
           const nextTask = subMilestone.children.find(t => t.data.pName === task);
-          const previousOfNextTask = nextTask.data.previousTask.split(';#');
+          const previousOfNextTask = nextTask.data.previousTask.split(';');
           const currentTaskIndex = previousOfNextTask.indexOf(currentTask.pName);
           previousOfNextTask[currentTaskIndex] = previousOfNextTask[currentTaskIndex].replace(/Slot/g, '');
-          const prevNextTaskString = previousOfNextTask.join(';#');
+          const prevNextTaskString = previousOfNextTask.join(';');
           nextTask.data.previousTask = prevNextTaskString;
         });
       }
       if (milestoneTask.previousTask) {
-        const previousTasks = milestoneTask.previousTask.split(';#');
+        const previousTasks = milestoneTask.previousTask.split(';');
         previousTasks.forEach(task => {
           const previousTask = subMilestone.children.find(t => t.data.pName === task);
-          const nextOfPrevTask = previousTask.data.nextTask.split(';#');
+          const nextOfPrevTask = previousTask.data.nextTask.split(';');
           const currentTaskIndex = nextOfPrevTask.indexOf(currentTask.pName);
           nextOfPrevTask[currentTaskIndex] = nextOfPrevTask[currentTaskIndex].replace(/Slot/g, '');
-          const nextPrevTaskString = nextOfPrevTask.join(';#');
+          const nextPrevTaskString = nextOfPrevTask.join(';');
           previousTask.data.nextTask = nextPrevTaskString;
         });
       }
     } else if (milestoneTask.slotType === 'Both' && !milestoneTask.AssignedTo.ID) {
       milestoneTask.itemType = milestoneTask.itemType + 'Slot';
+      // const taskCount = milestone.children.filter(t => t.data.itemType === milestoneTask.itemType);
+      // milestoneTask.pName = milestoneTask.pName.match(/\d+$/) ? milestoneTask.pName.split(' ' + milestoneTask.pName.match(/\d+$/)[0])[0] : milestoneTask.pName;
+      // milestoneTask.pName = taskCount.length > 1 ?  milestoneTask.pName + 'Slot' + taskCount :  milestoneTask.pName + 'Slot';
       if (milestoneTask.nextTask) {
-        const nextTasks = milestoneTask.nextTask.split(';#');
+        const nextTasks = milestoneTask.nextTask.split(';');
         nextTasks.forEach(task => {
           const nextTask = subMilestone.children.find(t => t.data.pName === task);
-          const previousOfNextTask = nextTask.data.previousTask.split(';#');
+          const previousOfNextTask = nextTask.data.previousTask.split(';');
           const currentTaskIndex = previousOfNextTask.indexOf(currentTask.pName);
           previousOfNextTask[currentTaskIndex] = previousOfNextTask[currentTaskIndex] + 'Slot';
-          const prevNextTaskString = previousOfNextTask.join(';#');
+          const prevNextTaskString = previousOfNextTask.join(';');
           nextTask.data.previousTask = prevNextTaskString;
         });
       }
       if (milestoneTask.previousTask) {
-        const previousTasks = milestoneTask.previousTask.split(';#');
+        const previousTasks = milestoneTask.previousTask.split(';');
         previousTasks.forEach(task => {
           const previousTask = subMilestone.children.find(t => t.data.pName === task);
-          const nextOfPrevTask = previousTask.data.nextTask.split(';#');
+          const nextOfPrevTask = previousTask.data.nextTask.split(';');
           const currentTaskIndex = nextOfPrevTask.indexOf(currentTask.pName);
           nextOfPrevTask[currentTaskIndex] = nextOfPrevTask[currentTaskIndex] + 'Slot';
-          const nextPrevTaskString = nextOfPrevTask.join(';#');
+          const nextPrevTaskString = nextOfPrevTask.join(';');
           previousTask.data.nextTask = nextPrevTaskString;
         });
       }
@@ -3082,7 +3090,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         Actual_x0020_Start_x0020_Date: milestoneStartDate,
         Actual_x0020_End_x0020_Date: milestoneEndDate,
         ExpectedTime: '' + currentMilestone.budgetHours,
-        Status: currentMilestone.status,
+        Status: currentMilestone.status === 'Not Saved' ? currentMilestone.isCurrent ? 'Not Started' : 'Not Confirmed' : currentMilestone.status,
         TATBusinessDays: currentMilestone.tatBusinessDays,
         SubMilestones: currentMilestone.submilestone
       };
@@ -3249,12 +3257,17 @@ export class TimelineComponent implements OnInit, OnDestroy {
     var addedTasks = [], updatedTasks = [], addedMilestones = [], updatedMilestones = []
     for (var nCount = 0; nCount < this.milestoneData.length; nCount = nCount + 1) {
       var milestone = this.milestoneData[nCount];
+      let deletedMilestone = this.deletedMilestones.filter(m => m.Title === milestone.data.pName);
+      if(deletedMilestone.length > 0 ) {
+        milestone.data.pID = deletedMilestone[0].ID
+        milestone.data.added = false;
+      }      
       if (milestone.data.type === 'milestone') {
         listOfMilestones.push(milestone.data.pName.split(' (')[0]);
       }
       if (milestone.data.edited === true && milestone.data.status !== 'Completed') {
         if (milestone.data.itemType === 'Client Review') {
-          if (milestone.data.added == true) {
+          if (milestone.data.added === true) {
             addedTasks.push(milestone.data);
           }
           else {

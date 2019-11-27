@@ -186,20 +186,42 @@ export class TaskAllocationCommonService {
     return tasksName;
   }
 
-  getPaths(source, target, submilestone, currentPath, arrLinks) {
-    if (arrLinks.indexOf(source) < 0) {
-      currentPath = currentPath + ',' + target;
-      const targetLinks = submilestone.task.links.filter(c => c.source === target).map(c => c.target);
-      const allPaths = currentPath.split(',');
-      if (targetLinks.length) {
-        arrLinks = [...arrLinks, ...allPaths];
-      }
-      let newTargets = allPaths.slice(0);
-      newTargets = newTargets.filter((el, i, a) => i === a.indexOf(el));
-      targetLinks.forEach(newTarget => {
-        this.getPaths(target, newTarget, submilestone, currentPath, arrLinks);
-      });
+  async getPaths(source, target, submilestone) {
+    const links = [source];
+    if (links.indexOf(target) < 0) {
+      links.push(target);
     }
-    return arrLinks;
+    const nextLink = this.findNextLink(target, submilestone, []);
+    if (nextLink) {
+      links.push(nextLink);
+    }
+    return links;
   }
+
+  findNextLink(target, submilestone, links) {
+    const targetLinks = submilestone.task.links.filter(c => c.source === target).map(c => c.target);
+    if (targetLinks.length) {
+      return targetLinks;
+    } else {
+      return this.findNextLink(targetLinks[0], submilestone, links);
+    }
+  }
+  // if (arrLinks.indexOf(target) < 0) {
+  //   currentPath = currentPath + ',' + target;
+  //   const targetLinks = submilestone.task.links.filter(c => c.source === target).map(c => c.target);
+  //   const allPaths = currentPath.split(',');
+  //   if (!targetLinks.length) {
+  //     arrLinks = [...allPaths];
+  //   } else {
+  //     let newTargets = allPaths.slice(0);
+  //     newTargets = newTargets.filter((el, i, a) => i === a.indexOf(el));
+  //     for (const newTarget of targetLinks) {
+  //       // arrLinks = await this.getPaths(target, newTarget, submilestone, currentPath, allPaths);
+  //       // console.log(arrLinks);
+  //       arrLinks.push(this.findNextLink(newTarget, submilestone));
+  //     }
+  //   }
+  // }
+  // return arrLinks;
+
 }
