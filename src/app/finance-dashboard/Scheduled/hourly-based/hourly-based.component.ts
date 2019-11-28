@@ -786,7 +786,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 pfbObj.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
                 pfbObj.type = 'PATCH';
                 pfbObj.data = pfbData;
-                batchUrl.push(poObj);
+                batchUrl.push(pfbObj);
                 ///Update ProjectBudgetBreakup
                 let pbbData = {
                     OriginalBudget: totalVal,
@@ -803,7 +803,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 pbbObj.listName = this.constantService.listNames.ProjectBudgetBreakup.name;
                 pbbObj.type = 'PATCH';
                 pbbObj.data = pbbData;
-                batchUrl.push(poObj);
+                batchUrl.push(pbbObj);
 
                 ///Update SOW
                 let sowData = {
@@ -820,7 +820,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 sowObj.listName = this.constantService.listNames.SOW.name;
                 sowObj.type = 'PATCH';
                 sowObj.data = sowData;
-                batchUrl.push(poObj);
+                batchUrl.push(sowObj);
 
                 ///Add InvoiceLineItem
                 const iliData = {
@@ -844,7 +844,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 iliObj.listName = this.constantService.listNames.InvoiceLineItems.name;
                 iliObj.type = 'POST';
                 iliObj.data = iliData;
-                batchUrl.push(poObj);
+                batchUrl.push(iliObj);
 
                 // Project Finance
                 let pfData = {
@@ -860,7 +860,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 pfObj.listName = this.constantService.listNames.ProjectFinances.name;
                 pfObj.type = 'PATCH';
                 pfObj.data = pfData;
-                batchUrl.push(poObj);
+                batchUrl.push(pfObj);
                 // let data = [
                 //     { objData: piObj, endpoint: piEndpoint, requestPost: false },
                 //     { objData: poObj, endpoint: poEndpoint, requestPost: false },
@@ -1158,7 +1158,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         mailContent = this.replaceContent(mailContent, "@@Val3@@", this.selectedRowItem.ClientLegalEntity);
         mailContent = this.replaceContent(mailContent, "@@Val4@@", this.selectedRowItem.PONumber);
         mailContent = this.replaceContent(mailContent, "@@Val5@@", this.datePipe.transform(this.confirmHourlybased_form.value.approvalDate, 'MMM dd, yyyy'));
-        mailContent = this.replaceContent(mailContent, "@@Val6@@", this.selectedRowItem.Currency + ' ' + (this.selectedRowItem.Rate * this.selectedRowItem.BudgetHrs));
+        mailContent = this.replaceContent(mailContent, "@@Val6@@", this.selectedRowItem.Currency + ' ' + (this.selectedRowItem.Rate * this.selectedRowItem.HoursSpent));
         mailContent = this.replaceContent(mailContent, "@@Val7@@", this.selectedRowItem.SOWCode);
 
         // Propose Closure Mail Content
@@ -1167,7 +1167,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         pcmailContent = this.replaceContent(pcmailContent, "@@Val3@@", 'All');
         pcmailContent = this.replaceContent(pcmailContent, "@@Val1@@", this.selectedRowItem.ProjectCode);
         pcmailContent = this.replaceContent(pcmailContent, "@@Val2@@", this.selectedRowItem.ClientLegalEntity);
-        pcmailContent = this.replaceContent(pcmailContent, "@@Val5@@", this.selectedRowItem.BudgetHrs);
+        pcmailContent = this.replaceContent(pcmailContent, "@@Val5@@", this.selectedRowItem.HoursSpent);
         pcmailContent = this.replaceContent(pcmailContent, "@@Val6@@", sharepointPageObject.webAbsoluteUrl + '/fd');
 
         var ccUser = [];

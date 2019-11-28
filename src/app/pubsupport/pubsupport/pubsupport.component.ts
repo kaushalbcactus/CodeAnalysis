@@ -324,8 +324,8 @@ export class PubsupportComponent implements OnInit {
     getDocuTypes() {
         this.documentTypes = [
             { label: 'Select type', value: '' },
-            { label: 'Journal', value: 'journal' },
-            { label: 'Conference', value: 'conference' }
+            { label: 'Journal', value: 'Journal' },
+            { label: 'Conference', value: 'Conference' }
         ];
     }
 
@@ -492,7 +492,7 @@ export class PubsupportComponent implements OnInit {
             case '':
             case 'rejected': {
                 this.items = [
-                    { label: 'Add Journal conference', command: (e) => this.openMenuContent(e, data) },
+                    { label: 'Add Journal / Conference', command: (e) => this.openMenuContent(e, data) },
                     { label: 'Add Authors', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Author forms & emails', command: e => this.openMenuContent(e, data) },
                     // { label: 'Update Journal Requirement', command: e => this.openMenuContent(e, data) }
@@ -501,7 +501,7 @@ export class PubsupportComponent implements OnInit {
             }
             case 'selected': {
                 this.items = [
-                    { label: 'Edit Journal conference', command: e => this.openMenuContent(e, data) },
+                    { label: 'Edit Journal / Conference', command: e => this.openMenuContent(e, data) },
                     { label: 'Add Authors', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Author forms & emails', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Journal Requirement', command: e => this.openMenuContent(e, data) },
@@ -511,7 +511,7 @@ export class PubsupportComponent implements OnInit {
             }
             case 'resubmit to same journal': {
                 this.items = [
-                    { label: 'Edit Journal conference', command: e => this.openMenuContent(e, data) },
+                    { label: 'Edit Journal / Conference', command: e => this.openMenuContent(e, data) },
                     { label: 'Add Authors', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Author forms & emails', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Journal Requirement', command: e => this.openMenuContent(e, data) }
@@ -520,7 +520,7 @@ export class PubsupportComponent implements OnInit {
             }
             case 'submitted': {
                 this.items = [
-                    { label: 'Edit Journal conference', command: e => this.openMenuContent(e, data) },
+                    { label: 'Edit Journal / Conference', command: e => this.openMenuContent(e, data) },
                     { label: 'Add Authors', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Author forms & emails', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Decision details', command: e => this.openMenuContent(e, data) },
@@ -616,23 +616,23 @@ export class PubsupportComponent implements OnInit {
             componentRef.instance.formType = 'addAuthor';
             this.ref = componentRef;
             return;
-        } else if (this.selectedModal === 'Add Journal conference') {
+        } else if (this.selectedModal === 'Add Journal / Conference') {
             // this.journalConfFormField();
             this.addJCDetailsModal = true;
             this.formatMilestone(this.milestonesList);
             if (this.selectedProject.DeliverableType === 'Abstract' || this.selectedProject.DeliverableType === 'Poster' || this.selectedProject.DeliverableType === 'Oral Presentation') {
                 this.documentTypes = [
                     { label: 'Select type', value: '' },
-                    { label: 'Conference', value: 'conference' }
+                    { label: 'Conference', value: 'Conference' }
                 ];
             } else {
                 this.documentTypes = [
                     { label: 'Select type', value: '' },
-                    { label: 'Journal', value: 'journal' },
+                    { label: 'Journal', value: 'Journal' },
                 ];
             }
             return;
-        } else if (this.selectedModal === 'Edit Journal conference') {
+        } else if (this.selectedModal === 'Edit Journal / Conference') {
             await this.getJCDetails(data);
             await this.getJCList(this.journal_Conf_data[0].element.EntryType);
             this.addJCControls(this.journal_Conference_Edit_Detail_form, this.journal_Conf_data[0].element.EntryType, 'Edit')
@@ -954,7 +954,7 @@ export class PubsupportComponent implements OnInit {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         let endpoint;
         let jcObj = [];
-        if (type === 'journal') {
+        if (type === 'Journal') {
             this.optionLabel.title = 'JournalName';
             endpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.Journal.name + '', this.pubsupportService.pubsupportComponent.journal);
             jcObj = [{
@@ -962,7 +962,7 @@ export class PubsupportComponent implements OnInit {
                 type: 'GET',
                 listName: this.constantService.listNames.Journal.name
             }];
-        } else if (type === 'conference') {
+        } else if (type === 'Conference') {
             this.optionLabel.title = 'ConferenceName';
             endpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.Conference.name + '', this.pubsupportService.pubsupportComponent.conference);
             jcObj = [{
@@ -981,9 +981,9 @@ export class PubsupportComponent implements OnInit {
             this.jcListArray = res[0].retItems;
             console.log('this.jcListArray ', this.jcListArray);
         }
-        if (type === 'journal') {
+        if (type === 'Journal') {
             this.jcListArray = this.sortJournalData(res[0].retItems);
-        } else if (type === 'conference') {
+        } else if (type === 'Conference') {
             this.jcListArray = this.sortConferenceData(res[0].retItems);
         }
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
@@ -1132,7 +1132,7 @@ export class PubsupportComponent implements OnInit {
 
     setJCValue(form: any, item: any, type: string) {
         if (item.value) {
-            if (type === 'journal') {
+            if (type === 'Journal') {
                 // Set New Values
                 form.get('Name').setValue(item.value.JournalName);
                 form.get('ExpectedReviewPeriod').setValue(item.value.ExpectedReviewPeriod);
@@ -1176,7 +1176,7 @@ export class PubsupportComponent implements OnInit {
         const type = this.journal_Conference_Detail_form.get('EntryType').value;
         this.formSubmit.isSubmit = false;
         this.submitBtn.isClicked = false;
-        if (type === 'journal') {
+        if (type === 'Journal') {
             const ref = this.dialogService.open(CreateJournalComponent, {
                 data: this.jcListArray,
                 closable: false,
@@ -1193,7 +1193,7 @@ export class PubsupportComponent implements OnInit {
                     this.getJCList('journal');
                 }
             });
-        } else if (type === 'conference') {
+        } else if (type === 'Conference') {
 
             const ref = this.dialogService.open(CreateConferenceComponent, {
                 data: this.jcListArray,
