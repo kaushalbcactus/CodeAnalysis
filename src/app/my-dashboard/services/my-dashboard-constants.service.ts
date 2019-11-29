@@ -108,7 +108,7 @@ export class MyDashboardConstantsService {
     },
     FTESchedulesTask: {
       select: 'ID,Title,ProjectCode,SubMilestones',
-      filter: "ProjectCode eq '{{ProjectCode}}' and Milestone eq '{{Milestone}}'",
+      filter: "ProjectCode eq '{{ProjectCode}}' and Milestone eq '{{Milestone}}' and Task ne 'Blocking' and Task ne 'Meeting' and Task ne 'Training'",
       top: "4500"
     },
     previousNextTask: {

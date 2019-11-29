@@ -9,6 +9,7 @@ import { MyDashboardConstantsService } from '../../services/my-dashboard-constan
 import { DatePipe } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
+import { Dropdown } from 'primeng/primeng';
 
 @Component({
   selector: 'app-create-task',
@@ -29,7 +30,7 @@ export class CreateTaskComponent implements OnInit {
 
   fteProjectsList: any = [];
   milestonesList: any = [];
-  subMilestonesList: SelectItem[];
+  subMilestonesList: any = [];
   subMilestonesArrayList: any[];
   taskArrayList: any[];
 
@@ -87,6 +88,8 @@ export class CreateTaskComponent implements OnInit {
   ) {
   }
 
+  MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
   async ngOnInit() {
     if (this.formType === 'createTask') {
       this.createTaskFormField();
@@ -103,7 +106,7 @@ export class CreateTaskComponent implements OnInit {
     this.create_task_form = this.fb.group({
       ProjectCode: ['', Validators.required],
       Milestones: ['', Validators.required],
-      SubMilestones: ['', Validators.required],
+      SubMilestones: ['', [Validators.required, Validators.maxLength(20)]],
       StartDate: [new Date(), Validators.required],
       StartTime: ['09:00 AM', Validators.required],
       EndDate: [new Date(), Validators.required],
@@ -154,23 +157,32 @@ export class CreateTaskComponent implements OnInit {
 
     this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
-
   onChangeDD(value: any, ddType: string) {
-    if (ddType === 'ProjectCode') {
-      console.log('Value ', value);
-      if (this.fteProjectsList.length >= 2) {
-        this.setMilestones(value);
-        this.getSubmilestones(this.create_task_form.value.ProjectCode.ProjectCode, this.create_task_form.value.Milestones.value);
+    if (value) {
+      if (ddType === 'ProjectCode') {
+        console.log('Value ', value);
+        this.milestonesList = [];
+        this.create_task_form.patchValue({
+          SubMilestones : ''
+        });
+        if (this.fteProjectsList.length >= 2) {
+          this.setMilestones(value);
+          this.getSubmilestones(this.create_task_form.value.ProjectCode.ProjectCode, this.create_task_form.value.Milestones.value);
+        }
+      } else if (ddType === 'Milestone') {
+        this.updateSDate();
+      } else if (ddType === 'SubMilestone') {
+        this.createSubMilestone = false;
+        this.enteredSubMile = '';
       }
-      // this.getMilestones(value.ProjectCode);
-    } else if (ddType === 'Milestone') {
-      console.log('Value ', value);
-      // if (this.fteProjectsList.length >= 2) {
-      //   this.getSubmilestones(this.create_task_form.value.ProjectCode.ProjectCode, this.create_task_form.value.Milestones.value);
-      // }
-    } else if (ddType === 'SubMilestone') {
-      this.createSubMilestone = false;
-      this.enteredSubMile = '';
+    }
+  }
+
+  clearFilter(dropdown: Dropdown) {
+    if (dropdown.clearClick) {
+      this.create_task_form.value.SubMilestones = '';
+      dropdown.resetFilter();
+      dropdown.focus();
     }
   }
 
@@ -195,7 +207,22 @@ export class CreateTaskComponent implements OnInit {
     this.create_task_form.patchValue({
       Milestones: this.milestonesList[milestoneInd ? 1 : 0]
     });
+    this.updateSDate();
     // this.getTaskList(this.create_task_form.value.ProjectCode, this.create_task_form.value.Milestones);
+  }
+
+  updateSDate() {
+    const mindex = this.MONTH_NAMES.indexOf(this.create_task_form.value.Milestones.value);
+    const cmIndex = new Date().getMonth();
+    const year = new Date().getFullYear();
+    const month = this.create_task_form.value.Milestones.value;
+    if (mindex <= cmIndex) {
+      const date = (this.MONTH_NAMES.indexOf(month) + 1) + '-' + new Date().getDate() + '-' + year;
+      this.minDateValue = this.commonService.getLastWorkingDay(3, new Date(date));
+    } else {
+      const date = (this.MONTH_NAMES.indexOf(month) + 1) + '-' + new Date().getDate() + '-' + (year - 1);
+      this.minDateValue = this.commonService.getLastWorkingDay(3, new Date(date));
+    }
   }
 
   async getSubmilestones(projectCode, milestone) {
@@ -273,7 +300,6 @@ export class CreateTaskComponent implements OnInit {
     const batchUrl = [];
     this.formSubmit.isSubmit = true;
     this.submitBtn.isClicked = true;
-    console.log('this.create_task_form.value ', this.create_task_form.value);
     if (type === 'createTask') {
       this.checkSubMilestone(this.enteredSubMile);
       if (this.create_task_form.invalid) {
@@ -313,9 +339,10 @@ export class CreateTaskComponent implements OnInit {
       }
 
       let taskObj = {};
+      const taskLength = this.taskArrayList.length ? this.taskArrayList.length + 1 : '';
       taskObj = {
         Title: this.create_task_form.value.ProjectCode.ProjectCode + ' ' + this.create_task_form.value.Milestones.value + ' ' +
-          this.create_task_form.value.ProjectCode.ServiceLevel + ' ' + this.taskArrayList.length,
+          this.create_task_form.value.ProjectCode.ServiceLevel + ' ' + taskLength.toString(),
         Entity: '',
         ProjectCode: this.create_task_form.value.ProjectCode.ProjectCode,
         Task: this.create_task_form.value.ProjectCode.ServiceLevel,
