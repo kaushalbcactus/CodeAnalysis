@@ -267,7 +267,7 @@
                                     [(ngModel)]="rowData.pUserEndTimePart" class="timePicker">
                                 <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
                                 <ngx-material-timepicker [preventOverlayClick]="true"
-                                    (closed)="DateChangePart(rowData,'start')" #picker
+                                    (closed)="DateChangePart(rowData,'end')" #picker
                                     [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
                                 </ngx-material-timepicker>
                             </span>
