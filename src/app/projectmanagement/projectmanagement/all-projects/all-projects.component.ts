@@ -1201,7 +1201,8 @@ export class AllProjectsComponent implements OnInit {
         batchURL.push(projectBudgetBreakCreate);
       }
     });
-    if (selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value) {
+    if (selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value ||
+      selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.FTE.value) {
       sowObj.TotalScheduled = sowObj.TotalScheduled ? sowObj.TotalScheduled : 0;
       sowObj.ScheduledRevenue = sowObj.ScheduledRevenue ? sowObj.ScheduledRevenue : 0;
       sowObj.TotalLinked = sowObj.TotalLinked ? sowObj.TotalLinked : 0;
