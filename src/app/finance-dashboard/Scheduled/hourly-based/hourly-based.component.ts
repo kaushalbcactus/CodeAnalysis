@@ -746,9 +746,9 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 pfbObj.listName = this.constantService.listNames.ProjectFinanceBreakup.name;
                 pfbObj.type = 'PATCH';
                 pfbObj.data = pfbData;
-                batchUrl.push(poObj);
-                // Update ProjectBudgetBreakup
-                const pbbData = {
+                batchUrl.push(pfbObj);
+                ///Update ProjectBudgetBreakup
+                let pbbData = {
                     OriginalBudget: totalVal,
                     NetBudget: totalVal,
                     Status: 'Approved',
@@ -763,7 +763,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 pbbObj.listName = this.constantService.listNames.ProjectBudgetBreakup.name;
                 pbbObj.type = 'PATCH';
                 pbbObj.data = pbbData;
-                batchUrl.push(poObj);
+                batchUrl.push(pbbObj);
 
                 // Update SOW
                 const sowData = {
@@ -780,7 +780,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 sowObj.listName = this.constantService.listNames.SOW.name;
                 sowObj.type = 'PATCH';
                 sowObj.data = sowData;
-                batchUrl.push(poObj);
+                batchUrl.push(sowObj);
 
                 // Add InvoiceLineItem
                 const iliData = {
@@ -804,7 +804,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 iliObj.listName = this.constantService.listNames.InvoiceLineItems.name;
                 iliObj.type = 'POST';
                 iliObj.data = iliData;
-                batchUrl.push(poObj);
+                batchUrl.push(iliObj);
 
                 // Project Finance
                 const pfData = {
@@ -1024,24 +1024,24 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         // Confirmation Mail 
         const mailSubject = this.selectedRowItem.ProjectCode + '/' + this.selectedRowItem.ClientLegalEntity + ': Confirmed line item for billing';
         let mailContent = this.mailContentRes[0].retItems[0].Content;
-        mailContent = this.replaceContent(mailContent, '@@Val1@@', 'Hello Invoice Team');
-        mailContent = this.replaceContent(mailContent, '@@Val2@@', this.selectedRowItem.ProjectCode);
-        mailContent = this.replaceContent(mailContent, '@@Val3@@', this.selectedRowItem.ClientLegalEntity);
-        mailContent = this.replaceContent(mailContent, '@@Val4@@', this.selectedRowItem.PONumber);
-        mailContent = this.replaceContent(mailContent, '@@Val5@@', this.datePipe.transform(this.confirmHourlybased_form.value.approvalDate, 'MMM dd, yyyy'));
-        mailContent = this.replaceContent(mailContent, '@@Val6@@', this.selectedRowItem.Currency + ' ' + (this.selectedRowItem.Rate * this.selectedRowItem.BudgetHrs));
-        mailContent = this.replaceContent(mailContent, '@@Val7@@', this.selectedRowItem.SOWCode);
+        mailContent = this.replaceContent(mailContent, "@@Val1@@", "Hello Invoice Team");
+        mailContent = this.replaceContent(mailContent, "@@Val2@@", this.selectedRowItem.ProjectCode);
+        mailContent = this.replaceContent(mailContent, "@@Val3@@", this.selectedRowItem.ClientLegalEntity);
+        mailContent = this.replaceContent(mailContent, "@@Val4@@", this.selectedRowItem.PONumber);
+        mailContent = this.replaceContent(mailContent, "@@Val5@@", this.datePipe.transform(this.confirmHourlybased_form.value.approvalDate, 'MMM dd, yyyy'));
+        mailContent = this.replaceContent(mailContent, "@@Val6@@", this.selectedRowItem.Currency + ' ' + (this.selectedRowItem.Rate * this.selectedRowItem.HoursSpent));
+        mailContent = this.replaceContent(mailContent, "@@Val7@@", this.selectedRowItem.SOWCode);
 
         // Propose Closure Mail Content
         const pcmailSubject = this.selectedRowItem.ProjectCode + '(' + this.selectedRowItem.Id + '): ' + 'Propose closure for project';
         let pcmailContent = this.mailContentRes[1].retItems[0].Content;
-        pcmailContent = this.replaceContent(pcmailContent, '@@Val3@@', 'All');
-        pcmailContent = this.replaceContent(pcmailContent, '@@Val1@@', this.selectedRowItem.ProjectCode);
-        pcmailContent = this.replaceContent(pcmailContent, '@@Val2@@', this.selectedRowItem.ClientLegalEntity);
-        pcmailContent = this.replaceContent(pcmailContent, '@@Val5@@', this.selectedRowItem.BudgetHrs);
-        pcmailContent = this.replaceContent(pcmailContent, '@@Val6@@', sharepointPageObject.webAbsoluteUrl + '/fd');
+        pcmailContent = this.replaceContent(pcmailContent, "@@Val3@@", 'All');
+        pcmailContent = this.replaceContent(pcmailContent, "@@Val1@@", this.selectedRowItem.ProjectCode);
+        pcmailContent = this.replaceContent(pcmailContent, "@@Val2@@", this.selectedRowItem.ClientLegalEntity);
+        pcmailContent = this.replaceContent(pcmailContent, "@@Val5@@", this.selectedRowItem.HoursSpent);
+        pcmailContent = this.replaceContent(pcmailContent, "@@Val6@@", sharepointPageObject.webAbsoluteUrl + '/fd');
 
-        // const ccUser = this.getCCList('i');
+        // var ccUser = [];
         // ccUser.push(this.currentUserInfoData.Email);
         // let tos = this.getTosList();
         this.spServices.sendMail(this.getTosList('i').join(','), this.currentUserInfoData.Email, mailSubject, mailContent, this.getCCList('i').join(','));
