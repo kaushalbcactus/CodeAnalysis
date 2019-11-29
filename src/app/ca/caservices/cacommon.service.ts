@@ -571,7 +571,7 @@ export class CACommonService {
    */
   getResourceByMatrix(filterResource, task, skillLevel, clientLegalEntity, ta, deliverableType) {
 
-    debugger;
+  
     const deliverable = deliverableType;
     const resources = filterResource;
     const filteredResources = [];
@@ -675,7 +675,6 @@ export class CACommonService {
    */
   getMiscDates(task, arrMilestoneTasks) {
 
-    debugger;
     task.ProjectTask = arrMilestoneTasks;
     task.MilestoneAllTasks = [];
     const oReturnedProjectMil = arrMilestoneTasks.filter(function (milTask) { return (milTask.projectCode === task.ProjectCode && milTask.milestone === task.Milestone) });
@@ -712,15 +711,17 @@ export class CACommonService {
 
       }
       const prevTasks = [];
+      debugger;
       milTasks.forEach(milTask => {
         let taskArr = [];
         taskArr = milTask.NextTasks ? milTask.NextTasks.split(";#") : [];
-        if (taskArr.indexOf(task.title) > -1) {
+        if (taskArr.indexOf(task.Title) > -1) {
           prevTasks.push(milTask);
         }
       });
       prevTasks.forEach(milTask => {
-        task.prevTaskComments = task.prevTaskComments ? task.prevTaskComments + "<br/>" + milTask.TaskComments : milTask.TaskComments;
+        debugger;
+        task.PrevTaskComments = task.PrevTaskComments ? task.PrevTaskComments + "<br/>" + milTask.TaskComments : milTask.TaskComments;
       });
       let currentTraverseTask = task.Title;
       let scTask = this.getSCTask(currentTraverseTask, milTasks);
@@ -745,7 +746,6 @@ export class CACommonService {
         }
       }
 
-      console.log(task.MilestoneAllTasks);
     }
   }
   /**
@@ -778,6 +778,8 @@ export class CACommonService {
    * @param modalService 
    */
   getAllocateTaskScope(task, popupTaskScopeContent, completeTaskArray, modalService) {
+
+    debugger;
     const index = completeTaskArray.findIndex(item => item.id === task.id);
     this.caGlobalService.taskScope = this.stripHtml(completeTaskArray[index].taskScope ? completeTaskArray[index].taskScope.replace(/<br\s*\/?>/gi, '\n') : '');
     this.caGlobalService.taskPreviousComment = this.stripHtml(completeTaskArray[index].prevTaskComments ? completeTaskArray[index].prevTaskComments.replace(/<br\s*\/?>/gi, '\n') : '');
@@ -1037,7 +1039,6 @@ export class CACommonService {
 
   async GetAllTasksMilestones(taskName) {
 
-    debugger;
     if (this.alldbConstantTasks.length == 0) {
       const batchUrl = [];
       const tasksObj = Object.assign({}, this.queryConfig);

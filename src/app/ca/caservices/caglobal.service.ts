@@ -59,7 +59,7 @@ export class CAGlobalService {
     PrevTasks: '',
     PrevTaskComments: '',
     allocatedResource: '',
-    AssignedTo: '',
+    AssignedTo: [],
     isAllocatedSelectHidden: true,
     isAssignedToHidden: false,
     isEditEnabled: true,
