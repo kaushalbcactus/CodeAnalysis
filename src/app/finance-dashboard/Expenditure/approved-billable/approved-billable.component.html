@@ -224,11 +224,11 @@
 
     <form [formGroup]="scheduleOopInvoice_form">
         <div class="ui-g">
-            <div class="ui-g-4">
+            <div class="ui-g-2">
                 Project Code
             </div>
-            <div class="ui-g-6">
-                <input type="text" pInputText formControlName="ProjectCode">
+            <div class="ui-g-10">
+                <input type="text" pInputText formControlName="ProjectCode" style="width: 72%;">
                 <div *ngIf="formSubmit.isSubmit && isValidScheduleOOPInvoiceForm.ProjectCode.errors">
                     <div *ngIf="isValidScheduleOOPInvoiceForm.ProjectCode.errors.required" style="color:red;">Please
                         Check Project Code.
@@ -236,13 +236,13 @@
                 </div>
             </div>
 
-            <div class="ui-g-4">
+            <div class="ui-g-2">
                 PO Number
             </div>
-            <div class="ui-g-4">
+            <div class="ui-g-8">
 
                 <div class="ui-g-6" style="padding-left:0">
-                    <p-dropdown resetFilterOnHide="true" [options]="poNames" filter="true" formControlName="PONumber"
+                    <p-dropdown resetFilterOnHide="true" [options]="poNames" filter="true" formControlName="PONumber" [style]="{'width':'30.0em'}"
                         placeholder="Select PO Number" optionLabel="Number" (onChange)="poChange($event)">
                         <ng-template let-item pTemplate="selectedItem">
                             <span style="vertical-align:middle">{{item.label}}
@@ -265,14 +265,14 @@
                 </div>
 
             </div>
-            <div class="ui-g-4">
+            <div class="ui-g-2">
                 OOP Balance <span *ngIf="poItem">{{oopBalance}}</span>
             </div>
 
-            <div class="ui-g-4">
+            <div class="ui-g-2">
                 Schedule Type
             </div>
-            <div class="ui-g-6">
+            <div class="ui-g-10">
                 <input type="text" pInputText formControlName="ScheduledType">
                 <div *ngIf="formSubmit.isSubmit && isValidScheduleOOPInvoiceForm.ScheduledType.errors">
                     <div *ngIf="isValidScheduleOOPInvoiceForm.ScheduledType.errors.required" style="color:red;">Please
@@ -281,10 +281,10 @@
                     </div>
                 </div>
             </div>
-            <div class="ui-g-4">
+            <div class="ui-g-2">
                 Amount
             </div>
-            <div class="ui-g-6">
+            <div class="ui-g-10">
                 <input type="text" pInputText formControlName="Amount">
                 <div *ngIf="formSubmit.isSubmit && isValidScheduleOOPInvoiceForm.Amount.errors">
                     <div *ngIf="isValidScheduleOOPInvoiceForm.Amount.errors.required" style="color:red;">Please Select
@@ -292,10 +292,10 @@
                     </div>
                 </div>
             </div>
-            <div class="ui-g-4">
+            <div class="ui-g-2">
                 Currency
             </div>
-            <div class="ui-g-6">
+            <div class="ui-g-10">
                 <input type="text" pInputText formControlName="Currency">
                 <div *ngIf="formSubmit.isSubmit && isValidScheduleOOPInvoiceForm.Currency.errors">
                     <div *ngIf="isValidScheduleOOPInvoiceForm.Currency.errors.required" style="color:red;">Please Select
@@ -303,10 +303,10 @@
                     </div>
                 </div>
             </div>
-            <div class="ui-g-4">
+            <div class="ui-g-2">
                 Schedule Date
             </div>
-            <div class="ui-g-6 box1">
+            <div class="ui-g-10 box1">
                 <p-calendar [showIcon]="true" [monthNavigator]="true" [readonlyInput]="true" dateFormat="dd M , yy"
                     yearRange="2019:2030" [disabledDays]="[0,6]" [yearNavigator]="true"
                     [inputStyle]="{'width': '80%', 'min-width': '80%','padding':'0px'}" formControlName="ScheduledDate">
@@ -317,10 +317,10 @@
                     </div>
                 </div>
             </div>
-            <div class="ui-g-4">
+            <div class="ui-g-2">
                 POC Name
             </div>
-            <div class="ui-g-6">
+            <div class="ui-g-10">
                 <p-dropdown resetFilterOnHide="true" [options]="listOfPOCs" formControlName="POCName"
                     placeholder="Select POC Name" optionLabel="FullName" filter="true" (onChange)="pocChange($event)">
                 </p-dropdown>
@@ -330,8 +330,8 @@
                 </div>
             </div>
 
-            <div class="ui-g-4">Address Type</div>
-            <div class="ui-g-6">
+            <div class="ui-g-2">Address Type</div>
+            <div class="ui-g-10">
                 <p-dropdown resetFilterOnHide="true" [options]="addressTypes" formControlName="AddressType"
                     placeholder="Select a Address Type" optionLabel="label">
                 </p-dropdown>

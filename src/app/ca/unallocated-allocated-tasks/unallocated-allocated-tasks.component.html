@@ -16,7 +16,7 @@
 <!-- **************************************************************************************************
                                                         Table View Data
 **************************************************************************************************** -->
-<div class="p-grid p-justify-between" style="margin: 0px;">
+<div class="p-grid p-justify-between mainPage">
     <p-dropdown [options]="DropdownOptions" class="mainfilter" [(ngModel)]="selectedTab" (onChange)="getProperties()"></p-dropdown>
 
     <button mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks(taskTable)">
@@ -25,8 +25,8 @@
 </div>
 
 <div class="allocatedUnallocatedTable" [hidden]='loderenable'>
-    <p-table #taskTable dataKey="Id" [columns]="displayedColumns" [value]="caGlobal.dataSource" [paginator]="true" [rows]="30" [lazy]="true" (onLazyLoad)="lazyLoadTask($event)" rowExpandMode="multiple" [loading]="caGlobal.loading" [style]="{'font-size':'13px'}"
-        [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)" [lazyLoadOnInit]="false" [totalRecords]="caGlobal.totalRecords">
+    <p-table #taskTable dataKey="Id" [columns]="displayedColumns" [value]="caGlobal.dataSource" [lazy]="true" (onLazyLoad)="lazyLoadTask($event)" [paginator]="true" [rows]="10" [totalRecords]="caGlobal.totalRecords" rowExpandMode="multiple" [loading]="caGlobal.loading"
+        [style]="{'font-size':'13px'}" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)" [lazyLoadOnInit]="false">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th style="width: 3%;"></th>
@@ -34,7 +34,7 @@
                     {{ col.header }}
                     <p-sortIcon [field]="col.field"></p-sortIcon>
                 </th>
-                <th>Next Task Start</th>
+                <th>Next Task Start {{caGlobal.totalRecords}}</th>
                 <th>Last Task End </th>
                 <th>SC Date</th>
                 <!-- <th [pSortableColumn]="'assignedTo'">Allocated To
@@ -204,9 +204,10 @@
                                 </td>
                                 <!-- Assign To -->
                                 <td>
-                                    <span *ngIf="!rowData.editMode"> {{rowData.AssignedTo.Title}}</span>
-                                    <p-dropdown #allocateResource *ngIf="rowData.editMode" class="resourceDropdown" [options]="rowData.displayselectedResources" [panelStyle]="{minWidth:'25em' }" [(ngModel)]="rowData.allocatedResource" placeholder="Select Resource" [group]="true" filter="true"
-                                        placeholder="Select Resource" (onShow)="fetchResources(rowData,false, allocateResource)" (onHide)="EditSlotEnable(rowData,Slot)" (onChange)="assignedToUserChanged(rowData)" [style]="{'width':'100%'}">
+                                    <span *ngIf="!rowData.editMode  || ( rowData.editMode && (rowData.Status ==='In Progress' || rowData.Status ==='Completed'))"> {{rowData.AssignedTo.Title}}</span>
+                                    <p-dropdown #allocateResource *ngIf="rowData.editMode && (rowData.Status ==='Not Started' || rowData.Status ==='Not Saved')" class="resourceDropdown" [options]="rowData.displayselectedResources" [panelStyle]="{minWidth:'25em' }" [(ngModel)]="rowData.allocatedResource"
+                                        placeholder="Select Resource" [group]="true" filter="true" placeholder="Select Resource" (onShow)="fetchResources(rowData,allocateResource)" (onHide)="EditSlotEnable(rowData,Slot)" (onChange)="assignedToUserChanged(rowData)"
+                                        [style]="{'width':'100%'}">
                                         <ng-template let-group pTemplate="group">
                                             <span style="margin-left:.25em">{{group.label}}</span>
                                         </ng-template>

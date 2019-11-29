@@ -47,6 +47,7 @@ export class CaDragdropComponent implements OnInit {
   taskDown = null;
   TempMilestoneAllTasks = [];
   nodeOrder = [];
+  slotTasks: any;
   constructor(
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
@@ -96,15 +97,31 @@ export class CaDragdropComponent implements OnInit {
 
     } else {
       this.response = await this.caCommonService.getSlotTasks(this.data);
-      if (this.response.length > 0) {
 
+      this.slotTasks = this.response;
+      if (this.response.length > 0) {
         this.response.forEach(async element => {
-          this.draggedTask = element.taskType;
-          await this.onPageLoad(element);
-          this.draggedTask = null;
-          links = this.loadLinks(element, links).splice(0);
-          this.links = [...links];
+          if (element.Status !== 'Deleted') {
+            this.draggedTask = element.taskType;
+            await this.onPageLoad(element);
+            this.draggedTask = null;
+
+            element.NextTasks = element.NextTasks ? element.NextTasks.replace(new RegExp(element.ProjectCode + ' ', 'g'), '')
+              .replace(new RegExp(element.Milestone + ' ', 'g'), '').replace(/#/gi, '') : null;
+
+            element.PrevTasks = element.PrevTasks ? element.PrevTasks.replace(new RegExp(element.ProjectCode + ' ', 'g'), '')
+              .replace(new RegExp(element.Milestone + ' ', 'g'), '').replace(/#/gi, '') : null;
+
+            links = this.loadLinks(element, links).splice(0);
+            this.links = [...links];
+          }
         });
+        if (this.response.filter(c => c.Status !== 'Deleted').length === 0) {
+          this.draggedTask = this.arrConstantTasks[0];
+          await this.onTaskDrop(null);
+          this.draggedTask = null;
+
+        }
         this.initialLoad = false;
       } else {
         this.draggedTask = this.arrConstantTasks[0];
@@ -187,7 +204,7 @@ export class CaDragdropComponent implements OnInit {
         id: (this.getMaxNodeID() + 1).toString(),
         dbId: event && event.id !== undefined ? event.id : 0,
         label: count > 0 ? Task.Title + ' ' + (count + 1) : Task.Title,
-        taskName: count > 0 ? Task.Title + ' ' + (count + 1) : Task.Title,
+        TaskName: count > 0 ? Task.Title + ' ' + (count + 1) : Task.Title,
         color: '#e2e2e2',
         taskType: originalType,
         top: 0,
@@ -195,14 +212,14 @@ export class CaDragdropComponent implements OnInit {
         Status: 'Not Saved',
         IsCentrallyAllocated: 'Yes',
         SkillLevel: Task !== undefined ? Task.DefaultSkill !== null ? Task.DefaultSkill : '' : '',
-        projectCode: this.data.projectCode
+        projectCode: this.data.ProjectCode
       };
     } else {
       node = {
         id: '1',
         dbId: event && event.id !== undefined ? event.id : 0,
         label: count > 0 ? Task.Title + ' ' + (count + 1) : Task.Title,
-        taskName: count > 0 ? Task.Title + ' ' + (count + 1) : Task.Title,
+        TaskName: count > 0 ? Task.Title + ' ' + (count + 1) : Task.Title,
         color: '#e2e2e2',
         taskType: originalType,
         top: 0,
@@ -210,7 +227,7 @@ export class CaDragdropComponent implements OnInit {
         Status: 'Not Saved',
         IsCentrallyAllocated: 'Yes',
         SkillLevel: Task !== undefined ? Task.DefaultSkill !== null ? Task.DefaultSkill : '' : '',
-        projectCode: this.data.projectCode
+        projectCode: this.data.ProjectCode
       };
     }
     this.recentEventNode = node.id;
@@ -282,7 +299,11 @@ export class CaDragdropComponent implements OnInit {
 
   onPageLoad(event) {
 
-    const Task = this.allConstantTasks.find(c => c.Title === event.taskName.replace(/[0-9]/g, '')
+
+    if (!event.TaskName) {
+      event.TaskName = $.trim(event.Title.replace(event.ProjectCode + '', '').replace(event.Milestone + '', ''));
+    }
+    const Task = this.allConstantTasks.find(c => c.Title === event.TaskName.replace(/[0-9]/g, '')
       .replace(/\s+$/, ''));
     const originalType = Task.Title;
     let node = null;
@@ -291,17 +312,15 @@ export class CaDragdropComponent implements OnInit {
     node = {
       // tslint:disable-next-line: radix
       id: this.nodes.length > 0 ? (parseInt(this.recentEventNode) + 1).toString() : '1',
-      dbId: event && event.id !== undefined ? event.id : 0,
-      label: event.taskName,
-      taskName: event.taskName,
+      dbId: event && event.Id !== undefined ? event.Id : 0,
+      label: event.TaskName,
+      TaskName: event.TaskName,
       color: '#e2e2e2',
       taskType: originalType,
       top: 0,
       left: 0,
       Status: event.Status ? event.Status : 'Not Saved',
-      IsCentrallyAllocated: event.IsCentrallyAllocated,
-      SkillLevel: Task !== undefined ? Task.DefaultSkill !== null ? Task.DefaultSkill : '' : '',
-      projectCode: this.data.projectCode
+      projectCode: this.data.ProjectCode
     };
 
     this.recentEventNode = node.id;
@@ -318,12 +337,14 @@ export class CaDragdropComponent implements OnInit {
 
   loadLinks(event, links) {
 
+
+
     const preTasks = event.PrevTasks !== undefined && event.PrevTasks !== null ? event.PrevTasks.split(';') : [];
     const nextTasks = event.NextTasks !== undefined && event.NextTasks !== null ? event.NextTasks.split(';') : [];
 
     const nodes = this.nodes;
 
-    const currentNode = nodes.find(e => e.label === event.taskName);
+    const currentNode = nodes.find(e => e.label === event.TaskName);
     preTasks.forEach(element => {
       const prevNode = nodes.find(e => e.label === element);
       if (prevNode) {
@@ -539,50 +560,64 @@ export class CaDragdropComponent implements OnInit {
 
   RemoveNode(event, node) {
 
-    const index = this.nodes.indexOf(this.nodes.find(c => c.label === node.label && c.id === node.id));
-    if (index > -1) {
-      const source = this.links.filter(c => c.target === node.id).map(c => c.source);
-      this.nodes.splice(index, 1);
-      this.nodeOrder.splice(this.nodeOrder.indexOf(node.id), 1);
-      const RemoveLinks = this.links.filter(c => c.source === node.id || c.target === node.id);
-      if (this.links.find(c => c.source === node.id) !== undefined && this.links.find(c => c.target === node.id) !== undefined) {
+    if (this.nodes.length > 1) {
+      const index = this.nodes.indexOf(this.nodes.find(c => c.label === node.label && c.id === node.id));
+      if (index > -1) {
+        const source = this.links.filter(c => c.target === node.id).map(c => c.source);
+        this.nodes.splice(index, 1);
+        this.nodeOrder.splice(this.nodeOrder.indexOf(node.id), 1);
+        const RemoveLinks = this.links.filter(c => c.source === node.id || c.target === node.id);
+        if (this.links.find(c => c.source === node.id) !== undefined && this.links.find(c => c.target === node.id) !== undefined) {
 
-        const target = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
-        if (target.length > 0) {
-          target.forEach(element => {
-            const link = {
-              source: this.links.find(c => c.target === node.id).source,
-              target: element,
-            };
-            this.links.push(link);
-          });
+          const target = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
+          if (target.length > 0) {
+            target.forEach(element => {
+              const link = {
+                source: this.links.find(c => c.target === node.id).source,
+                target: element,
+              };
+              this.links.push(link);
+            });
+          }
         }
-      }
-      this.links = this.links.filter(value => !RemoveLinks.includes(value));
-      this.links = [... this.links];
-      this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Task Deleted' });
-      if (RemoveLinks.filter(c => c.source === node.id).length > 0) {
-        this.previousSource = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
-        if (this.links.filter(c => this.previousSource.includes(c.source)).length > 0) {
-          this.previousSource = undefined;
+        this.links = this.links.filter(value => !RemoveLinks.includes(value));
+        this.links = [... this.links];
+        this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Task Deleted' });
+        if (RemoveLinks.filter(c => c.source === node.id).length > 0) {
+          this.previousSource = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
+          if (this.links.filter(c => this.previousSource.includes(c.source)).length > 0) {
+            this.previousSource = undefined;
+          } else {
+            this.previousSource = this.nodes.find(e => e.id === this.previousSource[0]);
+          }
         } else {
-          this.previousSource = this.nodes.find(e => e.id === this.previousSource[0]);
+          this.previousSource = this.nodes.find(e => e.id === source[0]);
         }
-      } else {
-        this.previousSource = this.nodes.find(e => e.id === source[0]);
       }
+      this.nodes = [...  this.nodes];
+      this.links = [...  this.links];
+      event.preventDefault();
+      this.GraphResize();
+    } else {
+      this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Task can  not be deleted' });
+      event.preventDefault();
     }
-    this.nodes = [...  this.nodes];
-    this.links = [...  this.links];
-    event.preventDefault();
-    this.GraphResize();
+
+
   }
+
+
+  ErrorMessage(event, type) {
+    this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: type + ' can  not be deleted' });
+    event.preventDefault();
+  }
+
 
 
   SaveGraph() {
     let errorM = 0;
     let circularPresent = false;
-    debugger;
+
     if (this.links.length > 0) {
       this.links.forEach(link => {
         if (circularPresent === false) {
@@ -602,9 +637,9 @@ export class CaDragdropComponent implements OnInit {
     }
 
     if (errorM <= 0) {
-      debugger;
+
       this.NodePosition();
-     
+
       this.nodes.sort((a, b) => {
         return parseInt(a.left, 10) - parseInt(b.left, 10);
       });
@@ -634,7 +669,7 @@ export class CaDragdropComponent implements OnInit {
         nodes: this.nodes,
         links: this.links,
         nodeOrder: this.nodeOrder,
-        dbSlots : this.response
+        dbSlots: this.response
       };
       this.data.MilestoneAllTasks = JSON.parse(JSON.stringify(this.TempMilestoneAllTasks));
       this.ref.close(obj);

@@ -571,7 +571,7 @@ export class CACommonService {
    */
   getResourceByMatrix(filterResource, task, skillLevel, clientLegalEntity, ta, deliverableType) {
 
-    debugger;
+  
     const deliverable = deliverableType;
     const resources = filterResource;
     const filteredResources = [];
@@ -607,10 +607,12 @@ export class CACommonService {
             filteredResources.push(element);
           } else {
             element.userType = 'Other';
+
             filteredResources.push(element);
           }
           element.Title = element.UserName.Title;
         }
+       
       });
       return filteredResources;
     }
@@ -621,7 +623,7 @@ export class CACommonService {
    * @param task 
    */
   sortResources(filteredResources, task) {
-    if (task.projectTask) {
+    if (task.projectTask.length > 0) {
       const projectTaskFilter = task.projectTask.filter(function (projObj) {
         return projObj.projectCode === task.projectCode;
       });
@@ -673,7 +675,6 @@ export class CACommonService {
    */
   getMiscDates(task, arrMilestoneTasks) {
 
-    debugger;
     task.ProjectTask = arrMilestoneTasks;
     task.MilestoneAllTasks = [];
     const oReturnedProjectMil = arrMilestoneTasks.filter(function (milTask) { return (milTask.projectCode === task.ProjectCode && milTask.milestone === task.Milestone) });
@@ -710,15 +711,17 @@ export class CACommonService {
 
       }
       const prevTasks = [];
+      debugger;
       milTasks.forEach(milTask => {
         let taskArr = [];
         taskArr = milTask.NextTasks ? milTask.NextTasks.split(";#") : [];
-        if (taskArr.indexOf(task.title) > -1) {
+        if (taskArr.indexOf(task.Title) > -1) {
           prevTasks.push(milTask);
         }
       });
       prevTasks.forEach(milTask => {
-        task.prevTaskComments = task.prevTaskComments ? task.prevTaskComments + "<br/>" + milTask.TaskComments : milTask.TaskComments;
+        debugger;
+        task.PrevTaskComments = task.PrevTaskComments ? task.PrevTaskComments + "<br/>" + milTask.TaskComments : milTask.TaskComments;
       });
       let currentTraverseTask = task.Title;
       let scTask = this.getSCTask(currentTraverseTask, milTasks);
@@ -743,7 +746,6 @@ export class CACommonService {
         }
       }
 
-      console.log(task.MilestoneAllTasks);
     }
   }
   /**
@@ -776,6 +778,8 @@ export class CACommonService {
    * @param modalService 
    */
   getAllocateTaskScope(task, popupTaskScopeContent, completeTaskArray, modalService) {
+
+    debugger;
     const index = completeTaskArray.findIndex(item => item.id === task.id);
     this.caGlobalService.taskScope = this.stripHtml(completeTaskArray[index].taskScope ? completeTaskArray[index].taskScope.replace(/<br\s*\/?>/gi, '\n') : '');
     this.caGlobalService.taskPreviousComment = this.stripHtml(completeTaskArray[index].prevTaskComments ? completeTaskArray[index].prevTaskComments.replace(/<br\s*\/?>/gi, '\n') : '');
@@ -1035,9 +1039,7 @@ export class CACommonService {
 
   async GetAllTasksMilestones(taskName) {
 
-    debugger;
-    if(this.alldbConstantTasks.length == 0)
-    {
+    if (this.alldbConstantTasks.length == 0) {
       const batchUrl = [];
       const tasksObj = Object.assign({}, this.queryConfig);
       tasksObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.MilestoneTasks.name,
@@ -1050,10 +1052,10 @@ export class CACommonService {
       const response = arrResult.length ? arrResult[0].retItems : [];
       this.alldbConstantTasks = response;
     }
-   
+
     let allConstantTasks = [];
     const SlotId = this.alldbConstantTasks.find(c => c.Title === taskName) ?
-    this.alldbConstantTasks.find(c => c.Title === taskName).ID : 0;
+      this.alldbConstantTasks.find(c => c.Title === taskName).ID : 0;
     if (SlotId > 0) {
       allConstantTasks = this.alldbConstantTasks.filter(c => c.ParentSlot === SlotId).sort(
         // tslint:disable-next-line: arrow-return-shorthand
@@ -1071,7 +1073,7 @@ export class CACommonService {
     const SlotTasks = Object.assign({}, this.caConstantService.scheduleQueryOptions);
     SlotTasks.filter = SlotTasks.filterTask;
     tasksObj.url = this.spServices.getReadURL(this.globalConstantService.listNames.Schedules.name, SlotTasks);
-    tasksObj.url = tasksObj.url.replace(/{{ParentSlotId}}/gi, event.data ? event.data.Id : event);
+    tasksObj.url = tasksObj.url.replace(/{{ParentSlotId}}/gi, event.data ? event.data.Id : event.Id);
     tasksObj.listName = this.globalConstantService.listNames.Schedules.name;
     tasksObj.type = 'GET';
     batchUrl.push(tasksObj);
