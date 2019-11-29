@@ -1040,7 +1040,8 @@ export class PMCommonService {
       batchURL.push(projectFinanceBreakupCreate);
       counter += 1;
     });
-    if (this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value) {
+    if (this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value ||
+      this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
       //  Add data to  InvoiceLineItem call ## 19
       const invoiceLineItemArray = this.getInvoiceLineItemData();
       invoiceLineItemArray.forEach(element => {
