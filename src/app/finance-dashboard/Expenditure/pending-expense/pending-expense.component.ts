@@ -1007,26 +1007,24 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             }
         }
 
-        const ccUser = this.getCCList(type);
+        const ccUser = this.getCCList(type, expense);
         // ccUser.push(this.currentUserInfoData.Email);
-        const tos = this.getTosList(type);
+        const tos = this.getTosList(type, expense);
         this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.isPSInnerLoaderHidden = false;
         this.reFetchData();
     }
 
-    getTosList(type: string) {
+    getTosList(type: string, expense) {
         let arrayTo = [];
         const approvers = this.groupInfo.results;
         if (type === 'Reject Expense' || type === 'Approve Expense') {
             // Creator
-            this.selectedAllRowsItem.forEach(element => {
-                arrayTo.push(element.AuthorEMail);
-            });
+            arrayTo.push(expense.AuthorEMail);
 
             // CS Team Member
             if (this.resCatEmails.length) {
-                arrayTo.push(this.fdDataShareServie.getCSMember(this.resCatEmails));
+                arrayTo = arrayTo.concat(this.fdDataShareServie.getCSMember(this.resCatEmails));
             }
 
         } else if (type === 'Cancel Expense') {
@@ -1045,24 +1043,22 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         return arrayTo;
     }
 
-    getCCList(type: string) {
+    getCCList(type: string, expense) {
         let arrayCC = [];
         const itApprovers = this.groupITInfo.results;
         const approvers = this.groupInfo.results;
         if (type === 'Cancel Expense') {
             // CS Team Member
             if (this.resCatEmails.length) {
-                arrayCC.push(this.fdDataShareServie.getCSMember(this.resCatEmails));
+                arrayCC = arrayCC.concat(this.fdDataShareServie.getCSMember(this.resCatEmails));
             }
             // Current User
             arrayCC.push(this.currentUserInfoData.Email);
             // Creator
-            this.selectedAllRowsItem.forEach(element => {
-                arrayCC.push(element.AuthorEMail);
-            });
+            arrayCC.push(expense.AuthorEMail);
             // Invoice Team Member
             if (itApprovers.length) {
-                arrayCC.push(this.fdDataShareServie.getITMember(itApprovers));
+                arrayCC = arrayCC.concat(this.fdDataShareServie.getITMember(itApprovers));
             }
 
         } else if (type === 'Reject Expense' || type === 'Approve Expense') {
@@ -1078,7 +1074,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             }
             // Invoice Team Member
             if (itApprovers.length) {
-                arrayCC.push(this.fdDataShareServie.getITMember(itApprovers));
+                arrayCC = arrayCC.concat(this.fdDataShareServie.getITMember(itApprovers));
             }
         }
 

@@ -820,7 +820,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 pfObj.listName = this.constantService.listNames.ProjectFinances.name;
                 pfObj.type = 'PATCH';
                 pfObj.data = pfData;
-                batchUrl.push(poObj);
+                batchUrl.push(pfObj);
 
                 const item = this.projectInfoData.find((x) => {
                     return x.ProjectCode === this.selectedRowItem.ProjectCode;
@@ -1064,7 +1064,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             }
         } else if (type === 'pc') {
             // CS Member
-            arrayTo.push(this.fdDataShareServie.getCSMember(this.resCatEmails));
+            arrayTo = arrayTo.concat(this.fdDataShareServie.getCSMember(this.resCatEmails));
         }
 
         arrayTo = arrayTo.filter(this.onlyUnique);
@@ -1078,7 +1078,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             // Current User
             arrayCC.push(this.currentUserInfoData.Email);
             // CS Member
-            arrayCC.push(this.fdDataShareServie.getCSMember(this.resCatEmails));
+            arrayCC = arrayCC.concat(this.fdDataShareServie.getCSMember(this.resCatEmails));
         } else if (type === 'pc') {
             // Current User
             arrayCC.push(this.currentUserInfoData.Email);

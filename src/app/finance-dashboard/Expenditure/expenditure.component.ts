@@ -980,12 +980,12 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         const itApprovers = this.groupITInfo.results;
         // Invoice Team Member
         if (itApprovers.length) {
-            arrayCC.push(this.fdDataShareServie.getITMember(itApprovers));
+            arrayCC = arrayCC.concat(this.fdDataShareServie.getITMember(itApprovers));
         }
 
         // CS Team Member
         if (this.resCatEmails.length) {
-            arrayCC.push(this.fdDataShareServie.getCSMember(this.resCatEmails));
+            arrayCC = arrayCC.concat(this.fdDataShareServie.getCSMember(this.resCatEmails));
         }
 
         arrayCC = arrayCC.filter(this.onlyUnique);
