@@ -6,7 +6,7 @@
       <div class="ui-g-12 ui-md-6 ui-lg-2">
         Project Code:
       </div>
-      <div class="ui-g-12 ui-md-6 ui-lg-4">
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
         <p-dropdown resetFilterOnHide="true" [options]="fteProjectsList" placeholder="Select Project code"
           [style]="{'width':'100%'}" formControlName="ProjectCode" optionLabel="ProjectCode"
           (onChange)="onChangeDD($event.value, 'ProjectCode')">
@@ -23,8 +23,8 @@
       <div class="ui-g-12 ui-md-6 ui-lg-2">
         Milestones:
       </div>
-      <div class="ui-g-12 ui-md-6 ui-lg-4">
-        <p-dropdown resetFilterOnHide="true" [options]="milestonesList" placeholder="Select milestone"
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+        <p-dropdown [options]="milestonesList" placeholder="Select milestone"
           optionLabel="label" [style]="{'width':'100%'}" formControlName="Milestones"
           (onChange)="onChangeDD($event.value, 'Milestone')">
         </p-dropdown>
@@ -39,14 +39,22 @@
       <div class="ui-g-12 ui-md-6 ui-lg-2">
         Sub milestones:
       </div>
-      <div class="ui-g-12 ui-md-6 ui-lg-4">
-        <p-dropdown resetFilterOnHide="true" editable="true" [options]="subMilestonesList" placeholder=""
-          [style]="{'width':'100%'}" formControlName="SubMilestones" optionLabel="label" [showClear]="true"
-          (onChange)="onChangeDD($event.value, 'SubMilestone')" (input)="onSearchChange($event.target.value)">
+      <div class="ui-g-12 ui-md-6 ui-lg-6">
+          <!-- [showClear]="create_task_form.value.SubMilestones.length ? true: false" -->
+        <p-dropdown #dd editable="true" [options]="subMilestonesList" [style]="{'width':'100%'}"
+          formControlName="SubMilestones" optionLabel="label"
+          
+          (onChange)="onChangeDD($event.value, 'SubMilestone')" (input)="onSearchChange($event.target.value)" (click)="clearFilter(dd)">
         </p-dropdown>
         <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.SubMilestones.errors">
-          <div style="color: red;">Sub Milestone is required.</div>
+          <div style="color: red;" *ngIf="isValidCreateTaskForm.SubMilestones.errors">Sub Milestone is required.</div>
         </div>
+        <div *ngIf="isValidCreateTaskForm.SubMilestones.hasError('maxlength')">
+          <div style="color: red;">Maximum Sub Milestone character length is 20 only.</div>
+        </div>
+      </div>
+      <div class="ui-g-12 ui-md-6 ui-lg-2">
+        <span>{{this.create_task_form.value.SubMilestones.length}} / 20</span>
       </div>
     </div>
 
@@ -122,7 +130,7 @@
         <textarea [rows]="5" [cols]="60" formControlName="Comments" pInputTextarea maxlength="100"></textarea>
         <span>{{this.create_task_form.value.Comments.length}} / 100</span>
         <div *ngIf="this.create_task_form.value.Comments.length >= 100 ">
-            <span style="color: red;">Task scope maximum length is 100</span>
+          <span style="color: red;">Task scope maximum length is 100</span>
         </div>
         <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.Comments.errors">
           <div style="color: red;">Task scope is required.</div>

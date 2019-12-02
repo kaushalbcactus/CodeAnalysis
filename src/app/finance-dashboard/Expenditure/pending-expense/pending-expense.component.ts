@@ -18,6 +18,47 @@ import { DataTable } from 'primeng/primeng';
     styleUrls: ['./pending-expense.component.css']
 })
 export class PendingExpenseComponent implements OnInit, OnDestroy {
+    constructor(
+        private messageService: MessageService,
+        private fb: FormBuilder,
+        private spServices: SPOperationService,
+        public constantService: ConstantsService,
+        private globalService: GlobalService,
+        private fdConstantsService: FdConstantsService,
+        private commonService: CommonService,
+        public fdDataShareServie: FDDataShareService,
+        private datePipe: DatePipe,
+        private route: ActivatedRoute,
+        private cdr: ChangeDetectorRef,
+        private platformLocation: PlatformLocation,
+        private locationStrategy: LocationStrategy,
+        private readonly _router: Router,
+        _applicationRef: ApplicationRef,
+        zone: NgZone,
+    ) {
+        this.subscription.add(this.fdDataShareServie.getAddExpenseSuccess().subscribe(date => {
+            this.isExpenseCreate = true;
+            this.getRequiredData();
+        }));
+
+        // Browser back button disabled & bookmark issue solution
+        history.pushState(null, null, window.location.href);
+        platformLocation.onPopState(() => {
+            history.pushState(null, null, window.location.href);
+        });
+
+        _router.events.subscribe((uri) => {
+            zone.run(() => _applicationRef.tick());
+        });
+
+    }
+
+    get isValidApproveExpeseForm() {
+        return this.approveExpense_form.controls;
+    }
+    get isValidCancelExpeseForm() {
+        return this.cancelReject_form.controls;
+    }
     tempClick: any;
     // Loadder
     isPSInnerLoaderHidden: boolean = true;
@@ -26,10 +67,10 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     showHideREModal: boolean = false;
     formSubmit: any = {
         isSubmit: false
-    }
+    };
     submitBtn: any = {
         isClicked: false
-    }
+    };
 
     // @ViewChild('dd') dropdown: Dropdown;
     selectedType: string = '';
@@ -67,7 +108,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     freelancerVendersRes: any = [];
     sowRes: any = [];
 
-    // Observable 
+    // Observable
     subscriptionPE: Subscription;
 
     showApproveReject: boolean = false;
@@ -80,44 +121,83 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         type: '',
         listName: ''
     };
-    // List of Subscribers 
+    // List of Subscribers
     private subscription: Subscription = new Subscription();
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
     @ViewChild('pendingExpense', { static: false }) pendingEnpenseTable: DataTable;
-    constructor(
-        private messageService: MessageService,
-        private fb: FormBuilder,
-        private spServices: SPOperationService,
-        public constantService: ConstantsService,
-        private globalService: GlobalService,
-        private fdConstantsService: FdConstantsService,
-        private commonService: CommonService,
-        public fdDataShareServie: FDDataShareService,
-        private datePipe: DatePipe,
-        private route: ActivatedRoute,
-        private cdr: ChangeDetectorRef,
-        private platformLocation: PlatformLocation,
-        private locationStrategy: LocationStrategy,
-        private readonly _router: Router,
-        _applicationRef: ApplicationRef,
-        zone: NgZone,
-    ) {
-        this.subscription.add(this.fdDataShareServie.getAddExpenseSuccess().subscribe(date => {
-            this.isExpenseCreate = true;
-            this.getRequiredData();
-        }));
 
-        // Browser back button disabled & bookmark issue solution
-        history.pushState(null, null, window.location.href);
-        platformLocation.onPopState(() => {
-            history.pushState(null, null, window.location.href);
-        });
+    // Project Info
+    projectInfoData: any = [];
 
-        _router.events.subscribe((uri) => {
-            zone.run(() => _applicationRef.tick());
-        });
+    // Billing ENtity Data
+    billingEntityData: any = [];
 
-    }
+    // Client Legal Entity
+    cleData: any = [];
+
+    // Resource Categorization
+    rcData: any = [];
+
+    pendingExpenses: any = [];
+
+    // getCreatedModifiedByFromRC(id) {
+    //     let found = this.rcData.find((x) => {
+    //         if (x.UserName.ID == id) {
+    //             return x;
+    //         }
+    //     })
+    //     return found ? found : ''
+    // }
+
+    pendinExpenseColArray = {
+        ProjectCode: [],
+        ClientLegalEntity: [],
+        RequestType: [],
+        SOWCode: [],
+        Category: [],
+        ExpenseType: [],
+        ClientAmount: [],
+        ClientCurrency: [],
+        CreatedDate: [],
+        CreatedBy: [],
+        ModifiedBy: [],
+        ModifiedDate: [],
+        VendorName: [],
+    };
+
+    items: any[];
+    cancelRejectDialog: any = {
+        title: '',
+        text: ''
+    };
+
+    // CLick on Table Check box to Select All Row Item
+    selectedAllRowsItem: any = [];
+
+    selectedRowItem: any;
+
+    // Upload File
+
+    selectedFile: any;
+    filePathUrl: any;
+    fileReader: any;
+    fileUploadedUrl: any;
+
+    batchContents: any = [];
+
+    // Send Mail // Mail Content
+    mailContentRes: any;
+
+    selectedProjectInfo: any;
+    cleForselectedPI: any;
+
+    selectedPI: any = [];
+
+    cmLevelIdList: any = [];
+
+    resCatEmails: any = [];
+
+    isOptionFilter: boolean;
 
     async ngOnInit() {
         // let snapData = this.route.snapshot.data['fdData'];
@@ -126,8 +206,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
         if (groups.indexOf('ExpenseApprovers') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('Invoice_Team') > -1) {
             this.showApproveReject = true;
-        }
-        else {
+        } else {
             this.showApproveReject = false;
         }
 
@@ -165,9 +244,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         console.log('this.groupITInfo  ', this.groupITInfo);
 
     }
-
-    // Project Info 
-    projectInfoData: any = [];
     async projectInfo() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         // Check PI list
@@ -178,40 +254,31 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 console.log('PI Data ', this.projectInfoData);
                 this.getRequiredData();
             }
-        }))
+        }));
     }
-
-    // Billing ENtity Data 
-    billingEntityData: any = [];
     biilingEntityInfo() {
         this.subscription.add(this.fdDataShareServie.defaultBEData.subscribe((res) => {
             if (res) {
                 this.billingEntityData = res;
                 console.log('BE Data ', this.billingEntityData);
             }
-        }))
+        }));
     }
-
-    // Client Legal Entity 
-    cleData: any = [];
     cleInfo() {
         this.subscription.add(this.fdDataShareServie.defaultCLEData.subscribe((res) => {
             if (res) {
                 this.cleData = res;
                 console.log('Client Legal Entity ', this.cleData);
             }
-        }))
+        }));
     }
-
-    // Resource Categorization
-    rcData: any = [];
     resourceCInfo() {
         this.subscription.add(this.fdDataShareServie.defaultRCData.subscribe((res) => {
             if (res) {
                 this.rcData = res;
                 console.log('Resource Categorization ', this.rcData);
             }
-        }))
+        }));
     }
 
     approveExpenseFormField() {
@@ -222,7 +289,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             PaymentMode: ['', Validators.required],
             ApproverComments: ['', Validators.required],
             ApproverFileUrl: ['', Validators.required]
-        })
+        });
     }
 
     canRejExpenseFormField() {
@@ -270,19 +337,12 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         ];
     }
 
-    get isValidApproveExpeseForm() {
-        return this.approveExpense_form.controls;
-    }
-    get isValidCancelExpeseForm() {
-        return this.cancelReject_form.controls;
-    }
-
     selectedProjectCode(projectCode, event) {
         console.log('Selected Project code ', projectCode);
     }
 
     OnChange(event) {
-        console.log(event)
+        console.log(event);
     }
 
 
@@ -317,8 +377,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     isExpenseRej() {
         this.submitBtn.isClicked = this.cancelReject_form.value.isCancel === 'No' ? this.submitBtn.isClicked = true : this.submitBtn.isClicked = false;
     }
-
-    pendingExpenses: any = [];
     // On load get Required Data
     async getRequiredData() {
         // Refetch vendor list if expense created
@@ -367,13 +425,13 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.selectedAllRowsItem = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
-            let cleName = this.getPIFromPC(element);
-            let cname = cleName ? ' / ' + cleName : '';
+            const cleName = this.getPIFromPC(element);
+            const cname = cleName ? ' / ' + cleName : '';
 
             // let rcCreatedItem = this.getCreatedModifiedByFromRC(element.AuthorId);
             // let rcModifiedItem = this.getCreatedModifiedByFromRC(element.EditorId);
-            let sowCodeFromPI = await this.fdDataShareServie.getSowCodeFromPI(this.projectInfoData, element);
-            let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(sowCodeFromPI.SOWCode);
+            const sowCodeFromPI = await this.fdDataShareServie.getSowCodeFromPI(this.projectInfoData, element);
+            const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(sowCodeFromPI.SOWCode);
 
             this.pendingExpenses.push({
                 Id: element.ID,
@@ -407,13 +465,14 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 ApproverFileUrl: element.ApproverFileUrl,
                 PayingEntity: element.PayingEntity,
                 VendorName: this.getVendorNameById(element),
-                AuthorId: element.AuthorId,
+                AuthorId: element.Author.Id,
+                AuthorEMail: element.Author.EMail,
                 DollarAmount: element.DollarAmount,
                 InvoiceID: element.InvoiceID,
                 POLookup: element.POLookup,
                 // PONumber: this.getPONumber(element),
                 // ProformaDate: this.datePipe.transform(element.ProformaDate, 'MMM dd, yyyy, hh:mm a')
-            })
+            });
         }
         this.pendingExpenses = [...this.pendingExpenses];
         this.isPSInnerLoaderHidden = true;
@@ -421,91 +480,60 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     }
 
     getSowTitle(pi: any) {
-        let found = this.sowRes.find((x) => {
+        const found = this.sowRes.find((x) => {
             if (x.SOWCode === pi.Title) {
                 return x;
             }
-        })
-        return found ? found : ''
+        });
+        return found ? found : '';
     }
 
     getPIFromPC(pc) {
-        let found = this.projectInfoData.find((x) => {
+        const found = this.projectInfoData.find((x) => {
             if (x.ProjectCode === pc.Title) {
                 return x;
             }
-        })
-        return found ? found.ClientLegalEntity : ''
+        });
+        return found ? found.ClientLegalEntity : '';
     }
 
     getVendorNameById(ele) {
-        let found = this.freelancerVendersRes.find((x) => {
+        const found = this.freelancerVendersRes.find((x) => {
             if (x.ID === ele.VendorFreelancer) {
                 return x;
             }
-        })
-        return found ? found.Title : ''
-    }
-
-    // getCreatedModifiedByFromRC(id) {
-    //     let found = this.rcData.find((x) => {
-    //         if (x.UserName.ID == id) {
-    //             return x;
-    //         }
-    //     })
-    //     return found ? found : ''
-    // }
-
-    pendinExpenseColArray = {
-        ProjectCode: [],
-        ClientLegalEntity: [],
-        RequestType: [],
-        SOWCode: [],
-        Category: [],
-        ExpenseType: [],
-        ClientAmount: [],
-        ClientCurrency: [],
-        CreatedDate: [],
-        CreatedBy: [],
-        ModifiedBy: [],
-        ModifiedDate: [],
-        VendorName: [],
+        });
+        return found ? found.Title : '';
     }
 
     createColFieldValues(resArray) {
 
-        this.pendinExpenseColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.RequestType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.RequestType, value: a.RequestType }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.Category = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
-        const ClientAmount = this.uniqueArrayObj(resArray.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
+        this.pendinExpenseColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.VendorName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.VendorName, value: a.VendorName }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.RequestType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.RequestType, value: a.RequestType }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.Category = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
+        const ClientAmount = this.uniqueArrayObj(resArray.map(a => { const b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
         this.pendinExpenseColArray.ClientAmount = this.fdDataShareServie.customSort(ClientAmount, 1, 'label');
-        this.pendinExpenseColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
-        const Created = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.CreatedDate, 'MMM dd, yyyy'), value: a.CreatedDate }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.CreatedDate = Created.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        this.pendinExpenseColArray.CreatedBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.ModifiedBy = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label));
-        this.pendinExpenseColArray.ModifiedDate = this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b; }).filter(ele => ele.label));
+        this.pendinExpenseColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
+        const Created = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { const b = { label: this.datePipe.transform(a.CreatedDate, 'MMM dd, yyyy'), value: a.CreatedDate }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.CreatedDate = Created.map(a => { const b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
+        this.pendinExpenseColArray.CreatedBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.ModifiedBy = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label));
+        this.pendinExpenseColArray.ModifiedDate = this.uniqueArrayObj(resArray.map(a => { const b = { label: this.datePipe.transform(a.Modified, 'MMM dd, yyyy'), value: a.Modified }; return b; }).filter(ele => ele.label));
     }
 
     uniqueArrayObj(array: any) {
         let sts: any = '';
         return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
-            let keys = {
+            const keys = {
                 label: label1,
                 value: array.find(s => s.label === label1).value
-            }
+            };
             return keys ? keys : '';
-        })
-    }
-
-    items: any[];
-    cancelRejectDialog: any = {
-        title: '',
-        text: ''
+        });
     }
 
     // Open popups
@@ -525,9 +553,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             ];
         }
     }
-
-    // CLick on Table Check box to Select All Row Item
-    selectedAllRowsItem: any = [];
 
     // selectedRowItemPC: any;
     onRowSelect(event) {
@@ -583,8 +608,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     cancelExpense() {
     }
-
-    selectedRowItem: any;
     openMenuContent(event, data) {
         console.log(JSON.stringify(data));
         this.selectedRowItem = data;
@@ -601,9 +624,9 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             this.cancelRejectDialog.text = event.item.label.replace('Expense', '');
         } else if (this.cancelRejectDialog.title.toLowerCase() === 'approve expense') {
             this.cancelRejectDialog.text = event.item.label.replace('Expense', '');
-            if (this.selectedRowItem.RequestType === "Invoice Payment") {
+            if (this.selectedRowItem.RequestType === 'Invoice Payment') {
                 this.addRemoveFormFieldForAE('Invoice Payment');
-            } else if (this.selectedRowItem.RequestType === "Credit Card") {
+            } else if (this.selectedRowItem.RequestType === 'Credit Card') {
                 this.addRemoveFormFieldForAE('Credit Card');
             }
 
@@ -643,12 +666,6 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         console.log('Payment Mode ', val);
     }
 
-    // Upload File
-
-    selectedFile: any;
-    filePathUrl: any;
-    fileReader: any;
-    fileUploadedUrl: any;
     onFileChange(event, folderName: string) {
         this.fileReader = new FileReader();
         if (event.target.files && event.target.files.length > 0) {
@@ -663,9 +680,9 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             }
             this.fileReader.readAsArrayBuffer(this.selectedFile);
             this.fileReader.onload = () => {
-                let date = new Date();
-                let folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
-                this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + "/_api/web/GetFolderByServerRelativeUrl(" + "'" + folderPath + "'" + ")/Files/add(url=@TargetFileName,overwrite='true')?" + "&@TargetFileName='" + this.selectedFile.name + "'";
+                const date = new Date();
+                const folderPath: string = this.globalService.sharePointPageObject.webRelativeUrl + '/SpendingInfoFiles/' + folderName + '/' + this.datePipe.transform(date, 'yyyy') + '/' + this.datePipe.transform(date, 'MMMM') + '/';
+                this.filePathUrl = this.globalService.sharePointPageObject.webRelativeUrl + '/_api/web/GetFolderByServerRelativeUrl(' + '\'' + folderPath + '\'' + ')/Files/add(url=@TargetFileName,overwrite=\'true\')?' + '&@TargetFileName=\'' + this.selectedFile.name + '\'';
             };
         }
     }
@@ -685,8 +702,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                     ApproverComments: this.approveExpense_form.value.ApproverComments,
                     ApproverFileUrl: this.fileUploadedUrl,
                     Status: 'Approved'
-                }
-                speInfoObj["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
+                };
+                speInfoObj['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
                 // let data = [];
                 for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
                     const element = this.selectedAllRowsItem[inv];
@@ -728,8 +745,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             const speInfoObj = {
                 ApproverComments: this.cancelReject_form.value.ApproverComments,
                 Status: 'Cancelled'
-            }
-            speInfoObj["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
+            };
+            speInfoObj['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
             // const spEndpoint = this.fdConstantsService.fdComponent.addUpdateSpendingInfo.update.replace("{{Id}}",
             //                       this.selectedRowItem.Id);
             // let data = [
@@ -754,11 +771,11 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
             // console.log('form is submitting ..... this.cancelReject_form ', this.cancelReject_form.value);
-            let speInfoObj = {
+            const speInfoObj = {
                 ApproverComments: this.cancelReject_form.value.ApproverComments,
                 Status: 'Rejected'
-            }
-            speInfoObj["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
+            };
+            speInfoObj['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
             // let data = [];
             for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
                 const element = this.selectedAllRowsItem[inv];
@@ -789,8 +806,8 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                     PayingEntity: this.approveExpense_form.value.PayingEntity.Title,
                     ApproverComments: this.approveExpense_form.value.ApproverComments,
                     Status: 'Approved Payment Pending'
-                }
-                speInfoObj["__metadata"] = { type: 'SP.Data.SpendingInfoListItem' };
+                };
+                speInfoObj['__metadata'] = { type: 'SP.Data.SpendingInfoListItem' };
                 // let data = [];
                 for (let inv = 0; inv < this.selectedAllRowsItem.length; inv++) {
                     const element = this.selectedAllRowsItem[inv];
@@ -814,35 +831,20 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         }
     }
 
-    batchContents: any = [];
     async submitForm(batchUrl, type: string) {
-        // console.log('Form is submitting');
-        // this.batchContents = [];
-        // const batchGuid = this.spServices.generateUUID();
-        // const changeSetId = this.spServices.generateUUID();
-        // dataEndpointArray.forEach(element => {
-        //     if (element)
-        //         this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId,
-        //               element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        // });
-
-        // this.batchContents.push('--changeset_' + changeSetId + '--');
-        // const batchBody = this.batchContents.join('\r\n');
-        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        // batchBodyContent.push('--batch_' + batchGuid + '--');
-        // const sBatchData = batchBodyContent.join('\r\n');
-        // const res = await this.spServices.getFDData(batchGuid, sBatchData);
-        // const arrResults = res;
-        // console.log('--oo ', arrResults);
         await this.spServices.executeBatch(batchUrl);
         if (type === 'Approve Expense') {
-            this.messageService.add({ key: 'pendingExpenseToast', severity: 'success', summary: 'Success message',
-                                     detail: 'Expense Approved.', life: 2000 });
+            this.messageService.add({
+                key: 'pendingExpenseToast', severity: 'success', summary: 'Success message',
+                detail: 'Expense Approved.', life: 2000
+            });
             this.displayModal = false;
             this.sendMailToSelectedLineItems(type);
         } else if (type === 'Cancel Expense' || type === 'Reject Expense') {
-            this.messageService.add({ key: 'pendingExpenseToast', severity: 'success', summary: 'Success message',
-                                     detail: 'Submitted.', life: 2000 })
+            this.messageService.add({
+                key: 'pendingExpenseToast', severity: 'success', summary: 'Success message',
+                detail: 'Submitted.', life: 2000
+            });
             this.displayModal = false;
             this.sendMailToSelectedLineItems(type);
         }
@@ -853,35 +855,31 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         for (let m = 0; m < this.selectedAllRowsItem.length; m++) {
             const element = this.selectedAllRowsItem[m];
             this.getPIorClient(element);
-            this.sendCreateExpenseMail(element, type);
+            this.sendApproveCanRejExpMail(element, type);
         }
     }
 
-    // Send Mail // Mail Content
-    mailContentRes: any;
     async getApproveExpenseMailContent(type) {
         // const mailContentEndpoint = this.fdConstantsService.fdComponent.mailContent;
-        let mailContentEndpoint = {
-            filter: this.fdConstantsService.fdComponent.mailContent.filter.replace("{{MailType}}", type),
+        const mailContentEndpoint = {
+            filter: this.fdConstantsService.fdComponent.mailContent.filter.replace('{{MailType}}', type),
             select: this.fdConstantsService.fdComponent.mailContent.select,
             top: this.fdConstantsService.fdComponent.mailContent.top,
-        }
+        };
 
-        let obj = [{
+        const obj = [{
             url: this.spServices.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
             type: 'GET',
             listName: this.constantService.listNames.MailContent.name
-        }]
+        }];
         const res = await this.spServices.executeBatch(obj);
         this.mailContentRes = res;
         console.log('Approve Mail Content res ', this.mailContentRes);
     }
 
-    selectedProjectInfo: any;
-    cleForselectedPI: any;
     getPIorClient(rowItem) {
         if (rowItem.ProjectCode && rowItem.ClientLegalEntity) {
-            let pc = rowItem.ProjectCode;
+            const pc = rowItem.ProjectCode;
             console.log('Project Code is ', pc);
             this.selectedProjectInfo = this.getPIByTitle(pc);
             console.log('this.selectedProjectInfo ', this.selectedProjectInfo);
@@ -895,32 +893,30 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     }
 
     getCleByPC(title) {
-        let found = this.cleData.find((x) => {
-            if (x.Title == title) {
+        const found = this.cleData.find((x) => {
+            if (x.Title === title) {
                 if (x.CMLevel1.hasOwnProperty('results')) {
                     this.selectedPI = x.CMLevel1.results;
                 }
                 return x;
             }
-        })
-        return found ? found : ''
+        });
+        return found ? found : '';
     }
 
-    selectedPI: any = [];
     getPIByTitle(title) {
-        let found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == title) {
+        const found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode === title) {
                 if (x.CMLevel1.hasOwnProperty('results')) {
                     this.selectedPI = x.CMLevel1.results;
                 }
                 console.log('this.selectedPI ', this.selectedPI);
                 return x;
             }
-        })
-        return found ? found : ''
+        });
+        return found ? found : '';
     }
 
-    cmLevelIdList: any = [];
     getResCatByCMLevel() {
         this.cmLevelIdList = [];
         for (let l = 0; l < this.selectedPI.length; l++) {
@@ -939,13 +935,12 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         this.resourceCatData();
     }
 
-    resCatEmails: any = [];
     resourceCatData() {
         for (let c = 0; c < this.cmLevelIdList.length; c++) {
             const element = this.cmLevelIdList[c];
             // this.resCatEmails.push(this.getResourceData(element))
-            let item = this.getResourceData(element);
-            item ? this.resCatEmails.push(item) : ''
+            const item = this.getResourceData(element);
+            item ? this.resCatEmails.push(item) : '';
             // if (item) {
             //     this.resCatEmails.push(item);
             // }
@@ -954,12 +949,12 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     }
 
     getResourceData(ele) {
-        let found = this.rcData.find((x) => {
-            if (x.UserName.ID == ele.ID) {
+        const found = this.rcData.find((x) => {
+            if (x.UserName.ID === ele.ID) {
                 return x;
             }
-        })
-        return found ? found : ''
+        });
+        return found ? found : '';
     }
 
     replaceContent(mailContent, key, value) {
@@ -967,94 +962,125 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     }
 
     getAuthor(id) {
-        let found = this.rcData.find((x) => {
-            if (x.UserName.ID == id) {
+        const found = this.rcData.find((x) => {
+            if (x.UserName.ID === id) {
                 return x;
             }
-        })
-        return found ? found : ''
+        });
+        return found ? found : '';
     }
 
-    sendCreateExpenseMail(expense, type: string) {
+    sendApproveCanRejExpMail(expense, type: string) {
         // let isCleData = this.getCleByPC(expense.projectCode);
-        let isCleData = this.cleForselectedPI;
-        let author = this.getAuthor(expense.AuthorId);
-        let val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.ProjectCode + ' (' + isCleData.ClientLegalEntity + ')' : expense.ProjectCode;
+        const isCleData = this.cleForselectedPI;
+        const author = this.getAuthor(expense.AuthorId);
+        const val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.ProjectCode + ' (' + isCleData.ClientLegalEntity + ')' : expense.ProjectCode;
 
         // var mailTemplate =  data.Status === "Approved" ? "ApproveExpense" :  data.Status === "Cancelled" ? "CancelExpense" : "RejectExpense";
-        var mailSubject = type === "Approve Expense" ? expense.ProjectCode + " : Expense Approved" : type === "Cancel Expense" ? expense.ProjectCode + " : Expense Cancelled" :
-            expense.ProjectCode + " : Expense Rejected";
+        const mailSubject = type === 'Approve Expense' ? expense.ProjectCode + ' : Expense Approved' : type === 'Cancel Expense' ? expense.ProjectCode + ' : Expense Cancelled' :
+            expense.ProjectCode + ' : Expense Rejected';
 
         let mailContent = this.mailContentRes[0].retItems[0].Content;
-        mailContent = this.replaceContent(mailContent, "@@Val1@@", val1);
-        mailContent = this.replaceContent(mailContent, "@@Val2@@", expense.Category);
-        mailContent = this.replaceContent(mailContent, "@@Val4@@", expense.ExpenseType);
-        mailContent = this.replaceContent(mailContent, "@@Val5@@", expense.Currency + ' ' + parseFloat(expense.Amount).toFixed(2));
-        mailContent = this.replaceContent(mailContent, "@@Val6@@", expense.ClientAmount ? expense.ClientCurrency + ' ' + parseFloat(expense.ClientAmount).toFixed(2) : '--');
-        mailContent = this.replaceContent(mailContent, "@@Val7@@", expense.Notes);
-        mailContent = this.replaceContent(mailContent, "@@Val10@@", this.approveExpense_form.value.ApproverComments ? this.approveExpense_form.value.ApproverComments : this.cancelReject_form.value.ApproverComments);
+        mailContent = this.replaceContent(mailContent, '@@Val1@@', val1);
+        mailContent = this.replaceContent(mailContent, '@@Val2@@', expense.Category);
+        mailContent = this.replaceContent(mailContent, '@@Val4@@', expense.ExpenseType);
+        mailContent = this.replaceContent(mailContent, '@@Val5@@', expense.Currency + ' ' + parseFloat(expense.Amount).toFixed(2));
+        mailContent = this.replaceContent(mailContent, '@@Val6@@', expense.ClientAmount ? expense.ClientCurrency + ' ' + parseFloat(expense.ClientAmount).toFixed(2) : '--');
+        mailContent = this.replaceContent(mailContent, '@@Val7@@', expense.Notes);
+        mailContent = this.replaceContent(mailContent, '@@Val10@@', this.approveExpense_form.value.ApproverComments ? this.approveExpense_form.value.ApproverComments : this.cancelReject_form.value.ApproverComments);
 
-        mailContent = this.replaceContent(mailContent, "@@Val0@@", expense.Id);
-        mailContent = this.replaceContent(mailContent, "@@Val13@@", author.hasOwnProperty('UserName') ? author.UserName.Title : 'Member');
-        mailContent = this.replaceContent(mailContent, "@@Val14@@", this.currentUserInfoData.Title);
-        if (type === "Approve Expense") {
-            mailContent = this.replaceContent(mailContent, "@@Val15@@", this.approveExpense_form.value.PayingEntity.Title);
-            if (expense.RequestType !== "Invoice Payment") {
-                mailContent = this.replaceContent(mailContent, "@@Val8@@", this.approveExpense_form.value.PaymentMode.value);
-                mailContent = this.replaceContent(mailContent, "@@Val9@@", this.datePipe.transform(this.approveExpense_form.value.DateSpend, 'dd MMMM yyyy, hh:mm a'));
-                mailContent = this.replaceContent(mailContent, "@@Val11@@", this.approveExpense_form.value.Number);
-                mailContent = this.replaceContent(mailContent, "@@Val12@@", this.globalService.sharePointPageObject.rootsite + '' + this.fileUploadedUrl);
+        mailContent = this.replaceContent(mailContent, '@@Val0@@', expense.Id);
+        mailContent = this.replaceContent(mailContent, '@@Val13@@', author.hasOwnProperty('UserName') ? author.UserName.Title : 'Member');
+        mailContent = this.replaceContent(mailContent, '@@Val14@@', this.currentUserInfoData.Title);
+        if (type === 'Approve Expense') {
+            mailContent = this.replaceContent(mailContent, '@@Val15@@', this.approveExpense_form.value.PayingEntity.Title);
+            if (expense.RequestType !== 'Invoice Payment') {
+                mailContent = this.replaceContent(mailContent, '@@Val8@@', this.approveExpense_form.value.PaymentMode.value);
+                mailContent = this.replaceContent(mailContent, '@@Val9@@', this.datePipe.transform(this.approveExpense_form.value.DateSpend, 'dd MMMM yyyy, hh:mm a'));
+                mailContent = this.replaceContent(mailContent, '@@Val11@@', this.approveExpense_form.value.Number);
+                mailContent = this.replaceContent(mailContent, '@@Val12@@', this.globalService.sharePointPageObject.rootsite + '' + this.fileUploadedUrl);
             } else {
-                mailContent = this.replaceContent(mailContent, "@@Val8@@", '');
-                mailContent = this.replaceContent(mailContent, "@@Val9@@", '');
-                mailContent = this.replaceContent(mailContent, "@@Val11@@", expense.Number);
-                mailContent = this.replaceContent(mailContent, "@@Val12@@", '');
-
+                mailContent = this.replaceContent(mailContent, '@@Val8@@', '');
+                mailContent = this.replaceContent(mailContent, '@@Val9@@', '');
+                mailContent = this.replaceContent(mailContent, '@@Val11@@', expense.Number);
+                mailContent = this.replaceContent(mailContent, '@@Val12@@', '');
             }
         }
 
-        var ccUser = [];
-        ccUser.push(this.currentUserInfoData.Email);
-        let tos = this.getTosList();
+        const ccUser = this.getCCList(type, expense);
+        // ccUser.push(this.currentUserInfoData.Email);
+        const tos = this.getTosList(type, expense);
         this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.isPSInnerLoaderHidden = false;
         this.reFetchData();
     }
 
-    getTosList() {
-        var approvers = this.groupInfo.results;
-        let itApprovers = this.groupITInfo.results;
-        var arrayTo = [];
-        if (approvers.length) {
-            for (var i in approvers) {
-                if (approvers[i].Email != undefined && approvers[i].Email != "") {
-                    arrayTo.push(approvers[i].Email);
-                }
-            }
-        }
+    getTosList(type: string, expense) {
+        let arrayTo = [];
+        const approvers = this.groupInfo.results;
+        if (type === 'Reject Expense' || type === 'Approve Expense') {
+            // Creator
+            arrayTo.push(expense.AuthorEMail);
 
-        if (itApprovers.length) {
-            for (var i in itApprovers) {
-                if (itApprovers[i].Email != undefined && itApprovers[i].Email != "") {
-                    arrayTo.push(itApprovers[i].Email);
-                }
+            // CS Team Member
+            if (this.resCatEmails.length) {
+                arrayTo = arrayTo.concat(this.fdDataShareServie.getCSMember(this.resCatEmails));
             }
-        }
 
-        if (this.resCatEmails.length) {
-            for (let e = 0; e < this.resCatEmails.length; e++) {
-                const element = this.resCatEmails[e];
-                if (element.UserName) {
-                    if (element.UserName.EMail)
-                        arrayTo.push(element.UserName.EMail);
-                } else if (element) {
-                    arrayTo.push(element.EMail);
+        } else if (type === 'Cancel Expense') {
+            // Expense Approver Member
+            if (approvers.length) {
+                for (const i in approvers) {
+                    if (approvers[i].Email !== undefined && approvers[i].Email !== '') {
+                        arrayTo.push(approvers[i].Email);
+                    }
                 }
             }
         }
+        // arrayTo.push(this.currentUserInfoData.Email);
         arrayTo = arrayTo.filter(this.onlyUnique);
         console.log('arrayTo ', arrayTo);
         return arrayTo;
+    }
+
+    getCCList(type: string, expense) {
+        let arrayCC = [];
+        const itApprovers = this.groupITInfo.results;
+        const approvers = this.groupInfo.results;
+        if (type === 'Cancel Expense') {
+            // CS Team Member
+            if (this.resCatEmails.length) {
+                arrayCC = arrayCC.concat(this.fdDataShareServie.getCSMember(this.resCatEmails));
+            }
+            // Current User
+            arrayCC.push(this.currentUserInfoData.Email);
+            // Creator
+            arrayCC.push(expense.AuthorEMail);
+            // Invoice Team Member
+            if (itApprovers.length) {
+                arrayCC = arrayCC.concat(this.fdDataShareServie.getITMember(itApprovers));
+            }
+
+        } else if (type === 'Reject Expense' || type === 'Approve Expense') {
+            // Current User
+            arrayCC.push(this.currentUserInfoData.Email);
+            // Expense Approver Member
+            if (approvers.length) {
+                for (const i in approvers) {
+                    if (approvers[i].Email !== undefined && approvers[i].Email !== '') {
+                        arrayCC.push(approvers[i].Email);
+                    }
+                }
+            }
+            // Invoice Team Member
+            if (itApprovers.length) {
+                arrayCC = arrayCC.concat(this.fdDataShareServie.getITMember(itApprovers));
+            }
+        }
+
+        arrayCC = arrayCC.filter(this.onlyUnique);
+        console.log('arrayCC ', arrayCC);
+        return arrayCC;
     }
 
     onlyUnique(value, index, self) {
@@ -1079,29 +1105,27 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     @HostListener('document:click', ['$event'])
     clickout(event) {
-        if (event.target.className === "pi pi-ellipsis-v") {
+        if (event.target.className === 'pi pi-ellipsis-v') {
             if (this.tempClick) {
-                this.tempClick.style.display = "none";
+                this.tempClick.style.display = 'none';
                 if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
                     this.tempClick = event.target.parentElement.children[0].children[0];
-                    this.tempClick.style.display = "";
+                    this.tempClick.style.display = '';
                 } else {
                     this.tempClick = undefined;
                 }
             } else {
                 this.tempClick = event.target.parentElement.children[0].children[0];
-                this.tempClick.style.display = "";
+                this.tempClick.style.display = '';
             }
 
         } else {
             if (this.tempClick) {
-                this.tempClick.style.display = "none";
+                this.tempClick.style.display = 'none';
                 this.tempClick = undefined;
             }
         }
     }
-
-    isOptionFilter: boolean;
     optionFilter(event: any) {
         if (event.target.value) {
             this.isOptionFilter = false;
@@ -1110,10 +1134,10 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
 
     ngAfterViewChecked() {
         if (this.pendingExpenses.length && this.isOptionFilter) {
-            let obj = {
+            const obj = {
                 tableData: this.pendingEnpenseTable,
                 colFields: this.pendinExpenseColArray
-            }
+            };
             if (obj.tableData.filteredValue) {
                 this.commonService.updateOptionValues(obj);
             } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {

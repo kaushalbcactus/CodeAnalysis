@@ -10,3 +10,7 @@
 ::ng-deep p-calendar > span > .ui-inputtext, .ui-inputtext:enabled:focus:not(.ui-state-error) {
     border: 1px solid #a6a6a6 !important;
 }
+
+::ng-deep p-calendar>span>input {
+    width: 22em !important;
+}
