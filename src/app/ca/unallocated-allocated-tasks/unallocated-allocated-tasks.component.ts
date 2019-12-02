@@ -10,7 +10,7 @@ import { Table } from 'primeng/table';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
-import { DialogService, ConfirmationService, MessageService, MenuItem, SelectItem } from 'primeng/primeng';
+import { DialogService, MessageService, MenuItem, SelectItem } from 'primeng/primeng';
 import { CaDragdropComponent } from '../ca-dragdrop/ca-dragdrop.component';
 import { async } from '@angular/core/testing';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
@@ -79,6 +79,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   storeTask: any;
   taskType: string;
   emailTemplate = undefined;
+  BudgetHoursTask = [];
+  BudgetHoursTaskenable = true;
   constructor(
     private spServices: SPOperationService,
     private globalConstant: ConstantsService,
@@ -90,7 +92,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     private route: ActivatedRoute,
     private usercapacityComponent: UsercapacityComponent,
     private datePipe: DatePipe,
-    private confirmationService: ConfirmationService,
+    // private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private commonService: CommonService,
     private cdr: ChangeDetectorRef,
@@ -736,45 +738,45 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   // Delete Task 
   // *****************************************************************************************************
 
-  async deleteTask(task, unt) {
-    this.confirmationService.confirm({
-      message: 'Do you want to delete this task?',
-      header: 'Delete Confirmation',
-      icon: 'pi pi-info-circle',
-      accept: () => {
-        this.messageService.add({
-          key: 'tc', severity: 'warn', sticky: true,
-          summary: 'Info Message', detail: 'Deleting Task...'
-        });
-        setTimeout(() => {
-          const nextTasks = [];
-          task.mileStoneTask.forEach(milTask => {
-            let taskArr = [];
-            taskArr = milTask.PrevTasks ? milTask.PrevTasks.split(";#") : [];
-            if (taskArr.indexOf(task.title) > -1) {
-              nextTasks.push(milTask);
-            }
-          });
-          const prevTasks = [];
-          task.mileStoneTask.forEach(milTask => {
-            let taskArr = [];
-            taskArr = milTask.NextTasks ? milTask.NextTasks.split(";#") : [];
-            if (taskArr.indexOf(task.title) > -1) {
-              prevTasks.push(milTask);
-            }
-          });
-          this.performDelete(task, nextTasks, prevTasks, unt);
-          this.messageService.clear('tc');
-        }, 500);
-      },
-      reject: () => {
-        this.messageService.add({
-          severity: 'warn', sticky: true,
-          summary: 'Info Message', detail: 'You have rejected'
-        });
-      }
-    });
-  }
+  // async deleteTask(task, unt) {
+  //   this.confirmationService.confirm({
+  //     message: 'Do you want to delete this task?',
+  //     header: 'Delete Confirmation',
+  //     icon: 'pi pi-info-circle',
+  //     accept: () => {
+  //       this.messageService.add({
+  //         key: 'tc', severity: 'warn', sticky: true,
+  //         summary: 'Info Message', detail: 'Deleting Task...'
+  //       });
+  //       setTimeout(() => {
+  //         const nextTasks = [];
+  //         task.mileStoneTask.forEach(milTask => {
+  //           let taskArr = [];
+  //           taskArr = milTask.PrevTasks ? milTask.PrevTasks.split(";#") : [];
+  //           if (taskArr.indexOf(task.title) > -1) {
+  //             nextTasks.push(milTask);
+  //           }
+  //         });
+  //         const prevTasks = [];
+  //         task.mileStoneTask.forEach(milTask => {
+  //           let taskArr = [];
+  //           taskArr = milTask.NextTasks ? milTask.NextTasks.split(";#") : [];
+  //           if (taskArr.indexOf(task.title) > -1) {
+  //             prevTasks.push(milTask);
+  //           }
+  //         });
+  //         this.performDelete(task, nextTasks, prevTasks, unt);
+  //         this.messageService.clear('tc');
+  //       }, 500);
+  //     },
+  //     reject: () => {
+  //       this.messageService.add({
+  //         severity: 'warn', sticky: true,
+  //         summary: 'Info Message', detail: 'You have rejected'
+  //       });
+  //     }
+  //   });
+  // }
 
 
   // ****************************************************************************************************
@@ -782,54 +784,54 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   // This method will also updates the Next and previous task.
   // *****************************************************************************************************
 
-  async performDelete(task, nextTasks, prevTasks, unt) {
-    if (task) {
-      const options = { 'NextTasks': '', 'PrevTasks': '', 'Status': 'Deleted' }
-      await this.spServices.updateItem(this.scheduleList, task.id, options, this.globalConstant.listNames.Schedules.type);
-    }
-    if (prevTasks) {
-      for (const tempTask of prevTasks) {
-        let sUpdateVal = tempTask.NextTasks ? tempTask.NextTasks.replace(task.title, task.NextTasks) : '';
-        sUpdateVal = this.caCommonService.getUniqueValues(sUpdateVal, ";#");
-        const options = { 'NextTasks': sUpdateVal }
-        await this.spServices.updateItem(this.scheduleList, tempTask.Id, options, this.globalConstant.listNames.Schedules.type);
-      }
-    }
-    if (nextTasks) {
-      for (const tempTask of
-        nextTasks) {
-        let sUpdateVal = tempTask.PrevTasks ? tempTask.PrevTasks.replace(task.title, task.PrevTasks) : '';
-        sUpdateVal = this.caCommonService.getUniqueValues(sUpdateVal, ";#");
-        const options = { 'PrevTasks': sUpdateVal }
-        await this.spServices.updateItem(this.scheduleList, tempTask.Id, options, this.globalConstant.listNames.Schedules.type);
-      }
-    }
+  // async performDelete(task, nextTasks, prevTasks, unt) {
+  //   if (task) {
+  //     const options = { 'NextTasks': '', 'PrevTasks': '', 'Status': 'Deleted' }
+  //     await this.spServices.updateItem(this.scheduleList, task.id, options, this.globalConstant.listNames.Schedules.type);
+  //   }
+  //   if (prevTasks) {
+  //     for (const tempTask of prevTasks) {
+  //       let sUpdateVal = tempTask.NextTasks ? tempTask.NextTasks.replace(task.title, task.NextTasks) : '';
+  //       sUpdateVal = this.caCommonService.getUniqueValues(sUpdateVal, ";#");
+  //       const options = { 'NextTasks': sUpdateVal }
+  //       await this.spServices.updateItem(this.scheduleList, tempTask.Id, options, this.globalConstant.listNames.Schedules.type);
+  //     }
+  //   }
+  //   if (nextTasks) {
+  //     for (const tempTask of
+  //       nextTasks) {
+  //       let sUpdateVal = tempTask.PrevTasks ? tempTask.PrevTasks.replace(task.title, task.PrevTasks) : '';
+  //       sUpdateVal = this.caCommonService.getUniqueValues(sUpdateVal, ";#");
+  //       const options = { 'PrevTasks': sUpdateVal }
+  //       await this.spServices.updateItem(this.scheduleList, tempTask.Id, options, this.globalConstant.listNames.Schedules.type);
+  //     }
+  //   }
 
-    this.messageService.add({
-      severity: 'success', summary: 'Success Message',
-      detail: task.title + ' deleted Sucessfully '
-    });
+  //   this.messageService.add({
+  //     severity: 'success', summary: 'Success Message',
+  //     detail: task.title + ' deleted Sucessfully '
+  //   });
 
-    const index = this.completeTaskArray.findIndex(item => item.id === task.id);
-    this.completeTaskArray.splice(index, 1);
-    let tempTaskArray = [];
-    const queryObj = {
-      projectCode: task.projectCode,
-      milestone: task.milestone
-    }
-    tempTaskArray.push(queryObj);
-    const arrMilestoneTasks = await this.caCommonService.getMilestoneSchedules(this.scheduleList, tempTaskArray);
-    for (const compTask of this.completeTaskArray) {
-      const index = arrMilestoneTasks[0].MilestoneTasks.findIndex(item => item.ID === compTask.id);
-      if (index > -1) {
-        compTask.PrevTasks = arrMilestoneTasks[0].MilestoneTasks[index].PrevTasks ? arrMilestoneTasks[0].MilestoneTasks[index].PrevTasks : '';
-        compTask.NextTasks = arrMilestoneTasks[0].MilestoneTasks[index].NextTasks ? arrMilestoneTasks[0].MilestoneTasks[index].NextTasks : '';
-      }
-      this.caCommonService.getMiscDates(compTask, arrMilestoneTasks);
-    }
-    this.caCommonService.filterAction(unt.sortField, unt.sortOrder, unt.filters.hasOwnProperty("global") ? unt.filters.global.value : null, unt.filters, unt.first, unt.rows
-      , this.completeTaskArray, this.filterColumns);
-  }
+  //   const index = this.completeTaskArray.findIndex(item => item.id === task.id);
+  //   this.completeTaskArray.splice(index, 1);
+  //   let tempTaskArray = [];
+  //   const queryObj = {
+  //     projectCode: task.projectCode,
+  //     milestone: task.milestone
+  //   }
+  //   tempTaskArray.push(queryObj);
+  //   const arrMilestoneTasks = await this.caCommonService.getMilestoneSchedules(this.scheduleList, tempTaskArray);
+  //   for (const compTask of this.completeTaskArray) {
+  //     const index = arrMilestoneTasks[0].MilestoneTasks.findIndex(item => item.ID === compTask.id);
+  //     if (index > -1) {
+  //       compTask.PrevTasks = arrMilestoneTasks[0].MilestoneTasks[index].PrevTasks ? arrMilestoneTasks[0].MilestoneTasks[index].PrevTasks : '';
+  //       compTask.NextTasks = arrMilestoneTasks[0].MilestoneTasks[index].NextTasks ? arrMilestoneTasks[0].MilestoneTasks[index].NextTasks : '';
+  //     }
+  //     this.caCommonService.getMiscDates(compTask, arrMilestoneTasks);
+  //   }
+  //   this.caCommonService.filterAction(unt.sortField, unt.sortOrder, unt.filters.hasOwnProperty("global") ? unt.filters.global.value : null, unt.filters, unt.first, unt.rows
+  //     , this.completeTaskArray, this.filterColumns);
+  // }
   // tslint:enable
   // ****************************************************************************************************
   // hide popup menu on production
@@ -930,7 +932,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         RestructureTasks.nodes = nodesNew;
 
         for (let task of RestructureTasks.nodes) {
-
+          debugger;
           const nextTasks = RestructureTasks.nodes.filter(c => RestructureTasks.links.filter(e => e.source ===
             task.id).map(d => d.target).includes(c.id)).map(c => c.label).join(';');
 
@@ -941,8 +943,39 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           task.DueDate = RowData.StartDate;
           if (SlotTasks.find(c => c.Id === task.dbId)) {
             task = SlotTasks.find(c => c.Id === task.dbId);
+            task.taskType = task.Task;
           } else {
             task.Status = 'Not Saved';
+          }
+
+          if (task.Status === 'Not Saved') {
+            task.projectCode = task.projectCode ? task.projectCode : task.ProjectCode;
+            const projectItem = this.projects.find(proj => proj.ProjectCode === task.projectCode);
+
+            if (projectItem.IsStandard === 'Yes') {
+              if (this.BudgetHoursTaskenable) {
+                const batchUrl = [];
+                const tasksObj = Object.assign({}, this.queryConfig);
+                tasksObj.url = this.spServices.getReadURL(this.globalConstant.listNames.MilestoneSubTaskMatrix.name,
+                  this.caConstant.GetTaskBudgetHours);
+                tasksObj.url = tasksObj.url.replace(/{{ClientLegalEntity}}/gi, projectItem.ClientLegalEntity)
+                  .replace(/{{StandardService}}/gi, projectItem.StandardService)
+                  .replace(/{{Milestone}}/gi, RowData.Milestone);
+                tasksObj.listName = this.globalConstant.listNames.MilestoneSubTaskMatrix.name;
+                tasksObj.type = 'GET';
+                batchUrl.push(tasksObj);
+                const arrResult = await this.spServices.executeBatch(batchUrl);
+                const response = arrResult.length ? arrResult[0].retItems : [];
+                this.BudgetHoursTask = response;
+                this.BudgetHoursTaskenable = false;
+              }
+              if (this.BudgetHoursTask.length > 0) {
+                if (this.BudgetHoursTask.find(c => c.Title === task.taskType)) {
+                  task.EstimatedTime = this.BudgetHoursTask.find(c => c.Title === task.taskType).Hours;
+                }
+              }
+            }
+
           }
           if (task.previousTask !== previousTasks || task.nextTask !== nextTasks) {
 
@@ -1417,7 +1450,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
             detail: 'Allocated time for task cannot be equal or less than 0 for '
-              + slot.Milestone + ' - ' + checkTaskAllocatedTime[0].Task
+              + slot.ProjectCode + '-' + slot.Milestone + ' - ' + checkTaskAllocatedTime[0].Task
           });
           return false;
         }
@@ -1428,7 +1461,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
             detail: 'End date should be greater than start date of ' + compareDates[0].TaskName + ' task of ' +
-              slot.Milestone + ' - ' + slot.Task
+              + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task
           });
           return false;
         }
@@ -1447,7 +1480,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         if (!validateAllocation) {
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'All tasks of ' + slot.Milestone + ' - ' + slot.Task + ' should be assigned to   resource.'
+            detail: 'All tasks of ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task + ' should be assigned to   resource.'
           });
           return false;
         }
@@ -1462,7 +1495,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
             // tslint:disable-next-line: max-line-length
-            detail: 'start date of ' + compareTaskDates[0].TaskName + ' task  should be greater than start date of ' + slot.Milestone + ' - ' + slot.Task
+            detail: 'start date of ' + compareTaskDates[0].TaskName + ' task  should be greater than start date of ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task
           });
           return false;
         }
@@ -1473,7 +1506,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
             // tslint:disable-next-line: max-line-length
-            detail: 'end date of ' + compareTaskEndDates[0].TaskName + ' task  should be less than end date of ' + slot.Milestone + ' - ' + slot.Task
+            detail: 'end date of ' + compareTaskEndDates[0].TaskName + ' task  should be less than end date of ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task
           });
           return false;
         }
@@ -1504,7 +1537,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
             detail: 'Start Date of ' + SDTask.TaskName + '  should be greater than end date of ' +
-              task.TaskName + ' in ' + slot.Milestone + ' - ' + slot.Task,
+              task.TaskName + ' in ' + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task,
           });
           errorPresnet = true;
           break;

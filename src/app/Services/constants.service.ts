@@ -239,6 +239,10 @@ export class ConstantsService {
       name: 'MilestoneMatrix',
       type: 'SP.Data.MilestoneMatrixListItem'
     },
+    MilestoneSubTaskMatrix: {
+      name: 'MilestoneSubTaskMatrix',
+      type: 'SP.Data.MilestoneSubTaskMatrixListItem'
+    },
     MilestoneTaskMatrix: {
       name: 'MilestoneTaskMatrix',
       type: 'SP.Data.MilestoneTaskMatrixListItem'
