@@ -425,9 +425,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   // Column filter for search
   // *************************************************************************************************************************************
 
-
-
-
   createColFieldValues(resArray) {
     this.AllTaskColArray.TaskStatus = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj
       (resArray.map(a => { const b = { label: a.TaskStatus, value: a.TaskStatus }; return b; })));
@@ -583,7 +580,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   }
 
 
-
   // *************************************************************************************************************************************
   // Dialog to display task and time spent
   // *************************************************************************************************************************************
@@ -723,15 +719,11 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     });
   }
 
-
-
   // *************************************************************************************************************************************
   //  save / Update task comment
   // *************************************************************************************************************************************
 
-
   async UpdateComment(comment, task) {
-
     const data = {
       TaskComments: comment
     };
@@ -739,59 +731,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, data, 'SP.Data.SchedulesListItem');
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
   }
-
-  // **************************************************************************************************
-  //  get Previous Task Status
-  // ***************************************************************************************************
-
-  // async getPrevTaskStatus(task) {
-  //   let status = '';
-  //   // this.batchContents = new Array();
-  //   // const batchGuid = this.spServices.generateUUID();
-
-  //   // const previousTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousTaskStatus);
-  //   // previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi,
-  //   // this.sharedObject.sharePointPageObject.userId.toString());
-
-  //   // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
-  //   // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
-
-  //   // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-  //   const previousTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousTaskStatus);
-  //   previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
-  //   this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousTask);
-  //   this.response.forEach(async element => {
-  //     if (element.AllowCompletion === 'No') {
-  //       let previousTaskFilter = '';
-  //       if (element.PrevTasks) {
-  //         const previousTasks = task.PrevTasks.split(';#');
-  //         previousTasks.forEach((value, i) => {
-  //           previousTaskFilter += '(Title eq \'' + value + '\')';
-  //           previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
-  //         });
-
-  //         const previousTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.taskStatus);
-  //         previousTask.filter = previousTaskFilter;
-  //         this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousTask);
-  //         this.response.forEach(element => {
-  //           status = element.Status;
-  //         });
-
-  //       } else {
-  //         status = 'AllowCompletion';
-  //       }
-  //     } else {
-  //       status = 'AllowCompletion';
-  //     }
-  //   });
-  //   return status;
-  // }
-
-
-  // *************************************************************************************************************************************
-  // load component for  upload document
-  // *************************************************************************************************************************************
-
 
   async getAddUpdateDocument(task) {
 
@@ -871,7 +810,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       listName: this.constants.listNames.ProjectInformation.name
     });
 
-
     const currentParentTasks = await this.spServices.executeBatch(batchURL);
     const parentTaskRes = currentParentTasks.length ? currentParentTasks[0].retItems[0] : [];
     const currentTaskRes = currentParentTasks.length ? currentParentTasks[1].retItems[0] : [];
@@ -880,8 +818,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       if (parentTaskRes.Status !== 'Completed') {
         const ctDueDate = new Date(this.datePipe.transform(currentTaskRes.DueDate, 'MMM d, y h:mm a'));
         const todayDate = new Date();
+        const ONE_HOUR = 60 * 60 * 1000;
+        const timeDiff = ctDueDate.getTime() - todayDate.getTime();
         const pcmLevels: any[] = this.getCSDetails(projInfoRes);
-        if (ctDueDate > todayDate) {
+        if (ctDueDate > todayDate && timeDiff > ONE_HOUR) {
           const earlyTaskCompleteObj = {
             Title: currentTaskRes.Title,
             ProjectCode: currentTaskRes.ProjectCode,

@@ -1,5 +1,5 @@
 
-import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ApplicationRef, NgZone,ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { MessageService, Message, SelectItem } from 'primeng/api';
 import { Calendar, DataTable } from 'primeng/primeng';
 import { ConfirmationService } from 'primeng/api';
@@ -22,56 +22,6 @@ import { Router } from '@angular/router';
     encapsulation: ViewEncapsulation.None
 })
 export class DeliverableBasedComponent implements OnInit, OnDestroy {
-    tempClick: any;
-    deliverableBasedRes: any = [];
-    deliverableBasedCols: any[];
-    msgs: Message[] = [];
-
-    // Address Type
-    addressTypes: any = [];
-
-    // Edit Deliverable Form
-    editDeliverable_form: FormGroup;
-
-    // Show Hide Requesr Expense Modal
-    showHideREModal: boolean = false;
-
-    formSubmit: any = {
-        isSubmit: false
-    }
-    submitBtn: any = {
-        isClicked: false
-    }
-    minScheduleDate: Date = new Date();
-    minimumDate = new Date();
-    // Loadder
-
-    // Right side bar
-    rightSideBar: boolean = false;
-
-    // For Mail
-    currentUserInfoData: any;
-    groupInfo: any;
-    groupITInfo: any;
-
-    // Date Range
-    rangeDates: Date[];
-
-    DateRange: any = {
-        startDate: '',
-        endDate: '',
-    };
-    public queryConfig = {
-        data: null,
-        url: '',
-        type: '',
-        listName: ''
-    };
-    // List of Subscribers
-    private subscription: Subscription = new Subscription();
-
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-    @ViewChild('db', { static: false }) deliverableTable: DataTable;
     constructor(
         private confirmationService: ConfirmationService,
         private fb: FormBuilder,
@@ -105,8 +55,148 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         _router.events.subscribe((uri) => {
             zone.run(() => _applicationRef.tick());
         });
-        
+
     }
+
+    get isValidEditDeliverableForm() {
+        return this.editDeliverable_form.controls;
+    }
+    tempClick: any;
+    deliverableBasedRes: any = [];
+    deliverableBasedCols: any[];
+    msgs: Message[] = [];
+
+    // Address Type
+    addressTypes: any = [];
+
+    // Edit Deliverable Form
+    editDeliverable_form: FormGroup;
+
+    // Show Hide Requesr Expense Modal
+    showHideREModal: boolean = false;
+
+    formSubmit: any = {
+        isSubmit: false
+    };
+    submitBtn: any = {
+        isClicked: false
+    };
+    minScheduleDate: Date = new Date();
+    minimumDate = new Date();
+    // Loadder
+
+    // Right side bar
+    rightSideBar: boolean = false;
+
+    // For Mail
+    currentUserInfoData: any;
+    groupInfo: any;
+    groupITInfo: any;
+
+    // Date Range
+    rangeDates: Date[];
+
+    DateRange: any = {
+        startDate: '',
+        endDate: '',
+    };
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+    };
+    // List of Subscribers
+    private subscription: Subscription = new Subscription();
+
+    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+    @ViewChild('db', { static: false }) deliverableTable: DataTable;
+    // Project Info
+    projectInfoData: any = [];
+
+    // Purchase Order Number
+    purchaseOrdersList: any = [];
+
+    // Project COntacts
+    projectContactsData: any = [];
+
+    // Client Legal Entity
+    cleData: any = [];
+
+    // Resource Categorization
+    rcData: any = [];
+
+
+    deliverableBasedColArray = {
+        ProjectCode: [],
+        SOWValue: [],
+        ProjectMileStone: [],
+        POValues: [],
+        ClientName: [],
+        ScheduledDate: [],
+        Amount: [],
+        Currency: [],
+        POCName: []
+    };
+
+    // CLick on Table Check box to Select All Row Item
+    selectedAllRowsItem: any = [];
+
+
+
+    items: any[];
+    deliverableDialog: any = {
+        title: '',
+        text: ''
+    };
+
+    deliverableModal: boolean = false;
+    selectedRowItem: any;
+
+    listOfPOCNames: SelectItem[];
+
+
+    // Send Mail
+
+    // Mail Content
+    mailContentRes: any;
+
+    selectedProjectInof: any;
+    cleForselectedPI: any;
+    // getPIorClient(rowItem) {
+    //     if (rowItem.ProjectCode.includes(' / ')) {
+    //         let pc = rowItem.ProjectCode.substr(0, rowItem.ProjectCode.indexOf(' / '));
+    //         console.log('Project Code is ', pc);
+    //         this.selectedProjectInof = this.getPIByTitle(pc);
+    //         console.log('this.selectedProjectInof ', this.selectedProjectInof);
+    //         this.getResCatByCMLevel();
+    //         this.cleForselectedPI = this.getCleByPC(rowItem.ProjectCode);
+    //     } else {
+    //         this.cleForselectedPI = this.getCleByPC(rowItem.ProjectCode);
+    //         console.log('this.cleForselectedPI ', this.cleForselectedPI);
+    //         this.getResCatByCMLevel();
+    //     }
+    // }
+
+    // getCleByPC(title) {
+    //     let found = this.cleData.find((x) => {
+    //         if (x.Title == title) {
+    //             if (x.CMLevel1.hasOwnProperty('results')) {
+    //                 this.selectedPI = x.CMLevel1.results;
+    //             }
+    //             return x;
+    //         }
+    //     })
+    //     return found ? found : ''
+    // }
+
+    selectedPI: any = [];
+
+    cmLevelIdList: any = [];
+
+    resCatEmails: any = [];
+
+    isOptionFilter: boolean;
 
     async ngOnInit() {
         // SetDefault Values
@@ -116,8 +206,8 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             const next3Months = this.commonService.getNextWorkingDay(65, new Date());
             const last1Year = this.commonService.getLastWorkingDay(260, new Date());
             this.rangeDates = [last1Year, next3Months];
-            this.DateRange.startDate = new Date(this.datePipe.transform(this.rangeDates[0], "yyyy-MM-dd") + " 00:00:00").toISOString();
-            this.DateRange.endDate = new Date(this.datePipe.transform(this.rangeDates[1], "yyyy-MM-dd") + " 23:59:00").toISOString();
+            this.DateRange.startDate = new Date(this.datePipe.transform(this.rangeDates[0], 'yyyy-MM-dd') + ' 00:00:00').toISOString();
+            this.DateRange.endDate = new Date(this.datePipe.transform(this.rangeDates[1], 'yyyy-MM-dd') + ' 23:59:00').toISOString();
             this.fdDataShareServie.scheduleDateRange = this.DateRange;
         }
 
@@ -152,34 +242,26 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     updateCalendarUI(calendar: Calendar) {
         calendar.updateUI();
     }
-    // Project Info
-    projectInfoData: any = [];
     async projectInfo() {
         // Check PI list
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-        let data = await this.fdDataShareServie.checkProjectsAvailable();
+        const data = await this.fdDataShareServie.checkProjectsAvailable();
 
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
             if (res) {
                 this.projectInfoData = res;
                 console.log('PI Data ', this.projectInfoData);
             }
-        }))
+        }));
     }
-
-    // Purchase Order Number
-    purchaseOrdersList: any = [];
     poInfo() {
         this.subscription.add(this.fdDataShareServie.defaultPoData.subscribe((res) => {
             if (res) {
                 this.purchaseOrdersList = res;
                 console.log('PO Data ', this.purchaseOrdersList);
             }
-        }))
+        }));
     }
-
-    // Project COntacts
-    projectContactsData: any = [];
     projectContacts() {
         this.subscription.add(this.fdDataShareServie.defaultPCData.subscribe((res) => {
             if (res) {
@@ -187,29 +269,23 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 console.log('this.projectContactsData ', this.projectContactsData);
                 // this.getPCForSentToAMForApproval();
             }
-        }))
+        }));
     }
-
-    // Client Legal Entity
-    cleData: any = [];
     cleInfo() {
         this.subscription.add(this.fdDataShareServie.defaultCLEData.subscribe((res) => {
             if (res) {
                 this.cleData = res;
                 console.log('Client Legal Entity ', this.cleData);
             }
-        }))
+        }));
     }
-
-    // Resource Categorization
-    rcData: any = [];
     resourceCInfo() {
         this.subscription.add(this.fdDataShareServie.defaultRCData.subscribe((res) => {
             if (res) {
                 this.rcData = res;
                 console.log('Resource Categorization ', this.rcData);
             }
-        }))
+        }));
     }
 
 
@@ -217,7 +293,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         this.addressTypes = [
             { label: 'Client', value: 'Client' },
             { label: 'POC', value: 'POC' },
-        ]
+        ];
     }
 
     createEditDeliverableFormField() {
@@ -230,7 +306,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             ScheduledDate: ['', Validators.required],
             POCName: ['', Validators.required],
             AddressType: ['', Validators.required],
-        })
+        });
     }
 
     createDBICols() {
@@ -312,7 +388,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             if (x.ProjectCode === element.Title) {
                 return x;
             }
-        })
+        });
 
         if (project) {
             return true;
@@ -325,21 +401,21 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         this.selectedAllRowsItem = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
-            let piInfo = await this.getMilestones(element);
+            const piInfo = await this.getMilestones(element);
             // let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
             // if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
             //     resCInfo = resCInfo.UserName.Title
             // }
-            let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
-            let sowCode = element.SOWCode ? element.SOWCode : '';
-            let sowName = sowItem.Title ? sowItem.Title : '';
+            const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
+            const sowCode = element.SOWCode ? element.SOWCode : '';
+            const sowName = sowItem.Title ? sowItem.Title : '';
             let sowcn = sowCode + ' ' + sowName;
             if (sowCode && sowName) {
                 sowcn = sowCode + ' / ' + sowName;
             }
-            let poItem = await this.getPONumber(element);
+            const poItem = await this.getPONumber(element);
             let pnumber = poItem.Number ? poItem.Number : '';
-            let pname = poItem.Name ? poItem.Name : '';
+            const pname = poItem.Name ? poItem.Name : '';
             if (pnumber === 'NA') {
                 pnumber = '';
             }
@@ -347,7 +423,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             if (pname && pnumber) {
                 ponn = pnumber + ' / ' + pname;
             }
-            let POValues = ponn;
+            const POValues = ponn;
             this.deliverableBasedRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
@@ -359,7 +435,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 PONumber: poItem.Number,
                 PO: element.PO,
                 POCId: element.MainPOC,
-                ClientName: piInfo.ClientLegalEntity,//this.getCLE(element),
+                ClientName: piInfo.ClientLegalEntity, // this.getCLE(element),
                 ScheduledDate: new Date(this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy')), //this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
                 ScheduledDateFormat: this.datePipe.transform(element.ScheduledDate, 'MMM dd, yyyy'),
                 Amount: element.Amount,
@@ -379,7 +455,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 Template: element.Template,
                 Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyyy'),
                 ModifiedBy: element.Editor ? element.Editor.Title : ''
-            })
+            });
         }
         this.deliverableBasedRes = [...this.deliverableBasedRes];
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
@@ -388,55 +464,55 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     // Project PO
     getPONumber(poId) {
-        let found = this.purchaseOrdersList.find((x) => {
+        const found = this.purchaseOrdersList.find((x) => {
             if (x.ID === poId.PO) {
                 return x;
             }
-        })
-        return found ? found : ''
+        });
+        return found ? found : '';
     }
 
     getPO(poId) {
-        let found = this.purchaseOrdersList.find((x) => {
+        const found = this.purchaseOrdersList.find((x) => {
             if (x.ID === poId) {
                 return x;
             }
-        })
-        return found ? found : ''
+        });
+        return found ? found : '';
     }
 
     getPOCName(poc: any) {
-        let found = this.projectContactsData.find((x) => {
+        const found = this.projectContactsData.find((x) => {
             if (x.ID === poc.MainPOC) {
                 return x;
             }
-        })
-        return found ? found.FName + ' ' + found.LName : ''
+        });
+        return found ? found.FName + ' ' + found.LName : '';
     }
 
     // Project Current Milestones
     getMilestones(pc: any) {
-        let found = this.projectInfoData.find((x) => {
+        const found = this.projectInfoData.find((x) => {
             if (x.ProjectCode == pc.Title) {
                 return x;
             }
-        })
+        });
         return found ? found : '';
     }
 
     // Project Current Milestones
     getPracticeArea(pc: any) {
-        let found = this.projectInfoData.find((x) => {
+        const found = this.projectInfoData.find((x) => {
             if (x.ProjectCode == pc.Title) {
                 return x;
             }
-        })
+        });
         return found ? found : '';
     }
 
     getCSDetails(res) {
         if (res.hasOwnProperty('CS') && res.CS.hasOwnProperty('results') && res.CS.results.length) {
-            let title = [];
+            const title = [];
             for (let i = 0; i < res.CS.results.length; i++) {
                 const element = res.CS.results[i];
                 title.push(element.Title);
@@ -447,32 +523,19 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         }
     }
 
-
-    deliverableBasedColArray = {
-        ProjectCode: [],
-        SOWValue: [],
-        ProjectMileStone: [],
-        POValues: [],
-        ClientName: [],
-        ScheduledDate: [],
-        Amount: [],
-        Currency: [],
-        POCName: []
-    }
-
     createColFieldValues(resArray) {
-        this.deliverableBasedColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.SOWValue = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.ClientName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientName, value: a.ClientName }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.SOWValue = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.ProjectMileStone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.ClientName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ClientName, value: a.ClientName }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.POValues = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.POValues, value: a.POValues }; return b; }).filter(ele => ele.label)));
 
-        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
-        this.deliverableBasedColArray.ScheduledDate = scheduledDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-        const amount = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
-        this.deliverableBasedColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label')
+        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { const b = { label: this.datePipe.transform(a.ScheduledDate, 'MMM dd, yyyy'), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
+        this.deliverableBasedColArray.ScheduledDate = scheduledDate.map(a => { const b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
+        const amount = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.Amount, value: a.Amount }; return b; }).filter(ele => ele.label));
+        this.deliverableBasedColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
     }
 
     uniqueArrayObj(array: any) {
@@ -481,12 +544,9 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             return {
                 label: label1,
                 value: array.find(s => s.label === label1).value
-            }
-        })
+            };
+        });
     }
-
-    // CLick on Table Check box to Select All Row Item
-    selectedAllRowsItem: any = [];
 
     onRowSelect(event) {
         console.log(this.selectedAllRowsItem);
@@ -516,14 +576,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             }
         });
     }
-
-
-
-    items: any[];
-    deliverableDialog: any = {
-        title: '',
-        text: ''
-    }
     // Open popups
     openPopup(data, popUpData) {
         this.items = [];
@@ -535,18 +587,29 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
         const last3Days = this.commonService.getLastWorkingDay(3, new Date());
         const projectData = this.projectInfoData.find(e => e.ProjectCode === data.ProjectCode);
-        const currentDay = new Date(this.datePipe.transform(new Date(), "yyyyMMdd"));
-        if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= new Date() &&
+        const todaysDateTimeZero = new Date();
+        todaysDateTimeZero.setHours(0, 0, 0, 0);
+        if (date >= last3Days && date < lastDay && retPO && new Date(retPO.POExpiryDate) >= todaysDateTimeZero &&
             (projectData && projectData.Status !== this.constantService.projectList.status.InDiscussion &&
                 projectData.Status !== this.constantService.projectList.status.AwaitingCancelApproval)) {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
             if (!(date >= last3Days && date <= lastDay)) {
-                this.messageService.add({ key: 'deliverableInfoToast', severity: 'info', summary: 'Info message', detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month..', life: 4000 })
+                this.messageService.add({
+                    key: 'deliverableInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.',
+                    life: 4000
+                });
             } else if (!retPO) {
-                this.messageService.add({ key: 'deliverableInfoToast', severity: 'info', summary: 'Info message', detail: 'PO not available for the selected line item.', life: 4000 })
-            } else if (!(new Date(retPO.POExpiryDate) >= new Date())) {
-                this.messageService.add({ key: 'deliverableInfoToast', severity: 'info', summary: 'Info message', detail: 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), life: 4000 })
+                this.messageService.add({
+                    key: 'deliverableInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'PO not available for the selected line item.', life: 4000
+                });
+            } else if (!(new Date(retPO.POExpiryDate) >= todaysDateTimeZero)) {
+                this.messageService.add({
+                    key: 'deliverableInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), life: 4000
+                });
             }
         }
         this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });
@@ -554,9 +617,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         this.items.push({ label: 'Details', command: (e) => this.openMenuContent(e, data) });
         this.items.push({ label: 'Show History', command: (e) => this.openMenuContent(e, data) });
     }
-
-    deliverableModal: boolean = false;
-    selectedRowItem: any;
     openMenuContent(event, data) {
         console.log(JSON.stringify(data));
         this.selectedRowItem = data;
@@ -572,7 +632,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             this.updateInvoice();
             this.getPOCNamesForEditInv(data);
         } else if (this.deliverableDialog.title.toLowerCase() === 'view project details') {
-            this.goToProjectDetails(this.selectedRowItem)
+            this.goToProjectDetails(this.selectedRowItem);
         } else if (this.deliverableDialog.title.toLowerCase() === 'show history') {
             this.timeline.showTimeline(data.Id, 'FD', 'InvoiceLineItems');
         } else if (event.item.label === 'Details') {
@@ -605,12 +665,10 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         const last3Days = this.commonService.getLastWorkingDay(3, new Date());
         this.minScheduleDate = last3Days;
     }
-
-    listOfPOCNames: SelectItem[];
     getPOCNamesForEditInv(rowItem: any) {
 
         this.listOfPOCNames = [];
-        var rowVal: any = {}
+        let rowVal: any = {};
         this.projectContactsData.filter((item) => {
             if (item.ClientLegalEntity === rowItem.ClientName) {
                 this.listOfPOCNames.push(item);
@@ -629,10 +687,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     pocChange(event) {
         console.log('event ', event);
-    }
-
-    get isValidEditDeliverableForm() {
-        return this.editDeliverable_form.controls;
     }
 
     cancelFormSub(formType) {
@@ -659,14 +713,6 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             iliObj.type = 'PATCH';
             iliObj.data = iliData;
             batchUrl.push(iliObj);
-            // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);
-            // let data = [
-            //     {
-            //         objData: obj,
-            //         endpoint: endpoint,
-            //         requestPost: false
-            //     }
-            // ]
             this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
             this.submitForm(batchUrl, type);
 
@@ -680,7 +726,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 AddressType: this.editDeliverable_form.value.AddressType.value,
                 ScheduledDate: this.editDeliverable_form.value.ScheduledDate,
                 MainPOC: this.editDeliverable_form.value.POCName.ID
-            }
+            };
             iliData['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
             const iliObj = Object.assign({}, this.queryConfig);
             iliObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, +this.selectedRowItem.Id);
@@ -688,120 +734,37 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
             iliObj.type = 'PATCH';
             iliObj.data = iliData;
             batchUrl.push(iliObj);
-            // const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);;
-            // let data = [
-            //     {
-            //         objData: obj1,
-            //         endpoint: endpoint,
-            //         requestPost: false
-            //     }
-            // ]
             this.submitForm(batchUrl, type);
             this.cancelFormSub('editDeliverable');
-            // this.submitForm();
         }
     }
 
     // batchContents: any = [];
     async submitForm(batchUrl, type: string) {
-        // console.log('Form is submitting');
-
-        // this.batchContents = [];
-        // const batchGuid = this.spServices.generateUUID();
-        // const changeSetId = this.spServices.generateUUID();
-
-        // // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        // console.log(' dataEndpointArray ', dataEndpointArray);
-        // dataEndpointArray.forEach(element => {
-        //     if (element)
-        //         this.batchContents = [...this.batchContents,
-        //  ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        // });
-
-        // console.log("this.batchContents ", JSON.stringify(this.batchContents));
-
-        // this.batchContents.push('--changeset_' + changeSetId + '--');
-        // const batchBody = this.batchContents.join('\r\n');
-        // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        // batchBodyContent.push('--batch_' + batchGuid + '--');
-        // const sBatchData = batchBodyContent.join('\r\n');
-        // const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
-        // const arrResults = res;
-        // console.log('--oo ', arrResults);
         await this.spServices.executeBatch(batchUrl);
-        if (type === "confirmInvoice") {
+        if (type === 'confirmInvoice') {
             this.messageService.add({
                 key: 'deliverableSuccessToast', severity: 'success',
                 summary: 'Success message', detail: 'Invoice is Confirmed.', life: 2000
             });
-            this.sendCreateExpenseMail();
-        } else if (type === "editInvoice") {
+            this.invoiceConfirmMail();
+        } else if (type === 'editInvoice') {
             this.messageService.add({
                 key: 'deliverableSuccessToast', severity: 'success',
                 summary: 'Success message', detail: 'Invoice Updated.', life: 2000
-            })
+            });
             this.reFetchData();
         }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
-        // });
     }
 
-
-    // Send Mail
-
-    // Mail Content
-    mailContentRes: any;
     async getApproveExpenseMailContent(type) {
-        // const mailContentEndpoint = this.fdConstantsService.fdComponent.mailContent;
         const objMail = Object.assign({}, this.fdConstantsService.fdComponent.mailContent);
         objMail.filter = objMail.filter.replace('{{MailType}}', type);
         const res = await this.spServices.readItems(this.constantService.listNames.MailContent.name, objMail);
-        // let mailContentEndpoint = {
-        //     filter: this.fdConstantsService.fdComponent.mailContent.filter.replace("{{MailType}}", type),
-        //     select: this.fdConstantsService.fdComponent.mailContent.select,
-        //     top: this.fdConstantsService.fdComponent.mailContent.top,
-        // }
-
-        // let obj = [{
-        //     url: this.spServices.getReadURL(this.constantService.listNames.MailContent.name, mailContentEndpoint),
-        //     type: 'GET',
-        //     listName: this.constantService.listNames.MailContent.name
-        // }]
-        // const res = await this.spServices.executeBatch(obj);
         this.mailContentRes = res.length ? res : [];
-        // console.log('Approve Mail Content res ', this.mailContentRes);
     }
 
-    selectedProjectInof: any;
-    cleForselectedPI: any;
-    // getPIorClient(rowItem) {
-    //     if (rowItem.ProjectCode.includes(' / ')) {
-    //         let pc = rowItem.ProjectCode.substr(0, rowItem.ProjectCode.indexOf(' / '));
-    //         console.log('Project Code is ', pc);
-    //         this.selectedProjectInof = this.getPIByTitle(pc);
-    //         console.log('this.selectedProjectInof ', this.selectedProjectInof);
-    //         this.getResCatByCMLevel();
-    //         this.cleForselectedPI = this.getCleByPC(rowItem.ProjectCode);
-    //     } else {
-    //         this.cleForselectedPI = this.getCleByPC(rowItem.ProjectCode);
-    //         console.log('this.cleForselectedPI ', this.cleForselectedPI);
-    //         this.getResCatByCMLevel();
-    //     }
-    // }
-
-    // getCleByPC(title) {
-    //     let found = this.cleData.find((x) => {
-    //         if (x.Title == title) {
-    //             if (x.CMLevel1.hasOwnProperty('results')) {
-    //                 this.selectedPI = x.CMLevel1.results;
-    //             }
-    //             return x;
-    //         }
-    //     })
-    //     return found ? found : ''
-    // }
-
-    selectedPI: any = [];
     getPIByTitle(title) {
         const found = this.projectInfoData.find((x) => {
             if (x.ProjectCode === title.ProjectCode) {
@@ -812,11 +775,9 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
                 this.getResCatByCMLevel();
                 return x;
             }
-        })
-        return found ? found : ''
+        });
+        return found ? found : '';
     }
-
-    cmLevelIdList: any = [];
     getResCatByCMLevel() {
         this.cmLevelIdList = [];
         for (let l = 0; l < this.selectedPI.length; l++) {
@@ -834,82 +795,54 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         this.resCatEmails = [];
         this.resourceCatData();
     }
-
-    resCatEmails: any = [];
     resourceCatData() {
         for (let c = 0; c < this.cmLevelIdList.length; c++) {
             const element = this.cmLevelIdList[c];
-            let item = this.getResourceData(element);
+            const item = this.getResourceData(element);
             item ? this.resCatEmails.push(item) : '';
         }
         console.log('resCatEmails ', this.resCatEmails);
     }
 
     getResourceData(ele) {
-        let found = this.rcData.find((x) => {
-            if (x.UserName.ID == ele.ID) {
+        const found = this.rcData.find((x) => {
+            if (x.UserName.ID === ele.ID) {
                 return x;
             }
-        })
-        return found ? found : ''
+        });
+        return found ? found : '';
     }
 
     replaceContent(mailContent, key, value) {
         return mailContent.replace(new RegExp(key, 'g'), value);
     }
 
-    sendCreateExpenseMail() {
-        // let isCleData = this.getCleByPC(expense.projectCode);
-        // let isCleData = this.cleForselectedPI;
-        // let author = this.getAuthor(expense.AuthorId);
-        // let val1 = isCleData.hasOwnProperty('ClientLegalEntity') ? expense.ProjectCode + ' (' + isCleData.ClientLegalEntity + ')' : expense.ProjectCode;
-        // var mailTemplate =  data.Status === "Approved" ? "ApproveExpense" :  data.Status === "Cancelled" ? "CancelExpense" : "RejectExpense";
-        var mailSubject = this.selectedRowItem.ProjectCode + "/" + this.selectedRowItem.ClientName + ": Confirmed line item for billing";
+    invoiceConfirmMail() {
+        const mailSubject = this.selectedRowItem.ProjectCode + '/' + this.selectedRowItem.ClientName + ': Confirmed line item for billing';
 
         let mailContent = this.mailContentRes[0].Content;
-        mailContent = this.replaceContent(mailContent, "@@Val1@@", "Hello Invoice Team");
-        mailContent = this.replaceContent(mailContent, "@@Val2@@", this.selectedRowItem.ProjectCode);
-        mailContent = this.replaceContent(mailContent, "@@Val3@@", this.selectedRowItem.ClientName);
-        mailContent = this.replaceContent(mailContent, "@@Val4@@", this.selectedRowItem.PO);
-        mailContent = this.replaceContent(mailContent, "@@Val5@@", this.datePipe.transform(this.selectedRowItem.ScheduledDate, 'MMM dd, yyyy'));
-        mailContent = this.replaceContent(mailContent, "@@Val6@@", this.selectedRowItem.Currency + ' ' + this.selectedRowItem.Amount);
-        mailContent = this.replaceContent(mailContent, "@@Val7@@", this.selectedRowItem.SOWCode);
+        mailContent = this.replaceContent(mailContent, '@@Val1@@', 'Hello Invoice Team');
+        mailContent = this.replaceContent(mailContent, '@@Val2@@', this.selectedRowItem.ProjectCode);
+        mailContent = this.replaceContent(mailContent, '@@Val3@@', this.selectedRowItem.ClientName);
+        mailContent = this.replaceContent(mailContent, '@@Val4@@', this.selectedRowItem.PO);
+        mailContent = this.replaceContent(mailContent, '@@Val5@@', this.datePipe.transform(this.selectedRowItem.ScheduledDate, 'MMM dd, yyyy'));
+        mailContent = this.replaceContent(mailContent, '@@Val6@@', this.selectedRowItem.Currency + ' ' + this.selectedRowItem.Amount);
+        mailContent = this.replaceContent(mailContent, '@@Val7@@', this.selectedRowItem.SOWCode);
 
-        var ccUser = [];
-        ccUser.push(this.currentUserInfoData.Email);
-        let tos = this.getTosList();
+        const ccUser = this.getCCList();
+        // ccUser.push(this.currentUserInfoData.Email);
+        const tos = this.getTosList();
         this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.reFetchData();
     }
 
     getTosList() {
-        var approvers = this.groupInfo.results;
-        let itApprovers = this.groupITInfo.results;
-        var arrayTo = [];
-        if (approvers.length) {
-            for (var i in approvers) {
-                if (approvers[i].Email != undefined && approvers[i].Email != "") {
-                    arrayTo.push(approvers[i].Email);
-                }
-            }
-        }
-
+        const itApprovers = this.groupITInfo.results;
+        let arrayTo = [];
         if (itApprovers.length) {
-            for (var i in itApprovers) {
-                if (itApprovers[i].Email != undefined && itApprovers[i].Email != "") {
+            for (const i in itApprovers) {
+                if (itApprovers[i].Email !== undefined && itApprovers[i].Email !== '') {
                     arrayTo.push(itApprovers[i].Email);
-                }
-            }
-        }
-
-        if (this.resCatEmails.length) {
-            for (let e = 0; e < this.resCatEmails.length; e++) {
-                const element = this.resCatEmails[e];
-                if (element.UserName) {
-                    if (element.UserName.EMail)
-                        arrayTo.push(element.UserName.EMail);
-                } else if (element) {
-                    arrayTo.push(element.EMail);
                 }
             }
         }
@@ -918,10 +851,22 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         return arrayTo;
     }
 
+    getCCList() {
+        let arrayCC = [];
+        arrayCC.push(this.currentUserInfoData.Email);
+
+        if (this.resCatEmails.length) {
+            arrayCC = arrayCC.concat(this.fdDataShareServie.getCSMember(this.resCatEmails));
+        }
+
+        arrayCC = arrayCC.filter(this.onlyUnique);
+        console.log('arrayCC ', arrayCC);
+        return arrayCC;
+    }
+
     onlyUnique(value, index, self) {
         return self.indexOf(value) === index;
     }
-
 
     reFetchData() {
         setTimeout(() => {
@@ -933,31 +878,31 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
         // unsubscribe to ensure no memory leaks
         this.subscription.unsubscribe();
     }
+
     @HostListener('document:click', ['$event'])
     clickout(event) {
-        if (event.target.className === "pi pi-ellipsis-v") {
+        if (event.target.className === 'pi pi-ellipsis-v') {
             if (this.tempClick) {
-                this.tempClick.style.display = "none";
+                this.tempClick.style.display = 'none';
                 if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
                     this.tempClick = event.target.parentElement.children[0].children[0];
-                    this.tempClick.style.display = "";
+                    this.tempClick.style.display = '';
                 } else {
                     this.tempClick = undefined;
                 }
             } else {
                 this.tempClick = event.target.parentElement.children[0].children[0];
-                this.tempClick.style.display = "";
+                this.tempClick.style.display = '';
             }
 
         } else {
             if (this.tempClick) {
-                this.tempClick.style.display = "none";
+                this.tempClick.style.display = 'none';
                 this.tempClick = undefined;
             }
         }
     }
 
-    isOptionFilter: boolean;
     optionFilter(event: any) {
         if (event.target.value) {
             this.isOptionFilter = false;
@@ -966,10 +911,10 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
 
     ngAfterViewChecked() {
         if (this.deliverableBasedRes.length && this.isOptionFilter) {
-            let obj = {
+            const obj = {
                 tableData: this.deliverableTable,
                 colFields: this.deliverableBasedColArray
-            }
+            };
             if (obj.tableData.filteredValue) {
                 this.commonService.updateOptionValues(obj);
             } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
