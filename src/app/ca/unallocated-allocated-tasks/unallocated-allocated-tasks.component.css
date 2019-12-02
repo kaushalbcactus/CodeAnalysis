@@ -114,62 +114,15 @@
 }
 
 ::ng-deep .ui-table.ui-widget {
-    margin-top: 0px;
+    margin-top: 0px !important;
 }
 
 ::ng-deep .mainPage {
-    margin: 0px;
-    padding: 0px 0px 5px 0px;
-    position: sticky;
-    overflow: visible;
-    background-color: #f4f4f4;
-    z-index: 1000;
-    top: 0;
-}
-
-
-/* 
-::ng-deep .ui-menu.ui-menu-dynamic {
-    position: fixed;
-}
-
-::ng-deep .ng-dropdown-panel {
-    width: 400px !important;
-    left: auto !important;
-    right: 0px !important;
-    padding-left: 0px !important;
-}
-
-::ng-deep .ng-dropdown-panel .templateOption {
-    width: 200px !important;
-    float: left !important;
-}
-
-::ng-deep .ng-dropdown-panel-items {
-    position: fixed !important;
-    background: #ffffff !important;
-    border: 1px solid #e6e6e6 !important;
-} */
-
-
-/* ::ng-deep .ui-dropdown-panel {
+    margin: 0px !important;
+    padding: 0px 0px 5px 0px !important;
+    position: sticky !important;
     overflow: visible !important;
-    position: fixed !important;
-    right: 79px !important;
-    min-width: 20% !important;
+    background-color: #f4f4f4 !important;
+    z-index: 1000 !important;
+    top: 0 !important;
 }
-
-::ng-deep .ui-dropdown {
-    min-width: 10.5em !important;
-} */
-
-
-/* 
- ::ng-deep .ui-widget-overlay {
-    z-index: 6001 !important;
-}
-
-::ng-deep .ui-dynamicdialog,
-::ng-deep .ScopeComment {
-    z-index: 7001 !important;
-} */

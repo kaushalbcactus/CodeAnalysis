@@ -9,7 +9,7 @@ export class CAConstantService {
   public resourceQueryOptions = {
     select: 'ID,MaxHrs,PrimarySkill,UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title',
     expand: 'UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title',
-    filter: "IsActive eq 'Yes'",
+    filter: "IsActive eq 'Yes' and  CAVisibility eq 'Yes'",
     top: 4200,
     orderby: 'UserName/Title asc'
   };
@@ -40,7 +40,7 @@ export class CAConstantService {
   };
 
   public projectOnLoad = {
-    select: 'ID,Title,ProjectCode,PrimaryPOC,WBJID,TA,DeliverableType,ClientLegalEntity',
+    select: 'ID,Title,ProjectCode,PrimaryPOC,WBJID,TA,DeliverableType,ClientLegalEntity,StandardService,IsStandard',
     filter: "(Status ne 'Closed') and (Status ne 'Cancelled') ",
     top: 4200,
     orderby: 'ClientLegalEntity asc'
@@ -86,10 +86,16 @@ export class CAConstantService {
   };
 
 
-  public getMailTemplate =  {
+  public getMailTemplate = {
     select: 'Content',
     filter: "Title eq '{{templateName}}'"
-}
+  };
+
+  public GetTaskBudgetHours = {
+    select: 'ID,Title,Hours',
+    filter: "ClientLegalEntity eq '{{ClientLegalEntity}}' and StandardService eq '{{StandardService}}' and Milestone eq '{{Milestone}}'  and IsActive eq 'Yes'",
+    top: 4500
+  };
 
   // tslint:enable
 

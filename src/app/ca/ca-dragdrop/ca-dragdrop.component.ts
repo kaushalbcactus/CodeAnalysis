@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogRef, DynamicDialogConfig, MessageService } from 'primeng/api';
+import { DynamicDialogRef, DynamicDialogConfig, MessageService, ConfirmationService } from 'primeng/api';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -48,6 +48,7 @@ export class CaDragdropComponent implements OnInit {
   TempMilestoneAllTasks = [];
   nodeOrder = [];
   slotTasks: any;
+  display: boolean;
   constructor(
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
@@ -55,6 +56,7 @@ export class CaDragdropComponent implements OnInit {
     private spServices: SPOperationService,
     private constants: ConstantsService,
     private caConstantService: CAConstantService,
+    private confirmationService: ConfirmationService,
     private caCommonService: CACommonService,
     private messageService: MessageService) { }
 
@@ -636,6 +638,38 @@ export class CaDragdropComponent implements OnInit {
       }
     }
 
+    // let sourceArray = this.links.length > 0 ? this.links.map(c => c.source) : [];
+    // const NodeIds = this.nodes.map(c => c.id);
+    // sourceArray = NodeIds.filter((el) => !sourceArray.includes(el));
+
+    // if (sourceArray.length > 1 || (this.links.length === 0 && this.nodes.length > 1)) {
+
+    //   this.display = true;
+
+    // this.confirmationService.confirm({
+    //   message: 'There are multiple end tasks for current slot. Are you sure that you want to continue?',
+    //   accept: () => {
+
+    //     if (errorM <= 0) {
+
+    //       this.NodePosition();
+
+    //       this.nodes.sort((a, b) => {
+    //         return parseInt(a.left, 10) - parseInt(b.left, 10);
+    //       });
+    //       const obj = {
+    //         nodes: this.nodes,
+    //         links: this.links,
+    //         nodeOrder: this.nodeOrder,
+    //         dbSlots: this.response
+    //       };
+    //       this.data.MilestoneAllTasks = JSON.parse(JSON.stringify(this.TempMilestoneAllTasks));
+    //       this.ref.close(obj);
+    //     }
+
+    //   }
+    // });
+    // } else {
     if (errorM <= 0) {
 
       this.NodePosition();
@@ -643,28 +677,6 @@ export class CaDragdropComponent implements OnInit {
       this.nodes.sort((a, b) => {
         return parseInt(a.left, 10) - parseInt(b.left, 10);
       });
-
-
-
-
-      // this.nodes.forEach(task => {
-
-      //   if (milestone.submilestone.nodes.length > 1) {
-      //     const DefaultObj = milestone.submilestone.nodes.find(c => c.label === 'Default');
-      //     const index = milestone.submilestone.nodes.indexOf(DefaultObj);
-      //     if (index > -1) {
-      //       milestone.submilestone.nodes.splice(index, 1);
-      //       milestone.submilestone.nodes.push(DefaultObj);
-      //     }
-      //   }
-
-      //   milestone.submilestone.nodes.forEach(submilestone => {
-      //     submilestone.task.nodes.sort((a, b) => {
-      //       return parseInt(a.left, 10) - parseInt(b.left, 10);
-      //     });
-      //   });
-      // });
-
       const obj = {
         nodes: this.nodes,
         links: this.links,
@@ -673,8 +685,11 @@ export class CaDragdropComponent implements OnInit {
       };
       this.data.MilestoneAllTasks = JSON.parse(JSON.stringify(this.TempMilestoneAllTasks));
       this.ref.close(obj);
-
     }
+    // }
+
+
+
   }
 
   getNextTarget(source, target, currentPath, circularPresent) {
