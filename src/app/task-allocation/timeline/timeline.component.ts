@@ -2082,7 +2082,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     } else if (milestoneTask.slotType === 'Both' && !milestoneTask.AssignedTo.ID) {
       milestoneTask.itemType = milestoneTask.itemType + 'Slot';
       const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
-      const newName = milestoneTask.itemType + taskCount;  
+      const newName = milestoneTask.itemType + taskCount;
       if (milestoneTask.nextTask) {
         const nextTasks = milestoneTask.nextTask.split(';');
         nextTasks.forEach(task => {
@@ -3098,11 +3098,16 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const milestoneStartDate = new Date(currentMilestone.pStart);
     const milestoneEndDate = new Date(currentMilestone.pEnd);
     currentMilestone.tatBusinessDays = this.commonService.calcBusinessDays(milestoneStartDate, milestoneEndDate);
+    // const milestoneName = currentMilestone.isCurrent ? currentMilestone.pName.replace(' (Current)', '') : currentMilestone.pName;
+    // let milestoneCR = this.milestoneData.filter(m => m.data.milestone === milestoneName && m.data.itemType === 'Client Review');
+    // const milestoneStatus = milestoneCR.length > 0 ? milestoneCR[0].data.status : '';
     if (!bAdd) {
       const updateData = {
         __metadata: { type: 'SP.Data.SchedulesListItem' },
         Actual_x0020_Start_x0020_Date: milestoneStartDate,
         Actual_x0020_End_x0020_Date: milestoneEndDate,
+        StartDate: milestoneStartDate,
+        DueDate: milestoneEndDate,
         ExpectedTime: '' + currentMilestone.budgetHours,
         Status: currentMilestone.status === 'Not Saved' ? currentMilestone.isCurrent ? 'Not Started' : 'Not Confirmed' : currentMilestone.status,
         TATBusinessDays: currentMilestone.tatBusinessDays,
@@ -3320,7 +3325,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     task.data.added = false;
                   }
                   if (task.data.added == true) {
-                    task.data.status = submilestone.data.status === 'In Progress' ? 'Not Started' : submilestone.data.status === 'Not Saved' ? 'Not Confirmed' : task.data.status;
+                    task.data.status = submilestone.data.status === 'In Progress' ? 'Not Started' : submilestone.data.status === 'Not Saved' ? milestone.data.isCurrent ? 'Not Started' : 'Not Confirmed' : task.data.status;
                     addedTasks.push(task.data);
                   }
                   else {
@@ -3615,9 +3620,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
           const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
           if (validateNextMilestone) {
             this.loaderenable = true;
-            // const newCurrentMilestoneText = this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone;
-            // this.messageService.add({key: 'custom', severity:'warn', summary: 'Warning Message',
-            // detail:' Setting ' + newCurrentMilestoneText + ' as current milestone'});
             setTimeout(() => { this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
           }
         },
@@ -3856,7 +3858,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (Milestone.children !== undefined) {
       for (let nCountSub = 0; nCountSub < Milestone.children.length; nCountSub = nCountSub + 1) {
         const submilestone = Milestone.children[nCountSub];
-        submilestone.data.status = submilestone.data.status === 'Not Saved' ? 'Not Confirmed' : submilestone.data.status;
+        submilestone.data.status = submilestone.data.status === 'Not Saved' ? Milestone.data.isCurrent ? 'Not Started' : 'Not Confirmed' : submilestone.data.status;
         if (submilestone.data.type !== 'task') {
 
           if (status === 'Completed') {
