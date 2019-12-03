@@ -376,6 +376,25 @@ export class ManageFinanceComponent implements OnInit {
 
   }
 
+  onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+  }
+
+  async getTosList() {
+    const approvers = await this.spServices.getGroupInfo('ExpenseApprovers');
+    let arrayTo = [];
+    if (approvers.length) {
+      for (const a in approvers) {
+        if (approvers[a].Email !== undefined && approvers[a].Email !== '') {
+          arrayTo.push(approvers[a].Email);
+        }
+      }
+    }
+    arrayTo = arrayTo.filter(this.onlyUnique);
+    console.log('arrayTo ', arrayTo);
+    return arrayTo;
+  }
+
   async reduceBudget() {
     if (this.selectedReason && this.selectedReasonType && this.newBudgetHrs) {
 
@@ -432,6 +451,8 @@ export class ManageFinanceComponent implements OnInit {
       arrayCC = arrayCC.concat([], cm1IdArray);
       tempArray = tempArray.concat([], this.projObj.CMLevel2ID);
       arrayTo = this.pmCommonService.getEmailId(tempArray);
+      arrayTo = arrayTo.concat(this.getTosList());
+      arrayTo = arrayTo.filter(this.onlyUnique);
       ccIDs = this.pmCommonService.getEmailId(arrayCC);
       ccIDs.push(this.pmObject.currLoginInfo.Email);
       ///// Send approval message
