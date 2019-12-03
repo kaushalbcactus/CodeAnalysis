@@ -19,11 +19,12 @@ import { NgxGraphModule } from '@swimlane/ngx-graph';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { CaComponent } from './ca.component';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
 
 
 
 @NgModule({
-  declarations: [UnallocatedAllocatedTasksComponent, CaDragdropComponent, CaComponent],
+  declarations: [UnallocatedAllocatedTasksComponent, CaDragdropComponent, CaComponent, ConfirmationDialogComponent],
   imports: [
     CommonModule,
     PrimengModule,
@@ -37,6 +38,6 @@ import { CaComponent } from './ca.component';
     NgxMaterialTimepickerModule,
   ],
   providers: [DynamicDialogConfig, DynamicDialogRef, ConfirmationService],
-  entryComponents: [UsercapacityComponent, CaDragdropComponent],
+  entryComponents: [UsercapacityComponent, CaDragdropComponent,ConfirmationDialogComponent],
 })
 export class CAModule { }

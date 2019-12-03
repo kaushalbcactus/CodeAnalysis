@@ -258,6 +258,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
   lazyLoadTask(event) {
+
+    debugger;
     this.caCommonService.lazyLoadTask(event, this.completeTaskArray, this.filterColumns);
   }
 
@@ -690,7 +692,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       const fromUser = this.globalService.currentUser.email;
       const user = task.allocatedResource.UserName;
       const mailSubject = task.ProjectCode + '(' + slot.ProjectName + ')' + ': Task created';
-      const objEmailBody = await this.getsendEmailObjBody(task, 'TaskCreation');
+      const objEmailBody = await this.getsendEmailObjBody(task, slot, 'TaskCreation');
       const arrayTo = [];
       if (user !== 'SelectOne' && user !== '' && user != null) {
         const userEmail = user.EMail;
@@ -701,18 +703,23 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
 
-  async getsendEmailObjBody(milestoneTask, templateName) {
+  async getsendEmailObjBody(milestoneTask, slot, templateName) {
 
     if (!this.emailTemplate) {
       this.emailTemplate = await this.GetEmailTemplate(templateName);
     }
 
+    debugger;
+
+    milestoneTask.Title = slot.ProjectCode + ' ' +
+      slot.Milestone + ' ' + milestoneTask.TaskName
+
     let mailContent = this.emailTemplate;
     mailContent = this.replaceContent(mailContent, "@@Val3@@", milestoneTask.allocatedResource && milestoneTask.allocatedResource.UserName ? milestoneTask.allocatedResource.UserName.Title : milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title : undefined);
     mailContent = this.replaceContent(mailContent, "@@Val1@@", milestoneTask.ProjectCode);
-    mailContent = this.replaceContent(mailContent, "@@Val2@@", milestoneTask.SubMilestones && milestoneTask.SubMilestones !== 'Default' ? milestoneTask.Title + ' - ' + milestoneTask.SubMilestones : milestoneTask.Title);
+    mailContent = this.replaceContent(mailContent, "@@Val2@@", slot.SubMilestones && slot.SubMilestones !== 'Default' ? milestoneTask.Title + ' - ' + slot.SubMilestones : milestoneTask.Title);
     mailContent = this.replaceContent(mailContent, "@@Val4@@", milestoneTask.Task);
-    mailContent = this.replaceContent(mailContent, "@@Val5@@", milestoneTask.Milestone);
+    mailContent = this.replaceContent(mailContent, "@@Val5@@", slot.Milestone);
     mailContent = this.replaceContent(mailContent, "@@Val6@@", this.datepipe.transform(milestoneTask.StartDate, 'MMM dd yyyy hh:mm:ss a'));
     mailContent = this.replaceContent(mailContent, "@@Val7@@", this.datepipe.transform(milestoneTask.DueDate, 'MMM dd yyyy hh:mm:ss a'));
     mailContent = this.replaceContent(mailContent, "@@Val9@@", milestoneTask.TaskScope ? milestoneTask.TaskScope : '');
@@ -932,7 +939,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         RestructureTasks.nodes = nodesNew;
 
         for (let task of RestructureTasks.nodes) {
-          debugger;
+
           const nextTasks = RestructureTasks.nodes.filter(c => RestructureTasks.links.filter(e => e.source ===
             task.id).map(d => d.target).includes(c.id)).map(c => c.label).join(';');
 
@@ -1458,9 +1465,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         const compareDates = slot.SlotTasks.filter(e => (e.UserEnd <= e.UserStart && e.Status !== 'Completed'));
         if (compareDates.length > 0) {
 
+          debugger;
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'End date should be greater than start date of ' + compareDates[0].TaskName + ' task of ' +
+            detail: 'End date should be greater than start date of ' + compareDates[0].TaskName + ' task of '
               + slot.ProjectCode + '-' + slot.Milestone + ' - ' + slot.Task
           });
           return false;
@@ -1489,7 +1497,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           return false;
         }
 
-        const compareTaskDates = slot.SlotTasks.filter(e => (slot.startDate > e.UserStart && e.Status !== 'Completed'));
+        const compareTaskDates = slot.SlotTasks.filter(e => (slot.StartDate > e.UserStart && e.Status !== 'Completed'));
         if (compareTaskDates.length > 0) {
 
           this.messageService.add({

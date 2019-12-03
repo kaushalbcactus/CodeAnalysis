@@ -25,8 +25,8 @@
 </div>
 
 <div class="allocatedUnallocatedTable" [hidden]='loderenable'>
-    <p-table #taskTable dataKey="Id" [columns]="displayedColumns" [value]="caGlobal.dataSource" [lazy]="true" (onLazyLoad)="lazyLoadTask($event)" [paginator]="true" [rows]="10" [totalRecords]="caGlobal.totalRecords" rowExpandMode="multiple" [loading]="caGlobal.loading"
-        [style]="{'font-size':'13px'}" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)" [lazyLoadOnInit]="false">
+    <p-table #taskTable dataKey="Id" [columns]="displayedColumns" [value]="caGlobal.dataSource" sortMode="multiple" [lazy]="true" (onLazyLoad)="lazyLoadTask($event)" [paginator]="true" [rows]="10" [totalRecords]="caGlobal.totalRecords" rowExpandMode="multiple"
+        [loading]="caGlobal.loading" [style]="{'font-size':'13px'}" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)" [lazyLoadOnInit]="false">
         <ng-template pTemplate="header" let-columns>
             <tr>
                 <th style="width: 3%;"></th>
@@ -182,7 +182,7 @@
                                 <!-- End Date -->
                                 <td style="padding: 5px;">
 
-                                    <span [title]="rowData.pUserEnd |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode">{{rowData.UserEnd |  date:' d MMM, y, h:mm a' }}</span>
+                                    <span [title]="rowData.UserEnd |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode">{{rowData.UserEnd |  date:' d MMM, y, h:mm a' }}</span>
                                     <span *ngIf="rowData.editMode" style="display: flex;">
         
                                         <p-calendar id="calenderIcon" [(ngModel)]="rowData.UserEndDatePart"
@@ -206,7 +206,7 @@
                                 <td>
                                     <span *ngIf="!rowData.editMode  || ( rowData.editMode && (rowData.Status ==='In Progress' || rowData.Status ==='Completed'))"> {{rowData.AssignedTo.Title}}</span>
                                     <p-dropdown #allocateResource *ngIf="rowData.editMode && (rowData.Status ==='Not Started' || rowData.Status ==='Not Saved')" class="resourceDropdown" [options]="rowData.displayselectedResources" [panelStyle]="{minWidth:'25em' }" [(ngModel)]="rowData.allocatedResource"
-                                        placeholder="Select Resource" [group]="true" filter="true" placeholder="Select Resource" (onShow)="fetchResources(rowData,allocateResource)" (onHide)="EditSlotEnable(rowData,Slot)" (onChange)="assignedToUserChanged(rowData)"
+                                        placeholder="Select Resource" resetFilterOnHide="true" [group]="true" filter="true" placeholder="Select Resource" (onShow)="fetchResources(rowData,allocateResource)" (onHide)="EditSlotEnable(rowData,Slot)" (onChange)="assignedToUserChanged(rowData)"
                                         [style]="{'width':'100%'}">
                                         <ng-template let-group pTemplate="group">
                                             <span style="margin-left:.25em">{{group.label}}</span>

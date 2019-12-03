@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogRef, DynamicDialogConfig, MessageService, ConfirmationService } from 'primeng/api';
+import { DynamicDialogRef, DynamicDialogConfig, MessageService, DialogService } from 'primeng/api';
 import { GlobalService } from 'src/app/Services/global.service';
-import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { ConstantsService } from 'src/app/Services/constants.service';
-import { CAConstantService } from '../caservices/caconstant.service';
 import * as shape from 'd3-shape';
 import { CACommonService } from '../caservices/cacommon.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 @Component({
   selector: 'app-ca-dragdrop',
   templateUrl: './ca-dragdrop.component.html',
-  styleUrls: ['./ca-dragdrop.component.css']
+  styleUrls: ['./ca-dragdrop.component.css'],
+  providers: [DialogService]
 })
 export class CaDragdropComponent implements OnInit {
   initialLoad: boolean;
@@ -53,11 +52,8 @@ export class CaDragdropComponent implements OnInit {
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
     public sharedObject: GlobalService,
-    private spServices: SPOperationService,
-    private constants: ConstantsService,
-    private caConstantService: CAConstantService,
-    private confirmationService: ConfirmationService,
     private caCommonService: CACommonService,
+    public dialogService: DialogService,
     private messageService: MessageService) { }
 
   async ngOnInit() {
@@ -94,6 +90,10 @@ export class CaDragdropComponent implements OnInit {
         links = this.loadLinks(task, links).splice(0);
         this.links = [...links];
       });
+
+      if (this.data.SlotTasks.length === 1) {
+        this.previousSource = this.nodes[0];
+      }
       this.initialLoad = false;
       this.GraphResize();
 
@@ -120,14 +120,14 @@ export class CaDragdropComponent implements OnInit {
         });
         if (this.response.filter(c => c.Status !== 'Deleted').length === 0) {
           this.draggedTask = this.arrConstantTasks[0];
-          await this.onTaskDrop(null);
+          await this.onTaskDrop(this.draggedTask);
           this.draggedTask = null;
 
         }
         this.initialLoad = false;
       } else {
         this.draggedTask = this.arrConstantTasks[0];
-        await this.onTaskDrop(null);
+        await this.onTaskDrop(this.draggedTask);
         this.draggedTask = null;
         this.initialLoad = false;
       }
@@ -638,55 +638,66 @@ export class CaDragdropComponent implements OnInit {
       }
     }
 
-    // let sourceArray = this.links.length > 0 ? this.links.map(c => c.source) : [];
-    // const NodeIds = this.nodes.map(c => c.id);
-    // sourceArray = NodeIds.filter((el) => !sourceArray.includes(el));
+    let sourceArray = this.links.length > 0 ? this.links.map(c => c.source) : [];
+    const NodeIds = this.nodes.map(c => c.id);
+    sourceArray = NodeIds.filter((el) => !sourceArray.includes(el));
 
-    // if (sourceArray.length > 1 || (this.links.length === 0 && this.nodes.length > 1)) {
+    if (sourceArray.length > 1 || (this.links.length === 0 && this.nodes.length > 1)) {
 
-    //   this.display = true;
 
-    // this.confirmationService.confirm({
-    //   message: 'There are multiple end tasks for current slot. Are you sure that you want to continue?',
-    //   accept: () => {
+      const confirmref = this.dialogService.open(ConfirmationDialogComponent, {
 
-    //     if (errorM <= 0) {
-
-    //       this.NodePosition();
-
-    //       this.nodes.sort((a, b) => {
-    //         return parseInt(a.left, 10) - parseInt(b.left, 10);
-    //       });
-    //       const obj = {
-    //         nodes: this.nodes,
-    //         links: this.links,
-    //         nodeOrder: this.nodeOrder,
-    //         dbSlots: this.response
-    //       };
-    //       this.data.MilestoneAllTasks = JSON.parse(JSON.stringify(this.TempMilestoneAllTasks));
-    //       this.ref.close(obj);
-    //     }
-
-    //   }
-    // });
-    // } else {
-    if (errorM <= 0) {
-
-      this.NodePosition();
-
-      this.nodes.sort((a, b) => {
-        return parseInt(a.left, 10) - parseInt(b.left, 10);
+        header: 'Confirmation',
       });
-      const obj = {
-        nodes: this.nodes,
-        links: this.links,
-        nodeOrder: this.nodeOrder,
-        dbSlots: this.response
-      };
-      this.data.MilestoneAllTasks = JSON.parse(JSON.stringify(this.TempMilestoneAllTasks));
-      this.ref.close(obj);
+      confirmref.onClose.subscribe((Confirmation: any) => {
+        if (Confirmation) {
+          this.NodePosition();
+          this.nodes.sort((a, b) => {
+            return parseInt(a.left, 10) - parseInt(b.left, 10);
+          });
+          const obj = {
+            nodes: this.nodes,
+            links: this.links,
+            nodeOrder: this.nodeOrder,
+            dbSlots: this.response
+          };
+          this.data.MilestoneAllTasks = JSON.parse(JSON.stringify(this.TempMilestoneAllTasks));
+
+          this.ref.close(obj);
+
+
+        }
+      });
+
+      // this.confirmationService.confirm({
+      //   message: 'There are multiple end tasks for current slot. Are you sure that you want to continue?',
+      //   accept: () => {
+
+      //     if (errorM <= 0) {
+
+
+      //     }
+
+      //   }
+      // });
+    } else {
+      if (errorM <= 0) {
+
+        this.NodePosition();
+
+        this.nodes.sort((a, b) => {
+          return parseInt(a.left, 10) - parseInt(b.left, 10);
+        });
+        const obj = {
+          nodes: this.nodes,
+          links: this.links,
+          nodeOrder: this.nodeOrder,
+          dbSlots: this.response
+        };
+        this.data.MilestoneAllTasks = JSON.parse(JSON.stringify(this.TempMilestoneAllTasks));
+        this.ref.close(obj);
+      }
     }
-    // }
 
 
 

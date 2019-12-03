@@ -421,7 +421,7 @@ export class CACommonService {
    * @param filterColumns 
    */
   lazyLoadTask(event, completeTaskArray, filterColumns) {
-    this.filterAction(event.sortField, event.sortOrder, event.globalFilter, event.filters, event.first, event.rows, completeTaskArray, filterColumns);
+    this.filterAction(event.multiSortMeta, event.sortOrder, event.globalFilter, event.filters, event.first, event.rows, completeTaskArray, filterColumns);
   }
 
   /**
@@ -441,7 +441,13 @@ export class CACommonService {
     setTimeout(() => {
       if (data) {
         if (sortField) {
-          this.customSort(data, sortField, sortOrder);
+          for (let i = sortField.length - 1; i >= 0; i--) {
+            this.customSort(data, sortField[i].field, sortField[i].order);
+          }
+          // sortField.forEach(element => {
+        
+          // });
+          // this.customSort(data, sortField, sortOrder);
         }
         if (globalFilter) {
           data = data.filter(row => this.globalFilter(row, globalFilter, filterColumns))
@@ -532,20 +538,38 @@ export class CACommonService {
    * @param order 
    */
   customSort(data, fieldName: string, order: number) {
-    data.sort((row1, row2) => {
-      const val1 = row1[fieldName];
-      const val2 = row2[fieldName];
-      if (val1 === val2) {
-        return 0;
-      }
-      let result = -1;
-      if (val1 > val2) {
+    data.sort((data1, data2) => {
+    //   const val1 = row1[fieldName];
+    //   const val2 = row2[fieldName];
+    //   if (val1 === val2) {
+    //     return 0;
+    //   }
+    //   let result = -1;
+    //   if (val1 > val2) {
+    //     result = 1;
+    //   }
+    //   if (order < 0) {
+    //     result = -result;
+    //   }
+    //   return result;
+    // });
+
+    let value1 = data1[fieldName];
+    let value2 = data2[fieldName];
+    let result = null;
+
+    if (value1 == null && value2 != null)
+        result = -1;
+    else if (value1 != null && value2 == null)
         result = 1;
-      }
-      if (order < 0) {
-        result = -result;
-      }
-      return result;
+    else if (value1 == null && value2 == null)
+        result = 0;
+    else if (typeof value1 === 'string' && typeof value2 === 'string')
+        result = value1.localeCompare(value2);
+    else
+        result = (value1 < value2) ? -1 : (value1 > value2) ? 1 : 0;
+
+    return (order * result);
     });
   }
   /**
@@ -711,7 +735,6 @@ export class CACommonService {
 
       }
       const prevTasks = [];
-      debugger;
       milTasks.forEach(milTask => {
         let taskArr = [];
         taskArr = milTask.NextTasks ? milTask.NextTasks.split(";#") : [];
@@ -720,7 +743,6 @@ export class CACommonService {
         }
       });
       prevTasks.forEach(milTask => {
-        debugger;
         task.PrevTaskComments = task.PrevTaskComments ? task.PrevTaskComments + "<br/>" + milTask.TaskComments : milTask.TaskComments;
       });
       let currentTraverseTask = task.Title;
@@ -778,8 +800,6 @@ export class CACommonService {
    * @param modalService 
    */
   getAllocateTaskScope(task, popupTaskScopeContent, completeTaskArray, modalService) {
-
-    debugger;
     const index = completeTaskArray.findIndex(item => item.id === task.id);
     this.caGlobalService.taskScope = this.stripHtml(completeTaskArray[index].taskScope ? completeTaskArray[index].taskScope.replace(/<br\s*\/?>/gi, '\n') : '');
     this.caGlobalService.taskPreviousComment = this.stripHtml(completeTaskArray[index].prevTaskComments ? completeTaskArray[index].prevTaskComments.replace(/<br\s*\/?>/gi, '\n') : '');

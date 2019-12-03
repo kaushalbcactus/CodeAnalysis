@@ -123,6 +123,6 @@
     position: sticky !important;
     overflow: visible !important;
     background-color: #f4f4f4 !important;
-    z-index: 1000 !important;
+    z-index: 990 !important;
     top: 0 !important;
 }

@@ -155,6 +155,11 @@ export class UsercapacityComponent implements OnInit {
       arrResources: [],
       arrDateFormat: [],
     };
+
+    let batchResults = [];
+
+    // let batchURL = [];
+    let finalArray = [];
     let startDateString = this.datepipe.transform(startDate, 'yyyy-MM-dd') + 'T00:00:01.000Z';
     let endDateString = this.datepipe.transform(endDate, 'yyyy-MM-dd') + 'T23:59:00.000Z';
     const sTopStartDate = startDate;
@@ -200,7 +205,7 @@ export class UsercapacityComponent implements OnInit {
     let arruserResults = await this.spService.executeBatch(batchUrl);
     arruserResults = arruserResults.length ? arruserResults.map(a => a.retItems) : [];
 
-    const batchURL = [];
+    let batchURL = [];
     const options = {
       data: null,
       url: '',
@@ -234,6 +239,14 @@ export class UsercapacityComponent implements OnInit {
 
         oCapacity.arrUserDetails.map(c => c.AvailableHoursRID = selectedUsers.find(c => c.ResourceUserID === oCapacity.arrUserDetails[indexUser].uid).ID)
 
+
+        if (batchURL.length === 99) {
+          batchResults = await this.spService.executeBatch(batchURL);
+          console.log(batchResults);
+          finalArray = [...finalArray, ...batchResults];
+          batchURL = [];
+        }
+
         const leaveGet = Object.assign({}, options);
         const leavesQuery = Object.assign({}, this.sharedConstant.userCapacity.leaveCalendar);
         leaveGet.url = this.spService.getReadURL('' + this.globalConstantService.listNames.LeaveCalendar.name + '', leavesQuery);
@@ -242,6 +255,12 @@ export class UsercapacityComponent implements OnInit {
         leaveGet.listName = this.globalConstantService.listNames.LeaveCalendar.name;
         batchURL.push(leaveGet);
 
+        if (batchURL.length === 99) {
+          batchResults = await this.spService.executeBatch(batchURL);
+          console.log(batchResults);
+          finalArray = [...finalArray, ...batchResults];
+          batchURL = [];
+        }
         const availableHrsGet = Object.assign({}, options);
         const availableHrsQuery = Object.assign({}, this.sharedConstant.userCapacity.availableHrs);
         availableHrsGet.url = this.spService.getReadURL('' + this.globalConstantService.listNames.AvailableHours.name +
@@ -251,14 +270,30 @@ export class UsercapacityComponent implements OnInit {
         availableHrsGet.listName = this.globalConstantService.listNames.AvailableHours.name;
         batchURL.push(availableHrsGet);
 
+
+
+
       }
     }
-    let arrResults = await this.spService.executeBatch(batchURL);
-    arrResults = arrResults.length ? arrResults : [];
-    if (arrResults) {
 
-      const UserLeaves = arrResults.filter(c => c.listName === 'Leave Calendar');
-      const UserAvailableHrs = arrResults.filter(c => c.listName === 'AvailableHours');
+
+    if (batchURL.length) {
+      batchResults = await this.spService.executeBatch(batchURL);
+      finalArray = [...finalArray, ...batchResults];
+    }
+    // } else {
+    //   batchResults = await this.spServices.executeBatch(batchURL);
+    //   finalArray = [...finalArray, ...batchResults];
+    // }
+
+
+
+    // let arrResults = await this.spService.executeBatch(batchURL);
+    finalArray = finalArray.length ? finalArray : [];
+    if (finalArray) {
+
+      const UserLeaves = finalArray.filter(c => c.listName === 'Leave Calendar');
+      const UserAvailableHrs = finalArray.filter(c => c.listName === 'AvailableHours');
 
       for (var index in oCapacity.arrUserDetails) {
         if (oCapacity.arrUserDetails.hasOwnProperty(index)) {
