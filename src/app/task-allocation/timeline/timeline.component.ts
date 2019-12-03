@@ -144,6 +144,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   dbRecords: any[];
   reallocationMailData = [];
   reallocationMailArray = [];
+  deallocationMailArray = [];
   deletedMilestones = [];
   deletedTasks = [];
   constructor(
@@ -2053,6 +2054,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
     let subMilestone: TreeNode;
     subMilestone = currentTask.submilestone ? milestone.children.find(t => t.data.pName === currentTask.submilestone) : milestone;
     if (milestoneTask.slotType === 'Both' && milestoneTask.AssignedTo.ID) {
+      milestoneTask.IsCentrallyAllocated = 'No';
+      milestoneTask.ActiveCA = 'No';
       milestoneTask.itemType = milestoneTask.itemType.replace(/Slot/g, '');
       const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
       const newName = milestoneTask.itemType + taskCount;
@@ -2080,6 +2083,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
       }
       milestoneTask.pName = newName;
     } else if (milestoneTask.slotType === 'Both' && !milestoneTask.AssignedTo.ID) {
+      milestoneTask.IsCentrallyAllocated = 'Yes';
+      milestoneTask.ActiveCA = 'Yes';
       milestoneTask.itemType = milestoneTask.itemType + 'Slot';
       const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
       const newName = milestoneTask.itemType + taskCount;
@@ -2462,11 +2467,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
           slot.data.slotColor = "#6EDC6C";
           deallocateSlot = false;
           task.data.deallocateCentral = false;
+          slot.data.CentralAllocationDone = 'Yes';
         }
       }
     }
 
     if (!deallocateSlot) {
+      const deallocationArray = this.deallocationMailArray;
       this.reallocationMailData.length = 0;
       this.reallocationMailArray.length = 0;
       const mailTableObj = {
@@ -2498,6 +2505,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         subTask.assginedTo = task.data.AssignedTo.Title;
         this.reallocationMailData.push(subTask);
       });
+      this.deallocationMailArray = this.deallocationMailArray.length ? this.deallocationMailArray.filter(s => s.slot.data.pID !== slot.data.pID) : [];
       setTimeout(() => {
         const table = this.reallocateTable.nativeElement.innerHTML;
         this.reallocationMailArray.push({
@@ -2507,6 +2515,15 @@ export class TimelineComponent implements OnInit, OnDestroy {
           subject: slot.data.pName + ' reallocated'
         });
       }, 300);
+    } else {
+      this.deallocationMailArray.length = 0;
+      this.reallocationMailArray = this.reallocationMailArray.length ? this.reallocationMailArray.filter(s => s.slot.data.pID !== slot.data.pID) : [];
+      this.deallocationMailArray.push({
+        project: this.oProjectDetails,
+        slot: slot,
+        subject: slot.data.pName + ' deallocated',
+        template: 'CentralTaskCreation'
+      });
     }
   }
 
@@ -2965,6 +2982,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.reallocationMailArray.forEach(mail => {
       this.sendReallocationCentralTaskMail(mail.project, mail.slot, mail.data, mail.subject);
     });
+    this.deallocationMailArray.forEach(mail => {
+      this.sendCentralTaskMail(mail.project, mail.slot.data, mail.subject, mail.template);
+    });
     // this.callReloadRes();
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
     this.getMilestones(false);
@@ -2987,15 +3007,17 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
 
     if (milestoneTask.assignedUserChanged && milestoneTask.status === 'Not Started') {
-      // debugger;
       this.sendMail(this.oProjectDetails, milestoneTask, 'New User Assigned for Task'
         + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode);
       milestoneTask.assignedUserChanged = false;
     }
 
-    // if (bAdd && milestoneTask.IsCentrallyAllocated === 'Yes') {
-    //   milestoneTask.ActiveCA = 'Yes';
-    // }
+    if (bAdd && milestoneTask.IsCentrallyAllocated === 'Yes') {
+      //// send task creation email
+      milestoneTask.ActiveCA = 'Yes';
+      this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, milestoneTask.pName + ' Created', 'CentralTaskCreation');
+    }
+
     if (!bAdd && milestoneTask.CentralAllocationDone === 'Yes' && milestoneTask.deallocateCentral
       && milestoneTask.status === 'Not Started') {
       milestoneTask.CentralAllocationDone = 'No';
@@ -3004,10 +3026,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
       const timeZone = milestoneTask.assignedUserTimeZone;
       if (parseFloat(timeZone) !== 5.5) {
         milestoneTask.assignedUserTimeZone = 5.5;
-      }
-      if (milestoneTask.IsCentrallyAllocated === 'No') {
-        this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, 'Central task deallocated'
-          + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'Central task deallocated', 'CentralTaskCreation');
       }
     }
     if (bAdd) {
@@ -3197,7 +3215,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   //  Send Email On Central Task
   // **************************************************************************************************
 
-  async sendCentralTaskMail(projectDetails, milestoneTask, callDetail, subjectLine, templateName) {
+  async sendCentralTaskMail(projectDetails, milestoneTask, subjectLine, templateName) {
 
     const fromUser = this.sharedObject.currentUser;
     const mailSubject = projectDetails.projectCode + '(' + projectDetails.wbjid + ')' + ': ' + subjectLine;
@@ -3207,9 +3225,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     for (const user of users) {
       arrayTo.push(user.Email);
     }
-    this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody, fromUser.email);
-    // this.spServices.triggerMail(fromUser.email, 'CentralTaskCreation', objEmailBody, mailSubject, arrayTo, callDetail);
-
+    this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
   }
 
   async sendReallocationCentralTaskMail(projectDetails, slot, data, subjectLine) {
@@ -3223,8 +3239,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
       arrayTo.push(user.Email);
     }
     this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
-    // this.spServices.triggerMail(fromUser.email, 'CentralTaskCreation', objEmailBody, mailSubject, arrayTo, callDetail);
-
   }
 
   // *************************************************************************************************
@@ -3254,7 +3268,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
       mailObj);
     let mailContent = templateData.length > 0 ? templateData[0].Content : [];
-    mailContent = this.replaceContent(mailContent, "@@Val1@@", slot.data.pName);
+    mailContent = this.replaceContent(mailContent, "@@Val1@@", slot.data.taskFullName);
     mailContent = this.replaceContent(mailContent, "@@ValTable@@", data);
 
     return mailContent;
@@ -3772,8 +3786,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           slots.push(element.ID);
           //// send task creation email
           element.ActiveCA = 'Yes';
-          this.sendCentralTaskMail(this.oProjectDetails, element, 'New central task created'
-            + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'New central task created', 'CentralTaskCreation');
+          this.sendCentralTaskMail(this.oProjectDetails, element, element.pName + ' Created', 'CentralTaskCreation');
         }
         element.status = 'Not Started';
         element.deallocateCentral = true;
@@ -4089,7 +4102,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       'milestone': milestone.label,
       'skillLevel': task.skillLevel,
       'CentralAllocationDone': 'No',
-      'ActiveCA': 'No',
+      'ActiveCA': task.IsCentrallyAllocated === 'Yes' ? 'Yes' : 'No',
       'assignedUserTimeZone': '5.5',
       'deallocateCentral': true,
       'DisableCascade': task.DisableCascade && task.DisableCascade === 'Yes' ? true : false,

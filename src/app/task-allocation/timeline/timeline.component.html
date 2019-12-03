@@ -287,7 +287,7 @@
 
                         <!-- Assign To -->
                         <td>
-                            <span *ngIf="!rowData.editMode"> {{rowData.pRes}}</span>
+                            <span *ngIf="!rowData.editMode && rowData.IsCentrallyAllocated === 'No'"> {{rowData.pRes}}</span>
                             <p-dropdown [style]="{'width':'100%'}"
                                 *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.status!= 'In Progress' && (rowData.IsCentrallyAllocated === 'No' || rowData.slotType === 'Both')"
                                 #assignedTo class="txtTask" [options]="rowData.assignedUsers"
