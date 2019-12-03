@@ -77,14 +77,25 @@ export class SPOperationService {
 
   // Send email
   async sendMail(to: string, ffrom: string, subj: string, body: string, cc?: string) {
-    const data = this.getEmailData(to, ffrom, subj, body, cc);
-    const url = this.getEmailURL();
+    // const data = this.getEmailData(to, ffrom, subj, body, cc);
+    // const url = this.getEmailURL();
 
-    const res = await this.httpClient.post(url, data, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
-      const error = err.error;
-      return error;
-    });
-    return this.parseRetSingle(res);
+    // const res = await this.httpClient.post(url, data, this.getHeaders(true, true)).toPromise().catch((err: HttpErrorResponse) => {
+    //   const error = err.error;
+    //   return error;
+    // });
+    // return this.parseRetSingle(res);
+    const data = {
+      Title: subj,
+      MailBody: body,
+      Subject: subj,
+      ToEmailId: to,
+      FromEmailId: ffrom,
+      CCEmailId: cc
+    };
+    const result = await this.createItem(this.constants.listNames.SendEmail.name, data,
+      this.constants.listNames.SendEmail.type);
+    return this.parseRetSingle(result);
   }
 
   // ----------SHAREPOINT USER PROFILES----------

@@ -302,6 +302,10 @@ export class ConstantsService {
     CLEBucketMapping: {
       name: 'CLEBucketMapping',
       type: 'SP.Data.CLEBucketMappingListItem'
+    },
+    SendEmail: {
+      name: 'SendEmail',
+      type: 'SP.Data.SendEmailListItem'
     }
   };
 
