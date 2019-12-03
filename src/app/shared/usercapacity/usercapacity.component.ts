@@ -810,6 +810,7 @@ export class UsercapacityComponent implements OnInit {
       },
       header: task.title,
       width: '90vw',
+      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
     });
     ref.onClose.subscribe(async (tasks: any) => {
     });
