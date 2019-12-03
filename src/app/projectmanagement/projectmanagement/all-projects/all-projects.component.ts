@@ -1045,6 +1045,25 @@ export class AllProjectsComponent implements OnInit {
       }
     }
   }
+  onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+  }
+
+  async getTosList() {
+    const approvers = await this.spServices.getGroupInfo('ExpenseApprovers');
+    let arrayTo = [];
+    if (approvers.length) {
+      for (const a in approvers) {
+        if (approvers[a].Email !== undefined && approvers[a].Email !== '') {
+          arrayTo.push(approvers[a].Email);
+        }
+      }
+    }
+    arrayTo = arrayTo.filter(this.onlyUnique);
+    console.log('arrayTo ', arrayTo);
+    return arrayTo;
+  }
+
   sendApprovalEmailToManager(selectedProjectObj, reason) {
     const projectFinanceObj = this.toUpdateIds[1] && this.toUpdateIds[1].retItems && this.toUpdateIds[1].retItems.length ?
       this.toUpdateIds[1].retItems[0] : [];
@@ -1068,6 +1087,8 @@ export class AllProjectsComponent implements OnInit {
     });
     tempArray = tempArray.concat(cm1IdArray, this.selectedProjectObj.CMLevel2ID);
     arrayTo = this.pmCommonService.getEmailId(tempArray);
+    arrayTo = arrayTo.concat(this.getTosList());
+    arrayTo = arrayTo.filter(this.onlyUnique);
     this.pmCommonService.getTemplate(this.constants.EMAIL_TEMPLATE_NAME.CANCEL, objEmailBody, mailSubject, arrayTo,
       [this.pmObject.currLoginInfo.Email]);
     this.pmObject.isMainLoaderHidden = true;
