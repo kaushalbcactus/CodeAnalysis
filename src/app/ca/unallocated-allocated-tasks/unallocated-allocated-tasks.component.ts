@@ -1154,8 +1154,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.Timezone = task.timezone ? task.timezone : task.TimeZone;
     taskObj.Title = task.Title;
     taskObj.ProjectCode = task.projectCode ? task.projectCode : task.ProjectCode;
-    taskObj.NextTasks = task.nextTasks ? task.nextTasks : task.NextTasks;
-    taskObj.PrevTasks = task.PrevTasks ? task.PrevTasks : task.prevTasks;
+    taskObj.NextTasks = task.Type && task.Type === 'Slot' ? '' :  (task.nextTasks ? task.nextTasks : task.NextTasks);
+    taskObj.PrevTasks = task.Type && task.Type === 'Slot' ? '' :  (task.PrevTasks ? task.PrevTasks : task.prevTasks);
     taskObj.Milestone = task.milestone ? task.milestone : task.Milestone;
     taskObj.TaskName = task.TaskName;
     taskObj.EstimatedTime = task.estimatedTime ? task.estimatedTime : task.ExpectedTime ?
