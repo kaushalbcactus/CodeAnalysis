@@ -2040,7 +2040,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         // milestoneTask.ActiveCA = 'Yes';
         milestoneTask.skillLevel = milestoneTask.AssignedTo.SkillText;
         milestoneTask.edited = true;
-        milestoneTask.deallocateCentral = true;
+        // milestoneTask.deallocateCentral = true;
         milestoneTask.pRes = milestoneTask.skillLevel;
       }
     }
@@ -2055,7 +2055,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     subMilestone = currentTask.submilestone ? milestone.children.find(t => t.data.pName === currentTask.submilestone) : milestone;
     if (milestoneTask.slotType === 'Both' && milestoneTask.AssignedTo.ID) {
       milestoneTask.IsCentrallyAllocated = 'No';
-      milestoneTask.ActiveCA = 'No';
+      milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'No' : milestoneTask.ActiveCA;
       milestoneTask.itemType = milestoneTask.itemType.replace(/Slot/g, '');
       const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
       const newName = milestoneTask.itemType + taskCount;
@@ -2084,7 +2084,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       milestoneTask.pName = newName;
     } else if (milestoneTask.slotType === 'Both' && !milestoneTask.AssignedTo.ID) {
       milestoneTask.IsCentrallyAllocated = 'Yes';
-      milestoneTask.ActiveCA = 'Yes';
+      milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'Yes' :  milestoneTask.ActiveCA;
       milestoneTask.itemType = milestoneTask.itemType + 'Slot';
       const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
       const newName = milestoneTask.itemType + taskCount;
@@ -2131,7 +2131,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     nodeData.pUserStart = this.commonService.calcTimeForDifferentTimeZone(prevNodeStartDate,
       this.sharedObject.currentUser.timeZone, nodeData.assignedUserTimeZone);
 
-    nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || prevNodeData.itemType === 'Client Review' || nodeData.itemType === 'Client Review' ?
+    nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 || prevNodeData.itemType === 'Client Review' || nodeData.itemType === 'Client Review' ?
       this.checkStartDate(new Date(nodeData.pUserStart.getFullYear(), nodeData.pUserStart.getMonth(), (nodeData.pUserStart.getDate() + 1), 9, 0)) :
       nodeData.pUserStart;
     nodeData.pUserEnd = this.checkEndDate(nodeData.pUserStart, workingHours);
@@ -2146,8 +2146,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
       nodeData.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
     nodeData.tatVal = this.commonService.calcBusinessDays(new Date(nodeData.pStart), new Date(nodeData.pEnd));
     nodeData.edited = true;
-    if (nodeData.IsCentrallyAllocated === 'Yes' && node.SlotType !== 'Slot' && !node.parentSlot) {
-      nodeData.deallocateCentral = true;
+    if (nodeData.IsCentrallyAllocated === 'Yes' && node.slotType !== 'Slot' && !node.parentSlot) {
+      // nodeData.deallocateCentral = true;
       nodeData.pRes = nodeData.skillLevel;
     }
   }
@@ -2196,10 +2196,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   changeDateOfEditedTask(node, type) {
     node.pUserStart = node.tat === true ?
-      new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0) : node.pUserStart,
-      node.pUserEnd = type === 'start' && node.pUserStart > node.pUserEnd ? (node.tat === true ?
-        new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(),
-          node.pUserStart.getDate(), 19, 0) : node.pUserStart) : node.pUserEnd;
+      new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0) : node.pUserStart;
+    node.pUserEnd = type === 'start' && node.pUserStart > node.pUserEnd ? (node.tat === true ?
+      new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(),
+        node.pUserStart.getDate(), 19, 0) : node.pUserStart) : node.pUserEnd;
 
 
     node.pUserStartDatePart = this.getDatePart(node.pUserStart);
@@ -2212,8 +2212,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
     node.pEnd = this.commonService.calcTimeForDifferentTimeZone(node.pUserEnd,
       node.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
     node.edited = true;
-    if (node.IsCentrallyAllocated === 'Yes' && node.SlotType !== 'Slot' && !node.parentSlot) {
-      node.deallocateCentral = true;
+    if (node.IsCentrallyAllocated === 'Yes' && node.slotType !== 'Slot' && !node.parentSlot) {
+      // node.deallocateCentral = true;
       node.pRes = node.skillLevel;
     }
 
@@ -3011,8 +3011,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode);
       milestoneTask.assignedUserChanged = false;
     }
-
-    if (bAdd && milestoneTask.IsCentrallyAllocated === 'Yes') {
+    if (bAdd && milestoneTask.IsCentrallyAllocated === 'Yes' && this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone) {
       //// send task creation email
       milestoneTask.ActiveCA = 'Yes';
       this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, milestoneTask.pName + ' Created', 'CentralTaskCreation');
@@ -3194,7 +3193,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // **************************************************************************************************
 
   async sendMail(projectDetails, milestoneTask, callDetail) {
-    if (milestoneTask.AssignedTo && milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID !== -1) {
+    if (milestoneTask.AssignedTo && milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID && milestoneTask.AssignedTo.ID !== -1) {
       const fromUser = this.sharedObject.currentUser;
       const user = milestoneTask.AssignedTo;
       const mailSubject = projectDetails.projectCode + '(' + projectDetails.wbjid + ')' + ': Task created';
@@ -3203,7 +3202,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       // const errorDetail = callDetail;
 
       if (user !== 'SelectOne' && user !== '' && user != null) {
-        const userEmail = user.UserName ? user.UserName.EMail : user.Email;
+        const userEmail = user.UserName ? user.UserName.EMail : user.EMail ? user.EMail : user.Email;
         arrayTo.push(userEmail);
       }
       this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
@@ -3789,7 +3788,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           this.sendCentralTaskMail(this.oProjectDetails, element, element.pName + ' Created', 'CentralTaskCreation');
         }
         element.status = 'Not Started';
-        element.deallocateCentral = true;
+        // element.deallocateCentral = true;
         element.assignedUserChanged = false;
         const updateSchedulesBody = {
           __metadata: { type: 'SP.Data.SchedulesListItem' },
@@ -4101,8 +4100,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
       'submilestone': submilestoneLabel,
       'milestone': milestone.label,
       'skillLevel': task.skillLevel,
-      'CentralAllocationDone': 'No',
-      'ActiveCA': task.IsCentrallyAllocated === 'Yes' ? 'Yes' : 'No',
+      'CentralAllocationDone': task.CentralAllocationDone,
+      'ActiveCA': task.ActiveCA,
       'assignedUserTimeZone': '5.5',
       'deallocateCentral': true,
       'DisableCascade': task.DisableCascade && task.DisableCascade === 'Yes' ? true : false,

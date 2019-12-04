@@ -548,3 +548,12 @@ body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight 
 body .ui-dropdown-panel .ui-dropdown-filter-container .ui-dropdown-filter-icon {
     color: #db1721 !important;
 }
+ div.sticky {
+    margin: 0px !important;
+    padding: 0px 0px 5px 0px !important;
+    position: sticky !important;
+    overflow: visible !important;
+    background-color: #f4f4f4 !important;
+    z-index: 990 !important;
+    top: 0 !important;
+  }

@@ -518,22 +518,12 @@ export class CommonService {
         // convert to msec
         // subtract local time zone offset
         // get UTC time in msec
-
         const checkDate = date.jsdate;
         if (checkDate) {
             date = new Date(date.jsdate);
         } else {
             date = new Date(date);
         }
-        // let offset = -1;
-        // const currentsystemOffset = (date.getTimezoneOffset() / 60 * -1);
-        // prevOffset = parseFloat(prevOffset);
-        // currentOffset = currentOffset ? parseFloat(currentOffset) : 5.5;
-        // if (currentsystemOffset === prevOffset) {
-        //   offset = currentOffset;
-        // } else {
-        //   offset = currentsystemOffset * 2 - (prevOffset);
-        // }
         const prevTimezone = parseFloat(prevOffset) * 60 * -1;
         const utc = date.getTime() + (prevTimezone * 60000);
         // create new Date object for different city

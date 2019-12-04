@@ -127,6 +127,8 @@ export class DragDropComponent implements OnInit {
                 taskType: element.data.pName.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
                   element.data.pName.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
                 IsCentrallyAllocated: element.data.IsCentrallyAllocated,
+                CentralAllocationDone: element.data.CentralAllocationDone,
+                ActiveCA: element.data.ActiveCA,
                 status: element.data.status,
               };
               element.children = element.children ? element.children.filter(t => !t.data.parentSlot) : [];
@@ -154,6 +156,8 @@ export class DragDropComponent implements OnInit {
                     taskType: element.data.pName.toLowerCase().indexOf('adhoc') > -1 ? 'Adhoc' :
                       element.data.pName.toLowerCase().indexOf('tb') > -1 ? 'TB' : element.data.itemType,
                     IsCentrallyAllocated: element.data.IsCentrallyAllocated,
+                    CentralAllocationDone: element.data.CentralAllocationDone,
+                    ActiveCA: element.data.ActiveCA,
                     status: element.data.status,
                   };
                   this.onPageLoad(temp2);
@@ -1018,8 +1022,9 @@ export class DragDropComponent implements OnInit {
     }
     else if ((this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length > 1 && this.selectedSubMilestone !== 'Default') || this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length === 1 || (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.length > 1 && this.selectedSubMilestone === 'Default' && event.data === 'Client Review')) {
       var subMilestone = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex];
-      const CentrallyAllocated = MilTask !== undefined ? MilTask.IsCentrallyAllocated !== null ? MilTask.IsCentrallyAllocated : 'No' : 'No';
-
+      const centrallyAllocated = MilTask !== undefined ? MilTask.IsCentrallyAllocated !== null ? MilTask.IsCentrallyAllocated : 'No' : 'No';
+      const centralAllocationDone = MilTask !== undefined ? MilTask.CentralAllocationDone !== null ? MilTask.CentralAllocationDone : 'No' : 'No';
+      const activeCA = MilTask !== undefined ? MilTask.ActiveCA !== null ? MilTask.ActiveCA : 'No' : 'No';
       var clPresnet = subMilestone.task.nodes.find(e => (e.taskType === 'Client Review' && event.data === 'Client Review'));
       if (clPresnet) {
         this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Client Review already present' });
@@ -1046,7 +1051,9 @@ export class DragDropComponent implements OnInit {
           top: 0,
           left: 0,
           status: 'Not Saved',
-          IsCentrallyAllocated: CentrallyAllocated === 'Yes' ? 'Yes' : 'No',
+          IsCentrallyAllocated: centrallyAllocated === 'Yes' ? 'Yes' : 'No',
+          CentralAllocationDone : centralAllocationDone === 'Yes' ? 'Yes' : 'No',
+          ActiveCA :  activeCA === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : '',
           slotType: MilTask.TaskType ? MilTask.TaskType : ''
         };
@@ -1061,7 +1068,9 @@ export class DragDropComponent implements OnInit {
           top: 0,
           left: 0,
           status: 'Not Saved',
-          IsCentrallyAllocated: CentrallyAllocated === 'Yes' ? 'Yes' : 'No',
+          IsCentrallyAllocated: centrallyAllocated === 'Yes' ? 'Yes' : 'No',
+          CentralAllocationDone : centralAllocationDone === 'Yes' ? 'Yes' : 'No',
+          ActiveCA :  activeCA === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : '',
           slotType: MilTask.TaskType ? MilTask.TaskType : ''
         };
@@ -1238,6 +1247,8 @@ export class DragDropComponent implements OnInit {
         left: 0,
         status: event.status,
         IsCentrallyAllocated: event.IsCentrallyAllocated,
+        CentralAllocationDone : event.CentralAllocationDone,
+        ActiveCA :  event.ActiveCA,
         skillLevel: MilTask !== undefined ? MilTask !== null ? MilTask : '' : ''
       };
     }
@@ -1253,6 +1264,8 @@ export class DragDropComponent implements OnInit {
         top: 0,
         left: 0,
         IsCentrallyAllocated: event.IsCentrallyAllocated,
+        CentralAllocationDone : event.CentralAllocationDone,
+        ActiveCA :  event.ActiveCA,
         skillLevel: MilTask !== undefined ? MilTask !== null ? MilTask : '' : ''
       };
     }
@@ -1534,6 +1547,8 @@ export class DragDropComponent implements OnInit {
           Math.max.apply(null, TaskOfType.filter(function (task) { return new RegExp(event.data, 'g').test(task) }).filter(function (v) { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(event.data, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
       const MilTask = this.sharedObject.oTaskAllocation.allTasks.find(c => c.Title === originalType);
       const CentrallyAllocated = MilTask !== undefined ? MilTask.IsCentrallyAllocated !== null ? MilTask.IsCentrallyAllocated : 'No' : 'No';
+      const CentralAllocationDone = MilTask !== undefined ? MilTask.CentralAllocationDone !== null ? MilTask.CentralAllocationDone : 'No' : 'No';
+      const ActiveCA =  MilTask !== undefined ? MilTask.ActiveCA !== null ? MilTask.ActiveCA : 'No' : 'No';
       var node = null;
 
       if (subMilestone.task.nodes.length) {
@@ -1548,6 +1563,8 @@ export class DragDropComponent implements OnInit {
           left: 0,
           status: 'Not Saved',
           IsCentrallyAllocated: CentrallyAllocated === 'Yes' ? 'Yes' : 'No',
+          CentralAllocationDone: CentralAllocationDone === 'Yes' ? 'Yes' : 'No',
+          ActiveCA: ActiveCA === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : '',
           slotType: MilTask.TaskType ? MilTask.TaskType : ''
         };
@@ -1564,6 +1581,8 @@ export class DragDropComponent implements OnInit {
           left: 0,
           status: 'Not Saved',
           IsCentrallyAllocated: CentrallyAllocated === 'Yes' ? 'Yes' : 'No',
+          CentralAllocationDone: CentralAllocationDone === 'Yes' ? 'Yes' : 'No',
+          ActiveCA: ActiveCA === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : '',
           slotType: MilTask.TaskType ? MilTask.TaskType : ''
         };
