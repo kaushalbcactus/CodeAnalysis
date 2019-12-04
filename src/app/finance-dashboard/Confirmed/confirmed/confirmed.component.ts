@@ -907,7 +907,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         const pfobj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
         pfobj.filter = pfobj.filter.replace('{{ProjectCode}}', this.selectedRowItem.ProjectCode);
         let response = await this.spServices.readItems(this.constantService.listNames.ProjectFinances.name, pfobj);
-        response = response.length ? response : [];
+        response = response.length ? response[0] : {};
         // let obj = [{
         //     url: this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name, pfobj),
         //     type: 'GET',
@@ -959,7 +959,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 piObj.listName = this.constantService.listNames.ProjectInformation.name;
                 piObj.type = 'PATCH';
                 piObj.data = piData;
-                batchUrl.push(iliObj);
+                batchUrl.push(piObj);
 
                 // data.push({
                 //     objData: piObj,
@@ -987,7 +987,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                     pfObj.type = 'PATCH';
                     pfObj.data = pfData;
 
-                    batchUrl.push(iliObj);
+                    batchUrl.push(pfObj);
                     // data.push({
                     //     objData: pfObj,
                     //     endpoint: pfEndpoint,
