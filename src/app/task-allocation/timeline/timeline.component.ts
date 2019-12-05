@@ -3414,7 +3414,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
         const userEmail = user.UserName ? user.UserName.EMail : user.Email ? user.Email : user.EMail;
         arrayTo.push(userEmail);
       }
-      await this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
+      const to = arrayTo.join(',').trim();
+      if(to) {
+        await this.spServices.sendMail(to, fromUser.email, mailSubject, objEmailBody);
+      }
       // this.spServices.triggerMail(fromUser.email, 'TaskCreation', objEmailBody, mailSubject, arrayTo, errorDetail);
     }
   }
