@@ -49,7 +49,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   selectedButton: any;
   selectedUser: any;
   modalloaderenable: boolean;
-  loderenable: boolean;
+  loderenable: boolean = true;
   DropdownOptions: SelectItem[];
   disableSave = true;
   public queryConfig = {
@@ -123,6 +123,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   public allocatedHideTable = true;
   public allocatedHideNoDataMessage = true;
   public userDetails;
+  public resetFilter = false;
   public resourceList = [];
   public projects = [];
   public schedulesItems = [];
@@ -163,7 +164,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.caGlobal.loading = true;
     this.caGlobal.totalRecords = 0;
     this.modalloaderenable = false;
-    this.loderenable = false;
     setTimeout(async () => {
       await this.getProperties();
     }, 100);
@@ -175,6 +175,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   // ****************************************************************************************************
   // Get Data based on tab selection
   // *****************************************************************************************************
+
 
 
   async getProperties() {
@@ -258,8 +259,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
   lazyLoadTask(event) {
-
-    debugger;
+    
     this.caCommonService.lazyLoadTask(event, this.completeTaskArray, this.filterColumns);
   }
 
@@ -271,19 +271,19 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   openPopup(data) {
     console.log(data);
     if (data.Type === 'Slot') {
-      if (data.editMode) {
-        this.taskMenu = [
-          { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
-          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) },
-          { label: 'Cancel Changes', icon: 'pi pi-fw pi-times', command: (e) => this.cancelledAllchanges(data) },
-        ];
-      } else {
+      // if (data.editMode) {
+      //   this.taskMenu = [
+      //     { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
+      //     { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) },
+      //     { label: 'Cancel Changes', icon: 'pi pi-fw pi-times', command: (e) => this.cancelledAllchanges(data) },
+      //   ];
+      // } else {
 
-        this.taskMenu = [
-          { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
-          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) }
-        ];
-      }
+      this.taskMenu = [
+        { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
+        { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) }
+      ];
+      // }
     } else {
       if (data.editMode) {
         this.taskMenu = [
@@ -528,6 +528,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   assignedToUserChanged(rowData) {
     rowData.assignedUserChanged = true;
+    rowData.PreviousAssignedUser = rowData.AssignedTo;
   }
 
   // ****************************************************************************************************
@@ -1154,8 +1155,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.Timezone = task.timezone ? task.timezone : task.TimeZone;
     taskObj.Title = task.Title;
     taskObj.ProjectCode = task.projectCode ? task.projectCode : task.ProjectCode;
-    taskObj.NextTasks = task.Type && task.Type === 'Slot' ? '' :  (task.nextTasks ? task.nextTasks : task.NextTasks);
-    taskObj.PrevTasks = task.Type && task.Type === 'Slot' ? '' :  (task.PrevTasks ? task.PrevTasks : task.prevTasks);
+    taskObj.NextTasks = task.Type && task.Type === 'Slot' ? '' : (task.nextTasks ? task.nextTasks : task.NextTasks);
+    taskObj.PrevTasks = task.Type && task.Type === 'Slot' ? '' : (task.PrevTasks ? task.PrevTasks : task.prevTasks);
     taskObj.Milestone = task.milestone ? task.milestone : task.Milestone;
     taskObj.TaskName = task.TaskName;
     taskObj.EstimatedTime = task.estimatedTime ? task.estimatedTime : task.ExpectedTime ?
@@ -1829,7 +1830,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     if (unt) {
       this.caGlobal.loading = true;
-      this.caCommonService.filterAction(unt.sortField, unt.sortOrder, unt.filters.hasOwnProperty('global') ?
+      this.caCommonService.filterAction(unt.multiSortMeta, unt.sortOrder, unt.filters.hasOwnProperty('global') ?
         unt.filters.global.value : null, unt.filters, unt.first, unt.rows,
         this.completeTaskArray, this.filterColumns);
     }
@@ -1923,6 +1924,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         PrevTasks: this.setPreviousAndNext(task.PrevTasks, slot.Milestone, slot.ProjectCode),
         IsCentrallyAllocated: 'No',
         DisableCascade: task.DisableCascade === true ? 'Yes' : 'No',
+        PreviousAssignedUserId: task.PreviousAssignedUser ? task.PreviousAssignedUser.hasOwnProperty('ID') ?
+          task.PreviousAssignedUser.ID : -1 : -1,
       };
       url = this.spServices.getItemURL(this.globalConstant.listNames.Schedules.name, +task.Id);
       data = updateData;

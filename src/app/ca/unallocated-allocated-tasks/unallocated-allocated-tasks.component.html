@@ -1,10 +1,7 @@
 <!-- *****************************************************************************************************
                                                          loader enable 
 ***************************************************************************************************** -->
-<!-- <div class="p-dir-col p-align-center" style="padding-top: 10vw;" [hidden]="!loaderenable">
-    <div id="scInnerLoader"></div>
-    <div id="scInnerLoaderText">Loading...</div>
-</div> -->
+
 
 <!-- <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog> -->
 
@@ -24,7 +21,13 @@
 </button>
 </div>
 
-<div class="allocatedUnallocatedTable" [hidden]='loderenable'>
+
+<div class="p-dir-col p-align-center" style="padding-top: 10vw;" [hidden]="!loaderenable">
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
+
+<div class="allocatedUnallocatedTable" *ngIf='!loaderenable'>
     <p-table #taskTable dataKey="Id" [columns]="displayedColumns" [value]="caGlobal.dataSource" sortMode="multiple" [lazy]="true" (onLazyLoad)="lazyLoadTask($event)" [paginator]="true" [rows]="10" [totalRecords]="caGlobal.totalRecords" rowExpandMode="multiple"
         [loading]="caGlobal.loading" [style]="{'font-size':'13px'}" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)" [lazyLoadOnInit]="false">
         <ng-template pTemplate="header" let-columns>
@@ -286,13 +289,20 @@
         <p-card class="p-col">
             <p-header style="padding: 0.5em;font-size: 1.2em;color: #af0b14;font-weight: 600;"><i class="fa fa-comments" aria-hidden="true"></i>&nbsp;&nbsp; Scope</p-header>
 
-            <div>
+            <div *ngIf="taskType ==='Slot'">
+
+                <span *ngIf="caGlobal.taskScope === ''" style="color: #c53e3e;font-size: 1em;">* No scope for present slot.         
+                        </span>
+                <span *ngIf="caGlobal.taskScope !==''" [(ngModel)]="caGlobal.taskScope"> 
+                       </span>
+            </div>
+            <div *ngIf="taskType !=='Slot'">
                 <textarea rows="7" cols="30" style="width: 100%;" placeholder="Leave Scope" [(ngModel)]="caGlobal.taskScope" pInputTextarea></textarea>
             </div>
         </p-card>
     </div>
     <p-footer>
-        <button type="button" pButton icon="pi pi-check" style="background-color: #af0b14;border-color:#af0b14;" (click)="saveTaskScope(caGlobal.curTaskScope, caGlobal.taskScope); displayCommentenable=false" label="Save"></button>
+        <button *ngIf="taskType !=='Slot'" type="button" pButton icon="pi pi-check" style="background-color: #af0b14;border-color:#af0b14;" (click)="saveTaskScope(caGlobal.curTaskScope, caGlobal.taskScope); displayCommentenable=false" label="Save"></button>
         <button type="button" pButton icon="pi pi-times" (click)="displayCommentenable=false" label="Cancel" class="ui-button-secondary"></button>
     </p-footer>
 </p-dialog>
