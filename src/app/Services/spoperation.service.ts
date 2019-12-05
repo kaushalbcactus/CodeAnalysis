@@ -85,6 +85,8 @@ export class SPOperationService {
     //   return error;
     // });
     // return this.parseRetSingle(res);
+    body = body.replace(RegExp("'", 'gi'), '');
+    subj = subj.replace(RegExp("'", 'gi'), '');
     const data = {
       Title: subj,
       MailBody: body,

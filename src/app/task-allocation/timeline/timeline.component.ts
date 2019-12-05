@@ -1045,7 +1045,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         const assignedUsers = await this.commonService.getResourceByMatrix(milestone.data, allRetrievedTasks);
 
         milestone.data.assignedUsers = [];
-        const response = await await this.formatAssignedUser(assignedUsers);
+        const response = await this.formatAssignedUser(assignedUsers);
         milestone.data.assignedUsers = response;
         if (milestone.data.editMode) {
           milestone.data.assignedUsers.forEach(element => {
@@ -1062,7 +1062,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             const assignedUsers = await this.commonService.getResourceByMatrix(submilestone.data, allRetrievedTasks);
 
             submilestone.data.assignedUsers = [];
-            const response = await await this.formatAssignedUser(assignedUsers);
+            const response = await this.formatAssignedUser(assignedUsers);
             submilestone.data.assignedUsers = response;
             if (submilestone.data.editMode) {
               submilestone.data.assignedUsers.forEach(element => {
@@ -1078,7 +1078,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               const task = submilestone.children[nCountTask];
               const assignedUsers = await this.commonService.getResourceByMatrix(task.data, allRetrievedTasks);
               task.data.assignedUsers = [];
-              const response = await await this.formatAssignedUser(assignedUsers);
+              const response = await this.formatAssignedUser(assignedUsers);
               task.data.assignedUsers = response;
               if (task.data.editMode) {
                 task.data.assignedUsers.forEach(element => {
@@ -1100,7 +1100,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   formatAssignedUser(assignedUsers) {
     const response = []
 
-    debugger;
+    
     const UniqueUserType = assignedUsers.map(c => c.userType).filter((item, index) => assignedUsers.map(c => c.userType).indexOf(item) === index);
     console.log(assignedUsers)
 
@@ -2817,7 +2817,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
       }
 
-      addTasks.push(this.setMilestoneTaskForAddUpdate(milestoneTask, true));
+      addTasks.push(await this.setMilestoneTaskForAddUpdate(milestoneTask, true));
     }
     for (const milestoneTask of updateTaskItems) {
       if (milestoneTask.AssignedTo && milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID !== -1) {
@@ -2859,7 +2859,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
       }
 
-      updateTasks.push(this.setMilestoneTaskForAddUpdate(milestoneTask, false));
+      updateTasks.push(await this.setMilestoneTaskForAddUpdate(milestoneTask, false));
     }
 
     for (const milestone of addMilestoneItems) {
@@ -3054,7 +3054,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     // }
   }
-  setMilestoneTaskForAddUpdate(milestoneTask, bAdd) {
+  async setMilestoneTaskForAddUpdate(milestoneTask, bAdd) {
     const batchUrl = [];
     let url = '';
     let data = {};
@@ -3069,7 +3069,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
     if (milestoneTask.assignedUserChanged && milestoneTask.status === 'Not Started') {
       debugger;
-      this.sendMail(this.oProjectDetails, milestoneTask, 'New User Assigned for Task'
+     await this.sendMail(this.oProjectDetails, milestoneTask, 'New User Assigned for Task'
         + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode);
       milestoneTask.assignedUserChanged = false;
     }
@@ -3079,7 +3079,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       if (bAdd) {
         debugger
         //// send task creation email
-        this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, 'New central task created'
+        await this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, 'New central task created'
           + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'New central task created');
       } else if (milestoneTask.CentralAllocationDone === 'Yes' && milestoneTask.deallocateCentral) {
         // milestoneTask.ActiveCA = 'No';
@@ -3091,7 +3091,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
         debugger
         //// send task deallocation email
-        this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, 'Central task deallocated'
+        await this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, 'Central task deallocated'
           + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'Central task deallocated');
       }
     }
@@ -3411,10 +3411,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
       // const errorDetail = callDetail;
 
       if (user !== 'SelectOne' && user !== '' && user != null) {
-        const userEmail = user.UserName ? user.UserName.EMail : user.Email;
+        const userEmail = user.UserName ? user.UserName.EMail : user.Email ? user.Email : user.EMail;
         arrayTo.push(userEmail);
       }
-      this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
+      await this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
       // this.spServices.triggerMail(fromUser.email, 'TaskCreation', objEmailBody, mailSubject, arrayTo, errorDetail);
     }
   }
@@ -3433,7 +3433,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     for (const user of users) {
       arrayTo.push(user.Email);
     }
-    this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
+    await this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
     // this.spServices.triggerMail(fromUser.email, 'CentralTaskCreation', objEmailBody, mailSubject, arrayTo, callDetail);
 
   }
@@ -3938,16 +3938,16 @@ export class TimelineComponent implements OnInit, OnDestroy {
     } else {
       setToTasks = this.getTasksFromMilestones(currentMilestone[0], false);
     }
-
-    setToTasks.forEach(element => {
+    for(let element of setToTasks) {
+    // setToTasks.forEach( async element => {
       if (element.status === 'Not Confirmed') {
         if (element.AssignedTo) {
-          this.sendMail(this.oProjectDetails, element, 'Set new milestone' + newCurrentMilestone[0].data.pName.split(' (')[0]);
+          await this.sendMail(this.oProjectDetails, element, 'Set new milestone' + newCurrentMilestone[0].data.pName.split(' (')[0]);
         }
         if (element.IsCentrallyAllocated === 'Yes') {
           //// send task creation email
           element.ActiveCA = 'Yes';
-          this.sendCentralTaskMail(this.oProjectDetails, element, 'New central task created'
+          await this.sendCentralTaskMail(this.oProjectDetails, element, 'New central task created'
             + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'New central task created');
         }
         element.status = 'Not Started';
@@ -3969,7 +3969,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
         batchUrl.push(taskCAUpdateObj);
         // spservice.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateSchedulesBody, false);
       }
-    });
+    // });
+    }
     const cMilestoneEndpoint = '';
     let updateCMilestoneBody;
     let curMilestoneID = -1;
