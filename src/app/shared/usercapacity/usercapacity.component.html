@@ -4,8 +4,7 @@
 </div>
 
 
-<p-toast [style]="{marginTop: '80px'}" position="top-center" key="myKey1" [modal]="true" [baseZIndex]="5000"
-    closable="false"></p-toast>
+<p-toast [style]="{marginTop: '80px'}" position="top-center" key="myKey1" [modal]="true" [baseZIndex]="5000" closable="false"></p-toast>
 <div>
 
 
@@ -29,28 +28,22 @@
         <tbody class="capacityBody">
             <tr *ngFor="let user of oCapacity.arrUserDetails">
 
-                <td>
+                <td [attr.colspan]="oCapacity.arrDateFormat.length + 3">
                     <table class="table-bordered table-striped tbl">
                         <tbody>
                             <tr class="UserTasksRow">
                                 <td>
                                     <table>
                                         <tbody>
-                                            <tr class="{{user.uid}}taskrow" [ngStyle]="{'height':height}">
+                                            <tr class="{{user.uid}}taskrow" [ngStyle]="{'height':height,'width': '100%','display': 'inline-table','table-layout': 'fixed'}">
                                                 <td [ngStyle]="{'vertical-align':verticalAlign}">
                                                     <div> {{user.userName}} </div>
-                                                    <div class="{{user.uid}}more more"
-                                                        (click)="changeHeight(user,$event)"
-                                                        *ngIf="user.tasks.length > 3 && user.dates.length <= 10">More
+                                                    <div class="{{user.uid}}more more" (click)="changeHeight(user,$event)" *ngIf="user.tasks.length > 3 && user.dates.length <= 10">More
                                                     </div>
-                                                    <div class="{{user.uid}}less less hide"
-                                                        (click)="changeHeight(user,$event)">Less</div>
+                                                    <div class="{{user.uid}}less less hide" (click)="changeHeight(user,$event)">Less</div>
                                                 </td>
                                                 <!-- (click)="fetchProjectTaskDetails(user, date.tasksDetails,$event)" -->
-                                                <td (click)="fetchProjectTaskDetails(user, date.tasksDetails,$event)"
-                                                    [ngStyle]="{'vertical-align':verticalAlign}"
-                                                    *ngFor="let date of user.dates" class="tableCell"
-                                                    [ngClass]="{'colorLeave': date.userCapacity==='Leave','colorFullAllocated':date.userCapacity === 'NotAvailable','colorAvailable':date.userCapacity === 'Available'}">
+                                                <td (click)="fetchProjectTaskDetails(user, date.tasksDetails,$event)" [ngStyle]="{'vertical-align':verticalAlign}" *ngFor="let date of user.dates" class="tableCell" [ngClass]="{'colorLeave': date.userCapacity==='Leave','colorFullAllocated':date.userCapacity === 'NotAvailable','colorAvailable':date.userCapacity === 'Available'}">
                                                     <div class="wrap">
                                                         <div class="taskCount right">{{date.taskCount}}</div>
                                                         <div class="availableHrs center"> {{date.displayAvailableHrs}}
@@ -66,9 +59,7 @@
                                             </tr>
                                             <tr *ngIf="user.dates.length<=10">
                                                 <td>
-                                                    <div class="taskBar" *ngFor="let task of user.tasks"
-                                                        [ngStyle]="{'width':task.cssWidth,'left':task.cssLeft,'top':task.cssTop,'display':task.cssHide}"
-                                                        [ngClass]="{'plannedTask':task.Status==='Not Confirmed','confirmedTask':task.Status!=='Not confirmed'}">
+                                                    <div class="taskBar" *ngFor="let task of user.tasks" [ngStyle]="{'width':task.cssWidth,'left':task.cssLeft,'top':task.cssTop,'display':task.cssHide}" [ngClass]="{'plannedTask':task.Status==='Not Confirmed','confirmedTask':task.Status!=='Not confirmed'}">
                                                         {{task.TotalAllocated}} : {{task.ProjectCode}}
                                                     </div>
                                                 </td>
@@ -83,7 +74,7 @@
                                         <div id="modalInnerLoader"></div>
                                         <div id="modalInnerLoaderText">Loading...</div>
                                     </div>
-                                    <table class="table-bordered table-striped" id="TasksPerDay">
+                                    <table class="table-bordered table-striped" id="TasksPerDay" style="width: 100%;">
                                         <thead>
                                             <tr class="tableHeader">
                                                 <td>
@@ -116,8 +107,7 @@
                                             <tr *ngFor="let task of user.dayTasks">
                                                 <td>
                                                     <span>{{task.title}} <span *ngIf='task.SubMilestones'> -
-                                                            {{task.SubMilestones}} </span><span
-                                                            *ngIf='task.shortTitle'>({{task.shortTitle}})</span></span>
+                                                            {{task.SubMilestones}} </span><span *ngIf='task.shortTitle'>({{task.shortTitle}})</span></span>
                                                 </td>
                                                 <td>
                                                     <span>{{(task.startDate | date:'dd MMM yy h:mm a') || '--' }}</span>
@@ -138,10 +128,7 @@
 
                                                 <td>
 
-                                                    <i *ngIf="task.projectCode !=='Adhoc' && !disableCamera"
-                                                        class="pi pi-camera" title="Milestone Tasks"
-                                                        (click)="getMilestoneTasks(task)"
-                                                        style="font-size: 3em;cursor: pointer;"></i>
+                                                    <i *ngIf="task.projectCode !=='Adhoc' && !disableCamera" class="pi pi-camera" title="Milestone Tasks" (click)="getMilestoneTasks(task)" style="font-size: 3em;cursor: pointer;"></i>
 
                                                 </td>
                                             </tr>

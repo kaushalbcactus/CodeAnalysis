@@ -157,9 +157,8 @@ export class UsercapacityComponent implements OnInit {
     };
 
     let batchResults = [];
-
-    // let batchURL = [];
     let finalArray = [];
+    let tempFinalArray = [];
     let startDateString = this.datepipe.transform(startDate, 'yyyy-MM-dd') + 'T00:00:01.000Z';
     let endDateString = this.datepipe.transform(endDate, 'yyyy-MM-dd') + 'T23:59:00.000Z';
     const sTopStartDate = startDate;
@@ -195,17 +194,32 @@ export class UsercapacityComponent implements OnInit {
             oUser.userName = userDetail[0].UserName.Title;
             oUser.maxHrs = userDetail[0].UserName.MaxHrs ? userDetail[0].UserName.MaxHrs : userDetail[0].MaxHrs;
             this.fetchData(oUser, startDateString, endDateString, batchUrl);
+
+            if (batchUrl.length === 99) {
+              batchResults = await this.spService.executeBatch(batchUrl);
+              console.log(batchResults);
+              tempFinalArray = [...tempFinalArray, ...batchResults];
+              batchUrl = [];
+            }
             oCapacity.arrUserDetails.push(oUser);
           }
         }
       }
     }
 
+    debugger;
 
-    let arruserResults = await this.spService.executeBatch(batchUrl);
-    arruserResults = arruserResults.length ? arruserResults.map(a => a.retItems) : [];
+    if (batchUrl.length) {
+      batchResults = await this.spService.executeBatch(batchUrl);
+      tempFinalArray = [...tempFinalArray, ...batchResults];
+    }
+
+    // let arruserResults = await this.spService.executeBatch(batchUrl);
+    const arruserResults = tempFinalArray.length ? tempFinalArray.map(a => a.retItems) : [];
 
     let batchURL = [];
+    batchResults = [];
+    finalArray = [];
     const options = {
       data: null,
       url: '',
@@ -798,6 +812,7 @@ export class UsercapacityComponent implements OnInit {
       },
       header: task.title,
       width: '90vw',
+      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' },
     });
     ref.onClose.subscribe(async (tasks: any) => {
     });

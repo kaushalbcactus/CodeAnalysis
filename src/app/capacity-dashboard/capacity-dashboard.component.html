@@ -9,7 +9,7 @@
 <div class="p-row p-dir-col" *ngIf="!mainloaderenable">
     <p-toast key="toastMessage" [style]="{marginTop: '80px'}" position="top-center"></p-toast>
     <p-card class="p-col">
-        <form #searchForm="ngForm" [formGroup]="searchCapacityForm" (ngSubmit)="onSubmit()">
+        <form class="p-grid" #searchForm="ngForm" [formGroup]="searchCapacityForm" (ngSubmit)="onSubmit()">
             <div class="p-col-12 p-justify-between p-align-center" style="padding: 20px 0px 20px 0px;">
                 <span class="p-col-2 ui-float-label ui-fluid">
                     <p-multiSelect [options]="Buckets" formControlName="bucket" (onChange)="onChange($event,'bucket')" 
@@ -47,15 +47,57 @@
 
                 <!-- <p-footer> -->
                 <button pButton type="submit" icon="pi pi-search" class="ui-button-raised ui-button-danger"></button>
-                <button pButton type="button" icon="pi pi-refresh" style="margin-left: 4px !important;"
-                    class="ui-button-raised ui-button-danger" (click)="onChange($event,'');searchForm.reset()"></button>
+                <button pButton type="button" icon="pi pi-refresh" style="margin-left: 4px !important;" class="ui-button-raised ui-button-danger" (click)="onChange($event,'');searchForm.reset()"></button>
                 <!-- </p-footer> -->
             </div>
         </form>
 
 
+        <div class="p-col" [hidden]="!fetchDataloader">
+            <div class="p-grid">
+                <div class="col-3 ui-card-title" style="font-size: 15px;">Selected User Capacity</div>
+                <div class="col-5 ui-card-title p-col-align-center p-justify-between">
+                    <div>
+                        <span style="float: left;font-size: 14px;padding-right: 10px;"> Days : </span>
+                        <div class="input-color">
+                            <label>Available</label>
+                            <div class="color-box" style="background-color: #55bf3b;left: 0px;"></div>
+                        </div>
+                        <div class="input-color">
+                            <label>Fully/Over Allocated</label>
+                            <div class="color-box" style="background-color: #EF3D3D;"></div>
+                        </div>
+                        <div class="input-color">
+                            <label>Leave / Not Working </label>
+                            <div class="color-box" style="background-color: #808080;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4 ui-card-title p-col-align-center p-justify-between">
+                    <div>
+                        <span style="float: left;font-size: 14px;padding-right: 10px;"> Tasks : </span>
+                        <div class="input-color">
+                            <label>Confirmed</label>
+                            <div class="color-box" style="background-color: #ffff00;left: 0px;"></div>
+                        </div>
+                        <div class="input-color">
+                            <label>Planned / Blocked</label>
+                            <div class="color-box" style="background-color: #7798bf;"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div [hidden]="!userCapacityEnable">
+                <app-usercapacity #InitialUserCapacity></app-usercapacity>
+            </div>
+
+        </div>
+
+
     </p-card>
-    <p-card class="p-col" [hidden]="!fetchDataloader">
+    <!-- <p-card class="p-col" [hidden]="!fetchDataloader">
         <div class="p-grid">
             <div class="col-3 ui-card-title" style="font-size: 15px;">Selected User Capacity</div>
             <div class="col-5 ui-card-title p-col-align-center p-justify-between">
@@ -95,5 +137,5 @@
             <app-usercapacity #InitialUserCapacity></app-usercapacity>
         </div>
 
-    </p-card>
+    </p-card> -->
 </div>
