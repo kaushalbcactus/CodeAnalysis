@@ -28,10 +28,10 @@
 </div>
 
 <div class="allocatedUnallocatedTable" *ngIf='!loaderenable'>
-    <p-table #taskTable dataKey="Id" [columns]="displayedColumns" [value]="caGlobal.dataSource" sortMode="multiple" [lazy]="true" (onLazyLoad)="lazyLoadTask($event)" [paginator]="true" [rows]="10" [totalRecords]="caGlobal.totalRecords" rowExpandMode="multiple"
+    <p-table #taskTable class="slotTable" dataKey="Id" [columns]="displayedColumns" [value]="caGlobal.dataSource" sortMode="multiple" [lazy]="true" (onLazyLoad)="lazyLoadTask($event)" [paginator]="true" [rows]="10" [totalRecords]="caGlobal.totalRecords" rowExpandMode="multiple"
         [loading]="caGlobal.loading" [style]="{'font-size':'13px'}" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)" [lazyLoadOnInit]="false">
         <ng-template pTemplate="header" let-columns>
-            <tr>
+            <tr class="slotTableTr">
                 <th style="width: 3%;"></th>
                 <th *ngFor="let col of columns" [pSortableColumn]="col.field">
                     {{ col.header }}
@@ -45,7 +45,7 @@
                 </th> -->
                 <th style="width: 3%;"></th>
             </tr>
-            <tr>
+            <tr class="slotTableTr1">
                 <th></th>
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
                     <p-multiSelect *ngSwitchCase="'ClientName'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.clientLegalEntityArray" defaultLabel="All" class="ClientName" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
@@ -118,7 +118,7 @@
                 <td style="width: 3%;">
                     <p-menu #popupMenu [style]="{'width': '16em'}" [popup]="true" [model]="taskMenu"></p-menu>
 
-                    <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(task, popupMenu);popupMenu.show($event);"></i>
+                    <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(task, Slot,popupMenu);popupMenu.show($event);"></i>
                 </td>
             </tr>
         </ng-template>
@@ -163,8 +163,8 @@
                                 <!-- Start Date -->
                                 <td style="padding: 5px;">
 
-                                    <span [title]="rowData.UserStart |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode">{{rowData.UserStart |  date:' d MMM, y, h:mm a' }}</span>
-                                    <span *ngIf="rowData.editMode" style="display: flex;">
+                                    <span [title]="rowData.UserStart |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode  || (rowData.editMode && (rowData.Status ==='Completed' || rowData.Status ==='In Progress'))">{{rowData.UserStart |  date:' d MMM, y, h:mm a' }}</span>
+                                    <span *ngIf="rowData.editMode && (rowData.Status === 'Not Saved' || rowData.Status === 'Not Started')" style="display: flex;">
                                         <p-calendar id="calenderIcon" [(ngModel)]="rowData.UserStartDatePart"
                                             [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
                                             yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
@@ -185,8 +185,8 @@
                                 <!-- End Date -->
                                 <td style="padding: 5px;">
 
-                                    <span [title]="rowData.UserEnd |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode">{{rowData.UserEnd |  date:' d MMM, y, h:mm a' }}</span>
-                                    <span *ngIf="rowData.editMode" style="display: flex;">
+                                    <span [title]="rowData.UserEnd |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode  || (rowData.editMode && rowData.Status ==='Completed')">{{rowData.UserEnd |  date:' d MMM, y, h:mm a' }}</span>
+                                    <span *ngIf="rowData.editMode && rowData.Status !=='Completed'" style="display: flex;">
         
                                         <p-calendar id="calenderIcon" [(ngModel)]="rowData.UserEndDatePart"
                                             [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
@@ -235,14 +235,14 @@
                                 <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
                                     <span *ngIf="!rowData.editMode">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
 
-                                    <p-inputSwitch *ngIf="rowData.editMode" (onChange)="modelChanged($event,Slot)" [(ngModel)]="rowData.allowStart"></p-inputSwitch>
+                                    <p-inputSwitch *ngIf="rowData.editMode" (onChange)="modelChanged(rowData,Slot)" [(ngModel)]="rowData.allowStart"></p-inputSwitch>
                                 </td>
                                 <!-- Disable cascade -->
 
                                 <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
                                     <span *ngIf="!rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
 
-                                    <p-inputSwitch *ngIf="rowData.editMode" (onChange)="modelChanged($event,Slot)" [(ngModel)]="rowData.DisableCascade"></p-inputSwitch>
+                                    <p-inputSwitch *ngIf="rowData.editMode" (onChange)="modelChanged(rowData,Slot)" [(ngModel)]="rowData.DisableCascade"></p-inputSwitch>
                                 </td>
 
                                 <!-- Menu option -->
@@ -250,7 +250,7 @@
                                     <div>
                                         <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu"></p-menu>
 
-                                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData, popupMenu);popupMenu.show($event);"></i>
+                                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData,Slot, popupMenu);popupMenu.show($event);"></i>
                                     </div>
                                 </td>
                             </tr>

@@ -81,6 +81,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   emailTemplate = undefined;
   BudgetHoursTask = [];
   BudgetHoursTaskenable = true;
+  tempSlot: any;
   constructor(
     private spServices: SPOperationService,
     private globalConstant: ConstantsService,
@@ -259,7 +260,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
   lazyLoadTask(event) {
-    
+
     this.caCommonService.lazyLoadTask(event, this.completeTaskArray, this.filterColumns);
   }
 
@@ -268,7 +269,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   // *****************************************************************************************************
 
 
-  openPopup(data) {
+  openPopup(data, Slot) {
     console.log(data);
     if (data.Type === 'Slot') {
       // if (data.editMode) {
@@ -281,18 +282,18 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
       this.taskMenu = [
         { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
-        { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) }
+        { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data, Slot) }
       ];
       // }
     } else {
       if (data.editMode) {
         this.taskMenu = [
-          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) }
+          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data, Slot) }
         ];
       } else {
         this.taskMenu = [
           { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(data) },
-          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) }
+          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data, Slot) }
         ];
       }
     }
@@ -338,11 +339,12 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     task.editImageUrl = this.globalService.imageSrcURL.editImageURL;
   }
 
-  getAllocateTaskScope(task) {
-
+  getAllocateTaskScope(task, Slot) {
+    this.tempSlot = Slot;
     this.displayCommentenable = true;
     this.taskTitle = task.title;
     this.taskType = task.Type && task.Type === 'Slot' ? task.Type : 'Task';
+
     this.caGlobal.taskScope = task.TaskScope ? task.TaskScope : '';
     this.caGlobal.taskPreviousComment = task.PrevTaskComments ?
       task.PrevTaskComments : '';
@@ -353,10 +355,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   // *****************************************************************************************************
   saveTaskScope(task, comments) {
     task.TaskScope = comments;
-    if (task.Type === 'Slot') {
-      task.editMode = true;
-      task.edited = true;
-    }
+    task.editMode = true;
+    task.edited = true;
+    this.tempSlot.edited = true;
+    this.tempSlot.editMode = true;
     this.disableSave = false;
   }
 
@@ -479,8 +481,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   async showCapacityPopup(task, item, allocateResource, selectedButton) {
 
-    const startTime = new Date(new Date(task.startTime).setHours(0, 0, 0, 0));
-    let endDate = new Date(new Date(task.endTime).setDate(new Date(task.endTime).getDate() + 2));
+
+    const startTime = new Date(new Date(task.StartDate).setHours(0, 0, 0, 0));
+    let endDate = new Date(new Date(task.DueDate).setDate(new Date(task.DueDate).getDate() + 2));
     if (endDate.getDay() === 6 || endDate.getDay() === 0) {
       endDate = new Date(new Date(endDate).setDate(new Date(endDate).getDate() + 2));
     }
@@ -710,7 +713,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       this.emailTemplate = await this.GetEmailTemplate(templateName);
     }
 
-    debugger;
+
 
     milestoneTask.Title = slot.ProjectCode + ' ' +
       slot.Milestone + ' ' + milestoneTask.TaskName
@@ -905,7 +908,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
   showRestructureCA(RowData) {
-    this.loaderenable = true;
+
     const ref = this.dialogService.open(CaDragdropComponent, {
 
       data: {
@@ -1048,7 +1051,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           event.data.dbSlotTasks.push(element);
         }
 
-        // debugger;
+        // 
         // if (event.data.SlotTasks.length === 0) {
         //   const tasks = await this.GetAllConstantTasks(event.data.Task);
 
@@ -1075,6 +1078,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   }
 
   modelChanged(event, Slot) {
+
+
     event.editMode = true;
     event.edited = true;
     Slot.editMode = true;
@@ -1466,7 +1471,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         const compareDates = slot.SlotTasks.filter(e => (e.UserEnd <= e.UserStart && e.Status !== 'Completed'));
         if (compareDates.length > 0) {
 
-          debugger;
+
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
             detail: 'End date should be greater than start date of ' + compareDates[0].TaskName + ' task of '
@@ -1577,7 +1582,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     for (const slot of EditedSlots) {
       if (slot.SlotTasks) {
         addedTasks = slot.SlotTasks.filter(e => e.Status === 'Not Saved');
-        updatedTasks = slot.SlotTasks.filter(e => e.Status !== 'Completed' && e.Status !== 'Not Saved' && e.edited);
+        updatedTasks = slot.SlotTasks.filter(e => (e.Status !== 'Completed' || e.Status !== 'Not Saved') && e.edited);
         if (addedTasks.length > 0) {
           slot.edited = true;
         }
@@ -1620,7 +1625,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
           if (task.allocatedResource && task.allocatedResource.UserName.hasOwnProperty('ID') && task.allocatedResource.UserName.ID !== -1) {
-            switch (task.task) {
+            switch (task.Task) {
               case 'QC':
               case 'Review-QC':
               case 'Inco-QC':

@@ -127,22 +127,17 @@
     top: 0 !important;
 }
 
-:host ::ng-deep .ui-table .ui-table-thead>tr:first-child>th {
+:host ::ng-deep .slotTableTr>th {
     position: -webkit-sticky;
     position: sticky;
     top: 40px !important;
-    z-index: 990 !important;
+    z-index: 99 !important;
 }
 
-:host ::ng-deep .ui-table .ui-table-thead>tr:last-child>th {
+
+/* :host ::ng-deep .slotTableTr1>th {
     position: -webkit-sticky;
     position: sticky;
     top: 90px !important;
-    z-index: 990 !important;
-}
-
-@media screen and (max-width: 64em) {
-     :host ::ng-deep .ui-table .ui-table-thead>tr:first-child>th {
-        top: 70px;
-    }
-}
+    z-index: 99 !important;
+} */
