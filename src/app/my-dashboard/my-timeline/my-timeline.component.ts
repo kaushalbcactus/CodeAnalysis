@@ -523,6 +523,8 @@ export class MyTimelineComponent implements OnInit {
           { label: 'In Progress', value: 'In Progress' },
           { label: 'Completed', value: 'Completed' },
         ];
+      }  else {
+        this.SelectedStatus = this.task.Status;
       }
       this.modalloaderenable = false;
     }

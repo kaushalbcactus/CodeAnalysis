@@ -756,8 +756,8 @@ export class UsercapacityComponent implements OnInit {
         for (const i in users) {
           if (users.hasOwnProperty(i)) {
             let top = 0;
-            this.height = '75px';
-            users[i].height = '75px';
+            this.height = '80px';
+            users[i].height = '80px';
             users[i].maxHeight = (users[i].tasks.length * 18) + 21 + 'px';
             this.verticalAlign = 'top';
             for (const j in users[i].tasks) {
