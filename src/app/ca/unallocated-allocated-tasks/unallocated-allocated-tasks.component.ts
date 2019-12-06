@@ -1581,7 +1581,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     for (const slot of EditedSlots) {
       if (slot.SlotTasks) {
         addedTasks = slot.SlotTasks.filter(e => e.Status === 'Not Saved');
-        updatedTasks = slot.SlotTasks.filter(e => (e.Status !== 'Completed' || e.Status !== 'Not Saved') && e.edited);
+        updatedTasks = slot.SlotTasks.filter(e => e.Status !== 'Completed' && e.Status !== 'Not Saved' && e.edited);
         if (addedTasks.length > 0) {
           slot.edited = true;
         }
@@ -1778,7 +1778,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     }
 
     for (const slot of updateSlot) {
-      if (slot.edited) {
+      if (slot.edited && slot.CentralAllocationDone !=='Yes') {
         const updateProjectBody = {
           __metadata: { type: 'SP.Data.SchedulesListItem' },
           CentralAllocationDone: 'Yes',
@@ -1795,7 +1795,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       }
     }
 
-
+   debugger;
     const responseInLines = await this.executeBulkRequests(UpdateProjectInfo, batchUrl);
     if (responseInLines.length > 0) {
       let counter = 0;
@@ -1874,7 +1874,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     }
 
     if (task.assignedUserChanged && task.Status === 'Not Started') {
-      // 
       this.sendMail(task, slot);
       task.assignedUserChanged = false;
     }
@@ -1922,9 +1921,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         TimeZone: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
           ? task.allocatedResource.TimeZone.Title : '+5.5' : '+5.5',
         Comments: task.TaskScope ? task.TaskScope : '',
-        Status: task.Status,
         NextTasks: this.setPreviousAndNext(task.NextTasks, slot.Milestone, slot.ProjectCode),
         PrevTasks: this.setPreviousAndNext(task.PrevTasks, slot.Milestone, slot.ProjectCode),
+        CentralAllocationDone: 'Yes',
         IsCentrallyAllocated: 'No',
         DisableCascade: task.DisableCascade === true ? 'Yes' : 'No',
         PreviousAssignedUserId: task.PreviousAssignedUser ? task.PreviousAssignedUser.hasOwnProperty('ID') ?
