@@ -293,7 +293,8 @@
 
                 <span *ngIf="caGlobal.taskScope === ''" style="color: #c53e3e;font-size: 1em;">* No scope for present slot.         
                         </span>
-                <span *ngIf="caGlobal.taskScope !==''" [(ngModel)]="caGlobal.taskScope"> 
+                <span *ngIf="caGlobal.taskScope !==''"> 
+                    {{caGlobal.taskScope}}
                        </span>
             </div>
             <div *ngIf="taskType !=='Slot'">

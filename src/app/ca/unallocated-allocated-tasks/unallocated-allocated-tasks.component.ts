@@ -342,7 +342,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   getAllocateTaskScope(task, Slot) {
     this.tempSlot = Slot;
     this.displayCommentenable = true;
-    this.taskTitle = task.title;
+    this.taskTitle = task.Title;
     this.taskType = task.Type && task.Type === 'Slot' ? task.Type : 'Task';
 
     this.caGlobal.taskScope = task.TaskScope ? task.TaskScope : '';
@@ -357,7 +357,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     task.TaskScope = comments;
     task.editMode = true;
     task.edited = true;
-    this.tempSlot.edited = true;
     this.tempSlot.editMode = true;
     this.disableSave = false;
   }
@@ -1783,7 +1782,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         const updateProjectBody = {
           __metadata: { type: 'SP.Data.SchedulesListItem' },
           CentralAllocationDone: 'Yes',
-          Comments: slot.TaskScope,
         };
         if (!slot.Id) {
           slot.Id = slot.id;
