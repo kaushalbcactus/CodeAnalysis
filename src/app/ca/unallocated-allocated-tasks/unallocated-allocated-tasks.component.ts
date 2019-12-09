@@ -393,8 +393,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         }
         task.selectedResources = [];
         task.displayselectedResources = [];
-        const res = this.caCommonService.sortResources(setResources, task);
-        const resExtn = $.extend(true, [], res);
+        //const res = this.caCommonService.sortResources(setResources, task);
+        const resExtn = $.extend(true, [], setResources);
 
         if (resExtn) {
           const UniqueUserType = resExtn.map(c => c.userType).filter((item, index) => resExtn.map(c => c.userType).indexOf(item) === index);
@@ -1208,13 +1208,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     return taskObj;
   }
-
-
-
-
+  
   async  GetResourceOnEdit(task) {
-
-
 
     const setResourcesExtn = $.extend(true, [], task.resources);
     const startTime = new Date(new Date(task.StartTime).setHours(0, 0, 0, 0));
@@ -1232,15 +1227,12 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     }
     task.selectedResources = [];
     task.displayselectedResources = [];
-    const res = this.caCommonService.sortResources(setResources, task);
-    const resExtn = $.extend(true, [], res);
+    //const res = this.caCommonService.sortResources(setResources, task);
+    const resExtn = $.extend(true, [], setResources);
 
     if (resExtn) {
       const UniqueUserType = resExtn.map(c => c.userType).filter((item, index) => resExtn.map(c => c.userType).indexOf(item) === index);
-
-
       for (const retRes of UniqueUserType) {
-
         const Users = resExtn.filter(c => c.userType === retRes);
         const Items = [];
         Users.forEach(user => {
@@ -1262,8 +1254,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       }
       this.selectedUser = null;
     }
-
-
     if (task.displayselectedResources.length > 1) {
       const response = await this.SortByGroupAssignTo(task.displayselectedResources);
       task.displayselectedResources = response;
@@ -1276,8 +1266,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       });
     }
   }
-
-
 
   getDatePart(date) {
     const newDate = new Date(date);

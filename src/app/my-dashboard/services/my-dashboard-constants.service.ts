@@ -366,12 +366,25 @@ export class MyDashboardConstantsService {
           return;
         }
         res = res.length ? res : [];
+        let taskBreak = [];
         res.forEach(element => {
-          element.TaskType = ele.TaskType;
-          this.previousNextTaskChildRes.push(element);
+          if (ele.TaskType === 'Next Task') {
+            if (!element.PrevTasks) {
+              element.TaskType = ele.TaskType;
+              taskBreak.push(element);
+            }
+          } else {
+            if (!element.NextTasks) {
+              element.TaskType = ele.TaskType;
+              taskBreak.push(element);
+            }
+          }
+          
         });
-        if (!res.length) {
+        if (!taskBreak.length) {
           this.previousNextTaskChildRes.push(ele);
+        } else {
+          this.previousNextTaskChildRes = this.previousNextTaskChildRes.concat(taskBreak);
         }
 
       } else if (ele.IsCentrallyAllocated === 'No') {

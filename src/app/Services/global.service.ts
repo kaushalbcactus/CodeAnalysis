@@ -243,7 +243,6 @@ export class GlobalService {
       assignedUserChanged: false,
       editMode: true,
       editTask: true,
-      deallocateCentral: false,
       dueDate: { date: { day: this.today.getDate(), month: this.today.getMonth() + 1, year: this.today.getFullYear() } },
       endTimeAMPM: 'AM',
       endTimeHrs: 9,

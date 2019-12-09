@@ -536,7 +536,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'CentralAllocationDone': milestoneTask.CentralAllocationDone,
                     'ActiveCA': milestoneTask.ActiveCA,
                     'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
-                    'deallocateCentral': false,
                     'parentSlot': milestoneTask.ParentSlot ? milestoneTask.ParentSlot : '',
                     'slotType': milestoneTask.IsCentrallyAllocated === 'Yes' ? 'Slot' : 'Task',
                     'DisableCascade': (milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes') || milestoneTask.Status === 'In Progress' ? true : false,
@@ -732,10 +731,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'CentralAllocationDone': milestoneTask.CentralAllocationDone,
                     'ActiveCA': milestoneTask.ActiveCA,
                     'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
-                    'deallocateCentral': false,
                     'parentSlot': milestoneTask.ParentSlot ? milestoneTask.ParentSlot : '',
                     'slotType': milestoneTask.IsCentrallyAllocated === 'Yes' ? 'Slot' : 'Task',
-                    'DisableCascade': (milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes') || milestoneTask.Status === 'In Progress'? true : false,
+                    'DisableCascade': (milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes') || milestoneTask.Status === 'In Progress' ? true : false,
                     'slotColor': 'white',
                     'deallocateSlot': false,
                     'taskFullName': milestoneTask.Title
@@ -870,7 +868,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
               'CentralAllocationDone': clientReviewObj[0].CentralAllocationDone,
               'ActiveCA': clientReviewObj[0].ActiveCA,
               'assignedUserTimeZone': clientReviewObj[0].assignedUserTimeZone,
-              'deallocateCentral': false,
               'slotType': '',
               'DisableCascade': clientReviewObj[0].DisableCascade && clientReviewObj[0].DisableCascade === 'Yes' ? true : false,
               'slotColor': 'white'
@@ -1014,9 +1011,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   'CentralAllocationDone': milestoneTask.CentralAllocationDone,
                   'ActiveCA': milestoneTask.ActiveCA,
                   'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
-                  'deallocateCentral': false,
                   'parentSlot': milestoneTask.ParentSlot ? milestoneTask.ParentSlot : '',
-                  'DisableCascade': (milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes') || milestoneTask.Status === 'In Progress'? true : false,
+                  'DisableCascade': (milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes') || milestoneTask.Status === 'In Progress' ? true : false,
                   'slotType': milestoneTask.IsCentrallyAllocated === 'Yes' ? 'Slot' : 'Task',
                   'slotColor': 'white',
                   'deallocateSlot': false,
@@ -2040,7 +2036,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
         // milestoneTask.ActiveCA = 'Yes';
         milestoneTask.skillLevel = milestoneTask.AssignedTo.SkillText;
         milestoneTask.edited = true;
-        // milestoneTask.deallocateCentral = true;
         milestoneTask.pRes = milestoneTask.skillLevel;
       }
     }
@@ -2084,7 +2079,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       milestoneTask.pName = newName;
     } else if (milestoneTask.slotType === 'Both' && !milestoneTask.AssignedTo.ID) {
       milestoneTask.IsCentrallyAllocated = 'Yes';
-      milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'Yes' :  milestoneTask.ActiveCA;
+      milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'Yes' : milestoneTask.ActiveCA;
       milestoneTask.itemType = milestoneTask.itemType + 'Slot';
       const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
       const newName = milestoneTask.itemType + taskCount;
@@ -2147,7 +2142,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
     nodeData.tatVal = this.commonService.calcBusinessDays(new Date(nodeData.pStart), new Date(nodeData.pEnd));
     nodeData.edited = true;
     if (nodeData.IsCentrallyAllocated === 'Yes' && node.slotType !== 'Slot' && !node.parentSlot) {
-      // nodeData.deallocateCentral = true;
       nodeData.pRes = nodeData.skillLevel;
     }
   }
@@ -2213,7 +2207,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
       node.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
     node.edited = true;
     if (node.IsCentrallyAllocated === 'Yes' && node.slotType !== 'Slot' && !node.parentSlot) {
-      // node.deallocateCentral = true;
       node.pRes = node.skillLevel;
     }
 
@@ -2458,14 +2451,11 @@ export class TimelineComponent implements OnInit, OnDestroy {
             || (task.data.pUserStart >= tsk.StartDate && task.data.pUserEnd <= tsk.DueDate));
         });
         retTask = retTask.filter(t => t.ID !== task.data.parentSlot && t.ParentSlot !== task.data.parentSlot);
-        if (retTask.length || deallocateSlot) {
+        if (retTask.length) {
           deallocateSlot = true;
-          task.data.deallocateCentral = true;
-          task.data.previousAssignedUser = task.data.AssignedTo.ID ? task.data.AssignedTo.ID : '-1';
-          task.data.AssignedTo.ID = -1;
+          break;
         } else {
           deallocateSlot = false;
-          task.data.deallocateCentral = false;
         }
       }
     }
@@ -2516,6 +2506,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
         });
       }, 300);
     } else {
+      for (let task of slotTasks) {
+        task.data.previousAssignedUser = task.data.AssignedTo.ID ? task.data.AssignedTo.ID : '-1';
+        task.data.AssignedTo.ID = -1;
+        task.data.assignedUserTimeZone = 5.5;
+        task.data.CentralAllocationDone = 'No';
+      }
       slot.data.slotColor = "#FF3E56";
       slot.data.CentralAllocationDone = 'No';
       this.deallocationMailArray.length = 0;
@@ -3790,7 +3786,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
           this.sendCentralTaskMail(this.oProjectDetails, element, element.pName + ' Created', 'CentralTaskCreation');
         }
         element.status = 'Not Started';
-        // element.deallocateCentral = true;
         element.assignedUserChanged = false;
         const updateSchedulesBody = {
           __metadata: { type: 'SP.Data.SchedulesListItem' },
@@ -4105,7 +4100,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
       'CentralAllocationDone': task.CentralAllocationDone,
       'ActiveCA': task.ActiveCA,
       'assignedUserTimeZone': '5.5',
-      'deallocateCentral': true,
       'DisableCascade': task.DisableCascade && task.DisableCascade === 'Yes' ? true : false,
       'taskFullName': this.oProjectDetails.projectCode + ' ' + milestone.label + ' ' + task.label
     };
