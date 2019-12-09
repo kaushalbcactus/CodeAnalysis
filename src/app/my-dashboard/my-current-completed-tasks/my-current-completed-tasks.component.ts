@@ -662,9 +662,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
 
   async checkCompleteTask(task) {
     const allowedStatus = ['Completed', 'AllowCompletion', 'Auto Closed'];
-    this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
+    const response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
-    task.TaskComments = this.response.length ? this.response[0].TaskComments : '';
+
+    task.TaskComments = response ?  response.TaskComments : '';
 
     // if (stval === 'Completed' || stval === 'AllowCompletion' || stval === 'Auto Closed') {
     if (allowedStatus.includes(stval)) {

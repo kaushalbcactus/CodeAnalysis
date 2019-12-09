@@ -1032,14 +1032,31 @@ export class MyDashboardConstantsService {
 
 
         //console.log(EmailTemplate);
-        const emailObj = Object.assign({}, this.queryConfig);
+        /*const emailObj = Object.assign({}, this.queryConfig);
         const Emaildata = this.spServices.getEmailData(element.AssignedTo.EMail,
           this.sharedObject.currentUser.email, mailSubject, EmailTemplate, this.sharedObject.currentUser.email);
 
         emailObj.data = JSON.parse(Emaildata);
         emailObj.url = this.spServices.getEmailURL();
         emailObj.type = 'POST';
-        batchUrl.push(emailObj);
+        batchUrl.push(emailObj);*/
+        EmailTemplate = EmailTemplate.replace(RegExp("'", 'gi'), '');
+        mailSubject = mailSubject.replace(RegExp("'", 'gi'), '');
+        const sendEmailObj = {
+          __metadata: { type: this.constants.listNames.SendEmail.type },
+          Title: mailSubject,
+          MailBody: EmailTemplate,
+          Subject: mailSubject,
+          ToEmailId: element.AssignedTo.EMail,
+          FromEmailId: this.sharedObject.currentUser.email,
+          CCEmailId: this.sharedObject.currentUser.email
+        };
+        const createSendEmailObj = Object.assign({}, this.queryConfig);
+        createSendEmailObj.url = this.spServices.getReadURL(this.constants.listNames.SendEmail.name, null);
+        createSendEmailObj.data = sendEmailObj;
+        createSendEmailObj.type = 'POST';
+        createSendEmailObj.listName = this.constants.listNames.SendEmail.name;
+        batchUrl.push(createSendEmailObj);
       }
 
     });

@@ -314,6 +314,10 @@ export class ConstantsService {
     EarlyTaskCompleteNotifications : {
       name: 'EarlyTaskCompleteNotifications',
       type: 'SP.Data.EarlyTaskCompleteNotificationsListItem'
+    },
+    SendEmail: {
+      name: 'SendEmail',
+      type: 'SP.Data.SendEmailListItem'
     }
   };
 
