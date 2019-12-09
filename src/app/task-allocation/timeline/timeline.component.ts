@@ -2459,20 +2459,20 @@ export class TimelineComponent implements OnInit, OnDestroy {
         });
         retTask = retTask.filter(t => t.ID !== task.data.parentSlot && t.ParentSlot !== task.data.parentSlot);
         if (retTask.length || deallocateSlot) {
-          slot.data.slotColor = "#FF3E56";
           deallocateSlot = true;
           task.data.deallocateCentral = true;
           task.data.previousAssignedUser = task.data.AssignedTo.ID ? task.data.AssignedTo.ID : '-1';
+          task.data.AssignedTo.ID = -1;
         } else {
-          slot.data.slotColor = "#6EDC6C";
           deallocateSlot = false;
           task.data.deallocateCentral = false;
-          slot.data.CentralAllocationDone = 'Yes';
         }
       }
     }
 
     if (!deallocateSlot) {
+      slot.data.slotColor = "#6EDC6C";
+      slot.data.CentralAllocationDone = 'Yes';
       const deallocationArray = this.deallocationMailArray;
       this.reallocationMailData.length = 0;
       this.reallocationMailArray.length = 0;
@@ -2516,6 +2516,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
         });
       }, 300);
     } else {
+      slot.data.slotColor = "#FF3E56";
+      slot.data.CentralAllocationDone = 'No';
       this.deallocationMailArray.length = 0;
       this.reallocationMailArray = this.reallocationMailArray.length ? this.reallocationMailArray.filter(s => s.slot.data.pID !== slot.data.pID) : [];
       this.deallocationMailArray.push({
@@ -3017,16 +3019,16 @@ export class TimelineComponent implements OnInit, OnDestroy {
       this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, milestoneTask.pName + ' Created', 'CentralTaskCreation');
     }
 
-    if (!bAdd && milestoneTask.CentralAllocationDone === 'Yes' && milestoneTask.deallocateCentral
-      && milestoneTask.status === 'Not Started') {
-      milestoneTask.CentralAllocationDone = 'No';
-      milestoneTask.AssignedTo.ID = -1;
-      milestoneTask.ActiveCA = milestoneTask.IsCentrallyAllocated === 'Yes' ? 'Yes' : 'No';
-      const timeZone = milestoneTask.assignedUserTimeZone;
-      if (parseFloat(timeZone) !== 5.5) {
-        milestoneTask.assignedUserTimeZone = 5.5;
-      }
-    }
+    // if (!bAdd && milestoneTask.CentralAllocationDone === 'Yes' && milestoneTask.deallocateCentral
+    //   && milestoneTask.status === 'Not Started') {
+    //   milestoneTask.CentralAllocationDone = 'No';
+    //   milestoneTask.AssignedTo.ID = -1;
+    //   milestoneTask.ActiveCA = milestoneTask.IsCentrallyAllocated === 'Yes' ? 'Yes' : 'No';
+    //   const timeZone = milestoneTask.assignedUserTimeZone;
+    //   if (parseFloat(timeZone) !== 5.5) {
+    //     milestoneTask.assignedUserTimeZone = 5.5;
+    //   }
+    // }
     if (bAdd) {
       const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
       milestoneTask.itemType = milestoneTask.itemType;

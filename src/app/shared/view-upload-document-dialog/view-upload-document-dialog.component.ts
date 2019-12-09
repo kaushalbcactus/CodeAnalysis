@@ -68,8 +68,8 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     if (this.selectedTask.ParentSlot) {
       const slotPNTask = await this.myDashboardConstantsService.getNextPreviousTask(this.selectedTask);
       const slotPTasks = slotPNTask.filter(ele => ele.TaskType === 'Previous Task');
+      this.selectedTask.PrevTasks =  '';
       slotPTasks.forEach((element, i) => {
-        this.selectedTask.PrevTasks = this.selectedTask.PrevTasks ? this.selectedTask.PrevTasks : '';
         this.selectedTask.PrevTasks += element.Title;
         this.selectedTask.PrevTasks += i < slotPTasks.length - 1 ? ';#' : '';
       });

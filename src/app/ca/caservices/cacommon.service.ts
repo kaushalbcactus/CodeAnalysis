@@ -322,8 +322,8 @@ export class CACommonService {
         schedulesItemFetch.push(queryObj);
       }
     }
-    const resourcesList = $.extend(true, [], resourceList);
-    const resPool = this.getResourceByMatrix(resourcesList, task.Task, task.SkillLevel, projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
+    //const resourcesList = $.extend(true, [], resourceList);
+    //const resPool = this.getResourceByMatrix(resourcesList, task.Task, task.SkillLevel, projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
     scObj.Id = task.ID;
     scObj.ClientName = projectItem[0].ClientLegalEntity;
     scObj.ProjectCode = task.ProjectCode;
@@ -361,7 +361,7 @@ export class CACommonService {
     scObj.editImageUrl = this.globalService.imageSrcURL.editImageURL;
     scObj.taskScopeImageUrl = this.globalService.imageSrcURL.scopeImageURL;
     scObj.taskDeleteImageUrl = this.globalService.imageSrcURL.cancelImageURL;
-    scObj.resources = $.extend(true, [], resPool);
+    //scObj.resources = $.extend(true, [], resPool);
     scObj.selectedResources = [];
     scObj.mileStoneTask = [];
     scObj.projectTask = [];
@@ -376,12 +376,12 @@ export class CACommonService {
     scTempArrays.allocatedTempArray.push({ label: scObj.EstimatedTime, value: scObj.EstimatedTime });
     scTempArrays.startTimeTempArray.push({ label: scObj.StartDateText, value: scObj.StartDate });
     scTempArrays.endTimeTempArray.push({ label: scObj.DueDateText, value: scObj.DueDate });
-    const resExt = $.extend(true, [], resPool);
-    for (const retRes of resExt) {
-      retRes.timeAvailable = 0;
-      retRes.Color = 'green';
-      scObj.selectedResources.push(retRes);
-    }
+    // const resExt = $.extend(true, [], resPool);
+    // for (const retRes of resExt) {
+    //   retRes.timeAvailable = 0;
+    //   retRes.Color = 'green';
+    //   scObj.selectedResources.push(retRes);
+    // }
     completeTaskArray.push(scObj);
   }
   /**
@@ -626,7 +626,8 @@ export class CACommonService {
               return objt.Title === clientLegalEntity;
             }) : [];
           if ((recomendedUserByDelv.length > 0 || recomendedUserByTa.length > 0
-            || recomendedUserByAccount.length > 0) && skillLevel === $.trim(resSkill)) {
+            || recomendedUserByAccount.length > 0) ) {
+              ////&& skillLevel === $.trim(resSkill)
             element.userType = 'Recommended';
             filteredResources.push(element);
           } else {
@@ -647,31 +648,31 @@ export class CACommonService {
    * @param task 
    */
   sortResources(filteredResources, task) {
-    if (task.projectTask.length > 0) {
-      const projectTaskFilter = task.projectTask.filter(function (projObj) {
-        return projObj.projectCode === task.projectCode;
-      });
-      let completedTask;
-      if (projectTaskFilter.length) {
-        completedTask = projectTaskFilter[0].MilestoneTasks.filter(function (tasobj) {
-          return tasobj.Status === 'Completed' && task.task === tasobj.Task;
-        });
-      }
-      const sortedResources = [];
+    // if (task.projectTask.length > 0) {
+    //   const projectTaskFilter = task.projectTask.filter(function (projObj) {
+    //     return projObj.projectCode === task.projectCode;
+    //   });
+    //   let completedTask;
+    //   if (projectTaskFilter.length) {
+    //     completedTask = projectTaskFilter[0].MilestoneTasks.filter(function (tasobj) {
+    //       return tasobj.Status === 'Completed' && task.task === tasobj.Task;
+    //     });
+    //   }
+      
+    // }
+    // else {
+    //   return filteredResources;
+    // }
+    const sortedResources = [];
       const recommended = filteredResources.filter(function (objt) {
         return objt.userType === 'Recommended' || objt.userType === 'Best Fit';
       });
       if (recommended.length) {
         for (const user of recommended) {
           user.userType = 'Recommended';
-          if (completedTask[0] && user.UserName.ID === completedTask[0].AssignedTo.ID) {
-            user.isUserTaskCompleted = 1;
-          } else {
-            user.isUserTaskCompleted = 0;
-          }
         }
         recommended.sort(function (a, b) {
-          return b['isUserTaskCompleted'] - a['isUserTaskCompleted'] || b['timeAvailable'] - a['timeAvailable'] || a['Title'] - b['Title'];
+          return b['timeAvailable'] - a['timeAvailable'] || a['Title'] - b['Title'];
         });
         recommended[0].userType = 'Best Fit';
         $.merge(sortedResources, recommended);
@@ -686,10 +687,6 @@ export class CACommonService {
         $.merge(sortedResources, other);
       }
       return sortedResources;
-    }
-    else {
-      return filteredResources;
-    }
   }
 
   /**

@@ -54,7 +54,8 @@
         </div>
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-2">
-        <span>{{this.create_task_form.value.SubMilestones.length}} / 20</span>
+        <div style="color: #C53E3E;">Preferably PUB ID </div>
+        <div>{{this.create_task_form.value.SubMilestones.length}} / 20</div>
       </div>
     </div>
 
@@ -128,13 +129,13 @@
       </div>
       <div class="ui-g-12 ui-md-6 ui-lg-7">
         <textarea [rows]="5" [cols]="60" formControlName="Comments" pInputTextarea maxlength="100"></textarea>
-        <span>{{this.create_task_form.value.Comments.length}} / 100</span>
+        <span style="padding-left: 5px;">{{this.create_task_form.value.Comments.length}} / 100</span>
         <div *ngIf="this.create_task_form.value.Comments.length >= 100 ">
           <span style="color: red;">Task scope maximum length is 100</span>
         </div>
-        <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.Comments.errors">
+        <!-- <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.Comments.errors">
           <div style="color: red;">Task scope is required.</div>
-        </div>
+        </div> -->
       </div>
     </div>
 
