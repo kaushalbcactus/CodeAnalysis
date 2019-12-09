@@ -186,25 +186,67 @@ export class TaskAllocationCommonService {
     return tasksName;
   }
 
-  async getPaths(source, target, submilestone) {
-    const links = [source];
-    if (links.indexOf(target) < 0) {
-      links.push(target);
+  async getPaths(source, target, submilestone, currentPath, arrLinks) {
+    if (arrLinks.indexOf(target) < 0) {
+      currentPath = currentPath + ',' + target;
+      const targetLinks = submilestone.task.links.filter(c => c.source === target).map(c => c.target);
+      const allPaths = currentPath.split(',');
+      if (!targetLinks.length) {
+        arrLinks = [...allPaths];
+      } else {
+        let newTargets = allPaths.slice(0);
+        newTargets = newTargets.filter((el, i, a) => i === a.indexOf(el));
+        for (const newTarget of targetLinks) {
+          // arrLinks = await this.getPaths(target, newTarget, submilestone, currentPath, allPaths);
+          // console.log(arrLinks);
+          arrLinks.push(this.findNextLink(newTarget, submilestone, arrLinks));
+        }
+      }
     }
-    const nextLink = this.findNextLink(target, submilestone, []);
-    if (nextLink) {
-      links.push(nextLink);
-    }
-    return links;
+    return arrLinks;
   }
 
-  findNextLink(target, submilestone, links) {
-    const targetLinks = submilestone.task.links.filter(c => c.source === target).map(c => c.target);
-    if (targetLinks.length) {
-      return targetLinks;
-    } else {
-      return this.findNextLink(targetLinks[0], submilestone, links);
+  //allSubmilestoneLinks = submilestone.task.links;
+
+  getAllLinkPaths(link, allSubmilestoneLinks) {
+    let allLinkedPaths = [];
+
+    var currentLink = link;
+    allLinkedPaths.push(currentLink.source);
+    allLinkedPaths.push(currentLink.target);
+
+    for (let i = 0; i < allSubmilestoneLinks.length; ++i) {
+      var nextLink = allSubmilestoneLinks[i];
+
+      var nextTarget = this.compareTo(currentLink, nextLink);
+
+      if (nextTarget) {
+        allLinkedPaths.push(allSubmilestoneLinks[i].target);
+        currentLink = allSubmilestoneLinks[i];
+      }
     }
+
+    return allLinkedPaths;
+  }
+
+  compareTo(currentLink, nextLink) {
+      return this.compareSourceWithTarget(currentLink.target, nextLink.source);
+  }
+
+  compareSourceWithTarget(target, source) {
+      if (target === source) {
+        return target;
+      }
+      return null;
+      //return target === source ? target : null;
+  }
+
+  async findNextLink(target, submilestone, links) {
+    const targetLinks = submilestone.task.links.filter(c => c.source === target).map(c => c.target);
+    // if (!targetLinks.length) {
+    //   await this.findNextLink(targetLinks[0], submilestone, links);
+    // }
+    return targetLinks;
   }
   // if (arrLinks.indexOf(target) < 0) {
   //   currentPath = currentPath + ',' + target;

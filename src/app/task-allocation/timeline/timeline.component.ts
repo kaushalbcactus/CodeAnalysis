@@ -374,7 +374,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               'pClass': element.status === 'Completed' ? 'gtaskblue' : element.status === "In Progress" ? 'gtaskgreen' : element.status === "Not Confirmed" ? 'gtaskyellow' : element.status === "Auto Closed" ? 'gtaskred' : 'ggroupblack',
               'pLink': '',
               'pMile': 0,
-              'pRes': ' -- ',
+              'pRes': '  ',
               'pComp': 0,
               'pGroup': 1,
               'pParent': milestone.Id,
@@ -498,7 +498,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'pClass': milestoneTask.Status === 'Completed' ? 'gtaskblue' : milestoneTask.Status === 'In Progress' ? 'gtaskgreen' : milestoneTask.Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
                     'pLink': '',
                     'pMile': 0,
-                    'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title !== undefined ? milestoneTask.AssignedTo.Title : '--' : ' -- ',
+                    'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title !== undefined ? milestoneTask.AssignedTo.Title : '' : '  ',
                     'pComp': milestoneTask.Status === 'Not Confirmed' ? 0 : (milestoneTask.Status === 'Completed' ? 100 : milestoneTask.Status === 'In Progress' ? 50 : 0),
                     'pGroup': milestoneTask.IsCentrallyAllocated === 'Yes' ? 1 : 0,
                     'pParent': milestoneTask.ParentSlot ? milestoneTask.ParentSlot : parseInt("1200000" + milestone.Id + index),
@@ -539,7 +539,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'deallocateCentral': false,
                     'parentSlot': milestoneTask.ParentSlot ? milestoneTask.ParentSlot : '',
                     'slotType': milestoneTask.IsCentrallyAllocated === 'Yes' ? 'Slot' : 'Task',
-                    'DisableCascade': milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes' ? true : false,
+                    'DisableCascade': (milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes') || milestoneTask.Status === 'In Progress' ? true : false,
                     'slotColor': 'white',
                     'deallocateSlot': false,
                     'taskFullName': milestoneTask.Title
@@ -693,7 +693,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'pClass': milestoneTask.Status === 'Completed' ? 'gtaskblue' : milestoneTask.Status === 'In Progress' ? 'gtaskgreen' : milestoneTask.Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
                     'pLink': '',
                     'pMile': 0,
-                    'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title ? milestoneTask.AssignedTo.Title : ' -- ' : ' -- ',
+                    'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title ? milestoneTask.AssignedTo.Title : '  ' : '  ',
                     'pComp': milestoneTask.Status === 'Not Confirmed' ? 0 : (milestoneTask.Status === 'Completed' ? 100 : milestoneTask.Status === 'In Progress' ? 50 : 0),
                     'pGroup': milestoneTask.IsCentrallyAllocated === 'Yes' ? 1 : 0,
                     'pParent': milestoneTask.Task === 'Client Review' ? 0 : milestoneTask.ParentSlot ? milestoneTask.ParentSlot : milestone.Id,
@@ -735,7 +735,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'deallocateCentral': false,
                     'parentSlot': milestoneTask.ParentSlot ? milestoneTask.ParentSlot : '',
                     'slotType': milestoneTask.IsCentrallyAllocated === 'Yes' ? 'Slot' : 'Task',
-                    'DisableCascade': milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes' ? true : false,
+                    'DisableCascade': (milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes') || milestoneTask.Status === 'In Progress'? true : false,
                     'slotColor': 'white',
                     'deallocateSlot': false,
                     'taskFullName': milestoneTask.Title
@@ -832,7 +832,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               'pClass': clientReviewObj[0].Status === 'Completed' ? 'gtaskblue' : clientReviewObj[0].Status === 'In Progress' ? 'gtaskgreen' : clientReviewObj[0].Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
               'pLink': '',
               'pMile': 0,
-              'pRes': clientReviewObj[0].AssignedTo ? clientReviewObj[0].AssignedTo.Title ? clientReviewObj[0].AssignedTo.Title : ' -- ' : ' -- ',
+              'pRes': clientReviewObj[0].AssignedTo ? clientReviewObj[0].AssignedTo.Title ? clientReviewObj[0].AssignedTo.Title : '  ' : '  ',
               'pComp': clientReviewObj[0].Status === 'Not Confirmed' ? 0 : (clientReviewObj[0].Status === 'Completed' ? 100 : clientReviewObj[0].Status === 'In Progress' ? 50 : 0),
               'pGroup': 0,
               'pParent': clientReviewObj[0].Task === 'Client Review' ? 0 : milestone.Id,
@@ -976,7 +976,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   'pClass': milestoneTask.Status === 'Completed' ? 'gtaskblue' : milestoneTask.Status === 'In Progress' ? 'gtaskgreen' : milestoneTask.Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
                   'pLink': '',
                   'pMile': 0,
-                  'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title ? milestoneTask.AssignedTo.Title : ' -- ' : ' -- ',
+                  'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title ? milestoneTask.AssignedTo.Title : '  ' : '  ',
                   'pComp': milestoneTask.Status === 'Not Confirmed' ? 0 : (milestoneTask.Status === 'Completed' ? 100 : milestoneTask.Status === 'In Progress' ? 50 : 0),
                   'pGroup': milestoneTask.IsCentrallyAllocated === 'Yes' ? 1 : 0,
                   'pParent': milestoneTask.Task === 'Client Review' ? 0 : milestoneTask.ParentSlot ? milestoneTask.ParentSlot : milestone.Id,
@@ -1016,7 +1016,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
                   'deallocateCentral': false,
                   'parentSlot': milestoneTask.ParentSlot ? milestoneTask.ParentSlot : '',
-                  'DisableCascade': milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes' ? true : false,
+                  'DisableCascade': (milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes') || milestoneTask.Status === 'In Progress'? true : false,
                   'slotType': milestoneTask.IsCentrallyAllocated === 'Yes' ? 'Slot' : 'Task',
                   'slotColor': 'white',
                   'deallocateSlot': false,
@@ -2491,7 +2491,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       milestoneMailObj.preEndDate = this.datepipe.transform(oldSlot.data.pEnd, 'MMM dd yyyy hh:mm:ss a');
       milestoneMailObj.newStDate = this.datepipe.transform(slot.data.pStart, 'MMM dd yyyy hh:mm:ss a');
       milestoneMailObj.newEndDate = this.datepipe.transform(slot.data.pEnd, 'MMM dd yyyy hh:mm:ss a');
-      milestoneMailObj.assginedTo = '--';
+      milestoneMailObj.assginedTo = '';
       this.reallocationMailData.push(milestoneMailObj);
       const oldSubTasks = oldSlot.children;
 
@@ -4066,7 +4066,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       'pClass': className,
       'pLink': '',
       'pMile': 0,
-      'pRes': ' -- ',
+      'pRes': '  ',
       'pComp': 0,
       'pGroup': className = 'gtaskred' ? 0 : 1,
       'pParent': task.taskType === 'Client Review' ? 0 : milestone.Id,

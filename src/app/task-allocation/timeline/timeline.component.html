@@ -65,7 +65,7 @@
                                                          Color Code Data
            ********************************************************************************************************** -->
 
-        <div fxLayout="row" fxLayoutAlign="space-between center" class="sticky" style="width: 100%;padding: 0px 0px 5px;">
+        <div fxLayout="row" fxLayoutAlign="space-between center" class="" style="width: 100%;padding: 0px 0px 5px;">
             <div>
                 <div class="input-color">
                     <label>Planned</label>
@@ -203,7 +203,7 @@
                             <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'"
                                 *ngIf="(!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat === true) || rowData.type === 'milestone' || rowData.type === 'submilestone' || (!rowData.editMode && rowData.type === 'task' && rowData.itemType==='Client Review' ) ">{{rowData.pStart |  date:' d MMM, y' }}</span>
                             <span [title]="rowData.pUserStart |  date:' d MMM, y, h:mm a'"
-                                *ngIf="!rowData.editMode &&  rowData.type === 'task' &&  rowData.tat !== true  && rowData.itemType !=='Client Review'">{{rowData.pStart |  date:' d MMM, y, h:mm a' }}</span>
+                                *ngIf="(!rowData.editMode && rowData.type === 'task' &&  rowData.tat !== true  && rowData.itemType !=='Client Review') || (rowData.type === 'task' && rowData.editMode && rowData.status === 'In Progress')">{{rowData.pStart |  date:' d MMM, y, h:mm a' }}</span>
 
                             <span
                                 *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType ==='Client Review' ">
@@ -216,7 +216,7 @@
                                 </p-calendar>
                             </span>
                             <span
-                                *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Client Review' ">
+                                *ngIf="rowData.editMode && rowData.type === 'task' && rowData.itemType !=='Client Review' && rowData.status !== 'In Progress'">
                                 <p-calendar id="calenderIcon" [(ngModel)]="rowData.pUserStartDatePart"
                                     [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
                                     yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
@@ -289,8 +289,8 @@
                         <td>
                             <span *ngIf="!rowData.editMode && rowData.IsCentrallyAllocated === 'No'"> {{rowData.pRes}}</span>
                             <p-dropdown [style]="{'width':'100%'}"
-                                *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && rowData.status!= 'In Progress' && (rowData.IsCentrallyAllocated === 'No' || rowData.slotType === 'Both')"
-                                #assignedTo class="txtTask" [options]="rowData.assignedUsers"
+                                *ngIf="rowData.editMode && rowData.type !=='milestone' && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated === 'No' || rowData.slotType === 'Both')"
+                                #assignedTo class="txtTask" [options]="rowData.assignedUsers" [disabled] = "rowData.status=== 'In Progress'"
                                 [panelStyle]="{minWidth:'15em' }" [(ngModel)]="rowData.AssignedTo"
                                 placeholder="Select Resource" [showClear]="true" [group]="true" filter="true"
                                 (onChange)="assignedToUserChanged(rowData, milestoneData)">
@@ -308,7 +308,7 @@
                                 *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated === 'No' || rowData.slotType === 'Both')) ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
 
                             <p-inputSwitch
-                                *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client') && rowData.IsCentrallyAllocated === 'No'"
+                                *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client') && rowData.IsCentrallyAllocated === 'No' && rowData.status !== 'In Progress'"
                                 [(ngModel)]="rowData.allowStart"></p-inputSwitch>
 
                             <!-- <p-checkbox *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.pName !=='Client Review' && rowData.pName !=='SC')" [(ngModel)]="rowData.allowStart" binary="true"></p-checkbox> -->
@@ -320,7 +320,7 @@
                                 *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
 
                             <p-inputSwitch
-                                *ngIf="rowData.editMode && rowData.type==='task' && rowData.itemType !== 'Client Review'"
+                                *ngIf="rowData.editMode && rowData.type==='task' && rowData.itemType !== 'Client Review' && rowData.status !== 'In Progress'" 
                                 [(ngModel)]="rowData.DisableCascade"></p-inputSwitch>
 
                             <!-- {{rowData.DisableCascade}} -->

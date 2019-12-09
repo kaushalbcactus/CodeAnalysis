@@ -297,11 +297,26 @@ export class DragDropComponent implements OnInit {
             }
 
             let circularPresent = false;
-            const linksArray = [];
+            // const linkArray = [];
             if (submilestone.task.links.length > 0) {
+
+              // let allUniqueLinkPath = [];
               for (const link of submilestone.task.links) {
-                // const paths = await this.taskCommonService.getPaths(link.source, link.target, submilestone);
-                if (circularPresent === false) {
+                // const arrLinks = this.taskCommonService.getAllLinkPaths(link, submilestone.task.links);
+
+                // if (allUniqueLinkPath.length === 0) {
+                //     allUniqueLinkPath = arrLinks;
+                // } else {
+                //   if (allUniqueLinkPath.length !== arrLinks.length) {
+                //     if (allUniqueLinkPath.slice(-1).pop() !== arrLinks.slice(-1).pop()) {
+                //         allUniqueLinkPath = arrLinks;
+                //       }
+                // }
+                // }
+
+                // console.log(allUniqueLinkPath);
+                
+                if (!circularPresent) {
                   const currentPath = link.source;
                   const target = link.target;
                   circularPresent = this.getNextTarget(link.source, target, submilestone, currentPath, circularPresent);
@@ -332,7 +347,7 @@ export class DragDropComponent implements OnInit {
       }
       // this.milestonesGraph.nodes.forEach(milestone => {
       // });
-
+     
       if (errorM <= 0) {
         this.NodePosition();
         this.milestonesGraph.nodes.forEach(milestone => {
@@ -1052,8 +1067,8 @@ export class DragDropComponent implements OnInit {
           left: 0,
           status: 'Not Saved',
           IsCentrallyAllocated: centrallyAllocated === 'Yes' ? 'Yes' : 'No',
-          CentralAllocationDone : centralAllocationDone === 'Yes' ? 'Yes' : 'No',
-          ActiveCA :  activeCA === 'Yes' ? 'Yes' : 'No',
+          CentralAllocationDone: centralAllocationDone === 'Yes' ? 'Yes' : 'No',
+          ActiveCA: activeCA === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : '',
           slotType: MilTask.TaskType ? MilTask.TaskType : ''
         };
@@ -1069,8 +1084,8 @@ export class DragDropComponent implements OnInit {
           left: 0,
           status: 'Not Saved',
           IsCentrallyAllocated: centrallyAllocated === 'Yes' ? 'Yes' : 'No',
-          CentralAllocationDone : centralAllocationDone === 'Yes' ? 'Yes' : 'No',
-          ActiveCA :  activeCA === 'Yes' ? 'Yes' : 'No',
+          CentralAllocationDone: centralAllocationDone === 'Yes' ? 'Yes' : 'No',
+          ActiveCA: activeCA === 'Yes' ? 'Yes' : 'No',
           skillLevel: MilTask !== undefined ? MilTask.DefaultSkill !== null ? MilTask.DefaultSkill : '' : '',
           slotType: MilTask.TaskType ? MilTask.TaskType : ''
         };
@@ -1247,8 +1262,8 @@ export class DragDropComponent implements OnInit {
         left: 0,
         status: event.status,
         IsCentrallyAllocated: event.IsCentrallyAllocated,
-        CentralAllocationDone : event.CentralAllocationDone,
-        ActiveCA :  event.ActiveCA,
+        CentralAllocationDone: event.CentralAllocationDone,
+        ActiveCA: event.ActiveCA,
         skillLevel: MilTask !== undefined ? MilTask !== null ? MilTask : '' : ''
       };
     }
@@ -1264,8 +1279,8 @@ export class DragDropComponent implements OnInit {
         top: 0,
         left: 0,
         IsCentrallyAllocated: event.IsCentrallyAllocated,
-        CentralAllocationDone : event.CentralAllocationDone,
-        ActiveCA :  event.ActiveCA,
+        CentralAllocationDone: event.CentralAllocationDone,
+        ActiveCA: event.ActiveCA,
         skillLevel: MilTask !== undefined ? MilTask !== null ? MilTask : '' : ''
       };
     }
@@ -1548,7 +1563,7 @@ export class DragDropComponent implements OnInit {
       const MilTask = this.sharedObject.oTaskAllocation.allTasks.find(c => c.Title === originalType);
       const CentrallyAllocated = MilTask !== undefined ? MilTask.IsCentrallyAllocated !== null ? MilTask.IsCentrallyAllocated : 'No' : 'No';
       const CentralAllocationDone = MilTask !== undefined ? MilTask.CentralAllocationDone !== null ? MilTask.CentralAllocationDone : 'No' : 'No';
-      const ActiveCA =  MilTask !== undefined ? MilTask.ActiveCA !== null ? MilTask.ActiveCA : 'No' : 'No';
+      const ActiveCA = MilTask !== undefined ? MilTask.ActiveCA !== null ? MilTask.ActiveCA : 'No' : 'No';
       var node = null;
 
       if (subMilestone.task.nodes.length) {
