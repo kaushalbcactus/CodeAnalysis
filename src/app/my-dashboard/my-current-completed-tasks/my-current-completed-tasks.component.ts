@@ -544,14 +544,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
 
 
   async getNextPreviousTaskDialog(task) {
-
     this.tableloaderenable = true;
     let tasks = [];
-    if (task.NextTasks || task.PrevTasks) {
-      // tasks = await this.getNextPreviousTask(task);
-      tasks = await this.myDashboardConstantsService.getNextPreviousTask(task);
-    }
 
+    tasks = await this.myDashboardConstantsService.getNextPreviousTask(task);
     this.tableloaderenable = false;
     const ref = this.dialogService.open(PreviosNextTasksDialogComponent, {
       data: {
@@ -665,7 +661,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     const response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
 
-    task.TaskComments = response ?  response.TaskComments : '';
+    task.TaskComments = response ? response.TaskComments : '';
 
     // if (stval === 'Completed' || stval === 'AllowCompletion' || stval === 'Auto Closed') {
     if (allowedStatus.includes(stval)) {
