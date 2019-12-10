@@ -270,21 +270,11 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
   openPopup(data, Slot) {
-    console.log(data);
     if (data.Type === 'Slot') {
-      // if (data.editMode) {
-      //   this.taskMenu = [
-      //     { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
-      //     { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) },
-      //     { label: 'Cancel Changes', icon: 'pi pi-fw pi-times', command: (e) => this.cancelledAllchanges(data) },
-      //   ];
-      // } else {
-
       this.taskMenu = [
         { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
         { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data, Slot) }
       ];
-      // }
     } else {
       if (data.editMode) {
         this.taskMenu = [
@@ -1049,18 +1039,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           }
           event.data.dbSlotTasks.push(element);
         }
-
-        // 
-        // if (event.data.SlotTasks.length === 0) {
-        //   const tasks = await this.GetAllConstantTasks(event.data.Task);
-
-        //   event.data.TaskName = tasks.length > 0 ? tasks[0] : event.data.TaskName;
-        //   const obj = await this.GetTask(event.data, false);
-        //   obj.editMode = true;
-        //   obj.edited = true;
-        //   obj.Status = 'Not Saved';
-        //   event.data.SlotTasks.push(obj);
-        // }
         event.data.subTaskloaderenable = false;
       } else {
         const tasks = await this.GetAllConstantTasks(event.data.Task);
@@ -1073,7 +1051,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         event.data.subTaskloaderenable = false;
       }
     }
-    console.log(event.data.SlotTasks);
   }
 
   modelChanged(event, Slot) {
@@ -1111,7 +1088,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       task.Type && task.Type === 'Slot' ? task.TaskName : task.Task && task.Task !== 'Select One' ?
         task.Task : task.taskType, task.SkillLevel,
       projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
-    resPool = this.caCommonService.sortResources(resPool,task);
+    resPool = this.caCommonService.sortResources(resPool, task);
     if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1) {
 
       let ExistingUser = resPool.find(c => c.UserName.ID === task.PreviousAssignedUser.ID && c.Title === task.PreviousAssignedUser.Title);
@@ -1208,7 +1185,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     return taskObj;
   }
-  
+
   async  GetResourceOnEdit(task) {
 
     const setResourcesExtn = $.extend(true, [], task.resources);
@@ -1766,7 +1743,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     }
 
     for (const slot of updateSlot) {
-      if (slot.edited && slot.CentralAllocationDone !=='Yes') {
+      if (slot.CentralAllocationDone !== 'Yes') {
         const updateProjectBody = {
           __metadata: { type: 'SP.Data.SchedulesListItem' },
           CentralAllocationDone: 'Yes',

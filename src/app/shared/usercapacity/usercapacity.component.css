@@ -363,5 +363,5 @@ tr[class$="taskrow"]+tr>td
 
 .tableHeader>tr>th {
     z-index: 990 !important;
-    background: #cdcdcd !important;
+    background: #f5f5f5 !important;
 }

@@ -657,6 +657,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
 
 
   async checkCompleteTask(task) {
+
     const allowedStatus = ['Completed', 'AllowCompletion', 'Auto Closed'];
     const response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
@@ -703,7 +704,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       this.loaderenable = false;
       this.GetDatabyDateSelection(this.selectedTab, this.days);
       this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
-
     } else {
       this.messageService.add({
         key: 'custom', severity: 'success', summary: 'Success Message',

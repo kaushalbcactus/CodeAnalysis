@@ -366,7 +366,7 @@ export class MyDashboardConstantsService {
           return;
         }
         res = res.length ? res : [];
-        let taskBreak = [];
+        const taskBreak = [];
         res.forEach(element => {
           if (ele.TaskType === 'Next Task') {
             if (!element.PrevTasks) {
@@ -379,7 +379,7 @@ export class MyDashboardConstantsService {
               taskBreak.push(element);
             }
           }
-          
+
         });
         if (!taskBreak.length) {
           this.previousNextTaskChildRes.push(ele);
@@ -393,9 +393,7 @@ export class MyDashboardConstantsService {
     }
 
     this.tasks = this.previousNextTaskChildRes.length ? this.previousNextTaskChildRes : this.tasks;
-
     console.log('previousNextTaskChildRes ', this.previousNextTaskChildRes);
-
     this.tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : '-');
     this.tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : '-');
 
@@ -407,17 +405,11 @@ export class MyDashboardConstantsService {
   async checkEmailNotificationEnable(task) {
     let EnableNotification = false;
     if (task.Status === 'Completed' || task.Status === 'Auto Closed') {
-
       let PastDate = await this.RemoveBusinessDays(new Date(), 2);
-
       PastDate = new Date(PastDate.getFullYear(), PastDate.getMonth(), PastDate.getDate());
-
       let TaskEndDate = task.Actual_x0020_End_x0020_Date ? new Date(task.Actual_x0020_End_x0020_Date) : new Date(task.DueDate);
-
       TaskEndDate = new Date(TaskEndDate.getFullYear(), TaskEndDate.getMonth(), TaskEndDate.getDate());
-
       EnableNotification = PastDate.getTime() <= TaskEndDate.getTime() ? true : false;
-
     }
     return EnableNotification;
   }
@@ -438,26 +430,13 @@ export class MyDashboardConstantsService {
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, currentTask);
     for (const element of this.response) {
       if (element.AllowCompletion === 'No') {
-        // let previousTaskFilter = '';
-        // if (element.PrevTasks) {
-        //   const previousTasks = task.PrevTasks.split(';#');
-        //   previousTasks.forEach((value, i) => {
-        //     previousTaskFilter += '(Title eq \'' + value + '\')';
-        //     previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
-        //   });
-        //   const previousTask = Object.assign({}, this.mydashboardComponent.taskStatus);
-        //   previousTask.filter = previousTaskFilter;
-        //   const prevTaskResponse = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousTask);
-
-        // }
         const nextPrevTasks = await this.getNextPreviousTask(element);
         const prevTaskResponse = nextPrevTasks.filter(e => e.TaskType === 'Previous Task');
         if (prevTaskResponse.length) {
           for (const obj of prevTaskResponse) {
             status = obj.Status;
           }
-        }
-        else {
+        } else {
           status = 'AllowCompletion';
         }
       } else {
@@ -490,9 +469,8 @@ export class MyDashboardConstantsService {
     } else {
       response = await this.saveTask(task, false);
     }
-
     if (task.ParentSlot) {
-      await this.getCurrentAndParentTask(task);
+      await this.getCurrentAndParentTask(task, 'Completed');
     }
     return response;
   }
@@ -509,7 +487,7 @@ export class MyDashboardConstantsService {
     }
   }
 
-  async getCurrentAndParentTask(task: any) {
+  async getCurrentAndParentTask(task: any, status) {
     let batchURL = [];
     // Parent Task
     const parentTaskObj = Object.assign({}, this.mydashboardComponent.previousNextTaskParent);
@@ -530,66 +508,74 @@ export class MyDashboardConstantsService {
       type: 'GET',
       listName: this.constants.listNames.Schedules.name
     });
+    if (status === 'Completed') {
 
-    // Project Information
-    const projectInfObj = Object.assign({}, this.mydashboardComponent.projectInfoByPC);
-    projectInfObj.filter = projectInfObj.filter.replace(/{{ProjectCode}}/g, task.ProjectCode);
-    batchURL.push({
-      data: null,
-      url: this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', projectInfObj),
-      type: 'GET',
-      listName: this.constants.listNames.ProjectInformation.name
-    });
+      // Project Information
+      const projectInfObj = Object.assign({}, this.mydashboardComponent.projectInfoByPC);
+      projectInfObj.filter = projectInfObj.filter.replace(/{{ProjectCode}}/g, task.ProjectCode);
+      batchURL.push({
+        data: null,
+        url: this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', projectInfObj),
+        type: 'GET',
+        listName: this.constants.listNames.ProjectInformation.name
+      });
 
+    }
     const currentParentTasks = await this.spServices.executeBatch(batchURL);
     let parentTaskProp: any;
     const parentTaskRes = currentParentTasks.length ? currentParentTasks[0].retItems[0] : null;
     const currentTaskRes = currentParentTasks.length ? currentParentTasks[1].retItems[0] : null;
-    const projInfoRes = currentParentTasks.length ? currentParentTasks[2].retItems[0] : null;
-    if (!currentTaskRes.NextTasks) {
-      if (parentTaskRes.Status !== 'Completed') {
-        const ctDueDate = new Date(this.datePipe.transform(currentTaskRes.DueDate, 'MMM d, y h:mm a'));
-        const todayDate = new Date();
-        const ONE_HOUR = 60 * 60 * 1000;
-        const timeDiff = ctDueDate.getTime() - todayDate.getTime();
-        const pcmLevels: any[] = this.getCSDetails(projInfoRes);
-        if (ctDueDate > todayDate && timeDiff > ONE_HOUR) {
-          const earlyTaskCompleteObj = {
-            Title: currentTaskRes.Title,
-            ProjectCode: currentTaskRes.ProjectCode,
-            ProjectCSId: { results: pcmLevels.map(x => x.ID) },
-            IsActive: 'Yes'
-          };
-          batchURL = [];
-          batchURL.push({
-            data: earlyTaskCompleteObj,
-            url: this.spServices.getReadURL(this.constants.listNames.EarlyTaskComplete.name, null),
-            type: 'POST',
-            listName: this.constants.listNames.EarlyTaskComplete.name
-          });
-          const res = await this.spServices.executeBatch(batchURL);
+    if (status === 'Completed') {
+      const projInfoRes = currentParentTasks.length ? currentParentTasks[2].retItems[0] : null;
+      if (!currentTaskRes.NextTasks) {
+        if (parentTaskRes.Status !== 'Completed') {
+          const ctDueDate = new Date(this.datePipe.transform(currentTaskRes.DueDate, 'MMM d, y h:mm a'));
+          const todayDate = new Date();
+          const ONE_HOUR = 60 * 60 * 1000;
+          const timeDiff = ctDueDate.getTime() - todayDate.getTime();
+          const pcmLevels: any[] = this.getCSDetails(projInfoRes);
+          if (ctDueDate > todayDate && timeDiff > ONE_HOUR) {
+            const earlyTaskCompleteObj = {
+              Title: currentTaskRes.Title,
+              ProjectCode: currentTaskRes.ProjectCode,
+              ProjectCSId: { results: pcmLevels.map(x => x.ID) },
+              IsActive: 'Yes'
+            };
+            batchURL = [];
+            batchURL.push({
+              data: earlyTaskCompleteObj,
+              url: this.spServices.getReadURL(this.constants.listNames.EarlyTaskComplete.name, null),
+              type: 'POST',
+              listName: this.constants.listNames.EarlyTaskComplete.name
+            });
+            const res = await this.spServices.executeBatch(batchURL);
+          }
+          parentTaskProp.Status = 'Completed';
+          parentTaskProp.ActiveCA = 'No';
+        } else {
+          return false;
         }
-        parentTaskProp.Status = 'Completed';
-        parentTaskProp.ActiveCA = 'No';
+      } else if (!currentTaskRes.PrevTasks) {
+        if (parentTaskRes.Status !== 'In Progress') {
+          parentTaskProp.Status = 'In Progress';
+        } else {
+          return false;
+        }
       } else {
         return false;
       }
-    } else if (!currentTaskRes.PrevTasks) {
+    } else {
       if (parentTaskRes.Status !== 'In Progress') {
         parentTaskProp.Status = 'In Progress';
       } else {
         return false;
       }
-    } else {
-      return false;
     }
-
     const postbatchURL = [];
-    const parentTaskPostObj = Object.assign({}, this.mydashboardComponent.previousNextTaskParent);
-    parentTaskObj.filter = parentTaskObj.filter.replace(/{{ParentSlotId}}/g, parentTaskRes.ID);
+
     postbatchURL.push({
       data: parentTaskProp,
-      url: this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', parentTaskPostObj),
+      url: this.spServices.getReadURLWithId(this.constants.listNames.Schedules.name, parentTaskRes.Id),
       type: 'POST',
       listName: this.constants.listNames.Schedules.name
     });

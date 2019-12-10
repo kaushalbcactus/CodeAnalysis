@@ -156,15 +156,10 @@ export class CaDragdropComponent implements OnInit {
 
   onDragged(event, task) {
 
-    console.log(event);
-    console.log(task);
-
   }
 
   dragStart(event, task) {
     this.draggedTask = task;
-    console.log(event);
-    console.log(task);
     this.NodePosition();
   }
 

@@ -701,8 +701,6 @@ export class CACommonService {
     const oReturnedProjectMil = arrMilestoneTasks.filter(function (milTask) { return (milTask.projectCode === task.ProjectCode && milTask.milestone === task.Milestone) });
     if (oReturnedProjectMil && oReturnedProjectMil.length) {
       const milTasks = oReturnedProjectMil[0].MilestoneTasks;
-
-      console.log(task);
       task.MilestoneTasks = milTasks;
       task.mileStoneTask = milTasks;
       const nextTasks = [];
