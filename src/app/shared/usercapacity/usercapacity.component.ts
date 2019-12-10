@@ -206,9 +206,6 @@ export class UsercapacityComponent implements OnInit {
         }
       }
     }
-
-    debugger;
-
     if (batchUrl.length) {
       batchResults = await this.spService.executeBatch(batchUrl);
       tempFinalArray = [...tempFinalArray, ...batchResults];

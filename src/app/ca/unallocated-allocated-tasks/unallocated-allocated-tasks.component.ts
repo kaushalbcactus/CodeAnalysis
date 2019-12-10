@@ -1782,8 +1782,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         batchUrl.push(taskObj);
       }
     }
-
-   debugger;
     const responseInLines = await this.executeBulkRequests(UpdateProjectInfo, batchUrl);
     if (responseInLines.length > 0) {
       let counter = 0;
