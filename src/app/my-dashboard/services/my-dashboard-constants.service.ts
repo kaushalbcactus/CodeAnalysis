@@ -117,7 +117,7 @@ export class MyDashboardConstantsService {
       expand: 'AssignedTo/Title'
     },
     previousNextTaskParent: {
-      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
+      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail,ProjectCode',
       filter: 'ID eq {{ParentSlotId}}',
       expand: 'AssignedTo/Title'
     },
@@ -127,7 +127,7 @@ export class MyDashboardConstantsService {
       expand: 'AssignedTo/Title'
     },
     previousTaskStatus: {
-      select: 'ID,Title,Status,NextTasks,Task,AllowCompletion,PrevTasks,AssignedTo/Title',
+      select: 'ID,Title,Status,NextTasks,Task,AllowCompletion,PrevTasks,AssignedTo/Title,ParentSlot',
       filter: "ID eq {{taskId}} and AssignedTo eq {{userID}} ",
       expand: 'AssignedTo/Title'
     },
@@ -430,9 +430,11 @@ export class MyDashboardConstantsService {
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, currentTask);
     for (const element of this.response) {
       if (element.AllowCompletion === 'No') {
+        debugger;
         const nextPrevTasks = await this.getNextPreviousTask(element);
         const prevTaskResponse = nextPrevTasks.filter(e => e.TaskType === 'Previous Task');
         if (prevTaskResponse.length) {
+          debugger
           for (const obj of prevTaskResponse) {
             status = obj.Status;
           }
@@ -488,6 +490,8 @@ export class MyDashboardConstantsService {
   }
 
   async getCurrentAndParentTask(task: any, status) {
+
+    debugger;
     let batchURL = [];
     // Parent Task
     const parentTaskObj = Object.assign({}, this.mydashboardComponent.previousNextTaskParent);
@@ -522,9 +526,10 @@ export class MyDashboardConstantsService {
 
     }
     const currentParentTasks = await this.spServices.executeBatch(batchURL);
-    let parentTaskProp: any;
+    const parentTaskProp = { Status: 'In Progress', ActiveCA: 'Yes', __metadata: { type: this.constants.listNames.Schedules.type } };
     const parentTaskRes = currentParentTasks.length ? currentParentTasks[0].retItems[0] : null;
     const currentTaskRes = currentParentTasks.length ? currentParentTasks[1].retItems[0] : null;
+    debugger
     if (status === 'Completed') {
       const projInfoRes = currentParentTasks.length ? currentParentTasks[2].retItems[0] : null;
       if (!currentTaskRes.NextTasks) {
@@ -534,8 +539,10 @@ export class MyDashboardConstantsService {
           const ONE_HOUR = 60 * 60 * 1000;
           const timeDiff = ctDueDate.getTime() - todayDate.getTime();
           const pcmLevels: any[] = this.getCSDetails(projInfoRes);
+          debugger;
           if (ctDueDate > todayDate && timeDiff > ONE_HOUR) {
             const earlyTaskCompleteObj = {
+              __metadata: { type: this.constants.listNames.EarlyTaskComplete.type },
               Title: currentTaskRes.Title,
               ProjectCode: currentTaskRes.ProjectCode,
               ProjectCSId: { results: pcmLevels.map(x => x.ID) },
@@ -575,8 +582,8 @@ export class MyDashboardConstantsService {
 
     postbatchURL.push({
       data: parentTaskProp,
-      url: this.spServices.getReadURLWithId(this.constants.listNames.Schedules.name, parentTaskRes.Id),
-      type: 'POST',
+      url: this.spServices.getItemURL(this.constants.listNames.Schedules.name, parentTaskRes.Id),
+      type: 'PATCH',
       listName: this.constants.listNames.Schedules.name
     });
     await this.spServices.executeBatch(postbatchURL);

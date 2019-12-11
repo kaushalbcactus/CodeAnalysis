@@ -309,12 +309,14 @@ export class TimeSpentDialogComponent implements OnInit {
       ActiveCA: 'No'
     };
     await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, 'SP.Data.SchedulesListItem');
-    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task Time updated successfully.' });
+
 
 
     if (task.ParentSlot) {
       await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
     }
+
+    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task Time updated successfully.' });
   }
 
 

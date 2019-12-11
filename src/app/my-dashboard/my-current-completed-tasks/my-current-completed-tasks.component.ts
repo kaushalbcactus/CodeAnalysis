@@ -657,7 +657,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
 
 
   async checkCompleteTask(task) {
-
+    debugger;
     const allowedStatus = ['Completed', 'AllowCompletion', 'Auto Closed'];
     const response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);

@@ -271,10 +271,19 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   openPopup(data, Slot) {
     if (data.Type === 'Slot') {
-      this.taskMenu = [
-        { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
-        { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data, Slot) }
-      ];
+
+      if (data.editMode) {
+        this.taskMenu = [
+          { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
+          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data, Slot) },
+          { label: 'Cancel Changes', icon: 'pi pi-fw pi-times', command: (e) => this.cancelledAllchanges(data) },
+        ];
+      } else {
+        this.taskMenu = [
+          { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
+          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data, Slot) }
+        ];
+      }
     } else {
       if (data.editMode) {
         this.taskMenu = [
@@ -977,25 +986,21 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
             }
 
           }
+
+          debugger;
           if (task.previousTask !== previousTasks || task.nextTask !== nextTasks) {
-
             task.edited = true;
-            task.PrevTasks = previousTasks === '' ? null : previousTasks;
-            task.nextTasks = nextTasks === '' ? null : nextTasks;
           }
-
-          task.PrevTasks = previousTasks === '' ? null : previousTasks;
+          task.prevTasks = previousTasks === '' ? null : previousTasks;
           task.nextTasks = nextTasks === '' ? null : nextTasks;
           const obj = await this.GetTask(task, false);
           obj.editMode = true;
           obj.edited = task.edited ? task.edited : false;
           RowData.SlotTasks.push(obj);
           RowData.editMode = true;
-
         }
         RowData.subTaskloaderenable = false;
         this.disableSave = false;
-
       } else {
 
         if (!RowData.SlotTasks) {
@@ -1034,6 +1039,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       if (response.length > 0) {
         for (const element of response) {
           if (element.Status !== 'Deleted') {
+            element.nextTasks = element.NextTasks;
+            element.prevTasks = element.PrevTasks;
             const obj = await this.GetTask(element, true);
             event.data.SlotTasks.push(obj);
           }
@@ -1043,6 +1050,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       } else {
         const tasks = await this.GetAllConstantTasks(event.data.Task);
         event.data.TaskName = tasks.length > 0 ? tasks[0] : event.data.TaskName;
+        debugger
+
+        event.data.nextTasks = event.data.NextTasks;
+        event.data.prevTasks = event.data.PrevTasks;
         const obj = await this.GetTask(event.data, false);
         obj.editMode = true;
         obj.edited = true;
@@ -1136,8 +1147,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     taskObj.Timezone = task.timezone ? task.timezone : task.TimeZone;
     taskObj.Title = task.Title;
     taskObj.ProjectCode = task.projectCode ? task.projectCode : task.ProjectCode;
-    taskObj.NextTasks = task.Type && task.Type === 'Slot' ? '' : (task.nextTasks ? task.nextTasks : task.NextTasks);
-    taskObj.PrevTasks = task.Type && task.Type === 'Slot' ? '' : (task.PrevTasks ? task.PrevTasks : task.prevTasks);
+    taskObj.NextTasks = task.Type && task.Type === 'Slot' ? '' : task.nextTasks;
+    taskObj.PrevTasks = task.Type && task.Type === 'Slot' ? '' : task.prevTasks;
     taskObj.Milestone = task.milestone ? task.milestone : task.Milestone;
     taskObj.TaskName = task.TaskName;
     taskObj.EstimatedTime = task.estimatedTime ? task.estimatedTime : task.ExpectedTime ?
@@ -1270,13 +1281,14 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     let previousNode = undefined;
     Slot.SlotTasks.forEach(task => {
       if (Node === task) {
+        debugger;
         this.changeDateOfEditedTask(task, type);
+        debugger;
         previousNode = task;
         const nextTasks = previousNode.NextTasks ? previousNode.NextTasks.split(';') : [];
         if (nextTasks) {
           this.cascadeNextTask(nextTasks, Slot, previousNode);
         }
-
       }
     });
   }

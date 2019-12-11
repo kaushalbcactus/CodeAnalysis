@@ -737,7 +737,7 @@ export class MyTimelineComponent implements OnInit {
             }
           });
         } else {
-         
+
           if (this.task.StartTime) {
             const startTime = this.commonService.ConvertTimeformat(24, this.task.StartTime);
             this.task.StartDate = this.datePipe.transform(new Date(this.task.StartDate), 'yyyy-MM-dd' + 'T' + startTime + ':00.000');
@@ -758,11 +758,13 @@ export class MyTimelineComponent implements OnInit {
           };
 
           await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, 'SP.Data.SchedulesListItem');
-          this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task updated successfully.' });
+
 
           if (task.ParentSlot) {
             await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
           }
+
+          this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task updated successfully.' });
           this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start,
             this.fullCalendar.calendar.state.dateProfile.currentRange.end);
 
