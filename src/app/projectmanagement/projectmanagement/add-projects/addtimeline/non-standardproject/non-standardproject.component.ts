@@ -193,7 +193,7 @@ export class NonStandardprojectComponent implements OnInit {
     const retResourceArray = this.pmObject.nonStandardPMResponse[5];
     let newArray = [];
     if (this.pmObject.addProject.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
-      newArray = retResourceArray.filter(obj => obj.IsFTE === 'Yes');
+      newArray = retResourceArray.filter(obj => obj.IsFTE === 'Yes' && obj.Account.results.length && obj.Account.results.some(b => b.Title === this.pmObject.addProject.ProjectAttributes.ClientLegalEntity));
     } else {
       newArray = retResourceArray;
     }
