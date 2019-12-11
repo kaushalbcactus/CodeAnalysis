@@ -529,7 +529,6 @@ export class MyDashboardConstantsService {
     const parentTaskProp = { Status: 'In Progress', ActiveCA: 'Yes', __metadata: { type: this.constants.listNames.Schedules.type } };
     const parentTaskRes = currentParentTasks.length ? currentParentTasks[0].retItems[0] : null;
     const currentTaskRes = currentParentTasks.length ? currentParentTasks[1].retItems[0] : null;
-    debugger
     if (status === 'Completed') {
       const projInfoRes = currentParentTasks.length ? currentParentTasks[2].retItems[0] : null;
       if (!currentTaskRes.NextTasks) {
@@ -568,9 +567,10 @@ export class MyDashboardConstantsService {
         } else {
           return false;
         }
-      } else {
-        return false;
-      }
+      } 
+      // else {
+      //   return false;
+      // }
     } else {
       if (parentTaskRes.Status !== 'In Progress') {
         parentTaskProp.Status = 'In Progress';
@@ -579,7 +579,7 @@ export class MyDashboardConstantsService {
       }
     }
     const postbatchURL = [];
-
+    debugger;
     postbatchURL.push({
       data: parentTaskProp,
       url: this.spServices.getItemURL(this.constants.listNames.Schedules.name, parentTaskRes.Id),
