@@ -308,7 +308,7 @@
                                 *ngIf="((rowData.editMode || !rowData.editMode) && rowData.type ==='milestone'  && rowData.type !=='submilestone') || (!rowData.editMode && rowData.type !=='milestone'  && rowData.type !=='submilestone' && (rowData.IsCentrallyAllocated === 'No' || rowData.slotType === 'Both')) ">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
 
                             <p-inputSwitch
-                                *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client') && rowData.IsCentrallyAllocated === 'No' && rowData.status !== 'In Progress'"
+                                *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.itemType !=='Client Review' && rowData.itemType !=='Send to client') && rowData.IsCentrallyAllocated === 'No'"
                                 [(ngModel)]="rowData.allowStart"></p-inputSwitch>
 
                             <!-- <p-checkbox *ngIf="rowData.editMode && (rowData.type !== 'milestone' && rowData.type !=='submilestone') && (rowData.pName !=='Client Review' && rowData.pName !=='SC')" [(ngModel)]="rowData.allowStart" binary="true"></p-checkbox> -->
@@ -320,7 +320,7 @@
                                 *ngIf="rowData.type==='task' && !rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
 
                             <p-inputSwitch
-                                *ngIf="rowData.editMode && rowData.type==='task' && rowData.itemType !== 'Client Review' && rowData.status !== 'In Progress'" 
+                                *ngIf="rowData.editMode && rowData.type==='task' && rowData.itemType !== 'Client Review'" 
                                 [(ngModel)]="rowData.DisableCascade"></p-inputSwitch>
 
                             <!-- {{rowData.DisableCascade}} -->
