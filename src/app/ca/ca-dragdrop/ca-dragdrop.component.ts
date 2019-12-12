@@ -61,6 +61,8 @@ export class CaDragdropComponent implements OnInit {
     this.initialLoad = true;
     this.data = this.config.data.slot;
     this.TempMilestoneAllTasks = JSON.parse(JSON.stringify(this.data.MilestoneAllTasks));
+
+    debugger;
     this.setInitialWidth();
     await this.GetAllConstantTasks();
     this.getSlotTasks();
@@ -185,8 +187,8 @@ export class CaDragdropComponent implements OnInit {
     const originalType = Task.Title;
 
 
-    const TaskOfType = this.TempMilestoneAllTasks.find(c => c.type === originalType) ?
-      this.TempMilestoneAllTasks.find(c => c.type === originalType).tasks : [];
+    const TaskOfType = this.TempMilestoneAllTasks.find(c => c.type === originalType && c.milestone === this.data.Milestone) ?
+      this.TempMilestoneAllTasks.find(c => c.type === originalType && c.milestone === this.data.Milestone).tasks : [];
     // tslint:disable 
     count = TaskOfType.filter((task) => { return new RegExp(Task.Title, 'g').test(task); }).length > 0 ?
       TaskOfType.filter(function (task) { return new RegExp(Task.Title, 'g').test(task) }).filter((v) => { return v.replace(/.*\D/g, '') }).map(function (v) { return v.replace(new RegExp(Task.Title, 'g'), '') }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
@@ -231,10 +233,11 @@ export class CaDragdropComponent implements OnInit {
     this.tempTaskarray.push(node.label);
     this.nodes.push(node);
     this.nodeOrder.push(node.id);
-    if (this.TempMilestoneAllTasks.length > 0 && this.TempMilestoneAllTasks.find(c => c.type === originalType)) {
-      this.TempMilestoneAllTasks.find(c => c.type === originalType).tasks.push(node.label);
+    if (this.TempMilestoneAllTasks.length > 0 && this.TempMilestoneAllTasks.find(c => c.type === originalType
+      && c.milestone === this.data.Milestone)) {
+      this.TempMilestoneAllTasks.find(c => c.type === originalType && c.milestone === this.data.Milestone).tasks.push(node.label);
     } else {
-      this.TempMilestoneAllTasks.push({ type: originalType, tasks: [node.label] });
+      this.TempMilestoneAllTasks.push({ type: originalType, milestone: this.data.Milestone, tasks: [node.label] });
     }
     this.nodes = [...this.nodes];
     ////// Works on links
@@ -324,10 +327,11 @@ export class CaDragdropComponent implements OnInit {
     this.tempTaskarray.push(node.label);
     this.nodes.push(node);
     this.nodeOrder.push(node.id);
-    if (this.TempMilestoneAllTasks.length > 0 && this.TempMilestoneAllTasks.find(c => c.type === originalType)) {
-      this.TempMilestoneAllTasks.find(c => c.type === originalType).tasks.push(node.label);
+    if (this.TempMilestoneAllTasks.length > 0 && this.TempMilestoneAllTasks.find(c => c.type === originalType
+      && c.milestone === this.data.Milestone)) {
+      this.TempMilestoneAllTasks.find(c => c.type === originalType && c.milestone === this.data.Milestone).tasks.push(node.label);
     } else {
-      this.TempMilestoneAllTasks.push({ type: originalType, tasks: [node.label] });
+      this.TempMilestoneAllTasks.push({ type: originalType, milestone: this.data.Milestone, tasks: [node.label] });
     }
     this.nodes = [...this.nodes];
   }

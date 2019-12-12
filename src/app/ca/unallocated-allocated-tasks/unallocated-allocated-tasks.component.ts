@@ -310,7 +310,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.expandedRows[data.Id] = false;
     data.editMode = false;
     data.edited = false;
-    delete data.MilestoneAllTasks;
+    // delete data.MilestoneAllTasks;
 
   }
 
@@ -407,6 +407,21 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
               Items.push({ label: user.UserName.Title + ' (' + user.timeAvailable + ') ', value: user }
               );
               task.selectedResources.push(user);
+            });
+
+            Items.sort((user1, user2) => {
+
+              // Sort by votes
+              // If the first item has a higher number, move it down
+              // If the first item has a lower number, move it up
+              if (user1.value.timeAvailable > user2.value.timeAvailable) { return -1; }
+              if (user1.value.timeAvailable < user2.value.timeAvailable) { return 1; }
+
+              // If the votes number is the same between both items, sort alphabetically
+              // If the first item comes first in the alphabet, move it up
+              // Otherwise move it down
+              if (user1.value.Title > user2.value.Title) { return 1; }
+              if (user1.value.Title < user2.value.Title) { return -1; }
             });
 
             task.displayselectedResources.push({ label: retRes, items: Items });
@@ -923,6 +938,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         this.expandedRows[RowData.Id] = true;
         RowData.subTaskloaderenable = true;
         let SlotTasks = [];
+
+        debugger;
         if (RowData.SlotTasks) {
           SlotTasks = JSON.parse(JSON.stringify(RowData.SlotTasks));
         } else {
@@ -986,8 +1003,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
             }
 
           }
-
-          debugger;
           if (task.previousTask !== previousTasks || task.nextTask !== nextTasks) {
             task.edited = true;
           }
@@ -998,23 +1013,43 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           obj.edited = task.edited ? task.edited : false;
           RowData.SlotTasks.push(obj);
           RowData.editMode = true;
+
+
+          if (RowData.MilestoneAllTasks.length > 0 && RowData.MilestoneAllTasks.find(c => c.type ===
+            task.taskType && c.milestone === RowData.Milestone)) {
+            if (!RowData.MilestoneAllTasks.find(c => c.type === task.taskType).tasks.find(c => c ===
+              task.label && c.milestone === RowData.Milestone)) {
+              RowData.MilestoneAllTasks.find(c => c.type === task.taskType && c.milestone ===
+                RowData.Milestone).tasks.push(RowData.TaskName);
+            }
+          } else {
+            RowData.MilestoneAllTasks.push({ type: task.taskType, milestone: RowData.Milestone, tasks: [RowData.TaskName] });
+          }
+        }
+
+        if (this.completeTaskArray.filter(c => c.ProjectCode === RowData.ProjectCode && c.Milestone === RowData.Milestone)) {
+          this.completeTaskArray.filter(c => c.ProjectCode === RowData.ProjectCode && c.Milestone ===
+            RowData.Milestone).map(c => c.MilestoneAllTasks = RowData.MilestoneAllTasks);
         }
         RowData.subTaskloaderenable = false;
         this.disableSave = false;
-      } else {
-
-        if (!RowData.SlotTasks) {
-
-          RowData.SlotTasks = [];
-          const obj = await this.GetTask(RowData, false);
-          const tasks = await this.GetAllConstantTasks(obj.Task);
-          obj.TaskName = tasks.length > 0 ? tasks[0] : obj.TaskName;
-          obj.isEditEnabled = true;
-          obj.edited = true;
-          RowData.SlotTasks.push(obj);
-          RowData.subTaskloaderenable = false;
-        }
       }
+      //        else {
+      // debugger;
+      //         if (!RowData.SlotTasks) {
+
+      //           RowData.SlotTasks = [];
+      //           const tasks = await this.GetAllConstantTasks(RowData.Task);
+      //           RowData.TaskName = tasks.length > 0 ? tasks[0] : RowData.TaskName;
+      //           const obj = await this.GetTask(RowData, false);
+
+
+      //           obj.isEditEnabled = true;
+      //           obj.edited = true;
+      //           RowData.SlotTasks.push(obj);
+      //           RowData.subTaskloaderenable = false;
+      //         }
+      //       }
     });
 
   }
@@ -1049,16 +1084,52 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         event.data.subTaskloaderenable = false;
       } else {
         const tasks = await this.GetAllConstantTasks(event.data.Task);
-        event.data.TaskName = tasks.length > 0 ? tasks[0] : event.data.TaskName;
-        debugger
+        let count = 0;
+        const constTask = event.data.MilestoneAllTasks.find(c => c.type === tasks[0] && c.milestone === event.data.Milestone);
+        debugger;
+        if (constTask) {
 
-        event.data.nextTasks = event.data.NextTasks;
-        event.data.prevTasks = event.data.PrevTasks;
+          count = constTask.tasks.filter((task) => { return new RegExp(tasks[0], 'g').test(task); }).length > 0 ?
+            constTask.tasks.filter((task) => { return new RegExp(tasks[0], 'g').test(task) }).filter((v) => {
+              return v.replace(/.*\D/g, '')
+            }).map((v) => {
+              return v.replace(new RegExp(tasks[0],
+                'g'), '')
+              // tslint:disable-next-line: radix
+            }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
+              Math.max.apply(null, constTask.tasks.filter((task) => {
+                return new RegExp(tasks[0], 'g').test
+                  (task)
+              }).filter((v) => { return v.replace(/.*\D/g, '') }).map((v) => {
+                return v.replace(new RegExp(tasks[0], 'g'), '');
+              }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
+        }
+
+
+
+
+        event.data.TaskName = tasks.length > 0 ? count > 0 ? tasks[0] + ' ' + (count + 1) : tasks[0] : event.data.TaskName;
+        // event.data.nextTasks = event.data.NextTasks;
+        // event.data.prevTasks = event.data.PrevTasks;
         const obj = await this.GetTask(event.data, false);
         obj.editMode = true;
         obj.edited = true;
         obj.Status = 'Not Saved';
         event.data.SlotTasks.push(obj);
+        if (event.data.MilestoneAllTasks.length > 0 && event.data.MilestoneAllTasks.find(c => c.type ===
+          tasks[0] && c.milestone === event.data.Milestone)) {
+          event.data.MilestoneAllTasks.find(c => c.type === tasks[0] && c.milestone === event.data.Milestone)
+            .tasks.push(event.data.TaskName);
+        } else {
+          event.data.MilestoneAllTasks.push({ type: tasks[0], milestone: event.data.Milestone, tasks: [event.data.TaskName] });
+        }
+
+        if (this.completeTaskArray.filter(c => c.ProjectCode === event.data.ProjectCode && c.Milestone === event.data.Milestone)) {
+          this.completeTaskArray.filter(c => c.ProjectCode === event.data.ProjectCode && c.Milestone ===
+            event.data.Milestone).map(c => c.MilestoneAllTasks = event.data.MilestoneAllTasks);
+        }
+
+        console.log(event.data);
         event.data.subTaskloaderenable = false;
       }
     }
@@ -1889,7 +1960,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         ID: task.Id,
         StartDate: task.StartDate,
         DueDate: task.DueDate,
-        ExpectedTime: '' + task.EstimatedTime,
+        Status: task.Status,
+        ExpectedTime: task.EstimatedTime ? '' + task.EstimatedTime : '' + task.ExpectedTime,
         AllowCompletion: task.allowStart === true ? 'Yes' : 'No',
         AssignedToId: task.allocatedResource ? task.allocatedResource.UserName.hasOwnProperty('ID') ?
           task.allocatedResource.UserName.ID : -1 : -1,
