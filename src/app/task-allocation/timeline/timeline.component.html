@@ -406,8 +406,8 @@
 
 
 </div>
-<div #reallocationMailTableID>
-    <table class="w580" width="580" cellpadding="5" cellspacing="0" border="0" hidden="true">
+<div #reallocationMailTableID style="display:none">
+    <table class="w580" width="580" cellpadding="5" cellspacing="0" border="0">
         <thead>
             <tr style="border-collapse:collapse;">
                 <td width="150" class="fullBorder boldHeadres"
@@ -457,7 +457,7 @@
         <tbody>
             <tr style="border-collapse:collapse;" *ngFor="let item of reallocationMailData;trackBy:trackByFn">
                 <td width="300" class="noLeftTopBorder"
-                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:0px;">
+                    style="font-family:HelveticaNeue, sans-serif;border-collapse:collapse;border-width:1px;border-style:solid;border-color:grey;border-top-width:0px;border-left-width:1px;">
                     <div align="left" class="table-Attr-content"
                         style="font-size:13px;color:#444444;font-family:HelveticaNeue, sans-serif;">
                         {{item.taskName}}
