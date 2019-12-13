@@ -392,13 +392,33 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         }
         task.selectedResources = [];
         task.displayselectedResources = [];
-        //const res = this.caCommonService.sortResources(setResources, task);
-        const resExtn = $.extend(true, [], setResources);
+        const res = this.caCommonService.sortResources(setResources, task);
+        debugger;
 
+        if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
+
+          const resourcesList = $.extend(true, [], this.resourceList);
+          let ExistingUser = res.find(c => c.UserName.ID === task.PreviousAssignedUser.ID &&
+            c.UserName.Title === task.PreviousAssignedUser.Title);
+          if (ExistingUser) {
+            ExistingUser.userType = 'Previously Assigned';
+          } else {
+            ExistingUser = resourcesList.find(c => c.UserName.ID === task.PreviousAssignedUser.ID &&
+              c.UserName.Title === task.PreviousAssignedUser.Title);
+            if (ExistingUser) {
+              ExistingUser.userType = 'Previously Assigned';
+              const retResource = oCapacity.arrUserDetails.filter(user => user.uid === ExistingUser.UserName.ID);
+              this.setColorCode(retResource, ExistingUser, task);
+              const dispTime = parseFloat(retResource[0].displayTotalUnAllocated.replace(':', '.'));
+              ExistingUser.taskDetails = retResource[0];
+              ExistingUser.timeAvailable = dispTime;
+              res.push(ExistingUser);
+            }
+          }
+        }
+        const resExtn = $.extend(true, [], res);
         if (resExtn) {
           const UniqueUserType = resExtn.map(c => c.userType).filter((item, index) => resExtn.map(c => c.userType).indexOf(item) === index);
-
-
           for (const retRes of UniqueUserType) {
 
             const Users = resExtn.filter(c => c.userType === retRes);
@@ -409,20 +429,12 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
               task.selectedResources.push(user);
             });
 
-            Items.sort((user1, user2) => {
-
-              // Sort by votes
-              // If the first item has a higher number, move it down
-              // If the first item has a lower number, move it up
-              if (user1.value.timeAvailable > user2.value.timeAvailable) { return -1; }
-              if (user1.value.timeAvailable < user2.value.timeAvailable) { return 1; }
-
-              // If the votes number is the same between both items, sort alphabetically
-              // If the first item comes first in the alphabet, move it up
-              // Otherwise move it down
-              if (user1.value.Title > user2.value.Title) { return 1; }
-              if (user1.value.Title < user2.value.Title) { return -1; }
-            });
+            // Items.sort((user1, user2) => {
+            //   if (user1.value.timeAvailable > user2.value.timeAvailable) { return -1; }
+            //   if (user1.value.timeAvailable < user2.value.timeAvailable) { return 1; }
+            //   if (user1.value.Title > user2.value.Title) { return 1; }
+            //   if (user1.value.Title < user2.value.Title) { return -1; }
+            // });
 
             task.displayselectedResources.push({ label: retRes, items: Items });
           }
@@ -1166,19 +1178,21 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (!task.TaskName) {
       task.TaskName = $.trim(task.Title.replace(task.ProjectCode + '', '').replace(task.Milestone + '', ''));
     }
-    let resPool = this.caCommonService.getResourceByMatrix(resourcesList,
+    const resPool = this.caCommonService.getResourceByMatrix(resourcesList,
       task.Type && task.Type === 'Slot' ? task.TaskName : task.Task && task.Task !== 'Select One' ?
         task.Task : task.taskType, task.SkillLevel,
       projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
-    resPool = this.caCommonService.sortResources(resPool, task);
-    if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1) {
+    //  resPool = this.caCommonService.sortResources(resPool, task);
 
-      let ExistingUser = resPool.find(c => c.UserName.ID === task.PreviousAssignedUser.ID && c.Title === task.PreviousAssignedUser.Title);
+    if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
+
+      debugger
+      let ExistingUser = resPool.find(c => c.UserName.ID === task.PreviousAssignedUser.ID && c.UserName.Title === task.PreviousAssignedUser.Title);
       if (ExistingUser) {
         ExistingUser.userType = 'Previously Assigned';
       } else {
         ExistingUser = resourcesList.find(c => c.UserName.ID === task.PreviousAssignedUser.ID &&
-          c.Title === task.PreviousAssignedUser.Title);
+          c.UserName.Title === task.PreviousAssignedUser.Title);
         if (ExistingUser) {
           ExistingUser.userType = 'Previously Assigned';
           resPool.push(ExistingUser);
@@ -1286,9 +1300,25 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     }
     task.selectedResources = [];
     task.displayselectedResources = [];
-    //const res = this.caCommonService.sortResources(setResources, task);
-    const resExtn = $.extend(true, [], setResources);
+    const res = this.caCommonService.sortResources(setResources, task);
 
+    if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
+      const resourcesList = $.extend(true, [], this.resourceList);
+      let ExistingUser = res.find(c => c.UserName.ID === task.PreviousAssignedUser.ID
+        && c.UserName.Title === task.PreviousAssignedUser.Title);
+      if (ExistingUser) {
+        ExistingUser.userType = 'Previously Assigned';
+      } else {
+        ExistingUser = resourcesList.find(c => c.UserName.ID === task.PreviousAssignedUser.ID &&
+          c.UserName.Title === task.PreviousAssignedUser.Title);
+        if (ExistingUser) {
+          ExistingUser.userType = 'Previously Assigned';
+          res.push(ExistingUser);
+        }
+      }
+    }
+
+    const resExtn = $.extend(true, [], res);
     if (resExtn) {
       const UniqueUserType = resExtn.map(c => c.userType).filter((item, index) => resExtn.map(c => c.userType).indexOf(item) === index);
       for (const retRes of UniqueUserType) {
@@ -1550,7 +1580,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           return false;
         }
 
-        const compareTaskDates = slot.SlotTasks.filter(e => (slot.StartDate > e.UserStart && e.Status !== 'Completed'));
+        const compareTaskDates = slot.SlotTasks.filter(e => (slot.StartDate >= e.UserStart && e.Status !== 'Completed'));
         if (compareTaskDates.length > 0) {
 
           this.messageService.add({
@@ -1561,7 +1591,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           return false;
         }
 
-        const compareTaskEndDates = slot.SlotTasks.filter(e => (slot.DueDate < e.UserEnd && e.Status !== 'Completed'));
+        const compareTaskEndDates = slot.SlotTasks.filter(e => (slot.DueDate <= e.UserEnd && e.Status !== 'Completed'));
         if (compareTaskEndDates.length > 0) {
 
           this.messageService.add({
