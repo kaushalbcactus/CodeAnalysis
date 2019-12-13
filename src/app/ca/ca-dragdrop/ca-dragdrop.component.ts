@@ -62,7 +62,6 @@ export class CaDragdropComponent implements OnInit {
     this.data = this.config.data.slot;
     this.TempMilestoneAllTasks = JSON.parse(JSON.stringify(this.data.MilestoneAllTasks));
 
-    debugger;
     this.setInitialWidth();
     await this.GetAllConstantTasks();
     this.getSlotTasks();

@@ -430,11 +430,11 @@ export class MyDashboardConstantsService {
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, currentTask);
     for (const element of this.response) {
       if (element.AllowCompletion === 'No') {
-        debugger;
+    
         const nextPrevTasks = await this.getNextPreviousTask(element);
         const prevTaskResponse = nextPrevTasks.filter(e => e.TaskType === 'Previous Task');
         if (prevTaskResponse.length) {
-          debugger
+      
           for (const obj of prevTaskResponse) {
             status = obj.Status;
           }
@@ -491,7 +491,7 @@ export class MyDashboardConstantsService {
 
   async getCurrentAndParentTask(task: any, status) {
 
-    debugger;
+    
     let batchURL = [];
     // Parent Task
     const parentTaskObj = Object.assign({}, this.mydashboardComponent.previousNextTaskParent);
@@ -538,7 +538,7 @@ export class MyDashboardConstantsService {
           const ONE_HOUR = 60 * 60 * 1000;
           const timeDiff = ctDueDate.getTime() - todayDate.getTime();
           const pcmLevels: any[] = this.getCSDetails(projInfoRes);
-          debugger;
+        
           if (ctDueDate > todayDate && timeDiff > ONE_HOUR) {
             const earlyTaskCompleteObj = {
               __metadata: { type: this.constants.listNames.EarlyTaskComplete.type },

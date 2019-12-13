@@ -393,8 +393,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         task.selectedResources = [];
         task.displayselectedResources = [];
         const res = this.caCommonService.sortResources(setResources, task);
-        debugger;
-
+      
         if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
 
           const resourcesList = $.extend(true, [], this.resourceList);
@@ -556,7 +555,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   assignedToUserChanged(rowData) {
     rowData.assignedUserChanged = true;
-    rowData.PreviousAssignedUser = rowData.AssignedTo;
+    // rowData.PreviousAssignedUser = rowData.AssignedTo;
   }
 
   // ****************************************************************************************************
@@ -951,7 +950,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         RowData.subTaskloaderenable = true;
         let SlotTasks = [];
 
-        debugger;
         if (RowData.SlotTasks) {
           SlotTasks = JSON.parse(JSON.stringify(RowData.SlotTasks));
         } else {
@@ -1098,7 +1096,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         const tasks = await this.GetAllConstantTasks(event.data.Task);
         let count = 0;
         const constTask = event.data.MilestoneAllTasks.find(c => c.type === tasks[0] && c.milestone === event.data.Milestone);
-        debugger;
         if (constTask) {
 
           count = constTask.tasks.filter((task) => { return new RegExp(tasks[0], 'g').test(task); }).length > 0 ?
@@ -1186,7 +1183,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
 
-      debugger
       let ExistingUser = resPool.find(c => c.UserName.ID === task.PreviousAssignedUser.ID && c.UserName.Title === task.PreviousAssignedUser.Title);
       if (ExistingUser) {
         ExistingUser.userType = 'Previously Assigned';
@@ -1382,9 +1378,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     let previousNode = undefined;
     Slot.SlotTasks.forEach(task => {
       if (Node === task) {
-        debugger;
+      
         this.changeDateOfEditedTask(task, type);
-        debugger;
+      
         previousNode = task;
         const nextTasks = previousNode.NextTasks ? previousNode.NextTasks.split(';') : [];
         if (nextTasks) {
@@ -1559,9 +1555,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
         let validateAllocation = true;
+    
         slot.SlotTasks.forEach(element => {
           if (element.edited) {
-            const title = element.allocatedResource ? element.allocatedResource.Title : null;
+            const title = element.allocatedResource ? element.allocatedResource.UserName.Title : null;
             if (!title) {
               validateAllocation = false;
             }
@@ -1580,7 +1577,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           return false;
         }
 
-        const compareTaskDates = slot.SlotTasks.filter(e => (slot.StartDate >= e.UserStart && e.Status !== 'Completed'));
+        const compareTaskDates = slot.SlotTasks.filter(e => (slot.StartDate >  e.UserStart && e.Status !== 'Completed'));
         if (compareTaskDates.length > 0) {
 
           this.messageService.add({
@@ -1591,7 +1588,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           return false;
         }
 
-        const compareTaskEndDates = slot.SlotTasks.filter(e => (slot.DueDate <= e.UserEnd && e.Status !== 'Completed'));
+        const compareTaskEndDates = slot.SlotTasks.filter(e => (e.UserEnd  > slot.DueDate  && e.Status !== 'Completed'));
         if (compareTaskEndDates.length > 0) {
 
           this.messageService.add({

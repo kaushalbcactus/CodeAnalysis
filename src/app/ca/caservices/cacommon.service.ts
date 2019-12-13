@@ -675,7 +675,6 @@ export class CACommonService {
           return b['timeAvailable'] - a['timeAvailable'] || a['Title'] - b['Title'];
         });
 
-        debugger;
         recommended[0].userType = 'Best Fit';
         $.merge(sortedResources, recommended);
       }
