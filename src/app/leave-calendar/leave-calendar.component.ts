@@ -217,7 +217,8 @@ export class LeaveCalendarComponent implements OnInit {
             'title': element.Title,
             'id': element.Id,
             'start': new Date(element.EventDate),
-            'end': new Date(this.datePipe.transform(element.EventDate, "yyyy-MM-dd")).getTime() !== new Date(this.datePipe.transform(element.EndDate, "yyyy-MM-dd")).getTime() ? new Date(new Date(element.EndDate).setDate(new Date(element.EndDate).getDate() + 1)) : new Date(element.EndDate),
+            // 'end': new Date(this.datePipe.transform(element.EventDate, "yyyy-MM-dd")).getTime() !== new Date(this.datePipe.transform(element.EndDate, "yyyy-MM-dd")).getTime() ? new Date(new Date(element.EndDate).setDate(new Date(element.EndDate).getDate() + 1)) : new Date(element.EndDate),
+            'end':  new Date(element.EndDate),
             'backgroundColor': element.IsHalfDay ? '#808080' : '#e60000',
 
           }
