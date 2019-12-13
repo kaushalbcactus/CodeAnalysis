@@ -674,6 +674,8 @@ export class CACommonService {
         recommended.sort(function (a, b) {
           return b['timeAvailable'] - a['timeAvailable'] || a['Title'] - b['Title'];
         });
+
+        debugger;
         recommended[0].userType = 'Best Fit';
         $.merge(sortedResources, recommended);
       }
@@ -713,12 +715,14 @@ export class CACommonService {
         }
         const TaskType = milTask.Task;
         const TaskName = $.trim(milTask.Title.replace(milTask.ProjectCode + '', '').replace(milTask.Milestone + '', ''));
-        if (task.MilestoneAllTasks.length > 0 && task.MilestoneAllTasks.find(c => c.type === TaskType)) {
-          task.MilestoneAllTasks.find(c => c.type === TaskType).tasks.push(TaskName);
-        }
-        else {
-          task.MilestoneAllTasks.push({ type: TaskType, tasks: [TaskName] });
-        }
+
+          if (task.MilestoneAllTasks.length > 0 && task.MilestoneAllTasks.find(c => c.type === TaskType && c.milestone === milTask.Milestone)) {
+            task.MilestoneAllTasks.find(c => c.type === TaskType).tasks.push(TaskName);
+          }
+          else {
+            task.MilestoneAllTasks.push({ type: TaskType, milestone: milTask.Milestone, tasks: [TaskName] });
+          }
+        
 
       });
       if (nextTasks.length) {

@@ -579,7 +579,6 @@ export class MyDashboardConstantsService {
       }
     }
     const postbatchURL = [];
-    debugger;
     postbatchURL.push({
       data: parentTaskProp,
       url: this.spServices.getItemURL(this.constants.listNames.Schedules.name, parentTaskRes.Id),

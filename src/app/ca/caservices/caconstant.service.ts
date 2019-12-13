@@ -14,6 +14,16 @@ export class CAConstantService {
     orderby: 'UserName/Title asc'
   };
 
+  public scheduleAllocatedQueryOptions = {
+    select: 'ID,Title,TimeZone,SkillLevel,TimeSpentSubmitStatus,TimeSpentPerDay,TimeSpent,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,ExpectedTime,TaskComments,Comments,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,StartDate,DueDate,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title, ActiveCA,DisableCascade,AllowCompletion',
+    expand: 'AssignedTo/ID, AssignedTo/Title',
+    filter: "ActiveCA eq 'Yes' and  IsCentrallyAllocated eq 'Yes' and CentralAllocationDone eq 'Yes'",
+    filterSlot: '',
+    orderby: 'DueDate asc',
+    top: 4200
+  };
+
+
   public scheduleUnAllocatedQueryOptions = {
     select: 'ID,Title,TimeZone,SkillLevel,Task,Status,NextTasks,PrevTasks,ProjectCode,TimeSpent,Milestone,SubMilestones,ExpectedTime,TaskComments,Comments,StartDate,DueDate,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title,DisableCascade,AllowCompletion',
     expand: 'AssignedTo/ID, AssignedTo/Title',
@@ -52,14 +62,6 @@ export class CAConstantService {
     top: 4200
   };
 
-  public scheduleAllocatedQueryOptions = {
-    select: 'ID,Title,TimeZone,SkillLevel,TimeSpentSubmitStatus,TimeSpentPerDay,TimeSpent,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,ExpectedTime,TaskComments,Comments,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,StartDate,DueDate,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title, ActiveCA,DisableCascade,AllowCompletion',
-    expand: 'AssignedTo/ID, AssignedTo/Title',
-    filter: "ActiveCA eq 'Yes' and  IsCentrallyAllocated eq 'Yes' and CentralAllocationDone eq 'Yes'",
-    filterSlot: '',
-    orderby: 'DueDate asc',
-    top: 4200
-  };
 
   public scheduleQueryOptions = {
     select: 'ID,Title,TimeZone,SkillLevel,TimeSpentSubmitStatus,TimeSpentPerDay,TimeSpent,Task,Status,NextTasks,PrevTasks,ProjectCode,Milestone,SubMilestones,ExpectedTime,TaskComments,Comments,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,StartDate,DueDate,CentralAllocationDone,IsCentrallyAllocated,AssignedTo/ID, AssignedTo/Title, ActiveCA,DisableCascade,AllowCompletion,PreviousAssignedUser/ID,PreviousAssignedUser/Title',
