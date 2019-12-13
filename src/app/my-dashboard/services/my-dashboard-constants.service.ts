@@ -430,11 +430,11 @@ export class MyDashboardConstantsService {
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, currentTask);
     for (const element of this.response) {
       if (element.AllowCompletion === 'No') {
-    
+
         const nextPrevTasks = await this.getNextPreviousTask(element);
         const prevTaskResponse = nextPrevTasks.filter(e => e.TaskType === 'Previous Task');
         if (prevTaskResponse.length) {
-      
+
           for (const obj of prevTaskResponse) {
             status = obj.Status;
           }
@@ -491,7 +491,7 @@ export class MyDashboardConstantsService {
 
   async getCurrentAndParentTask(task: any, status) {
 
-    
+
     let batchURL = [];
     // Parent Task
     const parentTaskObj = Object.assign({}, this.mydashboardComponent.previousNextTaskParent);
@@ -538,7 +538,7 @@ export class MyDashboardConstantsService {
           const ONE_HOUR = 60 * 60 * 1000;
           const timeDiff = ctDueDate.getTime() - todayDate.getTime();
           const pcmLevels: any[] = this.getCSDetails(projInfoRes);
-        
+
           if (ctDueDate > todayDate && timeDiff > ONE_HOUR) {
             const earlyTaskCompleteObj = {
               __metadata: { type: this.constants.listNames.EarlyTaskComplete.type },
@@ -562,17 +562,20 @@ export class MyDashboardConstantsService {
           return false;
         }
       } else if (!currentTaskRes.PrevTasks) {
-        if (parentTaskRes.Status !== 'In Progress') {
+        if (parentTaskRes.Status !== 'In Progress' && parentTaskRes.Status !== 'Completed') {
           parentTaskProp.Status = 'In Progress';
         } else {
           return false;
         }
-      } 
-      // else {
-      //   return false;
-      // }
+      } else if (currentTaskRes.PrevTasks  && currentTaskRes.NextTasks ) {
+        if (parentTaskRes.Status !== 'In Progress' && parentTaskRes.Status !== 'Completed') {
+          parentTaskProp.Status = 'In Progress';
+        } else {
+          return false;
+        }
+      }
     } else {
-      if (parentTaskRes.Status !== 'In Progress') {
+      if (parentTaskRes.Status !== 'In Progress' && parentTaskRes.Status !== 'Completed') {
         parentTaskProp.Status = 'In Progress';
       } else {
         return false;
