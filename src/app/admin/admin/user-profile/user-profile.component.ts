@@ -85,7 +85,13 @@ export class UserProfileComponent implements OnInit {
   userProfileColArray = {
     User: [],
     LastUpdated: [],
-    LastUpdatedBy: []
+    LastUpdatedBy: [],
+    PrimarySkill: [],
+    Bucket: [],
+    PracticeArea: [],
+    InCapacity: [],
+    DateOfJoining: [],
+    GoLiveDate: [],
   };
   auditHistoryArray = {
     User: [],
@@ -182,7 +188,9 @@ export class UserProfileComponent implements OnInit {
       inCapacity: ['', Validators.required],
       isActive: ['', null],
       manager: ['', Validators.required],
-      maxHrs: ['', [Validators.required, Validators.pattern('^[0-9]*$')]],
+      maxHrs: ['', [Validators.required, Validators.max(24)]],
+      // '^((?:[1-9]|1[0-9]|2[0-3])(?:\.\d[05]0?)(?:\.\d{1,2})?|24?)$'
+      // maxHrs: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.max(24)]],
       pooled: ['', Validators.required],
       primarySkill: ['', Validators.required],
       readyTo: ['', null],
@@ -198,13 +206,13 @@ export class UserProfileComponent implements OnInit {
       timeZoneEffectiveDate: ['', null],
       primarySkillEffectiveDate: ['', null],
       skillLevelEffectiveDate: ['', null],
-      workSunday: ['', null],
+      workSunday: [{ value: '', disabled: true }, null],
       workMonday: ['', null],
       workTuesday: ['', null],
       workWednessday: ['', null],
       workThursday: ['', null],
       workFriday: ['', null],
-      workSaturday: ['', null]
+      workSaturday: [{ value: '', disabled: true }, null],
     });
   }
   /**
@@ -221,9 +229,15 @@ export class UserProfileComponent implements OnInit {
     this.yearRange = (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
     this.userProfileColumns = [
       { field: 'User', header: 'User', visibility: true },
-      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
+      { field: 'PrimarySkill', header: 'Primary Skill', visibility: true },
+      { field: 'Bucket', header: 'Bucket', visibility: true },
+      { field: 'PracticeArea', header: 'Practice Area', visibility: true },
+      { field: 'InCapacity', header: 'In Capacity', visibility: true },
+      { field: 'DateOfJoining', header: 'Date Of Joining', visibility: true },
+      { field: 'GoLiveDate', header: 'Go Live Date', visibility: true },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: false, exportable: false },
       { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false },
-      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
+      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: false },
     ];
     this.auditHistoryColumns = [
       { field: 'User', header: 'User' },
@@ -932,11 +946,42 @@ export class UserProfileComponent implements OnInit {
    */
   colFilters(colData) {
     this.userProfileColArray.User = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = { label: a.User, value: a.User }; return b;
+    })));
+
+    this.userProfileColArray.PrimarySkill = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = { label: a.PrimarySkill, value: a.PrimarySkill }; return b;
+    })));
+
+    this.userProfileColArray.Bucket = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = { label: a.Bucket, value: a.Bucket }; return b;
+    })));
+
+    this.userProfileColArray.PracticeArea = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = { label: a.PracticeArea, value: a.PracticeArea }; return b;
+    })));
+
+
+    this.userProfileColArray.InCapacity = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = { label: a.InCapacity, value: a.InCapacity }; return b;
+    }).filter(ele => ele)));
+
+    this.userProfileColArray.DateOfJoining = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = {
-        label: a.User, value: a.User
+        label: this.datePipe.transform(a.DateOfJoining, 'MMM dd, yyyy'),
+        value: a.DateOfJoining
       };
       return b;
     })));
+
+    this.userProfileColArray.GoLiveDate = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = {
+        label: this.datePipe.transform(a.GoLiveDate, 'MMM dd, yyyy'),
+        value: a.GoLiveDate
+      };
+      return b;
+    })));
+
     const lastUpdatedArray = this.common.sortDateArray(this.adminCommonService.uniqueArrayObj(
       colData.map(a => {
         const b = {
@@ -956,6 +1001,7 @@ export class UserProfileComponent implements OnInit {
       const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b;
     })));
   }
+
   colFilters1(colData) {
     this.auditHistoryArray.User = this.adminCommonService.uniqueArrayObj(colData.map(a => {
       const b = { label: a.User, value: a.User }; return b;
@@ -1488,7 +1534,7 @@ export class UserProfileComponent implements OnInit {
       if (formObj.dateofexit) {
         const dateOfExit = formObj.dateofexit ? new Date(formObj.dateofexit) : null;
         const todayDate = new Date(new Date().setHours(0, 0, 0, 0));
-        if ( dateOfExit !== null && dateOfExit.getTime() <= todayDate.getTime()) {
+        if (dateOfExit !== null && dateOfExit.getTime() <= todayDate.getTime()) {
           data.IsActive = this.adminConstants.LOGICAL_FIELD.NO;
         } else {
           data.IsActive = this.adminConstants.LOGICAL_FIELD.YES;
@@ -1779,8 +1825,8 @@ export class UserProfileComponent implements OnInit {
     this.addUser.get('bucket').setValue(userObj.Bucket);
     this.addUser.get('practiceArea').setValue(userObj.PracticeArea);
     this.addUser.get('timeZone').setValue(userObj.TimeZone.ID);
-    this.addUser.get('liveDate').setValue(new Date(userObj.GoLiveDate));
-    this.addUser.get('dateofjoin').setValue(new Date(userObj.DateOfJoining));
+    this.addUser.get('liveDate').setValue(userObj.GoLiveDate ? new Date(userObj.GoLiveDate) : new Date());
+    this.addUser.get('dateofjoin').setValue(userObj.DateOfJoining ? new Date(userObj.DateOfJoining) : new Date());
     this.addUser.get('inCapacity').setValue(userObj.InCapacity);
     this.addUser.get('designation').setValue(userObj.Designation);
     this.addUser.get('pooled').setValue(userObj.Pooled);
@@ -1818,33 +1864,37 @@ export class UserProfileComponent implements OnInit {
     this.addUser.get('isActive').setValue(userObj.IsActive);
     if (userObj.ManagerEffectiveDate) {
       this.date.isManagerEffectiveDateActive = true;
-      this.addUser.get('managerEffectiveDate').setValue(new Date(userObj.ManagerEffectiveDate));
+      this.addUser.get('managerEffectiveDate').setValue(userObj.ManagerEffectiveDate ? new Date(userObj.ManagerEffectiveDate) : new Date());
       this.addUser.get('managerEffectiveDate').disable();
     }
     if (userObj.PracticeAreaEffectiveDate) {
       this.date.isPracticeEffectiveDateActive = true;
-      this.addUser.get('practiceAreaEffectiveDate').setValue(new Date(userObj.PracticeAreaEffectiveDate));
+      this.addUser.get('practiceAreaEffectiveDate').setValue(userObj.PracticeAreaEffectiveDate ?
+        new Date(userObj.PracticeAreaEffectiveDate) : new Date());
       this.addUser.get('practiceAreaEffectiveDate').disable();
     }
     if (userObj.TimeZoneEffectiveDate) {
       this.date.isTimeZoneEffectiveDateActive = true;
-      this.addUser.get('timeZoneEffectiveDate').setValue(new Date(userObj.TimeZoneEffectiveDate));
+      this.addUser.get('timeZoneEffectiveDate').setValue(userObj.TimeZoneEffectiveDate ?
+        new Date(userObj.TimeZoneEffectiveDate) : new Date());
       this.addUser.get('timeZoneEffectiveDate').disable();
     }
     if (userObj.PrimarySkillEffectiveDate) {
       this.date.isPrimarySkillEffectiveDateActive = true;
-      this.addUser.get('primarySkillEffectiveDate').setValue(new Date(userObj.PrimarySkillEffectiveDate));
+      this.addUser.get('primarySkillEffectiveDate').setValue(userObj.PrimarySkillEffectiveDate ?
+        new Date(userObj.PrimarySkillEffectiveDate) : new Date());
       this.addUser.get('primarySkillEffectiveDate').disable();
     }
     if (userObj.SkillLevelEffectiveDate) {
       this.date.isSkillLevelEffectiveDateActive = true;
-      this.addUser.get('skillLevelEffectiveDate').setValue(new Date(userObj.SkillLevelEffectiveDate));
+      this.addUser.get('skillLevelEffectiveDate').setValue(userObj.SkillLevelEffectiveDate ?
+        new Date(userObj.SkillLevelEffectiveDate) : new Date());
       this.addUser.get('skillLevelEffectiveDate').disable();
     }
     if (userObj.DateofExit) {
       this.showeditUser = true;
       this.date.isDateExit = true;
-      this.addUser.get('dateofexit').setValue(new Date(userObj.DateofExit));
+      this.addUser.get('dateofexit').setValue(userObj.DateofExit ? new Date(userObj.DateofExit) : new Date());
     }
     if (userObj.WorkingSunday === this.adminConstants.LOGICAL_FIELD.YES) {
       this.addUser.get('workSunday').setValue(true);

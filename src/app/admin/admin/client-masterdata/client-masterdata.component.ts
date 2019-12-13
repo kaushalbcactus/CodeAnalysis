@@ -270,7 +270,7 @@ export class ClientMasterdataComponent implements OnInit {
     this.pocForm = frmbuilder.group({
       fname: ['', Validators.required],
       lname: ['', Validators.required],
-      designation: ['', Validators.required],
+      designation: [''],
       email: ['', [Validators.required, Validators.email]],
       phone: [''],
       address1: [''],
@@ -1597,6 +1597,11 @@ export class ClientMasterdataComponent implements OnInit {
           this.dropdown.POCRefferalSourceArray = [];
           tempArray.forEach(element => {
             this.dropdown.POCRefferalSourceArray.push({ label: element, value: element });
+            if (element === 'Others') {
+              this.pocForm.patchValue({
+                referralSource: element
+              });
+            }
           });
         }
         if (relationshipArray && relationshipArray.length) {
@@ -1604,6 +1609,11 @@ export class ClientMasterdataComponent implements OnInit {
           this.dropdown.POCRelationshipArray = [];
           tempArray.forEach(element => {
             this.dropdown.POCRelationshipArray.push({ label: element, value: element });
+            if (element === 'None') {
+              this.pocForm.patchValue({
+                relationshipStrength: element
+              });
+            }
           });
         }
         if (projectContactArray && projectContactArray.length) {
@@ -1611,6 +1621,11 @@ export class ClientMasterdataComponent implements OnInit {
           this.dropdown.POCProjectContactTypesArray = [];
           tempArray.forEach(element => {
             this.dropdown.POCProjectContactTypesArray.push({ label: element, value: element });
+            if (element === 'Others') {
+              this.pocForm.patchValue({
+                contactsType: element
+              });
+            }
           });
         }
       }
