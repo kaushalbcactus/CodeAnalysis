@@ -562,7 +562,7 @@ export class MyDashboardConstantsService {
           return false;
         }
       } else if (!currentTaskRes.PrevTasks) {
-        if (parentTaskRes.Status !== 'In Progress') {
+        if (parentTaskRes.Status !== 'In Progress' && parentTaskRes.Status !== 'Completed') {
           parentTaskProp.Status = 'In Progress';
         } else {
           return false;
@@ -572,7 +572,7 @@ export class MyDashboardConstantsService {
       //   return false;
       // }
     } else {
-      if (parentTaskRes.Status !== 'In Progress') {
+      if (parentTaskRes.Status !== 'In Progress' && parentTaskRes.Status !== 'Completed') {
         parentTaskProp.Status = 'In Progress';
       } else {
         return false;

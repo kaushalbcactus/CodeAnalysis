@@ -88,12 +88,12 @@
     margin: 0px 4px 0px 6px;
 }
 
-
-/* .UserTasksRow {
+.UserTasksRow,
+.tableHeader {
     width: 100%;
     display: inline-table;
     table-layout: fixed;
-} */
+}
 
 #capacityTable {
     /*  height: 404px; */
@@ -356,7 +356,8 @@ tr[class$="taskrow"]+tr>td
     font-size: 12px;
 }
 
-#capacityTable>thead>tr>th {
+
+/* #capacityTable>thead>tr>th {
     position: sticky !important;
     top: 0px !important;
 }
@@ -364,4 +365,4 @@ tr[class$="taskrow"]+tr>td
 .tableHeader>tr>th {
     z-index: 990 !important;
     background: #f5f5f5 !important;
-}
+} */
