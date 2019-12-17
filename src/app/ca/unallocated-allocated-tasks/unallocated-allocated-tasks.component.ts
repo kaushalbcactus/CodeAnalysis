@@ -52,6 +52,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   loderenable: boolean = true;
   DropdownOptions: SelectItem[];
   disableSave = true;
+  yearsRange = new Date().getFullYear() + ':' + (new Date().getFullYear() + 10);
   public queryConfig = {
     data: null,
     url: '',
