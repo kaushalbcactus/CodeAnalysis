@@ -5,6 +5,7 @@ import { environment } from '../environments/environment';
 import { ConstantsService } from './Services/constants.service';
 // import { Environment } from '../environments/environment.prod';
 declare const _spPageContextInfo;
+declare const newrelic;
 
 @Component({
   selector: 'app-root',
@@ -48,6 +49,13 @@ export class AppComponent {
     this.globalService.currentUser.email = window.location.href.indexOf('localhost') > -1 ?
       'sneha.danduk@cactusglobal.com' : _spPageContextInfo.userEmail;
     this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Sneha' : _spPageContextInfo.userDisplayName;
+
+    if (typeof newrelic === 'object') {
+      newrelic.setCustomAttribute('spUserId', _spPageContextInfo.userId);
+      newrelic.setCustomAttribute('spUserName', _spPageContextInfo.userDisplayName);
+    }
+
+
   }
   initSPComponentRedirection() {
     // tslint:disable:no-string-literal

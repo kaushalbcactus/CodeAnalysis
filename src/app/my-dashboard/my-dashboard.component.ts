@@ -45,7 +45,7 @@ export class MyDashboardComponent implements OnInit {
     public dialogService: DialogService,
     public messageService: MessageService,
     private componentFactoryResolver: ComponentFactoryResolver,
-    private constantsService: ConstantsService,
+    private commonService: CommonService,
   ) { }
 
   ngOnInit() {
@@ -72,6 +72,8 @@ export class MyDashboardComponent implements OnInit {
   }
 
   async GetCurrentUser() {
+
+    this.commonService.SetNewrelic('MyDashboard', 'MyDashboard', 'GetCurrentUserDetails');
     const currentUser = await this.spServices.getUserInfo(this.sharedObject.currentUser.userId);
     this.sharedObject.currentUser.userId = currentUser.Id;
     this.sharedObject.currentUser.email = currentUser.Email;
