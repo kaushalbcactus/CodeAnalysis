@@ -1,4 +1,7 @@
-import { Component, OnInit, OnDestroy, ViewEncapsulation, TemplateRef, ViewChild, HostListener, ElementRef, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
+import {
+  Component, OnInit, OnDestroy, ViewEncapsulation, TemplateRef,
+  ViewChild, HostListener, ElementRef, ApplicationRef, NgZone, ChangeDetectorRef
+} from '@angular/core';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
@@ -145,6 +148,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       { field: 'ExpectedTime', header: 'Allocated Time', visibility: true, exportable: true },
       { field: 'TimeSpent', header: 'Time Spent', visibility: true, exportable: true },
     ];
+    this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'GetEmailTemplate');
     this.myDashboardConstantsService.getEmailTemplate();
   }
 
@@ -164,14 +168,13 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     }
   }
 
-  // *************************************************************************************************************************************
+  // *********************************************************************************************************
   // Get data by dates on button switch
-  // *************************************************************************************************************************************
+  // *********************************************************************************************************
 
   GetDatabyDateSelection(event, days) {
-    // this.myDashboardConstantsService.openTaskSelectedTab['event'] = event;
-    // this.myDashboardConstantsService.openTaskSelectedTab['days'] = days;
 
+    this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'GetTasks');
     this.TabName = this.route.snapshot.data.type;
     this.days = days;
     this.selectedTab = event;
@@ -191,9 +194,9 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     }
   }
 
-  // *************************************************************************************************************************************
+  // ********************************************************************************************************
   // hide popup menu on production
-  // *************************************************************************************************************************************
+  // ********************************************************************************************************
 
   @HostListener('document:click', ['$event'])
   clickout(event) {
@@ -220,9 +223,9 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   }
 
 
-  // *************************************************************************************************************************************
+  // *********************************************************************************************************
   // date selected on button Click or Custom
-  // *************************************************************************************************************************************
+  // ****************************************************************************************************
 
   CalculateDatesDiffernce(nextLast, days) {
     const filterDates = [];
@@ -259,9 +262,9 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     return filterDates;
   }
 
-  // *************************************************************************************************************************************
+  // ********************************************************************************************************
   // Add days to get end date for next days
-  // *************************************************************************************************************************************
+  // *********************************************************************************************************
   addBusinessDays(date, days) {
     date = new Date(date.getTime());
     const day = date.getDay();
@@ -271,37 +274,27 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
 
 
 
-  // *************************************************************************************************************************************
+  // *********************************************************************************************************
   // Get Data based on date selected
-  // *************************************************************************************************************************************
+  // *********************************************************************************************************
 
   async getStatusFilterDropDownValue(status, filterDates) {
 
+    this.commonService.SetNewrelic('MyCurrentCompletedTask', status, 'GetTasks');
     const mytasks = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTasks);
     mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
     mytasks.filter += status === 'MyCompletedTask' ? mytasks.filterCompleted : mytasks.filterStatus;
     // mytasks.filter += mytasks.filterStatus;
     mytasks.filter += mytasks.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, mytasks);
-
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
-    // const mytasks = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTasks);
-    // mytasks.filter = mytasks.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
-    // mytasks.filter += status === 'MyCompletedTask' ? mytasks.filterCompleted : mytasks.filterStatus;
-    // // mytasks.filter += mytasks.filterStatus;
-    // mytasks.filter += mytasks.filterDate.replace(/{{startDateString}}/gi, filterDates[0]).replace(/{{endDateString}}/gi, filterDates[1]);
-    // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', mytasks);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
-
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     const res = this.response.length ? this.response : [];
 
     if (res.length > 0) {
       const data = [];
       res.forEach(task => {
 
-        const TaskProject = this.sharedObject.DashboardData.ProjectCodes ? this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === task.ProjectCode) : null;
+        const TaskProject = this.sharedObject.DashboardData.ProjectCodes ?
+          this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === task.ProjectCode) : null;
         let DisplayTitle;
         if (TaskProject !== undefined) {
           if (task.SubMilestones) {
@@ -358,54 +351,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
         });
       });
       this.allTasks = data;
-
-      // this.allTasks.map(c => c.TimeSpent = c.TimeSpent === null ? 0 : c.TimeSpent.replace('.', ':'));
-
-      // this.allTasks.map(c => c.StartDate = new Date(this.datePipe.transform(c.StartDate, 'MMM d, y, h:mm a')));
-      // this.allTasks.map(c => c.DueDate = new Date(this.datePipe.transform(c.DueDate, 'MMM d, y, h:mm a')));
-
-      // this.allTasks.map(c => c.ExportStartDate = this.datePipe.transform(c.StartDate, 'MMM d, y, h:mm a'));
-
-      // this.allTasks.map(c => c.ExportDueDate = this.datePipe.transform(c.DueDate, 'MMM d, y, h:mm a'));
-
-
-
-      // if (this.TabName === 'MyCompletedTask') {
-      //   this.allTasks.filter(c => c.Status === 'Completed' || c.Status === 'Auto Closed').map(c => c.MainStatus = 'Closed');
-
-      // } else {
-      //   this.allTasks.filter(c => c.Status === 'Not Started' || c.Status === 'In Progress').map(c => c.MainStatus = 'Not Completed');
-      //   this.allTasks.filter(c => c.Status === 'Not Confirmed').map(c => c.MainStatus = 'Planned');
-      // }
-      // if (this.sharedObject.DashboardData.ProjectCodes.length > 0) {
-      //   this.allTasks.forEach(element => {
-
-      //     const data = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === element.ProjectCode);
-
-      //     if (data !== undefined) {
-      //       if (element.SubMilestones) {
-      //         task
-      //         if (element.SubMilestones === 'Default') {
-      //           element.DisplayTitle = element.Title + ' ( ' + data.WBJID + ')';
-      //         } else {
-      //           element.DisplayTitle = element.Title + ' - ' + element.SubMilestones + ' ( ' + data.WBJID + ')';
-      //         }
-      //       } else {
-      //         element.DisplayTitle = element.Title + ' (' + data.WBJID + ')';
-      //       }
-      //     } else {
-      //       if (element.SubMilestones) {
-      //         if (element.SubMilestones === 'Default') {
-      //           element.DisplayTitle = element.Title;
-      //         } else {
-      //           element.DisplayTitle = element.Title + ' - ' + element.SubMilestones;
-      //         }
-      //       } else {
-      //         element.DisplayTitle = element.Title;
-      //       }
-      //     }
-      //   });
-      // }
       this.initializeTableOptions();
 
     } else if (this.allTasks.length === 0) {
@@ -421,9 +366,9 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     this.createColFieldValues(this.allTasks);
   }
 
-  // *************************************************************************************************************************************
+  // *********************************************************************************************************
   // Column filter for search
-  // *************************************************************************************************************************************
+  // ********************************************************************************************************
 
   createColFieldValues(resArray) {
     this.AllTaskColArray.TaskStatus = this.commonService.sortData(this.myDashboardConstantsService.uniqueArrayObj
@@ -465,20 +410,17 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     this.AllTaskColArray.StartDate = this.AllTaskColArray.StartDate.sort((a, b) =>
       new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
     );
-
     this.AllTaskColArray.DueDate = this.AllTaskColArray.DueDate.sort((a, b) =>
       new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
     );
-
-
     this.loaderenable = false;
     this.thenBlock = this.taskId;
   }
 
 
-  // *************************************************************************************************************************************
+  // ********************************************************************************************************
   // Dialog to display task and time spent
-  // *************************************************************************************************************************************
+  // *********************************************************************************************************
 
   async showDialog(task, type, row) {
 
@@ -487,11 +429,9 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     this.selectedindex = row;
     this.selectedType = type;
 
-    if (type === 'TaskName') { // {
+    if (type === 'TaskName') { 
       this.getNextPreviousTaskDialog(task);
     }
-    // this.display = true;
-    // }
     if (type === 'TimeSpent') {
       await this.getupdateTimeSpent(task);
     }
@@ -499,15 +439,12 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
 
   }
 
-  // *************************************************************************************************************************************
+  // ********************************************************************************************************
   // load component for  time spent
-  // *************************************************************************************************************************************
+  // *********************************************************************************************************
 
 
   async getupdateTimeSpent(task) {
-
-    // var status = await this.getPrevTaskStatus(task);
-
     const ref = this.dialogService.open(TimeSpentDialogComponent, {
       data: {
         task,
@@ -520,8 +457,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       closable: false,
     });
     ref.onClose.subscribe((saveTimeSpentAccess: any) => {
-
-
       if (saveTimeSpentAccess) {
         this.loaderenable = true;
         this.allTasks = [];
@@ -538,15 +473,15 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   }
 
 
-  // *************************************************************************************************************************************
+  // ********************************************************************************************************
   // load component for  next previous tasks
-  // *************************************************************************************************************************************
+  // ********************************************************************************************************
 
 
   async getNextPreviousTaskDialog(task) {
     this.tableloaderenable = true;
     let tasks = [];
-
+    this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'GetTasks');
     tasks = await this.myDashboardConstantsService.getNextPreviousTask(task);
     this.tableloaderenable = false;
     const ref = this.dialogService.open(PreviosNextTasksDialogComponent, {
@@ -562,11 +497,9 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     });
   }
 
-
-  // *************************************************************************************************************************************
+  // *********************************************************************************************************
   // load component for  comment
-  // *************************************************************************************************************************************
-
+  // ********************************************************************************************************
 
   async getAddUpdateComment(task, IsMarkComplete) {
 
@@ -588,6 +521,7 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
           this.allTasks = [];
           task.TaskComments = Commentobj.comment;
           task.Status = 'Completed';
+          this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'CompleteTask');
           const response = await this.myDashboardConstantsService.CompleteTask(task);
           if (response) {
             this.loaderenable = false;
@@ -611,15 +545,16 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     });
   }
 
-  // *************************************************************************************************************************************
+  // *********************************************************************************************************
   //  save / Update task comment
-  // *************************************************************************************************************************************
+  // *********************************************************************************************************
 
   async UpdateComment(comment, task) {
     const data = {
       TaskComments: comment
     };
 
+    this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'UpdateComment');
     await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, data, 'SP.Data.SchedulesListItem');
     this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Comment saved successfully' });
   }
