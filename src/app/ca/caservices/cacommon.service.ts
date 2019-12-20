@@ -325,7 +325,7 @@ export class CACommonService {
     //const resourcesList = $.extend(true, [], resourceList);
     //const resPool = this.getResourceByMatrix(resourcesList, task.Task, task.SkillLevel, projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
     scObj.Id = task.ID;
-    scObj.ClientName = projectItem[0].ClientLegalEntity;
+    scObj.ClientName = projectItem.length ? projectItem[0].ClientLegalEntity : '';
     scObj.ProjectCode = task.ProjectCode;
     scObj.ProjectManagementURL = scObj.ProjectName = projectItem[0].WBJID;
     scObj.Milestone = task.Milestone;
@@ -335,7 +335,7 @@ export class CACommonService {
     scObj.Timezone = task.TimeZone;
     scObj.Title = task.Title;
     scObj.TaskName = $.trim(task.Title.replace(scObj.ProjectCode + '', '').replace(scObj.Milestone + '', ''));
-    scObj.DeliveryType = projectItem[0].DeliverableType;
+    scObj.DeliveryType = projectItem.length ? projectItem[0].DeliverableType :'';
     scObj.EstimatedTime = task.ExpectedTime;
     scObj.StartTime = task.StartDate;
     scObj.EndTime = task.DueDate;
