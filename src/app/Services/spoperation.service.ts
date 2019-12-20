@@ -86,6 +86,7 @@ export class SPOperationService {
     // });
     // return this.parseRetSingle(res);
     body = body.replace(RegExp("'", 'gi'), '');
+    body = body.replace(/\\/g, '\\\\');
     subj = subj.replace(RegExp("'", 'gi'), '');
     const data = {
       Title: subj,
