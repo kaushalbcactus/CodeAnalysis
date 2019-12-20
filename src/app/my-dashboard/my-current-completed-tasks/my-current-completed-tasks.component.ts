@@ -517,26 +517,13 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
       if (Commentobj) {
 
         if (Commentobj.IsMarkComplete) {
-          this.loaderenable = true;
-          this.allTasks = [];
           task.TaskComments = Commentobj.comment;
           task.Status = 'Completed';
           this.commonService.SetNewrelic('MyCurrentCompletedTask', this.route.snapshot.data.type, 'CompleteTask');
-          const response = await this.myDashboardConstantsService.CompleteTask(task);
-          if (response) {
-            this.loaderenable = false;
-            this.GetDatabyDateSelection(this.selectedTab, this.days);
-            this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
+          if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
+            this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
           } else {
-            this.allTasks = [];
-            this.messageService.add({
-              key: 'custom', severity: 'success', summary: 'Success Message',
-              detail: task.Title + 'Task Updated Successfully.'
-            });
-            this.GetDatabyDateSelection(this.selectedTab, this.days);
-            if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
-              this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
-            }
+            this.saveTask(task);
           }
         } else {
           this.UpdateComment(Commentobj.comment, task);
@@ -545,7 +532,25 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     });
   }
 
-  // *********************************************************************************************************
+  async saveTask(task) {
+    this.loaderenable = true;
+    this.allTasks = [];
+    const response = await this.myDashboardConstantsService.CompleteTask(task);
+    if (response) {
+      this.loaderenable = false;
+      this.GetDatabyDateSelection(this.selectedTab, this.days);
+      this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
+    } else {
+      this.allTasks = [];
+      this.messageService.add({
+        key: 'custom', severity: 'success', summary: 'Success Message',
+        detail: task.Title + 'Task Updated Successfully.'
+      });
+      this.GetDatabyDateSelection(this.selectedTab, this.days);
+    }
+  }
+
+  // *************************************************************************************************************************************
   //  save / Update task comment
   // *********************************************************************************************************
 
@@ -612,9 +617,15 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
           icon: 'pi pi-exclamation-triangle',
           accept: () => {
 
-            this.loaderenable = true;
-            this.allTasks = [];
-            this.callComplete(task);
+            // this.loaderenable = true;
+            // this.allTasks = [];
+            // this.callComplete(task);
+            task.Status = 'Completed';
+            if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
+              this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
+            } else {
+              this.saveTask(task);
+            }
           },
           reject: () => {
           }
@@ -631,25 +642,25 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     }
   }
 
-  async callComplete(task) {
-    task.Status = 'Completed';
-    const response = await this.myDashboardConstantsService.CompleteTask(task);
-    if (response) {
-      this.loaderenable = false;
-      this.GetDatabyDateSelection(this.selectedTab, this.days);
-      this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
-    } else {
-      this.messageService.add({
-        key: 'custom', severity: 'success', summary: 'Success Message',
-        detail: task.Title + ' - Task Updated Successfully.'
-      });
-      this.GetDatabyDateSelection(this.selectedTab, this.days);
-      if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
-        this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
-      }
-    }
+  // async callComplete(task) {
+  //   task.Status = 'Completed';
+  //   const response = await this.myDashboardConstantsService.CompleteTask(task);
+  //   if (response) {
+  //     this.loaderenable = false;
+  //     this.GetDatabyDateSelection(this.selectedTab, this.days);
+  //     this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
+  //   } else {
+  //     this.messageService.add({
+  //       key: 'custom', severity: 'success', summary: 'Success Message',
+  //       detail: task.Title + ' - Task Updated Successfully.'
+  //     });
+  //     this.GetDatabyDateSelection(this.selectedTab, this.days);
+  //     if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
+  //       this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
+  //     }
+  //   }
 
-  }
+  // }
 
   optionFilter(event: any) {
     if (event.target.value) {

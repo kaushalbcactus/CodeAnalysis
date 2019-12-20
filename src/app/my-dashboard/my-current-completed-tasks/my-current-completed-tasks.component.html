@@ -140,4 +140,4 @@
 
 <router-outlet></router-outlet>
 
-<app-feedback-popup #feedbackPopup></app-feedback-popup>
+<app-feedback-popup #feedbackPopup (popupClosed)='saveTask($event)' ></app-feedback-popup>

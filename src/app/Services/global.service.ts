@@ -50,7 +50,8 @@ export class GlobalService {
     reviewTask: {
       ID: 0,
       Title: ''
-    }
+    },
+    currentTask: {}
   };
 
   /**
@@ -81,7 +82,8 @@ export class GlobalService {
     reviewTask: {
       ID: 0,
       Title: ''
-    }
+    },
+    currentTask: {}
   };
 
   public personalFeedback = {
