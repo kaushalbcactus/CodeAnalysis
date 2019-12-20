@@ -712,25 +712,11 @@ export class MyTimelineComponent implements OnInit {
             header: 'Confirmation',
             icon: 'pi pi-exclamation-triangle',
             accept: async () => {
-              this.SelectedStatus = undefined;
-              this.taskdisplay = false;
-              this.CalendarLoader = true;
-              const response = await this.myDashboardConstantsService.CompleteTask(task);
-
-              if (response) {
-                this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
-
+              if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1) {
+                this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
               } else {
-                this.messageService.add({
-                  key: 'custom', severity: 'success', summary: 'Success Message',
-                  detail: task.Title + 'Task updated successfully.'
-                });
-
-                if (task.PrevTasks && task.PrevTasks.indexOf(';#') === -1 && task.Task.indexOf('Review-') > -1 && task.Status === 'Completed') {
-                  this.myDashboardConstantsService.callQMSPopup(task, this.feedbackPopupComponent);
-                }
+                this.saveTask(task);
               }
-              this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start, this.fullCalendar.calendar.state.dateProfile.currentRange.end);
             },
             reject: () => {
               task.Status = earlierStaus;
@@ -778,6 +764,23 @@ export class MyTimelineComponent implements OnInit {
     }
   }
 
+  async saveTask(task) {
+    this.SelectedStatus = undefined;
+    this.taskdisplay = false;
+    this.CalendarLoader = true;
+    const response = await this.myDashboardConstantsService.CompleteTask(task);
+
+    if (response) {
+      this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
+
+    } else {
+      this.messageService.add({
+        key: 'custom', severity: 'success', summary: 'Success Message',
+        detail: task.Title + 'Task updated successfully.'
+      });
+    }
+    this.getEvents(false, this.fullCalendar.calendar.state.dateProfile.currentRange.start, this.fullCalendar.calendar.state.dateProfile.currentRange.end);
+  }
   // ***************************************************************************************************
   // Update leave hours based on leave days
   // ***************************************************************************************************

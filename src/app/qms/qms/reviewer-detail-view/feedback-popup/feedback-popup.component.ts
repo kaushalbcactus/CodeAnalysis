@@ -13,6 +13,7 @@ export class FeedbackPopupComponent implements OnInit {
 
   @Output() bindTableEvent = new EventEmitter<{}>();
   @Output() setSuccessMessage = new EventEmitter<{}>();
+  @Output() popupClosed = new EventEmitter<{}>();
   @ViewChild('popupContent', {static: true}) popupContent: ElementRef;
   public popupByJS = false;
   public deliveryDashboardSharedObj = {};
@@ -328,13 +329,11 @@ export class FeedbackPopupComponent implements OnInit {
    *
    */
   closeFeedback() {
-    if (this.popupByJS) {
-      qmsFeedback.complete(this.deliveryDashboardSharedObj);
-    } else {
+      if (Object.keys(this.global.templateMatrix.currentTask).length === 0) {
+        this.popupClosed.emit(this.global.templateMatrix.currentTask);
+      }
       this.global.templateMatrix = JSON.parse(JSON.stringify(this.global.templateMatrix_copy));
-      // this.modalService.dismissAll();
       this.display = false;
-    }
   }
 
   /**
@@ -344,7 +343,6 @@ export class FeedbackPopupComponent implements OnInit {
    */
   openPopup(element: any) {
     this.display = true;
-    this.popupByJS = false;
     this.getTemplates();
     this.global.templateMatrix.task = element.title  ? element.title : element.taskTitle;
     this.global.templateMatrix.submilestones = element.subMilestones;
@@ -356,6 +354,7 @@ export class FeedbackPopupComponent implements OnInit {
     this.global.templateMatrix.reviewTaskDocUrl = element.reviewTaskDocUrl.length > 0 ?
                                                   element.reviewTaskDocUrl.join(';#') : '';
     this.global.templateMatrix.reviewTask = element.reviewTask ? element.reviewTask : '';
+    this.global.templateMatrix.currentTask = element.currentTask ? element.currentTask : '';
   }
 
  // #endregion ForRatingPopup

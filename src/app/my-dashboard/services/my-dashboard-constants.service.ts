@@ -1208,6 +1208,7 @@ export class MyDashboardConstantsService {
         taskTitle: previousItems[0].Title,
         taskID: previousItems[0].ID,
         reviewTaskDocUrl: reviewDocArray,
+        currentTask : currentTaskElement
       };
       qmsObj.openPopup(obj);
     }
