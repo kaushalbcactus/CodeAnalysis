@@ -7,6 +7,7 @@ import { MessageService, DialogService, ConfirmationService } from 'primeng/api'
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
     selector: 'app-add-author',
@@ -43,6 +44,7 @@ export class AddAuthorComponent implements OnInit {
         public pubsupportService: PubsuportConstantsService,
         private messageService: MessageService,
         private router: Router,
+        private common: CommonService
     ) { }
 
     ngOnInit() {
@@ -112,6 +114,8 @@ export class AddAuthorComponent implements OnInit {
     }
 
     async submit(dataEndpointArray, type: string) {
+
+        this.common.SetNewrelic('PubSupport', 'add-author', 'AddAuthor');
         const result = await this.spOperationsService.executeBatch(dataEndpointArray);
         let res: any = {};
         if (result.length) {

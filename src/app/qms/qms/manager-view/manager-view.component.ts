@@ -173,6 +173,8 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     managerComponent.getManagerResources.top = managerComponent.getManagerResources.top.replace('{{TopCount}}', '4500');
     managerComponent.getManagerResources.filter = managerComponent.getManagerResources.filter.replace('{{ManagerID}}', managerID);
     // tslint:disable: max-line-length
+
+    this.common.SetNewrelic('QMS', 'manager-view', 'getManagerResources');
     let resources = await this.spService.readItems(this.globalConstant.listNames.ResourceCategorization.name, managerComponent.getManagerResources);
     resources = resources.length > 0 ? resources : [];
     resources = resources.map(item => item)
@@ -197,6 +199,8 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     getResourceData.listName = 'UserInfo';
     getResourceData.type = 'GET';
     batchURL.push(getResourceData);
+
+    this.common.SetNewrelic('QMS', 'manager-view', 'GetAllResources');
     const arrResult = await this.spService.executeBatch(batchURL);
     let resources = arrResult.length > 0 ? arrResult[0].retItems : [];
     const managerInResourceIndex = resources.findIndex(r => r.UserName.ID === managerID);
@@ -312,6 +316,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     resources.forEach(element => {
       batchURL = [...batchURL, ...this.getScorecard(element.UserName.ID, topCount, startDate, endDate)];
     });
+    this.common.SetNewrelic('QMS', 'manager-view', 'getResourceRatingDetail');
     arrResourceScoreCards = await this.spService.executeBatch(batchURL);
     arrResourceScoreCards = arrResourceScoreCards.length > 0 ? arrResourceScoreCards.map(s => s.retItems) : [];
     for (const key in arrResourceScoreCards) {
@@ -347,6 +352,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
       Comments: feedback.comments,
       AssignedToId: feedback.userId
     };
+    this.common.SetNewrelic('QMS', 'manager-view', 'addScorecardItem');
     const resp = await this.spService.createItem(this.globalConstant.listNames.Scorecard.name, scorecardDetails,
       this.globalConstant.listNames.Scorecard.type);
     return resp;

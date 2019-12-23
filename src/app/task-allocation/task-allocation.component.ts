@@ -106,12 +106,10 @@ export class TaskAllocationComponent implements OnInit {
 
 
   async currentUserGroup() {
-    const currentUser = await this.sPOperationService.getUserInfo(this.globalObject.currentUser.userId);
-    // this.globalObject.currentUser.userId = currentUser.Id;
-    // this.globalObject.currentUser.email = currentUser.Email;
-    // this.globalObject.currentUser.title = currentUser.Title;
 
-    // const curruentUsrInfo = await this.spServices.getCurrentUser();
+    this.commonService.SetNewrelic('TaskAllocation', 'task-allocation', 'CurrentUser');
+    const currentUser = await this.sPOperationService.getUserInfo(this.globalObject.currentUser.userId);
+ 
     this.globalObject.currentUser.loggedInUserInfo = currentUser.Groups.results;
 
     this.globalObject.currentUser.loggedInUserInfo.forEach(element => {
@@ -147,6 +145,7 @@ export class TaskAllocationComponent implements OnInit {
     if (code || textCode) {
       const projCode = code !== undefined ? code : textCode;
       this.projectCode = projCode;
+      this.commonService.SetNewrelic('TaskAllocation', 'task-allocation', 'getProjectDetails');
       const project = await this.commonService.getProjectResources(this.projectCode, true, false);
       if (project.length <= 0) {
         this.errormessage = 'Project code doesn\'t exist. Please verify if it is correct.';
@@ -191,13 +190,10 @@ export class TaskAllocationComponent implements OnInit {
   // Central Group
   // ***********************************************************************************************************************************
   public async checkIfAccessAllowedToUser(code) {
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
+   
     const checkAccessCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.checkAccess);
     checkAccessCall.filter = checkAccessCall.filter.replace(/{{code}}/gi, code);
-    // const checkAccessUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', checkAccessCall);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, checkAccessUrl);
-    // const project = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.commonService.SetNewrelic('TaskAllocation', 'task-allocation', 'checkIfAccessAllowedToUser');
     const project = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name,  checkAccessCall);
     let arrayOperationResources;
     if (project.length > 0) {

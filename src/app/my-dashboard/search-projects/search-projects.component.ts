@@ -298,6 +298,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
       // const ProjectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', Project);
       // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectUrl);
       // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+      this.commonService.SetNewrelic('MyDashboard', 'SearchProject', 'GetProjectInfoByProjectCode');
       this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, Project);
       if (this.response.length > 0) {
         this.ProjectList = this.response;
@@ -410,6 +411,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     batchUrl.push(ProjectResources);
 
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.commonService.SetNewrelic('MyDashboard', 'SearchProject', 'GetProjectResourcesByProjectCode');
     const result = await this.spServices.executeBatch(batchUrl);
     const prjResInfo = result.length > 0 ? result[0].retItems : [];
     const prjResReponse = result.length > 1 ? result[1].retItems : [];

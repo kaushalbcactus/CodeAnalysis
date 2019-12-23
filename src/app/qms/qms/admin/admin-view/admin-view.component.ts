@@ -121,6 +121,7 @@ export class AdminViewComponent implements OnInit {
         // Fetch all active resources
         const adminComponent = JSON.parse(JSON.stringify(this.qmsConstant.AdminViewComponent));
         adminComponent.getResources.top = adminComponent.getResources.top.replace('{{TopCount}}', '4500');
+        this.commonService.SetNewrelic('QMS', 'admin', 'getResourceDetails');
         const arrResult = await this.spService.readItems(this.globalConstant.listNames.ResourceCategorization.name,
           adminComponent.getResources);
         this.resources = arrResult.length > 0 ? arrResult : [];
@@ -226,6 +227,7 @@ export class AdminViewComponent implements OnInit {
     adminComponent.resourceTaskUrl.filter = adminComponent.resourceTaskUrl.filter.replace('{{PrevMonthDate}}', filterDate)
       .replace('{{resourceID}}', userID)
       .replace('{{TaskType}}', this.filterObj.selectedTaskType.value);
+    this.commonService.SetNewrelic('QMS', 'admin', 'CurrentUserInfo');
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.Schedules.name,
       adminComponent.resourceTaskUrl);
     const arrTasks = arrResult.length > 0 ? arrResult : [];
@@ -280,6 +282,7 @@ export class AdminViewComponent implements OnInit {
         projcode.push(element.ProjectCode);
       }
     });
+    this.commonService.SetNewrelic('QMS', 'admin', 'GetProjectInfo');
     let arrResult = await this.spService.executeBatch(batchURL);
     arrResult = arrResult.length > 0 ? arrResult.map(p => p.retItems.length ? p.retItems[0] : {}) : [];
     return arrResult;

@@ -95,6 +95,8 @@ export class SPOperationService {
       FromEmailId: ffrom,
       CCEmailId: cc
     };
+
+    
     const result = await this.createItem(this.constants.listNames.SendEmail.name, data,
       this.constants.listNames.SendEmail.type);
     return this.parseRetSingle(result);

@@ -7,6 +7,7 @@ import { DatePipe } from '@angular/common';
 import { GlobalService } from 'src/app/Services/global.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { Table } from 'primeng/table';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-time-booking-dialog',
@@ -72,6 +73,7 @@ export class TimeBookingDialogComponent implements OnInit {
     private datePipe: DatePipe,
     public sharedObject: GlobalService,
     public spOperations: SPOperationService,
+    private commonService: CommonService
   ) { }
 
 
@@ -129,18 +131,12 @@ export class TimeBookingDialogComponent implements OnInit {
   async getAllProjects(client, rowData) {
     rowData.dbProjects = [{ label: 'Select Project', value: null }];
 
-    let projectInfoFilter = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
+    const projectInfoFilter = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
     projectInfoFilter.filter += " and (ClientLegalEntity eq '" + client + "')";
+
+    this.commonService.SetNewrelic('MyDashboard', 'timeBooking-dialog', 'GetProjectInfoByClient');
     this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInfoFilter);
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
-    // const ProjectInformations = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
-    // // tslint:disable-next-line: quotemark
-    // ProjectInformations.filter += " and (ClientLegalEntity eq '" + client + "')";
-    // const ProjectInformationsUrl = this.spServices.getReadURL('' +
-    //   this.constants.listNames.ProjectInformation.name + '', ProjectInformations);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectInformationsUrl);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+
     const dbProjectInformations = this.response.length > 0 ?
       this.response.map(o => new Object({ label: o.ProjectCode + ' (' + o.WBJID + ')', value: o.ProjectCode })) : [];
     rowData.dbProjects.push.apply(rowData.dbProjects, dbProjectInformations);
@@ -165,10 +161,9 @@ export class TimeBookingDialogComponent implements OnInit {
       (this.MainminDate.getDate() < 10 ? '0' + this.MainminDate.getDate() : this.MainminDate.getDate()) + 'T23:59:00.000Z';
 
     AllMilestones.filter = AllMilestones.filter.replace(/{{projectCode}}/gi, projectCode).replace(/{{DateString}}/gi, EndDate);
+    this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'GetMilestoneByRpojectCode');
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, AllMilestones);
-    // const AllMilestonesUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', AllMilestones);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, AllMilestonesUrl);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+
     const dbAllMilestones = this.response.length > 0 ? await this.getSubMilestoneMilestones(this.response) : [];
     rowData.dbMilestones.push.apply(rowData.dbMilestones, dbAllMilestones);
 
@@ -209,7 +204,8 @@ export class TimeBookingDialogComponent implements OnInit {
 
 
   // *************************************************************************************************
-  //  Get week days   //*************************************************************************************************
+  //  Get week days
+  //*************************************************************************************************
 
 
   getweekDates(status) {
@@ -289,10 +285,8 @@ export class TimeBookingDialogComponent implements OnInit {
     AllMilestones.filter += AllMilestones.filterNotCompleted;
 
     AllMilestones.filter += AllMilestones.filterDate.replace(/{{startDateString}}/gi, startDate).replace(/{{endDateString}}/gi, endDate);
-    // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', AllMilestones);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
 
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'GetSchedulesByUserId');
     this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, AllMilestones);
     this.allTasks = this.response.length > 0 ? this.response : [];
 
@@ -460,6 +454,7 @@ export class TimeBookingDialogComponent implements OnInit {
     });
 
     ProjectInformation.filter = ProjectInformationFilter;
+    this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'GetProjectInfoByProjectCodes');
     this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, ProjectInformation);
     // const projectInfoUrl = this.spServices.getReadURL('' + this.constants.listNames.projectInfo.name + '', ProjectInformation);
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectInfoUrl);
@@ -536,8 +531,10 @@ export class TimeBookingDialogComponent implements OnInit {
           existingObj.TimeSpentPerDay = timeSpentString;
           existingObj.TaskComments = dbTasks[i].Comments;
           count++;
-          await
-            this.spOperations.updateItem(this.constants.listNames.Schedules.name, existingObj.ID, existingObj, this.constants.listNames.Schedules.type);
+
+          this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'updateSchedule');
+          await this.spOperations.updateItem(this.constants.listNames.Schedules.name, existingObj.ID, existingObj,
+            this.constants.listNames.Schedules.type);
         }
       } else {
         if (dbTasks[i].Entity) {
@@ -583,6 +580,7 @@ export class TimeBookingDialogComponent implements OnInit {
               };
               count++;
               const folderUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/Lists/Schedules/' + dbTasks[i].ProjectCode;
+              this.commonService.SetNewrelic('MyDashboard', 'time-bookingDialog', 'CreateAndMoveSchedule');
               await this.spServices.createItemAndMove(this.constants.listNames.Schedules.name, obj, this.constants.listNames.Schedules.type, folderUrl);
               // await this.spServices.createAndMove(this.constants.listNames.Schedules.name, obj, folderUrl);
             }

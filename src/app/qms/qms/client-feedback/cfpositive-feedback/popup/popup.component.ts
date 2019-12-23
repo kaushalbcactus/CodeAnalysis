@@ -4,6 +4,7 @@ import { ConstantsService } from '../../../../../Services/constants.service';
 import { SPOperationService } from '../../../../../Services/spoperation.service';
 import { SPCommonService } from '../../../../../Services/spcommon.service';
 import { QMSConstantsService } from '../../../services/qmsconstants.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-popup',
@@ -74,8 +75,8 @@ export class PopupComponent implements OnInit {
     listName: ''
   };
   // tslint:disable: max-line-length
-  constructor(private global: GlobalService, private globalConstant: ConstantsService,
-              private spService: SPOperationService, private spcommon: SPCommonService, private qmsConstant: QMSConstantsService) {
+  constructor(private global: GlobalService, private globalConstant: ConstantsService, private commonService: CommonService,
+    private spService: SPOperationService, private spcommon: SPCommonService, private qmsConstant: QMSConstantsService) {
   }
 
   ngOnInit() {
@@ -106,6 +107,7 @@ export class PopupComponent implements OnInit {
     getClientItemData.listName = this.globalConstant.listNames.ClientLegalEntity.name;
     getClientItemData.type = 'GET';
     batchURL.push(getClientItemData);
+    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition-popup', 'GetResourceDetails');
     const arrResult = await this.spService.executeBatch(batchURL);
     const detail = arrResult && arrResult.length > 0 && arrResult[0].length > 0 ? arrResult[0][0] : arrResult[1].length > 0 ?
       arrResult[1][0] : [];
@@ -152,6 +154,8 @@ export class PopupComponent implements OnInit {
    * @param pfDetails- detals that needs to be updated
    */
   update(pfDetails) {
+
+    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'updatepf');
     this.spService.updateItem(this.globalConstant.listNames.PositiveFeedbacks.name, this.pf.pfID, pfDetails);
   }
 
@@ -192,13 +196,14 @@ export class PopupComponent implements OnInit {
       // Send updated pf to PF component and update CD
       this.bindTableEvent.emit(this.pf);
       // tslint:disable-next-line
-      this.setSuccessMessage.emit({type:'success', msg:'Success', detail:'PF Tagged Successfully!'});
+      this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'PF Tagged Successfully!' });
       const createPFTemplate = await this.getMailContent(this.qmsConstant.EmailTemplates.PF.CreatePositiveFeedback);
       if (createPFTemplate.length > 0) {
         let createMailContent = createPFTemplate[0].Content;
         const createMailSubject = this.pf.projectCode + '(#' + this.pf.pfID + '): Positive Feedback';
         const strTo = allDeliveryEmails.join(',');
         createMailContent = this.replaceContent(createMailContent, '@@Val1@@', this.global.sharePointPageObject.webAbsoluteUrl + '/quality#/qms/clientFeedback/cfpositiveFeedback');
+        this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'sendMail');
         this.spService.sendMail(strTo, this.global.currentUser.email, createMailSubject, createMailContent, this.global.currentUser.email);
       }
       this.close();
@@ -220,10 +225,14 @@ export class PopupComponent implements OnInit {
         mailTemplate.type = 'GET';
         batchURL.push(mailTemplate);
       });
+
+      this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition-popup', 'GetMailContent');
       arrResult = await this.spService.executeBatch(batchURL);
     } else {
       const common = this.qmsConstant.common;
       common.getMailTemplate.filter = common.getMailTemplate.filter.replace('{{templateName}}', arrTemplateName);
+
+      this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition-popup', 'GetMailContent');
       const templateData = await this.spService.readItems(this.globalConstant.listNames.MailContent.name,
         common.getMailTemplate);
       arrResult = templateData.length > 0 ? templateData : [];
@@ -240,6 +249,7 @@ export class PopupComponent implements OnInit {
       const cdComponent = JSON.parse(JSON.stringify(this.qmsConstant.ClientFeedback.ClientDissatisfactionComponent));
       const tagItemsUrl = group === 'Project' ? cdComponent.getOpenProjects : cdComponent.getClients;
       const tagListName = group === 'Project' ? this.globalConstant.listNames.ProjectInformation.name : this.globalConstant.listNames.ClientLegalEntity.name;
+      this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition-popup', 'GetSelectedGroupItems');
       let items = await this.spService.readItems(tagListName, tagItemsUrl);
       items = items.length > 0 ? items : [];
       this.pf.tagGroupItems = [...items];
@@ -336,7 +346,7 @@ export class PopupComponent implements OnInit {
       }
       this.update(pfDetails);
       this.bindTableEvent.emit(this.pf);
-      this.setSuccessMessage.emit({type:'success', msg:'Success', detail:'Positive feedback '+  this.pf.Status +'!'});
+      this.setSuccessMessage.emit({ type: 'success', msg: 'Success', detail: 'Positive feedback ' + this.pf.Status + '!' });
       this.close();
       this.hidePopupLoader = true;
       this.hidePopupTable = false;

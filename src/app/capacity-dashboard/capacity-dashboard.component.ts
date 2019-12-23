@@ -76,6 +76,8 @@ export class CapacityDashboardComponent implements OnInit {
     resourcesGet.listName = this.constants.listNames.ResourceCategorization.name;
     batchURL.push(resourcesGet);
 
+    this.commonService.SetNewrelic('CapacityDashboard', 'CapacityDashboard', 'GetResourceCategorization');
+
     const arrResults = await this.spServices.executeBatch(batchURL);
 
     this.mainloaderenable = false;
@@ -200,25 +202,7 @@ export class CapacityDashboardComponent implements OnInit {
     } else if (arrayType === 'resource') {
 
     } else {
-      // this.Buckets = this.commonService.sortData(this.sharedObject.unique(this.AlldbResources.filter(c => c.Bucket !== null).map(
-      //   o => new Object({ label: o.Bucket, value: o.Bucket })), ['label']));
 
-      // this.PracticeAreas = this.commonService.sortData(this.sharedObject.unique
-      //   (this.AlldbResources.filter(c => c.Practice_x0020_Area !== null).map(o => new Object({
-      //     label: o.Practice_x0020_Area,
-      //     value: o.Practice_x0020_Area,
-      //   })), ['label']));
-
-      // this.Skills = this.commonService.sortData(this.sharedObject.unique
-      //   (this.AlldbResources.filter(c => c.PrimarySkill !== null).map(o => new Object({
-      //     label: o.PrimarySkill,
-      //     value: o.PrimarySkill
-      //   })), ['label']));
-
-      // this.Resources = this.AlldbResources.filter(c => c.UserName.Title !== null)
-      //   .map(o => new Object({ label: o.UserName.Title, value: o }));
-
-      //this.searchCapacityForm.patchValue({ resources: null });
       this.searchCapacityForm.patchValue({ bucket: [], practicearea: [], skill: [], resources: [] });
     }
 

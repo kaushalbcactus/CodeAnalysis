@@ -160,7 +160,7 @@ export class ResourcesComponent implements OnInit {
         }
       }
     }
-
+    this.commonService.SetNewrelic('TaskAllocation', 'resources', 'SaveResources');
     await this.spService.updateItem(this.constants.listNames.ProjectInformation.name, project.projectID,
       oBj, 'SP.Data.ProjectInformationListItem');
 
