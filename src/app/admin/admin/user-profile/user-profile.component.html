@@ -424,11 +424,21 @@
                 <div class="p-col-2"><span class="compulsory">*</span>Bucket</div>
                 <div class="p-col-4">
                     <p-dropdown placeholder="Select Bucket" [options]="adminDropDown.bucketArray"
-                        formControlName="bucket" filter="true" resetFilterOnHide="true">
+                        formControlName="bucket" filter="true" resetFilterOnHide="true" (onChange)="onBucketChange()">
                     </p-dropdown>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.bucket.errors">
                         <div *ngIf="addUser.controls.bucket.errors.required">Bucket is required</div>
                     </div>
+
+                    <div class="mt-5" *ngIf="date.isBucketDateActive">
+                        <p-calendar formControlName="BucketDate" placeholder="Date" showIcon="true"
+                            [readonlyInput]="true" [minDate]="minPastMonth" dateFormat="M dd, yy">
+                        </p-calendar>
+                        <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.BucketDate.errors">
+                            <div *ngIf="addUser.controls.BucketDate.errors.required">Bucket Date is required</div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="p-col-2"><span class="compulsory">*</span>Practice Area</div>
                 <div class="p-col-4">
@@ -471,7 +481,7 @@
                     </div>
                     <div class="mt-5" *ngIf="date.isTimeZoneEffectiveDateActive">
                         <p-calendar formControlName="timeZoneEffectiveDate" placeholder="Time Zone Date" showIcon="true"
-                            [readonlyInput]="true" [minDate]="minPastMonth" dateFormat="M dd, yy"></p-calendar>
+                            [readonlyInput]="true" [minDate]="minEffectiveDate" dateFormat="M dd, yy"></p-calendar>
                         <div class="error"
                             *ngIf="upObject.isFormSubmit && addUser.controls.timeZoneEffectiveDate.errors">
                             <div *ngIf="addUser.controls.timeZoneEffectiveDate.errors.required">TimeZone Effective Date
@@ -495,7 +505,8 @@
                 <div class="p-col-2"><span class="compulsory">*</span>Go Live Date</div>
                 <div class="p-col-4">
                     <p-calendar formControlName="liveDate" placeholder="Go Live Date" showIcon="true"
-                        [readonlyInput]="true" dateFormat="M dd, yy">
+                        [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{yearRange}}"
+                        dateFormat="M dd, yy">
                     </p-calendar>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.liveDate.errors">
                         <div *ngIf="addUser.controls.liveDate.errors.required">Go Live Date is required</div>
@@ -534,7 +545,7 @@
                 <div class="p-col-2"><span class="compulsory">*</span>MaxHrs</div>
                 <div class="p-col-4">
                     <input class="mr-5" type="number" formControlName="maxHrs" step="0.5" value="0" placeholder="MaxHrs"
-                        onchange="validity.valid||(value='0');" pInputText appNumberOnly>
+                        onchange="validity.valid||(value='1');" (change)="onMaxHrsChange()" pInputText appNumberOnly>
                     <!-- <input type="number" class="form-control budgetHr" required="required" min="0" value="0" onchange="validity.valid||(value='0');" step="0.25" *ngIf=" rowData.editMode" required="required" [id]="rowData.ID" (ngModelChange)="modelChanged(rowData,Slot)" [(ngModel)]="rowData.EstimatedTime">  -->
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.maxHrs.errors">
                         <div *ngIf="addUser.controls.maxHrs.errors.required">MaxHrs is required</div>
@@ -542,9 +553,23 @@
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.maxHrs.errors">
                         <div *ngIf="addUser.controls.maxHrs.errors.pattern">Positive Number is required</div>
                     </div>
-                    <div class="error" *ngIf="addUser.controls.maxHrs.hasError('max')">
-                        <span>Max Hours can not be greater than 24</span>
+
+                    <div class="error" *ngIf="addUser.controls.maxHrs.hasError('min')">
+                        <span>Min Hours can not be less than 1</span>
                     </div>
+                    <div class="error" *ngIf="addUser.controls.maxHrs.hasError('max')">
+                        <span>Max Hours can not be greater than 12</span>
+                    </div>
+
+                    <div class="mt-5" *ngIf="date.isMaxHrsDateActive">
+                        <p-calendar formControlName="MaxHrsDate" placeholder="Date" showIcon="true"
+                            [readonlyInput]="true" [minDate]="minPastMonth" dateFormat="M dd, yy">
+                        </p-calendar>
+                        <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.MaxHrsDate.errors">
+                            <div *ngIf="addUser.controls.MaxHrsDate.errors.required">MaxHrs Date is required</div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="p-col-2"><span class="compulsory">*</span>Primary Skill</div>
                 <div class="p-col-4">
@@ -605,8 +630,9 @@
             <div class="p-grid mt-20">
                 <div class="p-col-2"><span class="compulsory">*</span>Task</div>
                 <div class="p-col-4">
-                    <p-multiSelect [options]="adminDropDown.taskArray" defaultLabel="Select Task" formControlName="task"
-                        (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                    <p-multiSelect [options]="adminDropDown.taskArray" defaultLabel="Select Task"
+                        [maxSelectedLabels]="1" formControlName="task" (keydown.enter)="$event.preventDefault()"
+                        filter="true" resetFilterOnHide="true">
                     </p-multiSelect>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.task.errors">
                         <div *ngIf="addUser.controls.task.errors.required">Task is required</div>
@@ -614,9 +640,9 @@
                 </div>
                 <div class="p-col-2">Account</div>
                 <div class="p-col-4">
-                    <p-multiSelect [options]="adminDropDown.accountArray" defaultLabel="Select Account"
-                        formControlName="account" (keydown.enter)="$event.preventDefault()" filter="true"
-                        resetFilterOnHide="true">
+                    <p-multiSelect [options]="adminDropDown.accountArray" [maxSelectedLabels]="1"
+                        defaultLabel="Select Account" formControlName="account"
+                        (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
                     </p-multiSelect>
                 </div>
 
@@ -624,14 +650,15 @@
             <div class="p-grid mt-20">
                 <div class="p-col-2">Deliverable</div>
                 <div class="p-col-4">
-                    <p-multiSelect [options]="adminDropDown.deliverableArray" defaultLabel="Select Deliverable"
-                        formControlName="deliverable" (keydown.enter)="$event.preventDefault()" filter="true"
-                        resetFilterOnHide="true" (onPanelHide)="onDeliverableChange()">
+                    <p-multiSelect [options]="adminDropDown.deliverableArray" [maxSelectedLabels]="1"
+                        defaultLabel="Select Deliverable" formControlName="deliverable"
+                        (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
+                        (onPanelHide)="onDeliverableChange()">
                     </p-multiSelect>
                 </div>
                 <div class="p-col-2">Deliverable Exclusion</div>
                 <div class="p-col-4">
-                    <p-multiSelect [options]="adminDropDown.deliverableExclusionArray"
+                    <p-multiSelect [options]="adminDropDown.deliverableExclusionArray" [maxSelectedLabels]="1"
                         defaultLabel="Select Deliverable Exclusion" formControlName="deliverableExclusion"
                         (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
                     </p-multiSelect>
@@ -643,14 +670,14 @@
                 <div class="p-col-4">
                     <p-multiSelect [options]="adminDropDown.taArray" defaultLabel="Select TA" formControlName="ta"
                         (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
-                        (onPanelHide)="onTAChange()">
+                        [maxSelectedLabels]="1" (onPanelHide)="onTAChange()">
                     </p-multiSelect>
                 </div>
                 <div class="p-col-2">TA Exclusion</div>
                 <div class="p-col-4">
                     <p-multiSelect [options]="adminDropDown.taExclusionArray" defaultLabel="Select TA Exclusion"
                         formControlName="taExclusion" (keydown.enter)="$event.preventDefault()" filter="true"
-                        resetFilterOnHide="true">
+                        [maxSelectedLabels]="1" resetFilterOnHide="true">
                     </p-multiSelect>
                 </div>
             </div>

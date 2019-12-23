@@ -80,7 +80,9 @@ export class UserProfileComponent implements OnInit {
     isTimeZoneEffectiveDateActive: false,
     isPrimarySkillEffectiveDateActive: false,
     isSkillLevelEffectiveDateActive: false,
-    isDateExit: false
+    isDateExit: false,
+    isBucketDateActive: false,
+    isMaxHrsDateActive: false
   };
   userProfileColArray = {
     User: [],
@@ -99,6 +101,7 @@ export class UserProfileComponent implements OnInit {
     ActionDate: [],
     Details: []
   };
+  minEffectiveDate = new Date();
   public users: PeoplePickerUser[];
   public multipleUsers: PeoplePickerUser[];
   spuser: PeoplePickerUser;
@@ -188,7 +191,7 @@ export class UserProfileComponent implements OnInit {
       inCapacity: ['', Validators.required],
       isActive: ['', null],
       manager: ['', Validators.required],
-      maxHrs: ['', [Validators.required, Validators.max(24)]],
+      maxHrs: ['', [Validators.required, Validators.max(12), Validators.min(1)]],
       // '^((?:[1-9]|1[0-9]|2[0-3])(?:\.\d[05]0?)(?:\.\d{1,2})?|24?)$'
       // maxHrs: ['', [Validators.required, Validators.pattern('^[0-9]*$'), Validators.max(24)]],
       pooled: ['', Validators.required],
@@ -201,6 +204,8 @@ export class UserProfileComponent implements OnInit {
       task: ['', Validators.required],
       timeZone: ['', Validators.required],
       practiceArea: ['', Validators.required],
+      BucketDate: [new Date(), null],
+      MaxHrsDate: [new Date(), null],
       managerEffectiveDate: ['', null],
       practiceAreaEffectiveDate: ['', null],
       timeZoneEffectiveDate: ['', null],
@@ -358,7 +363,7 @@ export class UserProfileComponent implements OnInit {
         userObj.ManagerEmail = item.Manager.EMail;
         userObj.ManagerId = item.Manager.ID;
         userObj.Bucket = item.Bucket;
-        userObj.PracticeArea = item.Practice_x0020_Area;
+        userObj.PracticeArea = item.Practice_x0020_Area.replace(';#', ',');
         userObj.TimeZone = item.TimeZone;
         userObj.DateOfJoining = item.DateOfJoining;
         userObj.GoLiveDate = item.GoLiveDate;
@@ -1043,6 +1048,7 @@ export class UserProfileComponent implements OnInit {
    * @param addUserForm The addUserForm as parameters which is required for fetching the form value.
    */
   async saveUser(addUserForm) {
+    console.log(addUserForm.value);
     if (addUserForm.valid) {
       console.log(addUserForm.value);
       /**
@@ -1062,8 +1068,7 @@ export class UserProfileComponent implements OnInit {
         });
         return false;
       }
-      if (new Date(addUserForm.value.dateofjoin) >
-        new Date(addUserForm.value.liveDate)) {
+      if (new Date(addUserForm.value.dateofjoin) > new Date(addUserForm.value.liveDate)) {
         this.messageService.add({
           key: 'adminCustom', severity: 'error',
           summary: 'Error Message', detail: 'Date of joining cannot be greater than go live date.'
@@ -1224,7 +1229,7 @@ export class UserProfileComponent implements OnInit {
       userObj.ManagerEmail = item.Manager.EMail;
       userObj.ManagerId = item.Manager.ID;
       userObj.Bucket = item.Bucket;
-      userObj.PracticeArea = item.Practice_x0020_Area;
+      userObj.PracticeArea = item.Practice_x0020_Area.replace(';#', ',');
       userObj.TimeZone = item.TimeZone;
       userObj.DateOfJoining = item.DateOfJoining;
       userObj.GoLiveDate = item.GoLiveDate;
@@ -1461,7 +1466,8 @@ export class UserProfileComponent implements OnInit {
       ManagerId: managerId,
       ManagerText: managerText,
       Bucket: formObj.bucket,
-      Practice_x0020_Area: formObj.practiceArea,
+      // Practice_x0020_Area: formObj.practiceArea,
+      Practice_x0020_Area: formObj.practiceArea.join(';#'),
       TimeZoneId: formObj.timeZone,
       DateOfJoining: formObj.dateofjoin,
       GoLiveDate: formObj.liveDate,
@@ -1471,6 +1477,8 @@ export class UserProfileComponent implements OnInit {
       MaxHrs: +formObj.maxHrs,
       PrimarySkill: formObj.primarySkill,
       SkillLevelId: formObj.skillLevel,
+      BucketEffectiveDate: formObj.BucketDate,
+      MaxHrsEffectiveDate: formObj.MaxHrsDate,
       TasksId: {
         results: formObj.task
       },
@@ -1592,6 +1600,27 @@ export class UserProfileComponent implements OnInit {
       }
     }
   }
+
+  onBucketChange() {
+    const bucketDateControl = this.addUser.get('BucketDate');
+    if (this.showeditUser && this.currUserObj.Bucket !== this.addUser.value.bucket) {
+      bucketDateControl.setValidators([Validators.required]);
+      bucketDateControl.updateValueAndValidity();
+      this.date.isBucketDateActive = true;
+      this.addUser.get('BucketDate').setValue(new Date());
+      this.addUser.get('BucketDate').enable();
+    } else if (this.showeditUser && this.currUserObj.Bucket === this.addUser.value.bucket) {
+      this.date.isBucketDateActive = true;
+      const userObj = this.currUserObj;
+      this.addUser.get('BucketDate').setValue(this.currUserObj.BucketEffectiveDate ? new Date(this.currUserObj.BucketEffectiveDate) : new Date());
+      this.addUser.get('BucketDate').disable();
+    } else {
+      bucketDateControl.clearValidators();
+      this.date.isBucketDateActive = false;
+    }
+  }
+
+
   /**
    * Construct a method to trigger whenever `Practice Area` field value changes.
    *
@@ -1601,6 +1630,7 @@ export class UserProfileComponent implements OnInit {
    * `Practice Area Effective Date` field will be visible and it's became mandatory field.
    */
   onPracticeAreaChange() {
+    console.log('this.addUser.value.practiceArea ', this.addUser.value.practiceArea);
     const practiceAreaEffectiveDateControl = this.addUser.get('practiceAreaEffectiveDate');
     if (this.showeditUser && this.currUserObj.PracticeArea !== this.addUser.value.practiceArea) {
       practiceAreaEffectiveDateControl.setValidators([Validators.required]);
@@ -1611,7 +1641,7 @@ export class UserProfileComponent implements OnInit {
     } else if (this.showeditUser && this.currUserObj.PracticeArea === this.addUser.value.practiceArea) {
       this.date.isPracticeEffectiveDateActive = true;
       const userObj = this.currUserObj;
-      this.addUser.get('practiceAreaEffectiveDate').setValue(new Date(userObj.PracticeAreaEffectiveDate));
+      this.addUser.get('practiceAreaEffectiveDate').setValue(userObj.PracticeAreaEffectiveDate ? new Date(userObj.PracticeAreaEffectiveDate) : new Date());
       this.addUser.get('practiceAreaEffectiveDate').disable();
     } else {
       practiceAreaEffectiveDateControl.clearValidators();
@@ -1628,6 +1658,7 @@ export class UserProfileComponent implements OnInit {
    */
   onTimezoneChange() {
     const timeZoneEffectiveDateControl = this.addUser.get('timeZoneEffectiveDate');
+    this.minEffectiveDate = this.addUser.value.dateofjoin ? new Date(this.addUser.value.dateofjoin) : new Date();
     if (this.showeditUser && this.currUserObj.TimeZone.ID !== this.addUser.value.timeZone) {
       timeZoneEffectiveDateControl.setValidators([Validators.required]);
       timeZoneEffectiveDateControl.updateValueAndValidity();
@@ -1637,13 +1668,33 @@ export class UserProfileComponent implements OnInit {
     } else if (this.showeditUser && this.currUserObj.TimeZone.ID === this.addUser.value.timeZone) {
       this.date.isTimeZoneEffectiveDateActive = true;
       const userObj = this.currUserObj;
-      this.addUser.get('timeZoneEffectiveDate').setValue(new Date(userObj.TimeZoneEffectiveDate));
+      this.addUser.get('timeZoneEffectiveDate').setValue(userObj.TimeZoneEffectiveDate ? new Date(userObj.TimeZoneEffectiveDate) : new Date());
       this.addUser.get('timeZoneEffectiveDate').disable();
     } else {
       timeZoneEffectiveDateControl.clearValidators();
       this.date.isTimeZoneEffectiveDateActive = false;
     }
   }
+
+  onMaxHrsChange() {
+    const maxHrsDateControl = this.addUser.get('MaxHrsDate');
+    if (this.showeditUser && this.currUserObj.MaxHrs !== this.addUser.value.maxHrs) {
+      maxHrsDateControl.setValidators([Validators.required]);
+      maxHrsDateControl.updateValueAndValidity();
+      this.date.isMaxHrsDateActive = true;
+      this.addUser.get('MaxHrsDate').setValue(new Date());
+      this.addUser.get('MaxHrsDate').enable();
+    } else if (this.showeditUser && this.currUserObj.MaxHrs === this.addUser.value.maxHrs) {
+      this.date.isMaxHrsDateActive = true;
+      const userObj = this.currUserObj;
+      this.addUser.get('MaxHrsDate').setValue(this.currUserObj.MaxHrsEffectiveDate ? new Date(this.currUserObj.MaxHrsEffectiveDate) : new Date());
+      this.addUser.get('MaxHrsDate').disable();
+    } else {
+      maxHrsDateControl.clearValidators();
+      this.date.isMaxHrsDateActive = false;
+    }
+  }
+
   /**
    * Construct a method to trigger whenever `Primary Skill` field value changes.
    *
@@ -1749,6 +1800,8 @@ export class UserProfileComponent implements OnInit {
     this.date.isPrimarySkillEffectiveDateActive = false;
     this.date.isSkillLevelEffectiveDateActive = false;
     this.date.isTimeZoneEffectiveDateActive = false;
+    this.date.isBucketDateActive = false;
+    this.date.isMaxHrsDateActive = false;
     this.addUser.get('workMonday').setValue(true);
     this.addUser.get('workTuesday').setValue(true);
     this.addUser.get('workWednessday').setValue(true);
@@ -1797,6 +1850,8 @@ export class UserProfileComponent implements OnInit {
     this.date.isPrimarySkillEffectiveDateActive = false;
     this.date.isSkillLevelEffectiveDateActive = false;
     this.date.isTimeZoneEffectiveDateActive = false;
+    this.date.isBucketDateActive = false;
+    this.date.isMaxHrsDateActive = false;
     const userObj = this.currUserObj;
     this.customLabel = 'Update';
     this.addUser.controls.username.disable();
@@ -1822,24 +1877,61 @@ export class UserProfileComponent implements OnInit {
       DisplayText: userObj.Manager,
       EntityData: { Email: userObj.ManagerEmail, ID: userObj.ManagerId }
     }, { emitEvent: false });
-    this.addUser.get('bucket').setValue(userObj.Bucket);
-    this.addUser.get('practiceArea').setValue(userObj.PracticeArea);
-    this.addUser.get('timeZone').setValue(userObj.TimeZone.ID);
-    this.addUser.get('liveDate').setValue(userObj.GoLiveDate ? new Date(userObj.GoLiveDate) : new Date());
-    this.addUser.get('dateofjoin').setValue(userObj.DateOfJoining ? new Date(userObj.DateOfJoining) : new Date());
-    this.addUser.get('inCapacity').setValue(userObj.InCapacity);
-    this.addUser.get('designation').setValue(userObj.Designation);
-    this.addUser.get('pooled').setValue(userObj.Pooled);
-    this.addUser.get('maxHrs').setValue(userObj.MaxHrs);
-    this.addUser.get('primarySkill').setValue(userObj.PrimarySkill);
-    this.addUser.get('skillLevel').setValue(userObj.SkillLevel.ID);
-    this.addUser.get('role').setValue(userObj.Role);
-    this.addUser.get('readyTo').setValue(userObj.ReadyTo);
+
+    this.addUser.patchValue({
+      bucket: userObj.Bucket,
+      // practiceArea: userObj.PracticeArea,
+      timeZone: userObj.TimeZone.ID,
+      liveDate: userObj.GoLiveDate ? new Date(userObj.GoLiveDate) : new Date(),
+      dateofjoin: userObj.DateOfJoining ? new Date(userObj.DateOfJoining) : new Date(),
+      inCapacity: userObj.InCapacity,
+      designation: userObj.Designation,
+      pooled: userObj.Pooled,
+      maxHrs: userObj.MaxHrs,
+      primarySkill: userObj.PrimarySkill,
+      skillLevel: userObj.SkillLevel.ID,
+      role: userObj.Role,
+      readyTo: userObj.ReadyTo,
+    });
+
+    // this.addUser.get('bucket').setValue(userObj.Bucket);
+
+    // this.addUser.get('practiceArea').setValue();
+    // this.addUser.get('timeZone').setValue();
+    // this.addUser.get('liveDate').setValue();
+    // this.addUser.get('dateofjoin').setValue();
+    // this.addUser.get('inCapacity').setValue();
+    // this.addUser.get('designation').setValue();
+    // this.addUser.get('pooled').setValue();
+    // this.addUser.get('maxHrs').setValue();
+    // this.addUser.get('primarySkill').setValue();
+    // this.addUser.get('skillLevel').setValue();
+    // this.addUser.get('role').setValue();
+    // this.addUser.get('readyTo').setValue();
     // Get the lookup Id's in order to display it in multiselect.
     // To get the Id's call getId from common services.
+
+    // Convert Practice area(;#) to array
+    const paArray = userObj.PracticeArea ? userObj.PracticeArea.split(',') : [];
+    if (paArray.length) {
+      const val = [];
+      paArray.forEach(element => {
+        val.push(element);
+      });
+
+      this.addUser.patchValue({
+        practiceArea: val
+      });
+      // this.addUser.get('practiceArea').setValue(val);
+      // this.addUser.value.practiceArea.updateValueAndValidity();
+    }
+
     if (userObj.Task.results && userObj.Task.results.length) {
       const tempTaskArray = this.adminCommonService.getIds(userObj.Task.results);
-      this.addUser.get('task').setValue(tempTaskArray);
+      // this.addUser.get('task').setValue(tempTaskArray);
+      this.addUser.patchValue({
+        task: tempTaskArray
+      });
     }
     if (userObj.Account.results && userObj.Account.results.length) {
       const tempAccountArray = this.adminCommonService.getIds(userObj.Account.results);
