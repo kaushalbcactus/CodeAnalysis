@@ -28,7 +28,7 @@
         <tbody class="capacityBody">
             <tr *ngFor="let user of oCapacity.arrUserDetails">
 
-                <td [attr.colspan]="oCapacity.arrDateFormat.length + 3">
+                <td>
                     <table class="table-bordered table-striped tbl">
                         <tbody>
                             <tr class="UserTasksRow">
@@ -69,7 +69,7 @@
                                 </td>
                             </tr>
                             <tr [hidden]="user.dayTasks.length === 0" class="TaskPerDayRow">
-                                <td colspan="4">
+                                <td>
                                     <div class="innerTableLoader" style="padding-top: 5%;">
                                         <div id="modalInnerLoader"></div>
                                         <div id="modalInnerLoaderText">Loading...</div>
@@ -104,8 +104,8 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr *ngFor="let task of user.dayTasks">
-                                                <td>
+                                            <tr *ngFor="let task of user.dayTasks" class="UserTasksRow">
+                                                <td style="border: 1px solid #ddd;">
                                                     <span>{{task.title}} <span *ngIf='task.SubMilestones'> -
                                                             {{task.SubMilestones}} </span><span *ngIf='task.shortTitle'>({{task.shortTitle}})</span></span>
                                                 </td>
