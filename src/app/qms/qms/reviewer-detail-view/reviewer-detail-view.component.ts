@@ -140,6 +140,7 @@ export class ReviewerDetailViewComponent implements OnInit {
     const reviewerComponent = JSON.parse(JSON.stringify(this.qmsConstant.reviewerComponent));
     reviewerComponent.reviewerPendingTaskURL.top = reviewerComponent.reviewerPendingTaskURL.top.replace('{{TopCount}}', '' + itemCount);
     reviewerComponent.reviewerPendingTaskURL.filter = reviewerComponent.reviewerPendingTaskURL.filter.replace('{{PrevMonthDate}}', lastMonthDateString);
+    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getPendingRatedTasks');
     let arrReviewTasks = await this.spService.readItems(this.globalConstant.listNames.Schedules.name, reviewerComponent.reviewerPendingTaskURL);
     arrReviewTasks = arrReviewTasks.length > 0 ? arrReviewTasks.filter(t => new Date(t.DueDate).getTime() >= filterDate.getTime()) : [];
     // Get previous task project information - 2nd Query
@@ -188,6 +189,7 @@ export class ReviewerDetailViewComponent implements OnInit {
       IsRated: true
     };
     // Update review task rated 'yes' if this is last previous task not rated
+    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'updateTask');
     this.spService.updateItem(this.globalConstant.listNames.Schedules.name, taskDetail.ID, taskUpdateDetail);
   }
 
@@ -213,6 +215,8 @@ export class ReviewerDetailViewComponent implements OnInit {
         projcode.push(element.ProjectCode);
       }
     });
+
+    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getProjectInfo');
     let arrResult = await this.spService.executeBatch(batchURL);
     arrResult = arrResult.length > 0 ? arrResult.map(p => p.retItems.length ? p.retItems[0] : {}) : [];
     return arrResult;
@@ -249,6 +253,7 @@ export class ReviewerDetailViewComponent implements OnInit {
         });
       }
     });
+    this.commonService.SetNewrelic('QMS', 'ReviewDetails-View', 'getPreviousTasks');
     let result = await this.spService.executeBatch(batchURL);
     result = result.map(t => t.retItems);
     prevTasksDetail = [...prevTasksDetail, ...result];

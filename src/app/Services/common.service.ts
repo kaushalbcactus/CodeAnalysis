@@ -667,7 +667,7 @@ export class CommonService {
             grpResourceObj.type = 'GET';
             batchUrl.push(grpResourceObj);
         }
-
+       
         const arrResult = await this.spServices.executeBatch(batchUrl);
         this.response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
         if (this.response.length > 0) {

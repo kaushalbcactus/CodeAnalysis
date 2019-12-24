@@ -4,6 +4,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
 import { DynamicDialogRef, MessageService, DynamicDialogConfig } from 'primeng/api';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { CommonService } from 'src/app/Services/common.service';
 // import { Journal } from "./journal-interface";
 
 @Component({
@@ -21,6 +22,7 @@ export class CreateJournalComponent implements OnInit {
         private constantService: ConstantsService,
         private messageService: MessageService,
         public config: DynamicDialogConfig,
+        public common: CommonService
 
     ) { }
 
@@ -72,7 +74,7 @@ export class CreateJournalComponent implements OnInit {
             type: 'GET',
             listName: this.constantService.listNames.Journal.name
         }];
-
+        this.common.SetNewrelic('PubSupport', 'create-journal', 'getJournalList');
         const result = await this.spOperationsService.executeBatch(data);
         const res = result[0].retItems;
         if (res.hasError) {
@@ -127,6 +129,7 @@ export class CreateJournalComponent implements OnInit {
         }
     }
     async submitForm(data) {
+        this.common.SetNewrelic('PubSupport', 'create-journal', 'createJournal');
         const res = await this.spOperationsService.executeBatch(data);
         if (res) {
             this.psConstantService.pubsupportComponent.isPSInnerLoaderHidden = true;

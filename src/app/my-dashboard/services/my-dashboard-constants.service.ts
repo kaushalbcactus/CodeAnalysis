@@ -529,6 +529,8 @@ export class MyDashboardConstantsService {
       });
 
     }
+
+    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'getCurrentAndParentTask');
     const currentParentTasks = await this.spServices.executeBatch(batchURL);
     const parentTaskProp = { Status: 'In Progress', ActiveCA: 'Yes', __metadata: { type: this.constants.listNames.Schedules.type } };
     const parentTaskRes = currentParentTasks.length ? currentParentTasks[0].retItems[0] : null;
@@ -558,6 +560,7 @@ export class MyDashboardConstantsService {
               type: 'POST',
               listName: this.constants.listNames.EarlyTaskComplete.name
             });
+            this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'EarlyTaskNotification');
             const res = await this.spServices.executeBatch(batchURL);
           }
           parentTaskProp.Status = 'Completed';
@@ -592,6 +595,7 @@ export class MyDashboardConstantsService {
       type: 'PATCH',
       listName: this.constants.listNames.Schedules.name
     });
+    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'UpdateSlot');
     await this.spServices.executeBatch(postbatchURL);
   }
 
@@ -619,10 +623,8 @@ export class MyDashboardConstantsService {
     // const batchGuid = this.spServices.generateUUID();
     const project = Object.assign({}, this.mydashboardComponent.projectInfo);
     project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
+    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'getCurrentTaskProjectInformation');
     this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, project);
-    // const projectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', project);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectUrl);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     return this.response.length > 0 ? this.response[0] : {};
   }
 
@@ -722,6 +724,8 @@ export class MyDashboardConstantsService {
       // this.spServices.getBatchBodyGet(batchContents, batchGuid, jcReqUrl);
     }
     // this.response = await this.spServices.getDataByApi(batchGuid, batchContents);
+
+    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'ckeckSubmissionDetails');
     const arrResult = await this.spServices.executeBatch(batchUrl);
     this.response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
     this.jcSubId = undefined;
@@ -772,7 +776,7 @@ export class MyDashboardConstantsService {
       TaskComments: task.TaskComments,
     };
 
-    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'SaveTask');
+
     const newdata = task.IsCentrallyAllocated === 'Yes' ? { ...data, ActiveCA: 'No' } : { ...data };
     const taskObj = Object.assign({}, this.queryConfig);
     taskObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +task.ID);
@@ -1030,17 +1034,9 @@ export class MyDashboardConstantsService {
 
     });
 
-
-
-    // batchContents.push('--changeset_' + changeSetId + '--');
-    // const batchBody = batchContents.join('\r\n');
-    // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-    // batchBodyContent.push('--batch_' + batchGuid + '--');
-    // const batchBodyContents = batchBodyContent.join('\r\n');
-    // const response = await this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
+    this.common.SetNewrelic('MyDashboardConstantService', 'MyDashboard', 'SaveTask');
     await this.spServices.executeBatch(batchUrl);
     return undefined;
-    // this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task completed sucessfully.' });
   }
 
 
@@ -1057,7 +1053,7 @@ export class MyDashboardConstantsService {
 
     // this.Emailtemplate = response[0][0];
 
-    this.common.SetNewrelic('MyDashboard', 'MyDashboard', 'GetCLERCPIPC');
+    this.common.SetNewrelic('MyDashboard', 'MyDashboard', 'GetEmailTemplate');
     const common = this.mydashboardComponent.common;
     common.getMailTemplate.filter = common.getMailTemplate.filter.replace('{{templateName}}', 'NextTaskTemplate');
     const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
@@ -1074,18 +1070,11 @@ export class MyDashboardConstantsService {
 
   async getAllClients() {
 
+
     let ClientLegalEntities = Object.assign({}, this.mydashboardComponent.ClientLegalEntities);
     this.response = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, ClientLegalEntities);
 
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
-
-    // let ClientLegalEntities = Object.assign({}, this.mydashboardComponent.ClientLegalEntities);
-    // const ClientLegalEntitiesUrl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', ClientLegalEntities);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ClientLegalEntitiesUrl);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-
+   
     const tempClientLegalEntities = this.response.map(c => c.Title);
 
     const ClientLegalEntitiesResponse = tempClientLegalEntities.filter(function (item, pos) {
@@ -1187,6 +1176,7 @@ export class MyDashboardConstantsService {
 
     const tempArray = [];
     const reviewDocArray = [];
+    
     const documents = await this.common.getTaskDocument(folderUrl, documentsUrl);
     for (const doc in documents) {
       if (currentTaskElement.PrevTasks.indexOf(documents[doc].ListItemAllFields.TaskName) > -1 && documents[doc].ListItemAllFields.Status.indexOf('Complete') > -1) {

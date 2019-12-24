@@ -140,6 +140,7 @@ export class CreateTaskComponent implements OnInit {
     pInfoObj.listName = this.constantsService.listNames.ProjectInformation.name;
     pInfoObj.type = 'GET';
     batchUrl.push(pInfoObj);
+    this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'getFTEProjects');
     const res = await this.spOperationsService.executeBatch(batchUrl);
     this.fteProjectArrayList = res.length ? res[0].retItems : [];
 
@@ -243,7 +244,7 @@ export class CreateTaskComponent implements OnInit {
     taskObj.listName = this.constantsService.listNames.Schedules.name;
     taskObj.type = 'GET';
     batchUrl.push(taskObj);
-
+    this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'getSubmilestones');
     const res = await this.spOperationsService.executeBatch(batchUrl);
     this.subMilestonesArrayList = res.length ? res[0].retItems : [];
     this.taskArrayList = res.length ? res[1].retItems : [];
@@ -335,6 +336,7 @@ export class CreateTaskComponent implements OnInit {
         milestoneObj.listName = this.constantsService.listNames.Schedules.name;
         milestoneObj.type = 'PATCH';
         milestoneObj.data = milestoneDataObj;
+      
         batchUrl.push(milestoneObj);
       }
 
@@ -395,6 +397,7 @@ export class CreateTaskComponent implements OnInit {
     // let batchUrl = [];
     // batchUrl.push(data);
     if (batchUrl.length) {
+    
       const res: any = await this.spOperationsService.executeBatch(batchUrl);
       console.log('res ', res);
       if (res.length) {
@@ -418,6 +421,7 @@ export class CreateTaskComponent implements OnInit {
         moveItemObj.type = 'POST';
         batchUrl = [];
         batchUrl.push(moveItemObj);
+        this.commonService.SetNewrelic('MyDashboard', 'fteCreateTask', 'CreateTask');
         const moveToMilestoneRes: any = await this.spOperationsService.executeBatch(batchUrl);
         console.log('res ', moveToMilestoneRes);
         this.messageService.add({ key: 'successCT', severity: 'success', summary: 'Success message', detail: 'Task created.' });

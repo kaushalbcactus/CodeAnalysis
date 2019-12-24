@@ -4,6 +4,7 @@ import { SPOperationService } from '../Services/spoperation.service';
 import { ConstantsService } from '../Services/constants.service';
 import { AccessLevelconstantService } from './Services/accesslevelconstant.service';
 import { Router } from '@angular/router';
+import { CommonService } from '../Services/common.service';
 
 @Component({
   selector: 'app-accessleveldashboard',
@@ -12,13 +13,14 @@ import { Router } from '@angular/router';
 })
 export class AccessleveldashboardComponent implements OnInit {
 
- 
+
   constructor(
     private globalObject: GlobalService,
     private spServices: SPOperationService,
     private constant: ConstantsService,
     private accessLevelconstantService: AccessLevelconstantService,
-    private router: Router) { }
+    private router: Router,
+    private common: CommonService) { }
 
   ngOnInit() {
     this.constant.loader.isPSInnerLoaderHidden = false;
@@ -42,6 +44,8 @@ export class AccessleveldashboardComponent implements OnInit {
     resourceGet.type = 'GET';
     resourceGet.listName = this.constant.listNames.ResourceCategorization.name;
     batchURL.push(resourceGet);
+
+    this.common.SetNewrelic('AccessLevelDashboard', 'Dashboard', 'GetUserDetailsById');
     const arrResults = await this.spServices.executeBatch(batchURL);
     if (arrResults) {
       if (arrResults[0].retItems.length > 0) {

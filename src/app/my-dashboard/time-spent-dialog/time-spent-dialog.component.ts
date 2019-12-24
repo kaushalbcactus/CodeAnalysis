@@ -6,6 +6,7 @@ import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-time-spent-dialog',
@@ -38,7 +39,8 @@ export class TimeSpentDialogComponent implements OnInit {
   };
   task: any;
   SelectedTabType: any;
-  constructor(public config: DynamicDialogConfig,
+  constructor(
+    public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
     private myDashboardConstantsService: MyDashboardConstantsService,
     private constants: ConstantsService,
@@ -46,6 +48,7 @@ export class TimeSpentDialogComponent implements OnInit {
     private datePipe: DatePipe,
     private spServices: SPOperationService,
     public messageService: MessageService,
+    private commonService: CommonService
   ) { }
 
   ngOnInit() {
@@ -99,6 +102,7 @@ export class TimeSpentDialogComponent implements OnInit {
     // const myTimeSpentUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', TimeSpent);
     // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTimeSpentUrl);
     // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.commonService.SetNewrelic('MyDashboard', 'timeSpentDialog', 'GetSchedulesByTaskId');
     this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID, TimeSpent);
 
     this.currentTaskTimeSpent = this.response;
@@ -308,6 +312,7 @@ export class TimeSpentDialogComponent implements OnInit {
 
       ActiveCA: 'No'
     };
+    this.commonService.SetNewrelic('MyDashboard', 'timeSpentDialog', 'UpdateTaskTimepent');
     await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, 'SP.Data.SchedulesListItem');
 
 

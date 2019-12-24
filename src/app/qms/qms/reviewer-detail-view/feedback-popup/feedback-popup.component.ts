@@ -3,6 +3,7 @@ import { ConstantsService } from '../../../../Services/constants.service';
 import { GlobalService } from '../../../../Services/global.service';
 import { SPOperationService } from '../../../../Services/spoperation.service';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
+import { CommonService } from 'src/app/Services/common.service';
 declare var qmsFeedback: any;
 @Component({
   selector: 'app-feedback-popup',
@@ -27,7 +28,7 @@ export class FeedbackPopupComponent implements OnInit {
     listName: ''
   };
   constructor(private spService: SPOperationService, private globalConstant: ConstantsService, private qmsConstant: QMSConstantsService,
-              public global: GlobalService) {
+              public global: GlobalService, private common : CommonService) {
   }
   ngOnInit() {
   }
@@ -40,6 +41,7 @@ export class FeedbackPopupComponent implements OnInit {
   async getTemplates() {
     const feedbackComponent = JSON.parse(JSON.stringify(this.qmsConstant.feedbackPopupComponent));
     feedbackComponent.getTemplates.top = feedbackComponent.getTemplates.top.replace('{{TopCount}}', '4500');
+    this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'GetTemplate');
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.ScorecardTemplate.name,
       feedbackComponent.getTemplates);
     this.global.templateMatrix.templates = arrResult.length > 0 ? arrResult : [];
@@ -58,6 +60,7 @@ export class FeedbackPopupComponent implements OnInit {
     feedbackComponent.getTemplateMatrix.top = feedbackComponent.getTemplateMatrix.top.replace('{{TopCount}}', '' + 100);
     // tslint:disable: max-line-length
     feedbackComponent.getTemplateMatrix.filter = feedbackComponent.getTemplateMatrix.filter.replace('{{selectedTemplate}}', selectedTemplate);
+    this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'getTemplateMatrix');
     let arrResults = await this.spService.readItems(this.globalConstant.listNames.ScorecardMatrix.name, feedbackComponent.getTemplateMatrix);
     arrResults = arrResults.length > 0 ? arrResults : [];
     arrResults.forEach(element => {
@@ -118,6 +121,7 @@ export class FeedbackPopupComponent implements OnInit {
     const scorecardMatrixContent = this.addScorecardMatrixItem(taskDetails);
     // form single array of object eg:- {'endPoint': endpoint, 'data': scorecardDetails, 'isPostMethod': true}
     firstBatchURL = [...firstPostRequestContent, ...scorecardMatrixContent];
+    this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'SaveFeedbackRating');
     const items = await this.spService.executeBatch(firstBatchURL);
     if (items && items.length > 0) {
       // splitting scorecard item and scorecard rating items as 1 scorecoard item is created
@@ -131,6 +135,7 @@ export class FeedbackPopupComponent implements OnInit {
         // Update scorecardMatrix list item with scorecard lookup id
         const scorecardMatrixItem = this.updateScorecardMatrixItem(scorecardItem, scorecardRatingItems);
         secondPostRequestContent = [...schedulesPostRequest, ...scorecardMatrixItem];
+        this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'SaveFeedbackRating');
         const result = await this.spService.executeBatch(secondPostRequestContent);
         if (result) {
           this.closeFeedback();
@@ -319,6 +324,7 @@ export class FeedbackPopupComponent implements OnInit {
       prevTaskData.type = 'GET';
       batchURL.push(prevTaskData);
     });
+    this.common.SetNewrelic('QMS', 'ReviewDetails-View-Feedbackpopup', 'GetPreviousTasks');
     let arrResults = await this.spService.executeBatch(batchURL);
     arrResults = arrResults.length ? arrResults[0].retItems : [];
     const tasks = [].concat(...arrResults);

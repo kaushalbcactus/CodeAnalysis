@@ -197,6 +197,7 @@ export class FeedbackBymeComponent implements OnInit, OnDestroy {
       getScorecardData.type = 'GET';
       batchURL.push(getScorecardData);
     }
+    this.commonService.SetNewrelic('QMS', 'personalFeedback-feedbackbyme', 'getScorecardItems');
     let arrRatings = await this.spService.executeBatch(batchURL);
     arrRatings = arrRatings.length > 0 ? arrRatings : [];
     for (const i in arrRatings) {

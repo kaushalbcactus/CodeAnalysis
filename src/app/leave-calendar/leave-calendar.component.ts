@@ -8,6 +8,7 @@ import { GlobalService } from '../Services/global.service';
 import { SPOperationService } from '../Services/spoperation.service';
 import { DatePipe } from '@angular/common';
 import { LeaveCalendarConstantsService } from './services/leave-calendar-constants.service';
+import { CommonService } from '../Services/common.service';
 
 declare var Tooltip: any;
 
@@ -29,6 +30,7 @@ export class LeaveCalendarComponent implements OnInit {
     public globalService: GlobalService,
     private spServices: SPOperationService,
     private datePipe: DatePipe,
+    private commonService: CommonService,
     private leaveCalendarConstantsService: LeaveCalendarConstantsService) { }
 
   ngOnInit() {
@@ -44,7 +46,7 @@ export class LeaveCalendarComponent implements OnInit {
         // right: ''
         right: 'AddnewEvent today,dayGridMonth,timeGridWeek,'
       },
-       aspectRatio: 2.4,
+      aspectRatio: 2.4,
       // handleWindowResize: true,
       // windowResizeDelay: 200,
       eventLimit: 4, // for all non-TimeGrid views
@@ -202,7 +204,7 @@ export class LeaveCalendarComponent implements OnInit {
     leavesGet.type = 'GET';
     leavesGet.listName = this.constants.listNames.LeaveCalendar.name;
     batchURL.push(leavesGet);
-
+    this.commonService.SetNewrelic('LeaveCalendar', 'leaveCalendar', 'GetLevaesBasedOnSDED');
     const arrResults = await this.spServices.executeBatch(batchURL);
 
     if (arrResults) {
@@ -218,7 +220,7 @@ export class LeaveCalendarComponent implements OnInit {
             'id': element.Id,
             'start': new Date(element.EventDate),
             // 'end': new Date(this.datePipe.transform(element.EventDate, "yyyy-MM-dd")).getTime() !== new Date(this.datePipe.transform(element.EndDate, "yyyy-MM-dd")).getTime() ? new Date(new Date(element.EndDate).setDate(new Date(element.EndDate).getDate() + 1)) : new Date(element.EndDate),
-            'end':  new Date(element.EndDate),
+            'end': new Date(element.EndDate),
             'backgroundColor': element.IsHalfDay ? '#808080' : '#e60000',
 
           }
@@ -226,20 +228,8 @@ export class LeaveCalendarComponent implements OnInit {
           this.leaves.push(eventObj);
 
         });
-
       }
     }
-
-
-
-
-
-
-
-
-
-
-
     this.leaves = [...this.leaves];
     this.CalendarLoader = false;
 

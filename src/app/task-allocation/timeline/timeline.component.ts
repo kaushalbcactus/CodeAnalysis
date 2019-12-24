@@ -206,6 +206,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   public async callReloadRes() {
+
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'GetProjectResources');
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
   }
 
@@ -240,6 +242,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
     let milestoneSubmilestones = [];
     let milestoneCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.milestone);
     milestoneCall.filter = milestoneCall.filter.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode);
+
+    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetMilestonesByProjectCode');
     const response = await this.spServices.readItems(this.constants.listNames.Schedules.name, milestoneCall);
     this.allTasks = response.length ? response : [];
     let allRetrievedTasks = [];
@@ -2414,7 +2418,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const lastTask = slot.children.filter(st => !st.data.nextTask);
     const sortedTasks = this.sortByDate(lastTask, 'pEnd', 'desc');
     for (const task of slotTasks) {
-      const assignedUserId = task.data.AssignedTo.ID && task.data.AssignedTo.ID !== -1 ? task.data.AssignedTo.ID : task.data.previousAssignedUser; 
+      const assignedUserId = task.data.AssignedTo.ID && task.data.AssignedTo.ID !== -1 ? task.data.AssignedTo.ID : task.data.previousAssignedUser;
       // find capacity of user on new dates and it returns task for user on given dates
       if (assignedUserId) {
         let retTask = [];
@@ -2428,7 +2432,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             || (task.data.pUserStart <= tsk.StartDate && task.data.pUserEnd >= tsk.StartDate)
             || (task.data.pUserStart >= tsk.StartDate && task.data.pUserEnd <= tsk.DueDate));
         });
-        retTask = retTask.filter(t => t.ID !== task.data.parentSlot && t.ParentSlot !== task.data.parentSlot);        
+        retTask = retTask.filter(t => t.ID !== task.data.parentSlot && t.ParentSlot !== task.data.parentSlot);
         if (retTask.length || slot.data.pEnd < sortedTasks[0].data.pEnd) {
           deallocateSlot = true;
           break;
@@ -2453,7 +2457,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         newStDate: '',
         newEndDate: '',
         assginedTo: ''
-      } 
+      }
       for (let task of slotTasks) {
         task.data.AssignedTo.ID = task.data.AssignedTo.ID !== -1 ? task.data.AssignedTo.ID : task.data.previousAssignedUser;
         task.data.previousAssignedUser = -1;
@@ -2908,7 +2912,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const task = addTaskItems.filter(c => c.milestone === this.oProjectDetails.currentMilestone);
 
     updatedCurrentMilestone = mile && task && task.length ? true : false;
-
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'SaveTasksMilestones');
     const responseInLines = await this.executeBulkRequests(updatedCurrentMilestone, restructureMilstoneStr,
       updatedResources, batchUrl);
     if (responseInLines.length > 0) {
@@ -2958,6 +2962,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
         counter = counter + 1;
       }
+      this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'MoveTasksAfterCreate');
       await this.spServices.executeBatch(respBatchUrl);
     }
     this.reallocationMailArray.forEach(mail => {
@@ -3152,6 +3157,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     updatePrjObj.type = 'PATCH';
     updatePrjObj.data = updateProjectRes;
     batchUrl.push(updatePrjObj);
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'updateProjectInfo');
     let response = await this.spServices.executeBatch(batchUrl);
     response = response.length ? response.map(a => a.retItems) : [];
     return response;
@@ -3175,6 +3181,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       }
       const to = arrayTo.join(',').trim();
       if (to) {
+        this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'sendMails');
         await this.spServices.sendMail(to, fromUser.email, mailSubject, objEmailBody);
       }
     }
@@ -3194,6 +3201,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     for (const user of users) {
       arrayTo.push(user.Email);
     }
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'sendCentralTaskMail');
     await this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
   }
 
@@ -3207,6 +3215,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     for (const user of users) {
       arrayTo.push(user.Email);
     }
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'sendReallocationCentralTaskMail');
     await this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
   }
 
@@ -3812,6 +3821,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     notificationObj.type = 'GET';
     batchUrl.push(notificationObj);
 
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'SetAsNextMilestone');
     const response = await this.spServices.executeBatch(batchUrl);
     if (response.length) {
       const notificationBatchUrl = [];
@@ -3828,6 +3838,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
         notificationUpdateObj.type = 'PATCH';
         notificationBatchUrl.push(notificationUpdateObj);
       });
+
+      this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'SendEarlyTaskCompletionNotification');
       await this.spServices.executeBatch(notificationBatchUrl);
     }
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
