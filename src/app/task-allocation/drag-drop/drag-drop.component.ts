@@ -304,7 +304,7 @@ export class DragDropComponent implements OnInit {
             if (submilestone.task.links.length > 0) {
               let individualTask = false;
               submilestone.task.nodes.forEach(node => {
-                if (!individualTask && node.taskType !== 'Client Review' && node.taskType !== 'Send to client') {
+                if (!individualTask && node.taskType !== 'Client Review' && node.taskType !== 'Send to client' && node.taskType !== 'Adhoc' && node.taskType !== 'TB') {
                   const linkPresent = submilestone.task.links.filter(st => st.source === node.id || st.target === node.id);
                   individualTask = linkPresent.length ? false : true;
                 }
