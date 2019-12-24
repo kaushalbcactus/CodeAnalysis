@@ -84,3 +84,59 @@ legend {
     background-color: rgba(255, 255, 255, 0.7);
     height: 70%;
   }
+
+  .layout-topbar{
+    background-color: #E51400;
+    box-sizing: border-box;
+    display: block;
+    padding: 0;
+    height: 46px;
+    box-sizing: border-box;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 87%;
+    z-index: 1;
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,.3); 
+    margin-left: 13%;
+  }
+
+ .logo {
+  margin-left: 13px;
+  margin-top: 10px;
+  display: inline-block;
+}
+ .logo img {
+  height: 21px;
+}
+.container .row {
+  padding-top: 60px;
+}
+
+.topbar-menu {
+  /* display: inline-block; */
+  list-style-type: none;
+  float: right;
+  margin: 18px 60px 0 0;
+  padding: 0;
+  height: 100%;
+  color: white
+}
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 15px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+.routerOutlet {
+  margin-top:20px;
+}
+.sidenav .logo {
+  margin-bottom: 14px;
+}
