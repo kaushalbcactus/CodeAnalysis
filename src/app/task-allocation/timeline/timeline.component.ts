@@ -3912,7 +3912,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           } else {
             checkTasks = milestoneTasks;
           }
-          checkTasks = checkTasks.filter(t => !t.parentSlot);
+          checkTasks = checkTasks.filter(t => !t.parentSlot && t.IsCentrallyAllocated === 'No');
           // tslint:disable
           const checkTaskAllocatedTime = checkTasks.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
             && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed');
