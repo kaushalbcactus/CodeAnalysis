@@ -26,9 +26,6 @@ export class QMSComponent implements OnInit {
   ngOnInit() {
     // this.initialize();
   }
-
-
-
   /**
    *  Display Client feedback tab if current user have atleast 1 CD as ASD/TL(Delivery Lead)
    */
@@ -54,6 +51,4 @@ export class QMSComponent implements OnInit {
   //   // batchURL.push(getQCData);
   //   // return batchURL;
   // }
-
-
 }

@@ -423,6 +423,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         // let arrResults: any = [];
         // const res = await this.spServices.getFDData(batchGuid, userBatchBody);
         const vendorObj = Object.assign({}, this.fdConstantsService.fdComponent.addUpdateFreelancer);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'GetVendorFreelancerData');
         const res = await this.spServices.readItems(this.constantService.listNames.VendorFreelancer.name, vendorObj);
         const arrResults = res.length ? res : [];
         // if (arrResults.length) {
@@ -474,6 +475,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
             type: 'GET',
             listName: this.constantService.listNames.MailContent.name
         }];
+        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'GetMailContent');
         const res = await this.spServices.executeBatch(obj);
         this.mailContentRes = res.length ? res[0].retItems : [];
         // console.log('Mail Content res ', this.mailContentRes);
@@ -564,6 +566,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
         // const batchGuid = this.spServices.generateUUID();
         const pfObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
         pfObj.filter = pfObj.filter.replace('{{ProjectCode}}', ProjectCode);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'GetPFByProjectCode');
         const res = await this.spServices.readItems(this.constantService.listNames.ProjectFinances.name, pfObj);
         const arrResults = res.length ? res : [];
         if (arrResults.length) {
@@ -865,6 +868,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     }
 
     async uploadFileData() {
+        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'FileUpolad');
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
         if (res.ServerRelativeUrl) {
             this.fileUploadedUrl = res.ServerRelativeUrl;
@@ -907,6 +911,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
     }
 
     async uploadCAFileData() {
+        this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'UploadCAFiles');
         const res = await this.spServices.uploadFile(this.cafilePathUrl, this.cafileReader.result);
         if (res.ServerRelativeUrl) {
             this.caFileUploadedUrl = res.ServerRelativeUrl;
@@ -1066,6 +1071,7 @@ export class ExpenditureComponent implements OnInit, OnDestroy {
 
             const ccUser = this.getCCList();
             const tos = this.getTosList();
+            this.commonService.SetNewrelic('Finance-Dashboard', 'expenditure', 'SendMail');
             this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         }
         this.reFetchData();
