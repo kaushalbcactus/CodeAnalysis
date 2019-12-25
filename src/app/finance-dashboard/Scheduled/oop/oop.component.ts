@@ -304,6 +304,7 @@ export class OopComponent implements OnInit, OnDestroy {
         if (!isManager) {
             obj.filter = obj.filter.replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'GetInvoiceLineItem');
         const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, obj);
         const arrResults = res.length ? res : [];
         this.isPSInnerLoaderHidden = true;
@@ -526,15 +527,21 @@ export class OopComponent implements OnInit, OnDestroy {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
             if (!(date >= last3Days && date <= lastDay)) {
-                this.messageService.add({ key: 'oopInfoToast', severity: 'info', summary: 'Info message',
-                 detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.',
-                  life: 4000 });
+                this.messageService.add({
+                    key: 'oopInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.',
+                    life: 4000
+                });
             } else if (!retPO) {
-                this.messageService.add({ key: 'oopInfoToast', severity: 'info', summary: 'Info message',
-                 detail: 'PO not available for the selected line item.', life: 4000 });
+                this.messageService.add({
+                    key: 'oopInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'PO not available for the selected line item.', life: 4000
+                });
             } else if (!(new Date(retPO.POExpiryDate) >= todaysDateTimeZero)) {
-                this.messageService.add({ key: 'oopInfoToast', severity: 'info', summary: 'Info message',
-                 detail: 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), life: 4000 });
+                this.messageService.add({
+                    key: 'oopInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), life: 4000
+                });
             }
         }
         this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });
@@ -646,6 +653,7 @@ export class OopComponent implements OnInit, OnDestroy {
             invObj.type = 'PATCH';
             invObj.data = iliData;
             batchUrl.push(invObj);
+            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'UpdateInvoiceLineItem');
             this.submitForm(batchUrl, type);
         } else if (type === 'editDeliverable') {
             // console.log('form is submitting .....', this.editOop_form.value);
@@ -665,6 +673,7 @@ export class OopComponent implements OnInit, OnDestroy {
             invObj.type = 'PATCH';
             invObj.data = iliData;
             batchUrl.push(invObj);
+            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'UpdateInvoiceLineItem');
             this.submitForm(batchUrl, type);
         }
     }
@@ -692,6 +701,7 @@ export class OopComponent implements OnInit, OnDestroy {
         // const mailContentEndpoint = this.fdConstantsService.fdComponent.mailContent;
         const objMailContent = Object.assign({}, this.fdConstantsService.fdComponent.mailContent);
         objMailContent.filter = objMailContent.filter.replace('{{MailType}}', type);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'GetEmailTemplate');
         const res = await this.spServices.readItems(this.constantService.listNames.MailContent.name, objMailContent);
         this.mailContentRes = res.length ? res[0] : {};
     }

@@ -356,6 +356,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
         // let invoicesQuery = '';
         const obj = Object.assign({}, this.fdConstantsService.fdComponent.paidInvoices);
         obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'paid-invoices', 'getPaidInvoices');
         const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, obj);
         // invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.OutInvoices.name + '', obj);
 

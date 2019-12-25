@@ -61,6 +61,8 @@ export class EditorComponent implements OnInit {
         private globalObject: GlobalService,
         private spOperationsServices: SPOperationService,
         private constantsService: ConstantsService,
+        
+
     ) { }
 
     ngOnInit() {
@@ -2975,6 +2977,7 @@ export class EditorComponent implements OnInit {
         // const batchGuid = this.spOperationsServices.generateUUID();
         const prfObj = Object.assign({}, this.fdConstantsService.fdComponent.proformaForUser);
         prfObj.filter = prfObj.filter.replace('{{ItemID}}', id);
+        this.common.SetNewrelic('Finance-Dashboard', 'PDFEditing-editor', 'generateExistingProforma');
         const res = await this.spOperationsServices.readItems(this.constantsService.listNames.Proforma.name, prfObj);
         // let invoicesQuery = this.spOperationsServices.getReadURL('' + this.constantsService.listNames.Proforma.name +
         //  '', this.fdConstantsService.fdComponent.proformaForUser);
@@ -3071,6 +3074,7 @@ export class EditorComponent implements OnInit {
         // const res = await this.spOperationsServices.getFDData(batchGuid, userBatchBody);// .subscribe(res => {
         const iliObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItem);
         iliObj.filter = iliObj.filter.replace('{{ProformaLookup}}', id);
+        this.common.SetNewrelic('Finance-Dashboard', 'PDFEditing-editor', 'readInviceLineItem');
         const res = await this.spOperationsServices.readItems(this.constantsService.listNames.InvoiceLineItems.name, iliObj);
         const arrResults = res.length ? res : [];
         // if (arrResults.length) {

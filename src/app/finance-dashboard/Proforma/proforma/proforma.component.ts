@@ -395,6 +395,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
         // console.log('REs in Confirmed Invoice ', res);
         const prfObj = Object.assign({}, this.fdConstantsService.fdComponent.proformaForMangerIT);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'performaForManager');
         const res = await this.spServices.readItems(this.constantService.listNames.Proforma.name, prfObj);
         const arrResults = res.length ? res : [];
         // if (arrResults.length) {
@@ -770,6 +771,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
         // console.log('REs in getILIByPID ', res);
         const iliObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItem);
         iliObj.filter = iliObj.filter.replace('{{ProformaLookup}}', this.selectedRowItem.Id);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'GetInviceLineItem');
         const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, iliObj);
         const arrResults = res.length ? res : [];
         // if (arrResults.length) {
@@ -863,6 +865,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             sowObj.listName = this.constantService.listNames.SOW.name;
             sowObj.type = 'GET';
             batchUrl.push(sowObj);
+            this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'GetPFPFBForPOSow');
             const res = await this.spServices.executeBatch(batchUrl);
             // let endPoints = this.invoicesQuery;
             // let userBatchBody = '';
@@ -1192,6 +1195,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             }
         }
 
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'submitingForm');
         this.submitForm(batchUrl, 'generateInvoice');
     }
 
@@ -1309,6 +1313,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             //         requestPost: false
             //     }
             // ];
+            this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'uploadFileUpdateProforma');
             this.submitForm(batchUrl, 'replaceProforma');
         } else if (res.hasError) {
             this.isPSInnerLoaderHidden = true;
@@ -1668,6 +1673,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
             // const updatePObj = { objData: pObj, endpoint: pEndpoint, requestPost: false }
             // data.push(updatePObj);
             // await this.callBatchRequest(batchUrl);
+            this.commonService.SetNewrelic('Finance-Dashboard', 'Proforma-proforma', 'UpdateProforma');
             await this.spServices.executeBatch(batchUrl);
             ////// Replace date on specific sections only
 

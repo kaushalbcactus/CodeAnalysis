@@ -321,6 +321,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         //      '', this.fdConstantsService.fdComponent.invoicesForNonManger);
         // }
         const outInvObj = Object.assign({}, this.fdConstantsService.fdComponent.invoicesForMangerIT);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'invoicesForMangerIT');
         const res = await this.spServices.readItems(this.constantService.listNames.OutInvoices.name, outInvObj);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
 
@@ -727,6 +728,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
 
     async uploadFileData() {
         const batchUrl = [];
+        this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'uploadFile');
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
         // console.log('selectedFile uploaded .', res.ServerRelativeUrl);
         if (res) {
@@ -912,6 +914,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
             //         requestPost: false
             //     }
             // ]
+            this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'submitForm');
             this.submitForm(batchUrl, type);
         }
     }
@@ -961,7 +964,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
         //         requestPost: false
         //     },
         // ];
-
+        this.commonService.SetNewrelic('Finance-Dashboard', 'outstanding-invoices', 'submitDebitCreditNoteForm');
         this.submitForm(batchUrl, type);
     }
 

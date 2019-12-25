@@ -376,6 +376,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
                 .replace('{{EndDate}}', this.DateRange.endDate)
                 .replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Expenditure-approvedBillable', 'GetSpendingInfo');
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
         const arrResults = res.length ? res : [];
         this.formatData(arrResults);
@@ -821,6 +822,8 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         // userBatchBody = batchContents.join('\r\n');
         // let arrResults: any = [];
         // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+
+            this.commonService.SetNewrelic('Finance-Dashboard', 'approved-billable', 'GetPFPFBPBB');
         const res = await this.spServices.executeBatch(batchUrl);
         const arrResults = res.length ? res.map(a => a.retItems) : [];
         if (arrResults.length) {
@@ -970,6 +973,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     }
 
     async uploadFileData(type: string) {
+        this.commonService.SetNewrelic('Finance-Dashboard', 'approve-billable', 'UploadFile');
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
         if (res.ServerRelativeUrl) {
             this.fileUploadedUrl = res.ServerRelativeUrl;
@@ -1117,6 +1121,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         // const batchBodyContent = this.spServices.getBatchBodyPost(batchBody, batchGuid, changeSetId);
         // batchBodyContent.push('--batch_' + batchGuid + '--');
         // const sBatchData = batchBodyContent.join('\r\n');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'approve-billable', 'formSubmitForSelectedRow');
         const res = await this.spServices.executeBatch(dataEndpointArray);
         // await this.spServices.getData(batchGuid, sBatchData).subscribe(res => {
 

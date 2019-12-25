@@ -187,6 +187,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
                                                  .replace('{{EndDate}}', this.DateRange.endDate)
                                                  .replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
+        this.commonService.SetNewrelic('Finance-Dashboard', 'reject-expense', 'getSpendingInfo');
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
         // const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
         // let endPoints = [sinfoEndpoint];

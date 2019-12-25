@@ -400,6 +400,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
                 .replace('{{UserID}}', this.globalService.currentUser.userId.toString());
             speInfoObj.orderby = speInfoObj.orderby.replace('{{Status}}', 'Created');
         }
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'GetSpendingInfo');
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
         // const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
         // let endPoints = [sinfoEndpoint];
@@ -832,6 +833,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     }
 
     async submitForm(batchUrl, type: string) {
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'submitform');
         await this.spServices.executeBatch(batchUrl);
         if (type === 'Approve Expense') {
             this.messageService.add({
@@ -872,6 +874,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
             type: 'GET',
             listName: this.constantService.listNames.MailContent.name
         }];
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'getApproveExpenseMailContent');
         const res = await this.spServices.executeBatch(obj);
         this.mailContentRes = res;
         console.log('Approve Mail Content res ', this.mailContentRes);
@@ -1010,6 +1013,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
         const ccUser = this.getCCList(type, expense);
         // ccUser.push(this.currentUserInfoData.Email);
         const tos = this.getTosList(type, expense);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'pending-expense', 'sendMail');
         this.spServices.sendMail(tos.join(','), this.currentUserInfoData.Email, mailSubject, mailContent, ccUser.join(','));
         this.isPSInnerLoaderHidden = false;
         this.reFetchData();

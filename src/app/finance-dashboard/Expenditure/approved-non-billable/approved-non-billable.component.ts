@@ -223,6 +223,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
                 .replace('{{EndDate}}', this.DateRange.endDate)
                 .replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
+        this.commonService.SetNewrelic('Finance-Dashboard', 'approve-nonbillable', 'spendingInfo');
         const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
         const arrResults = res.length ? res : [];
         this.formatData(arrResults);
@@ -520,6 +521,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
     async uploadFileData(type: string) {
        
         // this.nodeService.uploadFIle(this.filePathUrl, this.fileReader.result).subscribe(res => {
+            this.commonService.SetNewrelic('Finance-Dashboard', 'approve-nonbillable', 'UploadFile');
         const res = await this.spServices.uploadFile(this.filePathUrl, this.fileReader.result);
         if (res) {
             this.fileUploadedUrl = res.ServerRelativeUrl ? res.ServerRelativeUrl : '';
@@ -584,6 +586,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         // batchBodyContent.push('--batch_' + batchGuid + '--');
         // const sBatchData = batchBodyContent.join('\r\n');
         // const res = await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
+            this.commonService.SetNewrelic('Finance-Dashboard', 'approve-nonbillable', 'submitForm');
         await this.spServices.executeBatch(batchUrl);
         // const arrResults = res;
         // console.log('--oo ', arrResults);
