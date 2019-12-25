@@ -2412,7 +2412,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
       this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.pName === slot.data.pName);
     const slotTasks = slot.children;
     const lastTask = slot.children.filter(st => !st.data.nextTask);
-    const sortedTasks = this.sortByDate(lastTask, 'pEnd', 'desc');
+    const sortedTasksEnd = this.sortByDate(lastTask, 'pUserEnd', 'desc');
+    const sortedTasksStart = this.sortByDate(lastTask, 'pUserStart', 'asc');
     for (const task of slotTasks) {
       const assignedUserId = task.data.AssignedTo.ID && task.data.AssignedTo.ID !== -1 ? task.data.AssignedTo.ID : task.data.previousAssignedUser;
       // find capacity of user on new dates and it returns task for user on given dates
@@ -2421,20 +2422,33 @@ export class TimelineComponent implements OnInit, OnDestroy {
         const resource = this.sharedObject.oTaskAllocation.oResources.filter(r => r.UserName.ID === assignedUserId);
         const oCapacity = await this.usercapacityComponent.applyFilterReturn(task.data.pUserStart, task.data.pUserEnd,
           resource);
+
+
         let retRes = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : [];
-        // filter tasks based on dates and subtasks within same slot
-        retTask = retRes.tasks.filter((tsk) => {
-          return ((task.data.pUserStart <= tsk.DueDate && task.data.pUserEnd >= tsk.DueDate)
-            || (task.data.pUserStart <= tsk.StartDate && task.data.pUserEnd >= tsk.StartDate)
-            || (task.data.pUserStart >= tsk.StartDate && task.data.pUserEnd <= tsk.DueDate));
-        });
-        retTask = retTask.filter(t => t.ID !== task.data.parentSlot && t.ParentSlot !== task.data.parentSlot);
-        if (retTask.length || slot.data.pEnd < sortedTasks[0].data.pEnd) {
-          deallocateSlot = true;
-          break;
-        } else {
-          deallocateSlot = false;
+        let availableHours = parseFloat(retRes.displayTotalUnAllocated.replace(':', '.'));
+        const allocatedHours = parseFloat(task.data.budgetHours);
+        const retTaskInd = retTask.find(t => t.ID !== task.data.parentSlot && t.ParentSlot !== task.data.parentSlot);
+        if (retTaskInd) {
+          availableHours = availableHours + allocatedHours;
         }
+        if (availableHours >= allocatedHours) {
+          // filter tasks based on dates and subtasks within same slot
+          retTask = retRes.tasks.filter((tsk) => {
+            return ((task.data.pUserStart <= tsk.DueDate && task.data.pUserEnd >= tsk.DueDate)
+              || (task.data.pUserStart <= tsk.StartDate && task.data.pUserEnd >= tsk.StartDate)
+              || (task.data.pUserStart >= tsk.StartDate && task.data.pUserEnd <= tsk.DueDate));
+          });
+          retTask = retTask.filter(t => t.ID !== task.data.parentSlot && t.ParentSlot !== task.data.parentSlot);
+          if (retTask.length || slot.data.pUserEnd < sortedTasksEnd[0].data.pUserEnd || slot.data.pStart > sortedTasksStart[0].data.pUserStart) {
+            deallocateSlot = true;
+            break;
+          } else {
+            deallocateSlot = false;
+          }
+        } else {
+          deallocateSlot = true;
+        }
+
       }
     }
 
@@ -2493,7 +2507,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     } else {
       // Reallocation and send single mail for reallocation
       for (let task of slotTasks) {
-        task.data.previousAssignedUser = task.data.AssignedTo.ID ? task.data.AssignedTo.ID : -1;
+        task.data.previousAssignedUser = task.data.previousAssignedUser ? task.data.previousAssignedUser : task.data.AssignedTo.ID ? task.data.AssignedTo.ID : -1;
         task.data.AssignedTo.ID = -1;
         task.data.previousTimeZone = task.data.assignedUserTimeZone;
         task.data.assignedUserTimeZone = 5.5;
