@@ -394,7 +394,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         task.selectedResources = [];
         task.displayselectedResources = [];
         const res = this.caCommonService.sortResources(setResources, task);
-      
+
         if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
 
           const resourcesList = $.extend(true, [], this.resourceList);
@@ -1176,12 +1176,11 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (!task.TaskName) {
       task.TaskName = $.trim(task.Title.replace(task.ProjectCode + '', '').replace(task.Milestone + '', ''));
     }
-    const resPool = this.caCommonService.getResourceByMatrix(resourcesList,
-      task.Type && task.Type === 'Slot' ? task.TaskName : task.Task && task.Task !== 'Select One' ?
-        task.Task : task.taskType, task.SkillLevel,
+    const resPool = this.caCommonService.getResourceByMatrix(resourcesList, task.Task ? task.Task : '', task.SkillLevel,
       projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
     //  resPool = this.caCommonService.sortResources(resPool, task);
-
+    // task.Type && task.Type === 'Slot' ? task.Task : task.Task && task.Task !== 'Select One' ?
+    //   task.Task : task.Task
     if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
 
       let ExistingUser = resPool.find(c => c.UserName.ID === task.PreviousAssignedUser.ID && c.UserName.Title === task.PreviousAssignedUser.Title);
@@ -1379,9 +1378,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     let previousNode = undefined;
     Slot.SlotTasks.forEach(task => {
       if (Node === task) {
-      
+
         this.changeDateOfEditedTask(task, type);
-      
+
         previousNode = task;
         const nextTasks = previousNode.NextTasks ? previousNode.NextTasks.split(';') : [];
         if (nextTasks) {
@@ -1556,7 +1555,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
         let validateAllocation = true;
-    
+
         slot.SlotTasks.forEach(element => {
           if (element.edited) {
             const title = element.allocatedResource ? element.allocatedResource.UserName.Title : null;
@@ -1578,7 +1577,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           return false;
         }
 
-        const compareTaskDates = slot.SlotTasks.filter(e => (slot.StartDate >  e.UserStart && e.Status !== 'Completed'));
+        const compareTaskDates = slot.SlotTasks.filter(e => (slot.StartDate > e.UserStart && e.Status !== 'Completed'));
         if (compareTaskDates.length > 0) {
 
           this.messageService.add({
@@ -1589,7 +1588,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           return false;
         }
 
-        const compareTaskEndDates = slot.SlotTasks.filter(e => (e.UserEnd  > slot.DueDate  && e.Status !== 'Completed'));
+        const compareTaskEndDates = slot.SlotTasks.filter(e => (e.UserEnd > slot.DueDate && e.Status !== 'Completed'));
         if (compareTaskEndDates.length > 0) {
 
           this.messageService.add({
