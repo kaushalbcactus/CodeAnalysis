@@ -327,7 +327,7 @@ export class CACommonService {
     scObj.Id = task.ID;
     scObj.ClientName = projectItem.length ? projectItem[0].ClientLegalEntity : '';
     scObj.ProjectCode = task.ProjectCode;
-    scObj.ProjectManagementURL = scObj.ProjectName = projectItem[0].WBJID;
+    scObj.ProjectManagementURL = scObj.ProjectName = projectItem.length ?  projectItem[0].WBJID : '';
     scObj.Milestone = task.Milestone;
     scObj.SubMilestones = task.SubMilestones;
     scObj.Task = task.Task;

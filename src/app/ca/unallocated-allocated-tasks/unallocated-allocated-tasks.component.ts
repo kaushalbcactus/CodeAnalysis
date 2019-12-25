@@ -1176,7 +1176,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (!task.TaskName) {
       task.TaskName = $.trim(task.Title.replace(task.ProjectCode + '', '').replace(task.Milestone + '', ''));
     }
-    const resPool = this.caCommonService.getResourceByMatrix(resourcesList, task.Task ? task.Task : '', task.SkillLevel,
+    const resPool = this.caCommonService.getResourceByMatrix(resourcesList, task.Task ? task.Task : task.taskType ? task.taskType : '', task.SkillLevel,
       projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
     //  resPool = this.caCommonService.sortResources(resPool, task);
     // task.Type && task.Type === 'Slot' ? task.Task : task.Task && task.Task !== 'Select One' ?
