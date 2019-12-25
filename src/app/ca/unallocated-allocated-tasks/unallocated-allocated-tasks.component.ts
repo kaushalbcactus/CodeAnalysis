@@ -1995,8 +1995,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         TimeZone: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
           ? task.allocatedResource.TimeZone.Title : '+5.5' : '+5.5',
         Comments: task.TaskScope ? task.TaskScope : '',
-        NextTasks: this.setPreviousAndNext(task.NextTasks, slot.Milestone, slot.ProjectCode),
-        PrevTasks: this.setPreviousAndNext(task.PrevTasks, slot.Milestone, slot.ProjectCode),
+        NextTasks: task.Status !== 'Deleted' ? this.setPreviousAndNext(task.NextTasks, slot.Milestone, slot.ProjectCode) : '',
+        PrevTasks: task.Status !== 'Deleted' ? this.setPreviousAndNext(task.PrevTasks, slot.Milestone, slot.ProjectCode) : '',
         CentralAllocationDone: 'Yes',
         IsCentrallyAllocated: 'No',
         DisableCascade: task.DisableCascade === true ? 'Yes' : 'No',
@@ -2018,7 +2018,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (sText) {
       const arrVal = sText.split(';');
       const arrNewVal = [];
-      for (const val of arrVal) {
+      for (let val of arrVal) {
+        val = val.replace(sProject + ' ', '');
+        val = val.replace(sMilestone + ' ', '');
         arrNewVal.push(sProject + ' ' + sMilestone + ' ' + val);
       }
 
