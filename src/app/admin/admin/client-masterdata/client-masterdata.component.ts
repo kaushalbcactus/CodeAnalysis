@@ -424,7 +424,7 @@ export class ClientMasterdataComponent implements OnInit {
         obj.ID = item.ID;
         obj.ClientLegalEntity = item.Title;
         obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
-        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd ,yyyy');
         obj.LastUpdatedBy = item.Editor.Title;
         obj.Acronym = item.Acronym;
         obj.Geography = item.Geography;
@@ -922,7 +922,7 @@ export class ClientMasterdataComponent implements OnInit {
       obj.ID = item.ID;
       obj.ClientLegalEntity = item.Title;
       obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
-      obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+      obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
       obj.LastUpdatedBy = item.Editor.Title;
       obj.Acronym = item.Acronym;
       obj.Geography = item.Geography;
@@ -1181,7 +1181,7 @@ export class ClientMasterdataComponent implements OnInit {
         obj.ID = item.ID;
         obj.SubDivision = item.Title;
         obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
-        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
         obj.LastUpdatedBy = item.Editor.Title;
         obj.IsActive = item.IsActive;
         obj.CMLevel1 = item.CMLevel1;
@@ -1371,7 +1371,7 @@ export class ClientMasterdataComponent implements OnInit {
       obj.ID = item.ID;
       obj.SubDivision = item.Title;
       obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
-      obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+      obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
       obj.LastUpdatedBy = item.Editor.Title;
       obj.IsActive = item.IsActive;
       obj.CMLevel1 = item.CMLevel1;
@@ -1506,7 +1506,7 @@ export class ClientMasterdataComponent implements OnInit {
         obj.Comments = item.Comments ? item.Comments : '';
         obj.ProjectContactsType = item.ProjectContactsType;
         obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
-        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
         obj.LastUpdatedBy = item.Editor.Title;
         tempArray.push(obj);
       });
@@ -1838,7 +1838,7 @@ export class ClientMasterdataComponent implements OnInit {
       obj.Comments = item.Comments ? item.Comments : '';
       obj.ProjectContactsType = item.ProjectContactsType;
       obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
-      obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+      obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
       obj.LastUpdatedBy = item.Editor.Title;
       // If Create - add the new created item at position 0 in the array.
       // If Edit - Replace the item in the array and position at 0 in the array.
@@ -1940,7 +1940,7 @@ export class ClientMasterdataComponent implements OnInit {
         const obj = Object.assign({}, this.adminObject.poObj);
         obj.ID = item.ID;
         obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
-        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
         obj.LastUpdatedBy = item.Editor.Title;
         obj.ClientLegalEntity = item.ClientLegalEntity;
         obj.Title = item.Title;
@@ -2443,7 +2443,7 @@ export class ClientMasterdataComponent implements OnInit {
       const obj = Object.assign({}, this.adminObject.poObj);
       obj.ID = item.ID;
       obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
-      obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+      obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
       obj.LastUpdatedBy = item.Editor.Title;
       obj.ClientLegalEntity = item.ClientLegalEntity;
       obj.Title = item.Title;

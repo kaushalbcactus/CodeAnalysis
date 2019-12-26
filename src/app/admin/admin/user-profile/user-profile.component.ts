@@ -365,8 +365,8 @@ export class UserProfileComponent implements OnInit {
         userObj.Bucket = item.Bucket;
         userObj.PracticeArea = item.Practice_x0020_Area.replace(';#', ',');
         userObj.TimeZone = item.TimeZone;
-        userObj.DateOfJoining = item.DateOfJoining;
-        userObj.GoLiveDate = item.GoLiveDate;
+        userObj.DateOfJoining = this.datePipe.transform(item.DateOfJoining, 'MMM dd, yyyy');
+        userObj.GoLiveDate = this.datePipe.transform(item.GoLiveDate, 'MMM dd, yyyy');
         userObj.Designation = item.Designation;
         userObj.InCapacity = item.InCapacity;
         userObj.Pooled = item.Pooled;
@@ -390,7 +390,7 @@ export class UserProfileComponent implements OnInit {
         userObj.Manager = item.Manager.Title;
         userObj.User = item.UserName.Title;
         userObj.LastUpdated = new Date(new Date(item.Modified).toDateString());
-        userObj.LastUpdatedFormat = this.datePipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+        userObj.LastUpdatedFormat = this.datePipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
         userObj.LastUpdatedBy = item.Editor.Title;
         userObj.IsActive = item.IsActive;
         userObj.DisplayText = item.Manager.Title;
@@ -642,6 +642,16 @@ export class UserProfileComponent implements OnInit {
       const emptyProjects = [];
       this.userProfileData = [...emptyProjects];
       this.providedUser = '';
+      // this.userProfileColArray.User = [];
+      // this.userProfileColArray.LastUpdated = [];
+      // this.userProfileColArray.LastUpdatedBy = [];
+      // this.userProfileColArray.PrimarySkill = [];
+      // this.userProfileColArray.Bucket = [];
+      // this.userProfileColArray.PracticeArea = [];
+      // this.userProfileColArray.InCapacity = [];
+      // this.userProfileColArray.DateOfJoining = [];
+      // this.userProfileColArray.GoLiveDate = [];
+      this.colFilters([]);
     } else {
       this.showUserInput = false;
       this.loadUserTable();
@@ -696,7 +706,7 @@ export class UserProfileComponent implements OnInit {
         userObj.Manager = item.Manager.Title;
         userObj.User = item.UserName.Title;
         userObj.LastUpdated = new Date(new Date(item.Modified).toDateString());
-        userObj.LastUpdatedFormat = this.datePipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+        userObj.LastUpdatedFormat = this.datePipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
         userObj.LastUpdatedBy = item.Editor.Title;
         userObj.IsActive = item.IsActive;
         userObj.DisplayText = item.Manager.Title;
@@ -1469,7 +1479,7 @@ export class UserProfileComponent implements OnInit {
       // Practice_x0020_Area: formObj.practiceArea,
       Practice_x0020_Area: formObj.practiceArea.join(';#'),
       TimeZoneId: formObj.timeZone,
-      DateOfJoining: formObj.dateofjoin,
+      DateOfJoining: this.datePipe.transform(formObj.dateofjoin, 'MMM dd, yyyy'),
       GoLiveDate: formObj.liveDate,
       Designation: formObj.designation,
       InCapacity: formObj.inCapacity,
@@ -1795,6 +1805,7 @@ export class UserProfileComponent implements OnInit {
    */
   showAddUserModal() {
     this.addUser.reset();
+    // this.userProfileData = this.adminConstants.LOGICAL_FIELD.ACTIVE;
     this.date.isManagerEffectiveDateActive = false;
     this.date.isPracticeEffectiveDateActive = false;
     this.date.isPrimarySkillEffectiveDateActive = false;
@@ -2018,7 +2029,6 @@ export class UserProfileComponent implements OnInit {
     this.userProfileViewDataArray = [];
     this.addUser.reset();
     const userObj = this.currUserObj;
-    console.log(userObj);
     this.userProfileViewDataArray.push(userObj);
     this.isUserProfileRightSideVisible = true;
   }
