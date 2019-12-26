@@ -1225,7 +1225,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     taskObj.Id = task.ID ? task.ID : task.Id;
     taskObj.Task = task.Type && task.Type === 'Slot' ? task.TaskName : task.Task ? task.Task : task.taskType;
-    taskObj.Task = task.Task.split(' ')[0];
+    taskObj.Task = taskObj.Task.split(' ')[0];
     taskObj.Timezone = task.timezone ? task.timezone : task.TimeZone;
     taskObj.Title = task.Title;
     taskObj.ProjectCode = task.projectCode ? task.projectCode : task.ProjectCode;
