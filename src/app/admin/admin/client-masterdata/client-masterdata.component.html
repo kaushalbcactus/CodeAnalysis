@@ -4,8 +4,8 @@
                 aria-hidden="true"></i>
         </a>
     </div>
-    <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New Client Form" *ngIf="isUserSPMCA"
-        (click)="showAddClientModal()">
+    <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New Client Form"
+        *ngIf="isUserSPMCA" (click)="showAddClientModal()">
     </p-button>
 </div>
 <div class="clearBoth"></div>
@@ -29,15 +29,35 @@
                     <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [style]="{'width':'100%'}"
                         [options]="clientMasterDataColArray.ClientLegalEntity" defaultLabel="Client Legal Entry"
                         (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" resetFilterOnHide="true"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'BillingEntity'" [style]="{'width':'100%'}"
+                        [options]="clientMasterDataColArray.BillingEntity" defaultLabel="Billing Entity"
+                        (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Bucket'" [style]="{'width':'100%'}"
+                        [options]="clientMasterDataColArray.Bucket" defaultLabel="Bucket"
+                        (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Acronym'" [style]="{'width':'100%'}"
+                        [options]="clientMasterDataColArray.Acronym" defaultLabel="Acronym"
+                        (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Market'" [style]="{'width':'100%'}"
+                        [options]="clientMasterDataColArray.Market" defaultLabel="Market"
+                        (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'InvoiceName'" [style]="{'width':'100%'}"
+                        [options]="clientMasterDataColArray.InvoiceName" defaultLabel="Invoice Name"
+                        (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"></p-multiSelect>
+                    <!-- <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
                         [options]="clientMasterDataColArray.LastUpdated" defaultLabel="LastUpdated"
                         (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" resetFilterOnHide="true"></p-multiSelect>
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
                         [options]="clientMasterDataColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
                         (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" resetFilterOnHide="true"></p-multiSelect>
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"></p-multiSelect> -->
                 </th>
                 <th></th>
             </tr>
@@ -49,11 +69,26 @@
                     {{rowData.ClientLegalEntity}}
                 </td>
                 <td>
+                    {{rowData.BillingEntity}}
+                </td>
+                <td>
+                    {{rowData.Bucket}}
+                </td>
+                <td>
+                    {{rowData.Acronym}}
+                </td>
+                <td>
+                    {{rowData.Market}}
+                </td>
+                <td>
+                    {{rowData.InvoiceName}}
+                </td>
+                <!-- <td>
                     {{rowData.LastUpdated | date:'MMM dd, yyyy'}}
                 </td>
                 <td>
                     {{rowData.LastUpdatedBy}}
-                </td>
+                </td> -->
                 <td>
                     <div>
                         <p-menu #menu [popup]="true" [model]="items" styleClass="borderMenu"></p-menu>
@@ -336,7 +371,8 @@
             <div class="p-col-2 "><span class="compulsory">*</span>CM Level 2</div>
             <div class="p-col-4">
                 <p-dropdown [options]="dropdown.CMLevel2Array" placeholder="Select CM Level 2"
-                    formControlName="cmLevel2" filter="true" resetFilterOnHide="true"></p-dropdown>
+                    formControlName="cmLevel2" filter="true" resetFilterOnHide="true">
+                </p-dropdown>
                 <div class="error" *ngIf="cmObject.isClientFormSubmit && addClient.controls.cmLevel2.errors">
                     <div *ngIf="addClient.controls.cmLevel2.errors.required">
                         CM Level 2 is required</div>
@@ -437,8 +473,8 @@
         <a (click)="downloadExcel(sd)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
-        <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New Sub-Division" *ngIf="isUserSPMCA"
-            (click)="showAddSubDivision()">
+        <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New Sub-Division"
+            *ngIf="isUserSPMCA" (click)="showAddSubDivision()">
         </p-button>
     </div>
     <div class="clearBoth"></div>
@@ -466,17 +502,20 @@
                         <p-multiSelect *ngSwitchCase="'SubDivision'" [style]="{'width':'100%'}"
                             [options]="subDivisionDetailsColArray.SubDivision" defaultLabel="Sub-Division"
                             (onChange)="sd.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                            resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
                             [options]="subDivisionDetailsColArray.LastUpdated" defaultLabel="LastUpdated"
                             (onChange)="sd.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                            resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
                             [options]="subDivisionDetailsColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
                             (onChange)="sd.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                            resetFilterOnHide="true">
                         </p-multiSelect>
                     </th>
                     <th></th>
@@ -555,7 +594,8 @@
             <div class="p-col-4">
                 <p-multiSelect [style]="{'width':'100%'}" [options]="dropdown.DeliveryLevel1Array"
                     defaultLabel="Select Delivery Level 1" formControlName="deliveryLevel1"
-                    (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                    (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                    resetFilterOnHide="true"></p-multiSelect>
             </div>
         </div>
         <div class="p-grid mt-20">
@@ -563,7 +603,8 @@
             <div class="p-col-4">
                 <p-multiSelect [style]="{'width':'100%'}" [options]="dropdown.CMLevel1Array"
                     defaultLabel="Select CM Level 1" formControlName="cmLevel1"
-                    (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                    (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                    resetFilterOnHide="true"></p-multiSelect>
             </div>
         </div>
     </form>
@@ -607,26 +648,31 @@
                     <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
                         <p-multiSelect *ngSwitchCase="'FName'" [style]="{'width':'100%'}" [options]="POCColArray.FName"
                             defaultLabel="First Name" (onChange)="poc.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                            resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LName'" [style]="{'width':'100%'}" [options]="POCColArray.LName"
                             defaultLabel="Last Name" (onChange)="poc.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                            resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'EmailAddress'" [style]="{'width':'100%'}"
                             [options]="POCColArray.EmailAddress" defaultLabel="Email"
                             (onChange)="poc.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                            resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
                             [options]="POCColArray.LastUpdated" defaultLabel="LastUpdated"
                             (onChange)="poc.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                            resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
                             [options]="POCColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
                             (onChange)="poc.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                            resetFilterOnHide="true">
                         </p-multiSelect>
                     </th>
                     <th></th>
@@ -808,8 +854,8 @@
         <a (click)="downloadExcel(po)" class="download-worksheet td-none"><i class="fa fa-fw fa-file-excel-o"
                 aria-hidden="true"></i>
         </a>
-        <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New Purchase Order" *ngIf="isUserSPMCA || isUserPO"
-            (click)="showAddPO()">
+        <p-button style="float: right" type="button" icon="pi pi-plus-circle" label="Add New Purchase Order"
+            *ngIf="isUserSPMCA || isUserPO" (click)="showAddPO()">
         </p-button>
     </div>
     <div class="clearBoth"></div>
@@ -836,32 +882,38 @@
                     <th *ngFor="let col of columns" [hidden]="!col.visibility" [ngSwitch]="col.field">
                         <p-multiSelect *ngSwitchCase="'PoName'" [style]="{'width':'100%'}" [options]="POColArray.PoName"
                             defaultLabel="Po Name" (onChange)="po.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                            resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'PoNumber'" [style]="{'width':'100%'}"
                             [options]="POColArray.PoNumber" defaultLabel="Po Number"
                             (onChange)="po.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                            resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'AmountRevenue'" [style]="{'width':'100%'}"
                             [options]="POColArray.AmountRevenue" defaultLabel="Revenue"
                             (onChange)="po.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                            resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'AmountOOP'" [style]="{'width':'100%'}"
                             [options]="POColArray.AmountOOP" defaultLabel="OOP"
                             (onChange)="po.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                            resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
                             [options]="POColArray.LastUpdated" defaultLabel="LastUpdated"
                             (onChange)="po.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                            resetFilterOnHide="true">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
                             [options]="POColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
                             (onChange)="po.filter($event.value, col.field, 'in')"
-                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                            (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
+                            resetFilterOnHide="true">
                         </p-multiSelect>
                     </th>
                     <th></th>

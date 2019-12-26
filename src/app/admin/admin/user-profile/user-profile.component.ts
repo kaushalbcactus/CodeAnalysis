@@ -260,7 +260,7 @@ export class UserProfileComponent implements OnInit {
       }
     ];
     await this.loadUserTable();
-    this.colFilters(this.userProfileData);
+
     this.colFilters1(this.auditHistoryRows);
     this.loadDropDownValue();
   }
@@ -330,7 +330,8 @@ export class UserProfileComponent implements OnInit {
    */
   async loadUserTable() {
     this.adminObject.isMainLoaderHidden = false;
-
+    this.selectedOption = this.adminConstants.LOGICAL_FIELD.ACTIVE;
+    this.showUserInput = false;
     let resCatFilter: any = {};
     if (this.globalObject.userInfo.Groups.results.length) {
       const groups = this.globalObject.userInfo.Groups.results.map(x => x.LoginName);
@@ -457,6 +458,7 @@ export class UserProfileComponent implements OnInit {
     }
     this.userProfileData = tempResult;
     this.adminObject.isMainLoaderHidden = true;
+    this.colFilters(this.userProfileData);
   }
   /**
    * Construct a request for getting single people picker value.
@@ -774,7 +776,7 @@ export class UserProfileComponent implements OnInit {
       }
     }
     this.userProfileData = tempResult;
-
+    this.colFilters(this.userProfileData);
   }
   /**
    * Construct a method to initialize the dropdown array to null.

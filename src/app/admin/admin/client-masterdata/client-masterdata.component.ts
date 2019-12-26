@@ -95,6 +95,11 @@ export class ClientMasterdataComponent implements OnInit {
 
   clientMasterDataColArray = {
     ClientLegalEntity: [],
+    BillingEntity: [],
+    Bucket: [],
+    Acronym: [],
+    Market: [],
+    InvoiceName: [],
     LastUpdated: [],
     LastUpdatedBy: []
   };
@@ -351,8 +356,13 @@ export class ClientMasterdataComponent implements OnInit {
   ngOnInit() {
     this.clientMasterDataColumns = [
       { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
-      { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
-      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
+      { field: 'BillingEntity', header: 'Billing Entity', visibility: true },
+      { field: 'Bucket', header: 'Bucket', visibility: true },
+      { field: 'Acronym', header: 'Acronym', visibility: true },
+      { field: 'Market', header: 'Market', visibility: true },
+      { field: 'InvoiceName', header: 'Invoice Name', visibility: true },
+      // { field: 'LastUpdated', header: 'Last Updated', visibility: true, exportable: false },
+      // { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: true },
       { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false }
     ];
     this.subDivisionDetailsColumns = [
@@ -488,6 +498,27 @@ export class ClientMasterdataComponent implements OnInit {
     });
     this.clientMasterDataColArray.LastUpdatedBy = this.common.sortData(this.adminCommonService.uniqueArrayObj(
       colData.map(a => { const b = { label: a.LastUpdatedBy, value: a.LastUpdatedBy }; return b; })));
+
+    this.clientMasterDataColArray.BillingEntity = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = { label: a.BillingEntity, value: a.BillingEntity }; return b;
+    })));
+
+    this.clientMasterDataColArray.Bucket = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = { label: a.Bucket, value: a.Bucket }; return b;
+    })));
+
+    this.clientMasterDataColArray.Acronym = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = { label: a.Acronym, value: a.Acronym }; return b;
+    })));
+
+    this.clientMasterDataColArray.Market = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = { label: a.Market, value: a.Market }; return b;
+    })));
+
+    this.clientMasterDataColArray.InvoiceName = this.common.sortData(this.adminCommonService.uniqueArrayObj(colData.map(a => {
+      const b = { label: a.InvoiceName, value: a.InvoiceName }; return b;
+    })));
+
   }
   /**
    * Construct a method to show the add client legal entity form.
@@ -1051,6 +1082,7 @@ export class ClientMasterdataComponent implements OnInit {
     if (!this.dropdown.ClientGroupArray.length) {
       await this.loadClientDropdown();
     }
+    console.log('this.currClientObj ', this.currClientObj);
     this.addClient.patchValue({
       name: this.currClientObj.ClientLegalEntity,
       acronym: this.currClientObj.Acronym,
