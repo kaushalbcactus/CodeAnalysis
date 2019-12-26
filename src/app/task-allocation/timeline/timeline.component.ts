@@ -2425,7 +2425,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
         let retRes = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : [];
-        let availableHours = parseFloat(retRes.displayTotalUnAllocated.replace(':', '.'));
+        const breakAvailable = retRes.displayTotalUnAllocated.split(":");
+
+        let availableHours = parseFloat(breakAvailable[0]) + parseFloat((parseFloat(breakAvailable[1]) / 60).toFixed(2)); //  parseFloat(retRes.displayTotalUnAllocated.replace(':', '.'));
         const allocatedHours = parseFloat(task.data.budgetHours);
         const retTaskInd = retTask.find(t => t.ID !== task.data.parentSlot && t.ParentSlot !== task.data.parentSlot);
         if (retTaskInd) {
