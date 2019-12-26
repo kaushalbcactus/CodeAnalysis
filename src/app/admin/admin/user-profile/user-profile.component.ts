@@ -1202,13 +1202,13 @@ export class UserProfileComponent implements OnInit {
       if (result.hasOwnProperty('hasError') && result.hasError && result.message.value.includes('duplicate')) {
         this.messageService.add({
           key: 'adminCustom', severity: 'error', sticky: true,
-          summary: 'Error Message', detail: 'User - ' + formValue.username.DisplayText + ' has already exist.'
+          summary: 'Error Message', detail: 'User - ' + formValue.username.DisplayText + ' is already exist.'
         });
       } else {
         this.showModal = false;
         this.messageService.add({
           key: 'adminCustom', severity: 'success', sticky: true,
-          summary: 'Success Message', detail: 'User - ' + formValue.username.DisplayText + ' has added successfully'
+          summary: 'Success Message', detail: 'User - ' + formValue.username.DisplayText + ' is added successfully'
         });
         await this.loadRecentRecords(result.ID, this.showeditUser);
       }
