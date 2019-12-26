@@ -2078,12 +2078,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const endDate = nodeData.pUserEnd;
     var workingHours = this.workingHoursBetweenDates(startDate, endDate);
     // Check if prev node slot then consider startdate of slot 
-    const prevNodeStartDate = ((prevNodeData.slotType === 'Slot' && !prevNodeData.clickedInput && nodeData.parentSlot)
-      || (prevNodeData.slotType === 'Slot' && prevNodeData.clickedInput && prevNodeData.clickedInput === 'start' && nodeData.parentSlot) ?
+    const prevNodeStartDate = ((prevNodeData.slotType === 'Slot' && nodeData.parentSlot) ?
+      // || (prevNodeData.slotType === 'Slot' && prevNodeData.clickedInput && prevNodeData.clickedInput === 'start' && nodeData.parentSlot) ?
       new Date(prevNodeData.pStart) : new Date(prevNodeData.pEnd));
     nodeData.pUserStart = this.commonService.calcTimeForDifferentTimeZone(prevNodeStartDate,
       this.sharedObject.currentUser.timeZone, nodeData.assignedUserTimeZone);
-
+    // const chkDate = nodeData.pUserStart.getHours() >= 19 && (nodeData.pUserStart.getHours() <= 23 && nodeData.pUserStart.getMinutes() < 60)
     nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 || prevNodeData.itemType === 'Client Review' || nodeData.itemType === 'Client Review' ?
       this.checkStartDate(new Date(nodeData.pUserStart.getFullYear(), nodeData.pUserStart.getMonth(), (nodeData.pUserStart.getDate() + 1), 9, 0)) :
       nodeData.pUserStart;
@@ -2187,8 +2187,34 @@ export class TimelineComponent implements OnInit, OnDestroy {
     });
   }
 
+  validateTaskDates(AllTasks) {
+    let errorPresnet = false;
+    const taskCount = AllTasks.length;
+    for (let i = 0; i < taskCount; i = i + 1) {
+      const task = AllTasks[i];
+      if (task.nextTask && task.status !== 'Completed'
+        && task.status !== 'Auto Closed' && task.status !== 'Deleted') {
+        const nextTasks = task.nextTask.split(';');
+        const AllNextTasks = AllTasks.filter(c => (nextTasks.indexOf(c.pName) > -1));
+
+        const SDTask = AllNextTasks.find(c => c.pStart < task.pEnd && c.status !== 'Completed'
+          && c.status !== 'Auto Closed' && c.status !== 'Deleted' && c.allowStart === false);
+        if (SDTask) {
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            detail: 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName + ' in ' + task.milestone
+          });
+          errorPresnet = true;
+          break;
+        }
+      }
+    }
+    return errorPresnet;
+  }
 
   DateChangePart(Node, type) {
+    this.reallocationMailArray.length = 0;
+    this.deallocationMailArray.length = 0;
     Node.pUserStart = new Date(this.datepipe.transform(Node.pUserStartDatePart, 'MMM d, y') + ' ' + Node.pUserStartTimePart);
     Node.pUserEnd = new Date(this.datepipe.transform(Node.pUserEndDatePart, 'MMM d, y') + ' ' + Node.pUserEndTimePart);
     this.DateChange(Node, type);
@@ -2237,30 +2263,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
 
-  validateTaskDates(AllTasks) {
-    let errorPresnet = false;
-    const taskCount = AllTasks.length;
-    for (let i = 0; i < taskCount; i = i + 1) {
-      const task = AllTasks[i];
-      if (task.nextTask && task.status !== 'Completed'
-        && task.status !== 'Auto Closed' && task.status !== 'Deleted') {
-        const nextTasks = task.nextTask.split(';');
-        const AllNextTasks = AllTasks.filter(c => (nextTasks.indexOf(c.pName) > -1));
 
-        const SDTask = AllNextTasks.find(c => c.pStart < task.pEnd && c.status !== 'Completed'
-          && c.status !== 'Auto Closed' && c.status !== 'Deleted' && c.allowStart === false);
-        if (SDTask) {
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName + ' in ' + task.milestone
-          });
-          errorPresnet = true;
-          break;
-        }
-      }
-    }
-    return errorPresnet;
-  }
 
   cascadeNextNodes(previousNode, subMilestonePosition, selectedMil) {
     var nextNode = [];
@@ -2333,6 +2336,11 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
       }
     }
+    if (sentPrevNode.slotType === 'Slot' && sentPrevNode.pID > 0) {
+      // if ((sentPrevNode.slotType === 'Slot' && sentPrevNode.pID > 0 && !sentPrevNode.clickedInput) ||
+      //   sentPrevNode.slotType === 'Slot' && sentPrevNode.clickedInput) {
+      this.compareSlotSubTasksTimeline(sentPrevNode, subMilestonePosition, selectedMil)
+    }
 
     if (nextNode.length) {
       nextNode.forEach(element => {
@@ -2340,12 +2348,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
         if (!element.DisableCascade && element.status !== 'In Progress') {
           // first condition checks if slot is changed due to previous task of slot and if it is updated
           // second condition checks if slot start date is changed
-          if ((sentPrevNode.slotType === 'Slot' && sentPrevNode.pID > 0 && !sentPrevNode.clickedInput) ||
-            sentPrevNode.slotType === 'Slot' && sentPrevNode.clickedInput) {
-            this.compareSlotSubTasksTimeline(sentPrevNode, element, subMilestonePosition, selectedMil)
-          } else {
-            this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
-          }
+          //else {
+          this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
+          //}
         }
       });
     }
@@ -2358,44 +2363,46 @@ export class TimelineComponent implements OnInit, OnDestroy {
    * @param subMilestonePosition 
    * @param selectedMil 
    */
-  async compareSlotSubTasksTimeline(sentPrevNode, element, subMilestonePosition, selectedMil) {
+  async compareSlotSubTasksTimeline(sentPrevNode1, subMilestonePosition, selectedMil) {
     // fetch slot based on submilestone presnt or not
-    const slot = subMilestonePosition === 0 ? this.milestoneData[selectedMil].children.find(st => st.data.pName === sentPrevNode.pName) :
-      this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.pName === sentPrevNode.pName);
-    let slotFirstTask = slot ? slot.children ? slot.children.filter(st => !st.data.previousTask) : [] : [];
+    const sentPrevNode = subMilestonePosition === 0 ? this.milestoneData[selectedMil].children.find(st => st.data.pName === sentPrevNode1.pName) :
+      this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.pName === sentPrevNode1.pName);
+    let slotFirstTask = sentPrevNode ? sentPrevNode.children ? sentPrevNode.children.filter(st => !st.data.previousTask) : [] : [];
     // cascade if slot start date is more than first subtask in slot
-    if (slotFirstTask.length && sentPrevNode.clickedInput !== 'end') {
-      if (slot.data.pStart > slotFirstTask[0].data.pStart) {
-        let childIndex = 0;
-        for (const subTask of slot.children) {
-          if (!subTask.data.DisableCascade) {
-            // If first subtask then cascade based on slot start date and subtask start date
-            if (!subTask.data.previousTask) {
-              await this.cascadeNextTask(slot, subTask, subMilestonePosition, selectedMil);
+    if (slotFirstTask.length) {
+
+      if (!sentPrevNode1.clickedInput || (sentPrevNode1.clickedInput && sentPrevNode1.clickedInput === 'start')) {
+        let slotFirstTaskSorted = this.sortByDate(slotFirstTask, 'pUserStart', 'asc');
+        if (sentPrevNode.data.pStart > slotFirstTaskSorted[0].data.pStart) {
+          //let childIndex = 0;
+          // for (const subTask of sentPrevNode.children) {
+          //   if (!subTask.data.DisableCascade) {
+          //     // If first subtask then cascade based on slot start date and subtask start date
+          //     if (!subTask.data.previousTask) {
+          //       this.cascadeNextTask(sentPrevNode, subTask, subMilestonePosition, selectedMil);
+          //     }
+          //     // If next task present then cascade based on first task end date and next subtask
+          //     if (subTask.data.nextTask) {
+          //       this.cascadeNode(subTask, sentPrevNode.children[childIndex + 1]);
+          //     }
+          //   }
+          //   childIndex++;
+          // }
+          slotFirstTaskSorted.forEach(element => {
+            if (!element.data.DisableCascade && element.data.status !== 'In Progress') {
+              this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
             }
-            // If next task present then cascade based on first task end date and next subtask
-            if (subTask.data.nextTask) {
-              await this.cascadeNode(subTask, slot.children[childIndex + 1]);
-            }
-            else {
-              // If last subtask of slot then cascade based on end date of subtask and next task of slot 
-              await this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
-            }
+          });
+          if (slotFirstTask[0].data.AssignedTo.ID && slotFirstTask[0].data.AssignedTo.ID !== -1) {
+            // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability 
+            await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil);
           }
-          childIndex++;
         }
-        if (slotFirstTask[0].data.AssignedTo.ID && slotFirstTask[0].data.AssignedTo.ID !== -1) {
-          // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability 
-          await this.checkTaskResourceAvailability(slot, subMilestonePosition, selectedMil);
-        }
-      }
-    } else {
-      if (slotFirstTask.length && slotFirstTask[0].data.AssignedTo.EMail) {
+      } else if (slotFirstTask[0].data.AssignedTo.EMail) {
         // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability 
-        await this.checkTaskResourceAvailability(slot, subMilestonePosition, selectedMil);
+        await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil);
       }
-      // if slot does not have any child
-      await this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
+
     }
   }
 
@@ -2412,8 +2419,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
       this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.pName === slot.data.pName);
     const slotTasks = slot.children;
     const lastTask = slot.children.filter(st => !st.data.nextTask);
+    const firstTask = slot.children.filter(st => !st.data.prevTask);
     const sortedTasksEnd = this.sortByDate(lastTask, 'pUserEnd', 'desc');
-    const sortedTasksStart = this.sortByDate(lastTask, 'pUserStart', 'asc');
+    const sortedTasksStart = this.sortByDate(firstTask, 'pUserStart', 'asc');
     for (const task of slotTasks) {
       const assignedUserId = task.data.AssignedTo.ID && task.data.AssignedTo.ID !== -1 ? task.data.AssignedTo.ID : task.data.previousAssignedUser;
       // find capacity of user on new dates and it returns task for user on given dates
@@ -2441,7 +2449,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               || (task.data.pUserStart >= tsk.StartDate && task.data.pUserEnd <= tsk.DueDate));
           });
           retTask = retTask.filter(t => t.ID !== task.data.parentSlot && t.ParentSlot !== task.data.parentSlot);
-          if (retTask.length || slot.data.pUserEnd < sortedTasksEnd[0].data.pUserEnd || slot.data.pStart > sortedTasksStart[0].data.pUserStart) {
+          if (retTask.length || slot.data.pUserEnd < sortedTasksEnd[0].data.pUserEnd || slot.data.pUserStart > sortedTasksStart[0].data.pUserStart) {
             deallocateSlot = true;
             break;
           } else {
@@ -2449,6 +2457,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           }
         } else {
           deallocateSlot = true;
+          break;
         }
 
       }
@@ -2459,9 +2468,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (!deallocateSlot) {
       slot.data.slotColor = "#6EDC6C";
       slot.data.CentralAllocationDone = 'Yes';
-      this.deallocationMailArray;
       this.reallocationMailData.length = 0;
-      this.reallocationMailArray.length = 0;
+
       const mailTableObj = {
         taskName: '',
         preStDate: '',
@@ -2496,7 +2504,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
         subTask.assginedTo = task.data.AssignedTo.Title;
         this.reallocationMailData.push(subTask);
       });
-      this.deallocationMailArray = this.deallocationMailArray.length ? this.deallocationMailArray.filter(s => s.slot.data.pID !== slot.data.pID) : [];
       setTimeout(() => {
         const table = this.reallocateTable.nativeElement.innerHTML;
         this.reallocationMailArray.push({
@@ -2509,7 +2516,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     } else {
       // Reallocation and send single mail for reallocation
       for (let task of slotTasks) {
-        task.data.previousAssignedUser = task.data.previousAssignedUser ? task.data.previousAssignedUser : task.data.AssignedTo.ID ? task.data.AssignedTo.ID : -1;
+        task.data.previousAssignedUser = task.data.previousAssignedUser && task.data.previousAssignedUser !== -1 ? task.data.previousAssignedUser : task.data.AssignedTo.ID ? task.data.AssignedTo.ID : -1;
         task.data.AssignedTo.ID = -1;
         task.data.previousTimeZone = task.data.assignedUserTimeZone;
         task.data.assignedUserTimeZone = 5.5;
@@ -2517,8 +2524,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       }
       slot.data.slotColor = "#FF3E56";
       slot.data.CentralAllocationDone = 'No';
-      this.deallocationMailArray.length = 0;
-      this.reallocationMailArray = this.reallocationMailArray.length ? this.reallocationMailArray.filter(s => s.slot.data.pID !== slot.data.pID) : [];
+
       this.deallocationMailArray.push({
         project: this.oProjectDetails,
         slot: slot,
@@ -2532,8 +2538,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const nodeData = nextNode.hasOwnProperty('data') ? nextNode.data : nextNode;
     const prevNodeData = previousNode.hasOwnProperty('data') ? previousNode.data : previousNode;
     // based on slot or task use start date or end date
-    const prevNodeEndDate = ((prevNodeData.slotType === 'Slot' && !prevNodeData.clickedInput && nodeData.parentSlot)
-      || (prevNodeData.slotType === 'Slot' && prevNodeData.clickedInput && prevNodeData.clickedInput === 'start' && nodeData.parentSlot) ?
+    const prevNodeEndDate = ((prevNodeData.slotType === 'Slot' && nodeData.parentSlot) ?
+      // && !prevNodeData.clickedInput
+      // || (prevNodeData.slotType === 'Slot' && prevNodeData.clickedInput && prevNodeData.clickedInput === 'start' && nodeData.parentSlot) ?
       new Date(prevNodeData.pStart) : new Date(prevNodeData.pEnd));
     if (nodeData.type === 'task' && nodeData.itemType !== 'Client Review') {
       if (new Date(prevNodeEndDate) > new Date(nodeData.pStart) && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
@@ -2557,7 +2564,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           return !dataEl.data.previousTask
         });
         allParallelTasks.forEach(element => {
-          if (!element.DisableCascade) {
+          if (!element.data.DisableCascade && element.data.status !== 'In Progress') {
             this.cascadeNextTask(previousNode, element.data, parseInt(nodeData.position), selectedMil);
           }
         });
@@ -2584,7 +2591,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
         allParallelTasks.forEach(element => {
 
-          if (!element.DisableCascade) {
+          if (!element.data.DisableCascade  && element.data.status !== 'In Progress') {
             this.cascadeNextTask(previousNode, element, element.submilestone ? 1 : 0, selectedMil + 1);
           }
         });
@@ -2976,13 +2983,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
       }
       await this.spServices.executeBatch(respBatchUrl);
     }
-    this.reallocationMailArray.forEach(mail => {
-      this.sendReallocationCentralTaskMail(mail.project, mail.slot, mail.data, mail.subject);
-    });
-    this.deallocationMailArray.forEach(mail => {
-      this.sendCentralTaskMail(mail.project, mail.slot.data, mail.subject, mail.template);
-    });
-    // this.callReloadRes();
+    for (const mail of this.reallocationMailArray) {
+      await this.sendReallocationCentralTaskMail(mail.project, mail.slot, mail.data, mail.subject);
+    }
+    for (const mail of this.deallocationMailArray) {
+      await this.sendCentralTaskMail(mail.project, mail.slot.data, mail.subject, mail.template);
+    }
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
     this.getMilestones(false);
 
