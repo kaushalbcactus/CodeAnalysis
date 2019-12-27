@@ -780,7 +780,7 @@ export class DragDropComponent implements OnInit {
 
 
   ErrorMessage(event, type) {
-    this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: type + ' can  not be deleted' });
+    this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: type + ' cannot be deleted' });
     event.preventDefault();
   }
 
@@ -790,121 +790,238 @@ export class DragDropComponent implements OnInit {
 
       var index = mileType === 'milestone' ? this.milestonesGraph.nodes.indexOf(this.milestonesGraph.nodes.find(c => c.label === node.label && c.id === node.id)) : mileType === 'submilestone' ? this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.indexOf(this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.find(c => c.label === node.label && c.id === node.id)) : this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.indexOf(this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(c => c.label === node.label && c.id === node.id));
       if (index > -1) {
-
-        if (mileType === 'milestone') {
-          this.milestonesGraph.nodes.splice(index, 1);
-          this.milestonesGraph.nodeOrder.splice(this.milestonesGraph.nodeOrder.indexOf(node.id), 1);
-          var RemoveLinks = this.milestonesGraph.links.filter(c => c.source === node.id || c.target === node.id);
-          if (this.milestonesGraph.links.find(c => c.source === node.id) !== undefined && this.milestonesGraph.links.find(c => c.target === node.id) !== undefined) {
-            var link = {
-              source: this.milestonesGraph.links.find(c => c.target === node.id).source,
-              target: this.milestonesGraph.links.find(c => c.source === node.id).target,
-            };
-
-            if (link.source !== link.target) {
-              this.milestonesGraph.links.push(link);
-            }
-
-          }
-          this.milestonesGraph.links = this.milestonesGraph.links.filter(value => !RemoveLinks.includes(value));
-
-          if (this.milestoneIndex === index) {
-            this.milestoneIndex = -1;
-            this.submilestoneIndex = -1;
-            this.selectedMilestone = null;
-            this.selectedSubMilestone = null;
-          }
-          else {
-            if (this.milestonesGraph.nodes.find(c => c.color === '#d26767') !== undefined) {
-              this.milestoneIndex = this.milestonesGraph.nodes.indexOf(this.milestonesGraph.nodes.find(c => c.color === '#d26767'));
-            }
-          }
-
-          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Milestone Deleted' });
-        }
-        else if (mileType === 'submilestone') {
-          if (this.submilestoneIndex === index) {
-            this.submilestoneIndex = -1;
-            this.selectedSubMilestone = null;
-          }
-
-          this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.splice(index, 1);
-          this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodeOrder.splice(this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.indexOf(node.id), 1);
-          RemoveLinks = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.filter(c => c.source === node.id || c.target === node.id);
-
-          if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.find(c => c.source === node.id) !== undefined && this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.find(c => c.target === node.id) !== undefined) {
-            var target = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
-            if (target.length > 0) {
-              target.forEach(element => {
+        switch (mileType) {
+          case 'milestone':
+            const tasks = this.milestonesGraph.nodes[index].submilestone.nodes.length === 1 ? this.milestonesGraph.nodes[index].submilestone.nodes[0].task.nodes : [];
+            const scCRTasks = tasks.length <= 2 ? tasks.filter(t => t.taskType === "Send to client" || t.taskType === "Client Review") : [];
+            if ((node.status === 'Not Confirmed' || node.status === 'Not Saved') || (node.status === 'In Progress' && (scCRTasks.length === 1 || scCRTasks.length === 2))) {
+              this.milestonesGraph.nodes.splice(index, 1);
+              this.milestonesGraph.nodeOrder.splice(this.milestonesGraph.nodeOrder.indexOf(node.id), 1);
+              var RemoveLinks = this.milestonesGraph.links.filter(c => c.source === node.id || c.target === node.id);
+              if (this.milestonesGraph.links.find(c => c.source === node.id) !== undefined && this.milestonesGraph.links.find(c => c.target === node.id) !== undefined) {
                 var link = {
-                  source: this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.find(c => c.target === node.id).source,
-                  target: element,
+                  source: this.milestonesGraph.links.find(c => c.target === node.id).source,
+                  target: this.milestonesGraph.links.find(c => c.source === node.id).target,
                 };
-                this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.push(link);
-              });
-            }
-          }
-
-          this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.filter(value => !RemoveLinks.includes(value));
-          this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = [... this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links]
-          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Sub Milestone Deleted' });
-        }
-        else {
-          if (node.label === 'Client Review') {
-            this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Cant remove Client Review.' });
-          }
-          else {
-            var source = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(c => c.target === node.id).map(c => c.source);
-            this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.splice(index, 1);
-            RemoveLinks = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(c => c.source === node.id || c.target === node.id);
-            if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.source === node.id) !== undefined && this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.target === node.id) !== undefined) {
-
-              var target = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
-              if (target.length > 0) {
-                target.forEach(element => {
-                  var link = {
-                    source: this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.target === node.id).source,
-                    target: element,
-                  };
-                  if (target.length > 1) {
-                    if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(c => c.id === link.target).label.replace(/[0-9]/g, '') !== 'SC') {
-                      this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.push(link);
-                    }
-                  }
-                  else {
-                    if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(c => c.id === link.target).label.replace(/[0-9]/g, '') !== 'Client Review') {
-                      this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.push(link);
-                    }
-                  }
-                });
+                if (link.source !== link.target) {
+                  this.milestonesGraph.links.push(link);
+                }
               }
+              this.milestonesGraph.links = this.milestonesGraph.links.filter(value => !RemoveLinks.includes(value));
+              if (this.milestoneIndex === index) {
+                this.milestoneIndex = -1;
+                this.submilestoneIndex = -1;
+                this.selectedMilestone = null;
+                this.selectedSubMilestone = null;
+              } else {
+                if (this.milestonesGraph.nodes.find(c => c.color === '#d26767') !== undefined) {
+                  this.milestoneIndex = this.milestonesGraph.nodes.indexOf(this.milestonesGraph.nodes.find(c => c.color === '#d26767'));
+                }
+              }
+              this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Milestone Deleted' });
+            } else {
+              this.ErrorMessage(event, 'Milestone');
             }
+            break;
+          case 'submilestone':
+            if (node.status === 'Not Confirmed' || node.status === 'Not Saved' || node.status === 'Not Started') {
+              if (this.submilestoneIndex === index) {
+                this.submilestoneIndex = -1;
+                this.selectedSubMilestone = null;
+              }
 
-            this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(value => !RemoveLinks.includes(value));
-            this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [... this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links]
-            this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Task Deleted' });
+              this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.splice(index, 1);
+              this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodeOrder.splice(this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.indexOf(node.id), 1);
+              RemoveLinks = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.filter(c => c.source === node.id || c.target === node.id);
 
-            if (RemoveLinks.filter(c => c.source === node.id).length > 0) {
-              this.previousSource = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
-              if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(c => this.previousSource.includes(c.source)).length > 0) {
-                this.previousSource = undefined;
+              if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.find(c => c.source === node.id) !== undefined && this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.find(c => c.target === node.id) !== undefined) {
+                var target = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
+                if (target.length > 0) {
+                  target.forEach(element => {
+                    var link = {
+                      source: this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.find(c => c.target === node.id).source,
+                      target: element,
+                    };
+                    this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.push(link);
+                  });
+                }
+              }
+
+              this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.filter(value => !RemoveLinks.includes(value));
+              this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = [... this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links]
+              this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Sub Milestone Deleted' });
+            } else {
+              this.ErrorMessage(event, 'SubMilestone');
+            }
+            break;
+          case 'task':
+            if ((node.status === 'Not Confirmed' || node.status === 'Not Saved' || node.status === 'Not Started')) {
+              if (node.label === 'Client Review') {
+                this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Cant remove Client Review.' });
               }
               else {
-                this.previousSource = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(e => e.id === this.previousSource[0]);
+                var source = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(c => c.target === node.id).map(c => c.source);
+                this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.splice(index, 1);
+                RemoveLinks = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(c => c.source === node.id || c.target === node.id);
+                if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.source === node.id) !== undefined && this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.target === node.id) !== undefined) {
+
+                  var target = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
+                  if (target.length > 0) {
+                    target.forEach(element => {
+                      var link = {
+                        source: this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.target === node.id).source,
+                        target: element,
+                      };
+                      if (target.length > 1) {
+                        if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(c => c.id === link.target).label.replace(/[0-9]/g, '') !== 'SC') {
+                          this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.push(link);
+                        }
+                      }
+                      else {
+                        if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(c => c.id === link.target).label.replace(/[0-9]/g, '') !== 'Client Review') {
+                          this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.push(link);
+                        }
+                      }
+                    });
+                  }
+                }
+
+                this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(value => !RemoveLinks.includes(value));
+                this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [... this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links]
+                this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Task Deleted' });
+
+                if (RemoveLinks.filter(c => c.source === node.id).length > 0) {
+                  this.previousSource = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
+                  if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(c => this.previousSource.includes(c.source)).length > 0) {
+                    this.previousSource = undefined;
+                  }
+                  else {
+                    this.previousSource = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(e => e.id === this.previousSource[0]);
+                  }
+                }
+                else {
+                  this.previousSource = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(e => e.id === source[0]);
+                }
               }
+            } else {
+              this.ErrorMessage(event, 'Task')
             }
-            else {
-              this.previousSource = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(e => e.id === source[0]);
-            }
-          }
+            break;
         }
+        this.milestonesGraph.nodes = [...  this.milestonesGraph.nodes];
+        this.milestonesGraph.links = [...  this.milestonesGraph.links];
       }
-      this.milestonesGraph.nodes = [...  this.milestonesGraph.nodes];
-      this.milestonesGraph.links = [...  this.milestonesGraph.links];
+      event.preventDefault();
+      this.resizeGraph = mileType;
+      this.GraphResize();
+      // if (mileType === 'milestone') {
+      //   this.milestonesGraph.nodes.splice(index, 1);
+      //   this.milestonesGraph.nodeOrder.splice(this.milestonesGraph.nodeOrder.indexOf(node.id), 1);
+      //   var RemoveLinks = this.milestonesGraph.links.filter(c => c.source === node.id || c.target === node.id);
+      //   if (this.milestonesGraph.links.find(c => c.source === node.id) !== undefined && this.milestonesGraph.links.find(c => c.target === node.id) !== undefined) {
+      //     var link = {
+      //       source: this.milestonesGraph.links.find(c => c.target === node.id).source,
+      //       target: this.milestonesGraph.links.find(c => c.source === node.id).target,
+      //     };
+
+      //     if (link.source !== link.target) {
+      //       this.milestonesGraph.links.push(link);
+      //     }
+
+      //   }
+      //   this.milestonesGraph.links = this.milestonesGraph.links.filter(value => !RemoveLinks.includes(value));
+
+      //   if (this.milestoneIndex === index) {
+      //     this.milestoneIndex = -1;
+      //     this.submilestoneIndex = -1;
+      //     this.selectedMilestone = null;
+      //     this.selectedSubMilestone = null;
+      //   }
+      //   else {
+      //     if (this.milestonesGraph.nodes.find(c => c.color === '#d26767') !== undefined) {
+      //       this.milestoneIndex = this.milestonesGraph.nodes.indexOf(this.milestonesGraph.nodes.find(c => c.color === '#d26767'));
+      //     }
+      //   }
+
+      //   this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Milestone Deleted' });
+      // }
+      // else if (mileType === 'submilestone') {
+      //   if (this.submilestoneIndex === index) {
+      //     this.submilestoneIndex = -1;
+      //     this.selectedSubMilestone = null;
+      //   }
+
+      //   this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.splice(index, 1);
+      //   this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodeOrder.splice(this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes.indexOf(node.id), 1);
+      //   RemoveLinks = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.filter(c => c.source === node.id || c.target === node.id);
+
+      //   if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.find(c => c.source === node.id) !== undefined && this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.find(c => c.target === node.id) !== undefined) {
+      //     var target = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
+      //     if (target.length > 0) {
+      //       target.forEach(element => {
+      //         var link = {
+      //           source: this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.find(c => c.target === node.id).source,
+      //           target: element,
+      //         };
+      //         this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.push(link);
+      //       });
+      //     }
+      //   }
+
+      //   this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links.filter(value => !RemoveLinks.includes(value));
+      //   this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links = [... this.milestonesGraph.nodes[this.milestoneIndex].submilestone.links]
+      //   this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Sub Milestone Deleted' });
+      // }
+      // else {
+      //   if (node.label === 'Client Review') {
+      //     this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Cant remove Client Review.' });
+      //   }
+      //   else {
+      //     var source = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(c => c.target === node.id).map(c => c.source);
+      //     this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.splice(index, 1);
+      //     RemoveLinks = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(c => c.source === node.id || c.target === node.id);
+      //     if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.source === node.id) !== undefined && this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.target === node.id) !== undefined) {
+
+      //       var target = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
+      //       if (target.length > 0) {
+      //         target.forEach(element => {
+      //           var link = {
+      //             source: this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.find(c => c.target === node.id).source,
+      //             target: element,
+      //           };
+      //           if (target.length > 1) {
+      //             if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(c => c.id === link.target).label.replace(/[0-9]/g, '') !== 'SC') {
+      //               this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.push(link);
+      //             }
+      //           }
+      //           else {
+      //             if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(c => c.id === link.target).label.replace(/[0-9]/g, '') !== 'Client Review') {
+      //               this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.push(link);
+      //             }
+      //           }
+      //         });
+      //       }
+      //     }
+
+      //     this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(value => !RemoveLinks.includes(value));
+      //     this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links = [... this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links]
+      //     this.messageService.add({ key: 'custom', severity: 'error', summary: 'Deleted', detail: 'Task Deleted' });
+
+      //     if (RemoveLinks.filter(c => c.source === node.id).length > 0) {
+      //       this.previousSource = RemoveLinks.filter(c => c.source === node.id).map(c => c.target);
+      //       if (this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.links.filter(c => this.previousSource.includes(c.source)).length > 0) {
+      //         this.previousSource = undefined;
+      //       }
+      //       else {
+      //         this.previousSource = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(e => e.id === this.previousSource[0]);
+      //       }
+      //     }
+      //     else {
+      //       this.previousSource = this.milestonesGraph.nodes[this.milestoneIndex].submilestone.nodes[this.submilestoneIndex].task.nodes.find(e => e.id === source[0]);
+      //     }
+      //   }
     }
-    event.preventDefault();
-    this.resizeGraph = mileType;
-    this.GraphResize();
+
   }
 
   // *************************************************************************************************************************************

@@ -2011,7 +2011,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
       milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'No' : milestoneTask.ActiveCA;
       milestoneTask.itemType = milestoneTask.itemType.replace(/Slot/g, '');
       const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
-      const newName = milestoneTask.itemType + taskCount;
+      let newName = taskCount ? milestoneTask.itemType + taskCount : milestoneTask.itemType;
+      const counter = taskCount ? +taskCount : 1;
+      newName = this.getNewTaskName(milestoneTask, subMilestone, counter, newName);
       if (milestoneTask.nextTask) {
         const nextTasks = milestoneTask.nextTask.split(';');
         nextTasks.forEach(task => {
@@ -2040,7 +2042,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
       milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'Yes' : milestoneTask.ActiveCA;
       milestoneTask.itemType = milestoneTask.itemType + 'Slot';
       const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
-      const newName = milestoneTask.itemType + taskCount;
+      let newName = milestoneTask.itemType + taskCount;
+      const counter = taskCount ? +taskCount : 1;
+      newName = this.getNewTaskName(milestoneTask, subMilestone, counter, newName);
       if (milestoneTask.nextTask) {
         const nextTasks = milestoneTask.nextTask.split(';');
         nextTasks.forEach(task => {
@@ -2065,6 +2069,16 @@ export class TimelineComponent implements OnInit, OnDestroy {
       }
       milestoneTask.pName = newName;
     }
+  }
+
+  getNewTaskName(milestoneTask, subMilestone, counter, originalName) {
+    subMilestone.children.forEach(task => {
+      if (task.data.pName === originalName) {
+        counter++;
+        originalName = milestoneTask.itemType + ' ' + counter;
+      }
+    });
+    return originalName;
   }
   // *************************************************************************************************
   // Date changes Cascading (Task Date Change)
