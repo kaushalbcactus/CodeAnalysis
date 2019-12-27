@@ -2409,12 +2409,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
           });
           if (slotFirstTask[0].data.AssignedTo.ID && slotFirstTask[0].data.AssignedTo.ID !== -1) {
             // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability 
-            await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil);
+            await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil, this.sharedObject.oTaskAllocation.oResources);
           }
         }
       } else if (slotFirstTask[0].data.AssignedTo.EMail) {
         // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability 
-        await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil);
+        await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil, this.sharedObject.oTaskAllocation.oResources);
       }
 
     }
@@ -2426,7 +2426,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
    * @param subMilestonePosition 
    * @param selectedMil 
    */
-  async checkTaskResourceAvailability(slot, subMilestonePosition, selectedMil) {
+  async checkTaskResourceAvailability(slot, subMilestonePosition, selectedMil, oResources) {
     let deallocateSlot = false;
     // old value of slot is used for table details within mail sne for deallocation
     const oldSlot = subMilestonePosition === 0 ? this.tempmilestoneData[selectedMil].children.find(s => s.data.pName === slot.data.pName) :
@@ -2441,7 +2441,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       // find capacity of user on new dates and it returns task for user on given dates
       if (assignedUserId) {
         let retTask = [];
-        const resource = this.sharedObject.oTaskAllocation.oResources.filter(r => r.UserName.ID === assignedUserId);
+        const resource = oResources.filter(r => r.UserName.ID === assignedUserId);
         const oCapacity = await this.usercapacityComponent.applyFilterReturn(task.data.pUserStart, task.data.pUserEnd,
           resource);
 
