@@ -184,48 +184,49 @@ export class AllProjectsComponent implements OnInit {
 
     this.isApprovalAction = true;
     this.reloadAllProject();
+    this.checkEarlyTaskCompleted();
     setInterval(() => {
       this.checkEarlyTaskCompleted();
     }, 150000);
   }
   async checkEarlyTaskCompleted() {
-    const completedTaskFilter = this.pmConstant.QUERY.GET_EARLY_TASK_COMPLETED;
+    const completedTaskFilter = Object.assign({}, this.pmConstant.QUERY.GET_EARLY_TASK_COMPLETED);
+    completedTaskFilter.filter = completedTaskFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
     const sResult = await this.spServices.readItems(this.constants.listNames.EarlyTaskCompleteNotifications.name, completedTaskFilter);
     if (sResult && sResult.length) {
       console.log(sResult);
       let remainingUserId = [];
       let earlyTask;
       for (const element of sResult) {
-        if (element.ProjectCS && element.ProjectCS.results && element.ProjectCS.results.length) {
-          const projectCSArray = element.ProjectCS.results;
-          const userIndex = projectCSArray.findIndex(x => x.ID === this.globalObject.currentUser.userId);
-          if (userIndex > -1) {
-            projectCSArray.forEach(csElement => {
-              if (csElement.ID === this.globalObject.currentUser.userId) {
-                this.messageService.add({
-                  key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-                  detail: 'Early task ' + element.Title + ' has completed successfully.'
-                });
-              }
-            });
-            remainingUserId = projectCSArray.filter(x => x.ID !== this.globalObject.currentUser.userId).map(x => x.ID);
-          }
-          if (remainingUserId.length) {
-            earlyTask = {
-              ProjectCSId: {
-                results: remainingUserId
-              }
-            };
-            const retResults = await this.spServices.updateItem(this.constants.listNames.EarlyTaskCompleteNotifications.name,
-              element.ID, earlyTask, this.constants.listNames.EarlyTaskCompleteNotifications.type);
-          }
+        // if (element.ProjectCS && element.ProjectCS.results && element.ProjectCS.results.length) {
+        const projectCSArray = element.ProjectCS.results;
+        // const userIndex = projectCSArray.findIndex(x => x.ID === this.globalObject.currentUser.userId);
+        // if (userIndex > -1) {
+        // projectCSArray.forEach(async csElement => {
+        // if (csElement.ID === this.globalObject.currentUser.userId) {
+        this.messageService.add({
+          key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+          detail: 'Early task ' + element.Title + ' has completed successfully.'
+        });
+
+        // }
+        // });
+        remainingUserId = projectCSArray.filter(x => x.ID !== this.globalObject.currentUser.userId).map(x => x.ID);
+        // }
+        if (remainingUserId.length) {
+          earlyTask = {
+            ProjectCSId: {
+              results: remainingUserId,
+            },
+          };
         } else {
           earlyTask = {
-            IsActive: 'Yes'
+            IsActive: 'No'
           };
-          const retResults = await this.spServices.updateItem(this.constants.listNames.EarlyTaskCompleteNotifications.name,
-            element.ID, earlyTask, this.constants.listNames.EarlyTaskCompleteNotifications.type);
         }
+        const retResults = await this.spServices.updateItem(this.constants.listNames.EarlyTaskCompleteNotifications.name,
+          element.ID, earlyTask, this.constants.listNames.EarlyTaskCompleteNotifications.type);
+        // }
       }
     }
   }
