@@ -189,30 +189,29 @@ export class AllProjectsComponent implements OnInit {
       this.checkEarlyTaskCompleted();
     }, 150000);
   }
+
   async checkEarlyTaskCompleted() {
     const completedTaskFilter = Object.assign({}, this.pmConstant.QUERY.GET_EARLY_TASK_COMPLETED);
-    completedTaskFilter.filter = completedTaskFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString());
+    const lastOneHour = this.commonService.ConvertTimeformat(24,
+      this.datePipe.transform(new Date().getTime() - (1000 * 60 * 60), 'hh:mm a'));
+    const todayDate = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
+    const lastOneHourDateTime = todayDate + 'T' + lastOneHour + ':00.000';
+
+    completedTaskFilter.filter = completedTaskFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString()).
+      replace('{{LastOnceHour}}', lastOneHourDateTime);
+
     const sResult = await this.spServices.readItems(this.constants.listNames.EarlyTaskCompleteNotifications.name, completedTaskFilter);
     if (sResult && sResult.length) {
       console.log(sResult);
       let remainingUserId = [];
       let earlyTask;
       for (const element of sResult) {
-        // if (element.ProjectCS && element.ProjectCS.results && element.ProjectCS.results.length) {
         const projectCSArray = element.ProjectCS.results;
-        // const userIndex = projectCSArray.findIndex(x => x.ID === this.globalObject.currentUser.userId);
-        // if (userIndex > -1) {
-        // projectCSArray.forEach(async csElement => {
-        // if (csElement.ID === this.globalObject.currentUser.userId) {
         this.messageService.add({
           key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
           detail: 'Early task ' + element.Title + ' has completed successfully.'
         });
-
-        // }
-        // });
         remainingUserId = projectCSArray.filter(x => x.ID !== this.globalObject.currentUser.userId).map(x => x.ID);
-        // }
         if (remainingUserId.length) {
           earlyTask = {
             ProjectCSId: {
@@ -226,10 +225,10 @@ export class AllProjectsComponent implements OnInit {
         }
         const retResults = await this.spServices.updateItem(this.constants.listNames.EarlyTaskCompleteNotifications.name,
           element.ID, earlyTask, this.constants.listNames.EarlyTaskCompleteNotifications.type);
-        // }
       }
     }
   }
+
   navigateToSOW(oProject) {
     this.pmObject.columnFilter.SOWCode = [oProject.SOWCode];
     this.router.navigate(['/projectMgmt/allSOW']);
@@ -1090,7 +1089,6 @@ export class AllProjectsComponent implements OnInit {
     });
     tempArray = tempArray.concat(cm1IdArray, this.selectedProjectObj.CMLevel2ID);
     arrayTo = this.pmCommonService.getEmailId(tempArray);
-    debugger;
     const TempArray = await this.getTosList();
     arrayTo = arrayTo.concat(TempArray);
     arrayTo = arrayTo.filter(this.onlyUnique);
