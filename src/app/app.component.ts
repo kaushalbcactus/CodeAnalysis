@@ -55,7 +55,7 @@ export class AppComponent implements OnDestroy{
     this.globalService.sharePointPageObject.rootsite = window.origin;
   }
 
-  initSPLoggedInUser() {
+  async initSPLoggedInUser() {
     this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 103 : _spPageContextInfo.userId;
     this.globalService.currentUser.email = window.location.href.indexOf('localhost') > -1 ?
       'sneha.danduk@cactusglobal.com' : _spPageContextInfo.userEmail;
@@ -71,7 +71,7 @@ export class AppComponent implements OnDestroy{
   }
 
   linkAccessForUsers(groups) {
-    const currentUserGroups = groups.map(g => g.LoginName);
+    const currentUserGroups = groups.results.map(g => g.LoginName);
     if (currentUserGroups.length > 0) {
       if (currentUserGroups.find(g => g === 'Managers' || g === 'CentralAllocation Members')) {
         this.leftNavigation.push({ title: 'Central Allocation', href: '', visible: true });

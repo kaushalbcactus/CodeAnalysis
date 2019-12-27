@@ -14,7 +14,7 @@ import { DataService } from './Services/data.service';
 import { TimelineHistoryComponent } from './timeline/timeline-history/timeline-history.component';
 import { MessageService } from 'primeng/api';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
-
+import { PrimengModule } from './primeng/primeng.module';
 
 
 @NgModule({
@@ -29,7 +29,8 @@ import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.com
     HttpClientModule,
     HttpModule,
     CommonModule,
-    NgbModule
+    NgbModule,
+    PrimengModule
   ],
   declarations: [
     AppComponent,
