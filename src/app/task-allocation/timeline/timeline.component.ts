@@ -2447,22 +2447,25 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
         let retRes = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : [];
+        retTask = retRes.tasks;
         const breakAvailable = retRes.displayTotalUnAllocated.split(":");
 
         let availableHours = parseFloat(breakAvailable[0]) + parseFloat((parseFloat(breakAvailable[1]) / 60).toFixed(2)); //  parseFloat(retRes.displayTotalUnAllocated.replace(':', '.'));
         const allocatedHours = parseFloat(task.data.budgetHours);
-        const retTaskInd = retTask.find(t => t.ID !== task.data.parentSlot && t.ParentSlot !== task.data.parentSlot);
+        const retTaskInd = retTask.find(t => t.ID === task.data.pID);
         if (retTaskInd) {
           availableHours = availableHours + allocatedHours;
         }
         if (availableHours >= allocatedHours) {
           // filter tasks based on dates and subtasks within same slot
-          retTask = retRes.tasks.filter((tsk) => {
+          retTask = retTask.filter(t => t.ID !== task.data.pID);
+
+          retTask = retTask.filter((tsk) => {
             return ((task.data.pUserStart <= tsk.DueDate && task.data.pUserEnd >= tsk.DueDate)
               || (task.data.pUserStart <= tsk.StartDate && task.data.pUserEnd >= tsk.StartDate)
               || (task.data.pUserStart >= tsk.StartDate && task.data.pUserEnd <= tsk.DueDate));
           });
-          retTask = retTask.filter(t => t.ID !== task.data.parentSlot && t.ParentSlot !== task.data.parentSlot);
+          
           if (retTask.length || slot.data.pUserEnd < sortedTasksEnd[0].data.pUserEnd || slot.data.pUserStart > sortedTasksStart[0].data.pUserStart) {
             deallocateSlot = true;
             break;
