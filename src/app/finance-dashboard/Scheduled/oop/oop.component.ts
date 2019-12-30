@@ -260,6 +260,7 @@ export class OopComponent implements OnInit, OnDestroy {
     createANBCols() {
         this.oopBasedCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
+            { field: 'ProjectTitle', header: 'Project Title', visibility: false },
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
             { field: 'POValues', header: 'PO Number/ Name', visibility: true },
@@ -351,6 +352,7 @@ export class OopComponent implements OnInit, OnDestroy {
             this.oopBasedRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
+                ProjectTitle: piInfo.Title ? piInfo.Title : '',
                 SOWCode: element.SOWCode,
                 SOWName: sowItem.Title,
                 SOWValue: sowcn,
@@ -526,15 +528,21 @@ export class OopComponent implements OnInit, OnDestroy {
             this.items.push({ label: 'Confirm Invoice', command: (e) => this.openMenuContent(e, data) });
         } else {
             if (!(date >= last3Days && date <= lastDay)) {
-                this.messageService.add({ key: 'oopInfoToast', severity: 'info', summary: 'Info message',
-                 detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.',
-                  life: 4000 });
+                this.messageService.add({
+                    key: 'oopInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'To confirm the line item, scheduled Date should be between last 3 working days & last date of the current month.',
+                    life: 4000
+                });
             } else if (!retPO) {
-                this.messageService.add({ key: 'oopInfoToast', severity: 'info', summary: 'Info message',
-                 detail: 'PO not available for the selected line item.', life: 4000 });
+                this.messageService.add({
+                    key: 'oopInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'PO not available for the selected line item.', life: 4000
+                });
             } else if (!(new Date(retPO.POExpiryDate) >= todaysDateTimeZero)) {
-                this.messageService.add({ key: 'oopInfoToast', severity: 'info', summary: 'Info message',
-                 detail: 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), life: 4000 });
+                this.messageService.add({
+                    key: 'oopInfoToast', severity: 'info', summary: 'Info message',
+                    detail: 'PO expired on' + this.datePipe.transform(retPO.POExpiryDate, 'MMM dd, yyyy'), life: 4000
+                });
             }
         }
         this.items.push({ label: 'Edit Invoice', command: (e) => this.openMenuContent(e, data) });
