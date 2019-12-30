@@ -129,7 +129,7 @@ export class DeliverableTypesComponent implements OnInit {
         obj.DeliverableType = item.Title;
         obj.Acronym = item.Acronym;
         obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
-        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
         obj.LastUpdatedBy = item.Editor.Title;
         tempArray.push(obj);
       });
