@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { AdminObjectService } from '../services/admin-object.service';
 import { AdminConstantService } from '../services/admin-constant.service';
+import { GlobalService } from 'src/app/Services/global.service';
 
 @Component({
   selector: 'app-admin',
@@ -23,9 +24,12 @@ export class AdminComponent implements OnInit {
   ];
   constructor(
     public adminObject: AdminObjectService,
-    public adminConstantService: AdminConstantService
+    public adminConstantService: AdminConstantService,
+    public globalObject: GlobalService
   ) { }
   ngOnInit() {
+    this.globalObject.currentTitle = 'Admin';
+
   }
 
 }

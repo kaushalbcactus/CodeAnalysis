@@ -44,19 +44,19 @@ export class PubsupportComponent implements OnInit {
         zone: NgZone,
     ) {
 
-        this.router.routeReuseStrategy.shouldReuseRoute = () => {
-            return false;
-        };
+        // this.router.routeReuseStrategy.shouldReuseRoute = () => {
+        //     return false;
+        // };
 
         // subscribe to the router events - storing the subscription so
         // we can unsubscribe later.
-        this.navigationSubscription = this.router.events.subscribe((e: any) => {
+        // this.navigationSubscription = this.router.events.subscribe((e: any) => {
 
-            // If it is a NavigationEnd event re-initalise the component
-            if (e instanceof NavigationEnd) {
-                this.initialiseInvites();
-            }
-        });
+        //     // If it is a NavigationEnd event re-initalise the component
+        //     if (e instanceof NavigationEnd) {
+        //         this.initialiseInvites();
+        //     }
+        // });
 
         this.overAllValues = [
             { name: 'Open', value: 'Open' },
@@ -278,6 +278,8 @@ export class PubsupportComponent implements OnInit {
         this.display = true;
     }
     async ngOnInit() {
+        this.globalObject.currentTitle = "Publication Support";
+        this.currentUserInfo();
         this.todayDate = new Date();
         this.isSubmisssionDetails = false;
         this.journalConfFormField();
@@ -333,7 +335,7 @@ export class PubsupportComponent implements OnInit {
 
     initialiseInvites() {
         // Set default values and re-fetch any data you need.
-        this.currentUserInfo();
+        
     }
     callGetProjects(isClosed) {
         if (this.loggedInUserGroup.findIndex(c => (c === 'Managers' || c === 'Project-FullAccess')) !== -1) {
@@ -1797,7 +1799,7 @@ export class PubsupportComponent implements OnInit {
 
     // On Click of Project code
     goToProjectDetails(data: any, index: number) {
-        window.open(this.globalObject.sharePointPageObject.webRelativeUrl + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' +
+        window.open(this.globalObject.sharePointPageObject.webRelativeUrl + '/dashboard#/projectMgmt/allProjects?ProjectCode=' +
             data.ProjectCode);
     }
 

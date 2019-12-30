@@ -34,6 +34,8 @@ export class LeaveCalendarComponent implements OnInit {
     private leaveCalendarConstantsService: LeaveCalendarConstantsService) { }
 
   ngOnInit() {
+    this.globalService.currentTitle = 'Leave Calendar';
+
     this.options = {
 
       // listPlugin

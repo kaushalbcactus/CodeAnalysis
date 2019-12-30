@@ -86,42 +86,81 @@ legend {
   }
 
   .layout-topbar{
-    background-color: #E51400;
+    background-color: #C53E3E;
     box-sizing: border-box;
     display: block;
     padding: 0;
     height: 46px;
     box-sizing: border-box;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 87%;
-    z-index: 1;
+    width: 100%;
     box-shadow: 0 2px 5px 0 rgba(0,0,0,.3); 
-    margin-left: 13%;
   }
 
  .logo {
-  margin-left: 13px;
-  margin-top: 10px;
-  display: inline-block;
+   float: left;
 }
  .logo img {
-  height: 21px;
+  height: 32px;
+  padding-left: 9px;
+  padding-right: 5px;
 }
 .container .row {
   padding-top: 60px;
 }
 
-.topbar-menu {
-  /* display: inline-block; */
-  list-style-type: none;
-  float: right;
-  margin: 18px 60px 0 0;
-  padding: 0;
-  height: 100%;
-  color: white
+.img-bg {
+  background-color: white;
+  padding: 7px 0px;
 }
+
+.title {
+  display: inline-block;
+  padding: 12px;
+  color: white;
+}
+
+.title h6 {
+  font-size: 18px;
+}
+
+.sidebar-icon {
+  font-size: 25px;
+    padding-top: 5px;
+    float: left;
+}
+
+.help-icon {
+  font-size: 40px;
+  padding-top: 3px;
+  padding-left: 10px;
+  float: right;
+  text-decoration: none;
+  color: white;
+}
+
+.topbar-menu {
+  color: white;
+  float: right;
+}
+
+.btn-menu {
+  margin-top: 6px;
+  background-color: #C53E3E  !important;
+  border: 1px solid #C53E3E  !important;
+}
+
+.ui-button:enabled:focus {
+  box-shadow: none;
+  outline: 0 none;
+  outline-offset: none;
+}
+
+/* .topbar-menu span {
+  float: left;
+  padding-top: 11px;
+  font-size: 16px;
+} */
+
 .sidenav a {
   padding: 8px 8px 8px 32px;
   text-decoration: none;

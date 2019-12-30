@@ -73,7 +73,7 @@
                     </a>
                 </td>
                 <td>{{task.ClientName}}</td>
-                <td><a style="color:#C53E3E;" href="{{globalService.sharePointPageObject.webAbsoluteUrl}}/allocation#/taskAllocation?ProjectCode={{task.ProjectCode}}" target="_blank">{{task.ProjectCode}}</a> <br /> ({{task.ProjectName}}) </td>
+                <td><a style="color:#C53E3E;" href="{{globalService.sharePointPageObject.webAbsoluteUrl}}/dashboard#/taskAllocation?ProjectCode={{task.ProjectCode}}" target="_blank">{{task.ProjectCode}}</a> <br /> ({{task.ProjectName}}) </td>
                 <td> {{task.Milestone}} <span *ngIf="task.SubMilestones && task.SubMilestones !=='Default'"> -  {{task.SubMilestones}}</span></td>
                 <td>{{task.Displaytask}}</td>
                 <td>{{task.DeliveryType}}</td>

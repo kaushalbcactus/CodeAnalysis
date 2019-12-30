@@ -1,4 +1,4 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule , Title } from '@angular/platform-browser';
 import { CommonModule, DatePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -36,7 +36,7 @@ import { PrimengModule } from './primeng/primeng.module';
     AppComponent,
     PageNotFoundComponent,
   ],
-  providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService],
+  providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService, Title],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

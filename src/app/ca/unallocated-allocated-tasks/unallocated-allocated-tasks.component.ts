@@ -163,6 +163,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     { field: 'AssignedTo' }
   ];
   ngOnInit() {
+    this.globalService.currentTitle = 'Central Allocation';
     this.caGlobal.loading = true;
     this.caGlobal.totalRecords = 0;
     this.modalloaderenable = false;

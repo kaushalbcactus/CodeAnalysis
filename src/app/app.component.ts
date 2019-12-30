@@ -1,9 +1,12 @@
 import { Component, NgZone, OnDestroy } from '@angular/core';
 import { GlobalService } from './Services/global.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute , NavigationEnd} from '@angular/router';
 import { environment } from '../environments/environment';
 import { ConstantsService } from './Services/constants.service';
 import { SPOperationService } from './Services/spoperation.service';
+import { MenuItem } from 'primeng/api';
+import { Title } from '@angular/platform-browser';
+import { filter, map } from 'rxjs/operators';
 // import { Environment } from '../environments/environment.prod';
 declare const _spPageContextInfo;
 declare const newrelic;
@@ -13,16 +16,15 @@ declare const newrelic;
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnDestroy{
+export class AppComponent implements OnDestroy {
   title = 'Medcom SPA';
   display = false;
+  items: MenuItem[];
   leftNavigation = [
-    { title: 'My Dashboard', href: '', visible: true },
-    { title: 'QMS', href: '', visible: true },
-    { title: 'Leave Calendar', href: '', visible: true },
-    { title: 'Publication Support', href: '', visible: true },
-    { title: 'Allocation', href: '', visible: true },
-    { title: 'Attr Management', href: '', visible: true }
+    { title: 'My Dashboard', href: '/dashboard#/myDashboard', visible: true },
+    { title: 'QMS', href: '/dashboard#/qms', visible: true },
+    { title: 'Leave Calendar', href: '/dashboard#/leaveCalendar', visible: true },
+    { title: 'Publication Support', href: '/dashboard#/pubSupport', visible: true },
   ];
   // tslint:disable-next-line:variable-name
   constructor(
@@ -31,10 +33,28 @@ export class AppComponent implements OnDestroy{
     // tslint:disable-next-line: variable-name
     private _ngZone: NgZone,
     public constantsService: ConstantsService,
-    private spService: SPOperationService
+    private spService: SPOperationService,
+    private titleService: Title,
+    private activatedRoute:ActivatedRoute
   ) { }
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
+
+    const appTitle = this.titleService.getTitle();
+    this.router
+      .events.pipe(
+        filter(event => event instanceof NavigationEnd),
+        map(() => {
+          const child = this.activatedRoute.firstChild;
+          if (child.snapshot.data['title']) {
+            return child.snapshot.data['title'];
+          }
+          return appTitle;
+        })
+      ).subscribe((ttl: string) => {
+        this.titleService.setTitle(ttl);
+      });
+
     // tslint:disable-next-line: only-arrow-functions
     this.constantsService.loader.isPSInnerLoaderHidden = true;
     if (environment.production) { if (window) { window.console.log = () => { }; } }
@@ -42,6 +62,13 @@ export class AppComponent implements OnDestroy{
     this.initSPPageObject();
     this.initSPLoggedInUser();
     this.initSPComponentRedirection();
+
+    this.items = [{
+      label: 'Misc',
+      items: [
+        { label: 'Site Contents', url: this.globalService.sharePointPageObject.webRelativeUrl+'/_layouts/15/viewlsts.aspx' }
+      ]
+    }]
   }
 
   initSPPageObject() {
@@ -73,17 +100,26 @@ export class AppComponent implements OnDestroy{
   linkAccessForUsers(groups) {
     const currentUserGroups = groups.results.map(g => g.LoginName);
     if (currentUserGroups.length > 0) {
+      if (currentUserGroups.find(g => g === 'Managers' || g === 'ProjectManagement Members' || g === 'Invoice_Team')) {
+        this.leftNavigation.push({ title: 'Project Management', href: '/dashboard#/projectMgmt', visible: true });
+      }
+      if (currentUserGroups.find(g => g === 'Managers' || g === 'TaskAllocation Members')) {
+        this.leftNavigation.push({ title: 'Allocation', href: '/dashboard#/taskAllocation', visible: true });
+      }
       if (currentUserGroups.find(g => g === 'Managers' || g === 'CentralAllocation Members')) {
-        this.leftNavigation.push({ title: 'Central Allocation', href: '', visible: true });
+        this.leftNavigation.push({ title: 'Central Allocation', href: '/dashboard#/centralallocation', visible: true });
       }
       if (currentUserGroups.find(g => g === 'Managers' || g === 'CapacityDashboard Members' || g === 'CapacityLink Members')) {
-        this.leftNavigation.push({ title: 'Capacity Dashboard', href: '', visible: true });
+        this.leftNavigation.push({ title: 'Capacity Dashboard', href: '/dashboard#/capacityDashboard', visible: true });
       }
       if (currentUserGroups.find(g => g === 'Managers' || g === 'FinanceDashboard Members' || g === 'Invoice_Team')) {
-        this.leftNavigation.push({ title: 'Finance Dashboard', href: '', visible: true });
+        this.leftNavigation.push({ title: 'Finance Dashboard', href: '/dashboard#/financeDashboard', visible: true });
       }
-      if (currentUserGroups.find(g => g === 'Managers' || g === 'ProjectManagement Members' || g === 'Invoice_Team')) {
-        this.leftNavigation.push({ title: 'Project Management', href: '', visible: true });
+      if (currentUserGroups.find(g => g === 'Managers' || g === 'AttributeManagement Members')) {
+        this.leftNavigation.push({ title: 'Attr Management', href: '/attribute', visible: true });
+      }
+      if (currentUserGroups.find(g => g === 'Managers' || g === 'AttributeManagement Members')) {
+        this.leftNavigation.push({ title: 'Admin', href: '/dashboard#/admin', visible: true });
       }
     }
   }

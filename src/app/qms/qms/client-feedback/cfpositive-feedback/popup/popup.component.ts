@@ -202,7 +202,7 @@ export class PopupComponent implements OnInit {
         let createMailContent = createPFTemplate[0].Content;
         const createMailSubject = this.pf.projectCode + '(#' + this.pf.pfID + '): Positive Feedback';
         const strTo = allDeliveryEmails.join(',');
-        createMailContent = this.replaceContent(createMailContent, '@@Val1@@', this.global.sharePointPageObject.webAbsoluteUrl + '/quality#/qms/clientFeedback/cfpositiveFeedback');
+        createMailContent = this.replaceContent(createMailContent, '@@Val1@@', this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/clientFeedback/cfpositiveFeedback');
         this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'sendMail');
         this.spService.sendMail(strTo, this.global.currentUser.email, createMailSubject, createMailContent, this.global.currentUser.email);
       }
@@ -340,7 +340,7 @@ export class PopupComponent implements OnInit {
           let notifyMailContent = notifyPFTemplate[0].Content;
           const notifyMailSubject = this.pf.projectCode + '(#' + this.pf.pfID + '): Positive Feedback';
           const strTo = allResourcesEmails.join(',');
-          notifyMailContent = this.replaceContent(notifyMailContent, '@@Val1@@', this.global.sharePointPageObject.webAbsoluteUrl + '/quality#/qms/personalFeedback/positiveFeedback');
+          notifyMailContent = this.replaceContent(notifyMailContent, '@@Val1@@', this.global.sharePointPageObject.webAbsoluteUrl + '/dashboard#/qms/personalFeedback/positiveFeedback');
           this.spService.sendMail(strTo, this.global.currentUser.email, notifyMailSubject, notifyMailContent, this.global.currentUser.email);
         }
       }

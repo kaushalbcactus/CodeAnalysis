@@ -89,6 +89,7 @@ export class TaskAllocationComponent implements OnInit {
   }
 
   async ngOnInit() {
+    this.globalObject.currentTitle = 'Task Allocation'; 
     await this.currentUserGroup();
     // tslint:disable-next-line: no-string-literal
     this.projectCode = this.route.snapshot.queryParams['ProjectCode'];

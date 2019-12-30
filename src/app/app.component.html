@@ -5,25 +5,31 @@
     <div id="scInnerLoaderText">Loading...</div>
 </div>
 <p-sidebar class="sidenav" [(visible)]="display" [showCloseIcon]="false" [style]="{width:'19em'}">
-    <i (click)="display = false" class="pi pi-list"></i>
+    <i (click)="display = false" class="pi pi-list sidebar-icon"></i>
     <div class="logo">
-    <img _ngcontent-jlv-c0="" class="ng-tns-c0-0" alt="logo"
-        src="https://cactusglobal.sharepoint.com/:i:/r/sites/medcomcdn/PublishingImages/Images/CACTUSRLogo3.png?csf=1&e=jkqaBo">
+        <img _ngcontent-jlv-c0="" class="ng-tns-c0-0" alt="logo"
+            src="https://cactusglobal.sharepoint.com/:i:/r/sites/medcomcdn/PublishingImages/Images/CACTUSRLogo3.png?csf=1&e=jkqaBo">
     </div>
     <a *ngFor="let link of leftNavigation" [href]="link.href">{{link.title}}</a>
 </p-sidebar>
-<i (click)="display = true" class="pi pi-list"></i>
-<a _ngcontent-jlv-c0="" class="logo" href="#/">
-    <img _ngcontent-jlv-c0="" class="ng-tns-c0-0" alt="logo"
-        src="https://cactusglobal.sharepoint.com/:i:/r/sites/medcomcdn/PublishingImages/Images/CACTUSRLogo3.png?csf=1&e=jkqaBo">
-</a>
 <div class="layout-topbar">
-
-    <ul _ngcontent-aqt-c0="" class="topbar-menu">
-        <li _ngcontent-aqt-c0="" class="ng-tns-c0-0">
-            Welcome {{globalService.currentUser.title}}
-        </li>
-    </ul>
+    <div class="float-left img-bg">
+        <i (click)="display = true" class="pi pi-list sidebar-icon"></i>
+        <a _ngcontent-jlv-c0="" class="logo" href="#/dashboard">
+            <img _ngcontent-jlv-c0="" class="ng-tns-c0-0" alt="logo"
+                src="https://cactusglobal.sharepoint.com/:i:/r/sites/medcomcdn/PublishingImages/Images/CACTUSRLogo3.png?csf=1&e=jkqaBo">
+        </a>
+    </div>
+    <div class="title">
+        <h6>{{ globalService.currentTitle }}</h6>
+    </div>
+    <div class="topbar-menu">
+        <!-- <span>Welcome {{globalService.currentUser.title}}</span> -->
+        <p-menu #menu [popup]="true" [model]="items"></p-menu>
+        <button pButton type="button" class="btn-menu" label="Welcome {{globalService.currentUser.title}}"
+            (click)="menu.toggle($event)"></button>
+        <a href="mailto:sp.support@cactusglobal.com?subject=SP Issue:"><i class="pi pi-question-circle help-icon"></i></a>
+    </div>
 </div>
 <div class="routerOutlet">
     <router-outlet></router-outlet>

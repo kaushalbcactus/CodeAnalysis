@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 export class GlobalService {
 
   constructor() { }
+  public currentTitle: any;
   public userInfo: any;
   public oReviewerPendingTasks = [];
   public oTask = {

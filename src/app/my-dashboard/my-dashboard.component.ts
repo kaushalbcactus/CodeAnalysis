@@ -52,6 +52,8 @@ export class MyDashboardComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.sharedObject.currentTitle = 'My Dashboard';
+
     this.items = [
       { label: 'My Open Tasks', routerLink: ['my-current-tasks'] },
       { label: 'My Timeline', routerLink: ['my-timeline'] },
