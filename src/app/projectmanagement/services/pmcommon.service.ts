@@ -1628,7 +1628,7 @@ export class PMCommonService {
       data = {
         __metadata: { type: this.constant.listNames.Schedules.type },
         StartDate: fteObj.monthStartDay,
-        DueDate: fteObj.monthStartDay,
+        DueDate: fteObj.monthEndDay,
         ExpectedTime: '' + 0,
         TimeZone: '' + resourceObj.TimeZone.Title,
         TATBusinessDays: 0,
@@ -1646,7 +1646,7 @@ export class PMCommonService {
       data = {
         __metadata: { type: this.constant.listNames.Schedules.type },
         StartDate: fteObj.monthStartDay,
-        DueDate: fteObj.monthStartDay,
+        DueDate: fteObj.monthEndDay,
         ExpectedTime: '' + 0,
         TimeZone: '' + resourceObj.TimeZone.Title,
         TATBusinessDays: 0,
@@ -1899,6 +1899,7 @@ export class PMCommonService {
           monthEndDay = new Date(year, month + 1, 0);
         }
         const monthName = monthNames[month];
+        monthEndDay.setHours(23, 45);
         months.push({ year, month, monthName, monthStartDay, monthEndDay });
       }
     }

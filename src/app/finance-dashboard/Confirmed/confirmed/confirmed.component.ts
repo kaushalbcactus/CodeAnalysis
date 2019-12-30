@@ -915,7 +915,13 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         const pfobj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
         pfobj.filter = pfobj.filter.replace('{{ProjectCode}}', this.selectedRowItem.ProjectCode);
         let response = await this.spServices.readItems(this.constantService.listNames.ProjectFinances.name, pfobj);
-        response = response.length ? response : [];
+        response = response.length ? response[0] : {};
+        // let obj = [{
+        //     url: this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name, pfobj),
+        //     type: 'GET',
+        //     listName: this.constantService.listNames.ProjectFinances
+        // }]
+        // const res = await this.spServices.executeBatch(obj);
         return response;
     }
 
@@ -955,7 +961,8 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 piObj.listName = this.constantService.listNames.ProjectInformation.name;
                 piObj.type = 'PATCH';
                 piObj.data = piData;
-                batchUrl.push(iliObj);
+                batchUrl.push(piObj);
+
                 // Update PF
                 const pf = await this.getPFByPC();
                 // console.log('pf ', pf);
@@ -973,7 +980,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                     pfObj.type = 'PATCH';
                     pfObj.data = pfData;
 
-                    batchUrl.push(iliObj);
+                    batchUrl.push(pfObj);
                 }
             }
             this.submitForm(batchUrl, type);

@@ -52,6 +52,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
   loderenable: boolean = true;
   DropdownOptions: SelectItem[];
   disableSave = true;
+  yearsRange = new Date().getFullYear() + ':' + (new Date().getFullYear() + 10);
   public queryConfig = {
     data: null,
     url: '',
@@ -270,21 +271,20 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
   openPopup(data, Slot) {
-    console.log(data);
     if (data.Type === 'Slot') {
-      // if (data.editMode) {
-      //   this.taskMenu = [
-      //     { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
-      //     { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data) },
-      //     { label: 'Cancel Changes', icon: 'pi pi-fw pi-times', command: (e) => this.cancelledAllchanges(data) },
-      //   ];
-      // } else {
 
-      this.taskMenu = [
-        { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
-        { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data, Slot) }
-      ];
-      // }
+      if (data.editMode) {
+        this.taskMenu = [
+          { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
+          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data, Slot) },
+          { label: 'Cancel Changes', icon: 'pi pi-fw pi-times', command: (e) => this.cancelledAllchanges(data) },
+        ];
+      } else {
+        this.taskMenu = [
+          { label: 'Restructure', icon: 'pi pi-sitemap', command: (e) => this.showRestructureCA(data) },
+          { label: 'View / Add Scope', icon: 'pi pi-fw pi-comment', command: (e) => this.getAllocateTaskScope(data, Slot) }
+        ];
+      }
     } else {
       if (data.editMode) {
         this.taskMenu = [
@@ -311,7 +311,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     this.expandedRows[data.Id] = false;
     data.editMode = false;
     data.edited = false;
-    delete data.MilestoneAllTasks;
+    // delete data.MilestoneAllTasks;
 
   }
 
@@ -394,12 +394,31 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         task.selectedResources = [];
         task.displayselectedResources = [];
         const res = this.caCommonService.sortResources(setResources, task);
-        const resExtn = $.extend(true, [], res);
 
+        if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
+
+          const resourcesList = $.extend(true, [], this.resourceList);
+          let ExistingUser = res.find(c => c.UserName.ID === task.PreviousAssignedUser.ID &&
+            c.UserName.Title === task.PreviousAssignedUser.Title);
+          if (ExistingUser) {
+            ExistingUser.userType = 'Previously Assigned';
+          } else {
+            ExistingUser = resourcesList.find(c => c.UserName.ID === task.PreviousAssignedUser.ID &&
+              c.UserName.Title === task.PreviousAssignedUser.Title);
+            if (ExistingUser) {
+              ExistingUser.userType = 'Previously Assigned';
+              const retResource = oCapacity.arrUserDetails.filter(user => user.uid === ExistingUser.UserName.ID);
+              this.setColorCode(retResource, ExistingUser, task);
+              const dispTime = parseFloat(retResource[0].displayTotalUnAllocated.replace(':', '.'));
+              ExistingUser.taskDetails = retResource[0];
+              ExistingUser.timeAvailable = dispTime;
+              res.push(ExistingUser);
+            }
+          }
+        }
+        const resExtn = $.extend(true, [], res);
         if (resExtn) {
           const UniqueUserType = resExtn.map(c => c.userType).filter((item, index) => resExtn.map(c => c.userType).indexOf(item) === index);
-
-
           for (const retRes of UniqueUserType) {
 
             const Users = resExtn.filter(c => c.userType === retRes);
@@ -409,6 +428,13 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
               );
               task.selectedResources.push(user);
             });
+
+            // Items.sort((user1, user2) => {
+            //   if (user1.value.timeAvailable > user2.value.timeAvailable) { return -1; }
+            //   if (user1.value.timeAvailable < user2.value.timeAvailable) { return 1; }
+            //   if (user1.value.Title > user2.value.Title) { return 1; }
+            //   if (user1.value.Title < user2.value.Title) { return -1; }
+            // });
 
             task.displayselectedResources.push({ label: retRes, items: Items });
           }
@@ -530,7 +556,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
   assignedToUserChanged(rowData) {
     rowData.assignedUserChanged = true;
-    rowData.PreviousAssignedUser = rowData.AssignedTo;
+    // rowData.PreviousAssignedUser = rowData.AssignedTo;
   }
 
   // ****************************************************************************************************
@@ -924,6 +950,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         this.expandedRows[RowData.Id] = true;
         RowData.subTaskloaderenable = true;
         let SlotTasks = [];
+
         if (RowData.SlotTasks) {
           SlotTasks = JSON.parse(JSON.stringify(RowData.SlotTasks));
         } else {
@@ -988,13 +1015,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
           }
           if (task.previousTask !== previousTasks || task.nextTask !== nextTasks) {
-
             task.edited = true;
-            task.PrevTasks = previousTasks === '' ? null : previousTasks;
-            task.nextTasks = nextTasks === '' ? null : nextTasks;
           }
-
-          task.PrevTasks = previousTasks === '' ? null : previousTasks;
+          task.prevTasks = previousTasks === '' ? null : previousTasks;
           task.nextTasks = nextTasks === '' ? null : nextTasks;
           const obj = await this.GetTask(task, false);
           obj.editMode = true;
@@ -1002,24 +1025,42 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           RowData.SlotTasks.push(obj);
           RowData.editMode = true;
 
+
+          if (RowData.MilestoneAllTasks.length > 0 && RowData.MilestoneAllTasks.find(c => c.type ===
+            task.taskType && c.milestone === RowData.Milestone)) {
+            if (!RowData.MilestoneAllTasks.find(c => c.type === task.taskType).tasks.find(c => c ===
+              task.label && c.milestone === RowData.Milestone)) {
+              RowData.MilestoneAllTasks.find(c => c.type === task.taskType && c.milestone ===
+                RowData.Milestone).tasks.push(RowData.TaskName);
+            }
+          } else {
+            RowData.MilestoneAllTasks.push({ type: task.taskType, milestone: RowData.Milestone, tasks: [RowData.TaskName] });
+          }
+        }
+
+        if (this.completeTaskArray.filter(c => c.ProjectCode === RowData.ProjectCode && c.Milestone === RowData.Milestone)) {
+          this.completeTaskArray.filter(c => c.ProjectCode === RowData.ProjectCode && c.Milestone ===
+            RowData.Milestone).map(c => c.MilestoneAllTasks = RowData.MilestoneAllTasks);
         }
         RowData.subTaskloaderenable = false;
         this.disableSave = false;
-
-      } else {
-
-        if (!RowData.SlotTasks) {
-
-          RowData.SlotTasks = [];
-          const obj = await this.GetTask(RowData, false);
-          const tasks = await this.GetAllConstantTasks(obj.Task);
-          obj.TaskName = tasks.length > 0 ? tasks[0] : obj.TaskName;
-          obj.isEditEnabled = true;
-          obj.edited = true;
-          RowData.SlotTasks.push(obj);
-          RowData.subTaskloaderenable = false;
-        }
       }
+      //        else {
+      // debugger;
+      //         if (!RowData.SlotTasks) {
+
+      //           RowData.SlotTasks = [];
+      //           const tasks = await this.GetAllConstantTasks(RowData.Task);
+      //           RowData.TaskName = tasks.length > 0 ? tasks[0] : RowData.TaskName;
+      //           const obj = await this.GetTask(RowData, false);
+
+
+      //           obj.isEditEnabled = true;
+      //           obj.edited = true;
+      //           RowData.SlotTasks.push(obj);
+      //           RowData.subTaskloaderenable = false;
+      //         }
+      //       }
     });
 
   }
@@ -1044,36 +1085,64 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       if (response.length > 0) {
         for (const element of response) {
           if (element.Status !== 'Deleted') {
+            element.nextTasks = element.NextTasks;
+            element.prevTasks = element.PrevTasks;
             const obj = await this.GetTask(element, true);
             event.data.SlotTasks.push(obj);
           }
           event.data.dbSlotTasks.push(element);
         }
-
-        // 
-        // if (event.data.SlotTasks.length === 0) {
-        //   const tasks = await this.GetAllConstantTasks(event.data.Task);
-
-        //   event.data.TaskName = tasks.length > 0 ? tasks[0] : event.data.TaskName;
-        //   const obj = await this.GetTask(event.data, false);
-        //   obj.editMode = true;
-        //   obj.edited = true;
-        //   obj.Status = 'Not Saved';
-        //   event.data.SlotTasks.push(obj);
-        // }
         event.data.subTaskloaderenable = false;
       } else {
         const tasks = await this.GetAllConstantTasks(event.data.Task);
-        event.data.TaskName = tasks.length > 0 ? tasks[0] : event.data.TaskName;
+        let count = 0;
+        const constTask = event.data.MilestoneAllTasks.find(c => c.type === tasks[0] && c.milestone === event.data.Milestone);
+        if (constTask) {
+
+          count = constTask.tasks.filter((task) => { return new RegExp(tasks[0], 'g').test(task); }).length > 0 ?
+            constTask.tasks.filter((task) => { return new RegExp(tasks[0], 'g').test(task) }).filter((v) => {
+              return v.replace(/.*\D/g, '')
+            }).map((v) => {
+              return v.replace(new RegExp(tasks[0],
+                'g'), '')
+              // tslint:disable-next-line: radix
+            }).map(c => (!isNaN(c) ? parseInt(c) : 0)).length > 0 ?
+              Math.max.apply(null, constTask.tasks.filter((task) => {
+                return new RegExp(tasks[0], 'g').test
+                  (task)
+              }).filter((v) => { return v.replace(/.*\D/g, '') }).map((v) => {
+                return v.replace(new RegExp(tasks[0], 'g'), '');
+              }).map(c => (!isNaN(c) ? parseInt(c) : 0))) : 1 : 0;
+        }
+
+
+
+
+        event.data.TaskName = tasks.length > 0 ? count > 0 ? tasks[0] + ' ' + (count + 1) : tasks[0] : event.data.TaskName;
+        // event.data.nextTasks = event.data.NextTasks;
+        // event.data.prevTasks = event.data.PrevTasks;
         const obj = await this.GetTask(event.data, false);
         obj.editMode = true;
         obj.edited = true;
         obj.Status = 'Not Saved';
         event.data.SlotTasks.push(obj);
+        if (event.data.MilestoneAllTasks.length > 0 && event.data.MilestoneAllTasks.find(c => c.type ===
+          tasks[0] && c.milestone === event.data.Milestone)) {
+          event.data.MilestoneAllTasks.find(c => c.type === tasks[0] && c.milestone === event.data.Milestone)
+            .tasks.push(event.data.TaskName);
+        } else {
+          event.data.MilestoneAllTasks.push({ type: tasks[0], milestone: event.data.Milestone, tasks: [event.data.TaskName] });
+        }
+
+        if (this.completeTaskArray.filter(c => c.ProjectCode === event.data.ProjectCode && c.Milestone === event.data.Milestone)) {
+          this.completeTaskArray.filter(c => c.ProjectCode === event.data.ProjectCode && c.Milestone ===
+            event.data.Milestone).map(c => c.MilestoneAllTasks = event.data.MilestoneAllTasks);
+        }
+
+        console.log(event.data);
         event.data.subTaskloaderenable = false;
       }
     }
-    console.log(event.data.SlotTasks);
   }
 
   modelChanged(event, Slot) {
@@ -1107,19 +1176,19 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (!task.TaskName) {
       task.TaskName = $.trim(task.Title.replace(task.ProjectCode + '', '').replace(task.Milestone + '', ''));
     }
-    const resPool = this.caCommonService.getResourceByMatrix(resourcesList,
-      task.Type && task.Type === 'Slot' ? task.TaskName : task.Task && task.Task !== 'Select One' ?
-        task.Task : task.taskType, task.SkillLevel,
+    const resPool = this.caCommonService.getResourceByMatrix(resourcesList, task.Task ? task.Task : task.taskType ? task.taskType : '', task.SkillLevel,
       projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
+    //  resPool = this.caCommonService.sortResources(resPool, task);
+    // task.Type && task.Type === 'Slot' ? task.Task : task.Task && task.Task !== 'Select One' ?
+    //   task.Task : task.Task
+    if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
 
-    if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1) {
-
-      let ExistingUser = resPool.find(c => c.UserName.ID === task.PreviousAssignedUser.ID && c.Title === task.PreviousAssignedUser.Title);
+      let ExistingUser = resPool.find(c => c.UserName.ID === task.PreviousAssignedUser.ID && c.UserName.Title === task.PreviousAssignedUser.Title);
       if (ExistingUser) {
         ExistingUser.userType = 'Previously Assigned';
       } else {
         ExistingUser = resourcesList.find(c => c.UserName.ID === task.PreviousAssignedUser.ID &&
-          c.Title === task.PreviousAssignedUser.Title);
+          c.UserName.Title === task.PreviousAssignedUser.Title);
         if (ExistingUser) {
           ExistingUser.userType = 'Previously Assigned';
           resPool.push(ExistingUser);
@@ -1156,11 +1225,12 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     taskObj.Id = task.ID ? task.ID : task.Id;
     taskObj.Task = task.Type && task.Type === 'Slot' ? task.TaskName : task.Task ? task.Task : task.taskType;
+    taskObj.Task = taskObj.Task.split(' ')[0];
     taskObj.Timezone = task.timezone ? task.timezone : task.TimeZone;
     taskObj.Title = task.Title;
     taskObj.ProjectCode = task.projectCode ? task.projectCode : task.ProjectCode;
-    taskObj.NextTasks = task.Type && task.Type === 'Slot' ? '' : (task.nextTasks ? task.nextTasks : task.NextTasks);
-    taskObj.PrevTasks = task.Type && task.Type === 'Slot' ? '' : (task.PrevTasks ? task.PrevTasks : task.prevTasks);
+    taskObj.NextTasks = task.Type && task.Type === 'Slot' ? '' : task.nextTasks;
+    taskObj.PrevTasks = task.Type && task.Type === 'Slot' ? '' : task.prevTasks;
     taskObj.Milestone = task.milestone ? task.milestone : task.Milestone;
     taskObj.TaskName = task.TaskName;
     taskObj.EstimatedTime = task.estimatedTime ? task.estimatedTime : task.ExpectedTime ?
@@ -1209,12 +1279,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     return taskObj;
   }
 
-
-
-
   async  GetResourceOnEdit(task) {
-
-
 
     const setResourcesExtn = $.extend(true, [], task.resources);
     const startTime = new Date(new Date(task.StartTime).setHours(0, 0, 0, 0));
@@ -1233,14 +1298,27 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     task.selectedResources = [];
     task.displayselectedResources = [];
     const res = this.caCommonService.sortResources(setResources, task);
-    const resExtn = $.extend(true, [], res);
 
+    if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
+      const resourcesList = $.extend(true, [], this.resourceList);
+      let ExistingUser = res.find(c => c.UserName.ID === task.PreviousAssignedUser.ID
+        && c.UserName.Title === task.PreviousAssignedUser.Title);
+      if (ExistingUser) {
+        ExistingUser.userType = 'Previously Assigned';
+      } else {
+        ExistingUser = resourcesList.find(c => c.UserName.ID === task.PreviousAssignedUser.ID &&
+          c.UserName.Title === task.PreviousAssignedUser.Title);
+        if (ExistingUser) {
+          ExistingUser.userType = 'Previously Assigned';
+          res.push(ExistingUser);
+        }
+      }
+    }
+
+    const resExtn = $.extend(true, [], res);
     if (resExtn) {
       const UniqueUserType = resExtn.map(c => c.userType).filter((item, index) => resExtn.map(c => c.userType).indexOf(item) === index);
-
-
       for (const retRes of UniqueUserType) {
-
         const Users = resExtn.filter(c => c.userType === retRes);
         const Items = [];
         Users.forEach(user => {
@@ -1262,8 +1340,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       }
       this.selectedUser = null;
     }
-
-
     if (task.displayselectedResources.length > 1) {
       const response = await this.SortByGroupAssignTo(task.displayselectedResources);
       task.displayselectedResources = response;
@@ -1276,8 +1352,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
       });
     }
   }
-
-
 
   getDatePart(date) {
     const newDate = new Date(date);
@@ -1305,13 +1379,14 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     let previousNode = undefined;
     Slot.SlotTasks.forEach(task => {
       if (Node === task) {
+
         this.changeDateOfEditedTask(task, type);
+
         previousNode = task;
         const nextTasks = previousNode.NextTasks ? previousNode.NextTasks.split(';') : [];
         if (nextTasks) {
           this.cascadeNextTask(nextTasks, Slot, previousNode);
         }
-
       }
     });
   }
@@ -1481,9 +1556,10 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
 
         let validateAllocation = true;
+
         slot.SlotTasks.forEach(element => {
           if (element.edited) {
-            const title = element.allocatedResource ? element.allocatedResource.Title : null;
+            const title = element.allocatedResource ? element.allocatedResource.UserName.Title : null;
             if (!title) {
               validateAllocation = false;
             }
@@ -1513,7 +1589,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
           return false;
         }
 
-        const compareTaskEndDates = slot.SlotTasks.filter(e => (slot.DueDate < e.UserEnd && e.Status !== 'Completed'));
+        const compareTaskEndDates = slot.SlotTasks.filter(e => (e.UserEnd > slot.DueDate && e.Status !== 'Completed'));
         if (compareTaskEndDates.length > 0) {
 
           this.messageService.add({
@@ -1778,7 +1854,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     }
 
     for (const slot of updateSlot) {
-      if (slot.edited && slot.CentralAllocationDone !=='Yes') {
+      if (slot.CentralAllocationDone !== 'Yes') {
         const updateProjectBody = {
           __metadata: { type: 'SP.Data.SchedulesListItem' },
           CentralAllocationDone: 'Yes',
@@ -1794,8 +1870,6 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         batchUrl.push(taskObj);
       }
     }
-
-   debugger;
     const responseInLines = await this.executeBulkRequests(UpdateProjectInfo, batchUrl);
     if (responseInLines.length > 0) {
       let counter = 0;
@@ -1914,15 +1988,16 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         ID: task.Id,
         StartDate: task.StartDate,
         DueDate: task.DueDate,
-        ExpectedTime: '' + task.EstimatedTime,
+        Status: task.Status,
+        ExpectedTime: task.EstimatedTime ? '' + task.EstimatedTime : '' + task.ExpectedTime,
         AllowCompletion: task.allowStart === true ? 'Yes' : 'No',
         AssignedToId: task.allocatedResource ? task.allocatedResource.UserName.hasOwnProperty('ID') ?
           task.allocatedResource.UserName.ID : -1 : -1,
         TimeZone: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
           ? task.allocatedResource.TimeZone.Title : '+5.5' : '+5.5',
         Comments: task.TaskScope ? task.TaskScope : '',
-        NextTasks: this.setPreviousAndNext(task.NextTasks, slot.Milestone, slot.ProjectCode),
-        PrevTasks: this.setPreviousAndNext(task.PrevTasks, slot.Milestone, slot.ProjectCode),
+        NextTasks: task.Status !== 'Deleted' ? this.setPreviousAndNext(task.NextTasks, slot.Milestone, slot.ProjectCode) : '',
+        PrevTasks: task.Status !== 'Deleted' ? this.setPreviousAndNext(task.PrevTasks, slot.Milestone, slot.ProjectCode) : '',
         CentralAllocationDone: 'Yes',
         IsCentrallyAllocated: 'No',
         DisableCascade: task.DisableCascade === true ? 'Yes' : 'No',
@@ -1944,7 +2019,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (sText) {
       const arrVal = sText.split(';');
       const arrNewVal = [];
-      for (const val of arrVal) {
+      for (let val of arrVal) {
+        val = val.replace(sProject + ' ', '');
+        val = val.replace(sMilestone + ' ', '');
         arrNewVal.push(sProject + ' ' + sMilestone + ' ' + val);
       }
 

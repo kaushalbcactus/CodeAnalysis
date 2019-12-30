@@ -475,110 +475,6 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
     this.thenBlock = this.taskId;
   }
 
-  // **************************************************************************************************
-  // Get Next Previous task from current task
-  // **************************************************************************************************
-  async getNextPreviousTask(task) {
-    this.tasks = [];
-    let nextTaskFilter = '';
-    let previousTaskFilter = '';
-    let nextTasks;
-    let previousTasks;
-    let currentTaskNextTask = task.NextTasks;
-    let currentTaskPrevTask = task.PrevTasks;
-
-    if (task.ParentSlot) {
-      // const parentIds = this.tasks.filter(item => item.ParentSlot);
-      // if (parentIds.length) {
-      // let parentPreviousNextTask: any = [];
-      // parentIds.forEach(ele => {
-      const parentPreviousNextTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTaskParent);
-      parentPreviousNextTask.filter = parentPreviousNextTask.filter.replace('{{ParentSlotId}}', task.ParentSlot);
-      // });
-      const parentNPTasks = await this.spServices.readItems(this.constants.listNames.Schedules.name, parentPreviousNextTask);
-      console.log(parentNPTasks);
-      const parentNPTask = parentNPTasks.length ? parentNPTasks[0] : [];
-      if (!currentTaskNextTask) {
-        currentTaskNextTask = parentNPTask.NextTasks;
-      }
-      if (!currentTaskPrevTask) {
-        currentTaskPrevTask = parentNPTask.PrevTasks;
-      }
-    }
-
-
-    if (currentTaskNextTask) {
-      nextTasks = currentTaskNextTask.split(';#');
-      nextTasks.forEach((value, i) => {
-        // tslint:disable-next-line: quotemark
-        nextTaskFilter += "(Title eq '" + value + "')";
-        nextTaskFilter += i < nextTasks.length - 1 ? ' or ' : '';
-      });
-    }
-    if (currentTaskPrevTask) {
-      previousTasks = currentTaskPrevTask.split(';#');
-      previousTasks.forEach((value, i) => {
-        previousTaskFilter += '(Title eq \'' + value + '\')';
-        previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
-      });
-    }
-
-    const taskFilter = (nextTaskFilter !== '' && previousTaskFilter !== '') ?
-      nextTaskFilter + ' or ' + previousTaskFilter : (nextTaskFilter === '' && previousTaskFilter !== '')
-        ? previousTaskFilter : (nextTaskFilter !== '' && previousTaskFilter === '') ? nextTaskFilter : '';
-
-
-    const previousNextTask = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTask);
-    previousNextTask.filter = taskFilter;
-    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTask);
-
-    this.tasks = this.response.length ? this.response : [];
-
-
-    if (currentTaskNextTask) {
-      this.tasks.filter(c => nextTasks.includes(c.Title)).map(c => c.TaskType = 'Next Task');
-    }
-    if (currentTaskPrevTask) {
-      this.tasks.filter(c => previousTasks.includes(c.Title)).map(c => c.TaskType = 'Previous Task');
-    }
-
-    this.previousNextTaskChildRes = [];
-    for (const ele of this.tasks) {
-      if (ele.IsCentrallyAllocated === 'Yes') {
-        let previousNextTaskChild: any = [];
-        previousNextTaskChild = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.nextPreviousTaskChild);
-        previousNextTaskChild.filter = previousNextTaskChild.filter.replace('{{ParentSlotId}}', ele.ID.toString());
-        let res: any = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTaskChild);
-        if (res.hasError) {
-          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: res.message.value });
-          return;
-        }
-        res = res.length ? res : [];
-        res.forEach(element => {
-          if (!element.NextTasks) {
-            element.TaskType = 'Prev Task';
-            this.previousNextTaskChildRes.push(element);
-          }
-          if (!element.PrevTasks) {
-            element.TaskType = 'Next Task';
-            this.previousNextTaskChildRes.push(element);
-          }
-        });
-      } else if (ele.IsCentrallyAllocated === 'No') {
-        this.previousNextTaskChildRes.push(ele);
-      }
-    }
-
-    this.tasks = this.previousNextTaskChildRes.length ? this.previousNextTaskChildRes : this.tasks;
-
-    console.log('previousNextTaskChildRes ', this.previousNextTaskChildRes);
-
-    this.tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : '-');
-    this.tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : '-');
-
-    return this.tasks;
-  }
-
 
   // *************************************************************************************************************************************
   // Dialog to display task and time spent
@@ -648,14 +544,10 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
 
 
   async getNextPreviousTaskDialog(task) {
-
     this.tableloaderenable = true;
     let tasks = [];
-    if (task.NextTasks || task.PrevTasks) {
-      // tasks = await this.getNextPreviousTask(task);
-      tasks = await this.myDashboardConstantsService.getNextPreviousTask(task);
-    }
 
+    tasks = await this.myDashboardConstantsService.getNextPreviousTask(task);
     this.tableloaderenable = false;
     const ref = this.dialogService.open(PreviosNextTasksDialogComponent, {
       data: {
@@ -763,114 +655,13 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
   //  Mark as Complete
   // *************************************************************************************************************************************
 
-  getCSDetails(res) {
-    const pcmLevels = [];
-    // if (res.hasOwnProperty('CMLevel2')) {
-    //   pcmLevels.push(res.CMLevel2);
-    // }
-    if (res.hasOwnProperty('CMLevel1') && res.CMLevel1.hasOwnProperty('results') && res.CMLevel1.results.length) {
-      for (const ele of res.CMLevel1.results) {
-        pcmLevels.push(ele);
-      }
-      return pcmLevels;
-    } else {
-      return [];
-    }
-  }
-
-  async getCurrentAndParentTask(task: any) {
-    let batchURL = [];
-    // Parent Task
-    const parentTaskObj = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTaskParent);
-    parentTaskObj.filter = parentTaskObj.filter.replace(/{{ParentSlotId}}/g, task.ParentSlot);
-    batchURL.push({
-      data: null,
-      url: this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', parentTaskObj),
-      type: 'GET',
-      listName: this.constants.listNames.Schedules.name
-    });
-
-    // Current Task
-    const currentTaskObj = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTaskParent);
-    currentTaskObj.filter = currentTaskObj.filter.replace(/{{ParentSlotId}}/g, task.ID);
-    batchURL.push({
-      data: null,
-      url: this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', currentTaskObj),
-      type: 'GET',
-      listName: this.constants.listNames.Schedules.name
-    });
-
-    // Project Information
-    const projectInfObj = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfoByPC);
-    projectInfObj.filter = projectInfObj.filter.replace(/{{ProjectCode}}/g, task.ProjectCode);
-    batchURL.push({
-      data: null,
-      url: this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', projectInfObj),
-      type: 'GET',
-      listName: this.constants.listNames.ProjectInformation.name
-    });
-
-    const currentParentTasks = await this.spServices.executeBatch(batchURL);
-    const parentTaskRes = currentParentTasks.length ? currentParentTasks[0].retItems[0] : [];
-    const currentTaskRes = currentParentTasks.length ? currentParentTasks[1].retItems[0] : [];
-    const projInfoRes = currentParentTasks.length ? currentParentTasks[2].retItems[0] : [];
-    if (!currentTaskRes.NextTasks) {
-      if (parentTaskRes.Status !== 'Completed') {
-        const ctDueDate = new Date(this.datePipe.transform(currentTaskRes.DueDate, 'MMM d, y h:mm a'));
-        const todayDate = new Date();
-        const ONE_HOUR = 60 * 60 * 1000;
-        const timeDiff = ctDueDate.getTime() - todayDate.getTime();
-        const pcmLevels: any[] = this.getCSDetails(projInfoRes);
-        if (ctDueDate > todayDate && timeDiff > ONE_HOUR) {
-          const earlyTaskCompleteObj = {
-            Title: currentTaskRes.Title,
-            ProjectCode: currentTaskRes.ProjectCode,
-            ProjectCSId: { results: pcmLevels.map(x => x.ID) },
-            IsActive: 'Yes'
-          };
-          batchURL = [];
-          batchURL.push({
-            data: earlyTaskCompleteObj,
-            url: this.spServices.getReadURL('' + this.constants.listNames.EarlyTaskComplete.name + '', earlyTaskCompleteObj),
-            type: 'POST',
-            listName: this.constants.listNames.EarlyTaskComplete.name
-          });
-          const res = await this.spServices.executeBatch(batchURL);
-        }
-        parentTaskRes.Status = 'Completed';
-        parentTaskRes.ActiveCA = 'No';
-      } else {
-        return false;
-      }
-    } else if (!currentTaskRes.PrevTasks) {
-      if (parentTaskRes.Status !== 'In Progress') {
-        parentTaskRes.Status = 'In Progress';
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-
-    const postbatchURL = [];
-    const parentTaskPostObj = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.previousNextTaskParent);
-    parentTaskObj.filter = parentTaskObj.filter.replace(/{{ParentSlotId}}/g, parentTaskRes[0].ID);
-    postbatchURL.push({
-      data: parentTaskRes,
-      url: this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', parentTaskPostObj),
-      type: 'POST',
-      listName: this.constants.listNames.Schedules.name
-    });
-    const parentTasksSts = await this.spServices.executeBatch(postbatchURL);
-
-  }
-
 
   async checkCompleteTask(task) {
     const allowedStatus = ['Completed', 'AllowCompletion', 'Auto Closed'];
-    this.response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
+    const response = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID);
     const stval = await this.myDashboardConstantsService.getPrevTaskStatus(task);
-    task.TaskComments = this.response.length ? this.response[0].TaskComments : '';
+
+    task.TaskComments = response ? response.TaskComments : '';
 
     // if (stval === 'Completed' || stval === 'AllowCompletion' || stval === 'Auto Closed') {
     if (allowedStatus.includes(stval)) {
@@ -907,15 +698,11 @@ export class MyCurrentCompletedTasksComponent implements OnInit {
 
   async callComplete(task) {
     task.Status = 'Completed';
-    if (task.ParentSlot) {
-      await this.getCurrentAndParentTask(task);
-    }
     const response = await this.myDashboardConstantsService.CompleteTask(task);
     if (response) {
       this.loaderenable = false;
       this.GetDatabyDateSelection(this.selectedTab, this.days);
       this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: response });
-
     } else {
       this.messageService.add({
         key: 'custom', severity: 'success', summary: 'Success Message',

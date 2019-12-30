@@ -65,15 +65,15 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
       this.getEmailTemplate();
     }
     this.selectedTask = this.config.data ? this.data.task ? this.data.task : this.data : this.taskData;
-    if (this.selectedTask.ParentSlot) {
-      const slotPNTask = await this.myDashboardConstantsService.getNextPreviousTask(this.selectedTask);
-      const slotPTasks = slotPNTask.filter(ele => ele.TaskType === 'Previous Task');
-      slotPTasks.forEach((element, i) => {
-        this.selectedTask.PrevTasks = this.selectedTask.PrevTasks ? this.selectedTask.PrevTasks : '';
-        this.selectedTask.PrevTasks += element.Title;
-        this.selectedTask.PrevTasks += i < slotPTasks.length - 1 ? ';#' : '';
-      });
-    }
+    // if (this.selectedTask.ParentSlot) {
+    const slotPNTask = await this.myDashboardConstantsService.getNextPreviousTask(this.selectedTask);
+    const slotPTasks = slotPNTask.filter(ele => ele.TaskType === 'Previous Task');
+    this.selectedTask.PrevTasks = '';
+    slotPTasks.forEach((element, i) => {
+      this.selectedTask.PrevTasks += element.Title;
+      this.selectedTask.PrevTasks += i < slotPTasks.length - 1 ? ';#' : '';
+    });
+    // }
 
     if (this.selectedTask.PrevTasks) {
       this.items = [
@@ -277,15 +277,6 @@ export class ViewUploadDocumentDialogComponent implements OnInit, OnDestroy {
     const folderUrl = this.ProjectInformation.ProjectFolder;
     completeFolderRelativeUrl = folderUrl + documentsUrl;
     this.response = await this.spServices.readFiles(completeFolderRelativeUrl);
-    // const Url = this.sharedObject.sharePointPageObject.serverRelativeUrl +
-    //   // tslint:disable-next-line: quotemark
-    //   "/_api/web/getfolderbyserverrelativeurl('" + completeFolderRelativeUrl + "')/Files?$expand=ListItemAllFields";
-
-    // this.batchContents = new Array();
-    // const batchGuid = this.spServices.generateUUID();
-
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Url);
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
     this.allDocuments = this.response.length ? this.response : [];
 

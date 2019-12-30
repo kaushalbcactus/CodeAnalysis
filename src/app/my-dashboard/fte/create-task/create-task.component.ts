@@ -106,7 +106,7 @@ export class CreateTaskComponent implements OnInit {
     this.create_task_form = this.fb.group({
       ProjectCode: ['', Validators.required],
       Milestones: ['', Validators.required],
-      SubMilestones: ['', [Validators.required, Validators.maxLength(20)]],
+      SubMilestones: ['', [Validators.required, Validators.maxLength(30)]],
       StartDate: [new Date(), Validators.required],
       StartTime: ['09:00 AM', Validators.required],
       EndDate: [new Date(), Validators.required],

@@ -160,8 +160,8 @@ export class ConstantsService {
       type: 'SP.Data.SchedulesListItem'
     },
     EarlyTaskComplete: {
-      name: 'EarlyTaskCompleteNotification',
-      type: 'SP.Data.EarlyTaskCompleteNotification'
+      name: 'EarlyTaskCompleteNotifications',
+      type: 'SP.Data.EarlyTaskCompleteNotificationsListItem'
     },
     LeaveCalendar: {
       name: 'Leave Calendar',
@@ -314,6 +314,10 @@ export class ConstantsService {
     EarlyTaskCompleteNotifications : {
       name: 'EarlyTaskCompleteNotifications',
       type: 'SP.Data.EarlyTaskCompleteNotificationsListItem'
+    },
+    SendEmail: {
+      name: 'SendEmail',
+      type: 'SP.Data.SendEmailListItem'
     }
   };
 

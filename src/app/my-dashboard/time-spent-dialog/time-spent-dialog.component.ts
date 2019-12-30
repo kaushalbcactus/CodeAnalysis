@@ -264,8 +264,7 @@ export class TimeSpentDialogComponent implements OnInit {
     if (this.config.data) {
       await this.saveTimeSpentdb(this.task, this.dateArray)
       this.ref.close(data);
-    }
-    else {
+    } else {
       this.modalloaderenable = true;
       await this.saveTimeSpentdb(this.task, this.dateArray)
       this.modalloaderenable = false;
@@ -282,14 +281,12 @@ export class TimeSpentDialogComponent implements OnInit {
 
   async saveTimeSpentdb(task, dateArray) {
 
-
-
-    if (dateArray.find(c => c.time !== "00:00") !== undefined) {
+    let ActualStartDate;
+    if (dateArray.find(c => c.time !== '00:00') !== undefined) {
       //   this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Updating...' });
-      var ActualStartDate = this.datePipe.transform(dateArray.find(c => c.time !== "00:00").actualDate, 'yyyy-MM-dd') + "T09:00:00.000";
+      ActualStartDate = this.datePipe.transform(dateArray.find(c => c.time !== '00:00').actualDate, 'yyyy-MM-dd') + 'T09:00:00.000';
 
-    }
-    else {
+    } else {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please define time.' });
       return false;
     }
@@ -298,21 +295,29 @@ export class TimeSpentDialogComponent implements OnInit {
     }
 
 
-    var timeSpentString = dateArray.map(c => (c.date + ":" + c.time).replace(/ /g, '')).join('\n');
-    var timeSpentHours = dateArray.map(c => c.time.split(":")).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) + Math.floor(dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
-    var timeSpentMin = dateArray.map(c => c.time.split(":")).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
-    var totalTimeSpent = timeSpentMin < 10 ? timeSpentHours + '.' + "0" + timeSpentMin : timeSpentHours + '.' + timeSpentMin;
+    const timeSpentString = dateArray.map(c => (c.date + ':' + c.time).replace(/ /g, '')).join('\n');
+    const timeSpentHours = dateArray.map(c => c.time.split(':')).map(c => c[0]).map(Number).reduce((sum, num) => sum + num, 0) +
+      Math.floor(dateArray.map(c => c.time.split(':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) / 60);
+    const timeSpentMin = dateArray.map(c => c.time.split(':')).map(c => c[1]).map(Number).reduce((sum, num) => sum + num, 0) % 60;
+    const totalTimeSpent = timeSpentMin < 10 ? timeSpentHours + '.' + '0' + timeSpentMin : timeSpentHours + '.' + timeSpentMin;
     const jsonData = {
       Actual_x0020_Start_x0020_Date: ActualStartDate,
       TimeSpent: totalTimeSpent,
       TimeSpentPerDay: timeSpentString,
-      Status: task.Status === "Not Started" ? "In Progress" : task.Status,
+      Status: task.Status === 'Not Started' ? 'In Progress' : task.Status,
+
       ActiveCA: 'No'
     };
-    await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, "SP.Data.SchedulesListItem");
-    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task Time updated successfully.' });
+    await this.spServices.updateItem(this.constants.listNames.Schedules.name, task.ID, jsonData, 'SP.Data.SchedulesListItem');
 
-  };
+
+
+    if (task.ParentSlot) {
+      await this.myDashboardConstantsService.getCurrentAndParentTask(task, jsonData.Status);
+    }
+
+    this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Task Time updated successfully.' });
+  }
 
 
 }

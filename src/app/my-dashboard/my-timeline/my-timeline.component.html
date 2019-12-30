@@ -182,7 +182,7 @@
                             <td>{{task.AssignedTo.Title}}</td>
                         </tr>
                         <tr>
-                            <th>Start Date: {{task.StartDate |json}}</th>
+                            <th>Start Date:</th>
                             <td *ngIf="!myDashboardConstantsService.mydashboardComponent.user.isUserFTE">
                                 {{task.StartDate | date :'medium'}}</td>
                             <td *ngIf="myDashboardConstantsService.mydashboardComponent.user.isUserFTE && SelectedStatus !== 'Not Started'">
@@ -196,7 +196,7 @@
                                 <ngx-material-timepicker #defaultStartTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(task.StartTime, 'startTime')" [ngxMaterialTimepickerTheme]="darkTheme">
                                 </ngx-material-timepicker>
                             </td>
-                            <th>End Date: {{SelectedStatus |json}}</th>
+                            <th>End Date:</th>
                             <td *ngIf="!myDashboardConstantsService.mydashboardComponent.user.isUserFTE">
                                 {{task.DueDate | date :'medium'}}
                             </td>

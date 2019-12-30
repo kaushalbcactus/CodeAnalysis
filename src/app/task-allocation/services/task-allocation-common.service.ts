@@ -8,7 +8,8 @@ export class TaskAllocationCommonService {
 
   constructor(public sharedObject: GlobalService) { }
   getResourceByMatrix(task, allTasks) {
-    const resources = this.sharedObject.oTaskAllocation.oResources;
+    let resources = this.sharedObject.oTaskAllocation.oResources;
+    resources = resources.filter(e=>e.TAVisibility === 'Yes');
     const prjDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
     const cmL1 = prjDetails.cmLevel1.results ? prjDetails.cmLevel1.results : [];
     const cmL2 = prjDetails.cmLevel2 ? prjDetails.cmLevel2 : [];
@@ -186,84 +187,48 @@ export class TaskAllocationCommonService {
     return tasksName;
   }
 
-  async getPaths(source, target, submilestone, currentPath, arrLinks) {
-    if (arrLinks.indexOf(target) < 0) {
-      currentPath = currentPath + ',' + target;
-      const targetLinks = submilestone.task.links.filter(c => c.source === target).map(c => c.target);
-      const allPaths = currentPath.split(',');
-      if (!targetLinks.length) {
-        arrLinks = [...allPaths];
-      } else {
-        let newTargets = allPaths.slice(0);
-        newTargets = newTargets.filter((el, i, a) => i === a.indexOf(el));
-        for (const newTarget of targetLinks) {
-          // arrLinks = await this.getPaths(target, newTarget, submilestone, currentPath, allPaths);
-          // console.log(arrLinks);
-          arrLinks.push(this.findNextLink(newTarget, submilestone, arrLinks));
-        }
-      }
-    }
-    return arrLinks;
-  }
-
-  //allSubmilestoneLinks = submilestone.task.links;
-
-  getAllLinkPaths(link, allSubmilestoneLinks) {
-    let allLinkedPaths = [];
-
-    var currentLink = link;
-    allLinkedPaths.push(currentLink.source);
-    allLinkedPaths.push(currentLink.target);
-
-    for (let i = 0; i < allSubmilestoneLinks.length; ++i) {
-      var nextLink = allSubmilestoneLinks[i];
-
-      var nextTarget = this.compareTo(currentLink, nextLink);
-
-      if (nextTarget) {
-        allLinkedPaths.push(allSubmilestoneLinks[i].target);
-        currentLink = allSubmilestoneLinks[i];
-      }
-    }
-
-    return allLinkedPaths;
-  }
+  // getAllLinkPaths(link, allSubmilestone) {
+  //   const allSubmilestoneLinks = allSubmilestone.links;
+  //   const allNodes = allSubmilestone.nodes;
+  //   const allLinkedPaths = [];
+  //   let currentLink = link;
+  //   const source = {
+  //     label: allNodes.find(node => node.id === currentLink.source).label,
+  //     type: allNodes.find(node => node.id === currentLink.source).taskType
+  //   };
+  //   const target = {
+  //     label: allNodes.find(node => node.id === currentLink.target).label,
+  //     type: allNodes.find(node => node.id === currentLink.target).taskType
+  //   };
+  //   allLinkedPaths.push(source);
+  //   allLinkedPaths.push(target);
+  //   for (const nextLink of allSubmilestoneLinks) {
+  //     const nextTarget = this.compareTo(currentLink, nextLink);
+  //     if (nextTarget) {
+  //       const obj = {
+  //         label: allNodes.find(node => node.id === nextLink.target).label,
+  //         type: allNodes.find(node => node.id === nextLink.target).taskType
+  //       };
+  //       allLinkedPaths.push(obj);
+  //       currentLink = nextLink;
+  //     }
+  //   }
+  //   return allLinkedPaths;
+  // }
 
   compareTo(currentLink, nextLink) {
-      return this.compareSourceWithTarget(currentLink.target, nextLink.source);
+    return this.compareSourceWithTarget(currentLink.target, nextLink.source);
   }
 
   compareSourceWithTarget(target, source) {
-      if (target === source) {
-        return target;
-      }
-      return null;
-      //return target === source ? target : null;
+    if (target === source) {
+      return target;
+    }
+    return null;
   }
 
   async findNextLink(target, submilestone, links) {
     const targetLinks = submilestone.task.links.filter(c => c.source === target).map(c => c.target);
-    // if (!targetLinks.length) {
-    //   await this.findNextLink(targetLinks[0], submilestone, links);
-    // }
     return targetLinks;
   }
-  // if (arrLinks.indexOf(target) < 0) {
-  //   currentPath = currentPath + ',' + target;
-  //   const targetLinks = submilestone.task.links.filter(c => c.source === target).map(c => c.target);
-  //   const allPaths = currentPath.split(',');
-  //   if (!targetLinks.length) {
-  //     arrLinks = [...allPaths];
-  //   } else {
-  //     let newTargets = allPaths.slice(0);
-  //     newTargets = newTargets.filter((el, i, a) => i === a.indexOf(el));
-  //     for (const newTarget of targetLinks) {
-  //       // arrLinks = await this.getPaths(target, newTarget, submilestone, currentPath, allPaths);
-  //       // console.log(arrLinks);
-  //       arrLinks.push(this.findNextLink(newTarget, submilestone));
-  //     }
-  //   }
-  // }
-  // return arrLinks;
-
 }

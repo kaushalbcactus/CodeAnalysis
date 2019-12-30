@@ -383,10 +383,12 @@ export class ManageFinanceComponent implements OnInit {
   async getTosList() {
     const approvers = await this.spServices.getGroupInfo('ExpenseApprovers');
     let arrayTo = [];
-    if (approvers.length) {
-      for (const a in approvers) {
-        if (approvers[a].Email !== undefined && approvers[a].Email !== '') {
-          arrayTo.push(approvers[a].Email);
+    if (approvers.results) {
+      if (approvers.results.length) {
+        for (const a in approvers.results) {
+          if (approvers.results[a].Email !== undefined && approvers.results[a].Email !== '') {
+            arrayTo.push(approvers.results[a].Email);
+          }
         }
       }
     }
@@ -451,7 +453,9 @@ export class ManageFinanceComponent implements OnInit {
       arrayCC = arrayCC.concat([], cm1IdArray);
       tempArray = tempArray.concat([], this.projObj.CMLevel2ID);
       arrayTo = this.pmCommonService.getEmailId(tempArray);
-      arrayTo = arrayTo.concat(this.getTosList());
+
+      const tempUserArray = await this.getTosList()
+      arrayTo = arrayTo.concat(tempUserArray);
       arrayTo = arrayTo.filter(this.onlyUnique);
       ccIDs = this.pmCommonService.getEmailId(arrayCC);
       ccIDs.push(this.pmObject.currLoginInfo.Email);
@@ -751,15 +755,15 @@ export class ManageFinanceComponent implements OnInit {
       retPOInfo.tax = retPOInfo.tax + retPOInfo.tax ? retPOInfo.tax : 0;
     }
     if (this.unassignedBudget[0].total !== 0 && this.unassignedBudget[0].revenue !== 0) {
-     
+
       retPOInfo.revenue = retPOInfo.revenue + retPOInfo.poRevenue;
       retPOInfo.total = retPOInfo.revenue + retPOInfo.oop + retPOInfo.tax;
       retPOInfo.oop = retPOInfo.oop + retPOInfo.oop ? retPOInfo.oop : 0;
       retPOInfo.tax = retPOInfo.tax + retPOInfo.tax ? retPOInfo.tax : 0;
       this.unassignedBudget[0].total = this.unassignedBudget[0].total - retPOInfo.poRevenue; //- retPOInfo.oop - retPOInfo.tax;
       this.unassignedBudget[0].revenue = this.unassignedBudget[0].revenue - retPOInfo.poRevenue;
-     // this.unassignedBudget[0].oop = this.unassignedBudget[0].oop - retPOInfo.oop;
-     // this.unassignedBudget[0].tax = this.unassignedBudget[0].tax - retPOInfo.tax;
+      // this.unassignedBudget[0].oop = this.unassignedBudget[0].oop - retPOInfo.oop;
+      // this.unassignedBudget[0].tax = this.unassignedBudget[0].tax - retPOInfo.tax;
     }
     // Add the value to Po header.
     this.poHeader.total = this.poHeader.total + retPOInfo.poRevenue;

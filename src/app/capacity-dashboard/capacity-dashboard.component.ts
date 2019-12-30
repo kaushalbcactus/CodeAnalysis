@@ -101,7 +101,6 @@ export class CapacityDashboardComponent implements OnInit {
         this.Resources = this.AlldbResources.map(o => new Object({ label: o.UserName.Title, value: o }));
       }
     }
-    console.log(arrResults);
   }
 
   filterData(callType, dataType) {
