@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, ApplicationRef, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, NgZone, ApplicationRef, ViewEncapsulation, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { DatePipe, PlatformLocation } from '@angular/common';
 import { PeoplePickerUser } from '../../peoplePickerModel/people-picker.response';
@@ -12,6 +12,8 @@ import { AdminObjectService } from '../../services/admin-object.service';
 import { Router } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
 import { GlobalService } from 'src/app/Services/global.service';
+import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
@@ -137,6 +139,9 @@ export class UserProfileComponent implements OnInit {
     }
   };
   filteredCountriesMultiple: any[];
+
+  @ViewChild('up', { static: false }) userProfileTable: Table;
+
   /**
    * Construct a method to create an instance of required component.
    *
@@ -169,6 +174,7 @@ export class UserProfileComponent implements OnInit {
     private applicationRef: ApplicationRef,
     private common: CommonService,
     private globalObject: GlobalService,
+    private cdr: ChangeDetectorRef
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -206,7 +212,7 @@ export class UserProfileComponent implements OnInit {
       practiceArea: ['', Validators.required],
       BucketDate: [new Date(), null],
       MaxHrsDate: [new Date(), null],
-      managerEffectiveDate: ['', null],
+      managerEffectiveDate: [new Date(), null],
       practiceAreaEffectiveDate: ['', null],
       timeZoneEffectiveDate: ['', null],
       primarySkillEffectiveDate: ['', null],
@@ -364,7 +370,7 @@ export class UserProfileComponent implements OnInit {
         userObj.ManagerEmail = item.Manager.EMail;
         userObj.ManagerId = item.Manager.ID;
         userObj.Bucket = item.Bucket;
-        userObj.PracticeArea = item.Practice_x0020_Area.replace(';#', ',');
+        userObj.PracticeArea = item.Practice_x0020_Area ? item.Practice_x0020_Area.replace(/;#/g, ',') : '';
         userObj.TimeZone = item.TimeZone;
         userObj.DateOfJoining = this.datePipe.transform(item.DateOfJoining, 'MMM dd, yyyy');
         userObj.GoLiveDate = this.datePipe.transform(item.GoLiveDate, 'MMM dd, yyyy');
@@ -638,23 +644,21 @@ export class UserProfileComponent implements OnInit {
       }
     }
   }
+  showTable: boolean = true;
   onChangeSelect() {
     if (this.selectedOption === this.adminConstants.LOGICAL_FIELD.INACTIVE) {
+      setTimeout(() => {
+        this.showTable = false;
+        this.showTable = true;
+      }, 500);
+      console.log(this.userProfileTable);
       this.showUserInput = true;
       const emptyProjects = [];
       this.userProfileData = [...emptyProjects];
       this.providedUser = '';
-      // this.userProfileColArray.User = [];
-      // this.userProfileColArray.LastUpdated = [];
-      // this.userProfileColArray.LastUpdatedBy = [];
-      // this.userProfileColArray.PrimarySkill = [];
-      // this.userProfileColArray.Bucket = [];
-      // this.userProfileColArray.PracticeArea = [];
-      // this.userProfileColArray.InCapacity = [];
-      // this.userProfileColArray.DateOfJoining = [];
-      // this.userProfileColArray.GoLiveDate = [];
       this.colFilters([]);
     } else {
+      this.showTable = true;
       this.showUserInput = false;
       this.loadUserTable();
     }
@@ -683,8 +687,8 @@ export class UserProfileComponent implements OnInit {
         userObj.Bucket = item.Bucket;
         userObj.PracticeArea = item.Practice_x0020_Area;
         userObj.TimeZone = item.TimeZone;
-        userObj.DateOfJoining = item.DateOfJoining;
-        userObj.GoLiveDate = item.GoLiveDate;
+        userObj.DateOfJoining = this.datePipe.transform(item.DateOfJoining, 'MMM dd, yyyy');
+        userObj.GoLiveDate = this.datePipe.transform(item.GoLiveDate, 'MMM dd, yyyy');
         userObj.Designation = item.Designation;
         userObj.InCapacity = item.InCapacity;
         userObj.Pooled = item.Pooled;
@@ -1060,7 +1064,11 @@ export class UserProfileComponent implements OnInit {
    * @param addUserForm The addUserForm as parameters which is required for fetching the form value.
    */
   async saveUser(addUserForm) {
-    console.log(addUserForm.value);
+    if (this.selectedOption === this.adminConstants.LOGICAL_FIELD.INACTIVE) {
+      this.selectedOption = this.adminConstants.LOGICAL_FIELD.ACTIVE;
+      this.onChangeSelect();
+    }
+
     if (addUserForm.valid) {
       console.log(addUserForm.value);
       /**
@@ -1192,7 +1200,7 @@ export class UserProfileComponent implements OnInit {
       this.adminObject.isMainLoaderHidden = true;
       this.messageService.add({
         key: 'adminCustom', severity: 'success', sticky: true,
-        summary: 'Success Message', detail: 'User - ' + this.currUserObj.User + ' has updated successfully'
+        summary: 'Success Message', detail: 'User - ' + this.currUserObj.User + ' is updated successfully'
       });
       await this.loadRecentRecords(this.currUserObj.ID, this.showeditUser);
       this.showModal = false;
@@ -1241,10 +1249,10 @@ export class UserProfileComponent implements OnInit {
       userObj.ManagerEmail = item.Manager.EMail;
       userObj.ManagerId = item.Manager.ID;
       userObj.Bucket = item.Bucket;
-      userObj.PracticeArea = item.Practice_x0020_Area.replace(';#', ',');
+      userObj.PracticeArea = item.Practice_x0020_Area ? item.Practice_x0020_Area.replace(/;#/g, ',') : '';
       userObj.TimeZone = item.TimeZone;
-      userObj.DateOfJoining = item.DateOfJoining;
-      userObj.GoLiveDate = item.GoLiveDate;
+      userObj.DateOfJoining = this.datePipe.transform(item.DateOfJoining, 'MMM dd, yyyy');
+      userObj.GoLiveDate = this.datePipe.transform(item.GoLiveDate, 'MMM dd, yyyy');
       userObj.Designation = item.Designation;
       userObj.InCapacity = item.InCapacity;
       userObj.Pooled = item.Pooled;
@@ -1473,6 +1481,7 @@ export class UserProfileComponent implements OnInit {
       userText = formObj.username.hasOwnProperty('DisplayText') ? formObj.username.DisplayText : IdResults[0].retItems[0].Title;
       managerText = formObj.manager.hasOwnProperty('DisplayText') ? formObj.manager.DisplayText : IdResults[0].retItems[0].Title;
     }
+
     const data: any = {
       __metadata: { type: this.constants.listNames.ResourceCategorization.type },
       ManagerId: managerId,
@@ -1685,6 +1694,28 @@ export class UserProfileComponent implements OnInit {
     } else {
       timeZoneEffectiveDateControl.clearValidators();
       this.date.isTimeZoneEffectiveDateActive = false;
+    }
+  }
+
+  onCloseDateOfJoining() {
+    if (this.addUser.value.dateofjoin > this.addUser.value.BucketDate) {
+      this.addUser.patchValue({ BucketDate: this.addUser.value.dateofjoin });
+    }
+    if (this.addUser.value.dateofjoin > this.addUser.value.timeZoneEffectiveDate) {
+      this.addUser.patchValue({ timeZoneEffectiveDate: this.addUser.value.dateofjoin });
+    }
+    if (this.addUser.value.dateofjoin > this.addUser.value.liveDate) {
+      this.addUser.patchValue({ liveDate: this.addUser.value.dateofjoin });
+    }
+    if (this.addUser.value.dateofjoin > this.addUser.value.MaxHrsDate) {
+      this.addUser.patchValue({ MaxHrsDate: this.addUser.value.dateofjoin });
+    }
+    if (this.addUser.value.dateofjoin > this.addUser.value.primarySkillEffectiveDate) {
+      this.addUser.patchValue({ primarySkillEffectiveDate: this.addUser.value.dateofjoin });
+    }
+
+    if (this.addUser.value.dateofjoin > this.addUser.value.dateofexit) {
+      this.addUser.patchValue({ dateofexit: this.addUser.value.dateofjoin });
     }
   }
 

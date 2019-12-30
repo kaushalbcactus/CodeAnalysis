@@ -1,4 +1,4 @@
-import { Component, OnInit, ApplicationRef, NgZone, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ApplicationRef, NgZone, ViewEncapsulation, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { FormBuilder, FormGroup, FormControl, Validators, NgForm, ControlContainer } from '@angular/forms';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { removeSummaryDuplicates } from '@angular/compiler';
 import { GlobalService } from 'src/app/Services/global.service';
 import { CommonService } from 'src/app/Services/common.service';
+import { DataTable } from 'primeng/primeng';
 
 @Component({
   selector: 'app-client-masterdata',
@@ -28,6 +29,125 @@ import { CommonService } from 'src/app/Services/common.service';
  *
  */
 export class ClientMasterdataComponent implements OnInit {
+  /**
+   * Construct a method to create an instance of required component.
+   *
+   * @param datepipe This is instance referance of `DatePipe` component.
+   * @param frmbuilder This is instance referance of `FormBuilder` component.
+   * @param messageService This is instance referance of `MessageService` component.
+   * @param adminCommonService This is instance referance of `AdminCommonService` component.
+   * @param adminConstants This is instance referance of `AdminConstantService` component.
+   * @param adminObject This is instance referance of `AdminObjectService` component.
+   * @param constants This is instance referance of `ConstantsService` component.
+   * @param spServices This is instance referance of `SPOperationService` component.
+   * @param confirmationService This is instance referance of `ConfirmationService` component.
+   * @param platformLocation This is instance referance of `PlatformLocation` component.
+   * @param router This is instance referance of `Router` component.
+   * @param applicationRef This is instance referance of `ApplicationRef` component.
+   * @param zone This is instance referance of `NgZone` component.
+   * @param globalObject This is instance referance of `GlobalService` component.
+   * @param common This is instance referance of `CommonService` component.
+   */
+  constructor(
+    private datepipe: DatePipe,
+    private frmbuilder: FormBuilder,
+    private messageService: MessageService,
+    private adminCommonService: AdminCommonService,
+    private adminConstants: AdminConstantService,
+    private adminObject: AdminObjectService,
+    private constantsService: ConstantsService,
+    private spServices: SPOperationService,
+    private confirmationService: ConfirmationService,
+    private platformLocation: PlatformLocation,
+    private router: Router,
+    private applicationRef: ApplicationRef,
+    private zone: NgZone,
+    private globalObject: GlobalService,
+    private common: CommonService,
+    private cdr: ChangeDetectorRef
+  ) {
+    /**
+     * This is used to initialize the Client form.
+     */
+    this.addClient = frmbuilder.group({
+      name: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
+      acronym: ['', [Validators.required, Validators.maxLength(5),
+      Validators.pattern(this.adminConstants.REG_EXPRESSION.THREE_UPPERCASE_TWO_NUMBER)]],
+      group: ['', Validators.required],
+      distributionList: [''],
+      invoiceName: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
+      realization: ['', [Validators.required, this.adminCommonService.checkPositiveNumber]],
+      market: ['', Validators.required],
+      billingEntry: ['', Validators.required],
+      poRequired: ['', Validators.required],
+      timeZone: ['', Validators.required],
+      cmLevel1: ['', Validators.required],
+      cmLevel2: ['', Validators.required],
+      deliveryLevel1: [''],
+      deliveryLevel2: ['', Validators.required],
+      currency: ['', Validators.required],
+      APEmail: [''],
+      address1: [''],
+      address2: [''],
+      address3: [''],
+      address4: [''],
+      notes: [''],
+      bucket: ['', Validators.required],
+      bucketEffectiveDate: ['']
+    });
+    /**
+     * This is used to initialize the subDivision form.
+     */
+    this.subDivisionform = frmbuilder.group({
+      subDivision_Name: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
+      distributionList: [''],
+      cmLevel1: [''],
+      deliveryLevel1: [''],
+    });
+    /**
+     * This is used to initialize the POC form.
+     */
+    this.pocForm = frmbuilder.group({
+      fname: ['', Validators.required],
+      lname: ['', Validators.required],
+      designation: [''],
+      email: ['', [Validators.required, Validators.email]],
+      phone: [''],
+      address1: [''],
+      address2: [''],
+      address3: [''],
+      address4: [''],
+      department: [''],
+      referralSource: ['', Validators.required],
+      relationshipStrength: [''],
+      engagementPlan: [''],
+      comments: [''],
+      contactsType: ['', Validators.required],
+    });
+    this.initAddPOForm();
+    this.initAddBudgetForm();
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+    router.events.subscribe((uri) => {
+      zone.run(() => applicationRef.tick());
+    });
+
+    if (this.adminConstants.toastMsg.SPMAA || this.adminConstants.toastMsg.SPMAD || this.adminConstants.toastMsg.EAPA) {
+      // this.messageService.clear();
+      setTimeout(() => {
+        this.messageService.add({
+          key: 'adminAuth1', severity: 'info', sticky: true,
+          summary: 'Info Message', detail: 'You don\'\t have permission,please contact SP Team.'
+        });
+        this.adminConstants.toastMsg.SPMAD = false;
+        this.adminConstants.toastMsg.EAPA = false;
+      }, 300);
+    }
+  }
   isUserSPMCA: boolean;
   isUserPO: boolean;
   clientList = [];
@@ -195,124 +315,7 @@ export class ClientMasterdataComponent implements OnInit {
     AmountTax: 0,
     AmountOOP: 0
   };
-  /**
-   * Construct a method to create an instance of required component.
-   *
-   * @param datepipe This is instance referance of `DatePipe` component.
-   * @param frmbuilder This is instance referance of `FormBuilder` component.
-   * @param messageService This is instance referance of `MessageService` component.
-   * @param adminCommonService This is instance referance of `AdminCommonService` component.
-   * @param adminConstants This is instance referance of `AdminConstantService` component.
-   * @param adminObject This is instance referance of `AdminObjectService` component.
-   * @param constants This is instance referance of `ConstantsService` component.
-   * @param spServices This is instance referance of `SPOperationService` component.
-   * @param confirmationService This is instance referance of `ConfirmationService` component.
-   * @param platformLocation This is instance referance of `PlatformLocation` component.
-   * @param router This is instance referance of `Router` component.
-   * @param applicationRef This is instance referance of `ApplicationRef` component.
-   * @param zone This is instance referance of `NgZone` component.
-   * @param globalObject This is instance referance of `GlobalService` component.
-   * @param common This is instance referance of `CommonService` component.
-   */
-  constructor(
-    private datepipe: DatePipe,
-    private frmbuilder: FormBuilder,
-    private messageService: MessageService,
-    private adminCommonService: AdminCommonService,
-    private adminConstants: AdminConstantService,
-    private adminObject: AdminObjectService,
-    private constantsService: ConstantsService,
-    private spServices: SPOperationService,
-    private confirmationService: ConfirmationService,
-    private platformLocation: PlatformLocation,
-    private router: Router,
-    private applicationRef: ApplicationRef,
-    private zone: NgZone,
-    private globalObject: GlobalService,
-    private common: CommonService
-  ) {
-    /**
-     * This is used to initialize the Client form.
-     */
-    this.addClient = frmbuilder.group({
-      name: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
-      acronym: ['', [Validators.required, Validators.maxLength(5),
-      Validators.pattern(this.adminConstants.REG_EXPRESSION.THREE_UPPERCASE_TWO_NUMBER)]],
-      group: ['', Validators.required],
-      distributionList: [''],
-      invoiceName: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
-      realization: ['', [Validators.required, this.adminCommonService.checkPositiveNumber]],
-      market: ['', Validators.required],
-      billingEntry: ['', Validators.required],
-      poRequired: ['', Validators.required],
-      timeZone: ['', Validators.required],
-      cmLevel1: ['', Validators.required],
-      cmLevel2: ['', Validators.required],
-      deliveryLevel1: [''],
-      deliveryLevel2: ['', Validators.required],
-      currency: ['', Validators.required],
-      APEmail: [''],
-      address1: [''],
-      address2: [''],
-      address3: [''],
-      address4: [''],
-      notes: [''],
-      bucket: ['', Validators.required],
-      bucketEffectiveDate: ['']
-    });
-    /**
-     * This is used to initialize the subDivision form.
-     */
-    this.subDivisionform = frmbuilder.group({
-      subDivision_Name: ['', [Validators.required, Validators.pattern(this.adminConstants.REG_EXPRESSION.ALPHA_SPECIAL_WITHSPACE)]],
-      distributionList: [''],
-      cmLevel1: [''],
-      deliveryLevel1: [''],
-    });
-    /**
-     * This is used to initialize the POC form.
-     */
-    this.pocForm = frmbuilder.group({
-      fname: ['', Validators.required],
-      lname: ['', Validators.required],
-      designation: [''],
-      email: ['', [Validators.required, Validators.email]],
-      phone: [''],
-      address1: [''],
-      address2: [''],
-      address3: [''],
-      address4: [''],
-      department: [''],
-      referralSource: ['', Validators.required],
-      relationshipStrength: [''],
-      engagementPlan: [''],
-      comments: [''],
-      contactsType: ['', Validators.required],
-    });
-    this.initAddPOForm();
-    this.initAddBudgetForm();
 
-    // Browser back button disabled & bookmark issue solution
-    history.pushState(null, null, window.location.href);
-    platformLocation.onPopState(() => {
-      history.pushState(null, null, window.location.href);
-    });
-    router.events.subscribe((uri) => {
-      zone.run(() => applicationRef.tick());
-    });
-
-    if (this.adminConstants.toastMsg.SPMAA || this.adminConstants.toastMsg.SPMAD || this.adminConstants.toastMsg.EAPA) {
-      // this.messageService.clear();
-      setTimeout(() => {
-        this.messageService.add({
-          key: 'adminAuth1', severity: 'info', sticky: true,
-          summary: 'Info Message', detail: 'You don\'\t have permission,please contact SP Team.'
-        });
-        this.adminConstants.toastMsg.SPMAD = false;
-        this.adminConstants.toastMsg.EAPA = false;
-      }, 300);
-    }
-  }
   /**
    * This is used to initialize the PO form.
    */
@@ -3006,9 +3009,9 @@ export class ClientMasterdataComponent implements OnInit {
     await this.loadRecentPORecords(this.currPOObj.ID, this.adminConstants.ACTION.EDIT);
     this.constantsService.loader.isPSInnerLoaderHidden = true;
   }
+
   downloadExcel(cmd) {
     cmd.exportCSV();
   }
-
 }
 

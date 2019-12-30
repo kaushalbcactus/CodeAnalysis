@@ -18,92 +18,104 @@
 </div>
 <div class="clearBoth"></div>
 <div class="adminTable">
-    <p-table #up [columns]="userProfileColumns" [value]="userProfileData" exportFilename="User Profile"
-        [paginator]="true" [rows]="10" class="minFirstLastCol5Per">
-        <ng-template pTemplate="header" let-columns>
-            <tr>
-                <th>Sr.No.</th>
-                <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
-                    {{col.header}}
-                    <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
-                        ariaLabelDesc="Activate to sort in descending order"
-                        ariaLabelAsc="Activate to sort in ascending order">
-                    </p-sortIcon>
-                </th>
-                <th></th>
-            </tr>
-            <tr>
-                <th></th>
-                <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility">
-                    <p-multiSelect *ngSwitchCase="'User'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
-                        [options]="userProfileColArray.User" (onChange)="up.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'PrimarySkill'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
-                        [options]="userProfileColArray.PrimarySkill"
-                        (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" resetFilterOnHide="true"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'Bucket'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
-                        [options]="userProfileColArray.Bucket" (onChange)="up.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'PracticeArea'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
-                        [options]="userProfileColArray.PracticeArea"
-                        (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" resetFilterOnHide="true"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'InCapacity'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
-                        [options]="userProfileColArray.InCapacity" (onChange)="up.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'DateOfJoining'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
-                        [options]="userProfileColArray.DateOfJoining"
-                        (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" resetFilterOnHide="true"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'GoLiveDate'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
-                        [options]="userProfileColArray.GoLiveDate" (onChange)="up.filter($event.value, col.field, 'in')"
-                        (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
-                    </p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
-                        [options]="userProfileColArray.LastUpdated"
-                        (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" resetFilterOnHide="true"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
-                        [options]="userProfileColArray.LastUpdatedBy"
-                        (onChange)="up.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" resetFilterOnHide="true"></p-multiSelect>
-                </th>
-                <th></th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
-            <tr>
-                <td>{{ rowIndex+1 }}</td>
-                <td>{{rowData.User}}</td>
-                <td>{{rowData.PrimarySkill}}</td>
-                <td>{{rowData.Bucket}}</td>
-                <td>{{rowData.PracticeArea}}</td>
-                <td>{{rowData.InCapacity}}</td>
-                <td>{{rowData.DateOfJoining | date:'MMM dd, yyyy'}}</td>
-                <td>{{rowData.GoLiveDate | date:'MMM dd, yyyy'}}</td>
-                <!-- <td>{{rowData.LastUpdated | date:'MMM dd, yyyy'}}</td>
+    <div *ngIf="showTable">
+        <p-table #up [columns]="userProfileColumns" [value]="userProfileData" exportFilename="User Profile"
+            [paginator]="true" [rows]="10" class="minFirstLastCol5Per">
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th>Sr.No.</th>
+                    <th *ngFor="let col of columns" [pSortableColumn]="col.field" [hidden]="!col.visibility">
+                        {{col.header}}
+                        <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+                            ariaLabelDesc="Activate to sort in descending order"
+                            ariaLabelAsc="Activate to sort in ascending order">
+                        </p-sortIcon>
+                    </th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th *ngFor="let col of columns" [ngSwitch]="col.field" [hidden]="!col.visibility">
+                        <p-multiSelect *ngSwitchCase="'User'"  [style]="{'width':'100%'}" [maxSelectedLabels]="1"
+                            [options]="userProfileColArray.User" (onChange)="up.filter($event.value, col.field, 'in')"
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'PrimarySkill'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
+                            [options]="userProfileColArray.PrimarySkill"
+                            (onChange)="up.filter($event.value, col.field, 'in')"
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'Bucket'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
+                            [options]="userProfileColArray.Bucket" (onChange)="up.filter($event.value, col.field, 'in')"
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'PracticeArea'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
+                            [options]="userProfileColArray.PracticeArea"
+                            (onChange)="up.filter($event.value, col.field, 'in')"
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'InCapacity'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
+                            [options]="userProfileColArray.InCapacity"
+                            (onChange)="up.filter($event.value, col.field, 'in')"
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'DateOfJoining'" [style]="{'width':'100%'}"
+                            [maxSelectedLabels]="1" [options]="userProfileColArray.DateOfJoining"
+                            (onChange)="up.filter($event.value, col.field, 'in')"
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'GoLiveDate'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
+                            [options]="userProfileColArray.GoLiveDate"
+                            (onChange)="up.filter($event.value, col.field, 'in')"
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}" [maxSelectedLabels]="1"
+                            [options]="userProfileColArray.LastUpdated"
+                            (onChange)="up.filter($event.value, col.field, 'in')"
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                        </p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
+                            [maxSelectedLabels]="1" [options]="userProfileColArray.LastUpdatedBy"
+                            (onChange)="up.filter($event.value, col.field, 'in')"
+                            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true">
+                        </p-multiSelect>
+                    </th>
+                    <th></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+                <tr>
+                    <td>{{ rowIndex+1 }}</td>
+                    <td>{{rowData.User}}</td>
+                    <td>{{rowData.PrimarySkill}}</td>
+                    <td>{{rowData.Bucket}}</td>
+                    <td>{{rowData.PracticeArea}}</td>
+                    <td>{{rowData.InCapacity}}</td>
+                    <td>{{rowData.DateOfJoining | date:'MMM dd, yyyy'}}</td>
+                    <td>{{rowData.GoLiveDate | date:'MMM dd, yyyy'}}</td>
+                    <!-- <td>{{rowData.LastUpdated | date:'MMM dd, yyyy'}}</td>
                 <td>{{rowData.LastUpdatedBy}}</td> -->
-                <td>
-                    <div>
-                        <p-menu #menu [popup]="true" [model]="pMenuItems" styleClass="borderMenu"></p-menu>
-                        <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
-                            (click)="storeRowData(rowData); menu.toggle($event);"></i>
-                    </div>
-                </td>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage" let-columns>
-            <tr>
-                <td [attr.colspan]="9">
-                    No Data found
-                </td>
-            </tr>
-        </ng-template>
-    </p-table>
+                    <td>
+                        <div>
+                            <p-menu #menu [popup]="true" [model]="pMenuItems" styleClass="borderMenu"></p-menu>
+                            <i class="pi pi-ellipsis-v" style="font-size:2em;top: 100px !important;cursor: pointer;"
+                                (click)="storeRowData(rowData); menu.toggle($event);"></i>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-columns>
+                <tr>
+                    <td [attr.colspan]="9">
+                        No Data found
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <div *ngIf="!userProfileData.length">
+        <span>No User profile data found.</span>
+    </div>
 </div>
 <div *ngIf="isUserProfileRightSideVisible" class="ng-right-side-overlay">
     <p-sidebar [(visible)]="isUserProfileRightSideVisible" position="right" styleClass="ui-sidebar-md">
@@ -432,7 +444,7 @@
 
                     <div class="mt-5" *ngIf="date.isBucketDateActive">
                         <p-calendar formControlName="BucketDate" placeholder="Date" showIcon="true"
-                            [readonlyInput]="true" [minDate]="minPastMonth" dateFormat="M dd, yy">
+                            [readonlyInput]="true" [minDate]="addUser.value.dateofjoin" dateFormat="M dd, yy">
                         </p-calendar>
                         <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.BucketDate.errors">
                             <div *ngIf="addUser.controls.BucketDate.errors.required">Bucket Date is required</div>
@@ -481,7 +493,8 @@
                     </div>
                     <div class="mt-5" *ngIf="date.isTimeZoneEffectiveDateActive">
                         <p-calendar formControlName="timeZoneEffectiveDate" placeholder="Time Zone Date" showIcon="true"
-                            [readonlyInput]="true" [minDate]="minEffectiveDate" dateFormat="M dd, yy"></p-calendar>
+                            [readonlyInput]="true" [minDate]="addUser.value.dateofjoin" dateFormat="M dd, yy">
+                        </p-calendar>
                         <div class="error"
                             *ngIf="upObject.isFormSubmit && addUser.controls.timeZoneEffectiveDate.errors">
                             <div *ngIf="addUser.controls.timeZoneEffectiveDate.errors.required">TimeZone Effective Date
@@ -494,7 +507,7 @@
                 <div class="p-col-4">
                     <p-calendar formControlName="dateofjoin" placeholder="Date of Joining" showIcon="true"
                         [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{yearRange}}"
-                        dateFormat="M dd, yy">
+                        dateFormat="M dd, yy" (onClose)="onCloseDateOfJoining()">
                     </p-calendar>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.dateofjoin.errors">
                         <div *ngIf="addUser.controls.dateofjoin.errors.required"> Date of Joining is required</div>
@@ -505,8 +518,8 @@
                 <div class="p-col-2"><span class="compulsory">*</span>Go Live Date</div>
                 <div class="p-col-4">
                     <p-calendar formControlName="liveDate" placeholder="Go Live Date" showIcon="true"
-                        [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true" yearRange="{{yearRange}}"
-                        dateFormat="M dd, yy">
+                        [readonlyInput]="true" [monthNavigator]="true" [yearNavigator]="true"
+                        [minDate]="addUser.value.dateofjoin" yearRange="{{yearRange}}" dateFormat="M dd, yy">
                     </p-calendar>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.liveDate.errors">
                         <div *ngIf="addUser.controls.liveDate.errors.required">Go Live Date is required</div>
@@ -563,7 +576,7 @@
 
                     <div class="mt-5" *ngIf="date.isMaxHrsDateActive">
                         <p-calendar formControlName="MaxHrsDate" placeholder="Date" showIcon="true"
-                            [readonlyInput]="true" [minDate]="minPastMonth" dateFormat="M dd, yy">
+                            [readonlyInput]="true" [minDate]="addUser.value.dateofjoin" dateFormat="M dd, yy">
                         </p-calendar>
                         <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.MaxHrsDate.errors">
                             <div *ngIf="addUser.controls.MaxHrsDate.errors.required">MaxHrs Date is required</div>
@@ -691,7 +704,7 @@
                 <div class="p-col-2"><span class="compulsory">*</span>Date of Exit</div>
                 <div class="p-col-4">
                     <p-calendar formControlName="dateofexit" placeholder="Date of Exit" showIcon="true"
-                        [readonlyInput]="true" dateFormat="M dd, yy">
+                        [minDate]="addUser.value.dateofjoin" [readonlyInput]="true" dateFormat="M dd, yy">
                     </p-calendar>
                     <div class="error" *ngIf="upObject.isFormSubmit && addUser.controls.dateofexit.errors">
                         <div *ngIf="addUser.controls.dateofexit.errors.required">Date of Exit is required</div>
