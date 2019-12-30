@@ -546,7 +546,7 @@ export class PmconstantService {
     GET_EARLY_TASK_COMPLETED: {
       select: 'ID,Title,ProjectCode,IsActive,ProjectCS/ID,ProjectCS/Title',
       expand: 'ProjectCS/ID,ProjectCS/Title',
-      filter: 'IsActive eq \'Yes\''
+      filter: 'IsActive eq \'Yes\' and ProjectCSId eq {{UserID}} and Created ge \'{{LastOnceHour}}\''
     }
   };
   public PROJECT_TYPE = {

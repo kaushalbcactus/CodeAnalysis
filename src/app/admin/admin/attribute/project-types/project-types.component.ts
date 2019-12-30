@@ -123,7 +123,7 @@ export class ProjectTypesComponent implements OnInit {
         obj.ID = item.ID;
         obj.ProjectType = item.Title;
         obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
-        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
         obj.LastUpdatedBy = item.Editor.Title;
         tempArray.push(obj);
       });

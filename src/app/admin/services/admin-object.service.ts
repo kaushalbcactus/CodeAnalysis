@@ -14,8 +14,8 @@ export class AdminObjectService {
     Bucket: '',
     PracticeArea: '',
     TimeZone: '',
-    DateOfJoining: new Date(),
-    GoLiveDate: new Date(),
+    DateOfJoining: '',
+    GoLiveDate: '',
     Designation: '',
     InCapacity: '',
     Pooled: '',
@@ -66,7 +66,7 @@ export class AdminObjectService {
   public sowObj = {
     CMLevel1: [],
     CMLevel2: '',
-    AllResources:[],
+    AllResources: [],
     DeliveryLevel1: [],
     DeliveryLevel2: '',
     ID: 0,
@@ -81,7 +81,7 @@ export class AdminObjectService {
   public projObj = {
     CMLevel1: [],
     CMLevel2: '',
-    AllOperationresources:[],
+    AllOperationresources: [],
     DeliveryLevel1: [],
     DeliveryLevel2: '',
     ID: 0,
