@@ -400,8 +400,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     async formatData(data: any[]) {
         this.deliverableBasedRes = [];
         this.selectedAllRowsItem = [];
-        for (let i = 0; i < data.length; i++) {
-            const element = data[i];
+        for (const element of data) {
             const piInfo = await this.getMilestones(element);
             const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
             const sowCode = element.SOWCode ? element.SOWCode : '';
@@ -491,7 +490,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     // Project Current Milestones
     getMilestones(pc: any) {
         const found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == pc.Title) {
+            if (x.ProjectCode === pc.Title) {
                 return x;
             }
         });
@@ -501,7 +500,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     // Project Current Milestones
     getPracticeArea(pc: any) {
         const found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == pc.Title) {
+            if (x.ProjectCode === pc.Title) {
                 return x;
             }
         });
