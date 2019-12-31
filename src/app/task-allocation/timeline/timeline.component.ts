@@ -2007,13 +2007,16 @@ export class TimelineComponent implements OnInit, OnDestroy {
     let subMilestone: TreeNode;
     subMilestone = currentTask.submilestone ? milestone.children.find(t => t.data.pName === currentTask.submilestone) : milestone;
     if (milestoneTask.slotType === 'Both' && milestoneTask.AssignedTo.ID) {
-      milestoneTask.IsCentrallyAllocated = 'No';
+
       milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'No' : milestoneTask.ActiveCA;
       milestoneTask.itemType = milestoneTask.itemType.replace(/Slot/g, '');
       const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
       let newName = taskCount ? milestoneTask.itemType + taskCount : milestoneTask.itemType;
       const counter = taskCount ? +taskCount : 1;
-      newName = this.getNewTaskName(milestoneTask, subMilestone, counter, newName);
+      if (milestoneTask.IsCentrallyAllocated === 'Yes') {
+        newName = this.getNewTaskName(milestoneTask, subMilestone, counter, newName);
+        milestoneTask.IsCentrallyAllocated = 'No';
+      }
       if (milestoneTask.nextTask) {
         const nextTasks = milestoneTask.nextTask.split(';');
         nextTasks.forEach(task => {
@@ -2072,12 +2075,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   getNewTaskName(milestoneTask, subMilestone, counter, originalName) {
-    subMilestone.children.forEach(task => {
-      if (task.data.pName === originalName) {
-        counter++;
-        originalName = milestoneTask.itemType + ' ' + counter;
-      }
-    });
+    let getItem = subMilestone.children.filter(e => e.data.pName === originalName)
+    while (getItem.length) {
+      counter++;
+      originalName = milestoneTask.itemType + ' ' + counter;
+      getItem = subMilestone.children.filter(e => e.data.pName === originalName)
+    }
+   
     return originalName;
   }
   // *************************************************************************************************
@@ -2465,7 +2469,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               || (task.data.pUserStart <= tsk.StartDate && task.data.pUserEnd >= tsk.StartDate)
               || (task.data.pUserStart >= tsk.StartDate && task.data.pUserEnd <= tsk.DueDate));
           });
-          
+
           if (retTask.length || slot.data.pUserEnd < sortedTasksEnd[0].data.pUserEnd || slot.data.pUserStart > sortedTasksStart[0].data.pUserStart) {
             deallocateSlot = true;
             break;
@@ -2608,7 +2612,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
         allParallelTasks.forEach(element => {
 
-          if (!element.data.DisableCascade  && element.data.status !== 'In Progress') {
+          if (!element.data.DisableCascade && element.data.status !== 'In Progress') {
             this.cascadeNextTask(previousNode, element, element.submilestone ? 1 : 0, selectedMil + 1);
           }
         });
