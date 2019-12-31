@@ -74,16 +74,16 @@ export class AppComponent implements OnDestroy {
   initSPPageObject() {
     this.globalService.sharePointPageObject.publicCdn = window.location.href.indexOf('localhost') > -1
       ? '/sites/medcomcdn/PublishingImages/Images' : '/sites/medcomcdn/PublishingImages/Images';
-    this.globalService.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
+    this.globalService.sharePointPageObject.webAbsoluteUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomm'
       : _spPageContextInfo.webAbsoluteUrl;
-    this.globalService.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/Medcomqa'
+    this.globalService.sharePointPageObject.webRelativeUrl = window.location.href.indexOf('localhost') > -1 ? '/sites/medcomm'
       : _spPageContextInfo.siteServerRelativeUrl;
     this.globalService.sharePointPageObject.serverRelativeUrl = this.globalService.sharePointPageObject.webRelativeUrl;
     this.globalService.sharePointPageObject.rootsite = window.origin;
   }
 
   async initSPLoggedInUser() {
-    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 103 : _spPageContextInfo.userId;
+    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 259 : _spPageContextInfo.userId;
     this.globalService.currentUser.email = window.location.href.indexOf('localhost') > -1 ?
       'sneha.danduk@cactusglobal.com' : _spPageContextInfo.userEmail;
     this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Sneha' : _spPageContextInfo.userDisplayName;
@@ -136,7 +136,7 @@ export class AppComponent implements OnDestroy {
       component: this, zone: this._ngZone,
       loadTaskAllocation: () => this.goToTaskAllocation(),
     };
-    window['accessLecelDashboardComponentReference'] = {
+    window['accessLevelDashboardComponentReference'] = {
       component: this, zone: this._ngZone,
       loadAccessLevelDashboard: () => this.goToAccessLevelDashboard(),
     };
@@ -152,6 +152,16 @@ export class AppComponent implements OnDestroy {
     window['leaveCalendarComponentReference'] = {
       component: this, zone: this._ngZone,
       loadLeaveCalendar: () => this.goToLeaveCalendar(),
+    };
+
+    window['aldIfNotLinkComponentReference'] = {
+      component: this, zone: this._ngZone,
+      loadaldInNoLinkDashboard: () => this.goToAccessLevelDashboardIfNoLink(),
+    };
+
+    window['pageNotFoundComponentReference'] = {
+      component: this, zone: this._ngZone,
+      loadPageNotFound: () => this.goToPageNotFound(),
     };
   }
 
@@ -204,7 +214,12 @@ export class AppComponent implements OnDestroy {
     if (!window.location.href.includes('accessleveldashboard')) {
       this.router.navigate(['/accessleveldashboard']);
     }
+  }
 
+  goToAccessLevelDashboardIfNoLink() {
+    if (window.location.href.includes('defaultDashboard') || !window.location.href.includes('#')) {
+      this.router.navigate(['/accessleveldashboard']);
+    }
   }
 
   goToCapacityDashboard() {
@@ -216,6 +231,12 @@ export class AppComponent implements OnDestroy {
   goToLeaveCalendar() {
     if (!window.location.href.includes('leaveCalendar')) {
       this.router.navigate(['/leaveCalendar']);
+    }
+  }
+
+  goToPageNotFound() {
+    if (!window.location.href.includes('pageNotFound')) {
+      this.router.navigate(['/pageNotFound']);
     }
   }
 

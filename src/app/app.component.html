@@ -10,7 +10,7 @@
         <img _ngcontent-jlv-c0="" class="ng-tns-c0-0" alt="logo"
             src="https://cactusglobal.sharepoint.com/:i:/r/sites/medcomcdn/PublishingImages/Images/CACTUSRLogo3.png?csf=1&e=jkqaBo">
     </div>
-    <a *ngFor="let link of leftNavigation" [href]="link.href">{{link.title}}</a>
+    <a target="_blank" *ngFor="let link of leftNavigation" [href]="link.href">{{link.title}}</a>
 </p-sidebar>
 <div class="layout-topbar">
     <div class="float-left img-bg">
@@ -28,7 +28,7 @@
         <p-menu #menu [popup]="true" [model]="items"></p-menu>
         <button pButton type="button" class="btn-menu" label="Welcome {{globalService.currentUser.title}}"
             (click)="menu.toggle($event)"></button>
-        <a href="mailto:sp.support@cactusglobal.com?subject=SP Issue:"><i class="pi pi-question-circle help-icon"></i></a>
+        <a href="mailto:sp.support@cactusglobal.com?subject=SP issue:"><i class="pi pi-question-circle help-icon"></i></a>
     </div>
 </div>
 <div class="routerOutlet">
