@@ -13,6 +13,7 @@ import { DatePipe, TitleCasePipe, PlatformLocation, LocationStrategy } from '@an
 import { Subject } from 'rxjs';
 import { AddAuthorComponent } from './add-author/add-author.component';
 import { AuthorDetailsComponent } from './author-details/author-details.component';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
     selector: 'app-pubsupport',
@@ -39,22 +40,23 @@ export class PubsupportComponent implements OnInit {
         private platformLocation: PlatformLocation,
         private locationStrategy: LocationStrategy,
         _applicationRef: ApplicationRef,
+        private common: CommonService,
         zone: NgZone,
     ) {
 
-        this.router.routeReuseStrategy.shouldReuseRoute = () => {
-            return false;
-        };
+        // this.router.routeReuseStrategy.shouldReuseRoute = () => {
+        //     return false;
+        // };
 
         // subscribe to the router events - storing the subscription so
         // we can unsubscribe later.
-        this.navigationSubscription = this.router.events.subscribe((e: any) => {
+        // this.navigationSubscription = this.router.events.subscribe((e: any) => {
 
-            // If it is a NavigationEnd event re-initalise the component
-            if (e instanceof NavigationEnd) {
-                this.initialiseInvites();
-            }
-        });
+        //     // If it is a NavigationEnd event re-initalise the component
+        //     if (e instanceof NavigationEnd) {
+        //         this.initialiseInvites();
+        //     }
+        // });
 
         this.overAllValues = [
             { name: 'Open', value: 'Open' },
@@ -276,6 +278,8 @@ export class PubsupportComponent implements OnInit {
         this.display = true;
     }
     async ngOnInit() {
+        this.globalObject.currentTitle = "Publication Support";
+        this.currentUserInfo();
         this.todayDate = new Date();
         this.isSubmisssionDetails = false;
         this.journalConfFormField();
@@ -331,7 +335,7 @@ export class PubsupportComponent implements OnInit {
 
     initialiseInvites() {
         // Set default values and re-fetch any data you need.
-        this.currentUserInfo();
+        
     }
     callGetProjects(isClosed) {
         if (this.loggedInUserGroup.findIndex(c => (c === 'Managers' || c === 'Project-FullAccess')) !== -1) {
@@ -345,6 +349,7 @@ export class PubsupportComponent implements OnInit {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         this.loggedInUserInfo = [];
         this.loggedInUserGroup = [];
+        this.common.SetNewrelic('PubSupport', 'pubsupport', 'GetCurrentUserInfo');
         const curruentUsrInfo = await this.spOperationsService.getUserInfo(this.globalObject.currentUser.userId);
         this.loggedInUserInfo = curruentUsrInfo.Groups.results;
         this.loggedInUserInfo.forEach(element => {
@@ -411,6 +416,7 @@ export class PubsupportComponent implements OnInit {
         arrResults = await this.spOperationsService.executeBatch(pipcObj);
         if (arrEndPointsArchive.length) {
             // arrResultsArchive = await this.spServices.getDataByApi(this.globalObject.sharePointPageObject.webAbsoluteArchiveUrl, arrEndPointsArchive);
+            this.common.SetNewrelic('PubSupport', 'pubsupport', 'GetProjectInfo');
             arrResultsArchive = await this.spOperationsService.executeBatch(piObj);
             if (arrResultsArchive.length && arrResultsArchive[0].length) {
                 arrProjects = arrResultsArchive[0];
@@ -795,6 +801,7 @@ export class PubsupportComponent implements OnInit {
             },
         ];
         this.jc_jcSubId = [];
+        this.common.SetNewrelic('PubSupport', 'pubsupport', 'GetJCbyProjectCodeAndStatus');
         const arrResults = await this.spOperationsService.executeBatch(objData); //.subscribe(res => {
         this.jc_jcSubId = arrResults;
     }
@@ -809,6 +816,7 @@ export class PubsupportComponent implements OnInit {
             type: 'GET',
             listName: this.constantService.listNames.ProjectInformation.name
         }];
+        this.common.SetNewrelic('PubSupport', 'pubsupport', 'GetProjectCodebyCLE');
         const res = await this.spOperationsService.executeBatch(obj1);
         this.projectCodeRes = res[0].retItems;
         console.log(this.projectCodeRes);
@@ -1404,6 +1412,8 @@ export class PubsupportComponent implements OnInit {
 
         if (type === 'addJCDetailsModal' || type === 'addAuthor' || type === 'updateDecision' || type === 'galley' ||
             type === 'updatePublication' || type === 'cancelJC' || type === 'updateJCRequirementModal' || type === 'editJCDetailsModal') {
+
+            this.common.SetNewrelic('PubSupport', 'pubsupport', 'CancelJSR');
             const result = await this.spOperationsService.executeBatch(dataEndpointArray);
             let res: any = {};
             if (result.length) {
@@ -1504,6 +1514,7 @@ export class PubsupportComponent implements OnInit {
 
         const arr = [];
         arr.push(piObj, jcsObj);
+        this.common.SetNewrelic('PubSupport', 'pubsupport', 'updateProjectSts_JCSubmissionDetails');
         const result = await this.spOperationsService.executeBatch(arr);
         const result1 = result[0].retItems;
         if (result1.hasError) {
@@ -1640,6 +1651,8 @@ export class PubsupportComponent implements OnInit {
     }
 
     async uploadFileData(type: string) {
+
+        this.common.SetNewrelic('PubSupport', 'pubsupport', 'UploadFile');
         const res = await this.spOperationsService.uploadFile(this.filePathUrl, this.fileReader.result);
         console.log('selectedFile uploaded .', res.ServerRelativeUrl);
         if (res.hasError) {
@@ -1706,7 +1719,7 @@ export class PubsupportComponent implements OnInit {
             type: 'GET',
             listName: this.constantService.listNames.JournalConf.name
         }];
-
+        this.common.SetNewrelic('PubSupport', 'pubsupport', 'GetJCDetailsbyProjectCode');
         const res = await this.spOperationsService.executeBatch(jcObj);
         const jsData = res[0].retItems;
         this.journal_Conf_data = [];
@@ -1748,6 +1761,7 @@ export class PubsupportComponent implements OnInit {
             type: 'GET',
             listName: this.constantService.listNames.JCSubmission.name
         }];
+        this.common.SetNewrelic('PubSupport', 'pubsupport', 'getSubDetailsByProjectCodeAndJCID');
         const res = await this.spOperationsService.executeBatch(data);
         this.submission_details_data = res[0].retItems;
         // Hide Loader
@@ -1777,6 +1791,7 @@ export class PubsupportComponent implements OnInit {
             type: 'GET',
             listName: this.constantService.listNames.jcGalley.name
         }];
+        this.common.SetNewrelic('PubSupport', 'pubsupport', 'getGallyDetailsByProjectCodeAndJCSubID');
         const res = await this.spOperationsService.executeBatch(data);
         this.galleyDetailsData = res[0].retItems;
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
@@ -1784,7 +1799,7 @@ export class PubsupportComponent implements OnInit {
 
     // On Click of Project code
     goToProjectDetails(data: any, index: number) {
-        window.open(this.globalObject.sharePointPageObject.webRelativeUrl + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' +
+        window.open(this.globalObject.sharePointPageObject.webRelativeUrl + '/dashboard#/projectMgmt/allProjects?ProjectCode=' +
             data.ProjectCode);
     }
 

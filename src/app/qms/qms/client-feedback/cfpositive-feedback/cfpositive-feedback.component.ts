@@ -166,6 +166,8 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
         .replace('{{endDate}}', endDate);
       pfUrl = pfComponent.getPF;
     }
+
+    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'getPFItems');
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.PositiveFeedbacks.name, pfUrl);
     const arrPFs = arrResult.length > 0 ? this.appendPropertyTOObject(arrResult) : [];
     return arrPFs;
@@ -246,6 +248,8 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
    * @param cdDetails- detals that needs to be updated
    */
   savePF(pfDetails, pf) {
+
+    this.commonService.SetNewrelic('QMS', 'ClientFeedBack-cfposition', 'savePF');
     this.spService.updateItem(this.globalConstant.listNames.PositiveFeedbacks.name, pf.ID, pfDetails);
 
     this.showToastMsg({ type: 'success', msg: 'Success', detail: 'Positive Feedback sent by ' + pf.SentBy.Title + ' is ' + pf.Status + '.' });

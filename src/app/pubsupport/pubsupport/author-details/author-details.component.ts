@@ -3,6 +3,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
     selector: 'app-author-details',
@@ -20,6 +21,7 @@ export class AuthorDetailsComponent implements OnInit {
         public constantService: ConstantsService,
         public globalObject: GlobalService,
         public pubsupportService: PubsuportConstantsService,
+        public common : CommonService
     ) { }
 
     async ngOnInit() {
@@ -37,6 +39,7 @@ export class AuthorDetailsComponent implements OnInit {
             type: 'GET',
             listName: this.constantService.listNames.addAuthor.name
         }];
+        this.common.SetNewrelic('PubSupport', 'author-details', 'getAuthorByProjectCode');
         const res = await this.spOperationsService.executeBatch(authorsObj);
         this.authorsData = res[0].retItems;
         console.log('this.authorsData ', this.authorsData);
@@ -51,6 +54,7 @@ export class AuthorDetailsComponent implements OnInit {
     async onTabChange() {
         this.authorsFiles = [];
         const fileEndPoint = this.events.ProjectFolder + '/Publication Support/Forms/';
+        this.common.SetNewrelic('PubSupport', 'add-author', 'GetDocumnts');
         const authorFilesGet = await this.spOperationsService.readFiles(fileEndPoint);
         // tslint:disable-next-line:only-arrow-functions
         authorFilesGet.sort((a, b) => {

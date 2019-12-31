@@ -1,4 +1,7 @@
-import { Component, OnInit, ViewChild, AfterViewInit, ViewChildren, QueryList, ViewContainerRef, ComponentFactoryResolver, } from '@angular/core';
+import {
+  Component, OnInit, ViewChild, AfterViewInit, ViewChildren, QueryList, ViewContainerRef,
+  ComponentFactoryResolver,
+} from '@angular/core';
 import { MenuItem, DialogService, MessageService } from 'primeng/api';
 import { SPOperationService } from '../Services/spoperation.service';
 import { GlobalService } from '../Services/global.service';
@@ -22,7 +25,7 @@ export class MyDashboardComponent implements OnInit {
   batchContents: any[];
   response: any[];
 
-  firstload: boolean = true;
+  firstload = true;
   public queryConfig = {
     data: null,
     url: '',
@@ -45,10 +48,12 @@ export class MyDashboardComponent implements OnInit {
     public dialogService: DialogService,
     public messageService: MessageService,
     private componentFactoryResolver: ComponentFactoryResolver,
-    private constantsService: ConstantsService,
+    private commonService: CommonService,
   ) { }
 
   ngOnInit() {
+    this.sharedObject.currentTitle = 'My Dashboard';
+
     this.items = [
       { label: 'My Open Tasks', routerLink: ['my-current-tasks'] },
       { label: 'My Timeline', routerLink: ['my-timeline'] },
@@ -65,33 +70,34 @@ export class MyDashboardComponent implements OnInit {
       await this.executeCommonCalls();
     }
     if (this.router.url.includes('my-current-tasks') || this.router.url.includes('my-completed-tasks')) {
-      this.myDashboardConstantsService.openTaskSelectedTab['event'] = 'Today';
-      this.myDashboardConstantsService.openTaskSelectedTab['days'] = 0;
+      this.myDashboardConstantsService.openTaskSelectedTab.event = 'Today';
+      this.myDashboardConstantsService.openTaskSelectedTab.days = 0;
       componentRef.GetDatabyDateSelection('Today', 0);
     }
   }
 
   async GetCurrentUser() {
+
+    this.commonService.SetNewrelic('MyDashboard', 'MyDashboard', 'GetCurrentUserDetails');
     const currentUser = await this.spServices.getUserInfo(this.sharedObject.currentUser.userId);
     this.sharedObject.currentUser.userId = currentUser.Id;
     this.sharedObject.currentUser.email = currentUser.Email;
     this.sharedObject.currentUser.title = currentUser.Title;
     this.currentUserInfo = currentUser;
   }
-  // *************************************************************************************************************************************
-  //  dialog for time booking 
-  // *************************************************************************************************************************************
+  // ********************************************************************************************************
+  //  dialog for time booking
+  // ********************************************************************************************************
 
   loadTimeBookingDialog() {
 
     const ref = this.dialogService.open(TimeBookingDialogComponent, {
       data: {
-
       },
       header: 'Time Booking',
       width: '100vw',
       height: '100vh',
-      contentStyle: { "height": "90vh", "overflow": "auto" },
+      contentStyle: { height: '90vh', overflow: 'auto' },
       closable: false,
     });
     ref.onClose.subscribe(async (TimeBookingobjCount: any) => {
@@ -101,21 +107,17 @@ export class MyDashboardComponent implements OnInit {
           detail: 'Time booking updated successfully.'
         });
       }
-      // else if (TimeBookingobjCount === 0) {
-      //   this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: 'Please Enter Time Spent.' });
-      // }
     });
   }
 
   async executeCommonCalls() {
-    this.firstload = false;
-    // const batchGuid = this.spServices.generateUUID();
-    // this.batchContents = new Array();
 
+    this.commonService.SetNewrelic('MyDashboard', 'MyDashboard', 'GetCLERCPIPC');
+    this.firstload = false;
     const batchUrl = [];
-    // **************************************************************************************************************************************
+    // ****************************************************************************************************
     //  Get Client Legal Entities
-    // **************************************************************************************************************************************
+    // ***************************************************************************************************
     const cleObj = Object.assign({}, this.queryConfig);
     cleObj.url = this.spServices.getReadURL(this.constants.listNames.ClientLegalEntity.name,
       this.myDashboardConstantsService.mydashboardComponent.ClientLegalEntitys);
@@ -123,12 +125,9 @@ export class MyDashboardComponent implements OnInit {
     cleObj.type = 'GET';
     batchUrl.push(cleObj);
 
-    // const clientLegalEntityUrl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', this.myDashboardConstantsService.mydashboardComponent.ClientLegalEntitys);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, clientLegalEntityUrl);
-
-    // **************************************************************************************************************************************
+    // ******************************************************************************************************
     //  Get All ResourceCategorization
-    // **************************************************************************************************************************************
+    // ******************************************************************************************************
     const rcObj = Object.assign({}, this.queryConfig);
     rcObj.url = this.spServices.getReadURL(this.constants.listNames.ResourceCategorization.name,
       this.myDashboardConstantsService.mydashboardComponent.ResourceCategorization);
@@ -136,14 +135,9 @@ export class MyDashboardComponent implements OnInit {
     rcObj.type = 'GET';
     batchUrl.push(rcObj);
 
-    // const resourceCategorizationUrl = this.spServices.getReadURL('' + this.constants.listNames.ResourceCategorization.name + '', this.myDashboardConstantsService.mydashboardComponent.ResourceCategorization);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, resourceCategorizationUrl);
-
-
-    //**************************************************************************************************************************************
-
+    // *****************************************************************************************************
     //  Get All ProjectContacts
-    // **************************************************************************************************************************************
+    // *****************************************************************************************************
     const prjContactsObj = Object.assign({}, this.queryConfig);
     prjContactsObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectContacts.name,
       this.myDashboardConstantsService.mydashboardComponent.ProjectContacts);
@@ -151,14 +145,9 @@ export class MyDashboardComponent implements OnInit {
     prjContactsObj.type = 'GET';
     batchUrl.push(prjContactsObj);
 
-    // const projectContactsUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectContacts.name + '', this.myDashboardConstantsService.mydashboardComponent.ProjectContacts);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectContactsUrl);
-
-
-    //**************************************************************************************************************************************
-
+    // ******************************************************************************************************
     //  Get All ProjectInformation
-    // **************************************************************************************************************************************
+    // ******************************************************************************************************
     const piObj = Object.assign({}, this.queryConfig);
     piObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name,
       this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
@@ -166,15 +155,11 @@ export class MyDashboardComponent implements OnInit {
     piObj.type = 'GET';
     batchUrl.push(piObj);
 
-    // const projectInformationUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
-    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectInformationUrl);
-
-    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     this.response = await this.spServices.executeBatch(batchUrl);
-
     this.sharedObject.DashboardData.ClientLegalEntity = this.response.length > 0 ? this.response[0].retItems : [];
     this.sharedObject.DashboardData.ResourceCategorization = this.response.length > 0 ? this.response[1].retItems : [];
-    const currentUserResCat = this.sharedObject.DashboardData.ResourceCategorization.filter((item) => item.UserName.ID === this.sharedObject.currentUser.userId);
+    const currentUserResCat = this.sharedObject.DashboardData.ResourceCategorization.filter((item) =>
+      item.UserName.ID === this.sharedObject.currentUser.userId);
 
     if (currentUserResCat.length) {
       this.isUserFTE = currentUserResCat[0].IsFTE && currentUserResCat[0].IsFTE === 'Yes' ? true : false;

@@ -7,6 +7,8 @@ import { PmconstantService } from '../projectmanagement/services/pmconstant.serv
 import { PMObjectService } from '../projectmanagement/services/pmobject.service';
 import { DatePipe } from '@angular/common';
 declare var $;
+
+declare const newrelic;
 @Injectable({
     providedIn: 'root'
 })
@@ -665,7 +667,7 @@ export class CommonService {
             grpResourceObj.type = 'GET';
             batchUrl.push(grpResourceObj);
         }
-
+       
         const arrResult = await this.spServices.executeBatch(batchUrl);
         this.response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
         if (this.response.length > 0) {
@@ -703,7 +705,7 @@ export class CommonService {
                     status: returnedProject ? returnedProject.Status : '',
                     prevstatus: returnedProject ? returnedProject.PrevStatus : '',
                     projectFolder: returnedProject ? returnedProject.ProjectFolder : '',
-                    projectType : returnedProject ? returnedProject.ProjectType : ''
+                    projectType: returnedProject ? returnedProject.ProjectType : ''
                 };
                 if (bFirstCall) {
                     this.batchContents = new Array();
@@ -857,6 +859,15 @@ export class CommonService {
                 value: array.find(s => s.label === label1).value
             }
         })
+    }
+
+
+    SetNewrelic(moduleType,routeType,value) {
+        if (typeof newrelic === 'object') {
+            newrelic.setCustomAttribute('spModuleType', moduleType);
+            newrelic.setCustomAttribute('spRouteType', routeType);
+            newrelic.setCustomAttribute('spCallType', value);
+        }
     }
 
 

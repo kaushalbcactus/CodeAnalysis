@@ -305,6 +305,7 @@ export class OopComponent implements OnInit, OnDestroy {
         if (!isManager) {
             obj.filter = obj.filter.replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'GetInvoiceLineItem');
         const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, obj);
         const arrResults = res.length ? res : [];
         this.isPSInnerLoaderHidden = true;
@@ -654,6 +655,7 @@ export class OopComponent implements OnInit, OnDestroy {
             invObj.type = 'PATCH';
             invObj.data = iliData;
             batchUrl.push(invObj);
+            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'UpdateInvoiceLineItem');
             this.submitForm(batchUrl, type);
         } else if (type === 'editDeliverable') {
             // console.log('form is submitting .....', this.editOop_form.value);
@@ -673,6 +675,7 @@ export class OopComponent implements OnInit, OnDestroy {
             invObj.type = 'PATCH';
             invObj.data = iliData;
             batchUrl.push(invObj);
+            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'UpdateInvoiceLineItem');
             this.submitForm(batchUrl, type);
         }
     }
@@ -700,6 +703,7 @@ export class OopComponent implements OnInit, OnDestroy {
         // const mailContentEndpoint = this.fdConstantsService.fdComponent.mailContent;
         const objMailContent = Object.assign({}, this.fdConstantsService.fdComponent.mailContent);
         objMailContent.filter = objMailContent.filter.replace('{{MailType}}', type);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-oop', 'GetEmailTemplate');
         const res = await this.spServices.readItems(this.constantService.listNames.MailContent.name, objMailContent);
         this.mailContentRes = res.length ? res[0] : {};
     }

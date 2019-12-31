@@ -316,6 +316,10 @@ export class ClientMasterdataComponent implements OnInit {
     AmountOOP: 0
   };
 
+  @ViewChild('cmd', { static: false }) clientMasterTable: DataTable;
+
+
+  isOptionFilter: boolean;
   /**
    * This is used to initialize the PO form.
    */
@@ -3013,5 +3017,27 @@ export class ClientMasterdataComponent implements OnInit {
   downloadExcel(cmd) {
     cmd.exportCSV();
   }
-}
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
 
+  // tslint:disable-next-line: use-life-cycle-interface
+  ngAfterViewChecked() {
+    if (this.clientMasterDataRows.length && this.isOptionFilter) {
+      const obj = {
+        tableData: this.clientMasterTable,
+        colFields: this.clientMasterDataColArray
+      };
+      if (obj.tableData.filteredValue) {
+        this.common.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.colFilters(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
+    }
+  }
+
+}

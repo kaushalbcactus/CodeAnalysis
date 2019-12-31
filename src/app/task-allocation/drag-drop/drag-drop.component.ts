@@ -6,6 +6,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { TaskAllocationConstantsService } from '../services/task-allocation-constants.service';
 import * as shape from 'd3-shape';
 import { TaskAllocationCommonService } from '../services/task-allocation-common.service';
+import { CommonService } from 'src/app/Services/common.service';
 declare var $: any;
 @Component({
   selector: 'app-drag-drop',
@@ -80,7 +81,8 @@ export class DragDropComponent implements OnInit {
     private constants: ConstantsService,
     private taskAllocationService: TaskAllocationConstantsService,
     private messageService: MessageService,
-    private taskCommonService: TaskAllocationCommonService) { }
+    private taskCommonService: TaskAllocationCommonService,
+    private commonService: CommonService) { }
 
   ngOnInit() {
     this.initialLoad = true;
@@ -707,6 +709,7 @@ export class DragDropComponent implements OnInit {
     tasksObj.listName = this.constants.listNames.MilestoneTasks.name;
     tasksObj.type = 'GET';
     batchUrl.push(tasksObj);
+    this.commonService.SetNewrelic('TaskAllocation', 'Drag-Drop', 'GetMilestoneSubmilestoneAndTasks');
     const arrResult = await this.spServices.executeBatch(batchUrl);
     this.response = arrResult.length ? arrResult.map(a => a.retItems) : [];
     this.sharedObject.oTaskAllocation.arrMilestones = this.response[0].map(c => c.Title);
@@ -1306,8 +1309,6 @@ export class DragDropComponent implements OnInit {
     else {
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warn Message', detail: 'Only Client Review  can be added to default sub milestone.' });
     }
-
-
 
     this.resizeGraph = 'task';
     this.GraphResize();

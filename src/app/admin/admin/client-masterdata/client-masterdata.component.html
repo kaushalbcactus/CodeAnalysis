@@ -29,35 +29,41 @@
                     <p-multiSelect *ngSwitchCase="'ClientLegalEntity'" [style]="{'width':'100%'}"
                         [options]="clientMasterDataColArray.ClientLegalEntity" defaultLabel="Client Legal Entry"
                         (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"></p-multiSelect>
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
+                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'BillingEntity'" [style]="{'width':'100%'}"
                         [options]="clientMasterDataColArray.BillingEntity" defaultLabel="Billing Entity"
                         (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"></p-multiSelect>
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
+                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Bucket'" [style]="{'width':'100%'}"
                         [options]="clientMasterDataColArray.Bucket" defaultLabel="Bucket"
                         (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"></p-multiSelect>
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
+                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Acronym'" [style]="{'width':'100%'}"
                         [options]="clientMasterDataColArray.Acronym" defaultLabel="Acronym"
                         (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"></p-multiSelect>
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
+                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Market'" [style]="{'width':'100%'}"
                         [options]="clientMasterDataColArray.Market" defaultLabel="Market"
                         (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"></p-multiSelect>
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
+                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'InvoiceName'" [style]="{'width':'100%'}"
                         [options]="clientMasterDataColArray.InvoiceName" defaultLabel="Invoice Name"
                         (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"></p-multiSelect>
+                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true"
+                        (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
                     <!-- <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
-                        [options]="clientMasterDataColArray.LastUpdated" defaultLabel="LastUpdated"
-                        (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" ></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
-                        [options]="clientMasterDataColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
-                        (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                        filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" ></p-multiSelect> -->
+                            [options]="clientMasterDataColArray.LastUpdated" defaultLabel="LastUpdated"
+                            (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                            filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+                        <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
+                            [options]="clientMasterDataColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
+                            (onChange)="cmd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                            filter="true" [maxSelectedLabels]="1" resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect> -->
                 </th>
                 <th></th>
             </tr>
@@ -84,11 +90,11 @@
                     {{rowData.InvoiceName}}
                 </td>
                 <!-- <td>
-                    {{rowData.LastUpdated | date:'MMM dd, yyyy'}}
-                </td>
-                <td>
-                    {{rowData.LastUpdatedBy}}
-                </td> -->
+                        {{rowData.LastUpdated | date:'MMM dd, yyyy'}}
+                    </td>
+                    <td>
+                        {{rowData.LastUpdatedBy}}
+                    </td> -->
                 <td>
                     <div>
                         <p-menu #menu [popup]="true" [model]="items" styleClass="borderMenu"></p-menu>
@@ -111,120 +117,120 @@
 
 <!-- Audit History -->
 <!-- <div style="margin-top: 10px;">
-  <h3 style="text-align: center">Audit History (On Page Open)</h3>
-</div>
-
-<p-table #ah [columns]="auditHistoryColumns" [value]="auditHistoryRows" exportFilename="Audit History">
-  <ng-template pTemplate="header" let-columns>
-      <tr>
-          <th>Sr.No.</th>
-          <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-              {{col.header}}
-              <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
-                  ariaLabelDesc="Activate to sort in descending order"
-                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-          </th>
-      </tr>
-      <tr>
-          <th></th>
-          <th *ngFor="let col of columns" [ngSwitch]="col.field">
-              <p-multiSelect *ngSwitchCase="'Action'" [style]="{'width':'100%'}" appendTo="body"
-                  [options]="auditHistoryArray.Action" defaultLabel="Action"
-                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                  filter="true" resetFilterOnHide="true"></p-multiSelect>
-              <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body"
-                  [options]="auditHistoryArray.ActionBy" defaultLabel="ActionBy"
-                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                  filter="true" resetFilterOnHide="true"></p-multiSelect>
-              <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" appendTo="body"
-                  [options]="auditHistoryArray.Date" defaultLabel="Date"
-                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                  filter="true" resetFilterOnHide="true"></p-multiSelect>
-              <p-multiSelect *ngSwitchCase="'Details'" [style]="{'width':'100%'}" appendTo="body"
-                  [options]="auditHistoryArray.Details" defaultLabel="Details"
-                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                  filter="true" resetFilterOnHide="true"></p-multiSelect>
-          </th>
-      </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
-      <tr>
-          <td>{{ rowIndex+1 }}</td>
-          <td *ngFor="let col of columns">
-              <ng-container *ngIf="col.field != ''">
-                  {{rowData[col.field]}}
-              </ng-container>
-          </td>
-      </tr>
-  </ng-template>
-  <ng-template pTemplate="emptymessage" let-columns>
-      <tr>
-          <td [attr.colspan]="columns.length">
-              No Data found
-          </td>
-      </tr>
-  </ng-template>
-</p-table>
-
-<div style="margin-top: 10px;">
-  <h3 style="text-align: center">Audit History (On Line Item Selection)</h3>
-</div>
-
-<p-table [columns]="auditHistorySelectedColumns" [value]="auditHistorySelectedRows" exportFilename="Audit History">
-  <ng-template pTemplate="header" let-columns>
-      <tr>
-          <th>Sr.No.</th>
-          <th *ngFor="let col of columns" [pSortableColumn]="col.field">
-              {{col.header}}
-              <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
-                  ariaLabelDesc="Activate to sort in descending order"
-                  ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
-          </th>
-      </tr>
-      <tr>
-          <th></th>
-          <th *ngFor="let col of columns" [ngSwitch]="col.field">
-              <p-multiSelect *ngSwitchCase="'ClientLegalEntry'" [style]="{'width':'100%'}" appendTo="body"
-                  [options]="auditHistorySelectedArray.ClientLegalEntry" defaultLabel="Client Legal Entry"
-                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                  filter="true" resetFilterOnHide="true"></p-multiSelect>
-              <p-multiSelect *ngSwitchCase="'Action'" [style]="{'width':'100%'}" appendTo="body"
-                  [options]="auditHistorySelectedArray.Action" defaultLabel="Action"
-                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                  filter="true" resetFilterOnHide="true"></p-multiSelect>
-              <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body"
-                  [options]="auditHistorySelectedArray.ActionBy" defaultLabel="ActionBy"
-                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                  filter="true" resetFilterOnHide="true"></p-multiSelect>
-              <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" appendTo="body"
-                  [options]="auditHistorySelectedArray.Date" defaultLabel="Date"
-                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                  filter="true" resetFilterOnHide="true"></p-multiSelect>
-              <p-multiSelect *ngSwitchCase="'Details'" [style]="{'width':'100%'}" appendTo="body"
-                  [options]="auditHistorySelectedArray.Details" defaultLabel="Details"
-                  (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-                  filter="true" resetFilterOnHide="true"></p-multiSelect>
-          </th>
-      </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
-      <tr>
-          <td>{{ rowIndex+1 }}</td>
-          <td *ngFor="let col of columns">
-              <ng-container *ngIf="col.field != ''">
-                  {{rowData[col.field]}}
-              </ng-container>
-          </td>
-      </tr>
-  </ng-template>
-  <ng-template pTemplate="emptymessage" let-columns>
-      <tr>
-          <td [attr.colspan]="columns.length">
-              No Data found
-          </td>
-      </tr>
-  </ng-template>
-</p-table> -->
+      <h3 style="text-align: center">Audit History (On Page Open)</h3>
+    </div>
+    
+    <p-table #ah [columns]="auditHistoryColumns" [value]="auditHistoryRows" exportFilename="Audit History">
+      <ng-template pTemplate="header" let-columns>
+          <tr>
+              <th>Sr.No.</th>
+              <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                  {{col.header}}
+                  <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+                      ariaLabelDesc="Activate to sort in descending order"
+                      ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+          </tr>
+          <tr>
+              <th></th>
+              <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                  <p-multiSelect *ngSwitchCase="'Action'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="auditHistoryArray.Action" defaultLabel="Action"
+                      (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="auditHistoryArray.ActionBy" defaultLabel="ActionBy"
+                      (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="auditHistoryArray.Date" defaultLabel="Date"
+                      (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'Details'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="auditHistoryArray.Details" defaultLabel="Details"
+                      (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+              </th>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+          <tr>
+              <td>{{ rowIndex+1 }}</td>
+              <td *ngFor="let col of columns">
+                  <ng-container *ngIf="col.field != ''">
+                      {{rowData[col.field]}}
+                  </ng-container>
+              </td>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage" let-columns>
+          <tr>
+              <td [attr.colspan]="columns.length">
+                  No Data found
+              </td>
+          </tr>
+      </ng-template>
+    </p-table>
+    
+    <div style="margin-top: 10px;">
+      <h3 style="text-align: center">Audit History (On Line Item Selection)</h3>
+    </div>
+    
+    <p-table [columns]="auditHistorySelectedColumns" [value]="auditHistorySelectedRows" exportFilename="Audit History">
+      <ng-template pTemplate="header" let-columns>
+          <tr>
+              <th>Sr.No.</th>
+              <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                  {{col.header}}
+                  <p-sortIcon [field]="col.field" ariaLabel="Activate to sort"
+                      ariaLabelDesc="Activate to sort in descending order"
+                      ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+              </th>
+          </tr>
+          <tr>
+              <th></th>
+              <th *ngFor="let col of columns" [ngSwitch]="col.field">
+                  <p-multiSelect *ngSwitchCase="'ClientLegalEntry'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="auditHistorySelectedArray.ClientLegalEntry" defaultLabel="Client Legal Entry"
+                      (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'Action'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="auditHistorySelectedArray.Action" defaultLabel="Action"
+                      (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'ActionBy'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="auditHistorySelectedArray.ActionBy" defaultLabel="ActionBy"
+                      (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'Date'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="auditHistorySelectedArray.Date" defaultLabel="Date"
+                      (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'Details'" [style]="{'width':'100%'}" appendTo="body"
+                      [options]="auditHistorySelectedArray.Details" defaultLabel="Details"
+                      (onChange)="ah.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
+                      filter="true" resetFilterOnHide="true"></p-multiSelect>
+              </th>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rowData let-columns="columns" let-rowIndex="rowIndex">
+          <tr>
+              <td>{{ rowIndex+1 }}</td>
+              <td *ngFor="let col of columns">
+                  <ng-container *ngIf="col.field != ''">
+                      {{rowData[col.field]}}
+                  </ng-container>
+              </td>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage" let-columns>
+          <tr>
+              <td [attr.colspan]="columns.length">
+                  No Data found
+              </td>
+          </tr>
+      </ng-template>
+    </p-table> -->
 
 <p-dialog [(visible)]="showaddClientModal" [modal]="true" [contentStyle]="{'max-height':'500px', 'top':'0px'}"
     [style]="{width: '90%'}">
@@ -503,19 +509,19 @@
                             [options]="subDivisionDetailsColArray.SubDivision" defaultLabel="Sub-Division"
                             (onChange)="sd.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
                             [options]="subDivisionDetailsColArray.LastUpdated" defaultLabel="LastUpdated"
                             (onChange)="sd.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
                             [options]="subDivisionDetailsColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
                             (onChange)="sd.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                     </th>
                     <th></th>
@@ -595,7 +601,7 @@
                 <p-multiSelect [style]="{'width':'100%'}" [options]="dropdown.DeliveryLevel1Array"
                     defaultLabel="Select Delivery Level 1" formControlName="deliveryLevel1"
                     (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                    resetFilterOnHide="true"></p-multiSelect>
+                    resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
             </div>
         </div>
         <div class="p-grid mt-20">
@@ -604,7 +610,7 @@
                 <p-multiSelect [style]="{'width':'100%'}" [options]="dropdown.CMLevel1Array"
                     defaultLabel="Select CM Level 1" formControlName="cmLevel1"
                     (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                    resetFilterOnHide="true"></p-multiSelect>
+                    resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
             </div>
         </div>
     </form>
@@ -649,30 +655,30 @@
                         <p-multiSelect *ngSwitchCase="'FName'" [style]="{'width':'100%'}" [options]="POCColArray.FName"
                             defaultLabel="First Name" (onChange)="poc.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LName'" [style]="{'width':'100%'}" [options]="POCColArray.LName"
                             defaultLabel="Last Name" (onChange)="poc.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'EmailAddress'" [style]="{'width':'100%'}"
                             [options]="POCColArray.EmailAddress" defaultLabel="Email"
                             (onChange)="poc.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
                             [options]="POCColArray.LastUpdated" defaultLabel="LastUpdated"
                             (onChange)="poc.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
                             [options]="POCColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
                             (onChange)="poc.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                     </th>
                     <th></th>
@@ -883,37 +889,37 @@
                         <p-multiSelect *ngSwitchCase="'PoName'" [style]="{'width':'100%'}" [options]="POColArray.PoName"
                             defaultLabel="Po Name" (onChange)="po.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'PoNumber'" [style]="{'width':'100%'}"
                             [options]="POColArray.PoNumber" defaultLabel="Po Number"
                             (onChange)="po.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'AmountRevenue'" [style]="{'width':'100%'}"
                             [options]="POColArray.AmountRevenue" defaultLabel="Revenue"
                             (onChange)="po.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'AmountOOP'" [style]="{'width':'100%'}"
                             [options]="POColArray.AmountOOP" defaultLabel="OOP"
                             (onChange)="po.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdated'" [style]="{'width':'100%'}"
                             [options]="POColArray.LastUpdated" defaultLabel="LastUpdated"
                             (onChange)="po.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect *ngSwitchCase="'LastUpdatedBy'" [style]="{'width':'100%'}"
                             [options]="POColArray.LastUpdatedBy" defaultLabel="LastUpdatedBy"
                             (onChange)="po.filter($event.value, col.field, 'in')"
                             (keydown.enter)="$event.preventDefault()" filter="true" [maxSelectedLabels]="1"
-                            resetFilterOnHide="true">
+                            resetFilterOnHide="true" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                     </th>
                     <th></th>

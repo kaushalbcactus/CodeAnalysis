@@ -1,28 +1,60 @@
-import { Component, NgZone } from '@angular/core';
+import { Component, NgZone, OnDestroy } from '@angular/core';
 import { GlobalService } from './Services/global.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute , NavigationEnd} from '@angular/router';
 import { environment } from '../environments/environment';
 import { ConstantsService } from './Services/constants.service';
+import { SPOperationService } from './Services/spoperation.service';
+import { MenuItem } from 'primeng/api';
+import { Title } from '@angular/platform-browser';
+import { filter, map } from 'rxjs/operators';
 // import { Environment } from '../environments/environment.prod';
 declare const _spPageContextInfo;
+declare const newrelic;
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnDestroy {
   title = 'Medcom SPA';
+  display = false;
+  items: MenuItem[];
+  leftNavigation = [
+    { title: 'My Dashboard', href: '/dashboard#/myDashboard', visible: true },
+    { title: 'QMS', href: '/dashboard#/qms', visible: true },
+    { title: 'Leave Calendar', href: '/dashboard#/leaveCalendar', visible: true },
+    { title: 'Publication Support', href: '/dashboard#/pubSupport', visible: true },
+  ];
   // tslint:disable-next-line:variable-name
   constructor(
     public globalService: GlobalService,
     private router: Router,
     // tslint:disable-next-line: variable-name
     private _ngZone: NgZone,
-    public constantsService: ConstantsService
+    public constantsService: ConstantsService,
+    private spService: SPOperationService,
+    private titleService: Title,
+    private activatedRoute:ActivatedRoute
   ) { }
   // tslint:disable-next-line:use-life-cycle-interface
   ngOnInit() {
+
+    const appTitle = this.titleService.getTitle();
+    this.router
+      .events.pipe(
+        filter(event => event instanceof NavigationEnd),
+        map(() => {
+          const child = this.activatedRoute.firstChild;
+          if (child.snapshot.data['title']) {
+            return child.snapshot.data['title'];
+          }
+          return appTitle;
+        })
+      ).subscribe((ttl: string) => {
+        this.titleService.setTitle(ttl);
+      });
+
     // tslint:disable-next-line: only-arrow-functions
     this.constantsService.loader.isPSInnerLoaderHidden = true;
     if (environment.production) { if (window) { window.console.log = () => { }; } }
@@ -30,6 +62,13 @@ export class AppComponent {
     this.initSPPageObject();
     this.initSPLoggedInUser();
     this.initSPComponentRedirection();
+
+    this.items = [{
+      label: 'Misc',
+      items: [
+        { label: 'Site Contents', url: this.globalService.sharePointPageObject.webRelativeUrl+'/_layouts/15/viewlsts.aspx' }
+      ]
+    }]
   }
 
   initSPPageObject() {
@@ -43,24 +82,56 @@ export class AppComponent {
     this.globalService.sharePointPageObject.rootsite = window.origin;
   }
 
-  initSPLoggedInUser() {
-    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 286 : _spPageContextInfo.userId;
+  async initSPLoggedInUser() {
+    this.globalService.currentUser.userId = window.location.href.indexOf('localhost') > -1 ? 103 : _spPageContextInfo.userId;
     this.globalService.currentUser.email = window.location.href.indexOf('localhost') > -1 ?
       'sneha.danduk@cactusglobal.com' : _spPageContextInfo.userEmail;
-    this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Rahul' : _spPageContextInfo.userDisplayName;
+    this.globalService.currentUser.title = window.location.href.indexOf('localhost') > -1 ? 'Sneha' : _spPageContextInfo.userDisplayName;
+    this.spService.setBaseUrl(null);
+    const currentUserInfo = await this.spService.getUserInfo(this.globalService.currentUser.userId);
+    this.linkAccessForUsers(currentUserInfo.Groups);
+    console.log(currentUserInfo);
+    if (typeof newrelic === 'object') {
+      newrelic.setCustomAttribute('spUserId', _spPageContextInfo.userId);
+      newrelic.setCustomAttribute('spUserName', _spPageContextInfo.userDisplayName);
+    }
   }
+
+  linkAccessForUsers(groups) {
+    const currentUserGroups = groups.results.map(g => g.LoginName);
+    if (currentUserGroups.length > 0) {
+      if (currentUserGroups.find(g => g === 'Managers' || g === 'ProjectManagement Members' || g === 'Invoice_Team')) {
+        this.leftNavigation.push({ title: 'Project Management', href: '/dashboard#/projectMgmt', visible: true });
+      }
+      if (currentUserGroups.find(g => g === 'Managers' || g === 'TaskAllocation Members')) {
+        this.leftNavigation.push({ title: 'Allocation', href: '/dashboard#/taskAllocation', visible: true });
+      }
+      if (currentUserGroups.find(g => g === 'Managers' || g === 'CentralAllocation Members')) {
+        this.leftNavigation.push({ title: 'Central Allocation', href: '/dashboard#/centralallocation', visible: true });
+      }
+      if (currentUserGroups.find(g => g === 'Managers' || g === 'CapacityDashboard Members' || g === 'CapacityLink Members')) {
+        this.leftNavigation.push({ title: 'Capacity Dashboard', href: '/dashboard#/capacityDashboard', visible: true });
+      }
+      if (currentUserGroups.find(g => g === 'Managers' || g === 'FinanceDashboard Members' || g === 'Invoice_Team')) {
+        this.leftNavigation.push({ title: 'Finance Dashboard', href: '/dashboard#/financeDashboard', visible: true });
+      }
+      if (currentUserGroups.find(g => g === 'Managers' || g === 'AttributeManagement Members')) {
+        this.leftNavigation.push({ title: 'Attr Management', href: '/attribute', visible: true });
+      }
+      if (currentUserGroups.find(g => g === 'Managers' || g === 'AttributeManagement Members')) {
+        this.leftNavigation.push({ title: 'Admin', href: '/dashboard#/admin', visible: true });
+      }
+    }
+  }
+
   initSPComponentRedirection() {
     // tslint:disable:no-string-literal
     window['pubSupportComponentReference'] = { component: this, zone: this._ngZone, loadPubSupport: () => this.goToPubSupport(), };
     window['qmsComponentReference'] = { component: this, zone: this._ngZone, loadQMS: () => this.goToQMS(), };
     window['fdComponentReference'] = { component: this, zone: this._ngZone, loadFD: () => this.goToFD(), };
-    // tslint:disable-next-line:no-string-literal
     window['pmComponentReference'] = { component: this, zone: this._ngZone, loadPM: () => this.goToPM(), };
-    // tslint:disable-next-line:no-string-literal
     window['myDashboardComponentReference'] = { component: this, zone: this._ngZone, loadMyDashboard: () => this.goToMyDashboard(), };
-    // tslint:disable-next-line:no-string-literal
     window['adminComponentReference'] = { component: this, zone: this._ngZone, loadAdmin: () => this.goToAdmin(), };
-    // tslint:disable-next-line: no-string-literal
     window['taskAllocationComponentReference'] = {
       component: this, zone: this._ngZone,
       loadTaskAllocation: () => this.goToTaskAllocation(),
@@ -69,7 +140,6 @@ export class AppComponent {
       component: this, zone: this._ngZone,
       loadAccessLevelDashboard: () => this.goToAccessLevelDashboard(),
     };
-    // tslint:disable-next-line: no-string-literal
     window['caComponentReference'] = {
       component: this, zone: this._ngZone,
       loadCA: () => this.goToCA(),
@@ -149,19 +219,12 @@ export class AppComponent {
     }
   }
 
-  // tslint:disable-next-line:use-life-cycle-interface
   ngOnDestroy() {
-    // tslint:disable-next-line:no-string-literal
     window['pubSupportComponentReference'] = null;
-    // tslint:disable-next-line:no-string-literal
     window['fdComponentReference'] = null;
-    // tslint:disable-next-line:no-string-literal
     window['pmComponentReference'] = null;
-    // tslint:disable-next-line:no-string-literal
     window['myDashboardComponentReference'] = null;
-    // tslint:disable-next-line:no-string-literal
     window['adminComponentReference'] = null;
-    // tslint:disable-next-line: no-string-literal
     window['taskAllocationComponentReference'] = null;
     window['qmsComponentReference'] = null;
     window['accessLecelDashboardComponentReference'] = null;

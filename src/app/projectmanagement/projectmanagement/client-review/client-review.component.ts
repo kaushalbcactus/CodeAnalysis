@@ -413,7 +413,7 @@ export class ClientReviewComponent implements OnInit {
   }
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/allocation#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
+      '/dashboard#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
   goToProjectManagement(task) {
     this.pmObject.columnFilter.ProjectCode = [task.ProjectCode];

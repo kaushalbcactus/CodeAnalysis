@@ -1,4 +1,4 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule , Title } from '@angular/platform-browser';
 import { CommonModule, DatePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -14,7 +14,7 @@ import { DataService } from './Services/data.service';
 import { TimelineHistoryComponent } from './timeline/timeline-history/timeline-history.component';
 import { MessageService } from 'primeng/api';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
-
+import { PrimengModule } from './primeng/primeng.module';
 
 
 @NgModule({
@@ -29,13 +29,14 @@ import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.com
     HttpClientModule,
     HttpModule,
     CommonModule,
-    NgbModule
+    NgbModule,
+    PrimengModule
   ],
   declarations: [
     AppComponent,
     PageNotFoundComponent,
   ],
-  providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService],
+  providers: [DataService, TimelineHistoryComponent, DatePipe, MessageService, Title],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

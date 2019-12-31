@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 export class GlobalService {
 
   constructor() { }
+  public currentTitle: any;
   public userInfo: any;
   public oReviewerPendingTasks = [];
   public oTask = {
@@ -50,7 +51,8 @@ export class GlobalService {
     reviewTask: {
       ID: 0,
       Title: ''
-    }
+    },
+    currentTask: {}
   };
 
   /**
@@ -81,7 +83,8 @@ export class GlobalService {
     reviewTask: {
       ID: 0,
       Title: ''
-    }
+    },
+    currentTask: {}
   };
 
   public personalFeedback = {

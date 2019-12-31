@@ -1,6 +1,7 @@
 import { SPOperationService } from './../../../Services/spoperation.service';
 import { Injectable } from '@angular/core';
 import { MessageService } from 'primeng/primeng';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class QMSCommonService {
 
   public selectedComponent: any;
 
-  constructor(private spService: SPOperationService, private messageService: MessageService) { }
+  constructor(private spService: SPOperationService, private messageService: MessageService, private common:CommonService) { }
   /**
    * Fetch tasks documents
    */
@@ -48,6 +49,8 @@ export class QMSCommonService {
       }
     });
     // Execute remaining 32 requests less than multiple of 100
+
+    this.common.SetNewrelic('QMS', 'qmscommonService', 'GetDocuments');
     let arrResult = await this.spService.executeBatch(batchURL);
     arrResult = arrResult.map(t => t.retItems);
     const result = arrResult.length > 0 ? arrResult : [];

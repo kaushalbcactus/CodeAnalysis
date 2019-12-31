@@ -206,6 +206,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
   public async callReloadRes() {
+
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'GetProjectResources');
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
   }
 
@@ -240,6 +242,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
     let milestoneSubmilestones = [];
     let milestoneCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.milestone);
     milestoneCall.filter = milestoneCall.filter.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode);
+
+    this.commonService.SetNewrelic('TaskAllocation', 'task-detailsDialog', 'GetMilestonesByProjectCode');
     const response = await this.spServices.readItems(this.constants.listNames.Schedules.name, milestoneCall);
     this.allTasks = response.length ? response : [];
     let allRetrievedTasks = [];
@@ -2952,7 +2956,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const task = addTaskItems.filter(c => c.milestone === this.oProjectDetails.currentMilestone);
 
     updatedCurrentMilestone = mile && task && task.length ? true : false;
-
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'SaveTasksMilestones');
     const responseInLines = await this.executeBulkRequests(updatedCurrentMilestone, restructureMilstoneStr,
       updatedResources, batchUrl);
     if (responseInLines.length > 0) {
@@ -3002,6 +3006,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
         counter = counter + 1;
       }
+      this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'MoveTasksAfterCreate');
       await this.spServices.executeBatch(respBatchUrl);
     }
     for (const mail of this.reallocationMailArray) {
@@ -3195,6 +3200,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     updatePrjObj.type = 'PATCH';
     updatePrjObj.data = updateProjectRes;
     batchUrl.push(updatePrjObj);
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'updateProjectInfo');
     let response = await this.spServices.executeBatch(batchUrl);
     response = response.length ? response.map(a => a.retItems) : [];
     return response;
@@ -3218,6 +3224,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       }
       const to = arrayTo.join(',').trim();
       if (to) {
+        this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'sendMails');
         await this.spServices.sendMail(to, fromUser.email, mailSubject, objEmailBody);
       }
     }
@@ -3237,6 +3244,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     for (const user of users) {
       arrayTo.push(user.Email);
     }
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'sendCentralTaskMail');
     await this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
   }
 
@@ -3250,6 +3258,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     for (const user of users) {
       arrayTo.push(user.Email);
     }
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'sendReallocationCentralTaskMail');
     await this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
   }
 
@@ -3867,6 +3876,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     notificationObj.type = 'GET';
     batchUrl.push(notificationObj);
 
+    this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'SetAsNextMilestone');
     const response = await this.spServices.executeBatch(batchUrl);
     if (response.length) {
       const notificationBatchUrl = [];
@@ -3883,6 +3893,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
         notificationUpdateObj.type = 'PATCH';
         notificationBatchUrl.push(notificationUpdateObj);
       });
+
+      this.commonService.SetNewrelic('TaskAllocation', 'Timeline', 'SendEarlyTaskCompletionNotification');
       await this.spServices.executeBatch(notificationBatchUrl);
     }
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);

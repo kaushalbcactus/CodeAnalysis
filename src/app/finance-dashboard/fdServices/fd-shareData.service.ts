@@ -6,6 +6,7 @@ import { FdConstantsService } from './fd-constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { DatePipe } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Injectable({
     providedIn: 'root'
@@ -16,7 +17,8 @@ export class FDDataShareService {
         private constantService: ConstantsService,
         private fdConstantsService: FdConstantsService,
         private globalObject: GlobalService,
-        private datePipe: DatePipe
+        private datePipe: DatePipe,
+        private commonService: CommonService
     ) { }
     private subject = new Subject<any>();
     private expenseCreate = new Subject<any>();
@@ -202,6 +204,7 @@ export class FDDataShareService {
     }
     async getVendorFreelanceData() {
         const vendorObj = Object.assign({}, this.fdConstantsService.fdComponent.addUpdateFreelancer);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData', 'GetVendorFreelancerData');
         const res = await this.spServices.readItems(this.constantService.listNames.VendorFreelancer.name, vendorObj);
         const arrResults = res.length ? res : [];
         if (arrResults.length) {
@@ -218,6 +221,7 @@ export class FDDataShareService {
                 type: 'GET',
                 listName: this.constantService.listNames.ProjectFinances
             }];
+            this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData', 'GetSowData');
             const res = await this.spServices.executeBatch(obj);
             let arrResults: any = [];
             arrResults = res;
@@ -264,6 +268,7 @@ export class FDDataShareService {
     async getRequiredData(): Promise<any> {
         if (!this.requiredData.length) {
             this.constantService.loader.isPSInnerLoaderHidden = false;
+            this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData', 'GetUserInfo');
             this.globalObject.userInfo = await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
             // const batchContents = new Array();
             // const batchGuid = this.spServices.generateUUID();
@@ -322,6 +327,7 @@ export class FDDataShareService {
             prjInfoObj.listName = this.constantService.listNames.ProjectInformation.name;
             prjInfoObj.type = 'GET';
             batchUrl.push(prjInfoObj);
+            this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData', 'GetPICLEBRMasterBE');
             let arrResults = await this.spServices.executeBatch(batchUrl);
             this.requiredData = arrResults = arrResults.length ? arrResults.map(a => a.retItems) : [];
             this.setData(arrResults);
@@ -340,6 +346,7 @@ export class FDDataShareService {
                 type: 'GET',
                 listName: this.constantService.listNames.ProjectFinances
             }];
+            this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData', 'checkProjectAvailability');
             const res = await this.spServices.executeBatch(obj);
             if (res.length) {
                 // console.log('this.projectsInfo ', res[0]);
@@ -373,6 +380,7 @@ export class FDDataShareService {
             hourlyObj.type = 'GET';
             batchUrl.push(hourlyObj);
         }
+        this.commonService.SetNewrelic('Finance-Dashboard', 'fd-shareData', 'GetPIProPOCLE');
         let arrResults = await this.spServices.executeBatch(batchUrl);
         arrResults = arrResults.length ? arrResults.map(a => a.retItems) : [];
         this.setClePOData(arrResults);

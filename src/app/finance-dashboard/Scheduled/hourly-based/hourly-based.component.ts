@@ -320,6 +320,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             prjObj.type = 'GET';
             batchUrl.push(prjObj);
         });
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'getPFbyProjectCode');
         const res = await this.spServices.executeBatch(batchUrl);
         const arrResults = res.length ? res.map(a => a.retItems) : [];
         this.formatData(arrResults);
@@ -413,6 +414,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         // Get Finance Brekup List
         const pfbObj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinanceBreakupForPO);
         pfbObj.filter = pfbObj.filter.replace('{{ProjectCode}}', pf.ProjectCode);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'GetPoNO');
         const res = await this.spServices.readItems(this.constantService.listNames.ProjectFinanceBreakup.name, pfbObj);
         // const res = await this.getProjectBudgetBreakup(endPoints, 'poDetails');
         const poByPfb = res.length ? res[0] : { POLookup: '' };
@@ -544,7 +546,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     // Go to Project Details Page
     goToProjectDetails(data: any) {
         console.log(data);
-        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
+        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
     }
 
     updateInvoice() {
@@ -594,6 +596,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         sowObj.listName = this.constantService.listNames.SOW.name;
         sowObj.type = 'GET';
         batchUrl.push(sowObj);
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'getPFBPFBBSow');
         this.getProjectBudgetBreakup(batchUrl);
         const last3Days = this.commonService.getLastWorkingDay(3, new Date());
         this.minScheduleDate = last3Days;
@@ -833,7 +836,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 });
                 item.Status = 'Audit In Progress';
                 this.projectInfoData.splice(projIndex, 1, item);
-
+                this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePOPBBPFBSow');
                 this.submitForm(batchUrl, 'confirmInvoice');
             } else {
                 this.messageService.add({
@@ -894,6 +897,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
                 HoursSpent: this.editHourly_form.value.HoursSpent
             };
             pfData['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
+            this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'updatePFLItem');
             await this.spServices.updateItem(this.constantService.listNames.ProjectFinances.name, +this.selectedRowItem.PFID,
                 pfData, this.constantService.listNames.ProjectFinances.type);
             // this.submitForm(data, type);
@@ -962,6 +966,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
             type: 'GET',
             listName: this.constantService.listNames.MailContent.name
         }];
+        this.commonService.SetNewrelic('Finance-Dashboard', 'Schedule-hourlyBased', 'getEmailTemplates');
         const res = await this.spServices.executeBatch(obj);
         this.mailContentRes = res;
         console.log('Approve Mail Content res ', this.mailContentRes);

@@ -128,6 +128,7 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
     pfComponent.getPF.top = pfComponent.getPF.top.replace('{{TopCount}}', '' + topCount);
     pfComponent.getPF.filter = pfComponent.getPF.filter.replace('{{startDate}}', startDate)
       .replace('{{endDate}}', endDate);
+    this.commonService.SetNewrelic('QMS', 'personalFeedback-positiveFeedback', 'getPFItems');
     const arrResult = await this.spService.readItems(this.globalConstant.listNames.PositiveFeedbacks.name, pfComponent.getPF);
     this.global.templateMatrix.templates = arrResult.length > 0 ? arrResult : [];
     const arrPFs = arrResult.length > 0 ? this.appendPropertyTOObject(arrResult) : [];

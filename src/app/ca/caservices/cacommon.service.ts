@@ -5,6 +5,7 @@ import { SPOperationService } from '../../Services/spoperation.service';
 import { CAGlobalService } from './caglobal.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class CACommonService {
     private spServices: SPOperationService,
     private datePipe: DatePipe,
     private caGlobalService: CAGlobalService,
-    private globalService: GlobalService) { }
+    private globalService: GlobalService,
+    private commonService: CommonService) { }
   /**
      * This method is used to convert 24 hour format to 12 hours.
      * @param date
@@ -408,6 +410,8 @@ export class CACommonService {
     // batchContents.push('--batch_' + batchGuid + '--');
     // const userBatchBody = batchContents.join('\r\n');
     // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
+
+    this.commonService.SetNewrelic('caCommon', 'CA', 'GetMilestoneSchedules');
     const arrResults = await this.spServices.executeBatch(batchUrl);
     for (const count in arrTasks) {
       arrTasks[count].MilestoneTasks = arrResults[count].retItems;
@@ -1066,6 +1070,7 @@ export class CACommonService {
       tasksObj.listName = this.globalConstantService.listNames.MilestoneTasks.name;
       tasksObj.type = 'GET';
       batchUrl.push(tasksObj);
+      this.commonService.SetNewrelic('caCommon', 'CA', 'GetTaskBySlotType');
       const arrResult = await this.spServices.executeBatch(batchUrl);
       const response = arrResult.length ? arrResult[0].retItems : [];
       this.alldbConstantTasks = response;
@@ -1095,6 +1100,7 @@ export class CACommonService {
     tasksObj.listName = this.globalConstantService.listNames.Schedules.name;
     tasksObj.type = 'GET';
     batchUrl.push(tasksObj);
+    this.commonService.SetNewrelic('caCommon', 'CA', 'GetSlotTaskBySlotId');
     const arrResult = await this.spServices.executeBatch(batchUrl);
     response = arrResult.length ? arrResult[0].retItems : [];
 

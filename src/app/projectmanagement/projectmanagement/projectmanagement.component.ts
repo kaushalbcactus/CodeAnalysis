@@ -55,6 +55,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     private confirmationService: ConfirmationService
   ) { }
   ngOnInit() {
+    this.globalObject.currentTitle = 'Project Management';
     this.loadProjectManagementInit();
   }
   /**

@@ -4,6 +4,7 @@ import { DataService } from '../../../Services/data.service';
 import { QMSConstantsService } from '../services/qmsconstants.service';
 import { MessageService } from 'primeng/api';
 import { QMSCommonService } from '../services/qmscommon.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-personal-feedback',
@@ -25,6 +26,7 @@ export class PersonalFeedbackComponent implements OnInit {
     private qmsConstatsService: QMSConstantsService,
     private messageService: MessageService,
     private qmsCommonService: QMSCommonService,
+    private common: CommonService
   ) { }
 
   ngOnInit() {
@@ -41,18 +43,18 @@ export class PersonalFeedbackComponent implements OnInit {
     //this.router.navigate([this.router.url]);
     switch (this.router.url) {
       case '/qms/personalFeedback/internalFeedback':
-          this.qmsCommonService.selectedComponent.initialisePFInternal();
+        this.qmsCommonService.selectedComponent.initialisePFInternal();
         break;
       case '/qms/personalFeedback/externalFeedback':
-          this.qmsCommonService.selectedComponent.initialisePFCD();
+        this.qmsCommonService.selectedComponent.initialisePFCD();
         break;
       case '/qms/personalFeedback/positiveFeedback':
-          this.qmsCommonService.selectedComponent.initialisePFPositive();
+        this.qmsCommonService.selectedComponent.initialisePFPositive();
         break;
       case '/qms/personalFeedback/feedbackByMe':
-          this.qmsCommonService.selectedComponent.initialiseFeedback();
+        this.qmsCommonService.selectedComponent.initialiseFeedback();
         break;
     }
-    
+
   }
 }

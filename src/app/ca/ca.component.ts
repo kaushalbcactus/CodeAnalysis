@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CAGlobalService } from './caservices/caglobal.service';
 import { MenuItem } from 'primeng/api';
+
 @Component({
   selector: 'app-ca',
   templateUrl: './ca.component.html',
