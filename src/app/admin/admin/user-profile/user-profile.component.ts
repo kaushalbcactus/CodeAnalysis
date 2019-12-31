@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, ApplicationRef, ViewEncapsulation, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, NgZone, ApplicationRef, ViewEncapsulation, ViewChild, ChangeDetectorRef, ViewChildren } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { DatePipe, PlatformLocation } from '@angular/common';
 import { PeoplePickerUser } from '../../peoplePickerModel/people-picker.response';
@@ -139,8 +139,9 @@ export class UserProfileComponent implements OnInit {
     }
   };
   filteredCountriesMultiple: any[];
-
+  showTable = true;
   @ViewChild('up', { static: false }) userProfileTable: Table;
+  @ViewChildren('up') eventsTable: Table;
 
   /**
    * Construct a method to create an instance of required component.
@@ -235,6 +236,7 @@ export class UserProfileComponent implements OnInit {
    *
    */
   async ngOnInit() {
+    // console.log('eventsTable ', this.eventsTable);
     this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
     const currentYear = new Date();
     this.yearRange = (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
@@ -266,7 +268,6 @@ export class UserProfileComponent implements OnInit {
       }
     ];
     await this.loadUserTable();
-
     this.colFilters1(this.auditHistoryRows);
     this.loadDropDownValue();
   }
@@ -335,6 +336,7 @@ export class UserProfileComponent implements OnInit {
    * `userProfileData` array to display the result into Ng Prime table.
    */
   async loadUserTable() {
+    this.showTable = false;
     this.adminObject.isMainLoaderHidden = false;
     this.selectedOption = this.adminConstants.LOGICAL_FIELD.ACTIVE;
     this.showUserInput = false;
@@ -361,6 +363,7 @@ export class UserProfileComponent implements OnInit {
 
     const sResult = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resCatFilter);
     const tempResult = [];
+    this.showTable = true;
     if (sResult && sResult.length > 0) {
       // this.setValueInGlobalObject(sResult[0], false);
       for (const item of sResult) {
@@ -551,7 +554,7 @@ export class UserProfileComponent implements OnInit {
           value: this.adminConstants.LOGICAL_FIELD.INACTIVE
         }
       ];
-      console.log(this.userFilterOptions);
+      // console.log(this.userFilterOptions);
       // load bucket dropdown.
       const bucketResults = dropdownResults[0].retItems;
       if (bucketResults && bucketResults.length) {
@@ -644,21 +647,16 @@ export class UserProfileComponent implements OnInit {
       }
     }
   }
-  showTable: boolean = true;
   onChangeSelect() {
     if (this.selectedOption === this.adminConstants.LOGICAL_FIELD.INACTIVE) {
-      setTimeout(() => {
-        this.showTable = false;
-        this.showTable = true;
-      }, 500);
-      console.log(this.userProfileTable);
+      this.showTable = false;
+      // console.log(this.userProfileTable);
       this.showUserInput = true;
       const emptyProjects = [];
       this.userProfileData = [...emptyProjects];
       this.providedUser = '';
       this.colFilters([]);
     } else {
-      this.showTable = true;
       this.showUserInput = false;
       this.loadUserTable();
     }
@@ -677,7 +675,8 @@ export class UserProfileComponent implements OnInit {
     resCatFilter.filter = resCatFilter.filter + ' and startswith(UserNameText,\'' + this.providedUser + '\') ';
     const sResult = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resCatFilter);
     const tempResult = [];
-    if (sResult && sResult) {
+    if (sResult && sResult.length) {
+      this.showTable = true;
       for (const item of sResult) {
         const userObj = Object.assign({}, this.adminObject.addUser);
         userObj.UserNameEmail = item.UserName.EMail;
@@ -685,7 +684,7 @@ export class UserProfileComponent implements OnInit {
         userObj.ManagerEmail = item.Manager.EMail;
         userObj.ManagerId = item.Manager.ID;
         userObj.Bucket = item.Bucket;
-        userObj.PracticeArea = item.Practice_x0020_Area;
+        userObj.PracticeArea = item.Practice_x0020_Area ? item.Practice_x0020_Area.replace(/;#/g, ',') : '';
         userObj.TimeZone = item.TimeZone;
         userObj.DateOfJoining = this.datePipe.transform(item.DateOfJoining, 'MMM dd, yyyy');
         userObj.GoLiveDate = this.datePipe.transform(item.GoLiveDate, 'MMM dd, yyyy');
@@ -952,7 +951,7 @@ export class UserProfileComponent implements OnInit {
     taGet.listName = this.constants.listNames.TA.name;
     batchURL.push(taGet);
     const result = await this.spServices.executeBatch(batchURL);
-    console.log(result);
+    // console.log(result);
     return result;
   }
   /**
@@ -1064,13 +1063,8 @@ export class UserProfileComponent implements OnInit {
    * @param addUserForm The addUserForm as parameters which is required for fetching the form value.
    */
   async saveUser(addUserForm) {
-    if (this.selectedOption === this.adminConstants.LOGICAL_FIELD.INACTIVE) {
-      this.selectedOption = this.adminConstants.LOGICAL_FIELD.ACTIVE;
-      this.onChangeSelect();
-    }
-
     if (addUserForm.valid) {
-      console.log(addUserForm.value);
+      // console.log(addUserForm.value);
       /**
        * Need to validate if username and manager is properly selected or entered.
        */
@@ -1407,7 +1401,7 @@ export class UserProfileComponent implements OnInit {
     }
     const sResult = await this.spServices.executeBatch(batchURL);
     if (sResult && sResult.length) {
-      console.log(sResult);
+      // console.log(sResult);
       return sResult;
     }
   }
@@ -1651,7 +1645,7 @@ export class UserProfileComponent implements OnInit {
    * `Practice Area Effective Date` field will be visible and it's became mandatory field.
    */
   onPracticeAreaChange() {
-    console.log('this.addUser.value.practiceArea ', this.addUser.value.practiceArea);
+    // console.log('this.addUser.value.practiceArea ', this.addUser.value.practiceArea);
     const practiceAreaEffectiveDateControl = this.addUser.get('practiceAreaEffectiveDate');
     if (this.showeditUser && this.currUserObj.PracticeArea !== this.addUser.value.practiceArea) {
       practiceAreaEffectiveDateControl.setValidators([Validators.required]);
@@ -1698,24 +1692,26 @@ export class UserProfileComponent implements OnInit {
   }
 
   onCloseDateOfJoining() {
-    if (this.addUser.value.dateofjoin > this.addUser.value.BucketDate) {
-      this.addUser.patchValue({ BucketDate: this.addUser.value.dateofjoin });
-    }
-    if (this.addUser.value.dateofjoin > this.addUser.value.timeZoneEffectiveDate) {
-      this.addUser.patchValue({ timeZoneEffectiveDate: this.addUser.value.dateofjoin });
-    }
-    if (this.addUser.value.dateofjoin > this.addUser.value.liveDate) {
-      this.addUser.patchValue({ liveDate: this.addUser.value.dateofjoin });
-    }
-    if (this.addUser.value.dateofjoin > this.addUser.value.MaxHrsDate) {
-      this.addUser.patchValue({ MaxHrsDate: this.addUser.value.dateofjoin });
-    }
-    if (this.addUser.value.dateofjoin > this.addUser.value.primarySkillEffectiveDate) {
-      this.addUser.patchValue({ primarySkillEffectiveDate: this.addUser.value.dateofjoin });
-    }
+    if (this.editUser) {
+      if (this.addUser.value.dateofjoin > this.addUser.value.BucketDate) {
+        this.addUser.patchValue({ BucketDate: this.addUser.value.dateofjoin });
+      }
+      if (this.addUser.value.dateofjoin > this.addUser.value.timeZoneEffectiveDate) {
+        this.addUser.patchValue({ timeZoneEffectiveDate: this.addUser.value.dateofjoin });
+      }
+      if (this.addUser.value.dateofjoin > this.addUser.value.liveDate) {
+        this.addUser.patchValue({ liveDate: this.addUser.value.dateofjoin });
+      }
+      if (this.addUser.value.dateofjoin > this.addUser.value.MaxHrsDate) {
+        this.addUser.patchValue({ MaxHrsDate: this.addUser.value.dateofjoin });
+      }
+      if (this.addUser.value.dateofjoin > this.addUser.value.primarySkillEffectiveDate) {
+        this.addUser.patchValue({ primarySkillEffectiveDate: this.addUser.value.dateofjoin });
+      }
 
-    if (this.addUser.value.dateofjoin > this.addUser.value.dateofexit) {
-      this.addUser.patchValue({ dateofexit: this.addUser.value.dateofjoin });
+      if (this.addUser.value.dateofjoin > this.addUser.value.dateofexit) {
+        this.addUser.patchValue({ dateofexit: this.addUser.value.dateofjoin });
+      }
     }
   }
 
@@ -1872,7 +1868,10 @@ export class UserProfileComponent implements OnInit {
       { label: 'Edit', command: (e) => this.showEditUserModal() },
       { label: 'View', command: (e) => this.showRightViewUserModal() }
     ];
-    console.log(rowData);
+    // Remove Edit User option from Menu item
+    if (this.selectedOption === this.adminConstants.LOGICAL_FIELD.INACTIVE) {
+      this.pMenuItems.shift();
+    }
   }
   /**
    * Construct a method to show the edit user form.

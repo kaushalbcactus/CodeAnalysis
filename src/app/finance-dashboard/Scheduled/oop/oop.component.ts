@@ -260,6 +260,7 @@ export class OopComponent implements OnInit, OnDestroy {
     createANBCols() {
         this.oopBasedCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
+            { field: 'ProjectTitle', header: 'Project Title', visibility: false },
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
             { field: 'POValues', header: 'PO Number/ Name', visibility: true },
@@ -327,8 +328,7 @@ export class OopComponent implements OnInit, OnDestroy {
     async formatData(data: any[]) {
         this.oopBasedRes = [];
         this.selectedAllRowsItem = [];
-        for (let i = 0; i < data.length; i++) {
-            const element = data[i];
+        for (const element of data) {
             const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
             const sowCode = element.SOWCode ? element.SOWCode : '';
             const sowName = sowItem.Title ? sowItem.Title : '';
@@ -352,6 +352,7 @@ export class OopComponent implements OnInit, OnDestroy {
             this.oopBasedRes.push({
                 Id: element.ID,
                 ProjectCode: element.Title,
+                ProjectTitle: piInfo.Title ? piInfo.Title : '',
                 SOWCode: element.SOWCode,
                 SOWName: sowItem.Title,
                 SOWValue: sowcn,
@@ -577,7 +578,8 @@ export class OopComponent implements OnInit, OnDestroy {
     // Go to Project Details Page
     goToProjectDetails(data: any) {
         console.log(data);
-        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
+        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl
+            + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
     }
 
     // Update Form
@@ -717,7 +719,8 @@ export class OopComponent implements OnInit, OnDestroy {
         mailContent = this.replaceContent(mailContent, '@@Val2@@', this.selectedRowItem.ProjectCode);
         mailContent = this.replaceContent(mailContent, '@@Val3@@', this.selectedRowItem.ClientName);
         mailContent = this.replaceContent(mailContent, '@@Val4@@', this.selectedRowItem.PONumber);
-        mailContent = this.replaceContent(mailContent, '@@Val5@@', this.datePipe.transform(this.selectedRowItem.ScheduledDate, 'MMM dd, yyyy'));
+        mailContent = this.replaceContent(mailContent, '@@Val5@@',
+            this.datePipe.transform(this.selectedRowItem.ScheduledDate, 'MMM dd, yyyy'));
         mailContent = this.replaceContent(mailContent, '@@Val6@@', this.selectedRowItem.Currency + ' ' + this.selectedRowItem.Amount);
         mailContent = this.replaceContent(mailContent, '@@Val7@@', this.selectedRowItem.SOWCode);
 
