@@ -732,8 +732,6 @@ export class PMCommonService {
     return res;
   }
   setGlobalVariable(sowItem) {
-
-    debugger;
     this.pmObject.addSOW.ID = sowItem.hasOwnProperty('ID') ? sowItem.ID : 0;
     this.pmObject.addSOW.ClientLegalEntity = sowItem.ClientLegalEntity;
     this.pmObject.addSOW.SOWCode = sowItem.SOWCode;

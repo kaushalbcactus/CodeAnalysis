@@ -233,7 +233,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * This method is used to initiaze the form.
    */
   initForm() {
-    debugger;
     this.addSowForm = this.frmbuilder.group({
       clientLegalEntity: ['', Validators.required],
       poc: ['', Validators.required],
@@ -297,7 +296,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    */
   async createSOW() {
 
-    debugger;
     this.pmObject.isSOWFormSubmit = true;
     if (this.addSowForm.valid) {
       this.pmObject.isSOWFormSubmit = false;
@@ -385,7 +383,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * This method is used to set the field properties.
    */
   setFieldProperties() {
-    debugger;
     this.setSOWDropDownValue();
     this.onChangeClientLegalEntity();
     this.addSowForm.get('clientLegalEntity').setValue(this.pmObject.addSOW.ClientLegalEntity);
@@ -503,7 +500,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * @param sowObj Pass the sowObj as parameter.
    */
   createUpdateSOW(isUpdate, sowObj) {
-    debugger;
     if (!isUpdate) {
       this.addUpdateSOW(sowObj);
     } else {
@@ -756,7 +752,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * @param sowObj The parameter should be SOW list object.
    */
   getSOWDataObj(sowObj) {
-    debugger;
     const d = new Date();
     const year = d.getFullYear();
     const sowInfoOptions = {
@@ -1036,8 +1031,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     budgetGet.listName = this.constant.listNames.SOWBudgetBreakup.name;
     batchURL.push(budgetGet);
     const arrResults = await this.spServices.executeBatch(batchURL);
-
-    debugger;
     if (arrResults && arrResults.length) {
       const sowItem = arrResults[0].retItems[0];
       this.addSowForm.controls.sowCode.disable();
