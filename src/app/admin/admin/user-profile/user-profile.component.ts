@@ -190,11 +190,11 @@ export class UserProfileComponent implements OnInit {
       account: ['', null],
       bucket: ['', Validators.required],
       dateofexit: ['', null],
-      dateofjoin: ['', Validators.required],
+      dateofjoin: [new Date(), Validators.required],
       deliverableExclusion: ['', null],
       deliverable: ['', null],
       designation: ['', Validators.required],
-      liveDate: ['', Validators.required],
+      liveDate: [new Date(), Validators.required],
       inCapacity: ['', Validators.required],
       isActive: ['', null],
       manager: ['', Validators.required],
@@ -1041,6 +1041,11 @@ export class UserProfileComponent implements OnInit {
     }));
 
   }
+
+  // Reset when p-dialog close reset form value
+  cancelFormSub() {
+    this.addUser.reset();
+  }
   /**
    * Construct a method for saving and updating the user details to `Resource Categerization` List.
    *
@@ -1833,7 +1838,6 @@ export class UserProfileComponent implements OnInit {
    * Construct a method to show the add user form.
    */
   showAddUserModal() {
-    this.addUser.reset();
     // this.userProfileData = this.adminConstants.LOGICAL_FIELD.ACTIVE;
     this.date.isManagerEffectiveDateActive = false;
     this.date.isPracticeEffectiveDateActive = false;
