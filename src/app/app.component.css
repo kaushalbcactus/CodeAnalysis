@@ -123,6 +123,7 @@ legend {
 }
 
 .sidebar-icon {
+  cursor: pointer;
   font-size: 25px;
     padding-top: 5px;
     float: left;
