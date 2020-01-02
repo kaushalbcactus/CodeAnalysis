@@ -9,6 +9,7 @@ import { PMCommonService } from '../services/pmcommon.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
+import { CommonService } from 'src/app/Services/common.service';
 @Component({
   selector: 'app-projectmanagement',
   templateUrl: './projectmanagement.component.html',
@@ -52,6 +53,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     public pmService: PMCommonService,
     private router: Router,
     private dataService: DataService,
+    private commonService: CommonService,
     private confirmationService: ConfirmationService
   ) { }
   ngOnInit() {
@@ -661,6 +663,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   async addUpdateSOW(sowObj) {
     if (!sowObj.ID) { // Create SOW
       const sowInfoOptions = this.getSOWDataObj(sowObj);
+      this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'CreateSow');
       await this.spServices.createItem(this.constant.listNames.SOW.name, sowInfoOptions, this.constant.listNames.SOW.type);
       await this.addSOWBudgetBreakup(sowObj);
       const clientInfo = this.pmObject.oProjectCreation.oProjectInfo.clientLegalEntities.filter(x =>
@@ -675,6 +678,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           counter = +counter + 1;
         }
         const clientLegalInfo = { SOWCounter: counter };
+        this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'updateClientLegalEntity');
         const retResults = await this.spServices.updateItem(this.constant.listNames.ClientLegalEntity.name, cID, clientLegalInfo,
           this.constant.listNames.ClientLegalEntity.type);
         this.addUpdateSOWsendEmail(sowObj, this.constant.SOW_STATUS.APPROVED);
@@ -700,6 +704,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           break;
       }
       const data = this.getSOWDataObj(sowObj);
+      this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'updateSow');
       await this.spServices.updateItem(this.constant.listNames.SOW.name, sowObj.ID, data, this.constant.listNames.SOW.type);
       this.addUpdateSOWsendEmail(sowObj, this.constant.SOW_STATUS.UPDATE);
       this.messageService.add({
@@ -723,6 +728,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     const contentFilter = Object.assign({}, this.pmConstant.SOW_QUERY.PREDECESSOR);
     // tslint:disable-next-line:max-line-length
     contentFilter.filter = contentFilter.filter.replace(/{{predecessor}}/gi, predecessor);
+    this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'GetSow');
     const sResult = await this.spServices.readItems(this.constant.listNames.SOW.name, contentFilter);
     if (sResult && sResult.length > 0) {
       const cID = sResult[0].Id;
@@ -732,6 +738,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       const data = {
         TotalLinked: total
       };
+      this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'updateSow');
       await this.spServices.updateItem(this.constant.listNames.SOW.name, cID, data, this.constant.listNames.SOW.type);
     }
   }
@@ -783,6 +790,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
   async addSOWBudgetBreakup(sowObj) {
     if (sowObj.Budget.Total || sowObj.Budget.Total === 0) {
       const data = this.getBudgetBreakupObj(sowObj);
+      this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'createSowBudBreakup');
       await this.spServices.createItem(this.constant.listNames.SOWBudgetBreakup.name, data, this.constant.listNames.SOWBudgetBreakup.type);
     }
   }
@@ -896,6 +904,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         currSelectedSOW = this.pmObject.selectedSOWTask;
         const sowItemFilter = Object.assign({}, this.pmConstant.SOW_QUERY.SOW_BY_ID);
         sowItemFilter.filter = sowItemFilter.filter.replace(/{{Id}}/gi, currSelectedSOW.ID);
+        this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'getSow');
         sowItemResult = await this.spServices.readItems(this.constant.listNames.SOW.name, sowItemFilter);
         if (sowItemResult && sowItemResult.length) {
           this.pmObject.addSOW.Budget.Total = sowItemResult[0].TotalBudget ? sowItemResult[0].TotalBudget : 0;
@@ -976,6 +985,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       insertSOWBudgetBreakup.type = 'POST';
       insertSOWBudgetBreakup.url = this.spServices.getReadURL(this.constant.listNames.SOWBudgetBreakup.name, null);
       batchURL.push(insertSOWBudgetBreakup);
+      this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'GetSowSowBudBreakup');
       const res = await this.spServices.executeBatch(batchURL);
       if (sowItemResult && sowItemResult.length) {
         this.updateBudgetEmail(this.pmObject.addSOW);
@@ -1018,6 +1028,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     budgetGet.type = 'GET';
     budgetGet.listName = this.constant.listNames.SOWBudgetBreakup.name;
     batchURL.push(budgetGet);
+    this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'GetSowSowBudBreakup');
     const arrResults = await this.spServices.executeBatch(batchURL);
     if (arrResults && arrResults.length) {
       const sowItem = arrResults[0].retItems[0];
@@ -1088,6 +1099,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     updateSowData.type = 'PATCH';
     updateSowData.url = this.spServices.getItemURL(this.constant.listNames.SOW.name, currSelectedSOW.ID);
     batchURL.push(updateSowData);
+    this.commonService.SetNewrelic('projectManagment', 'projectManagement', 'getSows');
     const arrResults = await this.spServices.executeBatch(batchURL);
     if (arrResults && arrResults.length) {
       const sowItem = arrResults[0].retItems[0];

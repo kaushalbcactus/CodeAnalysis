@@ -7,6 +7,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { PlatformLocation } from '@angular/common';
 import { Router } from '@angular/router';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-add-user-to-projects',
@@ -59,7 +60,8 @@ export class AddUserToProjectsComponent implements OnInit {
     private platformLocation: PlatformLocation,
     private router: Router,
     private applicationRef: ApplicationRef,
-    private zone: NgZone
+    private zone: NgZone,
+    private common: CommonService
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -160,6 +162,7 @@ export class AddUserToProjectsComponent implements OnInit {
     const getProjInfo = Object.assign({}, this.adminConstants.QUERY.GET_PROJECT_BY_CLIENT);
     getProjInfo.filter = getProjInfo.filter.replace(/{{clientLegalEntity}}/gi,
       this.selectedClient);
+    this.common.SetNewrelic('admin', 'admin-entitlement-adduserToProject', 'getProjectInformation');
     const sResult = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, getProjInfo);
     if (sResult && sResult.length) {
       let disableCount = 0;
@@ -360,6 +363,7 @@ export class AddUserToProjectsComponent implements OnInit {
       });
       console.log(this.selectedProject);
       if (batchURL && batchURL.length) {
+        this.common.SetNewrelic('admin', 'admin-entitlement-adduserToProject', 'updateProjectInformation');
         const updateResult = await this.spServices.executeBatch(batchURL);
         this.messageService.add({
           key: 'adminCustom', severity: 'success', sticky: true,

@@ -67,9 +67,11 @@ export class SelectSOWComponent implements OnInit {
         || this.pmObject.userRights.isHaveSOWFullAccess
         || this.pmObject.userRights.isHaveSOWBudgetManager) {
         const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW);
+        this.commonService.SetNewrelic('projectManagment', 'addproj-selectSow', 'GetSow');
         arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
       } else {
         const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
+        this.commonService.SetNewrelic('projectManagment', 'addproj-selectSow', 'GetSow');
         arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
       }
       if (arrResults && arrResults.length) {

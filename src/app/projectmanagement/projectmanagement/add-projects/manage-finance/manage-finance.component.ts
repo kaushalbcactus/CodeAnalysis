@@ -255,7 +255,7 @@ export class ManageFinanceComponent implements OnInit {
     invGet.type = 'GET';
     invGet.listName = this.constant.listNames.Invoices.name;
     batchURL.push(invGet);
-
+    this.commonService.SetNewrelic('projectManagment', 'addproj-managefinance', 'GetPOSowInvoices');
     const arrResults = await this.spServices.executeBatch(batchURL);
     if (arrResults && arrResults.length) {
 
@@ -454,7 +454,7 @@ export class ManageFinanceComponent implements OnInit {
       tempArray = tempArray.concat([], this.projObj.CMLevel2ID);
       arrayTo = this.pmCommonService.getEmailId(tempArray);
 
-      const tempUserArray = await this.getTosList()
+      const tempUserArray = await this.getTosList();
       arrayTo = arrayTo.concat(tempUserArray);
       arrayTo = arrayTo.filter(this.onlyUnique);
       ccIDs = this.pmCommonService.getEmailId(arrayCC);
@@ -1244,7 +1244,7 @@ export class ManageFinanceComponent implements OnInit {
     pbbGet.type = 'GET';
     pbbGet.listName = this.constant.listNames.ProjectBudgetBreakup.name;
     batchURL.push(pbbGet);
-
+    this.commonService.SetNewrelic('projectManagment', 'addproj-manageFinance', 'GetProjFinanceProjFinanceBreakupPBBInvoiceLineItem');
     const result = await this.spServices.executeBatch(batchURL);
     this.budgetData = [];
 
@@ -1292,7 +1292,7 @@ export class ManageFinanceComponent implements OnInit {
           batchURLs.push(poCloseGet);
 
         });
-
+        this.commonService.SetNewrelic('projectManagment', 'addproj-manageFinance', 'GetListNames');
         const POresult = await this.spServices.executeBatch(batchURLs);
         this.poArray.push.apply(this.poArray, POresult.map(c => c.retItems[0]));
       }
@@ -1519,6 +1519,7 @@ export class ManageFinanceComponent implements OnInit {
       proformaGet.listName = this.constant.listNames.Proforma.name;
       batchURL.push(proformaGet);
     }
+    this.commonService.SetNewrelic('projectManagment', 'addproj-manageFinance', 'GetInvoicesAndProforma');
     const invoiceProformaResult = await this.spServices.executeBatch(batchURL);
     if (invoiceProformaResult && invoiceProformaResult.length) {
       return invoiceProformaResult;
@@ -1551,6 +1552,7 @@ export class ManageFinanceComponent implements OnInit {
     const data = {
       Status: this.constant.STATUS.CONFIRMED
     };
+    this.commonService.SetNewrelic('projectManagment', 'addproj-manageFinance', 'UpdateInvoiceLineItem');
     const result = await this.spServices.updateItem(this.constant.listNames.InvoiceLineItems.name,
       rowData.Id, data, this.constant.listNames.InvoiceLineItems.type);
     const objEmailBody = [];
@@ -1625,6 +1627,7 @@ export class ManageFinanceComponent implements OnInit {
       MainPOC: primaryPoc,
       AddressType: address
     };
+    this.commonService.SetNewrelic('projectManagment', 'addproj-manageFinance', 'UpdateInvoiceLineitem');
     const result = await this.spServices.updateItem(this.constant.listNames.InvoiceLineItems.name,
       this.invoiceObj.Id, data, this.constant.listNames.InvoiceLineItems.type);
     this.messageService.add({
@@ -1820,6 +1823,7 @@ export class ManageFinanceComponent implements OnInit {
 
     console.log(batchURL);
     if (batchURL.length) {
+      this.commonService.SetNewrelic('projectManagment', 'addproj-manageFinance', 'GetProjFinanceProjFinanceBreakupPBBInvoices');
       const res = await this.spServices.executeBatch(batchURL);
     }
 

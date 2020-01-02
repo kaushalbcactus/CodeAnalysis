@@ -175,7 +175,7 @@ export class UserProfileComponent implements OnInit {
     private applicationRef: ApplicationRef,
     private common: CommonService,
     private globalObject: GlobalService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     // Browser back button disabled & bookmark issue solution
     history.pushState(null, null, window.location.href);
@@ -361,6 +361,7 @@ export class UserProfileComponent implements OnInit {
     // resCatFilter.filter = resCatFilter.filter.replace(/{{isActive}}/gi,
     //   this.adminConstants.LOGICAL_FIELD.YES);
 
+    this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetResourceCategorization');
     const sResult = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resCatFilter);
     const tempResult = [];
     this.showTable = true;
@@ -673,6 +674,7 @@ export class UserProfileComponent implements OnInit {
     resCatFilter.filter = resCatFilter.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.NO);
     resCatFilter.filter = resCatFilter.filter + ' and startswith(UserNameText,\'' + this.providedUser + '\') ';
+    this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetResourceCategorization');
     const sResult = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resCatFilter);
     const tempResult = [];
     if (sResult && sResult.length) {
@@ -950,6 +952,7 @@ export class UserProfileComponent implements OnInit {
     taGet.type = 'GET';
     taGet.listName = this.constants.listNames.TA.name;
     batchURL.push(taGet);
+    this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetTADeliverableTypeCLEMilestoneTasksSkillMasterRCTimeZoneBusinessVerticle');
     const result = await this.spServices.executeBatch(batchURL);
     // console.log(result);
     return result;
@@ -1137,6 +1140,7 @@ export class UserProfileComponent implements OnInit {
         batchURL.push(managerIdGet);
       }
       if (batchURL.length) {
+        this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetUserInformation');
         IdResults = await this.spServices.executeBatch(batchURL);
       }
       if (IdResults && IdResults.length) {
@@ -1189,6 +1193,7 @@ export class UserProfileComponent implements OnInit {
   async createOrUpdateItem(formValue, IdResults, isEdit) {
     if (isEdit) {
       const data = await this.getResourceData(formValue, IdResults, this.showeditUser);
+      this.common.SetNewrelic('admin', 'admin-UserProfile', 'updateResourceCategorization');
       await this.spServices.updateItem(this.constants.listNames.ResourceCategorization.name,
         this.currUserObj.ID, data, this.constants.listNames.ResourceCategorization.type);
       this.adminObject.isMainLoaderHidden = true;
@@ -1200,6 +1205,7 @@ export class UserProfileComponent implements OnInit {
       this.showModal = false;
     } else {
       const data = await this.getResourceData(formValue, IdResults, this.showeditUser);
+      this.common.SetNewrelic('admin', 'admin-UserProfile', 'CreateResourceCategorization');
       const result = await this.spServices.createItem(this.constants.listNames.ResourceCategorization.name,
         data, this.constants.listNames.ResourceCategorization.type);
       this.adminObject.isMainLoaderHidden = true;
@@ -1234,6 +1240,7 @@ export class UserProfileComponent implements OnInit {
     const resGet = Object.assign({}, this.adminConstants.QUERY.GET_RESOURCE_CATEGERIZATION_BY_ID);
     resGet.filter = resGet.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES).replace(/{{Id}}/gi, ID);
+      this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetResourceCategorization');
     const result = await this.spServices.readItems(this.constants.listNames.ResourceCategorization.name, resGet);
     if (result && result.length) {
       const item = result[0];
@@ -1399,6 +1406,7 @@ export class UserProfileComponent implements OnInit {
       managerCreate.listName = this.constants.Groups.SYNC_USER_TO_USER_INFORMATION_LIST;
       batchURL.push(managerCreate);
     }
+    this.common.SetNewrelic('admin', 'admin-UserProfile', 'GetUserInformation');
     const sResult = await this.spServices.executeBatch(batchURL);
     if (sResult && sResult.length) {
       // console.log(sResult);

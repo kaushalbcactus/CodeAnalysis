@@ -118,6 +118,7 @@ export class TherapeuticAreasComponent implements OnInit {
     const getTAInfo = Object.assign({}, this.adminConstants.QUERY.GET_TA_BY_ACTIVE);
     getTAInfo.filter = getTAInfo.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES);
+      this.common.SetNewrelic('admin', 'admin-attribute-therapeutic', 'getTA');
     const results = await this.spServices.readItems(this.constants.listNames.TA.name, getTAInfo);
     if (results && results.length) {
       results.forEach(item => {
@@ -216,6 +217,7 @@ export class TherapeuticAreasComponent implements OnInit {
     const data = {
       Title: this.therapeuticArea
     };
+    this.common.SetNewrelic('admin', 'admin-attribute-therapeutic', 'createTA');
     const result = await this.spServices.createItem(this.constants.listNames.TA.name, data,
       this.constants.listNames.TA.type);
     console.log(result);
@@ -262,6 +264,7 @@ export class TherapeuticAreasComponent implements OnInit {
    */
   async confirmUpdate(data, updateData, listName, type) {
     this.adminObject.isMainLoaderHidden = false;
+    this.common.SetNewrelic('admin', 'admin-attribute-therapeutic', 'updateTA');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
     this.messageService.add({
       key: 'adminCustom', severity: 'success', sticky: true,

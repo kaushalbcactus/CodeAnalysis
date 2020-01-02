@@ -121,6 +121,7 @@ export class DeliverableTypesComponent implements OnInit {
     const getDeliverableTypeInfo = Object.assign({}, this.adminConstants.QUERY.GET_DELIVERABLE_TYPE_BY_ACTIVE);
     getDeliverableTypeInfo.filter = getDeliverableTypeInfo.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES);
+    this.common.SetNewrelic('admin', 'admin-attribute-deliverableTypes', 'getDeliverableType');
     const results = await this.spServices.readItems(this.constants.listNames.DeliverableType.name, getDeliverableTypeInfo);
     if (results && results.length) {
       results.forEach(item => {
@@ -195,6 +196,7 @@ export class DeliverableTypesComponent implements OnInit {
         Title: this.deliverableTypes,
         Acronym: this.acronym.toUpperCase()
       };
+      this.common.SetNewrelic('admin', 'admin-attribute-deliverableTypes', 'createDeliverableType');
       const result = await this.spServices.createItem(this.constants.listNames.DeliverableType.name, data,
         this.constants.listNames.DeliverableType.type);
       console.log(result);
@@ -314,6 +316,7 @@ export class DeliverableTypesComponent implements OnInit {
    */
   async confirmUpdate(data, updateData, listName, type) {
     this.adminObject.isMainLoaderHidden = false;
+    this.common.SetNewrelic('admin', 'admin-attribute-deliverableTypes', 'updateDeliverableType');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
     this.messageService.add({
       key: 'adminCustom', severity: 'success', sticky: true,

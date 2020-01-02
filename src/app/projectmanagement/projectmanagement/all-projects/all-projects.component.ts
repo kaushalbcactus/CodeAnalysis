@@ -199,7 +199,7 @@ export class AllProjectsComponent implements OnInit {
 
     completedTaskFilter.filter = completedTaskFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString()).
       replace('{{LastOnceHour}}', lastOneHourDateTime);
-
+    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'CheckEarlyTaskNotifications');
     const sResult = await this.spServices.readItems(this.constants.listNames.EarlyTaskCompleteNotifications.name, completedTaskFilter);
     if (sResult && sResult.length) {
       console.log(sResult);
@@ -223,6 +223,7 @@ export class AllProjectsComponent implements OnInit {
             IsActive: 'No'
           };
         }
+        this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'updateEarlyTaskNotification');
         const retResults = await this.spServices.updateItem(this.constants.listNames.EarlyTaskCompleteNotifications.name,
           element.ID, earlyTask, this.constants.listNames.EarlyTaskCompleteNotifications.type);
       }
@@ -676,7 +677,7 @@ export class AllProjectsComponent implements OnInit {
     sowGet.type = 'GET';
     sowGet.listName = this.constants.listNames.SOW.name;
     batchURL.push(sowGet);
-
+    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetProjFinancePBBSow');
     const result = await this.spServices.executeBatch(batchURL);
 
     if (result && result.length) {
@@ -736,7 +737,7 @@ export class AllProjectsComponent implements OnInit {
         projectBudgetBreakupUpdate.type = 'PATCH';
         projectBudgetBreakupUpdate.listName = this.constants.listNames.ProjectBudgetBreakup.name;
         batchURL.push(projectBudgetBreakupUpdate);
-
+        this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetProjFinancePBBSow');
         const res = await this.spServices.executeBatch(batchURL);
 
         const subjectVal = 'Budget reduction is ' + selectedStatus.toLowerCase();
@@ -935,6 +936,7 @@ export class AllProjectsComponent implements OnInit {
           inoviceGet.type = 'GET';
           inoviceGet.listName = this.constants.listNames.InvoiceLineItems.name;
           batchURL.push(inoviceGet);
+          this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetInvoiceLineItem');
           const sResult = await this.spServices.executeBatch(batchURL);
           const scheduleItems = result.find(c => c.listName === 'Schedules') ? result.find(c =>
             c.listName === 'Schedules').retItems : [];
@@ -1024,6 +1026,7 @@ export class AllProjectsComponent implements OnInit {
       if (this.selectedProjectObj.Status !== this.constants.projectStatus.InDiscussion) {
         piUdpate.Status = this.constants.projectStatus.AwaitingCancelApproval;
       }
+      this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'UpdateProjInformation');
       const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectInformation.name,
         this.selectedProjectObj.ID, piUdpate, this.constants.listNames.ProjectInformation.type);
       if (this.selectedProjectObj.Status === this.constants.projectStatus.InDiscussion) {
@@ -1297,11 +1300,13 @@ export class AllProjectsComponent implements OnInit {
         batchURL.push(scUpdate);
       }
       if (batchURL.length === 99) {
+        this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetProjFinancePBBProjFinanceBreakupSow');
         const batchResults = await this.spServices.executeBatch(batchURL);
         batchURL = [];
       }
     }
     if (batchURL.length) {
+      this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetProjFinancePBBProjFinanceBreakupSow');
       const updateResults = await this.spServices.executeBatch(batchURL);
       // console.log(updateResults);
     }
@@ -1350,6 +1355,7 @@ export class AllProjectsComponent implements OnInit {
     picloseUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name,
       selectedProjectObj.ID);
     batchURL.push(picloseUpdate);
+    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetProjInfo');
     const sResult = await this.spServices.executeBatch(batchURL);
     this.messageService.add({
       key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
@@ -1419,6 +1425,7 @@ export class AllProjectsComponent implements OnInit {
         element.ID);
       batchURL.push(prjBudgetBreakupUpdate);
     });
+    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetProjBBreakupProjectInfo');
     const sResult = await this.spServices.executeBatch(batchURL);
     this.sendEmailBasedOnStatus(this.constants.projectStatus.Unallocated, selectedProjectObj);
     this.messageService.add({
@@ -1438,6 +1445,7 @@ export class AllProjectsComponent implements OnInit {
   async changeMilestoneStatusFTE(selectedProjectObj) {
     const scheduleFilter = Object.assign({}, this.pmConstant.QUERY.GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE);
     scheduleFilter.filter = scheduleFilter.filter.replace(/{{projectCode}}/gi, selectedProjectObj.ProjectCode);
+    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedulesByProjCode');
     const sResult = await this.spServices.readItems(this.constants.listNames.Schedules.name, scheduleFilter);
     if (sResult && sResult.length > 0) {
       const filterResult = sResult.filter(a => a.Title.indexOf(selectedProjectObj.monthName) > -1);
@@ -1496,6 +1504,7 @@ export class AllProjectsComponent implements OnInit {
         }
       });
       if (batchURL.length) {
+        this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedules');
         await this.spServices.executeBatch(batchURL);
       }
     }
@@ -1545,6 +1554,7 @@ export class AllProjectsComponent implements OnInit {
     projectFinanceUpdate.url = this.spServices.getItemURL(this.constants.listNames.ProjectFinances.name,
       projectFinanceID);
     batchURL.push(projectFinanceUpdate);
+    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetProjInformationProjectFinance');
     const sResult = await this.spServices.executeBatch(batchURL);
     if (selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.HOURLY.value) {
       this.sendEmailBasedOnStatus(this.constants.projectStatus.SentToAMForApproval, selectedProjectObj);
@@ -1644,6 +1654,7 @@ export class AllProjectsComponent implements OnInit {
       invoiceGet.listName = this.constants.listNames.InvoiceLineItems.name;
       batchURL.push(invoiceGet);
     }
+    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedulesPOInvoiceLineItemSowListNameProjectFinancePBB');
     const results = await this.spServices.executeBatch(batchURL);
     if (results && results.length) {
       this.toUpdateIds = results;
@@ -1658,6 +1669,7 @@ export class AllProjectsComponent implements OnInit {
     let totalSpentTime = 0;
     const scheduleFilter = Object.assign({}, this.pmConstant.QUERY.GET_TIMESPENT);
     scheduleFilter.filter = scheduleFilter.filter.replace(/{{projectCode}}/gi, projectCode);
+    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedulesbyProjectCode');
     const sResult = await this.spServices.readItems(this.constants.listNames.Schedules.name, scheduleFilter);
     if (sResult && sResult.length > 0) {
       const batchURL = [];
@@ -1728,6 +1740,7 @@ export class AllProjectsComponent implements OnInit {
         }
       });
       if (isScheduleListStatusUpdated) {
+        this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSchedules');
         const batchResults = await this.spServices.executeBatch(batchURL);
       }
     }
@@ -1821,6 +1834,7 @@ export class AllProjectsComponent implements OnInit {
     // get data from project finance based on project code.
     const projectFinanceFilter = Object.assign({}, this.pmConstant.FINANCE_QUERY.PROJECT_FINANCE_BY_PROJECTCODE);
     projectFinanceFilter.filter = projectFinanceFilter.filter.replace(/{{projectCode}}/gi, proj.ProjectCode);
+    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetProjectFinance');
     const sResult = await this.spServices.readItems(this.constants.listNames.ProjectFinances.name, projectFinanceFilter);
     if (sResult && sResult.length > 0) {
       const fm = sResult[0];
@@ -1934,6 +1948,7 @@ export class AllProjectsComponent implements OnInit {
         Status: this.constants.projectStatus.PendingClosure,
         PrevStatus: this.selectedProjectObj.Status,
       };
+      this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'UpdateProjectInfo');
       const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectInformation.name,
         this.selectedProjectObj.ID, piUdpate, this.constants.listNames.ProjectInformation.type);
       this.checkList.addRollingProjectError = false;
@@ -2037,6 +2052,7 @@ export class AllProjectsComponent implements OnInit {
       const pfUdpate = {
         HoursSpent: totalHours
       };
+      this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'updateProjectFiance');
       const retResults = await this.spServices.updateItem(this.constants.listNames.ProjectFinances.name,
         projectFinanceID, pfUdpate, this.constants.listNames.ProjectFinances.type);
       return totalHours;
@@ -2071,9 +2087,11 @@ export class AllProjectsComponent implements OnInit {
         || this.pmObject.userRights.isHaveSOWFullAccess
         || this.pmObject.userRights.isHaveSOWBudgetManager) {
         const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW);
+        this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSow');
         arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
       } else {
         const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
+        this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSow');
         arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
       }
       if (arrResults && arrResults.length) {
@@ -2224,7 +2242,7 @@ export class AllProjectsComponent implements OnInit {
     VendorFreeLancerGet.type = 'GET';
     VendorFreeLancerGet.listName = this.constants.listNames.VendorFreelancer.name;
     batchURL.push(VendorFreeLancerGet);
-
+    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSpendingInfoAndVendorFreelancer');
     const arrResults = await this.spServices.executeBatch(batchURL);
 
 
@@ -2340,7 +2358,7 @@ export class AllProjectsComponent implements OnInit {
         projectInfoUpdate.listName = this.constants.listNames.ProjectInformation.name;
         batchURL.push(projectInfoUpdate);
       }
-
+      this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetSowInvoiceLineItemProjectInfo');
       const sResult = await this.spServices.executeBatch(batchURL);
       this.pmObject.isMainLoaderHidden = true;
       this.messageService.add({
@@ -2423,6 +2441,7 @@ export class AllProjectsComponent implements OnInit {
     inoviceGet.type = 'GET';
     inoviceGet.listName = this.constants.listNames.InvoiceLineItems.name;
     batchURL.push(inoviceGet);
+    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetProjectFinanceInvoiceLineItem');
     const sResult = await this.spServices.executeBatch(batchURL);
     const sowObj = allSOWArray.filter(x => x.SOWCode === newSOWCode);
     if (sResult && sResult.length && sowObj && sowObj.length) {
@@ -2494,7 +2513,7 @@ export class AllProjectsComponent implements OnInit {
 
     projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi,
       projectCode);
-
+    this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'GetProjectInformation');
     const results = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInfoFilter);
     if (results && results.length) {
       this.pmObject.allProjectItems = results;

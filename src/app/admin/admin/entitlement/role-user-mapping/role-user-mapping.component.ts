@@ -6,6 +6,7 @@ import { MessageService } from 'primeng/api';
 import { AdminCommonService } from 'src/app/admin/services/admin-common.service';
 import { Router } from '@angular/router';
 import { AdminConstantService } from 'src/app/admin/services/admin-constant.service';
+import { CommonService } from 'src/app/Services/common.service';
 
 @Component({
   selector: 'app-role-user-mapping',
@@ -44,6 +45,7 @@ export class RoleUserMappingComponent implements OnInit {
     private router: Router,
     private applicationRef: ApplicationRef,
     private zone: NgZone,
+    private common: CommonService,
     private adminConstants: AdminConstantService
   ) {
     // Browser back button disabled & bookmark issue solution
@@ -127,6 +129,7 @@ export class RoleUserMappingComponent implements OnInit {
     groupGet.type = 'GET';
     groupGet.listName = 'Groups';
     batchURL.push(groupGet);
+    this.common.SetNewrelic('admin', 'admin-entitlement-RoleUserMapping', 'GetAllsitegroups');
     const result = await this.spServices.executeBatch(batchURL);
     console.log(result);
     return result;
@@ -201,6 +204,7 @@ export class RoleUserMappingComponent implements OnInit {
       batchURL.push(userRemove);
     });
     if (batchURL.length) {
+      this.common.SetNewrelic('admin', 'admin-entitlement-RoleUserMapping', 'RemoveUserByLoginName');
       const sResult = await this.spServices.executeBatch(batchURL);
       this.adminObject.isMainLoaderHidden = true;
       setTimeout(() => {

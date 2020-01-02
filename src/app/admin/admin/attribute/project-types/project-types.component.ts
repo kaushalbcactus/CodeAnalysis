@@ -116,6 +116,7 @@ export class ProjectTypesComponent implements OnInit {
     const getProjectTypeInfo = Object.assign({}, this.adminConstants.QUERY.GET_PROJECT_TYPE_BY_ACTIVE);
     getProjectTypeInfo.filter = getProjectTypeInfo.filter.replace(/{{isActive}}/gi,
       this.adminConstants.LOGICAL_FIELD.YES);
+      this.common.SetNewrelic('admin', 'admin-attribute-projectTypes', 'getProjectType');
     const results = await this.spServices.readItems(this.constants.listNames.ProjectType.name, getProjectTypeInfo);
     if (results && results.length) {
       results.forEach(item => {
@@ -206,6 +207,7 @@ export class ProjectTypesComponent implements OnInit {
     const data = {
       Title: this.projectType
     };
+    this.common.SetNewrelic('admin', 'admin-attribute-projectTypes', 'createProjectType');
     const result = await this.spServices.createItem(this.constants.listNames.ProjectType.name, data,
       this.constants.listNames.ProjectType.type);
     console.log(result);
@@ -252,6 +254,7 @@ export class ProjectTypesComponent implements OnInit {
    */
   async confirmUpdate(data, updateData, listName, type) {
     this.adminObject.isMainLoaderHidden = false;
+    this.common.SetNewrelic('admin', 'admin-attribute-projectTypes', 'updateProjectType');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
     this.messageService.add({
       key: 'adminCustom', severity: 'success', sticky: true,
