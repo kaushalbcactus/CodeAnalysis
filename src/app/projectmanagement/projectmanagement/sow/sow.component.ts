@@ -239,6 +239,7 @@ export class SOWComponent implements OnInit, OnDestroy {
       currSelectedSOW = this.pmObject.selectedSOWTask;
       const sowItemFilter = Object.assign({}, this.pmConstant.SOW_QUERY.SOW_BY_ID);
       sowItemFilter.filter = sowItemFilter.filter.replace(/{{Id}}/gi, currSelectedSOW.ID);
+      this.commonService.SetNewrelic('projectManagment', 'sow', 'GetSow');
       const sowItemResult = await this.spServices.readItems(this.constants.listNames.SOW.name, sowItemFilter);
       if (sowItemResult && sowItemResult.length) {
         this.pmCommonService.setGlobalVariable(sowItemResult[0]);
@@ -281,9 +282,11 @@ export class SOWComponent implements OnInit, OnDestroy {
       || this.pmObject.userRights.isHaveSOWFullAccess
       || this.pmObject.userRights.isHaveSOWBudgetManager) {
       const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.ALL_SOW);
+      this.commonService.SetNewrelic('projectManagment', 'sow', 'GetSow');
       arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
     } else {
       const sowFilter = Object.assign({}, this.pmConstant.SOW_QUERY.USER_SPECIFIC_SOW);
+      this.commonService.SetNewrelic('projectManagment', 'sow', 'GetSow');
       arrResults = await this.spServices.readItems(this.constants.listNames.SOW.name, sowFilter);
     }
     if (arrResults && arrResults.length) {
@@ -514,6 +517,7 @@ export class SOWComponent implements OnInit, OnDestroy {
     }
 
     this.ProjectArray = [];
+    this.commonService.SetNewrelic('projectManagment', 'sow', 'GetProjectInformation');
     const sResults = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInformationFilter);
     this.ProjectArray = sResults;
     //  const budgetArray = await this.getBudget(sResults);

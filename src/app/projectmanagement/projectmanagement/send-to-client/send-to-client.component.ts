@@ -210,6 +210,7 @@ export class SendToClientComponent implements OnInit {
   async closeTaskWithStatus(task, options, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
     if (isActionRequired) {
+      this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'UpdateSchedules');
       await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
 
       // check whether next task is null or not.
@@ -217,11 +218,13 @@ export class SendToClientComponent implements OnInit {
       if (task.NextTasks) {
         const projectInfoOptions = { Status: 'Author Review' };
         const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
+        this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'UpdateProjectInfo');
         await this.spOperations.updateItem(this.Constant.listNames.ProjectInformation.name, projectID[0].ID, projectInfoOptions,
           this.Constant.listNames.ProjectInformation.type);
         const nextOptions = { PreviousTaskClosureDate: new Date() };
         const nextTask = this.scArrays.nextTaskArray.filter(item => item.Title === task.NextTasks);
         if (nextTask && nextTask.length) {
+          this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'UpdateSchedules');
           await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, nextTask[0].ID, nextOptions,
             this.Constant.listNames.Schedules.type);
         }
@@ -321,7 +324,7 @@ export class SendToClientComponent implements OnInit {
       top: 4200
     };
 
-
+    this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'GetSchedules');
     this.scArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
@@ -414,6 +417,7 @@ export class SendToClientComponent implements OnInit {
       // const userBatchBody = batchContents.join('\r\n');
       // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
       let counter = 0;
+      this.commonService.SetNewrelic('projectManagment', 'sendToClient', 'GetSchedules');
       let arrResults = await this.spServices.executeBatch(batchUrl);
       arrResults = arrResults.length > 0 ? arrResults.map(a => a.retItems) : [];
       for (const taskItem of tempSendToClientArray) {

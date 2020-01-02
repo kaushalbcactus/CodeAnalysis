@@ -8,6 +8,7 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
+import { CommonService } from 'src/app/Services/common.service';
 declare var $;
 @Component({
   selector: 'app-non-standardproject',
@@ -25,6 +26,7 @@ export class NonStandardprojectComponent implements OnInit {
     private constants: ConstantsService,
     private timelineObject: AddTimelineComponent,
     private messageService: MessageService,
+    private commonService : CommonService,
     private router: Router,
     private dataService: DataService) { }
   public nonStandardDeliverableType = [];
@@ -155,6 +157,9 @@ export class NonStandardprojectComponent implements OnInit {
     //   this.pmConstant.TIMELINE_QUERY.NON_STANDARD_RESOURCE_CATEGORIZATION);
     // this.spService.getBatchBodyGet(batchContents, batchGuid, resoureOptionEndPoint);
     // this.pmObject.nonStandardPMResponse = await this.spService.getDataByApi(batchGuid, batchContents);
+
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-nonStd', 'GetProjPYearSubDeliverablesRCDelTypeListName');
+
     const arrResult = await this.spService.executeBatch(batchUrl);
     this.pmObject.nonStandardPMResponse = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
     if (this.pmObject.nonStandardPMResponse && this.pmObject.nonStandardPMResponse.length) {

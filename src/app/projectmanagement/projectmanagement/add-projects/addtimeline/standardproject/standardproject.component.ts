@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
 import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
 import { async } from '@angular/core/testing';
+import { CommonService } from 'src/app/Services/common.service';
 
 declare var $;
 @Component({
@@ -96,6 +97,7 @@ export class StandardprojectComponent implements OnInit {
     private sharedObject: GlobalService,
     public messageService: MessageService,
     private router: Router,
+    private commonService : CommonService,
     private dataService: DataService) {
   }
 
@@ -136,6 +138,7 @@ export class StandardprojectComponent implements OnInit {
       this.standardServices = [];
       this.getProjectManagement();
       this.getStandardTemplate();
+      this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetUserInfo');
       this.userProperties = await this.spService.getUserInfo(this.sharedObject.currentUser.userId);
     } else {
       this.setDropdownField();
@@ -177,6 +180,8 @@ export class StandardprojectComponent implements OnInit {
     deliveryTypeGet.type = 'GET';
     deliveryTypeGet.listName = this.constants.listNames.DeliverableType.name;
     batchURL.push(deliveryTypeGet);
+
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetProjPYearCLERCDelType');
     this.pmObject.standardPMResponse = await this.spService.executeBatch(batchURL);
 
     if (this.pmObject.standardPMResponse && this.pmObject.standardPMResponse.length) {
@@ -220,6 +225,7 @@ export class StandardprojectComponent implements OnInit {
       select: 'BudgetHrs',
       filter: 'Title eq \'' + projectCode + '\''
     };
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetBudgetHours');
     const result = await this.spService.readItems(this.constants.listNames.ProjectFinances.name, prjFinanceOptions);
     return result.length ? result : [];
   }
@@ -235,6 +241,7 @@ export class StandardprojectComponent implements OnInit {
       expand: 'Writers/ID,Writers/Name,Writers/Title,Reviewers/ID,Reviewers/Name,Reviewers/Title,QC/ID,QC/Name,QC/Title,Editors/ID,Editors/Name,Editors/Title,PSMembers/ID,PSMembers/Name,PSMembers/Title,GraphicsMembers/ID,GraphicsMembers/Name,GraphicsMembers/Title,PrimaryResMembers/ID,PrimaryResMembers/Name,PrimaryResMembers/Title,CMLevel1/ID,CMLevel1/Title,AllDeliveryResources/ID,AllDeliveryResources/Name,AllDeliveryResources/Title',
       filter: 'ProjectCode eq \'' + projectCode + '\''
     };
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetProjectInfo');
     const project = await this.spService.readItems(this.constants.listNames.ProjectInformation.name, projectResourceOptions);
     // const project = this.spService.getListItem(projectResourceUrl);
     const oPrjFinance = await this.getBudgetHours(projectCode);
@@ -275,6 +282,7 @@ export class StandardprojectComponent implements OnInit {
       expand: 'StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
       filter: 'StandardService/Title eq \'' + selectedServices + '\' and LegalEntity/Title eq \'' + clientLegalEntity + '\' and Active eq \'Yes\''
     };
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStdTemplateBasedOnDeliverables');
     standardTemplate = await this.spService.readItems(this.constants.listNames.StandardTemplates.name, standardTemplateOptions)
     if (standardTemplate.length > 0) {
       return standardTemplate;
@@ -292,6 +300,7 @@ export class StandardprojectComponent implements OnInit {
       expand: 'StandardService/ID,StandardService/Title,LegalEntity/ID,LegalEntity/Title',
       filter: 'LegalEntity/Title eq \'' + clientLegalEntity + '\' and Active eq \'Yes \''
     };
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStdTemplate');
     standardTemplate = await this.spService.readItems(this.constants.listNames.StandardTemplates.name, standardTemplateOptions);
     if (standardTemplate && standardTemplate.length) {
       this.loadServiceDropDown(standardTemplate);
@@ -314,6 +323,7 @@ export class StandardprojectComponent implements OnInit {
       expand: 'Template/ID,Template/Title',
       filter: 'Template/Title eq \'' + templateName + '\''
     }
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetMilestonMatrix');
     standardMilestone = await this.spService.readItems(this.constants.listNames.MilestoneMatrix.name, standardMilestoneOptions);
     if (standardMilestone.length > 0) {
       return standardMilestone;
@@ -388,6 +398,7 @@ export class StandardprojectComponent implements OnInit {
       milestoneTaskGet.listName = this.constants.listNames.MilestoneTaskMatrix.name;
       batchURL.push(milestoneTaskGet);
     });
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetMilestoneTasks');
     this.allMilestoneTask = await this.spService.executeBatch(batchURL);
   }
   /**
@@ -410,6 +421,7 @@ export class StandardprojectComponent implements OnInit {
       filter: 'Active eq \'Yes\' and ' + filter + '',
       orderby: 'Title'
     };
+    this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetStandardServiceName');
     const result = await this.spService.readItems(this.constants.listNames.StandardServices.name, standardServiceOptions);
     if (result && result.length) {
       result.forEach(element => {
@@ -446,6 +458,7 @@ export class StandardprojectComponent implements OnInit {
         expand: 'Tasks/ID,Tasks/Title',
         filter: 'Name eq \'' + selectedVal + '\''
       };
+      this.commonService.SetNewrelic('projectManagment', 'addproj-addtimeline-Std', 'GetSkillMaster');
       let skillMaster = await this.spService.readItems(this.constants.listNames.SkillMaster.name, skillMasterOptions);
       skillMaster.forEach((skill) => {
         let tempSkill = skill.Name;
