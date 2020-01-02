@@ -162,7 +162,7 @@ export class UserProfileComponent implements OnInit {
    */
   constructor(
     private datePipe: DatePipe,
-    private frmbuilder: FormBuilder,
+    private fb: FormBuilder,
     private adminCommonService: AdminCommonService,
     private constants: ConstantsService,
     private adminConstants: AdminConstantService,
@@ -185,7 +185,57 @@ export class UserProfileComponent implements OnInit {
     router.events.subscribe((uri) => {
       zone.run(() => applicationRef.tick());
     });
-    this.addUser = frmbuilder.group({
+
+  }
+  /**
+   * Construct a method to initialize all the data.
+   *
+   * @description
+   *
+   * This is the entry point in this class which jobs is to initialize and load the required data.
+   *
+   */
+  async ngOnInit() {
+    this.initialAddUserForm();
+    // console.log('eventsTable ', this.eventsTable);
+    this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
+    const currentYear = new Date();
+    this.yearRange = (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
+    this.userProfileColumns = [
+      { field: 'User', header: 'User', visibility: true },
+      { field: 'PrimarySkill', header: 'Primary Skill', visibility: true },
+      { field: 'Bucket', header: 'Bucket', visibility: true },
+      { field: 'PracticeArea', header: 'Practice Area', visibility: true },
+      { field: 'InCapacity', header: 'In Capacity', visibility: true },
+      { field: 'DateOfJoining', header: 'Date Of Joining', visibility: true },
+      { field: 'GoLiveDate', header: 'Go Live Date', visibility: true },
+      { field: 'LastUpdated', header: 'Last Updated', visibility: false, exportable: false },
+      { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false },
+      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: false },
+    ];
+    this.auditHistoryColumns = [
+      { field: 'User', header: 'User' },
+      { field: 'ActionBy', header: 'Action By' },
+      { field: 'ActionDate', header: 'Action Date' },
+      { field: 'Details', header: 'Details' }
+    ];
+
+    this.auditHistoryRows = [
+      {
+        User: 'User Created',
+        ActionBy: '',
+        ActionDate: '',
+        Details: ''
+      }
+    ];
+    await this.loadUserTable();
+    this.colFilters1(this.auditHistoryRows);
+    this.loadDropDownValue();
+  }
+
+  // Initial form Fields
+  initialAddUserForm() {
+    this.addUser = this.fb.group({
       username: ['', Validators.required],
       account: ['', null],
       bucket: ['', Validators.required],
@@ -226,50 +276,6 @@ export class UserProfileComponent implements OnInit {
       workFriday: ['', null],
       workSaturday: [{ value: '', disabled: true }, null],
     });
-  }
-  /**
-   * Construct a method to initialize all the data.
-   *
-   * @description
-   *
-   * This is the entry point in this class which jobs is to initialize and load the required data.
-   *
-   */
-  async ngOnInit() {
-    // console.log('eventsTable ', this.eventsTable);
-    this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
-    const currentYear = new Date();
-    this.yearRange = (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
-    this.userProfileColumns = [
-      { field: 'User', header: 'User', visibility: true },
-      { field: 'PrimarySkill', header: 'Primary Skill', visibility: true },
-      { field: 'Bucket', header: 'Bucket', visibility: true },
-      { field: 'PracticeArea', header: 'Practice Area', visibility: true },
-      { field: 'InCapacity', header: 'In Capacity', visibility: true },
-      { field: 'DateOfJoining', header: 'Date Of Joining', visibility: true },
-      { field: 'GoLiveDate', header: 'Go Live Date', visibility: true },
-      { field: 'LastUpdated', header: 'Last Updated', visibility: false, exportable: false },
-      { field: 'LastUpdatedFormat', header: 'Last Updated Date', visibility: false },
-      { field: 'LastUpdatedBy', header: 'Last Updated By', visibility: false },
-    ];
-    this.auditHistoryColumns = [
-      { field: 'User', header: 'User' },
-      { field: 'ActionBy', header: 'Action By' },
-      { field: 'ActionDate', header: 'Action Date' },
-      { field: 'Details', header: 'Details' }
-    ];
-
-    this.auditHistoryRows = [
-      {
-        User: 'User Created',
-        ActionBy: '',
-        ActionDate: '',
-        Details: ''
-      }
-    ];
-    await this.loadUserTable();
-    this.colFilters1(this.auditHistoryRows);
-    this.loadDropDownValue();
   }
   /**
    * Construct a method to set the conditional validators when form edited.
@@ -1838,6 +1844,7 @@ export class UserProfileComponent implements OnInit {
    * Construct a method to show the add user form.
    */
   showAddUserModal() {
+    this.initialAddUserForm();
     // this.userProfileData = this.adminConstants.LOGICAL_FIELD.ACTIVE;
     this.date.isManagerEffectiveDateActive = false;
     this.date.isPracticeEffectiveDateActive = false;
