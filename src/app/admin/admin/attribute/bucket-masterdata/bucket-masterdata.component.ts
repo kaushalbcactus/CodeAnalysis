@@ -199,6 +199,7 @@ export class BucketMasterdataComponent implements OnInit {
     getClientLegalEntity.type = 'GET';
     getClientLegalEntity.listName = this.constants.listNames.ClientLegalEntity.name;
     batchURL.push(getClientLegalEntity);
+    this.common.SetNewrelic('admin', 'admin-attribute-bucketMasterData', 'GetFocusDataCLE');
     const sResults = await this.spServices.executeBatch(batchURL);
     return sResults;
   }
@@ -261,6 +262,7 @@ export class BucketMasterdataComponent implements OnInit {
     cleMappingGet.listName = this.constants.listNames.CLEBucketMapping.name;
     let batchUrl = [];
     batchUrl.push(cleMappingGet);
+    this.common.SetNewrelic('admin', 'admin-attribute-bucketMasterData', 'GetCLEBucketMapping');
     const getCLEResults = await this.spServices.executeBatch(batchUrl);
     console.log(getCLEResults);
     return getCLEResults;
@@ -392,6 +394,7 @@ export class BucketMasterdataComponent implements OnInit {
     const data = {
       Title: this.bucketData
     };
+    this.common.SetNewrelic('admin', 'admin-attribute-bucketMasterData', 'CreateFocusData');
     const result = await this.spServices.createItem(this.constants.listNames.FocusGroup.name, data,
       this.constants.listNames.FocusGroup.type);
     console.log(result);
@@ -436,6 +439,7 @@ export class BucketMasterdataComponent implements OnInit {
    */
   async confirmUpdate(data, updateData, listName, type) {
     this.adminObject.isMainLoaderHidden = false;
+    this.common.SetNewrelic('admin', 'admin-attribute-bucketMasterData', 'updateFocusGroup');
     const result = await this.spServices.updateItem(listName, data.ID, updateData, type);
     this.messageService.add({
       key: 'adminCustom', severity: 'success', sticky: true,
@@ -544,6 +548,7 @@ export class BucketMasterdataComponent implements OnInit {
       }
     });
     if (batchURL.length) {
+      this.common.SetNewrelic('admin', 'admin-attribute-bucketMasterData', 'POSTCLEBucketMapping');
       const results = await this.spServices.executeBatch(batchURL);
     }
   }
@@ -580,6 +585,7 @@ export class BucketMasterdataComponent implements OnInit {
       }
     });
     if (batchURL.length) {
+      this.common.SetNewrelic('admin', 'admin-attribute-bucketMasterData', 'GetCLEBucketMapping');
       const getCLEResults = await this.spServices.executeBatch(batchURL);
       console.log(getCLEResults);
       batchURL = [];
@@ -602,6 +608,7 @@ export class BucketMasterdataComponent implements OnInit {
         });
         if (batchURL.length) {
           // const updateResult = await this.spServices.executeBatch(batchURL);
+          this.common.SetNewrelic('admin', 'admin-attribute-bucketMasterData', 'updateCLEBucketMapping');
           await this.createCLEMapping(batchURL);
         }
       }
