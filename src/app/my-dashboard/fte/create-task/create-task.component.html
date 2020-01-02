@@ -1,0 +1,133 @@
+<p-dialog header="Create Task" [(visible)]="createTaskModal" [modal]="true" [draggable]="false" [style]="{'width': '50%'}" [maximizable]="false" [contentStyle]="{'max-height':'350px'}" (onHide)="cancelFormSub('createTask')">
+    <form [formGroup]="create_task_form">
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                Project Code:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-6">
+                <p-dropdown resetFilterOnHide="true" [options]="fteProjectsList" placeholder="Select Project code" [style]="{'width':'100%'}" formControlName="ProjectCode" optionLabel="ProjectCode" (onChange)="onChangeDD($event.value, 'ProjectCode')">
+                </p-dropdown>
+                <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.ProjectCode.errors">
+                    <div *ngIf="isValidCreateTaskForm.ProjectCode.errors.required" style="color:red;" style="color:red;">
+                        ProjectCode is required.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                Milestones:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-6">
+                <p-dropdown [options]="milestonesList" placeholder="Select milestone" optionLabel="label" [style]="{'width':'100%'}" formControlName="Milestones" (onChange)="onChangeDD($event.value, 'Milestone')">
+                </p-dropdown>
+                <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.Milestones.errors">
+                    <div *ngIf="isValidCreateTaskForm.Milestones.errors.required" style="color:red;">Milestone is required.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                Sub milestones:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-6">
+                <!-- [showClear]="create_task_form.value.SubMilestones.length ? true: false" -->
+                <p-dropdown #dd editable="true" [options]="subMilestonesList" [style]="{'width':'100%'}" formControlName="SubMilestones" optionLabel="label" (onChange)="onChangeDD($event.value, 'SubMilestone')" (input)="onSearchChange($event.target.value)" (click)="clearFilter(dd)">
+                </p-dropdown>
+                <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.SubMilestones.errors">
+                    <div style="color: red;" *ngIf="isValidCreateTaskForm.SubMilestones.errors">Sub Milestone is required.</div>
+                </div>
+                <div *ngIf="isValidCreateTaskForm.SubMilestones.hasError('maxlength')">
+                    <div style="color: red;">Maximum Sub Milestone character length is 30 only.</div>
+                </div>
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                <div style="color: #C53E3E;">Preferably PUB ID </div>
+                <div>{{this.create_task_form.value.SubMilestones.length}} / 30</div>
+            </div>
+        </div>
+
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                Start Date:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-6">
+                <p-calendar [style]="{'border': '1px solid !important'}" [minDate]="minDateValue" placeholder="Select Start Date" formControlName="StartDate" [maxDate]="maxDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}" appendTo="body" [monthNavigator]="true"
+                    (onClose)="onCloseStartDate()" [yearNavigator]="true">
+                </p-calendar>
+                <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.StartDate.errors">
+                    <div style="color: red;">Start Date is required.</div>
+                </div>
+            </div>
+            <!-- <div class="ui-g-12 ui-md-6 ui-lg-2">
+        Sub milestones:
+      </div> -->
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+
+                <input placeholder="Select Start Time" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:49%;margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultStartTime"
+                    formControlName="StartTime" [value]="'09:00 AM'" [format]="12" readonly>
+
+                <ngx-material-timepicker #defaultStartTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(create_task_form.value.StartTime, 'startTime')" [ngxMaterialTimepickerTheme]="darkTheme">
+                </ngx-material-timepicker>
+
+                <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.StartTime.errors">
+                    <div style="color: red;">Start time is required.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                End Date:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-6">
+                <p-calendar [style]="{'min-width':'100%','width': '17em !important'}" [minDate]="create_task_form.value.StartDate" placeholder="Select End Date" formControlName="EndDate" [maxDate]="maxDate" [disabledDays]="[0,6]" dateFormat="M dd, yy" yearRange="{{yearsRange}}"
+                    appendTo="body" [monthNavigator]="true" [yearNavigator]="true">
+                </p-calendar>
+                <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.EndDate.errors">
+                    <div style="color: red;">End Date is required.</div>
+                </div>
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-4">
+                <input placeholder="Select Start Time" style="font-size: 14px; color: #333333; background: #ffffff;  padding: 0.429em; width:49%;margin: 0px 8px 0px 0px; border: 1px solid #a6a6a6; border-radius: 4px;" aria-label="12hr format" [ngxTimepicker]="defaultEndTime"
+                    formControlName="EndTime" [value]="'07:00 PM'" [format]="12" readonly>
+
+                <ngx-material-timepicker #defaultEndTime [minutesGap]="15" [enableKeyboardInput]="false" (closed)="SetTime(create_task_form.value.EndTime, 'endTime')" [ngxMaterialTimepickerTheme]="darkTheme">
+                </ngx-material-timepicker>
+
+                <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.StartTime.errors">
+                    <div style="color: red;">Start time is required.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-g">
+            <div class="ui-g-12 ui-md-6 ui-lg-2">
+                Scope:
+            </div>
+            <div class="ui-g-12 ui-md-6 ui-lg-7">
+                <textarea [rows]="5" [cols]="60" formControlName="Comments" pInputTextarea maxlength="100"></textarea>
+                <span style="padding-left: 5px;">{{this.create_task_form.value.Comments.length}} / 100</span>
+                <div *ngIf="this.create_task_form.value.Comments.length >= 100 ">
+                    <span style="color: red;">Task scope maximum length is 100</span>
+                </div>
+                <!-- <div *ngIf="formSubmit.isSubmit &&  isValidCreateTaskForm.Comments.errors">
+          <div style="color: red;">Task scope is required.</div>
+        </div> -->
+            </div>
+        </div>
+
+    </form>
+
+    <p-footer>
+        <button pButton type="button" label="Create" [disabled]="submitBtn.isClicked" class="redLight" (click)="onFormSubmit('createTask')"></button>
+        <button pButton type="button" label="Cancel" class="redLight" (click)="cancelFormSub('createTask')"></button>
+    </p-footer>
+
+</p-dialog>
+
+<p-toast key="errorCT" position="bottom-center"></p-toast>
+<p-toast key="successCT" position="bottom-center"></p-toast>

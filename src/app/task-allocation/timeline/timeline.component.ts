@@ -1,17 +1,19 @@
-import { Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation, Input, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation, Input, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { GlobalService } from 'src/app/Services/global.service';
 import { TaskAllocationConstantsService } from '../services/task-allocation-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { GanttEditorComponent, GanttEditorOptions } from 'ng-gantt';
-import { TreeNode, MessageService, DialogService, ConfirmationService } from 'primeng/api';
+import { TreeNode, MessageService, DialogService, ConfirmationService, DynamicDialogRef } from 'primeng/api';
 import { MenuItem } from 'primeng/api';
-import { UserCapacityComponent } from '../user-capacity/user-capacity.component';
 import { DragDropComponent } from '../drag-drop/drag-drop.component';
 import { TaskDetailsDialogComponent } from '../task-details-dialog/task-details-dialog.component';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { UsercapacityComponent } from 'src/app/shared/usercapacity/usercapacity.component';
+import { CascadeDialogComponent } from '../cascade-dialog/cascade-dialog.component';
+import { TaskAllocationCommonService } from '../services/task-allocation-common.service';
 
 
 
@@ -19,7 +21,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
   selector: 'app-timeline',
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.css'],
-  providers: [MessageService, DialogService, DragDropComponent],
+  providers: [MessageService, DialogService, DragDropComponent, UsercapacityComponent, DynamicDialogRef],
   encapsulation: ViewEncapsulation.None
 })
 export class TimelineComponent implements OnInit, OnDestroy {
@@ -30,7 +32,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
   tempGanttchartData = [];
   public noTaskError = 'No milestones found.';
   @ViewChild('gantteditor', { static: true }) gantteditor: GanttEditorComponent;
-  @ViewChild(UserCapacityComponent, { static: true }) userCapacityChild: UserCapacityComponent;
+  @ViewChild('reallocationMailTableID', { static: false }) reallocateTable: ElementRef;
   Today = new Date();
   tempComment;
   minDateValue = new Date();
@@ -98,11 +100,17 @@ export class TimelineComponent implements OnInit, OnDestroy {
     pubSupportMembers: { results: [] },
     primaryResources: { results: [] },
     allMilestones: [],
+    allOldMilestones: [],
     ta: [],
     deliverable: [],
     account: [],
   };
-
+  public queryConfig = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
   selected: any;
   private contextMenuOptions: MenuItem[];
   milestoneData: TreeNode[] = [];
@@ -134,10 +142,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
   tempClick: any;
   selectedSubMilestone: any;
   changeInRestructure = false;
-  // errorMessageCount = 0;
-  // taskerrorMessage: string;
   dbRecords: any[];
-
+  reallocationMailData = [];
+  reallocationMailArray = [];
+  deallocationMailArray = [];
+  deletedMilestones = [];
+  deletedTasks = [];
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
@@ -147,10 +157,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
     public datepipe: DatePipe,
     public dialogService: DialogService,
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private taskAllocateCommonService: TaskAllocationCommonService,
+    private usercapacityComponent: UsercapacityComponent,
   ) {
 
   }
+
   ngOnInit() {
 
     if (this.projectDetails !== undefined) {
@@ -160,6 +173,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
       this.onPopupload();
 
     }
+
+
 
     this.sharedObject.currentUser.timeZone = this.commonService.getCurrentUserTimeZone();
     this.editorOptions = {
@@ -184,6 +199,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
   }
+
 
   async onPopupload() {
     await this.callReloadRes();
@@ -214,10 +230,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
   // tslint:disable
   public async getMilestones(bFirstLoad) {
-
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
-
     this.GanttchartData = [];
     this.oProjectDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
     const projectHoursSpent = [];
@@ -229,600 +241,387 @@ export class TimelineComponent implements OnInit, OnDestroy {
     let milestoneSubmilestones = [];
     let milestoneCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.milestone);
     milestoneCall.filter = milestoneCall.filter.replace(/{{projectCode}}/gi, this.oProjectDetails.projectCode);
-    const milestoneUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', milestoneCall);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, milestoneUrl);
-
+    const response = await this.spServices.readItems(this.constants.listNames.Schedules.name, milestoneCall);
+    this.allTasks = response.length ? response : [];
     let allRetrievedTasks = [];
     this.milestoneData = [];
-    this.allTasks = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     if (this.allTasks.length > 0) {
 
-      if (this.allTasks[0].length > 0) {
-        milestones = this.allTasks[0].filter(c => c.FileSystemObjectType === 1);
-        // milestones.sort(function (a, b) {
-        //   const startDate = new Date(a.Actual_x0020_Start_x0020_Date);
-        //   const dueDate = new Date(b.Actual_x0020_Start_x0020_Date);
-        //   return startDate > dueDate ? 1 : -1;
-        // });
-        var i = -1;
-        const arrMilestones = this.sharedObject.oTaskAllocation.oProjectDetails.allMilestones;
+      milestones = this.allTasks.filter(c => c.FileSystemObjectType === 1);
+      this.deletedMilestones = milestones.filter(m => m.Status === 'Deleted');
+      var i = -1;
+      const arrMilestones = this.sharedObject.oTaskAllocation.oProjectDetails.allMilestones;
 
-        const milestonesList = [];
+      const milestonesList = [];
 
-        for(const mil of arrMilestones) {
-          const milestone = milestones.find(e=>e.Title === mil);
-          milestonesList.push(milestone);
+      for (const mil of arrMilestones) {
+        const milestone = milestones.find(e => e.Title === mil);
+        milestonesList.push(milestone);
+      }
+      milestones = milestonesList;
+      this.dbRecords = [];
+
+      for (const milestone of milestones) {
+        const tempmilestoneTask = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title);
+        this.dbRecords.push({
+          milestone: milestone,
+          tasks: tempmilestoneTask.map(c => c.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestone.Title + ' ', '')),
+        });
+        const milestoneHoursSpent = [];
+        let taskName;
+        milestoneSubmilestones = milestone.SubMilestones !== null ? milestone.SubMilestones.replace(/#/gi, "").split(';') : [];
+
+        var dbSubMilestones: Array<any> = milestoneSubmilestones.length > 0 ? milestoneSubmilestones.map(o => new Object({ subMile: o.split(':')[0], position: o.split(':')[1], status: o.split(':')[2] })) : [];
+
+        var NextSubMilestone = dbSubMilestones.length > 0 ? dbSubMilestones.find(c => c.status === 'Not Confirmed') !== undefined ? dbSubMilestones.find(c => c.status === 'Not Confirmed') : new Object({ subMile: '', position: '', status: '' }) : new Object({ subMile: '', position: '', status: '' });
+
+        milestone.startDate = milestone.Actual_x0020_Start_x0020_Date ?
+          {
+            date: {
+              'year': new Date(milestone.Actual_x0020_Start_x0020_Date).getFullYear(),
+              'month': new Date(milestone.Actual_x0020_Start_x0020_Date).getMonth() + 1,
+              'day': new Date(milestone.Actual_x0020_Start_x0020_Date).getDate()
+            }
+          } : '';
+        milestone.endDate = milestone.Actual_x0020_End_x0020_Date ?
+          {
+            date: {
+              'year': new Date(milestone.Actual_x0020_End_x0020_Date).getFullYear(),
+              'month': new Date(milestone.Actual_x0020_End_x0020_Date).getMonth() + 1,
+              'day': new Date(milestone.Actual_x0020_End_x0020_Date).getDate()
+            }
+          } : '';
+
+        let color = this.colors.filter(c => c.key == milestone.Status)
+        if (color.length) {
+          milestone.color = color[0].value;
         }
 
-        milestones = milestonesList;
+        // Gantt Chart Object
 
-        this.dbRecords = [];
+        let GanttObj = {
 
-        for (const milestone of milestones) {
+          'pID': milestone.Id,
+          'pName': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? milestone.Title + " (Current)" : milestone.Title,
+          'pStart': milestone.startDate !== "" ? milestone.startDate.date.year + "/" + (milestone.startDate.date.month < 10 ? "0" + milestone.startDate.date.month : milestone.startDate.date.month) + "/" + (milestone.startDate.date.day < 10 ? "0" + milestone.startDate.date.day : milestone.startDate.date.day) : '',
+          'pEnd': milestone.endDate !== "" ? milestone.endDate.date.year + "/" + (milestone.endDate.date.month < 10 ? "0" + milestone.endDate.date.month : milestone.endDate.date.month) + "/" + (milestone.endDate.date.day < 10 ? "0" + milestone.endDate.date.day : milestone.endDate.date.day) : '',
+          'pUserStart': milestone.startDate !== "" ? milestone.startDate.date.year + "/" + (milestone.startDate.date.month < 10 ? "0" + milestone.startDate.date.month : milestone.startDate.date.month) + "/" + (milestone.startDate.date.day < 10 ? "0" + milestone.startDate.date.day : milestone.startDate.date.day) : '',
+          'pUserEnd': milestone.endDate !== "" ? milestone.endDate.date.year + "/" + (milestone.endDate.date.month < 10 ? "0" + milestone.endDate.date.month : milestone.endDate.date.month) + "/" + (milestone.endDate.date.day < 10 ? "0" + milestone.endDate.date.day : milestone.endDate.date.day) : '',
+          'pUserStartDatePart': this.getDate(milestone.startDate),
+          'pUserStartTimePart': '',
+          'pUserEndDatePart': this.getDate(milestone.endDate),
+          'pUserEndTimePart': '',
+          'pClass': milestone.Status === 'Completed' ? 'gtaskblue' : milestone.Status === "In Progress" ? 'gtaskgreen' : milestone.Status === "Not Confirmed" ? 'gtaskyellow' : 'ggroupblack',
+          'pLink': '',
+          'pMile': 0,
+          'pRes': '',
+          'pComp': milestone.Status === 'Completed' ? 100 : (milestoneTasks.filter(c => c.Status == "Completed").length > 0) ? Math.round((milestoneTasks.filter(c => c.Status == "Completed").length / milestoneTasks.length) * 100) : 0,
+          'pGroup': 1,
+          'pParent': 0,
+          'pOpen': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? 1 : 0,
+          'pDepend': i === -1 ? '' : i,
+          'pCaption': '',
+          'status': milestone.Status,
+          'tat': true,
+          'tatVal': this.commonService.calcBusinessDays(new Date(milestone.Actual_x0020_Start_x0020_Date), new Date(milestone.Actual_x0020_End_x0020_Date)),
+          'budgetHours': milestone.ExpectedTime ? milestone.ExpectedTime.toString() : '0',
+          'spentTime': '0:0',
+          'pNotes': milestone.Status,
+          'type': 'milestone',
+          'milestoneStatus': '',
+          'editMode': false,
+          'scope': null,
+          'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
+          'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
+            > -1 ? true : false : false,
+          'isNext': this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone === milestone.Title ? true : false,
+          'userCapacityEnable': false,
+          'color': milestone.color,
+          'itemType': 'milestone',
+          'edited': false,
+          'added': false,
+          'slotType': '',
+          'subMilestonePresent': dbSubMilestones.length > 0 ? true : false,
+          'slotColor': 'white'
+        };
 
+        i = milestone.Id;
+        if (GanttObj.status !== 'Deleted') {
+          this.GanttchartData.push(GanttObj);
+        }
 
-          const tempmilestoneTask = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title);
+        if (dbSubMilestones.length > 0) {
+          let submile = [];
+          let index = 0;
+          for (const element of dbSubMilestones) {
+            index++;
+            let color = this.colors.filter(c => c.key == element.status)
+            if (color.length) {
+              element.color = color[0].value;
+            }
 
+            let tempSubmilestones = [];
+            let GanttTaskObj = {
+              'pID': parseInt("1200000" + milestone.Id + index),
+              'pName': element.subMile,
+              'pStart': null,
+              'pEnd': null,
+              'pUserStart': null,
+              'pUserEnd': null,
+              'pUserStartDatePart': '',
+              'pUserStartTimePart': '',
+              'pUserEndDatePart': '',
+              'pUserEndTimePart': '',
+              'pClass': element.status === 'Completed' ? 'gtaskblue' : element.status === "In Progress" ? 'gtaskgreen' : element.status === "Not Confirmed" ? 'gtaskyellow' : element.status === "Auto Closed" ? 'gtaskred' : 'ggroupblack',
+              'pLink': '',
+              'pMile': 0,
+              'pRes': '  ',
+              'pComp': 0,
+              'pGroup': 1,
+              'pParent': milestone.Id,
+              'pOpen': 1,
+              'pDepend': '',
+              'pCaption': '',
+              'pNotes': element.status,
+              'status': element.status,
+              'budgetHours': 0,
+              'spentTime': '0:0',
+              'allowStart': false,
+              'tat': false,
+              'tatVal': 0,
+              'milestoneStatus': milestone.Status,
+              'type': 'submilestone',
+              'editMode': false,
+              'scope': null,
+              'isCurrent': GanttObj.isCurrent && NextSubMilestone.position === element.position && NextSubMilestone.status === element.status ? true : false,
+              'isNext': GanttObj.isNext && NextSubMilestone.position === element.position && NextSubMilestone.status === element.status ? true : false,
+              'isFuture': false,
+              'assignedUsers': null,
+              'AssignedTo': {},
+              'userCapacityEnable': false,
+              'position': element.position,
+              'color': element.color,
+              'itemType': 'submilestone',
+              'slotType': '',
+              'edited': false,
+              'added': false,
+              'slotColor': 'white'
 
-          this.dbRecords.push({
-            milestone: milestone,
-            tasks: tempmilestoneTask.map(c => c.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestone.Title + ' ', '')),
-          });
+            };
+            // taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
+            if (GanttTaskObj.status !== 'Deleted') {
+              this.GanttchartData.push(GanttTaskObj);
+            }
 
-
-          //  if (milestone.Status !== 'Deleted') {
-          const milestoneHoursSpent = [];
-          let taskName;
-          milestoneSubmilestones = milestone.SubMilestones !== null ? milestone.SubMilestones.replace(/#/gi, "").split(';') : [];
-
-          var dbSubMilestones: Array<any> = milestoneSubmilestones.length > 0 ? milestoneSubmilestones.map(o => new Object({ subMile: o.split(':')[0], position: o.split(':')[1], status: o.split(':')[2] })) : [];
-
-          var NextSubMilestone = dbSubMilestones.length > 0 ? dbSubMilestones.find(c => c.status === 'Not Confirmed') !== undefined ? dbSubMilestones.find(c => c.status === 'Not Confirmed') : new Object({ subMile: '', position: '', status: '' }) : new Object({ subMile: '', position: '', status: '' });
-
-          milestone.startDate = milestone.Actual_x0020_Start_x0020_Date ?
-            {
-              date: {
-                'year': new Date(milestone.Actual_x0020_Start_x0020_Date).getFullYear(),
-                'month': new Date(milestone.Actual_x0020_Start_x0020_Date).getMonth() + 1,
-                'day': new Date(milestone.Actual_x0020_Start_x0020_Date).getDate()
+            milestoneTasks = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && c.SubMilestones === element.subMile);
+            const excludeSlotsListForHrs = [];
+            for (const milestoneTask of milestoneTasks) {
+              taskName = '';
+              if (milestoneTask.CentralAllocationDone === 'Yes' && milestoneTask.IsCentrallyAllocated === 'Yes') {
+                // if (milestoneTask.Task.indexOf('Slot') > -1) {
+                excludeSlotsListForHrs.push(milestoneTask.ID);
+                // }
+              } else {
+                if (milestoneTask.ParentSlot) {
+                  excludeSlotsListForHrs.push(milestoneTask.ID);
+                }
               }
-            } : '';
-
-          milestone.endDate = milestone.Actual_x0020_End_x0020_Date ?
-            {
-              date: {
-                'year': new Date(milestone.Actual_x0020_End_x0020_Date).getFullYear(),
-                'month': new Date(milestone.Actual_x0020_End_x0020_Date).getMonth() + 1,
-                'day': new Date(milestone.Actual_x0020_End_x0020_Date).getDate()
-              }
-            } : '';
-
-          let color = this.colors.filter(c => c.key == milestone.Status)
-          if (color.length) {
-            milestone.color = color[0].value;
-          }
-
-          // Gantt Chart Object
-
-          let GanttObj = {
-
-            'pID': milestone.Id,
-            'pName': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? milestone.Title + " (Current)" : milestone.Title,
-            'pStart': milestone.startDate !== "" ? milestone.startDate.date.year + "/" + (milestone.startDate.date.month < 10 ? "0" + milestone.startDate.date.month : milestone.startDate.date.month) + "/" + (milestone.startDate.date.day < 10 ? "0" + milestone.startDate.date.day : milestone.startDate.date.day) : '',
-            'pEnd': milestone.endDate !== "" ? milestone.endDate.date.year + "/" + (milestone.endDate.date.month < 10 ? "0" + milestone.endDate.date.month : milestone.endDate.date.month) + "/" + (milestone.endDate.date.day < 10 ? "0" + milestone.endDate.date.day : milestone.endDate.date.day) : '',
-            'pUserStart': milestone.startDate !== "" ? milestone.startDate.date.year + "/" + (milestone.startDate.date.month < 10 ? "0" + milestone.startDate.date.month : milestone.startDate.date.month) + "/" + (milestone.startDate.date.day < 10 ? "0" + milestone.startDate.date.day : milestone.startDate.date.day) : '',
-            'pUserEnd': milestone.endDate !== "" ? milestone.endDate.date.year + "/" + (milestone.endDate.date.month < 10 ? "0" + milestone.endDate.date.month : milestone.endDate.date.month) + "/" + (milestone.endDate.date.day < 10 ? "0" + milestone.endDate.date.day : milestone.endDate.date.day) : '',
-            'pUserStartDatePart': this.getDate(milestone.startDate),
-            'pUserStartTimePart': '',
-            'pUserEndDatePart': this.getDate(milestone.endDate),
-            'pUserEndTimePart': '',
-            'pClass': milestone.Status === 'Completed' ? 'gtaskblue' : milestone.Status === "In Progress" ? 'gtaskgreen' : milestone.Status === "Not Confirmed" ? 'gtaskyellow' : 'ggroupblack',
-            'pLink': '',
-            'pMile': 0,
-            'pRes': '',
-            'pComp': milestone.Status === 'Completed' ? 100 : (milestoneTasks.filter(c => c.Status == "Completed").length > 0) ? Math.round((milestoneTasks.filter(c => c.Status == "Completed").length / milestoneTasks.length) * 100) : 0,
-            'pGroup': 1,
-            'pParent': 0,
-            'pOpen': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? 1 : 0,
-            'pDepend': i === -1 ? '' : i,
-            'pCaption': '',
-            'status': milestone.Status,
-            'tat': true,
-            'tatVal': this.commonService.calcBusinessDays(new Date(milestone.Actual_x0020_Start_x0020_Date), new Date(milestone.Actual_x0020_End_x0020_Date)),
-            'budgetHours': milestone.ExpectedTime ? milestone.ExpectedTime.toString() : '0',
-            'spentTime': '0:0',
-            'pNotes': milestone.Status,
-            'type': 'milestone',
-            'milestoneStatus': '',
-            'editMode': false,
-            'scope': null,
-            'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-            'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
-              > -1 ? true : false : false,
-            'isNext': this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone === milestone.Title ? true : false,
-            'userCapacityEnable': false,
-            'color': milestone.color,
-            'itemType': 'milestone',
-            'edited': false,
-            'added': false,
-            'subMilestonePresent': dbSubMilestones.length > 0 ? true : false
-          };
-
-          i = milestone.Id;
-          if (GanttObj.status !== 'Deleted') {
-            this.GanttchartData.push(GanttObj);
-          }
-
-          if (dbSubMilestones.length > 0) {
-            let submile = [];
-            let index = 0;
-            for (const element of dbSubMilestones) {
-              index++;
-              let color = this.colors.filter(c => c.key == element.status)
+              let color = this.colors.filter(c => c.key == milestoneTask.Status)
               if (color.length) {
-                element.color = color[0].value;
+                milestoneTask.color = color[0].value;
               }
 
-              let tempSubmilestones = [];
-              let GanttTaskObj = {
-                'pID': parseInt("1200000" + milestone.Id + index),
-                'pName': element.subMile,
-                'pStart': null,
-                'pEnd': null,
-                'pUserStart': null,
-                'pUserEnd': null,
-                'pUserStartDatePart': '',
-                'pUserStartTimePart': '',
-                'pUserEndDatePart': '',
-                'pUserEndTimePart': '',
-                'pClass': element.status === 'Completed' ? 'gtaskblue' : element.status === "In Progress" ? 'gtaskgreen' : element.status === "Not Confirmed" ? 'gtaskyellow' : element.status === "Auto Closed" ? 'gtaskred' : 'ggroupblack',
-                'pLink': '',
-                'pMile': 0,
-                'pRes': ' -- ',
-                'pComp': 0,
-                'pGroup': 1,
-                'pParent': milestone.Id,
-                'pOpen': 1,
-                'pDepend': '',
-                'pCaption': '',
-                'pNotes': element.status,
-                'status': element.status,
-                'budgetHours': 0,
-                'spentTime': '0:0',
-                'allowStart': false,
-                'tat': false,
-                'tatVal': 0,
-                'milestoneStatus': milestone.Status,
-                'type': 'submilestone',
-                'editMode': false,
-                'scope': null,
-                'isCurrent': GanttObj.isCurrent && NextSubMilestone.position === element.position && NextSubMilestone.status === element.status ? true : false,
-                'isNext': GanttObj.isNext && NextSubMilestone.position === element.position && NextSubMilestone.status === element.status ? true : false,
-                'isFuture': false,
-                'assignedUsers': null,
-                'AssignedTo': {},
-                'userCapacityEnable': false,
-                'position': element.position,
-                'color': element.color,
-                'itemType': 'submilestone',
-                'edited': false,
-                'added': false
+              milestoneTask.assignedUsers = [{ Title: '', userType: '' }]; //this.resources.length > 0 ? this.resources : [{ Title: '', userType: '' }];
 
-              };
-              // taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
-              if (GanttTaskObj.status !== 'Deleted') {
-                this.GanttchartData.push(GanttTaskObj);
-              }
-
-              milestoneTasks = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && c.SubMilestones === element.subMile);
-
-              for (const milestoneTask of milestoneTasks) {
-
-
-
-                taskName = '';
-                //this.resources = await this.commonService.getResourceByMatrix(milestoneTask, this.allTasks);
-
-                let color = this.colors.filter(c => c.key == milestoneTask.Status)
-                if (color.length) {
-                  milestoneTask.color = color[0].value;
-                }
-
-                milestoneTask.assignedUsers = [{ Title: '', userType: '' }]; //this.resources.length > 0 ? this.resources : [{ Title: '', userType: '' }];
-
-                const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter(function (objt) {
-                  return milestoneTask.AssignedTo.ID === objt.UserName.ID;
-                });
-                milestoneTask.assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
-                  ? AssignedUserTimeZone[0].TimeZone.Title ?
-                    AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
-
-                const convertedStartDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.StartDate),
-                  this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
-
-                milestoneTask.jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(convertedStartDate,
-                  milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-
-                const convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.DueDate),
-                  this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
-
-                milestoneTask.jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(convertedEndDate,
-                  milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-
-                const hrsMinObject = {
-                  timeHrs: milestoneTask.TimeSpent != null ? milestoneTask.TimeSpent.indexOf('.') > -1 ?
-                    milestoneTask.TimeSpent.split('.')[0] : milestoneTask.TimeSpent : '00',
-                  timeMins: milestoneTask.TimeSpent != null ?
-                    milestoneTask.TimeSpent.indexOf('.') > -1 ? milestoneTask.TimeSpent.split('.')[1] : '00' : 0
-                };
-
-                if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
-                  milestoneHoursSpent.push(hrsMinObject);
-                  projectHoursSpent.push(hrsMinObject);
-                  projectHoursAllocated.push(+milestoneTask.ExpectedTime);
-                }
-                if (milestoneTask.Status === 'Completed' || milestoneTask.Status === 'Auto Closed') {
-                  if (milestoneTask.TimeSpent == null) {
-                    projectAvailableHours.push(+milestoneTask.ExpectedTime);
-                  } else {
-                    const mHoursSpentTask = this.commonService.ajax_addHrsMins([hrsMinObject]);
-                    const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
-                    const convertedHoursMins = this.commonService.convertFromHrsMins(+taskTotalMins);
-                    projectAvailableHours.push(+convertedHoursMins);
-                  }
-                } else if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
-                  projectAvailableHours.push(+milestoneTask.ExpectedTime);
-                }
-
-
-                // Gantt Chart Sub Object 
-                if (milestone.Title === milestoneTask.Milestone) {
-                  if (milestoneTask.Status !== 'Deleted') {
-
-                    let GanttTaskObj = {
-                      'pID': milestoneTask.Id,
-                      'pName': milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', ''),
-                      'pStart': milestoneTask.jsLocalStartDate,
-                      'pEnd': milestoneTask.jsLocalEndDate,
-                      'pUserStart': convertedStartDate,
-                      'pUserEnd': convertedEndDate,
-                      'pUserStartDatePart': this.getDatePart(convertedStartDate),
-                      'pUserStartTimePart': this.getTimePart(convertedStartDate),
-                      'pUserEndDatePart': this.getDatePart(convertedEndDate),
-                      'pUserEndTimePart': this.getTimePart(convertedEndDate),
-                      'pClass': milestoneTask.Status === 'Completed' ? 'gtaskblue' : milestoneTask.Status === 'In Progress' ? 'gtaskgreen' : milestoneTask.Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
-                      'pLink': '',
-                      'pMile': 0,
-                      'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title !== undefined ? milestoneTask.AssignedTo.Title : '--' : ' -- ',
-                      'pComp': milestoneTask.Status === 'Not Confirmed' ? 0 : (milestoneTask.Status === 'Completed' ? 100 : milestoneTask.Status === 'In Progress' ? 50 : 0),
-                      'pGroup': 0,
-                      'pParent': parseInt("1200000" + milestone.Id + index),
-                      'pOpen': 1,
-                      'pDepend': '',
-                      'pCaption': '',
-                      'pNotes': milestoneTask.Status,
-                      'status': milestoneTask.Status,
-                      'budgetHours': milestoneTask.ExpectedTime,
-                      'spentTime': this.commonService.ajax_addHrsMins([hrsMinObject]),
-                      'allowStart': milestoneTask.AllowCompletion === true || milestoneTask.AllowCompletion === 'Yes' ? true : false,
-                      'tat': milestoneTask.TATStatus === true || milestoneTask.TATStatus === 'Yes' ? true : false,
-                      'tatVal': this.commonService.calcBusinessDays(new Date(milestoneTask.jsLocalStartDate), new Date(milestoneTask.jsLocalEndDate)),
-                      'milestoneStatus': milestone.Status,
-                      'type': 'task',
-                      'editMode': false,
-                      'scope': milestoneTask.Comments,
-                      'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-                      'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
-                        > -1 ? true : false : false,
-                      'assignedUsers': milestoneTask.assignedUsers,
-                      'AssignedTo': milestoneTask.AssignedTo,
-                      'userCapacityEnable': false,
-                      'color': milestoneTask.color,
-                      'itemType': milestoneTask.Task,
-                      'nextTask': milestoneTask.NextTasks !== null ? milestoneTask.NextTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(milestoneTask.Milestone + ' ', 'g'), "").replace(/#/gi, '') : null,  //.replace(/ /g,'')
-                      'previousTask': milestoneTask.PrevTasks !== null ? milestoneTask.PrevTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(milestoneTask.Milestone + ' ', 'g'), "").replace(/#/gi, '') : null,  //.replace(/ /g,'')
-                      'edited': false,
-                      'IsCentrallyAllocated': milestoneTask.IsCentrallyAllocated,
-                      'added': false,
-                      'submilestone': milestoneTask.SubMilestones,
-                      'milestone': milestoneTask.Milestone,
-                      'skillLevel': milestoneTask.SkillLevel,
-                      'CentralAllocationDone': milestoneTask.CentralAllocationDone,
-                      'ActiveCA': milestoneTask.ActiveCA,
-                      'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
-                      'deallocateCentral': false,
-                      'DisableCascade': milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes' ? true : false
-                    };
-
-                    taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
-
-                    //if(GanttTaskObj.status !== 'Deleted') {
-                    this.GanttchartData.push(GanttTaskObj);
-                    allRetrievedTasks.push(GanttTaskObj);
-                    //}
-                    if (GanttTaskObj.itemType !== 'Client Review') {
-                      const tempObj = { 'data': GanttTaskObj };
-                      tempSubmilestones.push(tempObj);
-                    }
-
-                  }
-                }
-
-                // Close  Gantt Chart Object
-              }
-
-
-              if (tempSubmilestones.length > 0) {
-
-                const tempSubmilestonesWOAT = tempSubmilestones.filter(c => c.data.itemType !== 'Time Booking');
-                const subMilData = this.GanttchartData.find(c => c.pName === element.subMile && c.pParent === milestone.Id);
-                subMilData.pStart = tempSubmilestonesWOAT[0].data.pStart;
-                subMilData.pEnd = tempSubmilestonesWOAT[tempSubmilestonesWOAT.length - 1].data.pEnd;
-                subMilData.pUserStart = tempSubmilestonesWOAT[0].data.pStart;
-                subMilData.pUserEnd = tempSubmilestonesWOAT[tempSubmilestonesWOAT.length - 1].data.pEnd;
-                subMilData.pUserStartDatePart = this.getDatePart(subMilData.pUserStart);
-                subMilData.pUserStartTimePart = this.getTimePart(subMilData.pUserStart);
-                subMilData.pUserEndDatePart = this.getDatePart(subMilData.pUserEnd);
-                subMilData.pUserEndTimePart = this.getTimePart(subMilData.pUserEnd);
-                subMilData.tatVal = this.commonService.calcBusinessDays(new Date(subMilData.pStart), new Date(subMilData.pEnd));
-              }
-              const temptasks = {
-                'data': this.GanttchartData.find(c => c.pName === element.subMile && c.pParent === milestone.Id),
-                'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-                'children': tempSubmilestones
-              }
-
-              submile.push(temptasks);
-            }
-
-            const DefaultTasks = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && (c.SubMilestones === null || c.SubMilestones === 'Default') && c.Task !== 'Client Review' && c.Status !== 'Deleted');
-
-            if (DefaultTasks !== undefined) {
-              for (const milestoneTask of DefaultTasks) {
-
-                taskName = '';
-                //this.resources = await this.commonService.getResourceByMatrix(milestoneTask, this.allTasks);
-
-                let color = this.colors.filter(c => c.key == milestoneTask.Status)
-                if (color.length) {
-                  milestoneTask.color = color[0].value;
-                }
-                milestoneTask.assignedUsers = [{ Title: '', userType: '' }]; //this.resources.length > 0 ? this.resources : [{ Title: '', userType: '' }];
-                const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter(function (objt) {
-                  return milestoneTask.AssignedTo.ID === objt.UserName.ID;
-                });
-                milestoneTask.assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
-                  ? AssignedUserTimeZone[0].TimeZone.Title ?
-                    AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
-
-                const convertedStartDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.StartDate),
-                  this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
-
-                milestoneTask.jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(convertedStartDate,
-                  milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-
-                const convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.DueDate),
-                  this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
-
-                milestoneTask.jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(convertedEndDate,
-                  milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
-
-                const hrsMinObject = {
-                  timeHrs: milestoneTask.TimeSpent != null ? milestoneTask.TimeSpent.indexOf('.') > -1 ?
-                    milestoneTask.TimeSpent.split('.')[0] : milestoneTask.TimeSpent : '00',
-                  timeMins: milestoneTask.TimeSpent != null ?
-                    milestoneTask.TimeSpent.indexOf('.') > -1 ? milestoneTask.TimeSpent.split('.')[1] : '00' : 0
-                };
-
-                if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
-                  milestoneHoursSpent.push(hrsMinObject);
-                  projectHoursSpent.push(hrsMinObject);
-                  projectHoursAllocated.push(+milestoneTask.ExpectedTime);
-                }
-                if (milestoneTask.Status === 'Completed' || milestoneTask.Status === 'Auto Closed') {
-                  if (milestoneTask.TimeSpent == null) {
-                    projectAvailableHours.push(+milestoneTask.ExpectedTime);
-                  } else {
-                    const mHoursSpentTask = this.commonService.ajax_addHrsMins([hrsMinObject]);
-                    const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
-                    const convertedHoursMins = this.commonService.convertFromHrsMins(+taskTotalMins);
-                    projectAvailableHours.push(+convertedHoursMins);
-                  }
-                } else if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
-                  projectAvailableHours.push(+milestoneTask.ExpectedTime);
-                }
-
-                // Gantt Chart Sub Object 
-
-                if (milestone.Title === milestoneTask.Milestone) {
-                  if (milestoneTask.Status !== 'Deleted') {
-                    let GanttTaskObj = {
-                      'pID': milestoneTask.Id,
-                      'pName': milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', ''),
-                      'pStart': milestoneTask.jsLocalStartDate,
-                      'pEnd': milestoneTask.jsLocalEndDate,
-                      'pUserStart': convertedStartDate,
-                      'pUserEnd': convertedEndDate,
-                      'pUserStartDatePart': this.getDatePart(convertedStartDate),
-                      'pUserStartTimePart': this.getTimePart(convertedStartDate),
-                      'pUserEndDatePart': this.getDatePart(convertedEndDate),
-                      'pUserEndTimePart': this.getTimePart(convertedEndDate),
-                      'pClass': milestoneTask.Status === 'Completed' ? 'gtaskblue' : milestoneTask.Status === 'In Progress' ? 'gtaskgreen' : milestoneTask.Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
-                      'pLink': '',
-                      'pMile': 0,
-                      'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title : ' -- ',
-                      'pComp': milestoneTask.Status === 'Not Confirmed' ? 0 : (milestoneTask.Status === 'Completed' ? 100 : milestoneTask.Status === 'In Progress' ? 50 : 0),
-                      'pGroup': 0,
-                      'pParent': milestoneTask.Task === 'Client Review' ? 0 : milestone.Id,
-                      'pOpen': 1,
-                      'pDepend': '',
-                      'pCaption': '',
-                      'pNotes': milestoneTask.Status,
-                      'status': milestoneTask.Status,
-                      'budgetHours': milestoneTask.ExpectedTime,
-                      'spentTime': this.commonService.ajax_addHrsMins([hrsMinObject]),
-                      'allowStart': milestoneTask.AllowCompletion === true || milestoneTask.AllowCompletion === 'Yes' ? true : false,
-                      'tat': milestoneTask.TATStatus === true || milestoneTask.TATStatus === 'Yes' ? true : false,
-                      'tatVal': this.commonService.calcBusinessDays(milestoneTask.jsLocalStartDate, milestoneTask.jsLocalEndDate),
-                      'milestoneStatus': milestone.Status,
-                      'type': 'task',
-                      'editMode': false,
-                      'scope': milestoneTask.Comments,
-                      'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-                      'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ?
-                        this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
-                          > -1 ? true : false : false,
-                      'assignedUsers': milestoneTask.assignedUsers,
-                      'AssignedTo': milestoneTask.AssignedTo,
-                      'userCapacityEnable': false,
-                      'color': milestoneTask.color,
-                      'itemType': milestoneTask.Task,
-                      'nextTask': milestoneTask.NextTasks !== null ? milestoneTask.NextTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(milestoneTask.Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
-                      'previousTask': milestoneTask.PrevTasks !== null ? milestoneTask.PrevTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(milestoneTask.Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
-                      'edited': false,
-                      'IsCentrallyAllocated': milestoneTask.IsCentrallyAllocated,
-                      'added': false,
-                      'submilestone': milestoneTask.SubMilestones,
-                      'milestone': milestoneTask.Milestone,
-                      'skillLevel': milestoneTask.SkillLevel,
-                      'CentralAllocationDone': milestoneTask.CentralAllocationDone,
-                      'ActiveCA': milestoneTask.ActiveCA,
-                      'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
-                      'deallocateCentral': false,
-                      'DisableCascade': milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes' ? true : false
-                    };
-                    taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
-                    //if(GanttTaskObj.status !== 'Deleted') {
-                    this.GanttchartData.push(GanttTaskObj);
-                    allRetrievedTasks.push(GanttTaskObj);
-                    //}
-
-                    if (GanttTaskObj.itemType !== 'Client Review') {
-                      const tempObj = { 'data': GanttTaskObj };
-                      submile.push(tempObj);
-                    }
-                  }
-                }
-              }
-            }
-
-
-            var milestoneTemp = this.GanttchartData.find(c => c.pID === milestone.Id);
-            if (milestoneTemp) {
-              milestoneTemp.spentTime = milestoneHoursSpent.length > 0 ? this.commonService.ajax_addHrsMins(milestoneHoursSpent) : '0:0';
-              const tempmilestone = {
-                'data': milestoneTemp,
-                // 'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ?   true:false,
-                'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-                'children': submile
-              }
-
-              this.milestoneData.push(tempmilestone);
-            }
-
-            const clientReviewObj = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && (c.SubMilestones === null || c.SubMilestones === 'Default') && c.Task === 'Client Review' && c.Status !== 'Deleted');
-
-            if (clientReviewObj.length > 0) {
-              clientReviewObj[0].assignedUsers = [{ Title: '', userType: '' }]; //this.resources.length > 0 ? this.resources : ;
               const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter(function (objt) {
-                return clientReviewObj[0].AssignedTo.ID === objt.UserName.ID;
+                return milestoneTask.AssignedTo.ID === objt.UserName.ID;
               });
-              clientReviewObj[0].assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
+              milestoneTask.assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
                 ? AssignedUserTimeZone[0].TimeZone.Title ?
                   AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
 
-              const convertedStartDate = this.commonService.calcTimeForDifferentTimeZone(new Date(clientReviewObj[0].StartDate),
-                this.sharedObject.currentUser.timeZone, clientReviewObj[0].assignedUserTimeZone);
+              const convertedStartDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.StartDate),
+                this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
 
-              clientReviewObj[0].jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(convertedStartDate,
-                clientReviewObj[0].assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+              milestoneTask.jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(convertedStartDate,
+                milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
 
-              const convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(clientReviewObj[0].DueDate),
-                this.sharedObject.currentUser.timeZone, clientReviewObj[0].assignedUserTimeZone);
+              const convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.DueDate),
+                this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
 
-              clientReviewObj[0].jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(convertedEndDate,
-                clientReviewObj[0].assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+              milestoneTask.jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(convertedEndDate,
+                milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
 
-              let color = this.colors.filter(c => c.key == clientReviewObj[0].Status)
-              if (color.length) {
-                clientReviewObj[0].color = color[0].value;
-              }
-
-              let GanttTaskObj = {
-                'pID': clientReviewObj[0].Id,
-                'pName': clientReviewObj[0].Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + clientReviewObj[0].Milestone + ' ', ''),
-                'pStart': clientReviewObj[0].jsLocalStartDate,
-                'pEnd': clientReviewObj[0].jsLocalEndDate,
-                'pUserStart': convertedStartDate,
-                'pUserEnd': convertedEndDate,
-                'pUserStartDatePart': this.getDatePart(convertedStartDate),
-                'pUserStartTimePart': this.getTimePart(convertedStartDate),
-                'pUserEndDatePart': this.getDatePart(convertedEndDate),
-                'pUserEndTimePart': this.getTimePart(convertedEndDate),
-                'pClass': clientReviewObj[0].Status === 'Completed' ? 'gtaskblue' : clientReviewObj[0].Status === 'In Progress' ? 'gtaskgreen' : clientReviewObj[0].Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
-                'pLink': '',
-                'pMile': 0,
-                'pRes': clientReviewObj[0].AssignedTo ? clientReviewObj[0].AssignedTo.Title : ' -- ',
-                'pComp': clientReviewObj[0].Status === 'Not Confirmed' ? 0 : (clientReviewObj[0].Status === 'Completed' ? 100 : clientReviewObj[0].Status === 'In Progress' ? 50 : 0),
-                'pGroup': 0,
-                'pParent': clientReviewObj[0].Task === 'Client Review' ? 0 : milestone.Id,
-                'pOpen': 1,
-                'pDepend': i,
-                'pCaption': '',
-                'pNotes': clientReviewObj[0].Status,
-                'status': clientReviewObj[0].Status,
-                'budgetHours': clientReviewObj[0].ExpectedTime,
-                'allowStart': clientReviewObj[0].AllowCompletion === true || clientReviewObj[0].AllowCompletion === 'Yes' ? true : false,
-                'tat': clientReviewObj[0].TATStatus === true || clientReviewObj[0].TATStatus === 'Yes' ? true : false,
-                'tatVal': this.commonService.calcBusinessDays(new Date(clientReviewObj[0].jsLocalStartDate), new Date(clientReviewObj[0].jsLocalEndDate)),
-                'milestoneStatus': milestone.Status,
-                'type': 'task',
-                'editMode': false,
-                'scope': clientReviewObj[0].Comments,
-                'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-                'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ?
-                  this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
-                    > -1 ? true : false : false,
-                'assignedUsers': clientReviewObj[0].assignedUsers,
-                'AssignedTo': clientReviewObj[0].AssignedTo,
-                'userCapacityEnable': false,
-                'color': clientReviewObj[0].color,
-                'itemType': clientReviewObj[0].Task,
-                'nextTask': clientReviewObj[0].NextTasks !== null ? clientReviewObj[0].NextTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(clientReviewObj[0].Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
-                'previousTask': clientReviewObj[0].PrevTasks !== null ? clientReviewObj[0].PrevTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(clientReviewObj[0].Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
-                'edited': false,
-                'IsCentrallyAllocated': 'No',
-                'added': false,
-                'submilestone': clientReviewObj[0].SubMilestones,
-                'milestone': clientReviewObj[0].Milestone,
-                'skillLevel': clientReviewObj[0].SkillLevel,
-                'CentralAllocationDone': clientReviewObj[0].CentralAllocationDone,
-                'ActiveCA': clientReviewObj[0].ActiveCA,
-                'assignedUserTimeZone': clientReviewObj[0].assignedUserTimeZone,
-                'deallocateCentral': false,
-                'DisableCascade': clientReviewObj[0].DisableCascade && clientReviewObj[0].DisableCascade === 'Yes' ? true : false
+              const hrsMinObject = {
+                timeHrs: milestoneTask.TimeSpent != null ? milestoneTask.TimeSpent.indexOf('.') > -1 ?
+                  milestoneTask.TimeSpent.split('.')[0] : milestoneTask.TimeSpent : '00',
+                timeMins: milestoneTask.TimeSpent != null ?
+                  milestoneTask.TimeSpent.indexOf('.') > -1 ? milestoneTask.TimeSpent.split('.')[1] : '00' : 0
               };
-              i = clientReviewObj[0].Id;
-              if (GanttTaskObj.status !== 'Deleted') {
-                this.GanttchartData.push(GanttTaskObj);
+
+              if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
+                milestoneHoursSpent.push(hrsMinObject);
+                projectHoursSpent.push(hrsMinObject);
+                if (excludeSlotsListForHrs.indexOf(milestoneTask.ID) < 0) {
+                  projectHoursAllocated.push(+milestoneTask.ExpectedTime);
+                }
+              }
+              if (milestoneTask.Status === 'Completed' || milestoneTask.Status === 'Auto Closed') {
+                if (milestoneTask.TimeSpent == null) {
+                  projectAvailableHours.push(+milestoneTask.ExpectedTime);
+                } else {
+                  const mHoursSpentTask = this.commonService.ajax_addHrsMins([hrsMinObject]);
+                  const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
+                  const convertedHoursMins = this.commonService.convertFromHrsMins(+taskTotalMins);
+                  projectAvailableHours.push(+convertedHoursMins);
+                }
+              } else if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
+                if (excludeSlotsListForHrs.indexOf(milestoneTask.ID) < 0) {
+                  projectAvailableHours.push(+milestoneTask.ExpectedTime);
+                }
               }
 
-              const tempmilestone = { 'data': GanttTaskObj, 'children': [] }
-              this.milestoneData.push(tempmilestone);
 
+              // Gantt Chart Sub Object 
+              if (milestone.Title === milestoneTask.Milestone) {
+                if (milestoneTask.Status !== 'Deleted') {
+                  let GanttTaskObj = {
+                    'pID': milestoneTask.Id,
+                    'pName': milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', ''),
+                    'pStart': milestoneTask.jsLocalStartDate,
+                    'pEnd': milestoneTask.jsLocalEndDate,
+                    'pUserStart': convertedStartDate,
+                    'pUserEnd': convertedEndDate,
+                    'pUserStartDatePart': this.getDatePart(convertedStartDate),
+                    'pUserStartTimePart': this.getTimePart(convertedStartDate),
+                    'pUserEndDatePart': this.getDatePart(convertedEndDate),
+                    'pUserEndTimePart': this.getTimePart(convertedEndDate),
+                    'pClass': milestoneTask.Status === 'Completed' ? 'gtaskblue' : milestoneTask.Status === 'In Progress' ? 'gtaskgreen' : milestoneTask.Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
+                    'pLink': '',
+                    'pMile': 0,
+                    'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title !== undefined ? milestoneTask.AssignedTo.Title : '' : '  ',
+                    'pComp': milestoneTask.Status === 'Not Confirmed' ? 0 : (milestoneTask.Status === 'Completed' ? 100 : milestoneTask.Status === 'In Progress' ? 50 : 0),
+                    'pGroup': milestoneTask.IsCentrallyAllocated === 'Yes' ? 1 : 0,
+                    'pParent': milestoneTask.ParentSlot ? milestoneTask.ParentSlot : parseInt("1200000" + milestone.Id + index),
+                    'pOpen': milestoneTask.IsCentrallyAllocated === 'Yes' ? 0 : 1,
+                    'pDepend': '',
+                    'pCaption': '',
+                    'pNotes': milestoneTask.Status,
+                    'status': milestoneTask.Status,
+                    'budgetHours': milestoneTask.ExpectedTime,
+                    'spentTime': this.commonService.ajax_addHrsMins([hrsMinObject]),
+                    'allowStart': milestoneTask.AllowCompletion === true || milestoneTask.AllowCompletion === 'Yes' ? true : false,
+                    'tat': milestoneTask.TATStatus === true || milestoneTask.TATStatus === 'Yes' ? true : false,
+                    'tatVal': this.commonService.calcBusinessDays(new Date(milestoneTask.jsLocalStartDate), new Date(milestoneTask.jsLocalEndDate)),
+                    'milestoneStatus': milestone.Status,
+                    'type': 'task',
+                    'editMode': false,
+                    'scope': milestoneTask.Comments,
+                    'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
+                    'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
+                      > -1 ? true : false : false,
+                    'assignedUsers': milestoneTask.assignedUsers,
+                    // 'AssignedTo': {ID :  milestoneTask.AssignedTo.ID , Title :  milestoneTask.AssignedTo.Title, Email :  milestoneTask.AssignedTo.EMail,SkillText : milestoneTask.AssignedTo.SkillLevel },
+                    'AssignedTo': milestoneTask.AssignedTo.ID ? milestoneTask.AssignedTo : '',
+                    'userCapacityEnable': false,
+                    'color': milestoneTask.color,
+                    'itemType': milestoneTask.Task,
+                    'nextTask': this.taskAllocateCommonService.fetchTaskName(milestoneTask.NextTasks, this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, milestoneTask.Milestone),
+                    'previousTask': this.taskAllocateCommonService.fetchTaskName(milestoneTask.PrevTasks, this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, milestoneTask.Milestone),
+                    'edited': false,
+                    'IsCentrallyAllocated': milestoneTask.IsCentrallyAllocated,
+                    'added': false,
+                    'submilestone': milestoneTask.SubMilestones,
+                    'milestone': milestoneTask.Milestone,
+                    'skillLevel': milestoneTask.SkillLevel,
+                    'CentralAllocationDone': milestoneTask.CentralAllocationDone,
+                    'ActiveCA': milestoneTask.ActiveCA,
+                    'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
+                    'parentSlot': milestoneTask.ParentSlot ? milestoneTask.ParentSlot : '',
+                    'slotType': milestoneTask.IsCentrallyAllocated === 'Yes' ? 'Slot' : 'Task',
+                    'DisableCascade': (milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes') ? true : false,
+                    'slotColor': 'white',
+                    'deallocateSlot': false,
+                    'taskFullName': milestoneTask.Title
+                  };
+
+                  taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
+                  this.GanttchartData.push(GanttTaskObj);
+                  allRetrievedTasks.push(GanttTaskObj);
+                  if (GanttTaskObj.itemType !== 'Client Review') {
+                    // const tempObj = { 'data': GanttTaskObj };
+                    // tempSubmilestones.push(tempObj);
+                    let tempObj = {};
+                    if (GanttTaskObj.IsCentrallyAllocated === 'Yes') {
+                      const dummyExistingSlot = tempSubmilestones.find(s => s.data.pID === GanttTaskObj.pID);
+                      if (dummyExistingSlot) {
+                        dummyExistingSlot.data = Object.assign({}, GanttTaskObj);
+                      } else {
+                        tempObj = { 'data': GanttTaskObj, 'expanded': false, 'children': [] };
+                        tempSubmilestones.push(tempObj);
+                      }
+                    } else {
+                      if (GanttTaskObj.parentSlot) {
+                        const slot = tempSubmilestones.find(t => t.data.pID === +GanttTaskObj.parentSlot);
+                        if (slot) {
+                          slot.children.push({ 'data': GanttTaskObj });
+                        } else {
+                          const tempSlot = Object.assign({}, GanttTaskObj);
+                          tempSlot.pID = GanttTaskObj.parentSlot;
+                          tempSubmilestones.push({ 'data': tempSlot, 'expanded': false, 'children': [{ 'data': GanttTaskObj }] });
+                        }
+                      } else {
+                        tempObj = { 'data': GanttTaskObj };
+                        tempSubmilestones.push(tempObj);
+                      }
+                    }
+                  }
+                }
+              }
+
+              // Close  Gantt Chart Object
             }
+
+
+            if (tempSubmilestones.length > 0) {
+
+              const tempSubmilestonesWOAT = tempSubmilestones.filter(c => c.data.itemType !== 'Time Booking');
+              const subMilData = this.GanttchartData.find(c => c.pName === element.subMile && c.pParent === milestone.Id);
+              subMilData.pStart = tempSubmilestonesWOAT[0].data.pStart;
+              subMilData.pEnd = tempSubmilestonesWOAT[tempSubmilestonesWOAT.length - 1].data.pEnd;
+              subMilData.pUserStart = tempSubmilestonesWOAT[0].data.pStart;
+              subMilData.pUserEnd = tempSubmilestonesWOAT[tempSubmilestonesWOAT.length - 1].data.pEnd;
+              subMilData.pUserStartDatePart = this.getDatePart(subMilData.pUserStart);
+              subMilData.pUserStartTimePart = this.getTimePart(subMilData.pUserStart);
+              subMilData.pUserEndDatePart = this.getDatePart(subMilData.pUserEnd);
+              subMilData.pUserEndTimePart = this.getTimePart(subMilData.pUserEnd);
+              subMilData.tatVal = this.commonService.calcBusinessDays(new Date(subMilData.pStart), new Date(subMilData.pEnd));
+            }
+            const temptasks = {
+              'data': this.GanttchartData.find(c => c.pName === element.subMile && c.pParent === milestone.Id),
+              'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
+              'children': tempSubmilestones
+            }
+
+            submile.push(temptasks);
           }
-          else {
-            milestoneTasks = this.allTasks[0].filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title);
 
-            let tempSubmilestones = [];
-            let GanttTaskObj;
-            let CRObj;
-            for (const milestoneTask of milestoneTasks) {
+          const DefaultTasks = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && (c.SubMilestones === null || c.SubMilestones === 'Default') && c.Task !== 'Client Review' && c.Status !== 'Deleted');
 
+          if (DefaultTasks !== undefined) {
+            /**
+             * excludeSlotsListForHrs is used for exclusion list to consider either slot or subtasks hours for available hours and budget hrs
+             */
+            const excludeSlotsListForHrs = [];
+            for (const milestoneTask of DefaultTasks) {
               taskName = '';
-              //this.resources = await this.commonService.getResourceByMatrix(milestoneTask, this.allTasks);
-
+              if (milestoneTask.CentralAllocationDone === 'Yes' && milestoneTask.IsCentrallyAllocated === 'Yes') {
+                excludeSlotsListForHrs.push(milestoneTask.ID);
+              } else {
+                if (milestoneTask.ParentSlot) {
+                  excludeSlotsListForHrs.push(milestoneTask.ID);
+                }
+              }
               let color = this.colors.filter(c => c.key == milestoneTask.Status)
               if (color.length) {
                 milestoneTask.color = color[0].value;
@@ -857,7 +656,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
               if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
                 milestoneHoursSpent.push(hrsMinObject);
                 projectHoursSpent.push(hrsMinObject);
-                projectHoursAllocated.push(+milestoneTask.ExpectedTime);
+                if (excludeSlotsListForHrs.indexOf(milestoneTask.ID) < 0) {
+                  projectHoursAllocated.push(+milestoneTask.ExpectedTime);
+                }
               }
               if (milestoneTask.Status === 'Completed' || milestoneTask.Status === 'Auto Closed') {
                 if (milestoneTask.TimeSpent == null) {
@@ -869,14 +670,17 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   projectAvailableHours.push(+convertedHoursMins);
                 }
               } else if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
-                projectAvailableHours.push(+milestoneTask.ExpectedTime);
+                if (excludeSlotsListForHrs.indexOf(milestoneTask.ID) < 0) {
+                  projectAvailableHours.push(+milestoneTask.ExpectedTime);
+                }
               }
 
               // Gantt Chart Sub Object 
 
               if (milestone.Title === milestoneTask.Milestone) {
                 if (milestoneTask.Status !== 'Deleted') {
-                  GanttTaskObj = {
+
+                  let GanttTaskObj = {
                     'pID': milestoneTask.Id,
                     'pName': milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', ''),
                     'pStart': milestoneTask.jsLocalStartDate,
@@ -890,12 +694,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'pClass': milestoneTask.Status === 'Completed' ? 'gtaskblue' : milestoneTask.Status === 'In Progress' ? 'gtaskgreen' : milestoneTask.Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
                     'pLink': '',
                     'pMile': 0,
-                    'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title : ' -- ',
+                    'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title ? milestoneTask.AssignedTo.Title : '  ' : '  ',
                     'pComp': milestoneTask.Status === 'Not Confirmed' ? 0 : (milestoneTask.Status === 'Completed' ? 100 : milestoneTask.Status === 'In Progress' ? 50 : 0),
-                    'pGroup': 0,
-                    'pParent': milestoneTask.Task === 'Client Review' ? 0 : milestone.Id,
-                    'pOpen': 1,
-                    'pDepend': milestoneTask.Task === 'Client Review' ? i : '',
+                    'pGroup': milestoneTask.IsCentrallyAllocated === 'Yes' ? 1 : 0,
+                    'pParent': milestoneTask.Task === 'Client Review' ? 0 : milestoneTask.ParentSlot ? milestoneTask.ParentSlot : milestone.Id,
+                    'pOpen': milestoneTask.IsCentrallyAllocated === 'Yes' ? 0 : 1,
+                    'pDepend': '',
                     'pCaption': '',
                     'pNotes': milestoneTask.Status,
                     'status': milestoneTask.Status,
@@ -909,15 +713,16 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'editMode': false,
                     'scope': milestoneTask.Comments,
                     'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-                    'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
-                      > -1 ? true : false : false,
+                    'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ?
+                      this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
+                        > -1 ? true : false : false,
                     'assignedUsers': milestoneTask.assignedUsers,
-                    'AssignedTo': milestoneTask.AssignedTo,
+                    'AssignedTo': milestoneTask.AssignedTo.ID ? milestoneTask.AssignedTo : '',
                     'userCapacityEnable': false,
                     'color': milestoneTask.color,
                     'itemType': milestoneTask.Task,
-                    'nextTask': milestoneTask.NextTasks !== null ? milestoneTask.NextTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(milestoneTask.Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
-                    'previousTask': milestoneTask.PrevTasks !== null ? milestoneTask.PrevTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(milestoneTask.Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
+                    'nextTask': this.taskAllocateCommonService.fetchTaskName(milestoneTask.NextTasks, this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, milestoneTask.Milestone),
+                    'previousTask': this.taskAllocateCommonService.fetchTaskName(milestoneTask.PrevTasks, this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, milestoneTask.Milestone),
                     'edited': false,
                     'IsCentrallyAllocated': milestoneTask.IsCentrallyAllocated,
                     'added': false,
@@ -927,79 +732,370 @@ export class TimelineComponent implements OnInit, OnDestroy {
                     'CentralAllocationDone': milestoneTask.CentralAllocationDone,
                     'ActiveCA': milestoneTask.ActiveCA,
                     'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
-                    'deallocateCentral': false,
-                    'DisableCascade': milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes' ? true : false
+                    'parentSlot': milestoneTask.ParentSlot ? milestoneTask.ParentSlot : '',
+                    'slotType': milestoneTask.IsCentrallyAllocated === 'Yes' ? 'Slot' : 'Task',
+                    'DisableCascade': (milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes') ? true : false,
+                    'slotColor': 'white',
+                    'deallocateSlot': false,
+                    'taskFullName': milestoneTask.Title
                   };
-
-                  if (milestoneTask.Task === 'Client Review' && milestoneTask.Status !== 'Deleted') {
-                    i = milestoneTask.Id;
-                    CRObj = { 'data': GanttTaskObj };
-
-                  }
                   taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
-                  //if(GanttTaskObj.status !== 'Deleted') {
                   this.GanttchartData.push(GanttTaskObj);
                   allRetrievedTasks.push(GanttTaskObj);
-                  //}
 
                   if (GanttTaskObj.itemType !== 'Client Review') {
-                    const tempObj = { 'data': GanttTaskObj };
-                    tempSubmilestones.push(tempObj);
+                    let tempObj = {};
+                    if (GanttTaskObj.IsCentrallyAllocated === 'Yes') {
+                      const dummyExistingSlot = submile.find(s => s.data.pID === GanttTaskObj.pID);
+                      if (dummyExistingSlot) {
+                        dummyExistingSlot.data = Object.assign({}, GanttTaskObj);
+                      } else {
+                        tempObj = { 'data': GanttTaskObj, 'expanded': false, 'children': [] };
+                        submile.push(tempObj);
+                      }
+                    } else {
+                      if (GanttTaskObj.parentSlot) {
+                        const slot = submile.find(t => t.data.pID === +GanttTaskObj.parentSlot);
+                        if (slot) {
+                          slot.children.push({ 'data': GanttTaskObj });
+                        } else {
+                          const tempSlot = Object.assign({}, GanttTaskObj);
+                          tempSlot.pID = GanttTaskObj.parentSlot;
+                          submile.push({ 'data': tempSlot, 'expanded': false, 'children': [{ 'data': GanttTaskObj }] });
+                        }
+                      } else {
+                        tempObj = { 'data': GanttTaskObj };
+                        submile.push(tempObj);
+                      }
+                    }
                   }
                 }
               }
-
-              // Close  Gantt Chart Object
-            }
-            var milestoneTemp = this.GanttchartData.find(c => c.pID === milestone.Id);
-            if (milestoneTemp) {
-              milestoneTemp.spentTime = milestoneHoursSpent.length > 0 ? this.commonService.ajax_addHrsMins(milestoneHoursSpent) : '0:0';
-
-              const tempmilestone = {
-                'data': milestoneTemp,
-                // 'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ?   true:false,
-                'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
-                'children': tempSubmilestones
-              }
-
-              this.milestoneData.push(tempmilestone);
-            }
-
-            if (!CRObj && taskName && taskName.replace(/[0-9]/g, '').trim() === 'Client Review') {
-              const tempmilestone = { 'data': GanttTaskObj, 'children': [] }
-              this.milestoneData.push(tempmilestone);
-            }
-            else if (CRObj) {
-              this.milestoneData.push(CRObj);
             }
           }
-          // }
+
+          const milestoneTemp = this.GanttchartData.find(c => c.pID === milestone.Id);
+          if (milestoneTemp) {
+            milestoneTemp.spentTime = milestoneHoursSpent.length > 0 ? this.commonService.ajax_addHrsMins(milestoneHoursSpent) : '0:0';
+            const tempmilestone = {
+              'data': milestoneTemp,
+              'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
+              'children': submile
+            }
+
+            this.milestoneData.push(tempmilestone);
+          }
+
+          const clientReviewObj = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title && (c.SubMilestones === null || c.SubMilestones === 'Default') && c.Task === 'Client Review' && c.Status !== 'Deleted');
+
+          if (clientReviewObj.length > 0) {
+            clientReviewObj[0].assignedUsers = [{ Title: '', userType: '' }];
+            const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter(function (objt) {
+              return clientReviewObj[0].AssignedTo.ID === objt.UserName.ID;
+            });
+            clientReviewObj[0].assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
+              ? AssignedUserTimeZone[0].TimeZone.Title ?
+                AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
+
+            const convertedStartDate = this.commonService.calcTimeForDifferentTimeZone(new Date(clientReviewObj[0].StartDate),
+              this.sharedObject.currentUser.timeZone, clientReviewObj[0].assignedUserTimeZone);
+
+            clientReviewObj[0].jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(convertedStartDate,
+              clientReviewObj[0].assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+
+            const convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(clientReviewObj[0].DueDate),
+              this.sharedObject.currentUser.timeZone, clientReviewObj[0].assignedUserTimeZone);
+
+            clientReviewObj[0].jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(convertedEndDate,
+              clientReviewObj[0].assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+
+            let color = this.colors.filter(c => c.key == clientReviewObj[0].Status)
+            if (color.length) {
+              clientReviewObj[0].color = color[0].value;
+            }
+
+            let GanttTaskObj = {
+              'pID': clientReviewObj[0].Id,
+              'pName': clientReviewObj[0].Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + clientReviewObj[0].Milestone + ' ', ''),
+              'pStart': clientReviewObj[0].jsLocalStartDate,
+              'pEnd': clientReviewObj[0].jsLocalEndDate,
+              'pUserStart': convertedStartDate,
+              'pUserEnd': convertedEndDate,
+              'pUserStartDatePart': this.getDatePart(convertedStartDate),
+              'pUserStartTimePart': this.getTimePart(convertedStartDate),
+              'pUserEndDatePart': this.getDatePart(convertedEndDate),
+              'pUserEndTimePart': this.getTimePart(convertedEndDate),
+              'pClass': clientReviewObj[0].Status === 'Completed' ? 'gtaskblue' : clientReviewObj[0].Status === 'In Progress' ? 'gtaskgreen' : clientReviewObj[0].Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
+              'pLink': '',
+              'pMile': 0,
+              'pRes': clientReviewObj[0].AssignedTo ? clientReviewObj[0].AssignedTo.Title ? clientReviewObj[0].AssignedTo.Title : '  ' : '  ',
+              'pComp': clientReviewObj[0].Status === 'Not Confirmed' ? 0 : (clientReviewObj[0].Status === 'Completed' ? 100 : clientReviewObj[0].Status === 'In Progress' ? 50 : 0),
+              'pGroup': 0,
+              'pParent': clientReviewObj[0].Task === 'Client Review' ? 0 : milestone.Id,
+              'pOpen': 1,
+              'pDepend': i,
+              'pCaption': '',
+              'pNotes': clientReviewObj[0].Status,
+              'status': clientReviewObj[0].Status,
+              'budgetHours': clientReviewObj[0].ExpectedTime,
+              'allowStart': clientReviewObj[0].AllowCompletion === true || clientReviewObj[0].AllowCompletion === 'Yes' ? true : false,
+              'tat': clientReviewObj[0].TATStatus === true || clientReviewObj[0].TATStatus === 'Yes' ? true : false,
+              'tatVal': this.commonService.calcBusinessDays(new Date(clientReviewObj[0].jsLocalStartDate), new Date(clientReviewObj[0].jsLocalEndDate)),
+              'milestoneStatus': milestone.Status,
+              'type': 'task',
+              'editMode': false,
+              'scope': clientReviewObj[0].Comments,
+              'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
+              'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ?
+                this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
+                  > -1 ? true : false : false,
+              'assignedUsers': clientReviewObj[0].assignedUsers,
+              'AssignedTo': clientReviewObj[0].AssignedTo,
+              'userCapacityEnable': false,
+              'color': clientReviewObj[0].color,
+              'itemType': clientReviewObj[0].Task,
+              'nextTask': clientReviewObj[0].NextTasks !== null ? clientReviewObj[0].NextTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(clientReviewObj[0].Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
+              'previousTask': clientReviewObj[0].PrevTasks !== null ? clientReviewObj[0].PrevTasks.replace(new RegExp(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ', 'g'), "").replace(new RegExp(clientReviewObj[0].Milestone + ' ', 'g'), "").replace(/#/gi, '') : null, //.replace(/ /g,'')
+              'edited': false,
+              'IsCentrallyAllocated': 'No',
+              'added': false,
+              'submilestone': clientReviewObj[0].SubMilestones,
+              'milestone': clientReviewObj[0].Milestone,
+              'skillLevel': clientReviewObj[0].SkillLevel,
+              'CentralAllocationDone': clientReviewObj[0].CentralAllocationDone,
+              'ActiveCA': clientReviewObj[0].ActiveCA,
+              'assignedUserTimeZone': clientReviewObj[0].assignedUserTimeZone,
+              'slotType': '',
+              'DisableCascade': clientReviewObj[0].DisableCascade && clientReviewObj[0].DisableCascade === 'Yes' ? true : false,
+              'slotColor': 'white'
+            };
+            i = clientReviewObj[0].Id;
+            if (GanttTaskObj.status !== 'Deleted') {
+              this.GanttchartData.push(GanttTaskObj);
+            }
+
+            const tempmilestone = { 'data': GanttTaskObj, 'children': [] }
+            this.milestoneData.push(tempmilestone);
+
+          }
         }
+        else {
+          milestoneTasks = this.allTasks.filter(c => c.FileSystemObjectType === 0 && c.Milestone === milestone.Title);
 
-        ////// Assign users 
+          let tempSubmilestones = [];
+          let GanttTaskObj;
+          let CRObj;
+          const excludeSlotsListForHrs = [];
+          for (const milestoneTask of milestoneTasks) {
+            taskName = '';
 
-        if (this.projectDetails === undefined) {
-          this.assignUsers(allRetrievedTasks);
+            if (milestoneTask.CentralAllocationDone === 'Yes' && milestoneTask.IsCentrallyAllocated === 'Yes') {
+              excludeSlotsListForHrs.push(milestoneTask.ID);
+            } else {
+              if (milestoneTask.ParentSlot) {
+                excludeSlotsListForHrs.push(milestoneTask.ID);
+              }
+            }
+            let color = this.colors.filter(c => c.key == milestoneTask.Status)
+            if (color.length) {
+              milestoneTask.color = color[0].value;
+            }
+            milestoneTask.assignedUsers = [{ Title: '', userType: '' }]; //this.resources.length > 0 ? this.resources : [{ Title: '', userType: '' }];
+            const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter(function (objt) {
+              return milestoneTask.AssignedTo.ID === objt.UserName.ID;
+            });
+            milestoneTask.assignedUserTimeZone = AssignedUserTimeZone && AssignedUserTimeZone.length > 0
+              ? AssignedUserTimeZone[0].TimeZone.Title ?
+                AssignedUserTimeZone[0].TimeZone.Title : '+5.5' : '+5.5';
+
+            const convertedStartDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.StartDate),
+              this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
+
+            milestoneTask.jsLocalStartDate = this.commonService.calcTimeForDifferentTimeZone(convertedStartDate,
+              milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+
+            const convertedEndDate = this.commonService.calcTimeForDifferentTimeZone(new Date(milestoneTask.DueDate),
+              this.sharedObject.currentUser.timeZone, milestoneTask.assignedUserTimeZone);
+
+            milestoneTask.jsLocalEndDate = this.commonService.calcTimeForDifferentTimeZone(convertedEndDate,
+              milestoneTask.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
+
+            const hrsMinObject = {
+              timeHrs: milestoneTask.TimeSpent != null ? milestoneTask.TimeSpent.indexOf('.') > -1 ?
+                milestoneTask.TimeSpent.split('.')[0] : milestoneTask.TimeSpent : '00',
+              timeMins: milestoneTask.TimeSpent != null ?
+                milestoneTask.TimeSpent.indexOf('.') > -1 ? milestoneTask.TimeSpent.split('.')[1] : '00' : 0
+            };
+
+            if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
+              milestoneHoursSpent.push(hrsMinObject);
+              projectHoursSpent.push(hrsMinObject);
+              if (excludeSlotsListForHrs.indexOf(milestoneTask.ID) < 0) {
+                projectHoursAllocated.push(+milestoneTask.ExpectedTime);
+              }
+            }
+            if (milestoneTask.Status === 'Completed' || milestoneTask.Status === 'Auto Closed') {
+              if (milestoneTask.TimeSpent == null) {
+                projectAvailableHours.push(+milestoneTask.ExpectedTime);
+              } else {
+                const mHoursSpentTask = this.commonService.ajax_addHrsMins([hrsMinObject]);
+                const taskTotalMins = this.commonService.calculateTotalMins(mHoursSpentTask);
+                const convertedHoursMins = this.commonService.convertFromHrsMins(+taskTotalMins);
+                projectAvailableHours.push(+convertedHoursMins);
+              }
+            } else if (milestoneTask.Status !== 'Deleted' && milestoneTask.Status !== 'Abandon') {
+              if (excludeSlotsListForHrs.indexOf(milestoneTask.ID) < 0) {
+                projectAvailableHours.push(+milestoneTask.ExpectedTime);
+              }
+            }
+
+            // Gantt Chart Sub Object 
+
+            if (milestone.Title === milestoneTask.Milestone) {
+              if (milestoneTask.Status !== 'Deleted') {
+                GanttTaskObj = {
+                  'pID': milestoneTask.Id,
+                  'pName': milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', ''),
+                  'pStart': milestoneTask.jsLocalStartDate,
+                  'pEnd': milestoneTask.jsLocalEndDate,
+                  'pUserStart': convertedStartDate,
+                  'pUserEnd': convertedEndDate,
+                  'pUserStartDatePart': this.getDatePart(convertedStartDate),
+                  'pUserStartTimePart': this.getTimePart(convertedStartDate),
+                  'pUserEndDatePart': this.getDatePart(convertedEndDate),
+                  'pUserEndTimePart': this.getTimePart(convertedEndDate),
+                  'pClass': milestoneTask.Status === 'Completed' ? 'gtaskblue' : milestoneTask.Status === 'In Progress' ? 'gtaskgreen' : milestoneTask.Status === 'Not Started' ? 'ggroupblack' : 'gtaskred',
+                  'pLink': '',
+                  'pMile': 0,
+                  'pRes': milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title ? milestoneTask.AssignedTo.Title : '  ' : '  ',
+                  'pComp': milestoneTask.Status === 'Not Confirmed' ? 0 : (milestoneTask.Status === 'Completed' ? 100 : milestoneTask.Status === 'In Progress' ? 50 : 0),
+                  'pGroup': milestoneTask.IsCentrallyAllocated === 'Yes' ? 1 : 0,
+                  'pParent': milestoneTask.Task === 'Client Review' ? 0 : milestoneTask.ParentSlot ? milestoneTask.ParentSlot : milestone.Id,
+                  'pOpen': milestoneTask.IsCentrallyAllocated === 'Yes' ? 0 : 1,
+                  'pDepend': milestoneTask.Task === 'Client Review' ? i : '',
+                  'pCaption': '',
+                  'pNotes': milestoneTask.Status,
+                  'status': milestoneTask.Status,
+                  'budgetHours': milestoneTask.ExpectedTime,
+                  'spentTime': this.commonService.ajax_addHrsMins([hrsMinObject]),
+                  'allowStart': milestoneTask.AllowCompletion === true || milestoneTask.AllowCompletion === 'Yes' ? true : false,
+                  'tat': milestoneTask.TATStatus === true || milestoneTask.TATStatus === 'Yes' ? true : false,
+                  'tatVal': this.commonService.calcBusinessDays(milestoneTask.jsLocalStartDate, milestoneTask.jsLocalEndDate),
+                  'milestoneStatus': milestone.Status,
+                  'type': 'task',
+                  'editMode': false,
+                  'scope': milestoneTask.Comments,
+                  'isCurrent': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
+                  'isFuture': this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones !== undefined ? this.sharedObject.oTaskAllocation.oProjectDetails.futureMilestones.indexOf(milestone.Title)
+                    > -1 ? true : false : false,
+                  'assignedUsers': milestoneTask.assignedUsers,
+                  'AssignedTo': milestoneTask.AssignedTo.ID ? milestoneTask.AssignedTo : '',
+                  'userCapacityEnable': false,
+                  'color': milestoneTask.color,
+                  'itemType': milestoneTask.Task,
+                  'nextTask': this.taskAllocateCommonService.fetchTaskName(milestoneTask.NextTasks, this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, milestoneTask.Milestone),
+                  'previousTask': this.taskAllocateCommonService.fetchTaskName(milestoneTask.PrevTasks, this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, milestoneTask.Milestone),
+                  'edited': false,
+                  'IsCentrallyAllocated': milestoneTask.IsCentrallyAllocated,
+                  'added': false,
+                  'submilestone': milestoneTask.SubMilestones,
+                  'milestone': milestoneTask.Milestone,
+                  'skillLevel': milestoneTask.SkillLevel,
+                  'CentralAllocationDone': milestoneTask.CentralAllocationDone,
+                  'ActiveCA': milestoneTask.ActiveCA,
+                  'assignedUserTimeZone': milestoneTask.assignedUserTimeZone,
+                  'parentSlot': milestoneTask.ParentSlot ? milestoneTask.ParentSlot : '',
+                  'DisableCascade': (milestoneTask.DisableCascade && milestoneTask.DisableCascade === 'Yes') ? true : false,
+                  'slotType': milestoneTask.IsCentrallyAllocated === 'Yes' ? 'Slot' : 'Task',
+                  'slotColor': 'white',
+                  'deallocateSlot': false,
+                  'taskFullName': milestoneTask.Title
+                };
+
+                if (milestoneTask.Task === 'Client Review' && milestoneTask.Status !== 'Deleted') {
+                  i = milestoneTask.Id;
+                  CRObj = { 'data': GanttTaskObj };
+
+                }
+                taskName = milestoneTask.Title.replace(this.sharedObject.oTaskAllocation.oProjectDetails.projectCode + ' ' + milestoneTask.Milestone + ' ', '');
+                this.GanttchartData.push(GanttTaskObj);
+                allRetrievedTasks.push(GanttTaskObj);
+
+                if (GanttTaskObj.itemType !== 'Client Review') {
+                  let tempObj = {};
+                  if (GanttTaskObj.IsCentrallyAllocated === 'Yes') {
+                    const dummyExistingSlot = tempSubmilestones.find(s => s.data.pID === GanttTaskObj.pID);
+                    if (dummyExistingSlot) {
+                      dummyExistingSlot.data = Object.assign({}, GanttTaskObj);
+                    } else {
+                      tempObj = { 'data': GanttTaskObj, 'expanded': false, 'children': [] };
+                      tempSubmilestones.push(tempObj);
+                    }
+                  } else {
+                    if (GanttTaskObj.parentSlot) {
+                      const slot = tempSubmilestones.find(t => t.data.pID === +GanttTaskObj.parentSlot);
+                      if (slot) {
+                        slot.children.push({ 'data': GanttTaskObj });
+                      } else {
+                        const tempSlot = Object.assign({}, GanttTaskObj);
+                        tempSlot.pID = GanttTaskObj.parentSlot;
+                        tempSubmilestones.push({ 'data': tempSlot, 'expanded': false, 'children': [{ 'data': GanttTaskObj }] });
+                      }
+                    } else {
+                      tempObj = { 'data': GanttTaskObj };
+                      tempSubmilestones.push(tempObj);
+                    }
+                  }
+                }
+              }
+            }
+
+            // Close  Gantt Chart Object
+          }
+          var milestoneTemp = this.GanttchartData.find(c => c.pID === milestone.Id);
+          if (milestoneTemp) {
+            milestoneTemp.spentTime = milestoneHoursSpent.length > 0 ? this.commonService.ajax_addHrsMins(milestoneHoursSpent) : '0:0';
+
+            const tempmilestone = {
+              'data': milestoneTemp,
+              'expanded': this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestone.Title ? true : false,
+              'children': tempSubmilestones
+            }
+
+            this.milestoneData.push(tempmilestone);
+          }
+
+          if (!CRObj && taskName && taskName.replace(/[0-9]/g, '').trim() === 'Client Review') {
+            const tempmilestone = { 'data': GanttTaskObj, 'children': [] }
+            this.milestoneData.push(tempmilestone);
+          }
+          else if (CRObj) {
+            this.milestoneData.push(CRObj);
+          }
         }
-
-        this.milestoneData = [...this.milestoneData];
-        this.GanttchartData = [...this.GanttchartData];
-        this.tempmilestoneData = [];
-        this.tempGanttchartData = JSON.parse(JSON.stringify(this.GanttchartData));
-        this.tempmilestoneData = JSON.parse(JSON.stringify(this.milestoneData));
-
-        this.loaderenable = false;
       }
-      else {
-        this.milestoneData = [];
+
+      ////// Assign users 
+
+      if (this.projectDetails === undefined) {
+        this.assignUsers(allRetrievedTasks);
       }
+
+      this.milestoneData = [...this.milestoneData];
+      this.GanttchartData = [...this.GanttchartData];
+      this.tempmilestoneData = [];
+      this.tempGanttchartData = JSON.parse(JSON.stringify(this.GanttchartData));
+      this.tempmilestoneData = JSON.parse(JSON.stringify(this.milestoneData));
+
+      this.loaderenable = false;
     }
     else {
       this.milestoneData = [];
     }
+
     this.GanttChartView = true;
     this.visualgraph = false;
-    this.milestoneDataCopy = this.milestoneData;
+    this.milestoneDataCopy = JSON.parse(JSON.stringify(this.milestoneData));
     this.oProjectDetails.hoursSpent = this.commonService.convertToHrs(projectHoursSpent.length > 0 ? this.commonService.ajax_addHrsMins(projectHoursSpent) : '0:0');
     this.oProjectDetails.hoursSpent = parseFloat(this.oProjectDetails.hoursSpent.toFixed(2));
     this.oProjectDetails.allocatedHours = projectHoursAllocated.reduce((a, b) => a + b, 0).toFixed(2);
@@ -1023,25 +1119,80 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // *************************************************************************************************************************************
 
   public async assignUsers(allRetrievedTasks) {
+
     for (let nCount = 0; nCount < this.milestoneData.length; nCount = nCount + 1) {
       let milestone = this.milestoneData[nCount];
       if (milestone.data.itemType === 'Client Review') {
-        milestone.data.assignedUsers = await this.commonService.getResourceByMatrix(milestone.data, allRetrievedTasks);
+        const assignedUsers = await this.taskAllocateCommonService.getResourceByMatrix(milestone.data, allRetrievedTasks);
+
+        milestone.data.assignedUsers = [];
+        const response = await this.formatAssignedUser(assignedUsers);
+        milestone.data.assignedUsers = response;
+        if (milestone.data.editMode) {
+          milestone.data.assignedUsers.forEach(element => {
+            if (element.items.find(c => c.value.ID === milestone.data.AssignedTo.ID)) {
+              milestone.data.AssignedTo = element.items.find(c => c.value.ID === milestone.data.AssignedTo.ID).value;
+            }
+          });
+        }
+
       } else if (milestone.children !== undefined) {
         for (let nCountSub = 0; nCountSub < milestone.children.length; nCountSub = nCountSub + 1) {
           let submilestone = milestone.children[nCountSub];
           if (submilestone.data.type === 'task') {
-            submilestone.data.assignedUsers = await this.commonService.getResourceByMatrix(submilestone.data, allRetrievedTasks);
+            const assignedUsers = await this.taskAllocateCommonService.getResourceByMatrix(submilestone.data, allRetrievedTasks);
+
+            submilestone.data.assignedUsers = [];
+            const response = await this.formatAssignedUser(assignedUsers);
+            submilestone.data.assignedUsers = response;
+            if (submilestone.data.editMode) {
+              submilestone.data.assignedUsers.forEach(element => {
+                if (element.items.find(c => c.value.ID === submilestone.data.AssignedTo.ID)) {
+                  submilestone.data.AssignedTo = element.items.find(c => c.value.ID === submilestone.data.AssignedTo.ID).value;
+                }
+              });
+            }
+
+
           } else if (submilestone.children !== undefined) {
             for (let nCountTask = 0; nCountTask < submilestone.children.length; nCountTask = nCountTask + 1) {
               const task = submilestone.children[nCountTask];
-              task.data.assignedUsers = await this.commonService.getResourceByMatrix(task.data, allRetrievedTasks);
-
+              const assignedUsers = await this.taskAllocateCommonService.getResourceByMatrix(task.data, allRetrievedTasks);
+              task.data.assignedUsers = [];
+              const response = await this.formatAssignedUser(assignedUsers);
+              task.data.assignedUsers = response;
+              if (task.data.editMode) {
+                task.data.assignedUsers.forEach(element => {
+                  if (element.items.find(c => c.value.ID === task.data.AssignedTo.ID)) {
+                    task.data.AssignedTo = element.items.find(c => c.value.ID === task.data.AssignedTo.ID).value;
+                  }
+                });
+              }
             }
           }
         }
       }
     }
+  }
+
+  formatAssignedUser(assignedUsers) {
+    const response = []
+    const UniqueUserType = assignedUsers.map(c => c.userType).filter((item, index) => assignedUsers.map(c => c.userType).indexOf(item) === index);
+    console.log(assignedUsers)
+
+    for (const retRes of UniqueUserType) {
+      const Items = [];
+      const Users = assignedUsers.filter(c => c.userType === retRes);
+      Users.forEach(user => {
+
+        const tempUser = user.UserName ? user.UserName : user;
+        Items.push({ label: tempUser.Title, value: { ID: tempUser.ID, Title: tempUser.Title, Email: tempUser.EMail ? tempUser.EMail : tempUser.Email, SkillText: tempUser.SkillText ? tempUser.SkillText : '' } }
+        );
+      });
+      response.push({ label: retRes, items: Items });
+
+    }
+    return response;
   }
 
   showVisualRepresentation() {
@@ -1096,7 +1247,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
     else {
       this.tempmilestoneData.forEach(element => {
-        const getAllTasks = this.getTasksFromMilestones(element, false);
+        const getAllTasks = this.getTasksFromMilestones(element, false, false);
         const SelectedTask = getAllTasks.find(c => c.pID === milestone.pID);
         if (SelectedTask !== undefined) {
           milestone.pStart = new Date(SelectedTask.pStart);
@@ -1115,6 +1266,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
           milestone.budgetHours = SelectedTask.budgetHours;
           milestone.DisableCascade = SelectedTask.DisableCascade;
           milestone.tatVal = this.commonService.calcBusinessDays(new Date(milestone.pStart), new Date(milestone.pEnd));
+          milestone.slotColor = SelectedTask.slotColor;
         }
       });
 
@@ -1125,7 +1277,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
           if (submilestoneIndex > -1) {
             var taskindex = this.milestoneData[milestoneIndex].children[submilestoneIndex].children.indexOf(this.milestoneData[milestoneIndex].children[submilestoneIndex].children.find(c => c.data === milestone));
-
+            const subTaskIndex = 0;
 
             // replace all milestone from edited milestone
             this.milestoneData = this.milestoneData.splice(0, milestoneIndex + 1);
@@ -1147,12 +1299,19 @@ export class TimelineComponent implements OnInit, OnDestroy {
             this.milestoneData[milestoneIndex].children[submilestoneIndex].children.push.apply(this.milestoneData[milestoneIndex].children[submilestoneIndex].children, tasks);
             this.milestoneData[milestoneIndex].children[submilestoneIndex].children.push.apply(this.milestoneData[milestoneIndex].children[submilestoneIndex].children, dbtasks);
 
+            if (this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].data.slotType === 'Slot') {
+              // replace all subtasks from edited task
+              var dbtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children;
+              this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children = [];
+              this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children.push.apply(this.milestoneData[milestoneIndex].children[submilestoneIndex].children[taskindex].children, dbtasks);
+            }
+
             this.convertDateString();
           }
         }
         else {
           var submilestoneIndex = this.milestoneData[milestoneIndex].children.indexOf(this.milestoneData[milestoneIndex].children.find(c => c.data.pName === milestone.pName));
-
+          const subTaskIndex = 0;
           if (submilestoneIndex > -1) {
 
             // replace all milestone from edited milestone
@@ -1167,6 +1326,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
             this.milestoneData[milestoneIndex].children.push.apply(this.milestoneData[milestoneIndex].children, submilestones);
             this.milestoneData[milestoneIndex].children.push.apply(this.milestoneData[milestoneIndex].children, dbsubmilestones);
 
+            if (this.milestoneData[milestoneIndex].children[submilestoneIndex].data.slotType === 'Slot') {
+              // replace all tasks from edited task
+              var dbtasks = this.tempmilestoneData[milestoneIndex].children[submilestoneIndex].children;
+              this.milestoneData[milestoneIndex].children[submilestoneIndex].children = [];
+              this.milestoneData[milestoneIndex].children[submilestoneIndex].children.push.apply(this.milestoneData[milestoneIndex].children[submilestoneIndex].children, dbtasks);
+            }
             this.convertDateString();
           }
         }
@@ -1177,7 +1342,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     this.tempmilestoneData = JSON.parse(JSON.stringify(this.tempmilestoneData));
     let allReturnedTasks = [];
     this.milestoneData.forEach(milestone => {
-      allReturnedTasks.push.apply(this.getTasksFromMilestones(milestone, false));
+      allReturnedTasks.push.apply(this.getTasksFromMilestones(milestone, false, false));
     });
 
     this.assignUsers(allReturnedTasks);
@@ -1194,7 +1359,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   convertDateString() {
     this.milestoneData.forEach(milestone => {
-
       milestone.data.pStart = new Date(milestone.data.pStart);
       milestone.data.pEnd = new Date(milestone.data.pEnd);
       milestone.data.pUserStart = new Date(milestone.data.pUserStart);
@@ -1206,7 +1370,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
       milestone.data.tatVal = this.commonService.calcBusinessDays(new Date(milestone.data.pStart), new Date(milestone.data.pEnd));
       if (milestone.children !== undefined && milestone.children.length > 0) {
         milestone.children.forEach(submilestone => {
-
           submilestone.data.pStart = new Date(submilestone.data.pStart);
           submilestone.data.pEnd = new Date(submilestone.data.pEnd);
           submilestone.data.pUserStart = new Date(submilestone.data.pUserStart);
@@ -1228,23 +1391,35 @@ export class TimelineComponent implements OnInit, OnDestroy {
               task.data.pUserEndDatePart = this.getDatePart(task.data.pUserEnd);
               task.data.pUserEndTimePart = this.getTimePart(task.data.pUserEnd);
               task.data.tatVal = this.commonService.calcBusinessDays(new Date(task.data.pStart), new Date(task.data.pEnd));
+              if (task.children !== undefined && task.children.length > 0) {
+                task.children.forEach(subTask => {
+                  subTask.data.pStart = new Date(subTask.data.pStart);
+                  subTask.data.pEnd = new Date(subTask.data.pEnd);
+                  subTask.data.pUserStart = new Date(subTask.data.pUserStart);
+                  subTask.data.pUserEnd = new Date(subTask.data.pUserEnd);
+                  subTask.data.pUserStartDatePart = this.getDatePart(subTask.data.pUserStart);
+                  subTask.data.pUserStartTimePart = this.getTimePart(subTask.data.pUserStart);
+                  subTask.data.pUserEndDatePart = this.getDatePart(subTask.data.pUserEnd);
+                  subTask.data.pUserEndTimePart = this.getTimePart(subTask.data.pUserEnd);
+                  subTask.data.tatVal = this.commonService.calcBusinessDays(new Date(subTask.data.pStart), new Date(subTask.data.pEnd));
+                });
+              }
             });
-
             const subMiledb = submilestone.children.filter(c => c.data.pName.toLowerCase().indexOf
-              ('adhoc') === -1 && c.data.pName.toLowerCase().indexOf('tb') === -1);
-            submilestone.data.pStart = new Date(subMiledb[0].data.pStart);
-            submilestone.data.pEnd = new Date(subMiledb[subMiledb.length - 1].data.pEnd);
-            submilestone.data.pUserStart = new Date(subMiledb[0].data.pUserStart);
-            submilestone.data.pUserEnd = new Date(subMiledb[subMiledb.length - 1].data.pUserEnd);
-            submilestone.data.pUserStartDatePart = this.getDatePart(submilestone.data.pUserStart);
-            submilestone.data.pUserStartTimePart = this.getTimePart(submilestone.data.pUserStart);
-            submilestone.data.pUserEndDatePart = this.getDatePart(submilestone.data.pUserEnd);
-            submilestone.data.pUserEndTimePart = this.getTimePart(submilestone.data.pUserEnd);
-            submilestone.data.tatVal = this.commonService.calcBusinessDays
-              (new Date(submilestone.data.pStart), new Date(submilestone.data.pEnd));
+              ('adhoc') === -1 && c.data.pName.toLowerCase().indexOf('tb') === -1 && !c.data.parentSlot);
+            if (subMiledb.length) {
+              submilestone.data.pStart = new Date(subMiledb[0].data.pStart);
+              submilestone.data.pEnd = new Date(subMiledb[subMiledb.length - 1].data.pEnd);
+              submilestone.data.pUserStart = new Date(subMiledb[0].data.pUserStart);
+              submilestone.data.pUserEnd = new Date(subMiledb[subMiledb.length - 1].data.pUserEnd);
+              submilestone.data.pUserStartDatePart = this.getDatePart(submilestone.data.pUserStart);
+              submilestone.data.pUserStartTimePart = this.getTimePart(submilestone.data.pUserStart);
+              submilestone.data.pUserEndDatePart = this.getDatePart(submilestone.data.pUserEnd);
+              submilestone.data.pUserEndTimePart = this.getTimePart(submilestone.data.pUserEnd);
+              submilestone.data.tatVal = this.commonService.calcBusinessDays
+                (new Date(submilestone.data.pStart), new Date(submilestone.data.pEnd));
+            }
           }
-
-
         });
 
         const tempMile = milestone.children.filter(c => c.data.pName.toLowerCase().indexOf('adhoc') ===
@@ -1270,6 +1445,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
   editTask(task, rowNode) {
+    task.assignedUsers.forEach(element => {
+
+      if (element.items.find(c => c.value.ID === task.AssignedTo.ID)) {
+        task.AssignedTo = element.items.find(c => c.value.ID === task.AssignedTo.ID).value;
+      }
+    });
     if (rowNode.parent !== null) {
       if (rowNode.parent.parent === null) {
         rowNode.parent.data.editMode = true;
@@ -1285,6 +1466,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
     task.editMode = true;
     task.edited = true;
 
+
+
   }
 
   // *************************************************************************************************
@@ -1299,14 +1482,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
   //  Add Comment
   // **************************************************************************************************
   openComment(task, rowNode) {
-
-
-    // this.tempComment = task.scope;
-    // this.task = task;
-    // this.displayComment = true;
-    // task.edited = true;
-
-
     this.tempComment = task.scope;
     this.task = task;
     this.displayComment = true;
@@ -1341,7 +1516,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   openPopup(data, rowNode) {
 
-    console.log(rowNode);
     this.taskMenu = [];
     if (data.type === 'task' && data.milestoneStatus !== 'Completed' &&
       (data.status !== 'Completed' && data.status !== 'Abandon' && data.status !== 'Auto Closed'
@@ -1349,10 +1523,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
       this.taskMenu = [
         { label: 'Edit', icon: 'pi pi-pencil', command: (event) => this.editTask(data, rowNode) },
-        // {
-        //   label: data.DisableCascade === 'Yes' ? 'Enable Cascade' : 'Disable Cascade',
-        //   icon: data.DisableCascade === 'Yes' ? 'pi pi-unlock' : 'pi pi-lock', command: (event) => this.enableDisableCascadeTask(data)
-        // }
       ];
 
       if (data.itemType !== 'Client Review' && data.itemType !== 'Send to client') {
@@ -1413,31 +1583,32 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   getUserCapacity(milestoneTask) {
 
+    milestoneTask.resources = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
+      return objt.UserName.ID === milestoneTask.AssignedTo.ID;
+    });
 
-    const ref = this.dialogService.open(UserCapacityComponent, {
-
+    const ref = this.dialogService.open(UsercapacityComponent, {
       data: {
         task: milestoneTask,
-        user: {
-          0: milestoneTask.AssignedTo.ID
-        }
+        startTime: milestoneTask.pUserStart,
+        endTime: milestoneTask.pUserEnd,
       },
-      header: 'User Capacity ',
       width: '90vw',
 
+      header: milestoneTask.submilestone ? milestoneTask.milestone + ' ' + milestoneTask.pName
+        + ' ( ' + milestoneTask.submilestone + ' )' : milestoneTask.milestone + ' ' + milestoneTask.pName,
+      contentStyle: { 'max-height': '90vh', 'overflow-y': 'auto' }
     });
-
     ref.onClose.subscribe((UserCapacity: any) => {
-
-
     });
+
   }
 
-  sortByDate(array, prop) {
-    array.sort(function (a, b) {
+  sortByDate(array, prop, order) {
+    array.sort((a, b) => {
       a = new Date(a.data[prop]).getTime();
       b = new Date(b.data[prop]).getTime();
-      return a - b;
+      return order === 'asc' ? a - b : b - a;
     });
     return array;
   }
@@ -1476,11 +1647,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
         let tempmilestoneData = [];
         let milestoneedit = false;
         const nodesNew = [];
-        for(const nodeOrder of RestructureMilestones.nodeOrder) {
-          const node = RestructureMilestones.nodes.find(e=>e.id === nodeOrder);
+        for (const nodeOrder of RestructureMilestones.nodeOrder) {
+          const node = RestructureMilestones.nodes.find(e => e.id === nodeOrder);
           nodesNew.push(node);
         }
         RestructureMilestones.nodes = nodesNew;
+
+
         RestructureMilestones.nodes.forEach(milestone => {
           let CRObj;
           let temptasks = [];
@@ -1494,7 +1667,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               if (submilestone.label !== 'Default') {
                 if (TempSubmilePositionArray.length === 0) {
                   const obj = {
-                    'name': submilestone.label, //.replace(/ /g, '')
+                    'name': submilestone.label,
                     'position': submilestoneposition.toString()
                   }
                   submilestoneposition++;
@@ -1518,11 +1691,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   submilestoneposition++;
                 }
                 else {
-                  if (TempSubmilePositionArray.find(c => c.name === submilestone.label) === undefined) //.replace(/ /g, '')
-                  {
+                  if (TempSubmilePositionArray.find(c => c.name === submilestone.label) === undefined) {
                     submilestoneposition++;
                     const obj = {
-                      'name': submilestone.label, //.replace(/ /g, '')
+                      'name': submilestone.label,
                       'position': submilestoneposition.toString(),
                     }
                     TempSubmilePositionArray.push(obj);
@@ -1535,8 +1707,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
               if (submilestone.task.nodes.length > 0) {
                 submilestone.task.nodes.forEach(task => {
-                  let nextTasks = submilestone.task.nodes.filter(c => submilestone.task.links.filter(c => c.source === task.id).map(c => c.target).includes(c.id)).map(c => c.label).join(';');
-                  let previousTasks = submilestone.task.nodes.filter(c => submilestone.task.links.filter(c => c.target === task.id).map(c => c.source).includes(c.id)).map(c => c.label).join(';');
+                  let nextTasks = submilestone.task.nodes.filter(c => submilestone.task.links.filter(c => c.source === task.id).map(c => c.target).includes(c.id));
+                  nextTasks = nextTasks.map(c => c.label).join(';')
+                  let previousTasks = submilestone.task.nodes.filter(c => submilestone.task.links.filter(c => c.target === task.id).map(c => c.source).includes(c.id));
+                  previousTasks = previousTasks.map(c => c.label).join(';')
                   let TaskObj = this.getTaskObjectByValue(task, 'ggroupblack', milestone, nextTasks, previousTasks, submilestone);
                   previousTasks = previousTasks === "" ? null : previousTasks;
                   nextTasks = nextTasks === "" ? null : nextTasks;
@@ -1621,7 +1795,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             submile.forEach(element => {
               expand = expand === false ? (element.data.status === 'Not Saved' ? true : false) : true;
               if (element.children !== undefined) {
-                element.children = this.sortByDate(element.children, 'pStart');
+                element.children = this.sortByDate(element.children, 'pStart', 'asc');
                 element.children.forEach(task => {
                   element.expanded = element.expanded === false ? (task.data.status === 'Not Saved' ? true : false) : true;
                 });
@@ -1644,10 +1818,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
           else {
 
             milestone.submilestone.nodes[0].task.nodes.forEach(task => {
-              let nextTasks = milestone.submilestone.nodes[0].task.nodes.filter(c => milestone.submilestone.nodes[0].task.links.filter(c => c.source === task.id).map(c => c.target).includes(c.id)).map(c => c.label).join(';');
-
-              let previousTasks = milestone.submilestone.nodes[0].task.nodes.filter(c => milestone.submilestone.nodes[0].task.links.filter(c => c.target === task.id).map(c => c.source).includes(c.id)).map(c => c.label).join(';');
-
+              let nextTasks = milestone.submilestone.nodes[0].task.nodes.filter(c => milestone.submilestone.nodes[0].task.links.filter(c => c.source === task.id).map(c => c.target).includes(c.id));
+              nextTasks = nextTasks.map(c => c.label).join(';');
+              let previousTasks = milestone.submilestone.nodes[0].task.nodes.filter(c => milestone.submilestone.nodes[0].task.links.filter(c => c.target === task.id).map(c => c.source).includes(c.id));
+              previousTasks = previousTasks.map(c => c.label).join(';');
               let TaskObj = this.getTaskObjectByValue(task, 'gtaskred', milestone, nextTasks, previousTasks, undefined);
 
               previousTasks = previousTasks === "" ? null : previousTasks;
@@ -1691,7 +1865,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
               }
             });
             let mileexpand = false;
-            temptasks = this.sortByDate(temptasks, 'pStart');
+            temptasks = this.sortByDate(temptasks, 'pStart', 'asc');
             temptasks.forEach(element => {
               mileexpand = mileexpand == false ? (element.data.status === 'Not Saved' ? true : false) : true;
             });
@@ -1729,7 +1903,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
         this.assignUsers(allReturnedTasks);
         this.loaderenable = false;
         this.milestoneData = [...this.milestoneData];
-        console.log(this.milestoneData);
 
         this.changeInRestructure = this.milestoneData.find(c => c.data.editMode === true) !== undefined ? true : false;
         if (this.changeInRestructure) {
@@ -1781,11 +1954,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   assignedToUserChanged(milestoneTask) {
     if (milestoneTask.AssignedTo) {
+      this.updateNextPreviousTasks(milestoneTask);
       milestoneTask.assignedUserChanged = true;
-      if (milestoneTask.AssignedTo.hasOwnProperty('ID')) {
-        milestoneTask.IsCentrallyAllocated = 'No';
-        // milestoneTask.ActiveCA = 'No';
-        milestoneTask.skillLevel = this.commonService.getSkillName(milestoneTask.AssignedTo.SkillText);
+      if (milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID) {
+        milestoneTask.skillLevel = this.taskAllocateCommonService.getSkillName(milestoneTask.AssignedTo.SkillText);
         const previousUserTimeZone = milestoneTask.assignedUserTimeZone;
         const AssignedUserTimeZone = this.sharedObject.oTaskAllocation.oResources.filter((objt) => {
           return milestoneTask.AssignedTo.ID === objt.UserName.ID;
@@ -1817,34 +1989,127 @@ export class TimelineComponent implements OnInit, OnDestroy {
         milestoneTask.pUserStartTimePart = this.getTimePart(milestoneTask.pUserStart);
         milestoneTask.pUserEndDatePart = this.getDatePart(milestoneTask.pUserEnd);
         milestoneTask.pUserEndTimePart = this.getTimePart(milestoneTask.pUserEnd);
-
-        milestoneTask.IsCentrallyAllocated = 'Yes';
-        // milestoneTask.ActiveCA = 'Yes';
         milestoneTask.skillLevel = milestoneTask.AssignedTo.SkillText;
         milestoneTask.edited = true;
-        milestoneTask.deallocateCentral = true;
         milestoneTask.pRes = milestoneTask.skillLevel;
       }
     }
   }
 
+  /**
+   * Update next previous task of submit/galley(Slot type as Both) slot based on skill/user
+   * @param milestoneTask - task whose assigned user changed
+   */
+  async updateNextPreviousTasks(milestoneTask) {
+    const currentTask = milestoneTask;
+    const milestone = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ?
+      // tslint:disable: max-line-length
+      this.milestoneData.find(m => m.data.pName === milestoneTask.milestone + ' (Current)') : this.milestoneData.find(m => m.data.pName === milestoneTask.milestone);
+    let subMilestone: TreeNode;
+    subMilestone = currentTask.submilestone ? milestone.children.find(t => t.data.pName === currentTask.submilestone) : milestone;
+    if (milestoneTask.slotType === 'Both' && milestoneTask.AssignedTo.ID) {
+
+      milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'No' : milestoneTask.ActiveCA;
+      milestoneTask.itemType = milestoneTask.itemType.replace(/Slot/g, '');
+      // const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
+      // let newName = taskCount ? milestoneTask.itemType + taskCount : milestoneTask.itemType;
+      let newName = '';
+      // const counter = taskCount ? +taskCount : 1;
+      if (milestoneTask.IsCentrallyAllocated === 'Yes') {
+        newName = milestoneTask.itemType;
+        newName = this.getNewTaskName(milestoneTask, subMilestone, newName);
+        milestoneTask.IsCentrallyAllocated = 'No';
+      } else {
+        newName = milestoneTask.pName;
+      }
+      if (milestoneTask.nextTask) {
+        const nextTasks = milestoneTask.nextTask.split(';');
+        nextTasks.forEach(task => {
+          const nextTask = subMilestone.children.find(t => t.data.pName === task);
+          const previousOfNextTask = nextTask.data.previousTask.split(';');
+          const currentTaskIndex = previousOfNextTask.indexOf(currentTask.pName);
+          previousOfNextTask[currentTaskIndex] = newName;
+          const prevNextTaskString = previousOfNextTask.join(';');
+          nextTask.data.previousTask = prevNextTaskString;
+        });
+      }
+      if (milestoneTask.previousTask) {
+        const previousTasks = milestoneTask.previousTask.split(';');
+        previousTasks.forEach(task => {
+          const previousTask = subMilestone.children.find(t => t.data.pName === task);
+          const nextOfPrevTask = previousTask.data.nextTask.split(';');
+          const currentTaskIndex = nextOfPrevTask.indexOf(currentTask.pName);
+          nextOfPrevTask[currentTaskIndex] = newName;
+          const nextPrevTaskString = nextOfPrevTask.join(';');
+          previousTask.data.nextTask = nextPrevTaskString;
+        });
+      }
+      milestoneTask.pName = newName;
+    } else if (milestoneTask.slotType === 'Both' && !milestoneTask.AssignedTo.ID) {
+      milestoneTask.IsCentrallyAllocated = 'Yes';
+      milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'Yes' : milestoneTask.ActiveCA;
+      milestoneTask.itemType = milestoneTask.itemType + 'Slot';
+      // const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
+      // let newName = milestoneTask.itemType + taskCount;
+      // const counter = taskCount ? +taskCount : 1;
+      let newName = milestoneTask.itemType;
+      newName = this.getNewTaskName(milestoneTask, subMilestone, newName);
+      if (milestoneTask.nextTask) {
+        const nextTasks = milestoneTask.nextTask.split(';');
+        nextTasks.forEach(task => {
+          const nextTask = subMilestone.children.find(t => t.data.pName === task);
+          const previousOfNextTask = nextTask.data.previousTask.split(';');
+          const currentTaskIndex = previousOfNextTask.indexOf(currentTask.pName);
+          previousOfNextTask[currentTaskIndex] = newName;
+          const prevNextTaskString = previousOfNextTask.join(';');
+          nextTask.data.previousTask = prevNextTaskString;
+        });
+      }
+      if (milestoneTask.previousTask) {
+        const previousTasks = milestoneTask.previousTask.split(';');
+        previousTasks.forEach(task => {
+          const previousTask = subMilestone.children.find(t => t.data.pName === task);
+          const nextOfPrevTask = previousTask.data.nextTask.split(';');
+          const currentTaskIndex = nextOfPrevTask.indexOf(currentTask.pName);
+          nextOfPrevTask[currentTaskIndex] = newName;
+          const nextPrevTaskString = nextOfPrevTask.join(';');
+          previousTask.data.nextTask = nextPrevTaskString;
+        });
+      }
+      milestoneTask.pName = newName;
+    }
+  }
+
+  getNewTaskName(milestoneTask, subMilestone, originalName) {
+    let counter = 1;
+    let getItem = subMilestone.children.filter(e => e.data.pName === originalName);
+    while (getItem.length) {
+      counter++;
+      originalName = milestoneTask.itemType + ' ' + counter;
+      getItem = subMilestone.children.filter(e => e.data.pName === originalName);
+    }
+
+    return originalName;
+  }
   // *************************************************************************************************
   // Date changes Cascading (Task Date Change)
   // **************************************************************************************************
   // tslint:disable
-  cascadeNode(previousNode, node) {
+  async cascadeNode(previousNode, node) {
 
     var nodeData = node.hasOwnProperty('data') ? node.data : node;
     var prevNodeData = previousNode.hasOwnProperty('data') ? previousNode.data : previousNode;
     const startDate = nodeData.pUserStart;
     const endDate = nodeData.pUserEnd;
     var workingHours = this.workingHoursBetweenDates(startDate, endDate);
-
-    nodeData.pStart = prevNodeData.pEnd;
-    nodeData.pUserStart = this.commonService.calcTimeForDifferentTimeZone(nodeData.pStart,
+    // Check if prev node slot then consider startdate of slot 
+    const prevNodeStartDate = ((prevNodeData.slotType === 'Slot' && nodeData.parentSlot) ?
+      // || (prevNodeData.slotType === 'Slot' && prevNodeData.clickedInput && prevNodeData.clickedInput === 'start' && nodeData.parentSlot) ?
+      new Date(prevNodeData.pStart) : new Date(prevNodeData.pEnd));
+    nodeData.pUserStart = this.commonService.calcTimeForDifferentTimeZone(prevNodeStartDate,
       this.sharedObject.currentUser.timeZone, nodeData.assignedUserTimeZone);
-
-    nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || prevNodeData.itemType === 'Client Review' || nodeData.itemType === 'Client Review' ?
+    // const chkDate = nodeData.pUserStart.getHours() >= 19 && (nodeData.pUserStart.getHours() <= 23 && nodeData.pUserStart.getMinutes() < 60)
+    nodeData.pUserStart = nodeData.pUserStart.getHours() >= 19 || nodeData.pUserStart.getHours() < 9 || prevNodeData.itemType === 'Client Review' || nodeData.itemType === 'Client Review' ?
       this.checkStartDate(new Date(nodeData.pUserStart.getFullYear(), nodeData.pUserStart.getMonth(), (nodeData.pUserStart.getDate() + 1), 9, 0)) :
       nodeData.pUserStart;
     nodeData.pUserEnd = this.checkEndDate(nodeData.pUserStart, workingHours);
@@ -1859,11 +2124,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
       nodeData.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
     nodeData.tatVal = this.commonService.calcBusinessDays(new Date(nodeData.pStart), new Date(nodeData.pEnd));
     nodeData.edited = true;
-    if (nodeData.IsCentrallyAllocated === 'Yes') {
-      nodeData.deallocateCentral = true;
+    if (nodeData.IsCentrallyAllocated === 'Yes' && node.slotType !== 'Slot' && !node.parentSlot) {
       nodeData.pRes = nodeData.skillLevel;
     }
-
   }
   // tslint:enable
 
@@ -1910,10 +2173,10 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   changeDateOfEditedTask(node, type) {
     node.pUserStart = node.tat === true ?
-      new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0) : node.pUserStart,
-      node.pUserEnd = type === 'start' && node.pUserStart > node.pUserEnd ? (node.tat === true ?
-        new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(),
-          node.pUserStart.getDate(), 19, 0) : node.pUserStart) : node.pUserEnd;
+      new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(), node.pUserStart.getDate(), 9, 0) : node.pUserStart;
+    node.pUserEnd = type === 'start' && node.pUserStart > node.pUserEnd ? (node.tat === true ?
+      new Date(node.pUserStart.getFullYear(), node.pUserStart.getMonth(),
+        node.pUserStart.getDate(), 19, 0) : node.pUserStart) : node.pUserEnd;
 
 
     node.pUserStartDatePart = this.getDatePart(node.pUserStart);
@@ -1926,8 +2189,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     node.pEnd = this.commonService.calcTimeForDifferentTimeZone(node.pUserEnd,
       node.assignedUserTimeZone, this.sharedObject.currentUser.timeZone);
     node.edited = true;
-    if (node.IsCentrallyAllocated === 'Yes') {
-      node.deallocateCentral = true;
+    if (node.IsCentrallyAllocated === 'Yes' && node.slotType !== 'Slot' && !node.parentSlot) {
       node.pRes = node.skillLevel;
     }
 
@@ -1946,13 +2208,38 @@ export class TimelineComponent implements OnInit, OnDestroy {
           }
         });
       }
-
       this.setStartAndEnd(milestone);
     });
   }
 
+  validateTaskDates(AllTasks) {
+    let errorPresnet = false;
+    const taskCount = AllTasks.length;
+    for (let i = 0; i < taskCount; i = i + 1) {
+      const task = AllTasks[i];
+      if (task.nextTask && task.status !== 'Completed'
+        && task.status !== 'Auto Closed' && task.status !== 'Deleted') {
+        const nextTasks = task.nextTask.split(';');
+        const AllNextTasks = AllTasks.filter(c => (nextTasks.indexOf(c.pName) > -1));
+
+        const SDTask = AllNextTasks.find(c => c.pStart < task.pEnd && c.status !== 'Completed'
+          && c.status !== 'Auto Closed' && c.status !== 'Deleted' && c.allowStart === false);
+        if (SDTask) {
+          this.messageService.add({
+            key: 'custom', severity: 'warn', summary: 'Warning Message',
+            detail: 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName + ' in ' + task.milestone
+          });
+          errorPresnet = true;
+          break;
+        }
+      }
+    }
+    return errorPresnet;
+  }
 
   DateChangePart(Node, type) {
+    this.reallocationMailArray.length = 0;
+    this.deallocationMailArray.length = 0;
     Node.pUserStart = new Date(this.datepipe.transform(Node.pUserStartDatePart, 'MMM d, y') + ' ' + Node.pUserStartTimePart);
     Node.pUserEnd = new Date(this.datepipe.transform(Node.pUserEndDatePart, 'MMM d, y') + ' ' + Node.pUserEndTimePart);
     this.DateChange(Node, type);
@@ -1960,7 +2247,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
   // tslint:disable
   DateChange(Node, type) {
     let previousNode = undefined;
-    //let CheckDateTasks;
     let milestonePosition = -1;
     let selectedMil = -1;
     let subMilestonePosition = 0;
@@ -1979,7 +2265,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
               this.changeDateOfEditedTask(submilestone.data, type);
               selectedMil = milestonePosition;
               previousNode = submilestone.data;
-              // CheckDateTasks = milestone.children.map(c => c.data);
             }
           }
           if (submilestone.children !== undefined) {
@@ -1989,58 +2274,28 @@ export class TimelineComponent implements OnInit, OnDestroy {
                 this.changeDateOfEditedTask(task.data, type);
                 selectedMil = milestonePosition;
                 previousNode = task.data;
-                // CheckDateTasks = submilestone.children.map(c => c.data);
               }
             });
           }
         });
       }
     });
+    // clickedInput variable is used to know if start or end date changed
+    previousNode.clickedInput = type;
     this.cascadeNextNodes(previousNode, subMilestonePosition, selectedMil);
-    // if (CheckDateTasks) {
-    //   this.validateTaskDates(CheckDateTasks);
-    // }
-
     this.ResetStartAndEnd();
+    previousNode.clickedInput = undefined;
   }
 
 
-  validateTaskDates(AllTasks) {
-    let errorPresnet = false;
-    //this.errorMessageCount = 0;
-    const taskCount = AllTasks.length;
-    for (let i = 0; i < taskCount; i = i + 1) {
-      // AllTasks.forEach(task => {
-      const task = AllTasks[i];
-      if (task.nextTask && task.status !== 'Completed'
-        && task.status !== 'Auto Closed' && task.status !== 'Deleted') {
-        const nextTasks = task.nextTask.split(';');
-        const AllNextTasks = AllTasks.filter(c => (nextTasks.indexOf(c.pName) > -1));
 
-        const SDTask = AllNextTasks.find(c => c.pStart < task.pEnd && c.status !== 'Completed'
-          && c.status !== 'Auto Closed' && c.status !== 'Deleted' && c.allowStart === false);
-        if (SDTask) {
-          // this.errorMessageCount++;
-          this.messageService.add({
-            key: 'custom', severity: 'warn', summary: 'Warning Message',
-            detail: 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName + ' in ' + task.milestone
-          });
-          errorPresnet = true;
-          break;
-          // this.taskerrorMessage = 'Start Date of ' + SDTask.pName + '  should be greater than end date of ' + task.pName;
-        }
-      }
-    }
-    return errorPresnet;
-    // });
-  }
 
   cascadeNextNodes(previousNode, subMilestonePosition, selectedMil) {
     var nextNode = [];
     let sentPrevNode = undefined;
     if (previousNode.nextTask && previousNode.nextTask.indexOf('Client Review') === -1) {
       const currMil = this.milestoneData[selectedMil];
-      const allMilestoneTasks = this.getTasksFromMilestones(currMil, false);
+      const allMilestoneTasks = this.getTasksFromMilestones(currMil, false, false);
       const nextTasks = previousNode.nextTask.split(';');
       let retNodes = undefined;
       if (subMilestonePosition !== 0) {
@@ -2067,7 +2322,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
         else {
           sentPrevNode = previousNode;
-          const allMilestoneTasks = this.getTasksFromMilestones(currMil, false);
+          const allMilestoneTasks = this.getTasksFromMilestones(currMil, false, false);
           const nextTasks = previousNode.nextTask.split(';');
           retNodes = allMilestoneTasks.filter(c => (c.submilestone === previousNode.submilestone && nextTasks.indexOf(c.pName) > -1));
         }
@@ -2081,7 +2336,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
           retNodes = currMil.children.filter((c => (c.data.submilestone == '' || c.data.submilestone === 'Default') && !c.data.previousTask));
           subMilestonePosition = 0;
           if (retNodes.length) {
-            //nextNode.push(this.sortDates(retNodes, ''));
             retNodes.forEach(element => {
               nextNode.push(element);
             });
@@ -2091,7 +2345,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
             sentPrevNode = this.milestoneData[selectedMil];
             this.setStartAndEnd(sentPrevNode);
             this.milestoneData[selectedMil] = sentPrevNode;
-            //nextNode.push(this.milestoneData[selectedMil + 1]);
             if (this.milestoneData.length > (selectedMil + 1)) {
               nextNode.push(this.milestoneData[selectedMil + 1]);
             }
@@ -2102,67 +2355,253 @@ export class TimelineComponent implements OnInit, OnDestroy {
         sentPrevNode = this.milestoneData[selectedMil];
         this.setStartAndEnd(sentPrevNode);
         this.milestoneData[selectedMil] = sentPrevNode;
-        //sentPrevNode = previousNode;
         if (this.milestoneData.length > (selectedMil + 1)) {
           nextNode.push(this.milestoneData[selectedMil + 1]);
         }
 
       }
     }
+    if (sentPrevNode.slotType === 'Slot' && sentPrevNode.pID > 0) {
+      // if ((sentPrevNode.slotType === 'Slot' && sentPrevNode.pID > 0 && !sentPrevNode.clickedInput) ||
+      //   sentPrevNode.slotType === 'Slot' && sentPrevNode.clickedInput) {
+      this.compareSlotSubTasksTimeline(sentPrevNode, subMilestonePosition, selectedMil)
+    }
 
     if (nextNode.length) {
       nextNode.forEach(element => {
-        if (!element.DisableCascade) {
+        // stops cascading if elements cascading is disabled or task is in progress
+        if (!element.DisableCascade && element.status !== 'In Progress') {
+          // first condition checks if slot is changed due to previous task of slot and if it is updated
+          // second condition checks if slot start date is changed
+          //else {
           this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
+          //}
         }
       });
     }
   }
 
-  cascadeNextTask(previousNode, nextNode, subMilestonePosition, selectedMil) {
-    var nodeData = nextNode.hasOwnProperty('data') ? nextNode.data : nextNode;
-    var prevNodeData = previousNode.hasOwnProperty('data') ? previousNode.data : previousNode;
+  /**
+   * Cascading slot subtasks if start date of slot is changed
+   * @param sentPrevNode 
+   * @param element 
+   * @param subMilestonePosition 
+   * @param selectedMil 
+   */
+  async compareSlotSubTasksTimeline(sentPrevNode1, subMilestonePosition, selectedMil) {
+    // fetch slot based on submilestone presnt or not
+    const sentPrevNode = subMilestonePosition === 0 ? this.milestoneData[selectedMil].children.find(st => st.data.pName === sentPrevNode1.pName) :
+      this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.pName === sentPrevNode1.pName);
+    let slotFirstTask = sentPrevNode ? sentPrevNode.children ? sentPrevNode.children.filter(st => !st.data.previousTask) : [] : [];
+    // cascade if slot start date is more than first subtask in slot
+    if (slotFirstTask.length) {
+
+      if (!sentPrevNode1.clickedInput || (sentPrevNode1.clickedInput && sentPrevNode1.clickedInput === 'start')) {
+        let slotFirstTaskSorted = this.sortByDate(slotFirstTask, 'pUserStart', 'asc');
+        if (sentPrevNode.data.pStart > slotFirstTaskSorted[0].data.pStart) {
+          //let childIndex = 0;
+          // for (const subTask of sentPrevNode.children) {
+          //   if (!subTask.data.DisableCascade) {
+          //     // If first subtask then cascade based on slot start date and subtask start date
+          //     if (!subTask.data.previousTask) {
+          //       this.cascadeNextTask(sentPrevNode, subTask, subMilestonePosition, selectedMil);
+          //     }
+          //     // If next task present then cascade based on first task end date and next subtask
+          //     if (subTask.data.nextTask) {
+          //       this.cascadeNode(subTask, sentPrevNode.children[childIndex + 1]);
+          //     }
+          //   }
+          //   childIndex++;
+          // }
+          slotFirstTaskSorted.forEach(element => {
+            if (!element.data.DisableCascade && element.data.status !== 'In Progress') {
+              this.cascadeNextTask(sentPrevNode, element, subMilestonePosition, selectedMil);
+            }
+          });
+          if (slotFirstTask[0].data.AssignedTo.ID && slotFirstTask[0].data.AssignedTo.ID !== -1) {
+            // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability 
+            await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil, this.sharedObject.oTaskAllocation.oResources);
+          }
+        }
+      } else if (slotFirstTask[0].data.AssignedTo.EMail) {
+        // All task of slot will be allocated at once so if first task is assigned to resource then check for resource and new task date availability 
+        await this.checkTaskResourceAvailability(sentPrevNode, subMilestonePosition, selectedMil, this.sharedObject.oTaskAllocation.oResources);
+      }
+
+    }
+  }
+
+  /**
+   * Deallocation / Reallocation logic
+   * @param slot 
+   * @param subMilestonePosition 
+   * @param selectedMil 
+   */
+  async checkTaskResourceAvailability(slot, subMilestonePosition, selectedMil, oResources) {
+    let deallocateSlot = false;
+    // old value of slot is used for table details within mail sne for deallocation
+    const oldSlot = subMilestonePosition === 0 ? this.tempmilestoneData[selectedMil].children.find(s => s.data.pName === slot.data.pName) :
+      this.milestoneData[selectedMil].children[subMilestonePosition - 1].children.find(st => st.data.pName === slot.data.pName);
+    const slotTasks = slot.children;
+    const lastTask = slot.children.filter(st => !st.data.nextTask);
+    const firstTask = slot.children.filter(st => !st.data.prevTask);
+    const sortedTasksEnd = this.sortByDate(lastTask, 'pUserEnd', 'desc');
+    const sortedTasksStart = this.sortByDate(firstTask, 'pUserStart', 'asc');
+    for (const task of slotTasks) {
+      const assignedUserId = task.data.AssignedTo.ID && task.data.AssignedTo.ID !== -1 ? task.data.AssignedTo.ID : task.data.previousAssignedUser;
+      // find capacity of user on new dates and it returns task for user on given dates
+      if (assignedUserId) {
+        let retTask = [];
+        const resource = oResources.filter(r => r.UserName.ID === assignedUserId);
+        const oCapacity = await this.usercapacityComponent.applyFilterReturn(task.data.pUserStart, task.data.pUserEnd,
+          resource);
 
 
-    var nextNode;
+        let retRes = oCapacity.arrUserDetails.length ? oCapacity.arrUserDetails[0] : [];
+        retTask = retRes.tasks;
+        const breakAvailable = retRes.displayTotalUnAllocated.split(":");
+
+        let availableHours = parseFloat(breakAvailable[0]) + parseFloat((parseFloat(breakAvailable[1]) / 60).toFixed(2)); //  parseFloat(retRes.displayTotalUnAllocated.replace(':', '.'));
+        const allocatedHours = parseFloat(task.data.budgetHours);
+        const retTaskInd = retTask.find(t => t.ID === task.data.pID);
+        if (retTaskInd) {
+          availableHours = availableHours + allocatedHours;
+        }
+        if (availableHours >= allocatedHours) {
+          // filter tasks based on dates and subtasks within same slot
+          retTask = retTask.filter(t => t.ID !== task.data.pID);
+
+          retTask = retTask.filter((tsk) => {
+            return ((task.data.pUserStart <= tsk.DueDate && task.data.pUserEnd >= tsk.DueDate)
+              || (task.data.pUserStart <= tsk.StartDate && task.data.pUserEnd >= tsk.StartDate)
+              || (task.data.pUserStart >= tsk.StartDate && task.data.pUserEnd <= tsk.DueDate));
+          });
+
+          if (retTask.length || slot.data.pUserEnd < sortedTasksEnd[0].data.pUserEnd || slot.data.pUserStart > sortedTasksStart[0].data.pUserStart) {
+            deallocateSlot = true;
+            break;
+          } else {
+            deallocateSlot = false;
+          }
+        } else {
+          deallocateSlot = true;
+          break;
+        }
+
+      }
+    }
+
+    // If slot needs to be deallocated then form table with new and old values for table
+    // this.deallocationMailArray is used to store all values of table to trigger single mail for slot which is used in savetask function
+    if (!deallocateSlot) {
+      slot.data.slotColor = "#6EDC6C";
+      slot.data.CentralAllocationDone = 'Yes';
+      this.reallocationMailData.length = 0;
+
+      const mailTableObj = {
+        taskName: '',
+        preStDate: '',
+        preEndDate: '',
+        newStDate: '',
+        newEndDate: '',
+        assginedTo: ''
+      }
+      for (let task of slotTasks) {
+        task.data.AssignedTo.ID = task.data.AssignedTo.ID !== -1 ? task.data.AssignedTo.ID : task.data.previousAssignedUser;
+        task.data.previousAssignedUser = -1;
+        task.data.assignedUserTimeZone = task.data.assignedUserTimeZone ? task.data.assignedUserTimeZone : task.data.previousTimeZone;
+        task.data.CentralAllocationDone = 'Yes';
+      }
+      const milestoneMailObj = Object.assign({}, mailTableObj);
+      milestoneMailObj.taskName = slot.data.pName;
+      milestoneMailObj.preStDate = this.datepipe.transform(oldSlot.data.pStart, 'MMM dd yyyy hh:mm:ss a');
+      milestoneMailObj.preEndDate = this.datepipe.transform(oldSlot.data.pEnd, 'MMM dd yyyy hh:mm:ss a');
+      milestoneMailObj.newStDate = this.datepipe.transform(slot.data.pStart, 'MMM dd yyyy hh:mm:ss a');
+      milestoneMailObj.newEndDate = this.datepipe.transform(slot.data.pEnd, 'MMM dd yyyy hh:mm:ss a');
+      milestoneMailObj.assginedTo = '';
+      this.reallocationMailData.push(milestoneMailObj);
+      const oldSubTasks = oldSlot.children;
+
+      slot.children.forEach((task, index) => {
+        const subTask = Object.assign({}, mailTableObj);
+        subTask.taskName = task.data.pName;
+        subTask.preStDate = this.datepipe.transform(oldSubTasks[index].data.pStart, 'MMM dd yyyy hh:mm:ss a');
+        subTask.preEndDate = this.datepipe.transform(oldSubTasks[index].data.pEnd, 'MMM dd yyyy hh:mm:ss a');
+        subTask.newStDate = this.datepipe.transform(task.data.pStart, 'MMM dd yyyy hh:mm:ss a');
+        subTask.newEndDate = this.datepipe.transform(task.data.pEnd, 'MMM dd yyyy hh:mm:ss a');
+        subTask.assginedTo = task.data.AssignedTo.Title;
+        this.reallocationMailData.push(subTask);
+      });
+      setTimeout(() => {
+        const table = this.reallocateTable.nativeElement.innerHTML;
+        this.reallocationMailArray.push({
+          project: this.oProjectDetails,
+          slot: slot,
+          data: table,
+          subject: slot.data.pName + ' reallocated'
+        });
+      }, 300);
+    } else {
+      // Reallocation and send single mail for reallocation
+      for (let task of slotTasks) {
+        task.data.previousAssignedUser = task.data.previousAssignedUser && task.data.previousAssignedUser !== -1 ? task.data.previousAssignedUser : task.data.AssignedTo.ID ? task.data.AssignedTo.ID : -1;
+        task.data.AssignedTo.ID = -1;
+        task.data.previousTimeZone = task.data.assignedUserTimeZone;
+        task.data.assignedUserTimeZone = 5.5;
+        task.data.CentralAllocationDone = 'No';
+      }
+      slot.data.slotColor = "#FF3E56";
+      slot.data.CentralAllocationDone = 'No';
+
+      this.deallocationMailArray.push({
+        project: this.oProjectDetails,
+        slot: slot,
+        subject: slot.data.pName + ' deallocated',
+        template: 'CentralTaskCreation'
+      });
+    }
+  }
+
+  async cascadeNextTask(previousNode, nextNode, subMilestonePosition, selectedMil) {
+    const nodeData = nextNode.hasOwnProperty('data') ? nextNode.data : nextNode;
+    const prevNodeData = previousNode.hasOwnProperty('data') ? previousNode.data : previousNode;
+    // based on slot or task use start date or end date
+    const prevNodeEndDate = ((prevNodeData.slotType === 'Slot' && nodeData.parentSlot) ?
+      // && !prevNodeData.clickedInput
+      // || (prevNodeData.slotType === 'Slot' && prevNodeData.clickedInput && prevNodeData.clickedInput === 'start' && nodeData.parentSlot) ?
+      new Date(prevNodeData.pStart) : new Date(prevNodeData.pEnd));
     if (nodeData.type === 'task' && nodeData.itemType !== 'Client Review') {
-      if (new Date(prevNodeData.pEnd) > new Date(nodeData.pStart) && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
-        //alert('next task');
+      if (new Date(prevNodeEndDate) > new Date(nodeData.pStart) && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
         this.cascadeNode(previousNode, nodeData);
         this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
       }
-      else if (new Date(prevNodeData.pEnd).getTime() === new Date(nodeData.pStart).getTime() && prevNodeData.itemType === 'Client Review' && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
+      else if (new Date(prevNodeEndDate).getTime() === new Date(nodeData.pStart).getTime() && prevNodeData.itemType === 'Client Review' && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
         this.cascadeNode(previousNode, nodeData);
         this.cascadeNextNodes(nodeData, subMilestonePosition, selectedMil);
       }
     }
     else if (nodeData.type === 'task' && nodeData.itemType === 'Client Review') {
-      if (new Date(prevNodeData.pEnd) >= new Date(nodeData.pStart) && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
-        //alert('next CR');
-        //this.setStartAndEnd(previousNode);
+      if (new Date(prevNodeEndDate) >= new Date(nodeData.pStart) && nodeData.status !== 'Completed' && nodeData.status !== 'Auto Closed') {
         this.cascadeNode(previousNode, nodeData);
         this.cascadeNextNodes(nodeData, 0, selectedMil + 1);
       }
     }
     else if (nodeData.type === 'submilestone') {
-      //alert('next submilestone');
-      //this.setStartAndEnd(previousNode);
-      if (new Date(prevNodeData.pEnd) > new Date(nodeData.pStart)) {
+      if (new Date(prevNodeEndDate) > new Date(nodeData.pStart)) {
         const allParallelTasks = nextNode.children.filter(dataEl => {
           return !dataEl.data.previousTask
         });
         allParallelTasks.forEach(element => {
-          if (!element.DisableCascade) {
+          if (!element.data.DisableCascade && element.data.status !== 'In Progress') {
             this.cascadeNextTask(previousNode, element.data, parseInt(nodeData.position), selectedMil);
           }
         });
       }
     }
     else if (nodeData.type === 'milestone') {
-      //alert('next milestone');
-      if (new Date(prevNodeData.pEnd) >= new Date(nodeData.pStart)) {
+      if (new Date(prevNodeEndDate) >= new Date(nodeData.pStart)) {
         const firstTask = nextNode.children[0].data;
-        const allTasks = this.getTasksFromMilestones(nextNode, false);
+        const allTasks = this.getTasksFromMilestones(nextNode, false, false);
         let allParallelTasks = [];
         if (firstTask.type === 'task') {
           allParallelTasks = allTasks.filter(dataEl => {
@@ -2179,7 +2618,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
           });
         }
         allParallelTasks.forEach(element => {
-          if (!element.DisableCascade) {
+
+          if (!element.data.DisableCascade && element.data.status !== 'In Progress') {
             this.cascadeNextTask(previousNode, element, element.submilestone ? 1 : 0, selectedMil + 1);
           }
         });
@@ -2281,14 +2721,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (this.milestoneData.length > 0) {
 
       const isValid = this.validate();
-      // if (this.errorMessageCount > 0) {
-      //   this.messageService.add({
-      //     key: 'custom', severity: 'warn', summary: 'Warning Message',
-      //     detail: this.taskerrorMessage
-      //   });
-      // }
-
-      // && this.errorMessageCount === 0
       if (isValid) {
         this.loaderenable = true;
         this.sharedObject.resSectionShow = false;
@@ -2299,7 +2731,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
         this.disableSave = false;
       }
     } else {
-      // this.messageService.add({severity:'info', summary: 'Update Message', detail:'Updating.....'});
       this.disableSave = true;
       this.messageService.add({ key: 'custom', severity: 'warn', summary: 'Warning Message', detail: 'Please Add Task.' });
     }
@@ -2314,31 +2745,20 @@ export class TimelineComponent implements OnInit, OnDestroy {
     return arrData;
   }
 
-  // tslint:disable
   async setMilestone(addTaskItems, updateTaskItems, addMilestoneItems, updateMilestoneItems) {
     let updatedCurrentMilestone = false;
+    // tslint:disable-next-line: one-variable-per-declaration
     let writers = [], arrWriterIDs = [],
-      //arrWriterNames = [],
       qualityChecker = [],
       arrQualityCheckerIds = [],
-      //arrQCNames = [],
       editors = [], arrEditorsIds = [],
-      //arrEditorsNames = [],
       graphics = [], arrGraphicsIds = [],
-      //arrGraphicsNames = [],
       pubSupport = [], arrPubSupportIds = [],
-      //arrPubSupportNames = [],
       reviewers = [], arrReviewers = [],
-      //arrReviewesNames = [],
       arrPrimaryResourcesIds = [], addTasks = [], updateTasks = [], addMilestones = [], updateMilestones = [];
     const projectFolder = this.oProjectDetails.projectFolder;
     this.oProjectDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
-    let strNewMilestones = '';
-    /// update Budget hours
-    const batchGuid = this.spServices.generateUUID();
-    const batchContents = new Array();
-    const changeSetId = this.spServices.generateUUID();
-
+    const batchUrl = [];
     arrWriterIDs = this.getIDFromItem(this.oProjectDetails.writer);
     arrReviewers = this.getIDFromItem(this.oProjectDetails.reviewer);
     arrEditorsIds = this.getIDFromItem(this.oProjectDetails.editor);
@@ -2387,7 +2807,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
       }
 
-      addTasks.push(this.setMilestoneTaskForAddUpdate(milestoneTask, true));
+      addTasks.push(await this.setMilestoneTaskForAddUpdate(milestoneTask, true));
     }
     for (const milestoneTask of updateTaskItems) {
       if (milestoneTask.AssignedTo && milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID !== -1) {
@@ -2429,7 +2849,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
       }
 
-      updateTasks.push(this.setMilestoneTaskForAddUpdate(milestoneTask, false));
+      updateTasks.push(await this.setMilestoneTaskForAddUpdate(milestoneTask, false));
     }
 
     for (const milestone of addMilestoneItems) {
@@ -2441,26 +2861,81 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
 
     for (const mil of addMilestones) {
-      this.spServices.getChangeSetBodySC(batchContents, changeSetId, mil.url, mil.body, true);
+      // this.spServices.getChangeSetBodySC(batchContents, changeSetId, mil.url, mil.body, true);
+      const milObj = Object.assign({}, this.queryConfig);
+      milObj.url = mil.url;
+      milObj.listName = this.constants.listNames.Schedules.name;
+      milObj.type = 'POST';
+      milObj.data = mil.body;
+      batchUrl.push(milObj);
     }
 
     for (const tasks of addTasks) {
-      this.spServices.getChangeSetBodySC(batchContents, changeSetId, tasks.url, tasks.body, true);
+      // this.spServices.getChangeSetBodySC(batchContents, changeSetId, tasks.url, tasks.body, true);
+      const milTaskObj = Object.assign({}, this.queryConfig);
+      milTaskObj.url = tasks.url;
+      milTaskObj.listName = this.constants.listNames.Schedules.name;
+      milTaskObj.type = 'POST';
+      milTaskObj.data = tasks.body;
+      batchUrl.push(milTaskObj);
     }
-    const milestoneFolderEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + '/_api/web/Folders';
+
     for (const mil of addMilestoneItems) {
-      const milestoneFolderBody = {
-        __metadata: { type: 'SP.Folder' },
-        ServerRelativeUrl: projectFolder + '/Drafts/Internal/' + mil.data.pName
-      };
-      this.spServices.getChangeSetBodySC(batchContents, changeSetId, milestoneFolderEndpoint, JSON.stringify(milestoneFolderBody), true);
+      // const milestoneFolderBody = {
+      //   __metadata: { type: 'SP.Folder' },
+      //   ServerRelativeUrl: projectFolder + '/Drafts/Internal/' + mil.data.pName
+      // };
+      const folderUrl = projectFolder + '/Drafts/Internal/' + mil.data.pName;
+      const addMilObj = Object.assign({}, this.queryConfig);
+      addMilObj.url = this.spServices.getFolderCreationURL();
+      addMilObj.listName = 'Milestone Folder Creation';
+      addMilObj.type = 'POST';
+      addMilObj.data = this.spServices.getFolderCreationData(folderUrl);
+      batchUrl.push(addMilObj);
+      // this.spServices.getChangeSetBodySC(batchContents, changeSetId, milestoneFolderEndpoint, JSON.stringify(milestoneFolderBody), true);
     }
     for (const mil of updateMilestones) {
-      this.spServices.getChangeSetBodySC(batchContents, changeSetId, mil.url, mil.body, false);
+      // this.spServices.getChangeSetBodySC(batchContents, changeSetId, mil.url, mil.body, false);
+      const milObj = Object.assign({}, this.queryConfig);
+      milObj.url = mil.url;
+      milObj.listName = this.constants.listNames.Schedules.name;
+      milObj.type = 'PATCH';
+      milObj.data = mil.body;
+      batchUrl.push(milObj);
     }
     for (const tasks of updateTasks) {
-      this.spServices.getChangeSetBodySC(batchContents, changeSetId, tasks.url, tasks.body, false);
+
+
+      // this.spServices.getChangeSetBodySC(batchContents, changeSetId, tasks.url, tasks.body, false);
+      const taskObj = Object.assign({}, this.queryConfig);
+      taskObj.url = tasks.url;
+      taskObj.listName = this.constants.listNames.Schedules.name;
+      taskObj.type = 'PATCH';
+      taskObj.data = tasks.body;
+      batchUrl.push(taskObj);
     }
+
+    arrWriterIDs = arrWriterIDs.filter((el) => {
+      return el != null;
+    });
+    arrEditorsIds = arrEditorsIds.filter((el) => {
+      return el != null;
+    });
+    arrGraphicsIds = arrGraphicsIds.filter((el) => {
+      return el != null;
+    });
+    arrQualityCheckerIds = arrQualityCheckerIds.filter((el) => {
+      return el != null;
+    });
+    arrReviewers = arrReviewers.filter((el) => {
+      return el != null;
+    });
+    arrPubSupportIds = arrPubSupportIds.filter((el) => {
+      return el != null;
+    });
+    arrPrimaryResourcesIds = arrPrimaryResourcesIds.filter((el) => {
+      return el != null;
+    });
 
     const updatedResources = {
       writer: { results: [...arrWriterIDs] },
@@ -2477,81 +2952,83 @@ export class TimelineComponent implements OnInit, OnDestroy {
     ...updatedResources.graphicsMembers.results, ...updatedResources.qualityChecker.results,
     ...updatedResources.reviewer.results, ...updatedResources.pubSupportMembers.results,
     ...updatedResources.primaryResources.results];
+
     const restructureMilstoneStr = this.oProjectDetails.allMilestones && this.oProjectDetails.allMilestones.length > 0 ?
       this.oProjectDetails.allMilestones.join(';#') : '';
-
     const mile = updateMilestoneItems.find(c => c.data.pName.split(' (')[0] === this.oProjectDetails.currentMilestone);
     const task = addTaskItems.filter(c => c.milestone === this.oProjectDetails.currentMilestone);
 
-    debugger;
     updatedCurrentMilestone = mile && task && task.length ? true : false;
 
-    const responseInLines = this.updateProjectInformation(updatedCurrentMilestone, restructureMilstoneStr, updatedResources, batchContents, changeSetId, batchGuid);
+    const responseInLines = await this.executeBulkRequests(updatedCurrentMilestone, restructureMilstoneStr,
+      updatedResources, batchUrl);
     if (responseInLines.length > 0) {
-      let arrResponse = [];
-      const batchGuid = this.spServices.generateUUID();
-      const batchContents = new Array();
-      const changeSetId = this.spServices.generateUUID();
-      for (const response of responseInLines) {
-        try {
-          const resItem = JSON.parse(response);
-          arrResponse.push(resItem);
-        }
-        catch (e) {
-          //console.log(e);
-        }
-      }
       let counter = 0;
-      let addMilLength = addMilestones.length;
-      let endIndex = addMilLength + addTasks.length;
-      for (const response of arrResponse) {
-        const fileUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/Lists/' + this.constants.listNames.Schedules.name + '/' + response.d.ID + '_.000';
+      const addMilLength = addMilestones.length;
+      const endIndex = addMilLength + addTasks.length;
+      const respBatchUrl = [];
+      for (const resp of responseInLines) {
+        // tslint:disable: max-line-length
+        const fileUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/Lists/' + this.constants.listNames.Schedules.name + '/' + resp.ID + '_.000';
         let moveFileUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/Lists/' + this.constants.listNames.Schedules.name + '/' + this.oProjectDetails.projectCode;
         if (counter < addMilLength) {
-          moveFileUrl = moveFileUrl + '/' + response.d.ID + '_.000';
-          let milestoneURL = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/Web/Lists/getByTitle('" + this.constants.listNames.Schedules.name + "')/Items('" + response.d.ID + "')";
-          let moveData = JSON.stringify({
-            "__metadata": { type: "SP.Data.SchedulesListItem" },
-            //Title: response.d.Title,
-            FileLeafRef: response.d.Title
-          });
+          moveFileUrl = moveFileUrl + '/' + resp.ID + '_.000';
+          // const milestoneURL = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/Web/Lists/getByTitle('" + this.constants.listNames.Schedules.name + "')/Items('" + resp.ID + "')";
+          const moveData = {
+            __metadata: { type: 'SP.Data.SchedulesListItem' },
+            FileLeafRef: resp.Title
+          };
+          const url = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/getfolderbyserverrelativeurl('" + fileUrl + "')/moveto(newurl='" + moveFileUrl + "')";
+          // this.spServices.getChangeSetBodyMove(batchContents, changeSetId, url);
 
-          let url = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/getfolderbyserverrelativeurl('" + fileUrl + "')/moveto(newurl='" + moveFileUrl + "')";
-          this.spServices.getChangeSetBodyMove(batchContents, changeSetId, url);
+          // this.spServices.getChangeSetBodySC(batchContents, changeSetId, milestoneURL, moveData, false);
 
-          this.spServices.getChangeSetBodySC(batchContents, changeSetId, milestoneURL, moveData, false);
-        }
-        else if (counter < endIndex) {
-          moveFileUrl = moveFileUrl + '/' + response.d.Milestone + '/' + response.d.ID + '_.000';
-          let url = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/getfilebyserverrelativeurl('" + fileUrl + "')/moveto(newurl='" + moveFileUrl + "',flags=1)";
-          this.spServices.getChangeSetBodyMove(batchContents, changeSetId, url);
-        }
-        else {
+          const moveItemObj = Object.assign({}, this.queryConfig);
+          moveItemObj.url = url; // this.spServices.getMoveURL(fileUrl, moveFileUrl);
+          moveItemObj.listName = 'Move Item';
+          moveItemObj.type = 'POST';
+          respBatchUrl.push(moveItemObj);
+          const updateTaskObj = Object.assign({}, this.queryConfig);
+          updateTaskObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +resp.ID);
+          updateTaskObj.listName = this.constants.listNames.Schedules.name;
+          updateTaskObj.type = 'PATCH';
+          updateTaskObj.data = moveData;
+          respBatchUrl.push(updateTaskObj);
+        } else if (counter < endIndex) {
+          moveFileUrl = moveFileUrl + '/' + resp.Milestone + '/' + resp.ID + '_.000';
+          const url = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/getfilebyserverrelativeurl('" + fileUrl + "')/moveto(newurl='" + moveFileUrl + "',flags=1)";
+          // this.spServices.getChangeSetBodyMove(batchContents, changeSetId, url);
+          const moveItemObj = Object.assign({}, this.queryConfig);
+          moveItemObj.url = url; // this.spServices.getMoveURL(fileUrl, moveFileUrl);
+          moveItemObj.listName = 'Move Item';
+          moveItemObj.type = 'POST';
+          respBatchUrl.push(moveItemObj);
+        } else {
           break;
         }
 
         counter = counter + 1;
       }
-
-      batchContents.push('--changeset_' + changeSetId + '--');
-      const batchBody = batchContents.join('\r\n');
-      const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-      batchBodyContent.push('--batch_' + batchGuid + '--');
-      const batchBodyContents = batchBodyContent.join('\r\n');
-      const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
+      await this.spServices.executeBatch(respBatchUrl);
     }
-    // this.callReloadRes();
+    for (const mail of this.reallocationMailArray) {
+      await this.sendReallocationCentralTaskMail(mail.project, mail.slot, mail.data, mail.subject);
+    }
+    for (const mail of this.deallocationMailArray) {
+      await this.sendCentralTaskMail(mail.project, mail.slot.data, mail.subject, mail.template);
+    }
     await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
     this.getMilestones(false);
 
     this.reloadResources.emit();
 
 
-    //}
+    // }
   }
-  // tslint:enable
-
-  setMilestoneTaskForAddUpdate(milestoneTask, bAdd) {
+  async setMilestoneTaskForAddUpdate(milestoneTask, bAdd) {
+    const batchUrl = [];
+    let url = '';
+    let data = {};
     if (milestoneTask.status === 'Not Saved') {
       if (milestoneTask.isCurrent) {
         milestoneTask.status = 'Not Started';
@@ -2560,92 +3037,78 @@ export class TimelineComponent implements OnInit, OnDestroy {
         milestoneTask.status = 'Not Confirmed';
       }
     }
-
+    // send mail for new task for current milestone
     if (milestoneTask.assignedUserChanged && milestoneTask.status === 'Not Started') {
-      this.sendMail(this.oProjectDetails, milestoneTask, 'New User Assigned for Task'
-        + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode);
+      await this.sendMail(this.oProjectDetails, milestoneTask);
       milestoneTask.assignedUserChanged = false;
     }
-
-    if (milestoneTask.IsCentrallyAllocated === 'Yes' && milestoneTask.status === 'Not Started') {
+    // For new slot and current milestone
+    if (bAdd && milestoneTask.IsCentrallyAllocated === 'Yes' && this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone) {
+      //// send task creation email
       milestoneTask.ActiveCA = 'Yes';
-      if (bAdd) {
-        //// send task creation email
-        this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, 'New central task created'
-          + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'New central task created');
-      } else if (milestoneTask.CentralAllocationDone === 'Yes' && milestoneTask.deallocateCentral) {
-        // milestoneTask.ActiveCA = 'No';
-        milestoneTask.CentralAllocationDone = 'No';
-        milestoneTask.AssignedTo.ID = -1;
-        const timeZone = milestoneTask.assignedUserTimeZone;
-        if (parseFloat(timeZone) !== 5.5) {
-          milestoneTask.assignedUserTimeZone = 5.5;
-        }
-        //// send task deallocation email
-        this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, 'Central task deallocated'
-          + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'Central task deallocated');
-      }
+      await this.sendCentralTaskMail(this.oProjectDetails, milestoneTask, milestoneTask.pName + ' Created', 'CentralTaskCreation');
     }
-    if (milestoneTask.IsCentrallyAllocated === 'Yes' && milestoneTask.status !== 'Not Started') {
-      milestoneTask.ActiveCA = 'No';
+    if (bAdd) {
+      const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
+      milestoneTask.itemType = milestoneTask.itemType;
+      const slotTaskName = milestoneTask.itemType + taskCount;
+      const addData = {
+        __metadata: { type: 'SP.Data.SchedulesListItem' },
+        StartDate: milestoneTask.pStart,
+        DueDate: milestoneTask.pEnd,
+        ExpectedTime: '' + milestoneTask.budgetHours,
+        AllowCompletion: milestoneTask.allowStart === true ? 'Yes' : 'No',
+        TATStatus: milestoneTask.tat === true || milestoneTask.tat === 'Yes' ? 'Yes' : 'No',
+        TATBusinessDays: milestoneTask.tatVal,
+        AssignedToId: milestoneTask.AssignedTo ? milestoneTask.AssignedTo.hasOwnProperty('ID') ? milestoneTask.AssignedTo.ID : -1 : -1,
+        TimeZone: milestoneTask.assignedUserTimeZone.toString(),
+        Comments: milestoneTask.scope,
+        Status: milestoneTask.status,
+        NextTasks: this.setPreviousAndNext(milestoneTask.nextTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
+        PrevTasks: this.setPreviousAndNext(milestoneTask.previousTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
+        ProjectCode: this.oProjectDetails.projectCode,
+        Task: milestoneTask.itemType,
+        Milestone: milestoneTask.milestone,
+        SubMilestones: milestoneTask.submilestone,
+        Title: milestoneTask.slotType !== 'Both' && milestoneTask.slotType !== 'Slot' ? this.oProjectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.pName :
+          this.oProjectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + slotTaskName,
+        SkillLevel: milestoneTask.skillLevel,
+        IsCentrallyAllocated: milestoneTask.slotType === 'Both' && milestoneTask.AssignedTo.ID ? 'No' : milestoneTask.IsCentrallyAllocated,
+        CentralAllocationDone: milestoneTask.CentralAllocationDone,
+        ActiveCA: milestoneTask.ActiveCA,
+        DisableCascade: milestoneTask.DisableCascade === true ? 'Yes' : 'No'
+      };
+      url = this.spServices.getReadURL(this.constants.listNames.Schedules.name);
+      data = addData;
+    } else {
+      const updateData = {
+        __metadata: { type: 'SP.Data.SchedulesListItem' },
+        StartDate: milestoneTask.pStart,
+        DueDate: milestoneTask.pEnd,
+        ExpectedTime: '' + milestoneTask.budgetHours,
+        AllowCompletion: milestoneTask.allowStart === true ? 'Yes' : 'No',
+        TATStatus: milestoneTask.tat === true || milestoneTask.tat === 'Yes' ? 'Yes' : 'No',
+        TATBusinessDays: milestoneTask.tatVal,
+        AssignedToId: milestoneTask.AssignedTo ? milestoneTask.AssignedTo.ID ? milestoneTask.AssignedTo.ID : -1 : -1,
+        TimeZone: milestoneTask.assignedUserTimeZone.toString(),
+        Comments: milestoneTask.scope ? milestoneTask.scope : '',
+        Status: milestoneTask.status,
+        NextTasks: this.setPreviousAndNext(milestoneTask.nextTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
+        PrevTasks: this.setPreviousAndNext(milestoneTask.previousTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
+        SkillLevel: milestoneTask.skillLevel,
+        IsCentrallyAllocated: milestoneTask.IsCentrallyAllocated,
+        CentralAllocationDone: milestoneTask.CentralAllocationDone,
+        ActiveCA: milestoneTask.ActiveCA,
+        DisableCascade: milestoneTask.DisableCascade === true ? 'Yes' : 'No',
+        PreviousAssignedUserId: milestoneTask.previousAssignedUser ? milestoneTask.previousAssignedUser : -1,
+        SubMilestones: milestoneTask.submilestone,
+      };
+      url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +milestoneTask.pID);
+      data = updateData;
     }
-
-    // tslint:disable
-    const endpoint = bAdd ?
-      this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items" :
-      this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(milestoneTask.pID) + ")";
-    // tslint:enable
-    const updateBody = JSON.stringify(
-      !bAdd ?
-        {
-          __metadata: { type: 'SP.Data.SchedulesListItem' },
-          StartDate: milestoneTask.pStart,
-          DueDate: milestoneTask.pEnd,
-          ExpectedTime: '' + milestoneTask.budgetHours,
-          AllowCompletion: milestoneTask.allowStart === true ? 'Yes' : 'No',
-          TATStatus: milestoneTask.tat === true || milestoneTask.tat === 'Yes' ? 'Yes' : 'No',
-          TATBusinessDays: milestoneTask.tatVal,
-          AssignedToId: milestoneTask.AssignedTo ? milestoneTask.AssignedTo.hasOwnProperty('ID') ? milestoneTask.AssignedTo.ID : -1 : -1,
-          TimeZone: milestoneTask.assignedUserTimeZone.toString(),
-          Comments: milestoneTask.scope,
-          Status: milestoneTask.status,
-          NextTasks: this.setPreviousAndNext(milestoneTask.nextTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
-          PrevTasks: this.setPreviousAndNext(milestoneTask.previousTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
-          SkillLevel: milestoneTask.skillLevel,
-          IsCentrallyAllocated: milestoneTask.IsCentrallyAllocated,
-          CentralAllocationDone: milestoneTask.CentralAllocationDone,
-          ActiveCA: milestoneTask.ActiveCA,
-          DisableCascade: milestoneTask.DisableCascade ? 'Yes' : 'No'
-        } :
-        {
-          __metadata: { type: 'SP.Data.SchedulesListItem' },
-          StartDate: milestoneTask.pStart,
-          DueDate: milestoneTask.pEnd,
-          ExpectedTime: '' + milestoneTask.budgetHours,
-          AllowCompletion: milestoneTask.allowStart === true ? 'Yes' : 'No',
-          TATStatus: milestoneTask.tat === true || milestoneTask.tat === 'Yes' ? 'Yes' : 'No',
-          TATBusinessDays: milestoneTask.tatVal,
-          AssignedToId: milestoneTask.AssignedTo ? milestoneTask.AssignedTo.hasOwnProperty('ID') ? milestoneTask.AssignedTo.ID : -1 : -1,
-          TimeZone: milestoneTask.assignedUserTimeZone.toString(),
-          Comments: milestoneTask.scope,
-          Status: milestoneTask.status,
-          NextTasks: this.setPreviousAndNext(milestoneTask.nextTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
-          PrevTasks: this.setPreviousAndNext(milestoneTask.previousTask, milestoneTask.milestone, this.oProjectDetails.projectCode),
-          ProjectCode: this.oProjectDetails.projectCode,
-          Task: milestoneTask.itemType,
-          Milestone: milestoneTask.milestone,
-          SubMilestones: milestoneTask.submilestone,
-          Title: this.oProjectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.pName,
-          SkillLevel: milestoneTask.skillLevel,
-          IsCentrallyAllocated: milestoneTask.IsCentrallyAllocated,
-          CentralAllocationDone: milestoneTask.CentralAllocationDone,
-          ActiveCA: milestoneTask.ActiveCA,
-          DisableCascade: milestoneTask.DisableCascade ? 'Yes' : 'No'
-        }
-    );
     return {
-      body: updateBody,
-      url: endpoint
+      body: data,
+      url
     };
   }
   // tslint:disable
@@ -2667,58 +3130,74 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   setMilestoneForAddUpdate(sentMilestone, bAdd) {
     let currentMilestone = sentMilestone.data;
-
+    // let newCurrentMilestoneName = null;
+    // if (currentMilestone.isCurrent && currentMilestone.status === 'Deleted') {
+    //   const currentMilestoneName = currentMilestone.pName.indexOf(' (') ? currentMilestone.pName.split(' (')[0] : currentMilestone.pName;
+    //   const newCurrentMilestoneIndex = this.oProjectDetails.allOldMilestones.findIndex(t => t === currentMilestoneName);
+    //   newCurrentMilestoneName = newCurrentMilestoneIndex > 0 ? this.oProjectDetails.allOldMilestones[newCurrentMilestoneIndex - 1] : '';
+    //   const newCurrentMilestone = this.milestoneData.find((obj) => {
+    //     return obj.data.pName === newCurrentMilestoneName;
+    //   });
+    //   newCurrentMilestone.data.isCurrent = true;
+    //   newCurrentMilestone.data.pName = newCurrentMilestone.data.pName + ' (Current)';
+    // }
+    let url = '';
+    let data = {};
     currentMilestone.submilestone = this.getSubMilestoneStatus(sentMilestone, '').join(';#');
-    let updateMilestoneBody = {};
     const milestoneStartDate = new Date(currentMilestone.pStart);
     const milestoneEndDate = new Date(currentMilestone.pEnd);
     currentMilestone.tatBusinessDays = this.commonService.calcBusinessDays(milestoneStartDate, milestoneEndDate);
-
-    updateMilestoneBody = JSON.stringify(
-      !bAdd ?
-        {
-          __metadata: { type: 'SP.Data.SchedulesListItem' },
-          Actual_x0020_Start_x0020_Date: milestoneStartDate,
-          Actual_x0020_End_x0020_Date: milestoneEndDate,
-          ExpectedTime: '' + currentMilestone.budgetHours,
-          Status: currentMilestone.status,
-          TATBusinessDays: currentMilestone.tatBusinessDays,
-          SubMilestones: currentMilestone.submilestone
-        } :
-        {
-          __metadata: { type: 'SP.Data.SchedulesListItem' },
-          Actual_x0020_Start_x0020_Date: milestoneStartDate,
-          Actual_x0020_End_x0020_Date: milestoneEndDate,
-          StartDate: milestoneStartDate,
-          DueDate: milestoneEndDate,
-          ExpectedTime: '' + currentMilestone.budgetHours,
-          Status: currentMilestone.status === 'Not Saved' ? currentMilestone.isCurrent ?
-            'Not Started' : 'Not Confirmed' : currentMilestone.status,
-          TATBusinessDays: currentMilestone.tatBusinessDays,
-          ProjectCode: this.oProjectDetails.projectCode,
-          Title: currentMilestone.pName.split(' (')[0],
-          FileSystemObjectType: 1,
-          ContentTypeId: "0x0120",
-          SubMilestones: currentMilestone.submilestone
-        }
-    );
-
-    // tslint:disable
-    const endpoint = bAdd ?
-      this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items" :
-      this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(currentMilestone.pID) + ")";
+    if (!bAdd) {
+      let updateData: any = {
+        __metadata: { type: 'SP.Data.SchedulesListItem' },
+        Actual_x0020_Start_x0020_Date: milestoneStartDate,
+        Actual_x0020_End_x0020_Date: milestoneEndDate,
+        StartDate: milestoneStartDate,
+        DueDate: milestoneEndDate,
+        ExpectedTime: '' + currentMilestone.budgetHours,
+        Status: currentMilestone.status === 'Not Saved' ? currentMilestone.isCurrent ? 'Not Started' : 'Not Confirmed' : currentMilestone.status,
+        TATBusinessDays: currentMilestone.tatBusinessDays,
+        SubMilestones: currentMilestone.submilestone,
+      };
+      url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +currentMilestone.pID);
+      data = updateData;
+    } else {
+      const addData = {
+        __metadata: { type: 'SP.Data.SchedulesListItem' },
+        Actual_x0020_Start_x0020_Date: milestoneStartDate,
+        Actual_x0020_End_x0020_Date: milestoneEndDate,
+        StartDate: milestoneStartDate,
+        DueDate: milestoneEndDate,
+        ExpectedTime: '' + currentMilestone.budgetHours,
+        Status: currentMilestone.status === 'Not Saved' ? currentMilestone.isCurrent ? 'Not Started' : 'Not Confirmed' : currentMilestone.status,
+        TATBusinessDays: currentMilestone.tatBusinessDays,
+        ProjectCode: this.oProjectDetails.projectCode,
+        Title: currentMilestone.pName.split(' (')[0],
+        FileSystemObjectType: 1,
+        ContentTypeId: "0x0120",
+        SubMilestones: currentMilestone.submilestone
+      };
+      url = this.spServices.getReadURL(this.constants.listNames.Schedules.name);
+      data = addData;
+    }
     return {
-      body: updateMilestoneBody,
-      url: endpoint,
+      body: data,
+      url,
       Title: currentMilestone.Title
     };
+
   }
 
-  updateProjectInformation(currentMilestoneUpdated, restructureMilstoneStr, updatedResources, batchContents, changeSetId, batchGuid) {
+  // executing bulk batch requests
+  async executeBulkRequests(currentMilestoneUpdated, restructureMilstoneStr, updatedResources, batchUrl) {
     let updateProjectRes = {};
     const projectID = this.oProjectDetails.projectID;
-    const currentMilestone = this.oProjectDetails.currentMilestone;
-    //  if (!currentMilestone.Exists) {
+    let currentMilestone = this.oProjectDetails.currentMilestone;
+    const isCurrentMilestoneDeleted = this.oProjectDetails.allMilestones.find(m => m === currentMilestone) ? false : true;
+    if (isCurrentMilestoneDeleted) {
+      const newCurrentMilestoneIndex = this.oProjectDetails.allOldMilestones.findIndex(t => t === currentMilestone);
+      currentMilestone = newCurrentMilestoneIndex > 0 ? this.oProjectDetails.allOldMilestones[newCurrentMilestoneIndex - 1] : '';
+    }
     updateProjectRes = {
       __metadata: { type: 'SP.Data.ProjectInformationListItem' },
       WritersId: { results: updatedResources.writer.results },
@@ -2733,39 +3212,37 @@ export class TimelineComponent implements OnInit, OnDestroy {
       Status: currentMilestoneUpdated ? 'In Progress' : this.sharedObject.oTaskAllocation.oProjectDetails.status,
       PrevStatus: currentMilestoneUpdated ? this.sharedObject.oTaskAllocation.oProjectDetails.status : this.sharedObject.oTaskAllocation.oProjectDetails.prevstatus
     };
-
-
-    const projectInfoEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" +
-      this.constants.listNames.ProjectInformation.name + "')/items(" + +(projectID) + ")";
-
-    this.spServices.getChangeSetBodySC(batchContents, changeSetId, projectInfoEndpoint, JSON.stringify(updateProjectRes), false);
-    batchContents.push('--changeset_' + changeSetId + '--');
-    const batchBody = batchContents.join('\r\n');
-    const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-    batchBodyContent.push('--batch_' + batchGuid + '--');
-    const batchBodyContents = batchBodyContent.join('\r\n');
-    const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
-    const responseInLines = response.split('\n');
-    return responseInLines;
+    const updatePrjObj = Object.assign({}, this.queryConfig);
+    updatePrjObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +projectID);
+    updatePrjObj.listName = this.constants.listNames.ProjectInformation.name;
+    updatePrjObj.type = 'PATCH';
+    updatePrjObj.data = updateProjectRes;
+    batchUrl.push(updatePrjObj);
+    let response = await this.spServices.executeBatch(batchUrl);
+    response = response.length ? response.map(a => a.retItems) : [];
+    return response;
   }
 
   // *************************************************************************************************
   //  Send Email On Task
   // **************************************************************************************************
 
-  sendMail(projectDetails, milestoneTask, callDetail) {
-    if (milestoneTask.AssignedTo && milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID !== -1) {
+  async sendMail(projectDetails, milestoneTask) {
+    if (milestoneTask.AssignedTo && milestoneTask.AssignedTo.hasOwnProperty('ID') && milestoneTask.AssignedTo.ID && milestoneTask.AssignedTo.ID !== -1) {
       const fromUser = this.sharedObject.currentUser;
       const user = milestoneTask.AssignedTo;
       const mailSubject = projectDetails.projectCode + '(' + projectDetails.wbjid + ')' + ': Task created';
-      const objEmailBody = this.getsendEmailObjBody(milestoneTask, projectDetails, 'Email');
+      const objEmailBody = await this.getsendEmailObjBody(milestoneTask, projectDetails, 'Email', 'TaskCreation');
       const arrayTo = [];
-      const errorDetail = callDetail;
+
       if (user !== 'SelectOne' && user !== '' && user != null) {
-        const userEmail = user.UserName ? user.UserName.EMail : user.EMail;
+        const userEmail = user.UserName ? user.UserName.EMail : user.EMail ? user.EMail : user.Email;
         arrayTo.push(userEmail);
       }
-      this.spServices.triggerMail(fromUser.email, 'TaskCreation', objEmailBody, mailSubject, arrayTo, errorDetail);
+      const to = arrayTo.join(',').trim();
+      if (to) {
+        await this.spServices.sendMail(to, fromUser.email, mailSubject, objEmailBody);
+      }
     }
   }
 
@@ -2773,60 +3250,67 @@ export class TimelineComponent implements OnInit, OnDestroy {
   //  Send Email On Central Task
   // **************************************************************************************************
 
-  sendCentralTaskMail(projectDetails, milestoneTask, callDetail, subjectLine) {
+  async sendCentralTaskMail(projectDetails, milestoneTask, subjectLine, templateName) {
 
     const fromUser = this.sharedObject.currentUser;
     const mailSubject = projectDetails.projectCode + '(' + projectDetails.wbjid + ')' + ': ' + subjectLine;
-    const objEmailBody = this.getsendEmailObjBody(milestoneTask, projectDetails, 'CentralTaskMail');
+    const objEmailBody = await this.getsendEmailObjBody(milestoneTask, projectDetails, 'CentralTaskMail', templateName);
     const arrayTo = [];
     const users = this.sharedObject.oTaskAllocation.oCentralGroup;
     for (const user of users) {
       arrayTo.push(user.Email);
     }
-    this.spServices.triggerMail(fromUser.email, 'CentralTaskCreation', objEmailBody, mailSubject, arrayTo, callDetail);
+    await this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
+  }
 
+  async sendReallocationCentralTaskMail(projectDetails, slot, data, subjectLine) {
+
+    const fromUser = this.sharedObject.currentUser;
+    const mailSubject = projectDetails.projectCode + '(' + projectDetails.wbjid + ')' + ': ' + subjectLine;
+    const objEmailBody = await this.getReallocateEmailObjBody(data, slot, 'ReallocationSlotNotification');
+    const arrayTo = [];
+    const users = this.sharedObject.oTaskAllocation.oCentralGroup;
+    for (const user of users) {
+      arrayTo.push(user.Email);
+    }
+    await this.spServices.sendMail(arrayTo.join(','), fromUser.email, mailSubject, objEmailBody);
   }
 
   // *************************************************************************************************
   //  Get Email Body
   // **************************************************************************************************
 
-  getsendEmailObjBody(milestoneTask, projectDetails, EmailType) {
-    const objEmailBody = [];
-    objEmailBody.push({
-      'key': '@@Val3@@',
-      'value': EmailType === 'Email' ? milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title : undefined : 'Team'
-    });
-    objEmailBody.push({
-      'key': '@@Val1@@', // Project Code
-      'value': projectDetails.projectCode
-    });
-    objEmailBody.push({
-      'key': '@@Val2@@', // Task Name
-      'value': milestoneTask.submilestone && milestoneTask.submilestone !== 'Default' ? projectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.pName + ' - ' + milestoneTask.submilestone : projectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.pName
-    });
-    objEmailBody.push({
-      'key': '@@Val4@@', // Task Type
-      'value': milestoneTask.itemType
-    });
-    objEmailBody.push({
-      'key': '@@Val5@@', // Milestone
-      'value': milestoneTask.milestone
-    });
-    objEmailBody.push({
-      'key': '@@Val6@@', // Start Date
-      'value': this.datepipe.transform(milestoneTask.pStart, 'MMM dd yyyy hh:mm:ss a') // Yes
-    });
-    objEmailBody.push({
-      'key': '@@Val7@@', // End Date
-      'value': this.datepipe.transform(milestoneTask.pEnd, 'MMM dd yyyy hh:mm:ss a') // Yes
-    });
-    objEmailBody.push({
-      'key': '@@Val9@@', // Scope
-      'value': milestoneTask.scope ? milestoneTask.scope : ''
-    });
+  async getsendEmailObjBody(milestoneTask, projectDetails, EmailType, templateName) {
+    const mailObj = Object.assign({}, this.taskAllocationService.common.getMailTemplate);
+    mailObj.filter = mailObj.filter.replace('{{templateName}}', templateName);
+    const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
+      mailObj);
+    let mailContent = templateData.length > 0 ? templateData[0].Content : [];
+    mailContent = this.replaceContent(mailContent, "@@Val3@@", EmailType === 'Email' ? milestoneTask.AssignedTo ? milestoneTask.AssignedTo.Title : undefined : 'Team');
+    mailContent = this.replaceContent(mailContent, "@@Val1@@", projectDetails.projectCode);
+    mailContent = this.replaceContent(mailContent, "@@Val2@@", milestoneTask.submilestone && milestoneTask.submilestone !== 'Default' ? projectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.pName + ' - ' + milestoneTask.submilestone : projectDetails.projectCode + ' ' + milestoneTask.milestone + ' ' + milestoneTask.pName);
+    mailContent = this.replaceContent(mailContent, "@@Val4@@", milestoneTask.itemType);
+    mailContent = this.replaceContent(mailContent, "@@Val5@@", milestoneTask.milestone);
+    mailContent = this.replaceContent(mailContent, "@@Val6@@", this.datepipe.transform(milestoneTask.pStart, 'MMM dd yyyy hh:mm:ss a'));
+    mailContent = this.replaceContent(mailContent, "@@Val7@@", this.datepipe.transform(milestoneTask.pEnd, 'MMM dd yyyy hh:mm:ss a'));
+    mailContent = this.replaceContent(mailContent, "@@Val9@@", milestoneTask.scope ? milestoneTask.scope : '');
+    return mailContent;
+  }
 
-    return objEmailBody;
+  async getReallocateEmailObjBody(data, slot, templateName) {
+    const mailObj = Object.assign({}, this.taskAllocationService.common.getMailTemplate);
+    mailObj.filter = mailObj.filter.replace('{{templateName}}', templateName);
+    const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
+      mailObj);
+    let mailContent = templateData.length > 0 ? templateData[0].Content : [];
+    mailContent = this.replaceContent(mailContent, "@@Val1@@", slot.data.taskFullName);
+    mailContent = this.replaceContent(mailContent, "@@ValTable@@", data);
+
+    return mailContent;
+  }
+
+  replaceContent(mailContent, key, value) {
+    return mailContent.replace(new RegExp(key, 'g'), value);
   }
 
   public generateSaveTasks() {
@@ -2835,12 +3319,23 @@ export class TimelineComponent implements OnInit, OnDestroy {
     var addedTasks = [], updatedTasks = [], addedMilestones = [], updatedMilestones = []
     for (var nCount = 0; nCount < this.milestoneData.length; nCount = nCount + 1) {
       var milestone = this.milestoneData[nCount];
+      // deleted milestone is overwritten by new milestone
+      let deletedMilestone = this.deletedMilestones.filter(m => m.Title === milestone.data.pName);
+      if (deletedMilestone.length > 0) {
+        milestone.data.pID = deletedMilestone[0].ID
+        milestone.data.added = false;
+      }
       if (milestone.data.type === 'milestone') {
         listOfMilestones.push(milestone.data.pName.split(' (')[0]);
       }
       if (milestone.data.edited === true && milestone.data.status !== 'Completed') {
         if (milestone.data.itemType === 'Client Review') {
-          if (milestone.data.added == true) {
+          const deletedTask = this.allTasks.filter(t => t.Title === milestone.data.taskFullName && t.Status === 'Deleted');
+          if (deletedTask.length > 0) {
+            milestone.data.pID = deletedTask[0].ID
+            milestone.data.added = false;
+          }
+          if (milestone.data.added === true) {
             addedTasks.push(milestone.data);
           }
           else {
@@ -2856,10 +3351,15 @@ export class TimelineComponent implements OnInit, OnDestroy {
           }
           for (var nCountSub = 0; nCountSub < milestone.children.length; nCountSub = nCountSub + 1) {
             var submilestone = milestone.children[nCountSub];
+            // fetch deleted task and update task if task is again added
+            const deletedTask = this.allTasks.filter(t => t.Title === submilestone.data.taskFullName && t.Status === 'Deleted');
+            if (deletedTask.length > 0) {
+              submilestone.data.pID = deletedTask[0].ID
+              submilestone.data.added = false;
+            }
             if (submilestone.data.edited === true) {
               if (submilestone.data.type === 'task') {
                 if (submilestone.data.added == true) {
-
                   submilestone.data.status = milestone.data.status === 'In Progress' ? 'Not Started' : submilestone.data.status;
                   addedTasks.push(submilestone.data);
                 }
@@ -2867,20 +3367,39 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   updatedTasks.push(submilestone.data);
                 }
               }
-              else if (submilestone.children !== undefined) {
+              if (submilestone.children !== undefined) {
                 for (var nCountTask = 0; nCountTask < submilestone.children.length; nCountTask = nCountTask + 1) {
                   var task = submilestone.children[nCountTask];
-                  //  if(task.data.edited === true) {
+                  const deletedTask = this.allTasks.filter(t => t.Title === task.data.taskFullName && t.Status === 'Deleted');
+                  if (deletedTask.length > 0) {
+                    task.data.pID = deletedTask[0].ID
+                    task.data.added = false;
+                  }
                   if (task.data.added == true) {
-
-                    task.data.status = submilestone.data.status === 'In Progress' ? 'Not Started' : submilestone.data.status === 'Not Saved' ? 'Not Confirmed' : task.data.status;
-
+                    task.data.status = submilestone.data.status === 'In Progress' ? 'Not Started' : submilestone.data.status === 'Not Saved' ? milestone.data.isCurrent ? 'Not Started' : 'Not Confirmed' : task.data.status;
                     addedTasks.push(task.data);
                   }
                   else {
                     updatedTasks.push(task.data);
                   }
-                  //  }
+                  if (task.children) {
+                    for (var nSubTaskTaskCount = 0; nSubTaskTaskCount < task.children.length; nSubTaskTaskCount = nSubTaskTaskCount + 1) {
+                      var subtask = task.children[nSubTaskTaskCount];
+                      const deletedSubTask = this.allTasks.filter(t => t.Title === subtask.data.taskFullName);
+                      if (deletedSubTask.length > 0) {
+                        subtask.data.pID = deletedSubTask[0].ID
+                        subtask.data.added = false;
+                      }
+                      if (subtask.data.added == true) {
+                        subtask.data.status = subtask.data.status;
+                        addedTasks.push(subtask.data);
+                      }
+                      else {
+                        updatedTasks.push(subtask.data);
+                      }
+
+                    }
+                  }
                 }
               }
             }
@@ -2888,8 +3407,8 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
       }
     }
+
     this.sharedObject.oTaskAllocation.oProjectDetails.allMilestones = listOfMilestones;
-    //this.oProjectDetails.allMilestones = listOfMilestones;
 
     this.getDeletedMilestoneTasks(updatedTasks, updatedMilestones);
     this.setMilestone(addedTasks, updatedTasks, addedMilestones, updatedMilestones);
@@ -2900,7 +3419,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   getDeletedMilestoneTasks(updatedTasks, updatedMilestones) {
 
-    this.milestoneDataCopy.forEach(element => {
+    this.milestoneDataCopy.forEach((element) => {
       if (element.data.status !== 'Completed' && element.data.status !== 'Deleted') {
         if (element.data.type === 'task' && element.data.itemType === 'Client Review') {
           const clTasks = this.milestoneData.filter(dataEl => {
@@ -2921,9 +3440,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
             const milDel = element;
             milDel.data.status = 'Deleted';
             updatedMilestones.push(milDel);
-            const getAllTasks = this.getTasksFromMilestones(milDel, true);
-
-
+            const getAllTasks = this.getTasksFromMilestones(milDel, true, false);
             getAllTasks.forEach(task => {
               if (task.status !== 'Deleted' && task.status !== 'Completed') {
                 task.previousTask = '';
@@ -2938,8 +3455,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
             if (newSub !== existingSub) {
               updatedMilestones.push(milestoneReturn[0]);
             }
-            const getAllTasks = this.getTasksFromMilestones(element, true);
-            const getAllNewTasks = this.getTasksFromMilestones(milestoneReturn[0], false);
+            const getAllTasks = this.getTasksFromMilestones(element, true, false);
+            const getAllSubTasks = this.getTasksFromMilestones(element, true, true);
+            const getAllNewTasks = this.getTasksFromMilestones(milestoneReturn[0], false, false);
             getAllTasks.forEach(task => {
               if (task.status !== 'Deleted' && task.status !== 'Completed') {
                 const taskSearch = getAllNewTasks.filter(dataEl => {
@@ -2949,6 +3467,19 @@ export class TimelineComponent implements OnInit, OnDestroy {
                   task.previousTask = '';
                   task.nextTask = '';
                   task.status = 'Deleted';
+                  /// mark activeca as No for slot if it is deleted
+                  if (task.IsCentrallyAllocated) {
+                    task.ActiveCA = 'No';
+                    task.CentralAllocationDone = 'No';
+                    const subTaskSearch = getAllSubTasks.filter(dataEl => dataEl.parentSlot === task.pID);
+                    subTaskSearch.forEach(subTask => {
+                      subTask.previousTask = '';
+                      subTask.nextTask = '';
+                      subTask.status = 'Deleted';
+                      subTask.CentralAllocationDone = 'No';
+                      updatedTasks.push(subTask);
+                    });
+                  }
                   updatedTasks.push(task);
                 }
               }
@@ -2961,19 +3492,29 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   // tslint:disable
 
-  getTasksFromMilestones(milestone, bOld) {
+  getTasksFromMilestones(milestone, bOld, includeSubTasks) {
     let tasks = [];
     if (milestone.children !== undefined) {
-
       for (var nCountSub = 0; nCountSub < milestone.children.length; nCountSub = nCountSub + 1) {
         var submilestone = milestone.children[nCountSub];
         if (submilestone.data.type === 'task') {
           tasks.push(submilestone.data);
-        }
-        else if (submilestone.children !== undefined) {
+          if (includeSubTasks && submilestone.children) {
+            for (let nCountSubTask = 0; nCountSubTask < submilestone.children.length; nCountSubTask = nCountSubTask + 1) {
+              var subtask = submilestone.children[nCountSubTask];
+              tasks.push(subtask.data);
+            }
+          }
+        } else if (submilestone.children !== undefined) {
           for (var nCountTask = 0; nCountTask < submilestone.children.length; nCountTask = nCountTask + 1) {
             var task = submilestone.children[nCountTask];
             tasks.push(task.data);
+            if (includeSubTasks && task.children) {
+              for (let nCountSubTask = 0; nCountSubTask < task.children.length; nCountSubTask = nCountSubTask + 1) {
+                var subtask = task.children[nCountSubTask];
+                tasks.push(subtask.data);
+              }
+            }
           }
         }
       }
@@ -2994,6 +3535,17 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
 
 
+
+  getSubTasksfromTasks(task) {
+    let tasks = [];
+    if (task.children !== undefined) {
+      for (var nCountTask = 0; nCountTask < task.children.length; nCountTask = nCountTask + 1) {
+        var task = task.children[nCountTask];
+        tasks.push(task.data);
+      }
+      return tasks;
+    }
+  }
 
   getTasksFromSubMilestones(submilestone) {
 
@@ -3048,7 +3600,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       return obj.data.pName.split(' (')[0] === newCurrentMilestoneText;
     });
     if (newCurrentMilestone.length > 0) {
-      let currMilTasks = this.getTasksFromMilestones(newCurrentMilestone[0], false);
+      let currMilTasks = this.getTasksFromMilestones(newCurrentMilestone[0], false, false);
       currMilTasks = currMilTasks.filter((objt) => {
         return objt.status !== 'Deleted' && objt.status !== 'Abandon';
       });
@@ -3057,8 +3609,6 @@ export class TimelineComponent implements OnInit, OnDestroy {
           return objt.pParent === subMile.pID;
         });
       } else {
-        // const checkMilestoneAllicatedTime = tempMilestones.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
-        // && e.status !== 'Not Confirmed');
         if (subMile.budgetHours === '' || +subMile.budgetHours <= 0) {
           this.messageService.add({
             key: 'custom', severity: 'warn', summary: 'Warning Message',
@@ -3085,7 +3635,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
       // tslint:disable
       const checkTaskAllocatedTime = currMilTasks.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
-        && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed');
+        && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed' && !e.parentSlot);
       // tslint:enable
       if (checkTaskAllocatedTime.length > 0) {
         this.messageService.add({
@@ -3119,33 +3669,38 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
   setAsNextMilestoneCall(rowData, rowNode) {
 
-    const Title = rowNode.parent ? rowNode.parent.data.pName + ' - ' + rowData.pName : rowData.pName;
+    if (rowData.editMode) {
+      this.messageService.add({
+        key: 'custom', severity: 'warn', summary: 'Warning Message',
+        detail: 'There are some unsaved changes, Please save them.'
+      });
+      return false;
 
-    this.confirmationService.confirm({
-      message: 'Are you sure that you want to Confirm ' + Title + ' ?',
-      header: 'Confirmation',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.selectedSubMilestone = rowData;
-        const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
-        if (validateNextMilestone) {
-          this.loaderenable = true;
-          // const newCurrentMilestoneText = this.sharedObject.oTaskAllocation.oProjectDetails.nextMilestone;
-          // this.messageService.add({key: 'custom', severity:'warn', summary: 'Warning Message',
-          // detail:' Setting ' + newCurrentMilestoneText + ' as current milestone'});
-          setTimeout(() => { this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
+    } else {
+      const Title = rowNode.parent ? rowNode.parent.data.pName + ' - ' + rowData.pName : rowData.pName;
+
+      this.confirmationService.confirm({
+        message: 'Are you sure that you want to Confirm ' + Title + ' ?',
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          this.selectedSubMilestone = rowData;
+          const validateNextMilestone = this.validateNextMilestone(this.selectedSubMilestone);
+          if (validateNextMilestone) {
+            this.loaderenable = true;
+            setTimeout(() => { this.setAsNextMilestone(this.selectedSubMilestone); }, 200);
+          }
+        },
+        reject: () => {
         }
-      },
-      reject: () => {
-      }
-    });
+      });
+    }
   }
 
 
   async setAsNextMilestone(subMile) {
 
     const projectID = this.oProjectDetails.projectID;
-    // this.showUpdateInProgress(' Setting ' + newCurrentMilestoneText + ' as curent milestone');
     const currentMilestone = this.milestoneData.filter((obj) => {
       return obj.data.isCurrent === true;
     });
@@ -3164,28 +3719,24 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const newCurrentMilestone = this.milestoneData.filter((obj) => {
       return obj.data.pName.split(' (')[0] === newCurrentMilestoneText;
     });
-    // tslint:disable-next-line
-
-    const batchGuid = this.spServices.generateUUID();
-    const batchContents = new Array();
-    const changeSetId = this.spServices.generateUUID();
-    /// Body for project information update
+    const batchUrl = [];
     // tslint:disable
 
     if (!submilePresentInCurrent) {
-      const endpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.ProjectInformation.name + "')" +
-        "/items(" + +(projectID) + ")";
-      // tslint:enable
-      const updateProjectBody = JSON.stringify({
+      // // tslint:enable
+      const updateProjectBody = {
         __metadata: { type: 'SP.Data.ProjectInformationListItem' },
         Milestone: newCurrentMilestoneText,
         Status: 'In Progress',
         PrevStatus: this.sharedObject.oTaskAllocation.oProjectDetails.status
-      });
-      this.spServices.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateProjectBody, false);
+      };
+      const taskObj = Object.assign({}, this.queryConfig);
+      taskObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +projectID);
+      taskObj.data = updateProjectBody;
+      taskObj.listName = this.constants.listNames.ProjectInformation.name;
+      taskObj.type = 'PATCH';
+      batchUrl.push(taskObj);
     }
-
-
     /// end of project information update
     let previousSubMilestones;
     if (currentMilestone.length > 0) {
@@ -3197,46 +3748,43 @@ export class TimelineComponent implements OnInit, OnDestroy {
         // tslint:disable
 
         previousSubMilestones.forEach(element => {
-          let pMilestoneEndpoint;
+          // let pMilestoneEndpoint;
           let updatePMilestoneBody;
 
           let prevMilestoneTasks;
           if (element.type === 'milestone') {
-            prevMilestoneTasks = this.getTasksFromMilestones(currentMilestone[0], false);
+            prevMilestoneTasks = this.getTasksFromMilestones(currentMilestone[0], false, true);
           } else {
-            prevMilestoneTasks = this.getTasksFromMilestones(element, false);
+            prevMilestoneTasks = this.getTasksFromMilestones(element, false, true);
           }
           prevMilestoneTasks = prevMilestoneTasks.filter((objt) => {
             return objt.status !== 'Deleted' && objt.status !== 'Abandon' && objt.status !== 'Completed';
           });
-
+          let milestoneID = -1;
           if (submilePresentInCurrent) {
-
+            milestoneID = +element.data.pID;
             const subMileStatus = prevMilestoneTasks.filter(c => c.itemType !== 'Client Review').every(this.checkStatus);
-
             element.data.status = subMileStatus ? 'Deleted' : 'Completed';
-            pMilestoneEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(element.data.pID) + ")";
-
-            updatePMilestoneBody = JSON.stringify({
+            updatePMilestoneBody = {
               __metadata: { type: 'SP.Data.SchedulesListItem' },
               Status: subMileStatus ? 'Deleted' : 'Completed'
-            });
-
+            };
           }
           else {
-            pMilestoneEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(element.pID) + ")";
-
-
-
-            updatePMilestoneBody = JSON.stringify({
+            milestoneID = +element.pID;
+            updatePMilestoneBody = {
               __metadata: { type: 'SP.Data.SchedulesListItem' },
               Status: 'Completed',
               SubMilestones: this.getSubMilestoneStatus(currentMilestone[0], 'Completed').join(';#')
-            });
+            };
           }
-
+          const milestoneObj = Object.assign({}, this.queryConfig);
+          milestoneObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +milestoneID);
+          milestoneObj.data = updatePMilestoneBody;
+          milestoneObj.listName = this.constants.listNames.Schedules.name;
+          milestoneObj.type = 'PATCH';
+          batchUrl.push(milestoneObj);
           // tslint:enable
-          this.spServices.getChangeSetBodySC(batchContents, changeSetId, pMilestoneEndpoint, updatePMilestoneBody, false);
           for (const task of prevMilestoneTasks) {
             if (task.status === 'Not Confirmed') {
               if (task.itemType !== 'Client Review') {
@@ -3252,25 +3800,23 @@ export class TimelineComponent implements OnInit, OnDestroy {
               }
             }
             task.ActiveCA = 'No';
-            // task.allowStart =  true;
-            // tslint:disable
-            const endpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(task.pID) + ")";
             // tslint:enable
-            const updateSchedulesBody = JSON.stringify({
-              __metadata: { type: 'SP.Data.SchedulesListItem' },
+            const updateSchedulesBody = {
+              __metadata: { type: this.constants.listNames.Schedules.type },
               Status: task.status,
               AllowCompletion: 'Yes',
               ActiveCA: task.ActiveCA
-            });
-            this.spServices.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateSchedulesBody, false);
+            };
+            const taskUpdateObj = Object.assign({}, this.queryConfig);
+            taskUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +task.pID);
+            taskUpdateObj.data = updateSchedulesBody;
+            taskUpdateObj.listName = this.constants.listNames.Schedules.name;
+            taskUpdateObj.type = 'PATCH';
+            batchUrl.push(taskUpdateObj);
           }
         });
       }
     }
-
-
-    const schedules = this.constants.listNames.Schedules.name;
-    const spservice = this.spServices;
 
     // updated by Maxwell
     let setToTasks;
@@ -3280,77 +3826,90 @@ export class TimelineComponent implements OnInit, OnDestroy {
         newCurrentMilestone[0].children.find(c => c.data === subMile) !== undefined ?
           newCurrentMilestone[0].children.find(c => c.data === subMile) : newCurrentMilestone[0];
       subMilestone.data.status = 'In Progress';
-      setToTasks = this.getTasksFromMilestones(subMilestone, false);
+      setToTasks = this.getTasksFromMilestones(subMilestone, false, true);
     } else {
-      setToTasks = this.getTasksFromMilestones(currentMilestone[0], false);
+      setToTasks = this.getTasksFromMilestones(currentMilestone[0], false, true);
     }
-
-    setToTasks.forEach(element => {
+    const slots = [];
+    for (const element of setToTasks) {
       if (element.status === 'Not Confirmed') {
         if (element.AssignedTo) {
-          this.sendMail(this.oProjectDetails, element, 'Set new milestone' + newCurrentMilestone[0].data.pName.split(' (')[0]);
+          await this.sendMail(this.oProjectDetails, element);
         }
         if (element.IsCentrallyAllocated === 'Yes') {
+          slots.push(element.ID);
           //// send task creation email
           element.ActiveCA = 'Yes';
-          this.sendCentralTaskMail(this.oProjectDetails, element, 'New central task created'
-            + this.sharedObject.oTaskAllocation.oProjectDetails.projectCode, 'New central task created');
+          await this.sendCentralTaskMail(this.oProjectDetails, element, element.pName + ' Created', 'CentralTaskCreation');
         }
         element.status = 'Not Started';
-        element.deallocateCentral = true;
         element.assignedUserChanged = false;
-        // tslint:disable
-        const endpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + schedules + "')/items(" + +(element.pID) + ")";
-        // tslint:enable
-        const updateSchedulesBody = JSON.stringify({
+        const updateSchedulesBody = {
           __metadata: { type: 'SP.Data.SchedulesListItem' },
           Status: element.status,
           ActiveCA: element.ActiveCA
-        });
-        spservice.getChangeSetBodySC(batchContents, changeSetId, endpoint, updateSchedulesBody, false);
+        };
+        const taskCAUpdateObj = Object.assign({}, this.queryConfig);
+        taskCAUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +element.pID);
+        taskCAUpdateObj.data = updateSchedulesBody;
+        taskCAUpdateObj.listName = this.constants.listNames.Schedules.name;
+        taskCAUpdateObj.type = 'PATCH';
+        batchUrl.push(taskCAUpdateObj);
       }
-    });
-    let cMilestoneEndpoint;
+    }
+    const cMilestoneEndpoint = '';
     let updateCMilestoneBody;
-
+    let curMilestoneID = -1;
     if (submilePresentInCurrent) {
-      // tslint:disable
-      cMilestoneEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl +
-        "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name +
-        "')/items(" + (currentMilestone[0].data.pID) + ")";
-      // tslint:enable
-      updateCMilestoneBody = JSON.stringify({
+      curMilestoneID = +currentMilestone[0].data.pID;
+      updateCMilestoneBody = {
         __metadata: { type: 'SP.Data.SchedulesListItem' },
         Status: 'In Progress',
         SubMilestones: this.getSubMilestoneStatus(currentMilestone[0], '').join(';#')
-      });
+      };
     } else {
-      // tslint:disable
-      cMilestoneEndpoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + (newCurrentMilestone[0].data.pID) + ")";
-      // tslint:enable
-      updateCMilestoneBody = JSON.stringify({
+      curMilestoneID = +newCurrentMilestone[0].data.pID;
+      updateCMilestoneBody = {
         __metadata: { type: 'SP.Data.SchedulesListItem' },
         Status: 'In Progress',
         SubMilestones: this.getSubMilestoneStatus(newCurrentMilestone[0], '').join(';#')
+      };
+    }
+    const taskCMUpdateObj = Object.assign({}, this.queryConfig);
+    taskCMUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +curMilestoneID);
+    taskCMUpdateObj.data = updateCMilestoneBody;
+    taskCMUpdateObj.listName = this.constants.listNames.Schedules.name;
+    taskCMUpdateObj.type = 'PATCH';
+    batchUrl.push(taskCMUpdateObj);
+
+    const notificationObj = Object.assign({}, this.queryConfig);
+    // tslint:disable: max-line-length
+    notificationObj.url = this.spServices.getReadURL(this.constants.listNames.EarlyTaskCompleteNotifications.name, this.taskAllocationService.taskallocationComponent.earlyTaskNotification);
+    notificationObj.url = notificationObj.url.replace(/{{projectCode}}/g, this.oProjectDetails.projectCode);
+    notificationObj.listName = this.constants.listNames.EarlyTaskCompleteNotifications.name;
+    notificationObj.type = 'GET';
+    batchUrl.push(notificationObj);
+
+    const response = await this.spServices.executeBatch(batchUrl);
+    if (response.length) {
+      const notificationBatchUrl = [];
+      const notifications = response[0].retItems;
+      notifications.forEach(element => {
+        const updateNotificationBody = {
+          __metadata: { type: this.constants.listNames.EarlyTaskCompleteNotifications.type },
+          IsActive: 'No',
+        };
+        const notificationUpdateObj = Object.assign({}, this.queryConfig);
+        notificationUpdateObj.url = this.spServices.getItemURL(this.constants.listNames.EarlyTaskCompleteNotifications.name, +element.ID);
+        notificationUpdateObj.data = updateNotificationBody;
+        notificationUpdateObj.listName = this.constants.listNames.EarlyTaskCompleteNotifications.name;
+        notificationUpdateObj.type = 'PATCH';
+        notificationBatchUrl.push(notificationUpdateObj);
       });
+      await this.spServices.executeBatch(notificationBatchUrl);
     }
-    // tslint:disable
-
-    this.spServices.getChangeSetBodySC(batchContents, changeSetId, cMilestoneEndpoint, updateCMilestoneBody, false);
-
-    // updated by Maxwell end
-    batchContents.push('--changeset_' + changeSetId + '--');
-    const batchBody = batchContents.join('\r\n');
-    const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-    batchBodyContent.push('--batch_' + batchGuid + '--');
-    const batchBodyContents = batchBodyContent.join('\r\n');
-    const response = this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
-    const responseInLines = response.split('\n');
-    if (responseInLines.length > 0) {
-      // this.callReloadRes();
-      await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
-      this.getMilestones(false);
-    }
+    await this.commonService.getProjectResources(this.oProjectDetails.projectCode, false, false);
+    this.getMilestones(false);
   }
 
   checkStatus(value) {
@@ -3366,7 +3925,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     if (Milestone.children !== undefined) {
       for (let nCountSub = 0; nCountSub < Milestone.children.length; nCountSub = nCountSub + 1) {
         const submilestone = Milestone.children[nCountSub];
-        submilestone.data.status = submilestone.data.status === 'Not Saved' ? 'Not Confirmed' : submilestone.data.status;
+        submilestone.data.status = submilestone.data.status === 'Not Saved' ? Milestone.data.isCurrent ? 'Not Started' : 'Not Confirmed' : submilestone.data.status;
         if (submilestone.data.type !== 'task') {
 
           if (status === 'Completed') {
@@ -3413,10 +3972,9 @@ export class TimelineComponent implements OnInit, OnDestroy {
     for (const milestone of milestonesData) {
 
       if (milestone.data.status !== 'Completed' && milestone.data.status !== 'Deleted') {
-        //if (milestone.data.status === 'In Progress' || milestone.data.status === 'Not Saved') {
         let bSubMilPresent = false;
         const zeroItem = milestone.children && milestone.children.length ? milestone.children[0].data : milestone.data;
-        const AllTasks = this.getTasksFromMilestones(milestone, false);
+        const AllTasks = this.getTasksFromMilestones(milestone, false, false);
         const milestoneTasks = AllTasks.filter(t => t.status !== 'Abandon' && t.status !== 'Completed' && t.status !== 'Not Confirmed' && t.itemType !== 'Adhoc');
         if (milestone.data.status === 'In Progress') {
           if (zeroItem.itemType === 'submilestone') {
@@ -3426,12 +3984,13 @@ export class TimelineComponent implements OnInit, OnDestroy {
           if (bSubMilPresent) {
             milestone.children.forEach(element => {
               if (element.data.status === 'In Progress' && element.data.itemType === 'submilestone') {
-                checkTasks = checkTasks.concat(this.getTasksFromMilestones(element, false));
+                checkTasks = checkTasks.concat(this.getTasksFromMilestones(element, false, false));
               }
             });
           } else {
             checkTasks = milestoneTasks;
           }
+          checkTasks = checkTasks.filter(t => !t.parentSlot && t.IsCentrallyAllocated === 'No');
           // tslint:disable
           const checkTaskAllocatedTime = checkTasks.filter(e => (e.budgetHours === '' || +e.budgetHours === 0)
             && e.itemType !== 'Send to client' && e.itemType !== 'Client Review' && e.itemType !== 'Follow up' && e.status !== 'Completed');
@@ -3481,7 +4040,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         }
 
         if (previousNode !== undefined && previousNode.status !== "Completed" && new Date(previousNode.pEnd) >= new Date(milestone.data.pStart)) {
-          let errormessage = previousNode.milestone +  ' Client Review';
+          let errormessage = previousNode.milestone + ' Client Review';
           if (previousNode.pName !== 'Client Review') {
             errormessage = previousNode.pName;
           }
@@ -3544,6 +4103,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
 
   getTaskObjectByValue(task, className, milestone, nextTasks, previousTasks, submilestone) {
+    const submilestoneLabel = submilestone ? submilestone.label : '';
     return {
       'pID': task.dbId === undefined ? task.Id : task.dbId,
       'pName': task.label,
@@ -3558,7 +4118,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       'pClass': className,
       'pLink': '',
       'pMile': 0,
-      'pRes': ' -- ',
+      'pRes': '  ',
       'pComp': 0,
       'pGroup': className = 'gtaskred' ? 0 : 1,
       'pParent': task.taskType === 'Client Review' ? 0 : milestone.Id,
@@ -3573,6 +4133,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
       'tatVal': 0,
       'milestoneStatus': className = 'gtaskred' ? 'Not Saved' : null,
       'type': 'task',
+      'slotType': task.slotType ? task.slotType : '',
       'editMode': true,
       'scope': null,
       'spentTime': '0:0',
@@ -3588,14 +4149,14 @@ export class TimelineComponent implements OnInit, OnDestroy {
       'IsCentrallyAllocated': task.IsCentrallyAllocated,
       'edited': true,
       'added': true,
-      'submilestone': submilestone ? submilestone.label : '',
+      'submilestone': submilestoneLabel,
       'milestone': milestone.label,
       'skillLevel': task.skillLevel,
-      'CentralAllocationDone': 'No',
-      'ActiveCA': 'No',
+      'CentralAllocationDone': task.CentralAllocationDone,
+      'ActiveCA': task.ActiveCA,
       'assignedUserTimeZone': '5.5',
-      'deallocateCentral': true,
-      'DisableCascade': task.DisableCascade && task.DisableCascade === 'Yes' ? true : false
+      'DisableCascade': task.DisableCascade && task.DisableCascade === 'Yes' ? true : false,
+      'taskFullName': this.oProjectDetails.projectCode + ' ' + milestone.label + ' ' + task.label
     };
   }
 
@@ -3661,6 +4222,26 @@ export class TimelineComponent implements OnInit, OnDestroy {
   }
   // tslint:enable
 
+
+  CascadeDialog() {
+
+    const ref = this.dialogService.open(CascadeDialogComponent, {
+      data: {
+
+      },
+      header: 'Cascading Data',
+      width: '80vw',
+      contentStyle: { 'min-height': '30vh', 'max-height': '90vh', 'overflow-y': 'auto' }
+    });
+    ref.onClose.subscribe(async (taskobj: any) => {
+
+    });
+
+  }
+
+  trackByFn(index, item) {
+    return index; // or item.id
+  }
 
 }
 

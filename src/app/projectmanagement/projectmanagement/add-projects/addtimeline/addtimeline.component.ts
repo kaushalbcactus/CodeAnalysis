@@ -3,6 +3,7 @@ import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.ser
 import { Subject } from 'rxjs';
 import { GlobalService } from 'src/app/Services/global.service';
 import { debounceTime } from 'rxjs/operators';
+import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 declare var $;
 @Component({
   selector: 'app-addtimeline',
@@ -16,6 +17,7 @@ export class AddTimelineComponent implements OnInit {
   private _timelineAlert = new Subject<string>();
   constructor(
     public pmObject: PMObjectService,
+    public pmConstant: PmconstantService,
     public globalObject: GlobalService
   ) { }
 
@@ -24,8 +26,14 @@ export class AddTimelineComponent implements OnInit {
     this._timelineAlert.pipe(
       debounceTime(5000)
     ).subscribe(() => this.timelineAlertMsg = null);
-    if (!this.pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked) {
+
+    if (this.pmObject.addProject.FinanceManagement.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
+      $('#nonStandardTimeline').attr('checked', 'checked');
+      $('#standardTimeline').attr('disabled', 'true');
+      this.pmObject.isStandardChecked = false;
+    } else if (!this.pmObject.addProject.Timeline.NonStandard.IsRegisterButtonClicked) {
       this.pmObject.isStandardChecked = true;
+      $('#standardTimeline').attr('disabled', 'false');
     }
   }
   goToProjectAttributes() {

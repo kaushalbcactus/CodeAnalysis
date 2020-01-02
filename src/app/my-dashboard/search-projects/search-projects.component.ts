@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { MessageService, MenuItem } from 'primeng/api';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
@@ -7,10 +7,11 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { ProjectDraftsComponent } from './project-drafts/project-drafts.component';
 import { TimelineComponent } from 'src/app/task-allocation/timeline/timeline.component';
 import { Router } from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { TimelineHistoryComponent } from './../../timeline/timeline-history/timeline-history.component';
 import { CommonService } from 'src/app/Services/common.service';
 import { ViewUploadDocumentDialogComponent } from 'src/app/shared/view-upload-document-dialog/view-upload-document-dialog.component';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-search-projects',
@@ -29,6 +30,7 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   viewUploadDocumentDialogComponent: ViewUploadDocumentDialogComponent;
 
   @ViewChild('timelineRef', { static: true })
+  @ViewChild('project', { static: false }) project: Table;
   timeline: TimelineHistoryComponent;
 
   selectedDate: DateObj;
@@ -77,7 +79,12 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     account: [],
   };
   tempClick: any;
-
+  public queryConfig = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
 
   constructor(
     public messageService: MessageService,
@@ -86,7 +93,27 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
     private spServices: SPOperationService,
     private commonService: CommonService,
     private datePipe: DatePipe,
-    public sharedObject: GlobalService, public router: Router) { }
+    public sharedObject: GlobalService,
+    public router: Router,
+    private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    _applicationRef: ApplicationRef,
+    zone: NgZone,
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+
+  }
 
   ngOnInit() {
     const route = this.router.url;
@@ -105,11 +132,8 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
       { field: 'ProjectType', header: 'Project Type' },
       { field: 'Status', header: 'Status' },
       { field: 'CreatedBy', header: 'Created By' },
-      { field: 'Created', header: 'Created Date' },
+      { field: 'CreatedDate', header: 'Created Date' },
     ];
-  }
-
-  ngOnDestroy() {
   }
 
 
@@ -168,65 +192,64 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   //   create column heading multiselect options
   // **************************************************************************************************
 
-  createColFieldValues() {
+  createColFieldValues(resArray) {
 
     this.ProjectColArray = {
       SOWCode: [], ProjectCode: [], WBJID: [], ClientLegalEntity: [],
-      DeliverableType: [], ProjectType: [], Status: [], CreatedBy: [], Created: []
+      DeliverableType: [], ProjectType: [], Status: [], CreatedBy: [], CreatedDate: []
     };
     this.ProjectColArray.SOWCode = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.SOWCode, value: a.SOWCode }; return b;
       })));
 
     this.ProjectColArray.ProjectCode = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.ProjectCode, value: a.ProjectCode }; return b;
       })));
 
     this.ProjectColArray.WBJID = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.WBJID, value: a.WBJID }; return b;
       })));
 
     this.ProjectColArray.ClientLegalEntity = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b;
       })));
 
     this.ProjectColArray.DeliverableType = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.DeliverableType, value: a.DeliverableType }; return b;
       })));
 
     this.ProjectColArray.ProjectType = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.ProjectType, value: a.ProjectType }; return b;
       })));
 
     this.ProjectColArray.Status = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.Status, value: a.Status }; return b;
       })));
 
 
     this.ProjectColArray.CreatedBy = this.commonService.sortData
-      (this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
+      (this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
         const b = { label: a.CreatedBy, value: a.CreatedBy }; return b;
       })));
 
 
-    this.ProjectColArray.Created.push.apply(this.ProjectColArray.Created,
-      this.myDashboardConstantsService.uniqueArrayObj(this.ProjectList.map(a => {
-        const b = { label: this.datePipe.transform(a.Created, 'MMM d, y, h:mm a'), value: a.Create }; return b;
+    this.ProjectColArray.CreatedDate.push.apply(this.ProjectColArray.CreatedDate,
+      this.myDashboardConstantsService.uniqueArrayObj(resArray.map(a => {
+        const b = { label: this.datePipe.transform(a.CreatedDate, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.CreatedDate, 'MMM dd, yyyy, h:mm a')) }; return b;
       })));
 
 
 
-    this.ProjectColArray.Created = this.ProjectColArray.Created.sort((a, b) =>
+    this.ProjectColArray.CreatedDate = this.ProjectColArray.CreatedDate.sort((a, b) =>
       new Date(a.value).getTime() > new Date(b.value).getTime() ? 1 : -1
     );
-
 
     this.loaderenable = false;
     this.tableviewenable = true;
@@ -258,8 +281,8 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
       });
     } else {
       this.loaderenable = true;
-      this.batchContents = new Array();
-      const batchGuid = this.spServices.generateUUID();
+      // this.batchContents = new Array();
+      // const batchGuid = this.spServices.generateUUID();
       let Project;
       if (this.ProjectCode !== '') {
         Project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformation);
@@ -272,18 +295,25 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
         Project.filter = Project.filterByTitle;
       }
 
-      const ProjectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', Project);
-      this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectUrl);
-      this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+      // const ProjectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', Project);
+      // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectUrl);
+      // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+      this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, Project);
+      if (this.response.length > 0) {
+        this.ProjectList = this.response;
 
-      if (this.response[0].length > 0) {
-        this.ProjectList = this.response[0];
-
-        this.ProjectList.map(c => c.Created = new Date(c.Created));
+        this.ProjectList.map(c => c.Created = new Date(this.datePipe.transform(c.Created, 'MMM dd, yyyy, h:mm a')));
 
         this.ProjectList.map(c => c.CreatedBy = c.Author.Title);
 
-        this.createColFieldValues();
+        this.ProjectList = this.ProjectList.map(c => {
+          c['CreatedDate'] = c['Created'];
+          // delete c['Created'];
+          return c;
+        })
+
+        console.log('this.ProjectList ', this.ProjectList);
+        this.createColFieldValues(this.ProjectList);
 
         this.ProjectCode = '';
         this.ProjectTitle = '';
@@ -350,26 +380,42 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
   // **************************************************************************************************
 
   async GetProjectResources() {
+    const batchUrl = [];
+    this.response = [];
+    const ProjectInfoResources = Object.assign({}, this.queryConfig);
+    ProjectInfoResources.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name, this.myDashboardConstantsService.mydashboardComponent.ProjectInfoResources);
+    ProjectInfoResources.url = ProjectInfoResources.url.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
+    ProjectInfoResources.listName = this.constants.listNames.ProjectInformation.name;
+    ProjectInfoResources.type = 'GET';
+    batchUrl.push(ProjectInfoResources);
 
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+    // const ProjectInfoResources = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInfoResources);
+    // ProjectInfoResources.filter = ProjectInfoResources.filter.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
+    // const ProjectInfoResourcesUrl = this.spServices.getReadURL('' +
+    //   this.constants.listNames.ProjectInformation.name + '', ProjectInfoResources);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectInfoResourcesUrl);
 
+    // const ProjectResources = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectResource);
+    // ProjectResources.filter = ProjectResources.filter.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
+    // const ProjectResourcesUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', ProjectResources);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectResourcesUrl);
 
-    const ProjectInfoResources = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInfoResources);
-    ProjectInfoResources.filter = ProjectInfoResources.filter.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
-    const ProjectInfoResourcesUrl = this.spServices.getReadURL('' +
-      this.constants.listNames.ProjectInformation.name + '', ProjectInfoResources);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectInfoResourcesUrl);
+    const ProjectResources = Object.assign({}, this.queryConfig);
+    ProjectResources.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name, this.myDashboardConstantsService.mydashboardComponent.ProjectResource);
+    ProjectResources.url = ProjectResources.url.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
+    ProjectResources.listName = this.constants.listNames.ProjectInformation.name;
+    ProjectResources.type = 'GET';
+    batchUrl.push(ProjectResources);
 
-
-    const ProjectResources = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectResource);
-    ProjectResources.filter = ProjectResources.filter.replace(/{{projectId}}/gi, this.ProjectPopupDetails.ID);
-    const ProjectResourcesUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', ProjectResources);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectResourcesUrl);
-
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    const result = await this.spServices.executeBatch(batchUrl);
+    const prjResInfo = result.length > 0 ? result[0].retItems : [];
+    const prjResReponse = result.length > 1 ? result[1].retItems : [];
+    this.response.push(prjResInfo);
+    this.response.push(prjResReponse);
     this.ProjectDetails.cmLevel1 = this.response[1][0].CMLevel1;
-
 
     this.projectResource.CMMembers = this.response[1].map(c => c).map(c => c.CMLevel1)[0].results ?
       this.response[1].map(c => c).map(c => c.CMLevel1).map(c => c.results)[0].map(c => c.Title) + ', '
@@ -413,6 +459,34 @@ export class SearchProjectsComponent implements OnInit, OnDestroy {
       this.timeline.showTimeline(selectedProjectObj.ID, 'ProjectMgmt', 'Project');
     }
   }
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.ProjectList && this.isOptionFilter) {
+      const obj = {
+        tableData: this.project,
+        colFields: this.ProjectColArray
+      };
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.createColFieldValues(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+    }
+    this.cdr.detectChanges();
+  }
+
+  ngOnDestroy() {
+  }
+
+
 }
 
 

@@ -4,12 +4,15 @@ import { GlobalService } from '../../Services/global.service';
 import { DatePipe } from '@angular/common';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { MessageService } from 'primeng/api';
+import { CommonService } from 'src/app/Services/common.service';
+import { Subject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MyDashboardConstantsService {
   tasks: any[];
+  previousNextTaskChildRes: any[];
   batchContents: any[];
   response: any[];
   NextPreviousTask: any[];
@@ -20,34 +23,63 @@ export class MyDashboardConstantsService {
   jcId: any;
   Emailtemplate: any;
 
+  private OpenTaskSelectedTab = new Subject<any>();
+  private TimelineSelectedTab = new Subject<any>();
+
   constructor(
     private constants: ConstantsService,
     public sharedObject: GlobalService,
     private datePipe: DatePipe,
     private spServices: SPOperationService,
-    public messageService: MessageService, ) { }
+    public messageService: MessageService,
+    public common: CommonService) { }
+
+
+  public openTaskSelectedTab = {
+    event: '',
+    days: 0,
+    selectedDate: ''
+  };
 
   mydashboardComponent = {
 
+    user: {
+      isUserFTE: false,
+    },
+
+    common: {
+      getAllResource: {
+        select: 'ID,UserName/ID,UserName/EMail,UserName/Title,UserName/Name,TimeZone/Title,Designation, Manager/ID, Manager/Title, Tasks/ID, Tasks/Title',
+        expand: 'UserName,TimeZone,Manager,Tasks',
+        filter: "IsActive eq 'Yes'",
+        top: '4500'
+      },
+      getMailTemplate: {
+        select: 'Content',
+        filter: "Title eq '{{templateName}}'"
+      }
+    },
     MyTasks: {
 
-      select: 'ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones, IsCentrallyAllocated',
+      select: 'ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,SubMilestones, IsCentrallyAllocated,ParentSlot,AssignedTo/Title,AssignedTo/EMail',
       orderby: 'DueDate asc',
-      filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and (Task ne 'Time Booking') and",
+      filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and (Task ne 'Time Booking') and (Task ne 'Blocking') and ",
       filterStatus: "(Status ne 'Completed') and (Status ne 'Auto Closed')  and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
       // filterNotCompleted: "(Status ne 'Completed') and (Status ne 'Not Confirmed') and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
       // filterPlanned:"(Status eq 'Not Confirmed')",
       filterCompleted: "(Status eq 'Completed' or Status eq 'Auto Closed') and (Task ne 'Adhoc')",
       filterDate: "and((StartDate ge '{{startDateString}}' and StartDate le '{{endDateString}}') or (DueDate ge '{{startDateString}}' and DueDate le '{{endDateString}}') or (StartDate le '{{startDateString}}' and DueDate ge '{{endDateString}}'))",
+      expand: 'AssignedTo/Title'
 
     },
     ClientLegalEntitys: {
       select: 'ID,Title,Acronym,Geography,ClientGroup,Bucket,DistributionList',
       orderby: 'Title asc',
+      filter: "IsActive eq 'yes'",
       top: 4500
     },
     ResourceCategorization: {
-      select: 'ID,UserName/ID,UserName/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,Designation,PrimarySkill,SkillLevel/ID,SkillLevel/Title,TimeZone/ID,TimeZone/Title,IsActive',
+      select: 'ID,UserName/ID,UserName/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,Designation,PrimarySkill,SkillLevel/ID,SkillLevel/Title,TimeZone/ID,TimeZone/Title,IsActive,IsFTE',
       expand: 'UserName/ID,UserName/Title,Account/ID,Account/Title,Manager/ID,Manager/Title,SkillLevel/ID,SkillLevel/Title,TimeZone/ID,TimeZone/Title',
       filter: "IsActive eq 'Yes'",
       orderby: "UserName/Title",
@@ -63,28 +95,54 @@ export class MyDashboardConstantsService {
       orderby: "ProjectCode asc",
       top: "4500"
     },
+    FTEProjectInformations: {
+      select: 'ID,Title,ProjectCode,Status,ClientLegalEntity,Milestones,Milestone,WBJID,ProjectFolder,ServiceLevel',
+      filter: "ProjectType eq 'FTE-Writing' and (Status eq 'Author Review' or Status eq 'In Progress' or Status eq 'Ready for Client' or Status eq 'Unallocated') and PrimaryResMembersId eq {{userId}} ",
+      orderby: "ProjectCode asc",
+      top: "4500"
+    },
+    FTESchedulesSubMilestones: {
+      select: 'ID,Title,ProjectCode,SubMilestones',
+      filter: "ProjectCode eq '{{ProjectCode}}' and Title eq '{{Milestone}}'",
+      top: "4500"
+    },
+    FTESchedulesTask: {
+      select: 'ID,Title,ProjectCode,SubMilestones',
+      filter: "ProjectCode eq '{{ProjectCode}}' and Milestone eq '{{Milestone}}' and Task ne 'Blocking' and Task ne 'Meeting' and Task ne 'Training'",
+      top: "4500"
+    },
     previousNextTask: {
-      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
+      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
       filter: '',
-      expand: "AssignedTo/Title"
+      expand: 'AssignedTo/Title'
+    },
+    previousNextTaskParent: {
+      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail,ProjectCode',
+      filter: 'ID eq {{ParentSlotId}}',
+      expand: 'AssignedTo/Title'
+    },
+    nextPreviousTaskChild: {
+      select: 'ID,Title,StartDate,DueDate,Status,Task,NextTasks,PrevTasks,Milestone,SubMilestones,IsCentrallyAllocated,ParentSlot,Start_x0020_Date_x0020_Text,End_x0020_Date_x0020_Text,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
+      filter: "ParentSlot eq {{ParentSlotId}} and Status ne 'Deleted'",
+      expand: 'AssignedTo/Title'
     },
     previousTaskStatus: {
-      select: 'ID,Title,Status,NextTasks,Task,AllowCompletion,PrevTasks,AssignedTo/Title',
+      select: 'ID,Title,Status,NextTasks,Task,AllowCompletion,PrevTasks,AssignedTo/Title,ParentSlot',
       filter: "ID eq {{taskId}} and AssignedTo eq {{userID}} ",
-      expand: "AssignedTo/Title"
+      expand: 'AssignedTo/Title'
     },
     taskStatus: {
       select: 'ID,Title,Status,Task,NextTasks,PrevTasks,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail',
       filter: '',
-      expand: "AssignedTo/Title"
+      expand: 'AssignedTo/Title'
     },
     TimeSpent: {
       select: 'ID,Title,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,DueDate,Status,ExpectedTime,TimeSpentPerDay,TimeSpentSubmitStatus',
-      filter: 'ID eq {{taskId}}',
+      // filter: 'ID eq {{taskId}}',
     },
     Comments: {
       select: "ID,Title,Milestone,FileDirRef,NextTasks,PrevTasks,Status,ProjectCode,Task",
-      filter: "ID eq {{taskID}}"
+      // filter: "ID eq {{taskID}}"
     },
     Milestone: {
 
@@ -97,6 +155,11 @@ export class MyDashboardConstantsService {
     projectInfo: {
       select: 'ID,Title,ProjectCode,ProjectFolder,Milestone,Milestones,WBJID,IsPubSupport,ClientLegalEntity,PrimaryPOC,Status,DeliverableType',
       filter: "ProjectCode eq '{{projectCode}}'"
+    },
+    projectInfoByPC: {
+      select: 'ID,Title,ProjectCode,CMLevel1/ID',
+      expand: 'CMLevel1/ID',
+      filter: "ProjectCode eq '{{ProjectCode}}'"
     },
     SubmissionPkg: {
       select: 'ID,Title,JCID,SubmissionDate,SubmissionURL,SubmissionPkgURL,DecisionURL,DecisionDate,Decision,Status',
@@ -125,7 +188,7 @@ export class MyDashboardConstantsService {
     MyTimeline: {
       select: "ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,SubMilestones",
       orderby: "DueDate asc",
-      filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and  (Task ne 'Time Booking') and ",
+      filter: "AssignedTo eq  {{userId}} and (Task ne 'Send to client') and (Task ne 'Follow up') and (Task ne 'Client Review') and  (Task ne 'Time Booking') and (Task ne 'Blocking') and ",
       filterNotCompleted: "(Status ne 'Completed') and (Status ne 'Not Confirmed') and (Status ne 'Deleted') and (Status ne 'Abandon') and (Status ne 'Hold Request') and (Status ne 'Abandon Request') and (Status ne 'Hold') and (Status ne 'Project on Hold')",
       filterPlanned: "(Status eq 'Not Confirmed')",
       filterCompleted: "(Task ne 'Adhoc') and ((Status eq 'Completed' ) or (Status eq 'Auto Closed'))",
@@ -135,18 +198,27 @@ export class MyDashboardConstantsService {
       top: 4500
     },
     TaskDetails: {
-      select: "ID,Title,Status,StartDate,DueDate,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity",
+      select: "ID,Title,Status,StartDate,DueDate,SubMilestones,Actual_x0020_Start_x0020_Date,Actual_x0020_End_x0020_Date,ExpectedTime,TimeSpent,NextTasks,Comments,ProjectCode,PrevTasks,Milestone,Task,FinalDocSubmit,TaskComments,TATStatus,Entity,AssignedTo/Id,AssignedTo/Title",
       filter: 'ID eq {{taskId}}',
+      expand: "AssignedTo",
     },
     ClientLegalEntities: {
       select: 'ID,Title',
       orderby: "Title asc",
+      filter: "IsActive eq 'Yes'",
       top: 4500
     },
     LeaveCalendar: {
 
-      select: 'ID,EventDate,EndDate,IsHalfDay,Title',
-      filter: "(Author/Id eq {{currentUser}})and((EventDate ge '{{startDateString}}' and EventDate le '{{endDateString}}') or (EndDate ge '{{startDateString}}' and EndDate le '{{endDateString}}') or (EventDate le '{{startDateString}}' and EndDate ge '{{endDateString}}'))",
+      select: 'ID,EventDate,EndDate,IsHalfDay,Title,IsActive',
+      filter: "(UserName/Id eq {{currentUser}} and IsActive eq 'Yes' ) and ((EventDate ge '{{startDateString}}' and EventDate le '{{endDateString}}') or (EndDate ge '{{startDateString}}' and EndDate le '{{endDateString}}') or (EventDate le '{{startDateString}}' and EndDate ge '{{endDateString}}'))",
+      orderby: 'Created',
+      top: 4500
+    },
+    AvailableHours: {
+      // tslint:disable-next-line: max-line-length
+      select: 'ID,WeekStartDate,WeekEndDate,ResourceID,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday,MondayLeave,TuesdayLeave,WednesdayLeave,ThursdayLeave,FridayLeave',
+      filter: "ResourceID eq {{resourceId}}  and ((WeekStartDate ge '{{startDateString}}' and WeekStartDate le '{{endDateString}}') or (WeekEndDate ge '{{startDateString}}' and WeekEndDate le '{{endDateString}}') or (WeekStartDate le '{{startDateString}}' and WeekEndDate ge '{{endDateString}}'))",
       orderby: 'Created',
       top: 4500
     },
@@ -183,62 +255,165 @@ export class MyDashboardConstantsService {
       select: 'ID,Title,ProjectCode,ClientLegalEntity,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
       expand: "CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title",
       filter: "ID eq {{projectId}}",
-    }
-  }
+    },
+
+  };
 
   // var endpoint = _spPageContextInfo.webAbsoluteUrl
   // +"/_api/web/lists/getbytitle('" + ListNames.LeaveCalendar + "')/items?$select=ID,EventDate,EndDate,IsHalfDay&$top=4500&$orderby=Created&$filter=(Author/Id eq "+oCapacity.arrUserDetails[indexUser].uid+")and("+
   // "(EventDate ge '"+startDateString+"' and EventDate le '"+endDateString+"') or (EndDate ge '"+startDateString+"' and EndDate le '"+endDateString+"') or (EventDate le '"+startDateString+"' and EndDate ge '"+endDateString+"'))";
   // getBatchBody(batchContentsLeaves, batchGuid, endpoint); 
 
+  public queryConfig = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
+
+  // For current task
+  setOpenTaskTabValue(data: any) {
+    this.OpenTaskSelectedTab.next(data);
+  }
+
+  getOpenTaskTabValue(): Observable<any> {
+    return this.OpenTaskSelectedTab.asObservable();
+  }
+
+  // My Timeline
+  // For current task
+  setTimelineTabValue(data: any) {
+    this.TimelineSelectedTab.next(data);
+  }
+
+  getTimelineTabValue(): Observable<any> {
+    return this.TimelineSelectedTab.asObservable();
+  }
 
   // *************************************************************************************************************************************
-  // Get Next Previous task from current task 
+  // Get Next Previous task from current task
   // *************************************************************************************************************************************
+
   async getNextPreviousTask(task) {
     this.tasks = [];
-    var nextTaskFilter = '';
-    var previousTaskFilter = '';
-    if (task.NextTasks) {
-      var nextTasks = task.NextTasks.split(";#");
-      nextTasks.forEach(function (value, i) {
+    let nextTaskFilter = '';
+    let previousTaskFilter = '';
+    let nextTasks;
+    let previousTasks;
+    let currentTaskNextTask = task.NextTasks;
+    let currentTaskPrevTask = task.PrevTasks;
+
+    if (task.ParentSlot) {
+      const parentPreviousNextTask = Object.assign({}, this.mydashboardComponent.previousNextTaskParent);
+      parentPreviousNextTask.filter = parentPreviousNextTask.filter.replace('{{ParentSlotId}}', task.ParentSlot);
+      const parentNPTasks = await this.spServices.readItems(this.constants.listNames.Schedules.name, parentPreviousNextTask);
+      console.log(parentNPTasks);
+      const parentNPTask = parentNPTasks.length ? parentNPTasks[0] : [];
+      if (!currentTaskNextTask) {
+        currentTaskNextTask = parentNPTask.NextTasks;
+      }
+      if (!currentTaskPrevTask) {
+        currentTaskPrevTask = parentNPTask.PrevTasks;
+      }
+    }
+
+    if (currentTaskNextTask) {
+      nextTasks = currentTaskNextTask.split(';#');
+      nextTasks.forEach((value, i) => {
+        // tslint:disable-next-line: quotemark
         nextTaskFilter += "(Title eq '" + value + "')";
-        nextTaskFilter += i < nextTasks.length - 1 ? " or " : '';
+        nextTaskFilter += i < nextTasks.length - 1 ? ' or ' : '';
       });
     }
-    if (task.PrevTasks) {
-      var previousTasks = task.PrevTasks.split(";#");
-      previousTasks.forEach(function (value, i) {
-        previousTaskFilter += "(Title eq '" + value + "')";
-        previousTaskFilter += i < previousTasks.length - 1 ? " or " : '';
+    if (currentTaskPrevTask) {
+      previousTasks = currentTaskPrevTask.split(';#');
+      previousTasks.forEach((value, i) => {
+        previousTaskFilter += '(Title eq \'' + value + '\')';
+        previousTaskFilter += i < previousTasks.length - 1 ? ' or ' : '';
       });
     }
 
-    var taskFilter = (nextTaskFilter !== '' && previousTaskFilter !== '') ? nextTaskFilter + " or " + previousTaskFilter : (nextTaskFilter === '' && previousTaskFilter !== '') ? previousTaskFilter : (nextTaskFilter !== '' && previousTaskFilter === '') ? nextTaskFilter : '';
+    const taskFilter = (nextTaskFilter !== '' && previousTaskFilter !== '') ?
+      nextTaskFilter + ' or ' + previousTaskFilter : (nextTaskFilter === '' && previousTaskFilter !== '')
+        ? previousTaskFilter : (nextTaskFilter !== '' && previousTaskFilter === '') ? nextTaskFilter : '';
 
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
-
-    let previousNextTask = Object.assign({}, this.mydashboardComponent.previousNextTask);
+    if (!taskFilter) {
+      return [];
+    }
+    const previousNextTask = Object.assign({}, this.mydashboardComponent.previousNextTask);
     previousNextTask.filter = taskFilter;
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTask);
 
-    const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousNextTask);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
+    this.tasks = this.response.length ? this.response : [];
 
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    this.tasks = this.response[0] !== "" ? this.response[0] : [];
 
-    this.tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : "-");
-    this.tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : "-");
+    if (currentTaskNextTask) {
+      this.tasks.filter(c => nextTasks.includes(c.Title)).map(c => c.TaskType = 'Next Task');
+    }
+    if (currentTaskPrevTask) {
+      this.tasks.filter(c => previousTasks.includes(c.Title)).map(c => c.TaskType = 'Previous Task');
+    }
 
-    if (task.NextTasks)
-      this.tasks.filter(c => nextTasks.includes(c.Title)).map(c => c.TaskType = "Next Task");
-    if (task.PrevTasks)
-      this.tasks.filter(c => previousTasks.includes(c.Title)).map(c => c.TaskType = "Previous Task");
+    this.previousNextTaskChildRes = [];
+    for (const ele of this.tasks) {
+      if (ele.IsCentrallyAllocated === 'Yes') {
+        let previousNextTaskChild: any = [];
+        previousNextTaskChild = Object.assign({}, this.mydashboardComponent.nextPreviousTaskChild);
+        previousNextTaskChild.filter = previousNextTaskChild.filter.replace('{{ParentSlotId}}', ele.ID.toString());
+        let res: any = await this.spServices.readItems(this.constants.listNames.Schedules.name, previousNextTaskChild);
+        if (res.hasError) {
+          this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: res.message.value });
+          return;
+        }
+        res = res.length ? res : [];
+        const taskBreak = [];
+        res.forEach(element => {
+          if (ele.TaskType === 'Next Task') {
+            if (!element.PrevTasks) {
+              element.TaskType = ele.TaskType;
+              taskBreak.push(element);
+            }
+          } else {
+            if (!element.NextTasks) {
+              element.TaskType = ele.TaskType;
+              taskBreak.push(element);
+            }
+          }
 
+        });
+        if (!taskBreak.length) {
+          this.previousNextTaskChildRes.push(ele);
+        } else {
+          this.previousNextTaskChildRes = this.previousNextTaskChildRes.concat(taskBreak);
+        }
+
+      } else if (ele.IsCentrallyAllocated === 'No') {
+        this.previousNextTaskChildRes.push(ele);
+      }
+    }
+
+    this.tasks = this.previousNextTaskChildRes.length ? this.previousNextTaskChildRes : this.tasks;
+    console.log('previousNextTaskChildRes ', this.previousNextTaskChildRes);
+    this.tasks.map(c => c.StartDate = c.StartDate !== null ? this.datePipe.transform(c.StartDate, 'MMM d, y h:mm a') : '-');
+    this.tasks.map(c => c.DueDate = c.DueDate !== null ? this.datePipe.transform(c.DueDate, 'MMM d, y h:mm a') : '-');
 
     return this.tasks;
   }
+
+
+
+  async checkEmailNotificationEnable(task) {
+    let EnableNotification = false;
+    if (task.Status === 'Completed' || task.Status === 'Auto Closed') {
+      let PastDate = await this.RemoveBusinessDays(new Date(), 2);
+      PastDate = new Date(PastDate.getFullYear(), PastDate.getMonth(), PastDate.getDate());
+      let TaskEndDate = task.Actual_x0020_End_x0020_Date ? new Date(task.Actual_x0020_End_x0020_Date) : new Date(task.DueDate);
+      TaskEndDate = new Date(TaskEndDate.getFullYear(), TaskEndDate.getMonth(), TaskEndDate.getDate());
+      EnableNotification = PastDate.getTime() <= TaskEndDate.getTime() ? true : false;
+    }
+    return EnableNotification;
+  }
+
 
 
 
@@ -248,51 +423,26 @@ export class MyDashboardConstantsService {
 
 
   async getPrevTaskStatus(task) {
-    var status = '';
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    let status = '';
+    const currentTask = Object.assign({}, this.mydashboardComponent.previousTaskStatus);
+    currentTask.filter = currentTask.filter.replace(/{{taskId}}/gi, task.ID)
+      .replace(/{{userID}}/gi, this.sharedObject.currentUser.userId.toString());
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, currentTask);
+    for (const element of this.response) {
+      if (element.AllowCompletion === 'No') {
 
-    let previousTask = Object.assign({}, this.mydashboardComponent.previousTaskStatus);
-    previousTask.filter = previousTask.filter.replace(/{{taskId}}/gi, task.ID).replace(/{{userID}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
+        const nextPrevTasks = await this.getNextPreviousTask(element);
+        const prevTaskResponse = nextPrevTasks.filter(e => e.TaskType === 'Previous Task');
+        if (prevTaskResponse.length) {
 
-    const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
-
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-
-    for (var i = 0; i < this.response[0].length; i++) {
-      if (this.response[0][i].AllowCompletion === "No") {
-        var previousTaskFilter = '';
-        if (this.response[0][i].PrevTasks) {
-          var previousTasks = task.PrevTasks.split(";#");
-          previousTasks.forEach(function (value, i) {
-            previousTaskFilter += "(Title eq '" + value + "')";
-            previousTaskFilter += i < previousTasks.length - 1 ? " or " : '';
-          });
-
-          this.batchContents = new Array();
-          const batchGuid = this.spServices.generateUUID();
-
-          let previousTask = Object.assign({}, this.mydashboardComponent.taskStatus);
-          previousTask.filter = previousTaskFilter
-
-          const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', previousTask);
-          this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
-
-          this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-          this.response[0].forEach(element => {
-            status = element.Status;
-          });
-
+          for (const obj of prevTaskResponse) {
+            status = obj.Status;
+          }
+        } else {
+          status = 'AllowCompletion';
         }
-        else {
-          status = "AllowCompletion";
-        }
-      }
-      else {
-        status = "AllowCompletion";
+      } else {
+        status = 'AllowCompletion';
       }
     }
     return status;
@@ -300,33 +450,145 @@ export class MyDashboardConstantsService {
 
 
   // **************************************************************************************************************************************
-  //  Complete Task 
+  //  Complete Task
   // **************************************************************************************************************************************
 
 
   async CompleteTask(task) {
-    var response;
+    let response;
     this.projectInfo = await this.getCurrentTaskProjectInformation(task.ProjectCode);
     this.NextPreviousTask = await this.getNextPreviousTask(task);
-    if (task.Task == 'Galley' || task.Task == 'Submission Pkg'
-      || task.Task == 'Submit' || task.Task == 'Journal Selection'
-      || task.Task == 'Journal Requirement') {
+    const allowedTasks = ['Galley', 'Submission Pkg', 'Submit', 'Journal Selection', 'Journal Requirement'];
+    if (allowedTasks.includes(task.Task)) {
       await this.GetAllDocuments(task);
-      var isJcIdFound = await this.getJCIDS(task);
+      const isJcIdFound = await this.getJCIDS(task);
       if (!isJcIdFound) {
-        // this.messageService.add({ key: 'custom', severity: 'error', summary: 'Error Message', detail: task.Task + "task can't be closed as no submission details are found." });
-        response = "Task can't be closed as no submission details are found."
+        response = 'Task can\'t be closed as no submission details are found.';
         return response;
-      }
-      else {
-
+      } else {
         response = await this.saveTask(task, true);
       }
-    }
-    else {
+    } else {
       response = await this.saveTask(task, false);
     }
+    if (task.ParentSlot) {
+      await this.getCurrentAndParentTask(task, 'Completed');
+    }
     return response;
+  }
+
+  getCSDetails(res) {
+    const pcmLevels = [];
+    if (res.hasOwnProperty('CMLevel1') && res.CMLevel1.hasOwnProperty('results') && res.CMLevel1.results.length) {
+      for (const ele of res.CMLevel1.results) {
+        pcmLevels.push(ele);
+      }
+      return pcmLevels;
+    } else {
+      return [];
+    }
+  }
+
+  async getCurrentAndParentTask(task: any, status) {
+
+
+    let batchURL = [];
+    // Parent Task
+    const parentTaskObj = Object.assign({}, this.mydashboardComponent.previousNextTaskParent);
+    parentTaskObj.filter = parentTaskObj.filter.replace(/{{ParentSlotId}}/g, task.ParentSlot);
+    batchURL.push({
+      data: null,
+      url: this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', parentTaskObj),
+      type: 'GET',
+      listName: this.constants.listNames.Schedules.name
+    });
+
+    // Current Task
+    const currentTaskObj = Object.assign({}, this.mydashboardComponent.previousNextTaskParent);
+    currentTaskObj.filter = currentTaskObj.filter.replace(/{{ParentSlotId}}/g, task.ID);
+    batchURL.push({
+      data: null,
+      url: this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', currentTaskObj),
+      type: 'GET',
+      listName: this.constants.listNames.Schedules.name
+    });
+    if (status === 'Completed') {
+
+      // Project Information
+      const projectInfObj = Object.assign({}, this.mydashboardComponent.projectInfoByPC);
+      projectInfObj.filter = projectInfObj.filter.replace(/{{ProjectCode}}/g, task.ProjectCode);
+      batchURL.push({
+        data: null,
+        url: this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', projectInfObj),
+        type: 'GET',
+        listName: this.constants.listNames.ProjectInformation.name
+      });
+
+    }
+    const currentParentTasks = await this.spServices.executeBatch(batchURL);
+    const parentTaskProp = { Status: 'In Progress', ActiveCA: 'Yes', __metadata: { type: this.constants.listNames.Schedules.type } };
+    const parentTaskRes = currentParentTasks.length ? currentParentTasks[0].retItems[0] : null;
+    const currentTaskRes = currentParentTasks.length ? currentParentTasks[1].retItems[0] : null;
+    if (status === 'Completed') {
+      const projInfoRes = currentParentTasks.length ? currentParentTasks[2].retItems[0] : null;
+      if (!currentTaskRes.NextTasks) {
+        if (parentTaskRes.Status !== 'Completed') {
+          const ctDueDate = new Date(this.datePipe.transform(currentTaskRes.DueDate, 'MMM d, y h:mm a'));
+          const todayDate = new Date();
+          const ONE_HOUR = 60 * 60 * 1000;
+          const timeDiff = ctDueDate.getTime() - todayDate.getTime();
+          const pcmLevels: any[] = this.getCSDetails(projInfoRes);
+
+          if (ctDueDate > todayDate && timeDiff > ONE_HOUR) {
+            const earlyTaskCompleteObj = {
+              __metadata: { type: this.constants.listNames.EarlyTaskComplete.type },
+              Title: currentTaskRes.Title,
+              ProjectCode: currentTaskRes.ProjectCode,
+              ProjectCSId: { results: pcmLevels.map(x => x.ID) },
+              IsActive: 'Yes'
+            };
+            batchURL = [];
+            batchURL.push({
+              data: earlyTaskCompleteObj,
+              url: this.spServices.getReadURL(this.constants.listNames.EarlyTaskComplete.name, null),
+              type: 'POST',
+              listName: this.constants.listNames.EarlyTaskComplete.name
+            });
+            const res = await this.spServices.executeBatch(batchURL);
+          }
+          parentTaskProp.Status = 'Completed';
+          parentTaskProp.ActiveCA = 'No';
+        } else {
+          return false;
+        }
+      } else if (!currentTaskRes.PrevTasks) {
+        if (parentTaskRes.Status !== 'In Progress' && parentTaskRes.Status !== 'Completed') {
+          parentTaskProp.Status = 'In Progress';
+        } else {
+          return false;
+        }
+      } else if (currentTaskRes.PrevTasks  && currentTaskRes.NextTasks ) {
+        if (parentTaskRes.Status !== 'In Progress' && parentTaskRes.Status !== 'Completed') {
+          parentTaskProp.Status = 'In Progress';
+        } else {
+          return false;
+        }
+      }
+    } else {
+      if (parentTaskRes.Status !== 'In Progress' && parentTaskRes.Status !== 'Completed') {
+        parentTaskProp.Status = 'In Progress';
+      } else {
+        return false;
+      }
+    }
+    const postbatchURL = [];
+    postbatchURL.push({
+      data: parentTaskProp,
+      url: this.spServices.getItemURL(this.constants.listNames.Schedules.name, parentTaskRes.Id),
+      type: 'PATCH',
+      listName: this.constants.listNames.Schedules.name
+    });
+    await this.spServices.executeBatch(postbatchURL);
   }
 
 
@@ -335,39 +597,29 @@ export class MyDashboardConstantsService {
   // **************************************************************************************************************************************
 
   async GetAllDocuments(task) {
-
     this.DocumentArray = [];
-    var documentsUrl = "/Drafts/Internal/" + task.Milestone;
-    var completeFolderRelativeUrl = "";
+    const documentsUrl = "/Drafts/Internal/" + task.Milestone;
+    let completeFolderRelativeUrl = '';
     completeFolderRelativeUrl = this.projectInfo.ProjectFolder + documentsUrl;
-    var Url = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/_api/web/getfolderbyserverrelativeurl('" + completeFolderRelativeUrl + "')/Files?$expand=ListItemAllFields";
-
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
-
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Url);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-    this.allDocuments = this.response[0];
-
+    this.response = await this.spServices.readFiles(completeFolderRelativeUrl);
+    this.allDocuments = this.response.length > 0 ? this.response : [];
     this.allDocuments.map(c => c.isFileMarkedAsFinal = c.ListItemAllFields.Status.split(" ").splice(-1)[0] === "Complete" ? true : false);
     this.DocumentArray = this.allDocuments.filter(c => c.ListItemAllFields.TaskName === task.Title && c.isFileMarkedAsFinal);
-
-
   }
   // **************************************************************************************************************************************
   //  Get  current project information
   // **************************************************************************************************************************************
 
   async getCurrentTaskProjectInformation(ProjectCode) {
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
-    let project = Object.assign({}, this.mydashboardComponent.projectInfo);
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+    const project = Object.assign({}, this.mydashboardComponent.projectInfo);
     project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
-    const projectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', project);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectUrl);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    return this.response[0][0];
+    this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, project);
+    // const projectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', project);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    return this.response.length > 0 ? this.response[0] : {};
   }
 
 
@@ -381,46 +633,93 @@ export class MyDashboardConstantsService {
     var isJcIdFound = false;
     const batchGuid = this.spServices.generateUUID();
     var batchContents = new Array();
+    let batchUrl = [];
     if (task.Task === 'Submission Pkg') {
-      let jcSub = Object.assign({}, this.mydashboardComponent.SubmissionPkg);
-      jcSub.filter = jcSub.filter.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Selected');;
-      const jcSubUrl = this.spServices.getReadURL('' + this.constants.listNames.JCSubmission.name + '', jcSub);
-      this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubUrl);
+      let jcObj = Object.assign({}, this.queryConfig);
+      jcObj.url = this.spServices.getReadURL(this.constants.listNames.JCSubmission.name, this.mydashboardComponent.SubmissionPkg);
+      jcObj.url = jcObj.url.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Selected');
+      jcObj.listName = this.constants.listNames.JCSubmission.name;
+      jcObj.type = 'GET';
+      batchUrl.push(jcObj);
+      // let jcSub = Object.assign({}, this.mydashboardComponent.SubmissionPkg);
+      // jcSub.filter = jcSub.filter.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Selected');
+      // const jcSubUrl = this.spServices.getReadURL('' + this.constants.listNames.JCSubmission.name + '', jcSub);
+      // this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubUrl);
     }
     else if (task.Task === 'Galley') {
-      let jcSub = Object.assign({}, this.mydashboardComponent.GalleySubCat);
-      jcSub.filter = jcSub.filter.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Accepted').replace(/{{Status1}}/gi, 'Galleyed');
-      const jcSubUrl = this.spServices.getReadURL('' + this.constants.listNames.JCSubmission.name + '', jcSub);
-      this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubUrl);
+      let jcSubObj = Object.assign({}, this.queryConfig);
+      jcSubObj.url = this.spServices.getReadURL(this.constants.listNames.JCSubmission.name, this.mydashboardComponent.GalleySubCat);
+      jcSubObj.url = jcSubObj.url.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Accepted').replace(/{{Status1}}/gi, 'Galleyed');
+      jcSubObj.listName = this.constants.listNames.JCSubmission.name;
+      jcSubObj.type = 'GET';
+      batchUrl.push(jcSubObj);
 
-      let jcSubCat = Object.assign({}, this.mydashboardComponent.Submit);
-      jcSubCat.filter = jcSubCat.filter.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Accepted').replace(/{{Status1}}/gi, 'Galleyed');
-      const jcSubCatUrl = this.spServices.getReadURL('' + this.constants.listNames.JournalConf.name + '', jcSubCat);
-      this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubCatUrl);
+      // let jcSub = Object.assign({}, this.mydashboardComponent.GalleySubCat);
+      // jcSub.filter = jcSub.filter.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Accepted').replace(/{{Status1}}/gi, 'Galleyed');
+      // const jcSubUrl = this.spServices.getReadURL('' + this.constants.listNames.JCSubmission.name + '', jcSub);
+      // this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubUrl);
+
+      let jcSubCatObj = Object.assign({}, this.queryConfig);
+      jcSubCatObj.url = this.spServices.getReadURL(this.constants.listNames.JournalConf.name, this.mydashboardComponent.Submit);
+      jcSubCatObj.url = jcSubCatObj.url.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Accepted').replace(/{{Status1}}/gi, 'Galleyed');
+      jcSubCatObj.listName = this.constants.listNames.JournalConf.name;
+      jcSubCatObj.type = 'GET';
+      batchUrl.push(jcSubCatObj);
+
+      // let jcSubCat = Object.assign({}, this.mydashboardComponent.Submit);
+      // jcSubCat.filter = jcSubCat.filter.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Accepted').replace(/{{Status1}}/gi, 'Galleyed');
+      // const jcSubCatUrl = this.spServices.getReadURL('' + this.constants.listNames.JournalConf.name + '', jcSubCat);
+      // this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubCatUrl);
+
+
     }
 
     else if (task.Task === 'Submit') {
-      let jcSub = Object.assign({}, this.mydashboardComponent.SubmissionPkg);
-      jcSub.filter = jcSub.filter.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Selected');
-      const jcSubUrl = this.spServices.getReadURL('' + this.constants.listNames.JCSubmission.name + '', jcSub);
-      this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubUrl);
 
-      let jcSubCat = Object.assign({}, this.mydashboardComponent.Submit);
-      jcSubCat.filter = jcSubCat.filter.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Selected').replace(/{{Status1}}/gi, 'Resubmit to same journal');
-      const jcSubCatUrl = this.spServices.getReadURL('' + this.constants.listNames.JournalConf.name + '', jcSubCat);
-      this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubCatUrl);
+      const jcSubObj = Object.assign({}, this.queryConfig);
+      jcSubObj.url = this.spServices.getReadURL(this.constants.listNames.JCSubmission.name, this.mydashboardComponent.SubmissionPkg);
+      jcSubObj.url = jcSubObj.url.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Selected');
+      jcSubObj.listName = this.constants.listNames.JCSubmission.name;
+      jcSubObj.type = 'GET';
+      batchUrl.push(jcSubObj);
+
+      // let jcSub = Object.assign({}, this.mydashboardComponent.SubmissionPkg);
+      // jcSub.filter = jcSub.filter.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Selected');
+      // const jcSubUrl = this.spServices.getReadURL('' + this.constants.listNames.JCSubmission.name + '', jcSub);
+      // this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubUrl);
+
+      const jcSubCatObj = Object.assign({}, this.queryConfig);
+      jcSubCatObj.url = this.spServices.getReadURL(this.constants.listNames.JournalConf.name, this.mydashboardComponent.Submit);
+      jcSubCatObj.url = jcSubCatObj.url.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Selected').replace(/{{Status1}}/gi, 'Resubmit to same journal');
+      jcSubCatObj.listName = this.constants.listNames.JournalConf.name;
+      jcSubCatObj.type = 'GET';
+      batchUrl.push(jcSubCatObj);
+
+      // let jcSubCat = Object.assign({}, this.mydashboardComponent.Submit);
+      // jcSubCat.filter = jcSubCat.filter.replace(/{{projectCode}}/gi, task.ProjectCode).replace(/{{Status}}/gi, 'Selected').replace(/{{Status1}}/gi, 'Resubmit to same journal');
+      // const jcSubCatUrl = this.spServices.getReadURL('' + this.constants.listNames.JournalConf.name + '', jcSubCat);
+      // this.spServices.getBatchBodyGet(batchContents, batchGuid, jcSubCatUrl);
+
     }
     else if (task.Task === 'Journal Selection') {
       isJcIdFound = true;
     }
     else if (task.Task === 'Journal Requirement') {
-      let jcReq = Object.assign({}, this.mydashboardComponent.JournalRequirement);
-      jcReq.filter = jcReq.filter.replace(/{{projectCode}}/gi, task.ProjectCode);
-      const jcReqUrl = this.spServices.getReadURL('' + this.constants.listNames.JournalConf.name + '', jcReq);
-      this.spServices.getBatchBodyGet(batchContents, batchGuid, jcReqUrl);
-    }
-    this.response = await this.spServices.getDataByApi(batchGuid, batchContents);
+      const jcReqObj = Object.assign({}, this.queryConfig);
+      jcReqObj.url = this.spServices.getReadURL(this.constants.listNames.JournalConf.name, this.mydashboardComponent.JournalRequirement);
+      jcReqObj.url = jcReqObj.url.replace(/{{projectCode}}/gi, task.ProjectCode);
+      jcReqObj.listName = this.constants.listNames.JournalConf.name;
+      jcReqObj.type = 'GET';
+      batchUrl.push(jcReqObj);
 
+      // let jcReq = Object.assign({}, this.mydashboardComponent.JournalRequirement);
+      // jcReq.filter = jcReq.filter.replace(/{{projectCode}}/gi, task.ProjectCode);
+      // const jcReqUrl = this.spServices.getReadURL('' + this.constants.listNames.JournalConf.name + '', jcReq);
+      // this.spServices.getBatchBodyGet(batchContents, batchGuid, jcReqUrl);
+    }
+    // this.response = await this.spServices.getDataByApi(batchGuid, batchContents);
+    const arrResult = await this.spServices.executeBatch(batchUrl);
+    this.response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
     this.jcSubId = undefined;
     this.jcId = undefined;
     if (this.response.length > 0) {
@@ -461,9 +760,10 @@ export class MyDashboardConstantsService {
   async saveTask(task, isJcIdFound) {
 
 
-    const batchGuid = this.spServices.generateUUID();
-    var batchContents = new Array();
-    const changeSetId = this.spServices.generateUUID();
+    // const batchGuid = this.spServices.generateUUID();
+    // var batchContents = new Array();
+    // const changeSetId = this.spServices.generateUUID();
+    const batchUrl = [];
     let data = {
       __metadata: { type: 'SP.Data.SchedulesListItem' },
       Actual_x0020_End_x0020_Date: new Date(),
@@ -471,119 +771,183 @@ export class MyDashboardConstantsService {
       Status: task.Status,
       TaskComments: task.TaskComments,
     };
-    const newdata = task.IsCentrallyAllocated === 'Yes' ? {...data, ActiveCA: 'No'} : {...data};
-    const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(task.ID) + ")";
-    this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(newdata), false);
-
+    const newdata = task.IsCentrallyAllocated === 'Yes' ? { ...data, ActiveCA: 'No' } : { ...data };
+    const taskObj = Object.assign({}, this.queryConfig);
+    taskObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +task.ID);
+    taskObj.data = newdata;
+    taskObj.listName = this.constants.listNames.Schedules.name;
+    taskObj.type = 'PATCH';
+    batchUrl.push(taskObj);
+    // const endPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(task.ID) + ")";
+    // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint, JSON.stringify(newdata), false);
     if (isJcIdFound) {
-      var docUrl = '';
+      let docUrl = '';
       const count = this.DocumentArray.length;
-      this.DocumentArray.forEach(function (value, i) {
+      this.DocumentArray.forEach((value, i) => {
         docUrl += value.ServerRelativeUrl;
         docUrl += i < count - 1 ? ";#" : '';
       });
       if (task.Task === 'Submission Pkg') {
-        const jcSubmissionObj = {
+        const jcSubmissionData = {
           __metadata: { type: 'SP.Data.JCSubmissionListItem' },
           SubmissionPkgURL: docUrl
         };
+        const jcSubObj = Object.assign({}, this.queryConfig);
+        jcSubObj.url = this.spServices.getItemURL(this.constants.listNames.JCSubmission.name, +this.jcSubId);
+        jcSubObj.data = jcSubmissionData;
+        jcSubObj.listName = this.constants.listNames.JCSubmission.name;
+        jcSubObj.type = 'PATCH';
+        batchUrl.push(jcSubObj);
 
-        const SubPackPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
-        this.spServices.getChangeSetBodySC(batchContents, changeSetId, SubPackPoint, JSON.stringify(jcSubmissionObj), false);
+        // const SubPackPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
+        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, SubPackPoint, JSON.stringify(jcSubmissionObj), false);
 
-      }
-      else if (task.Task === 'Galley') {
-        const jcSubmissionObj = {
+      } else if (task.Task === 'Galley') {
+        const jcSubmissionData = {
           __metadata: { type: 'SP.Data.JCGalleyListItem' },
           Title: task.ProjectCode,
           JCSubmissionID: this.jcSubId,
           GalleyDate: new Date().toISOString(),
           GalleyURL: docUrl
         };
-
-        const GallyPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.jcGalley.name + "')/items";
-        this.spServices.getChangeSetBodySC(batchContents, changeSetId, GallyPoint, JSON.stringify(jcSubmissionObj), true);
+        const jcSubObj = Object.assign({}, this.queryConfig);
+        jcSubObj.url = this.spServices.getReadURL(this.constants.listNames.jcGalley.name);
+        jcSubObj.data = jcSubmissionData;
+        jcSubObj.listName = this.constants.listNames.jcGalley.name;
+        jcSubObj.type = 'POST';
+        batchUrl.push(jcSubObj);
+        // const GallyPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.jcGalley.name + "')/items";
+        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, GallyPoint, JSON.stringify(jcSubmissionObj), true);
         //--------------------------------------- new Url--------------------------------------------------//
-        const jcendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
-        const jcSubObj = {
+        // const jcendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
+        const jcSubData = {
           __metadata: { type: 'SP.Data.JCSubmissionListItem' },
           Status: 'Galleyed'
         };
-        this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcendPoint, JSON.stringify(jcSubObj), false);
+        const jcObj = Object.assign({}, this.queryConfig);
+        jcObj.data = jcSubData;
+        jcObj.url = this.spServices.getItemURL(this.constants.listNames.JCSubmission.name, +this.jcSubId);
+        jcObj.listName = this.constants.listNames.JCSubmission.name;
+        jcObj.type = 'PATCH';
+        batchUrl.push(jcObj);
+        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcendPoint, JSON.stringify(jcSubObj), false);
 
         //--------------------------------------- new Url--------------------------------------------------//
-        const jcConendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JournalConf.name + "')/items(" + +(this.jcId) + ")";
-        const jcConObj = {
+        // const jcConendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JournalConf.name + "')/items(" + +(this.jcId) + ")";
+        const jcConData = {
           __metadata: { type: 'SP.Data.JournalConferenceListItem' },
           Status: 'Galleyed'
         };
-        this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcConendPoint, JSON.stringify(jcConObj), false);
+        const jcConObj = Object.assign({}, this.queryConfig);
+        jcConObj.data = jcConData;
+        jcConObj.url = this.spServices.getItemURL(this.constants.listNames.JournalConf.name, +this.jcId);
+        jcConObj.listName = this.constants.listNames.JournalConf.name;
+        jcConObj.type = 'PATCH';
+        batchUrl.push(jcConObj);
+
+        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcConendPoint, JSON.stringify(jcConObj), false);
         //--------------------------------------- new Url--------------------------------------------------//
-        const ProjetcInfoPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.ProjectInformation.name + "')/items(" + +(this.projectInfo.ID) + ")";
-        const projectInfoObj = {
+        // const ProjetcInfoPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.ProjectInformation.name + "')/items(" + +(this.projectInfo.ID) + ")";
+        const projectInfoData = {
           __metadata: { type: 'SP.Data.ProjectInformationListItem' },
           PubSupportStatus: 'Galleyed'
         };
-        this.spServices.getChangeSetBodySC(batchContents, changeSetId, ProjetcInfoPoint, JSON.stringify(projectInfoObj), false);
+        const projectInfoObj = Object.assign({}, this.queryConfig);
+        projectInfoObj.data = projectInfoData;
+        projectInfoObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +this.projectInfo.ID);
+        projectInfoObj.listName = this.constants.listNames.ProjectInformation.name;
+        projectInfoObj.type = 'PATCH';
+        batchUrl.push(projectInfoObj);
+        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, ProjetcInfoPoint, JSON.stringify(projectInfoObj), false);
 
 
       }
       else if (task.Task === 'Submit') {
-        const jcSubmissionObj = {
+        const jcSubmissionData = {
           __metadata: { type: 'SP.Data.JCSubmissionListItem' },
           Status: 'Submitted',
           SubmissionDate: new Date().toISOString(),
           SubmissionURL: docUrl
         };
-
-        const SubmitPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
-        this.spServices.getChangeSetBodySC(batchContents, changeSetId, SubmitPoint, JSON.stringify(jcSubmissionObj), false);
+        const jcSubmissionObj = Object.assign({}, this.queryConfig);
+        jcSubmissionObj.data = jcSubmissionData;
+        jcSubmissionObj.url = this.spServices.getItemURL(this.constants.listNames.JCSubmission.name, +this.jcSubId);
+        jcSubmissionObj.listName = this.constants.listNames.JCSubmission.name;
+        jcSubmissionObj.type = 'PATCH';
+        batchUrl.push(jcSubmissionObj);
+        // const SubmitPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JCSubmission.name + "')/items(" + +(this.jcSubId) + ")";
+        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, SubmitPoint, JSON.stringify(jcSubmissionObj), false);
         //--------------------------------------- new Url--------------------------------------------------//
-        const jcConendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JournalConf.name + "')/items(" + +(this.jcId) + ")";
-        const jcConObj = {
+        // const jcConendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JournalConf.name + "')/items(" + +(this.jcId) + ")";
+        const jcConData = {
           __metadata: { type: 'SP.Data.JournalConferenceListItem' },
           Status: 'Submitted'
         };
-        this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcConendPoint, JSON.stringify(jcConObj), false);
+        const jcConObj = Object.assign({}, this.queryConfig);
+        jcConObj.data = jcConData;
+        jcConObj.url = this.spServices.getItemURL(this.constants.listNames.JournalConf.name, +this.jcId);
+        jcConObj.listName = this.constants.listNames.JournalConf.name;
+        jcConObj.type = 'PATCH';
+        batchUrl.push(jcConObj);
+        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcConendPoint, JSON.stringify(jcConObj), false);
         //--------------------------------------- new Url--------------------------------------------------//
-        const ProjetcInfoPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.ProjectInformation.name + "')/items(" + +(this.projectInfo.ID) + ")";
-        const projectInfoObj = {
+        // const ProjetcInfoPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.ProjectInformation.name + "')/items(" + +(this.projectInfo.ID) + ")";
+        const projectInfoData = {
           __metadata: { type: 'SP.Data.ProjectInformationListItem' },
           PubSupportStatus: 'Submitted',
           LastSubmissionDate: new Date().toISOString()
         };
-        this.spServices.getChangeSetBodySC(batchContents, changeSetId, ProjetcInfoPoint, JSON.stringify(projectInfoObj), false);
+        const projectInfoObj = Object.assign({}, this.queryConfig);
+        projectInfoObj.data = projectInfoData;
+        projectInfoObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +this.projectInfo.ID);
+        projectInfoObj.listName = this.constants.listNames.ProjectInformation.name;
+        projectInfoObj.type = 'PATCH';
+        batchUrl.push(projectInfoObj);
+        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, ProjetcInfoPoint, JSON.stringify(projectInfoObj), false);
 
 
       } else if (task.Task === 'Journal Selection') {
 
-        const ProjetcInfoPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.ProjectInformation.name + "')/items(" + +(this.projectInfo.ID) + ")";
-        const projectInfoObj = {
+        // const ProjetcInfoPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.ProjectInformation.name + "')/items(" + +(this.projectInfo.ID) + ")";
+        const projectInfoData = {
           __metadata: { type: 'SP.Data.ProjectInformationListItem' },
           JournalSelectionURL: docUrl,
           JournalSelectionDate: new Date().toISOString()
         };
-        this.spServices.getChangeSetBodySC(batchContents, changeSetId, ProjetcInfoPoint, JSON.stringify(projectInfoObj), false);
+        const projectInfoObj = Object.assign({}, this.queryConfig);
+        projectInfoObj.data = projectInfoData;
+        projectInfoObj.url = this.spServices.getItemURL(this.constants.listNames.ProjectInformation.name, +this.projectInfo.ID);
+        projectInfoObj.listName = this.constants.listNames.ProjectInformation.name;
+        projectInfoObj.type = 'PATCH';
+        batchUrl.push(projectInfoObj);
+        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, ProjetcInfoPoint, JSON.stringify(projectInfoObj), false);
 
 
       }
       else if (task.Task === 'Journal Requirement') {
 
-        const jcConendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JournalConf.name + "')/items(" + +(this.jcId) + ")";
-        const jcConObj = {
+        // const jcConendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.JournalConf.name + "')/items(" + +(this.jcId) + ")";
+        const jcConData = {
           __metadata: { type: 'SP.Data.JournalConferenceListItem' },
           JournalRequirementDate: new Date().toISOString(),
           JournalRequirementURL: docUrl
         };
-        this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcConendPoint, JSON.stringify(jcConObj), false);
+        const jcConObj = Object.assign({}, this.queryConfig);
+        jcConObj.data = jcConData;
+        jcConObj.url = this.spServices.getItemURL(this.constants.listNames.JournalConf.name, +this.jcId);
+        jcConObj.listName = this.constants.listNames.JournalConf.name;
+        jcConObj.type = 'PATCH';
+        batchUrl.push(jcConObj);
+        // this.spServices.getChangeSetBodySC(batchContents, changeSetId, jcConendPoint, JSON.stringify(jcConObj), false);
 
 
       }
     }
-    var nextTasks = this.NextPreviousTask !== undefined ? this.NextPreviousTask.filter(c => c.TaskType === "Next Task") : [];
-    var sendToClientPresent = false;
+
+    const nextTasks = this.NextPreviousTask !== undefined ? this.NextPreviousTask.filter(c => c.TaskType === 'Next Task') : [];
+    let sendToClientPresent = false;
     if (nextTasks.length > 0) {
-      sendToClientPresent = nextTasks.find(c => c.Task === "Send to client") !== undefined ? true : false;
+      sendToClientPresent = nextTasks.find(c => c.Task === 'Send to client') !== undefined ? true : false;
     }
 
 
@@ -592,9 +956,14 @@ export class MyDashboardConstantsService {
         __metadata: { type: 'SP.Data.ProjectInformationListItem' },
         Status: "Ready for Client"
       };
-
-      const endPoint1 = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.projectInfo.name + "')/items(" + +(this.projectInfo.ID) + ")";
-      this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint1, JSON.stringify(data1), false);
+      const scObj = Object.assign({}, this.queryConfig);
+      scObj.data = data1;
+      scObj.url = this.spServices.getItemURL(this.constants.listNames.projectInfo.name, +this.projectInfo.ID);
+      scObj.listName = this.constants.listNames.projectInfo.name;
+      scObj.type = 'PATCH';
+      batchUrl.push(scObj);
+      // const endPoint1 = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.projectInfo.name + "')/items(" + +(this.projectInfo.ID) + ")";
+      // this.spServices.getChangeSetBodySC(batchContents, changeSetId, endPoint1, JSON.stringify(data1), false);
     }
     var mailSubject = task.ProjectCode + "(" + this.projectInfo.WBJID + "): Task Completed";
     nextTasks.forEach(element => {
@@ -602,85 +971,101 @@ export class MyDashboardConstantsService {
         __metadata: { type: 'SP.Data.SchedulesListItem' },
         PreviousTaskClosureDate: new Date()
       };
-      const tempendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(element.ID) + ")";
-      this.spServices.getChangeSetBodySC(batchContents, changeSetId, tempendPoint, JSON.stringify(data), false);
+      const nextTaskObj = Object.assign({}, this.queryConfig);
+      nextTaskObj.data = data;
+      nextTaskObj.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +element.ID);
+      nextTaskObj.listName = this.constants.listNames.Schedules.name;
+      nextTaskObj.type = 'PATCH';
+      batchUrl.push(nextTaskObj);
+      // const tempendPoint = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/web/lists/getbytitle('" + this.constants.listNames.Schedules.name + "')/items(" + +(element.ID) + ")";
+      // this.spServices.getChangeSetBodySC(batchContents, changeSetId, tempendPoint, JSON.stringify(data), false);
+      if (element.AssignedTo.EMail) {
+        var EmailTemplate = this.Emailtemplate.Content;
+        var objEmailBody = [];
 
-      var EmailTemplate = this.Emailtemplate.Content;
-      var objEmailBody = [];
+        objEmailBody.push({
+          "key": "@@Val1@@",
+          "value": task.ProjectCode
+        });
+        objEmailBody.push({
+          "key": "@@Val2@@",
+          "value": element.SubMilestones ? element.SubMilestones !== "Default" ? element.Title + " - " +
+            element.SubMilestones : element.Title : element.Title
+        });
+        objEmailBody.push({
+          "key": "@@Val3@@",
+          "value": element.AssignedTo.Title
+        });
+        objEmailBody.push({
+          "key": "@@Val4@@",
+          "value": element.Task
+        });
+        objEmailBody.push({
+          "key": "@@Val5@@",
+          "value": element.Milestone
+        });
+        objEmailBody.push({
+          "key": "@@Val6@@",
+          "value": element.StartDate
+        });
+        objEmailBody.push({
+          "key": "@@Val7@@",
+          "value": element.DueDate
+        });
+        objEmailBody.push({
+          "key": "@@Val8@@",
+          "value": task.TaskComments ? task.TaskComments : ''
+        });
+        objEmailBody.push({
+          "key": "@@Val0@@",
+          "value": element.ID
+        });
 
-      objEmailBody.push({
-        "key": "@@Val1@@",
-        "value": task.ProjectCode
-      });
-      objEmailBody.push({
-        "key": "@@Val2@@",
-        "value": element.SubMilestones ? element.SubMilestones !== "Default" ? element.Title + " - " + element.SubMilestones : element.Title : element.Title
-      });
-      objEmailBody.push({
-        "key": "@@Val3@@",
-        "value": element.AssignedTo.Title
-      });
-      objEmailBody.push({
-        "key": "@@Val4@@",
-        "value": element.Task
-      });
-      objEmailBody.push({
-        "key": "@@Val5@@",
-        "value": element.Milestone
-      });
-      objEmailBody.push({
-        "key": "@@Val6@@",
-        "value": element.StartDate
-      });
-      objEmailBody.push({
-        "key": "@@Val7@@",
-        "value": element.DueDate
-      });
-      objEmailBody.push({
-        "key": "@@Val8@@",
-        "value": task.TaskComments ? task.TaskComments : ''
-      });
-      objEmailBody.push({
-        "key": "@@Val0@@",
-        "value": element.ID
-      });
+        objEmailBody.forEach(obj => {
+          EmailTemplate = EmailTemplate.replace(RegExp(obj.key, 'gi'), obj.value);
+        });
 
-      objEmailBody.forEach(element => {
-        EmailTemplate = EmailTemplate.replace(RegExp(element.key, "gi"), element.value);
-      });
-      const obj = {
-        'properties': {
-          '__metadata': {
-            'type': 'SP.Utilities.EmailProperties'
-          },
-          'To': {
-            'results': [element.AssignedTo.EMail]
-          },
-          'CC': {
-            'results': [this.sharedObject.currentUser.email]
-          },
-          'From': this.sharedObject.currentUser.email,
-          'Subject': mailSubject,
-          'Body': EmailTemplate
-        }
-      };
 
-      const emailUrl = this.sharedObject.sharePointPageObject.webAbsoluteUrl + "/_api/SP.Utilities.Utility.SendEmail";
-      this.spServices.getChangeSetBodySC(batchContents, changeSetId, emailUrl, JSON.stringify(obj), true);
+        //console.log(EmailTemplate);
+        /*const emailObj = Object.assign({}, this.queryConfig);
+        const Emaildata = this.spServices.getEmailData(element.AssignedTo.EMail,
+          this.sharedObject.currentUser.email, mailSubject, EmailTemplate, this.sharedObject.currentUser.email);
+
+        emailObj.data = JSON.parse(Emaildata);
+        emailObj.url = this.spServices.getEmailURL();
+        emailObj.type = 'POST';
+        batchUrl.push(emailObj);*/
+        EmailTemplate = EmailTemplate.replace(RegExp("'", 'gi'), '');
+        EmailTemplate = EmailTemplate.replace(/\\/g, '\\\\');
+        mailSubject = mailSubject.replace(RegExp("'", 'gi'), '');
+        const sendEmailObj = {
+          __metadata: { type: this.constants.listNames.SendEmail.type },
+          Title: mailSubject,
+          MailBody: EmailTemplate,
+          Subject: mailSubject,
+          ToEmailId: element.AssignedTo.EMail,
+          FromEmailId: this.sharedObject.currentUser.email,
+          CCEmailId: this.sharedObject.currentUser.email
+        };
+        const createSendEmailObj = Object.assign({}, this.queryConfig);
+        createSendEmailObj.url = this.spServices.getReadURL(this.constants.listNames.SendEmail.name, null);
+        createSendEmailObj.data = sendEmailObj;
+        createSendEmailObj.type = 'POST';
+        createSendEmailObj.listName = this.constants.listNames.SendEmail.name;
+        batchUrl.push(createSendEmailObj);
+      }
 
     });
 
 
 
-    batchContents.push('--changeset_' + changeSetId + '--');
-    const batchBody = batchContents.join('\r\n');
-    const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-    batchBodyContent.push('--batch_' + batchGuid + '--');
-    const batchBodyContents = batchBodyContent.join('\r\n');
-    const response = await this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
-
-
-
+    // batchContents.push('--changeset_' + changeSetId + '--');
+    // const batchBody = batchContents.join('\r\n');
+    // const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
+    // batchBodyContent.push('--batch_' + batchGuid + '--');
+    // const batchBodyContents = batchBodyContent.join('\r\n');
+    // const response = await this.spServices.executeBatchPostRequestByRestAPI(batchGuid, batchBodyContents);
+    await this.spServices.executeBatch(batchUrl);
     return undefined;
     // this.messageService.add({ key: 'custom', severity: 'success', summary: 'Success Message', detail: task.Title + 'Task completed sucessfully.' });
   }
@@ -690,15 +1075,20 @@ export class MyDashboardConstantsService {
   // Get Email Template  
   // *************************************************************************************************************************************
   async getEmailTemplate() {
-    var Url = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/_api/web/lists/GetByTitle('" + this.constants.listNames.MailContent.name + "')/items?$select=Content&$filter=Title eq 'NextTaskTemplate'";
-    const batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // var Url = this.sharedObject.sharePointPageObject.serverRelativeUrl + "/_api/web/lists/GetByTitle('" + this.constants.listNames.MailContent.name + "')/items?$select=Content&$filter=Title eq 'NextTaskTemplate'";
+    // const batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
 
-    this.spServices.getBatchBodyGet(batchContents, batchGuid, Url);
-    var response = await this.spServices.getDataByApi(batchGuid, batchContents);
+    // this.spServices.getBatchBodyGet(batchContents, batchGuid, Url);
+    // var response = await this.spServices.getDataByApi(batchGuid, batchContents);
 
-    this.Emailtemplate = response[0][0];
+    // this.Emailtemplate = response[0][0];
 
+    const common = this.mydashboardComponent.common;
+    common.getMailTemplate.filter = common.getMailTemplate.filter.replace('{{templateName}}', 'NextTaskTemplate');
+    const templateData = await this.spServices.readItems(this.constants.listNames.MailContent.name,
+      common.getMailTemplate);
+    this.Emailtemplate = templateData.length > 0 ? templateData[0] : [];
   }
 
 
@@ -710,24 +1100,27 @@ export class MyDashboardConstantsService {
 
   async getAllClients() {
 
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
-
     let ClientLegalEntities = Object.assign({}, this.mydashboardComponent.ClientLegalEntities);
-    const ClientLegalEntitiesUrl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', ClientLegalEntities);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ClientLegalEntitiesUrl);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.response = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, ClientLegalEntities);
+
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+
+    // let ClientLegalEntities = Object.assign({}, this.mydashboardComponent.ClientLegalEntities);
+    // const ClientLegalEntitiesUrl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', ClientLegalEntities);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ClientLegalEntitiesUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
 
-    const tempClientLegalEntities = this.response[0].map(c => c.Title);
+    const tempClientLegalEntities = this.response.map(c => c.Title);
 
     const ClientLegalEntitiesResponse = tempClientLegalEntities.filter(function (item, pos) {
       if (!item.toLowerCase().includes('cactus internal')) {
         return tempClientLegalEntities.indexOf(item) == pos;
       }
     });
-
-    var dbClientLegalEntities = ClientLegalEntitiesResponse.map(o => new Object({ label: o, value: o }))
+    let dbClientLegalEntities = [];
+    dbClientLegalEntities = ClientLegalEntitiesResponse.map(o => new Object({ label: o, value: o }))
 
     return dbClientLegalEntities;
 
@@ -756,140 +1149,124 @@ export class MyDashboardConstantsService {
     return tempminDateValue;
   }
 
-  //*************************************************************************************************
-  //  Calculate difference between 2 dates 
-  //*************************************************************************************************
+  // *************************************************************************************************
+  //  Calculate difference between 2 dates
+  // *************************************************************************************************
 
   differenceBetweenHours(startDateTime, endDateTime) {
-    var diff = new Date(endDateTime).getTime() - new Date(startDateTime).getTime();
-    var hours = Math.floor(diff / 1000 / 60 / 60);
+    let diff = new Date(endDateTime).getTime() - new Date(startDateTime).getTime();
+    const hours = Math.floor(diff / 1000 / 60 / 60);
     diff -= hours * 1000 * 60 * 60;
-    var minutes = Math.floor(diff / 1000 / 60);
-
+    const minutes = Math.floor(diff / 1000 / 60);
     return (hours < 9 ? "0" : "") + hours + ":" + (minutes < 9 ? "0" : "") + minutes;
-
   }
 
 
 
-  //*************************************************************************************************
-  //  Return unique objects  string 
-  //*************************************************************************************************
+  // *************************************************************************************************
+  //  Return unique objects  string
+  // *************************************************************************************************
 
   uniqueArrayObj(array: any) {
-
     let sts: any = '';
     return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
       return {
         label: label1,
         value: array.find(s => s.label === label1).value,
-
-      }
+      };
     });
   }
 
-  //*************************************************************************************************
-  //   Get Task Documents
-  //*************************************************************************************************
+  // *************************************************************************************************
+  // Get Task Documents
+  // *************************************************************************************************
 
 
-  getTaskDocument(folderUrl, documentUrl, previousTask) {
-    let documents = [];
-    const completeFolderRelativeUrl = folderUrl + documentUrl;
-    const Url = "/_api/web/getfolderbyserverrelativeurl('" + completeFolderRelativeUrl + "')/Files?$expand=ListItemAllFields";
-    if (previousTask) {
-      documents = this.spServices.fetchTaskDocumentsByRestAPI(Url, previousTask);
-    } else {
-      documents = this.spServices.fetchTaskDocumentsByRestAPI(Url, null);
-    }
-    if (documents.length) {
-      documents = documents.sort((a, b) =>
-        new Date(a.modified) < new Date(b.modified) ? 1 : -1
-      );
-    }
-    return documents;
-  }
+  // async getTaskDocument(folderUrl, documentUrl) {
+  //   // let documents = [];
+  //   const completeFolderRelativeUrl = folderUrl + documentUrl;
+  //   let documents = await this.spServices.readFiles(completeFolderRelativeUrl);
+  //   if (documents.length) {
+  //     documents = documents.sort((a, b) =>
+  //       new Date(a.modified) < new Date(b.modified) ? 1 : -1
+  //     );
+  //   }
+  //   return documents;
+  // }
 
 
-  callQMSPopup(currentTaskElement, qmsObj) {
-    var previousTaskFilter = '';
-    var newValue = [];
+  async callQMSPopup(currentTaskElement, qmsObj) {
+    let previousTaskFilter = '';
+    let newValue = [];
     if (currentTaskElement.PrevTasks) {
       newValue = currentTaskElement.PrevTasks.split(";#");
-      for (var i = 0; i < newValue.length; i++) {
+      for (let i = 0; i < newValue.length; i++) {
         previousTaskFilter += "(Title eq '" + newValue[i] + "')";
-        if (i != newValue.length - 1) {
+        if (i !== newValue.length - 1) {
           previousTaskFilter += " or "
         }
       }
     }
     const project = this.sharedObject.DashboardData.ProjectCodes.find(c => c.ProjectCode === currentTaskElement.ProjectCode);
-    var folderUrl = project.ProjectFolder;
-    var documentsUrl = "/Drafts/Internal/" + currentTaskElement.Milestone;
+    const folderUrl = project.ProjectFolder;
+    const documentsUrl = "/Drafts/Internal/" + currentTaskElement.Milestone;
 
-    var tempArray = [];
-    var reviewDocArray = [];
-    var documents = this.getTaskDocument(folderUrl, documentsUrl, currentTaskElement.PrevTasks);
-    for (var document in documents) {
-      if (documents[document].visiblePrevTaskDoc === true) {
-        // var docObj = {
-        //   url: '',
-        //   fileName: ''
-        // }
-        // docObj.url = documents[document].fileUrl;
-        // docObj.fileName = documents[document].fileName;
-        tempArray.push(documents[document].fileUrl);
+    const tempArray = [];
+    const reviewDocArray = [];
+    const documents = await this.common.getTaskDocument(folderUrl, documentsUrl);
+    for (const doc in documents) {
+      if (currentTaskElement.PrevTasks.indexOf(documents[doc].ListItemAllFields.TaskName) > -1 && documents[doc].ListItemAllFields.Status.indexOf('Complete') > -1) {
+        tempArray.push(documents[doc].ServerRelativeUrl);
       }
     }
-    var reviewDocuments = this.getTaskDocument(folderUrl, documentsUrl, '');
-    for (var document in reviewDocuments) {
-      if (reviewDocuments[document].taskName === currentTaskElement.TaskName && reviewDocuments[document].status.indexOf('Complete') > -1) {
-        // var docObj = {
-        //   url: '',
-        //   fileName: ''
-        // }
-        // docObj.url = reviewDocuments[document].fileUrl;
-        // docObj.fileName = reviewDocuments[document].fileName;
-        reviewDocArray.push(reviewDocuments[document].fileUrl);
+    const reviewDocuments = await this.common.getTaskDocument(folderUrl, documentsUrl);
+    for (const document in reviewDocuments) {
+      if (reviewDocuments[document].ListItemAllFields.TaskName === currentTaskElement.Title && reviewDocuments[document].ListItemAllFields.Status.indexOf('Complete') > -1) {
+        reviewDocArray.push(reviewDocuments[document].ServerRelativeUrl);
       }
     }
-    if (newValue.length == 1 && tempArray.length) {
-      var queryUrl = "/_api/web/lists/GetByTitle('Schedules')/items?$select=ID,Title,StartDate,DueDate, SubMilestones, Status,Task,NextTasks,PrevTasks,Milestone,Actual_x0020_End_x0020_Date,AssignedTo/Id,AssignedTo/Title,AssignedTo/EMail&$expand=AssignedTo/Title&$filter=" + previousTaskFilter;
-      var previousItems = this.spServices.fetchListItemsByRestAPI(queryUrl);
-      var obj = {
-        documentURL: [],
-        resourceID: 0,
-        resource: '',
-        taskCompletionDate: new Date(),
+    if (newValue.length === 1 && tempArray.length) {
+      const taskObj = Object.assign({}, this.mydashboardComponent.TaskDetails);
+      taskObj.filter = previousTaskFilter;
+      const previousItems = await this.spServices.readItems(this.constants.listNames.Schedules.name, taskObj);
+      const obj = {
+        documentURL: tempArray,
+        resourceID: previousItems[0].AssignedTo.Id,
+        subMilestones: previousItems[0].SubMilestones,
+        resource: previousItems[0].AssignedTo.Title,
+        taskCompletionDate: previousItems[0].Actual_x0020_End_x0020_Date,
         reviewTask: {
-          ID: 0,
-          Title: '',
-          PrevTasks: '',
-          Rated: '',
+          ID: currentTaskElement.ID,
+          Title: currentTaskElement.Title ? currentTaskElement.Title : currentTaskElement.Title,
+          PrevTasks: currentTaskElement.PrevTasks,
+          Rated: currentTaskElement.Rated
         },
-        reviewTaskDocUrl: [],
-        taskTitle: '',
-        taskID: 0,
-        subMilestones : ''
-      }
-      obj.documentURL = tempArray;
-      obj.resourceID = previousItems[0].AssignedTo.Id;
-      obj.subMilestones = previousItems[0].SubMilestones;
-      obj.resource = previousItems[0].AssignedTo.Title;
-      obj.taskCompletionDate = previousItems[0].Actual_x0020_End_x0020_Date;
-      obj.reviewTask.ID = currentTaskElement.ID;
-      obj.reviewTask.Title = currentTaskElement.TaskName ? currentTaskElement.TaskName : currentTaskElement.Title;
-      obj.reviewTask.PrevTasks = currentTaskElement.PrevTasks;
-      obj.reviewTask.Rated = currentTaskElement.Rated;
-      obj.taskTitle = previousItems[0].Title;
-      obj.taskID = previousItems[0].ID;
-      obj.reviewTaskDocUrl = reviewDocArray;
+        taskTitle: previousItems[0].Title,
+        taskID: previousItems[0].ID,
+        reviewTaskDocUrl: reviewDocArray,
+      };
       qmsObj.openPopup(obj);
-      //window.angularComponentReference.zone.run(() =>{window.angularComponentReference.componentFn(obj);});
     }
   }
 
 
+
+  // *************************************************************************************************************************************
+  // remove days to get start date for previous days
+  // *************************************************************************************************************************************
+
+  RemoveBusinessDays(date, days) {
+
+    let tempDate = new Date(date);
+    while (days > 0) {
+
+      tempDate = new Date(tempDate.setDate(tempDate.getDate() - 1));
+      if (tempDate.getDay() !== 6 && tempDate.getDay() !== 0) {
+        days -= 1;
+      }
+    }
+    return tempDate;
+  }
 
 }
 

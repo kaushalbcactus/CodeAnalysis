@@ -56,7 +56,7 @@ export class PmconstantService {
   public crTaskOptions = {
     select: 'ID,Title,Status, AssignedTo/ID,AssignedTo/Title,DueDate',
     expand: 'AssignedTo/ID,AssignedTo/Title',
-    filter: 'Title eq \'{0}\' or Title eq \'{1}\''
+    filter: 'Title eq \'{0}\''
   };
 
   public pInfoPendingAllocationIndiviualViewOptions = {
@@ -65,7 +65,7 @@ export class PmconstantService {
       + 'ID,DeliverableType,TA,Molecule,ProjectCode,Status,Milestone,WBJID,StatusReportDesc,NextSCDate,PrimaryPOC,Description',
     expand: 'PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,AllDeliveryResources/Title,'
       + 'AllOperationresources/Id,AllOperationresources/Title,PrimaryResMembers/Id,PrimaryResMembers/Title',
-    filter: '((AllOperationresources/Id eq ' + this.global.sharePointPageObject.userId + ') and (Status eq \'Unallocated\'))',
+    filter: '((AllOperationresources/Id eq ' + this.global.currentUser.userId + ') and (Status eq \'Unallocated\'))',
     orderby: 'ProjectCode asc',
     top: '4500'
   };
@@ -75,7 +75,7 @@ export class PmconstantService {
       + 'ID,DeliverableType,TA,Molecule,ProjectCode,Status,Milestone,WBJID,StatusReportDesc,NextSCDate,PrimaryPOC,Description',
     expand: 'PrimaryResMembers/Id,PrimaryResMembers/Title,AllDeliveryResources/Id,AllDeliveryResources/Title,'
       + 'AllOperationresources/Id,AllOperationresources/Title,PrimaryResMembers/Id,PrimaryResMembers/Title',
-    filter: '((AllOperationresources/Id eq ' + this.global.sharePointPageObject.userId + ') and '
+    filter: '((AllOperationresources/Id eq ' + this.global.currentUser.userId + ') and '
       + ' (Status eq \'On Hold\' or Status eq \'In Discussion\'))',
     orderby: 'ProjectCode asc',
     top: '4500'
@@ -110,7 +110,7 @@ export class PmconstantService {
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title,Editor/Title',
       // tslint:disable-next-line:max-line-length
-      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllOperationresources/Id eq ' + this.global.sharePointPageObject.userId + ')',
+      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllOperationresources/Id eq ' + this.global.currentUser.userId + ')',
       orderby: 'Modified desc',
       top: 4500
     },
@@ -127,7 +127,7 @@ export class PmconstantService {
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
       // tslint:disable-next-line:max-line-length
-      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllOperationresources/Id eq ' + this.global.sharePointPageObject.userId + ' or AllDeliveryResources/Id eq ' + this.global.sharePointPageObject.userId + ')',
+      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllOperationresources/Id eq ' + this.global.currentUser.userId + ' or AllDeliveryResources/Id eq ' + this.global.currentUser.userId + ')',
       orderby: 'Modified desc',
       top: 4500
     },
@@ -143,7 +143,7 @@ export class PmconstantService {
       expand: 'Author/Id,Author/Title, CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title,'
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title, DeliveryLevel2/ID, DeliveryLevel2/Title,'
         + 'PrimaryResMembers/Id,PrimaryResMembers/Title',
-      filter: 'ProjectCode eq \'{{projectCode}}\' and (Status eq \'Closed\' or Status eq \'Cancelled\') and (AllOperationresources/Id eq ' + this.global.sharePointPageObject.userId + ')',
+      filter: 'ProjectCode eq \'{{projectCode}}\' and (Status eq \'Closed\' or Status eq \'Cancelled\') and (AllOperationresources/Id eq ' + this.global.currentUser.userId + ')',
       orderby: 'Modified desc',
       top: 4500
     },
@@ -195,7 +195,7 @@ export class PmconstantService {
         + 'DeliveryLevel1/ID, DeliveryLevel1/Title,Editor/Title,'
         + 'DeliveryLevel2/ID, DeliveryLevel2/Title, BD/ID, BD/Title',
       // tslint:disable-next-line:max-line-length
-      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllResources/Id eq ' + this.global.sharePointPageObject.userId + ')',
+      filter: '(Status ne \'Closed\') and (Status ne \'Cancelled\') and (AllResources/Id eq ' + this.global.currentUser.userId + ')',
       orderby: 'Modified desc',
       top: 4500
     },
@@ -232,11 +232,13 @@ export class PmconstantService {
     BILLING_ENTITY: {
       select: 'Title, InvoiceTemplate, Acronym',
       orderby: 'Title',
+      filter: "IsActive eq 'Yes'",
       top: 4900
     },
     PRACTICE_AREA: {
       select: 'Title',
       orderby: 'Title',
+      filter: "IsActive eq 'Yes'",
       top: 4900
     },
     CLIENT_LEGAL_ENTITY: {
@@ -245,6 +247,7 @@ export class PmconstantService {
         + 'DeliveryLevel2/ID, DeliveryLevel2/Title',
       expand: 'CMLevel1/ID, CMLevel1/Title, CMLevel2/ID, CMLevel2/Title, DeliveryLevel1/ID, DeliveryLevel1/Title,'
         + 'DeliveryLevel2/ID, DeliveryLevel2/Title',
+      filter: "IsActive eq 'Yes'",
       orderby: 'Title',
       top: 4900
     },
@@ -256,7 +259,8 @@ export class PmconstantService {
     DELIVERY_TYPE: {
       select: 'Title,Acronym',
       orderby: 'Title',
-      top: 4900
+      top: 4900,
+      filter: "Active eq 'Yes'",
     },
     MILESTONE_TYPE: {
       select: 'Title,Mandatory',
@@ -266,16 +270,19 @@ export class PmconstantService {
     MOLECULES: {
       select: 'Title',
       orderby: 'Title',
+      filter: "IsActive eq 'Yes'",
       top: 4900
     },
     PROJECT_CONTANTCS: {
       select: 'ID,Title,ClientLegalEntity,Address,Designation,EmailAddress,FName,ID,LName,Phone, FullName',
       orderby: 'Title',
+      filter: "Status eq 'Active'",
       top: 4900
     },
     PROJECT_TYPE: {
       select: 'Title',
       orderby: 'Title',
+      filter: "IsActive eq 'Yes'",
       top: 4900
     },
     SUBDELIVERABLES: {
@@ -286,6 +293,7 @@ export class PmconstantService {
     TA: {
       select: 'Title',
       orderby: 'Title',
+      filter: "Active eq 'Yes'",
       top: 4900
     }
   };
@@ -315,6 +323,7 @@ export class PmconstantService {
       select: 'ID,Title,BillingEntity,Acronym,CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Title,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
       // tslint:disable-next-line:max-line-length
       expand: 'CMLevel1/ID,CMLevel1/Title,CMLevel2/ID,CMLevel2/Titl,DeliveryLevel1/ID,DeliveryLevel1/Title,DeliveryLevel2/ID,DeliveryLevel2/Title',
+      filter: "IsActive eq 'Yes'",
       top: 4900
     },
     DELIVERY_TYPE: {
@@ -344,7 +353,7 @@ export class PmconstantService {
     },
     NON_STANDARD_RESOURCE_CATEGORIZATION: {
       // tslint:disable-next-line:max-line-length
-      select: 'ID,MaxHrs,PrimarySkill,UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title',
+      select: 'ID,MaxHrs,PrimarySkill,UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title,IsFTE',
       // tslint:disable-next-line:max-line-length
       expand: 'UserName/ID,UserName/EMail,UserName/Title,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title',
       filter: 'IsActive eq \'Yes\' and SkillLevel/Title ne null',
@@ -360,7 +369,10 @@ export class PmconstantService {
     SEND_TO_CLIENT: 'Send to client',
     USER_AVAILABLE: 'Available',
     CLIENT_REVIEW: 'Client Review',
-    FOLLOW_UP: 'Follow up'
+    FOLLOW_UP: 'Follow up',
+    BLOCKING: 'Blocking',
+    MEETING: 'Meeting',
+    TRAINING: 'Training'
   };
 
   public endDate = {
@@ -454,11 +466,17 @@ export class PmconstantService {
         + ' InvoiceDate, MainPOC, FileURL',
       filter: 'ClientLegalEntity eq \'{{clientLegalEntity}}\' and IsTaggedFully eq \'No\'',
       top: 4500
+    },
+    GET_PROJECT_TYPE: {
+      select: 'ID,Title,IsActive',
+      filter: 'IsActive eq \'{{isActive}}\'',
+      top: 4500,
+      orderby: 'Title asc'
     }
   };
   public QUERY = {
     GET_TIMESPENT: {
-      select: 'ID, Title, Task,TimeSpent, Status',
+      select: 'ID, Title, Task,TimeSpent, Status,SubMilestones,Milestone',
       filter: 'ProjectCode eq \'{{projectCode}}\''
     },
     PROJECT_BUDGET_BREAKUP_BY_PROJECTCODE: {
@@ -521,11 +539,20 @@ export class PmconstantService {
       select: 'ID,Title,POLookup,ProjectNumber,Amount, AmountRevenue, AmountOOP, AmountTax, TotalScheduled, ScheduledRevenue',
       filter: 'ProjectNumber eq \'{{projectCode}}\' and Status eq \'Active\''
     },
+    GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE: {
+      select: 'ID,Title,Milestone,Status,Task,ProjectCode',
+      filter: 'ProjectCode eq \'{{projectCode}}\''
+    },
+    GET_EARLY_TASK_COMPLETED: {
+      select: 'ID,Title,ProjectCode,IsActive,ProjectCS/ID,ProjectCS/Title',
+      expand: 'ProjectCS/ID,ProjectCS/Title',
+      filter: 'IsActive eq \'Yes\' and ProjectCSId eq {{UserID}} and Created ge \'{{LastOnceHour}}\''
+    }
   };
   public PROJECT_TYPE = {
     HOURLY: { display: 'Hourly', value: 'Hours-Rolling' },
-    // HOURLY: 'Hours-Rolling',
-    DELIVERABLE: { display: 'Deliverable', value: 'Deliverable-Writing' }
+    DELIVERABLE: { display: 'Deliverable', value: 'Deliverable-Writing' },
+    FTE: { display: 'FTE', value: 'FTE-Writing' }
   };
   public TIME_OUT = 500;
   public PROJECT_CANCELLED_REASON = {
@@ -559,4 +586,6 @@ export class PmconstantService {
     RELATIONSHIP: 'Client discount - relationship',
     INPUT_ERROR: 'Input error',
   };
+  public MONTH_NAMES = ['January', 'February', 'March', 'April', 'May',
+    'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 }

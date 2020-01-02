@@ -1,22 +1,26 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
-import { UnallocatedComponent } from './ca/unallocated/unallocated.component';
-import { AllocatedComponent } from './ca/allocated/allocated.component';
-import { CaComponent } from './ca/ca.component';
+// import { CaComponent } from './ca.component';
+import { UnallocatedAllocatedTasksComponent } from './unallocated-allocated-tasks/unallocated-allocated-tasks.component';
 const appRoutes: Routes = [
   {
     path: '',
-    component: CaComponent,
-    children: [
-      { path: '', redirectTo: 'unallocated', pathMatch: 'prefix' },
-      { path: 'unallocated', component: UnallocatedComponent,  runGuardsAndResolvers: 'always' },
-      { path: 'allocated', component: AllocatedComponent, runGuardsAndResolvers: 'always' },
-    ]
+    component: UnallocatedAllocatedTasksComponent,
+    runGuardsAndResolvers: 'always',
+    // component: CaComponent,
+    // children: [
+    //   { path: '', redirectTo: 'unallocated', pathMatch: 'prefix' },
+    //   {
+    //     path: 'unallocated', component: UnallocatedAllocatedTasksComponent,
+    //     runGuardsAndResolvers: 'always', data: { type: 'unallocated' }
+    //   },
+    //   {
+    //     path: 'allocated', component: UnallocatedAllocatedTasksComponent,
+    //     runGuardsAndResolvers: 'always', data: { type: 'allocated' }
+    //   },
+    // ]
   }
-  // { path: '', redirectTo: 'ca', pathMatch: 'full'},
-  // { path: 'unallocated', component: UnallocatedComponent},
-  // { path: 'allocated', component: AllocatedComponent}
 ];
 @NgModule({
   declarations: [],

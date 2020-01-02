@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
 import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
 import { Calendar, DataTable } from 'primeng/primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
@@ -7,7 +7,7 @@ import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
-import { formatDate, DatePipe } from '@angular/common';
+import { formatDate, DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/editor.component';
@@ -21,52 +21,6 @@ import { Subscription } from 'rxjs';
     // encapsulation: ViewEncapsulation.None
 })
 export class ConfirmedComponent implements OnInit, OnDestroy {
-    tempClick: any;
-    confirmedRes: any = [];
-    confirmCols: any[];
-    msgs: Message[] = [];
-
-    // Proforma Templates & Address Type
-    proformatTemplates: any = [];
-    addressTypes: any = [];
-    listOfproformaType: any = [];
-
-    // Show Hide State
-    isTemplate4US: boolean = false;
-
-    // Edit Deliverable Form
-    addToProforma_form: FormGroup;
-
-    // Show Hide Request Modal
-    showHideREModal: boolean = false;
-
-    formSubmit: any = {
-        isSubmit: false
-    }
-    submitBtn: any = {
-        isClicked: false
-    }
-
-    // PoBalance Obj
-    po: any = {
-        oopBalance: '',
-        revenuBalance: ''
-    }
-
-    // Loader
-    isPSInnerLoaderHidden: boolean = true;
-
-    // Right side bar
-    rightSideBar: boolean = false;
-
-    selectedPurchaseNumber: any;
-    minProformaDate: Date = new Date();
-    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-    @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
-
-    @ViewChild('cnf', { static: false }) confirmTable: DataTable;
-    // List of Subscribers 
-    private subscription: Subscription = new Subscription();
 
 
     constructor(
@@ -80,8 +34,154 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         private datePipe: DatePipe,
         private messageService: MessageService,
         private commonService: CommonService,
-        private router: Router
-    ) { }
+        private router: Router,
+        private cdr: ChangeDetectorRef,
+        private platformLocation: PlatformLocation,
+        private locationStrategy: LocationStrategy,
+        private readonly _router: Router,
+        _applicationRef: ApplicationRef,
+        zone: NgZone,
+
+    ) {
+
+        // Browser back button disabled & bookmark issue solution
+        history.pushState(null, null, window.location.href);
+        platformLocation.onPopState(() => {
+            history.pushState(null, null, window.location.href);
+        });
+
+        _router.events.subscribe((uri) => {
+            zone.run(() => _applicationRef.tick());
+        });
+
+    }
+
+
+
+    get isValidAddToProformaForm() {
+        return this.addToProforma_form.controls;
+    }
+    tempClick: any;
+    confirmedRes: any = [];
+    confirmCols: any[];
+    msgs: Message[] = [];
+
+    // Proforma Templates & Address Type
+    proformatTemplates: any = [];
+    addressTypes: any = [];
+    listOfproformaType: any = [];
+
+    // Show Hide State
+    isTemplate4US = false;
+
+    // Edit Deliverable Form
+    addToProforma_form: FormGroup;
+
+    // Show Hide Request Modal
+    showHideREModal = false;
+
+    formSubmit: any = {
+        isSubmit: false
+    };
+    submitBtn: any = {
+        isClicked: false
+    };
+
+    // PoBalance Obj
+    po: any = {
+        oopBalance: '',
+        revenuBalance: ''
+    };
+
+    // Loader
+    isPSInnerLoaderHidden = true;
+
+    // Right side bar
+    rightSideBar = false;
+    confirmedILIarray: any = [];
+    usStatesData: any = [];
+    selectedPurchaseNumber: any;
+    minProformaDate: Date = new Date();
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+    };
+    @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
+    @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
+
+    @ViewChild('cnf', { static: false }) confirmTable: DataTable;
+    // List of Subscribers
+    private subscription: Subscription = new Subscription();
+    // Project Info
+    projectInfoData: any = [];
+
+    // Purchase Order Number
+    purchaseOrdersList: any = [];
+
+    // Project COntacts
+    projectContactsData: any = [];
+
+    // US States
+    currencyData: any = [];
+
+    // Client Legal Entity
+    cleData: any = [];
+
+    // Resource Categorization
+    rcData: any = [];
+    purchaseOrders: any = [];
+    confirmedPOList: any = [];
+    confirmedPOCList: any = [];
+
+    matchedILIArray: any = [];
+    selectedDDPO: any = {};
+
+    confirmedInColArray = {
+        ProjectCode: [],
+        SOWCode: [],
+        ProjectMileStone: [],
+        POName: [],
+        PONumber: [],
+        ClientLegalEntity: [],
+        ScheduledDate: [],
+        ScheduleType: [],
+        Amount: [],
+        Currency: [],
+        POCName: []
+    };
+
+
+    // On Row Selection
+    // Row Selection Array
+    selectedTotalAmt = 0;
+    selectedRowItemData: any = [];
+    uniqueST = true;
+    selectedAllRowData: any[] = [];
+
+    items: any[];
+    confirmDialog: any = {
+        title: '',
+        text: ''
+    };
+
+    revertInvModal = false;
+    isHourlyProject = false;
+    selectedRowItem: any;
+
+    proformaModal = false;
+
+    listOfPOCNames: SelectItem[];
+    selectedPOItem: any;
+
+    // Project PO
+    poNames: any = [];
+
+    batchContents: any = [];
+    enterPOAmtMsg = false;
+
+    isOptionFilter: boolean;
 
     async ngOnInit() {
 
@@ -110,8 +210,6 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     updateCalendarUI(calendar: Calendar) {
         calendar.updateUI();
     }
-    // Project Info 
-    projectInfoData: any = [];
     async projectInfo() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         // Check PI list
@@ -120,32 +218,26 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultPIData.subscribe((res) => {
             if (res) {
                 this.projectInfoData = res;
-                console.log('PI Data ', this.projectInfoData);
+                // console.log('PI Data ', this.projectInfoData);
             }
-        }))
+        }));
     }
-
-    // Purchase Order Number
-    purchaseOrdersList: any = [];
     poInfo() {
         this.subscription.add(this.fdDataShareServie.defaultPoData.subscribe((res) => {
             if (res) {
                 this.purchaseOrdersList = res;
-                console.log('PO Data ', this.purchaseOrdersList);
+                // console.log('PO Data ', this.purchaseOrdersList);
             }
-        }))
+        }));
     }
-
-    // Project COntacts
-    projectContactsData: any = [];
     projectContacts() {
         this.subscription.add(this.fdDataShareServie.defaultPCData.subscribe((res) => {
             if (res) {
                 this.projectContactsData = res;
-                console.log('this.projectContactsData ', this.projectContactsData);
+                // console.log('this.projectContactsData ', this.projectContactsData);
                 // this.getPCForSentToAMForApproval();
             }
-        }))
+        }));
     }
 
     // Set Address type
@@ -153,42 +245,36 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.addressTypes = [
             { label: 'Client', value: 'Client' },
             { label: 'POC', value: 'POC' },
-        ]
+        ];
     }
 
     getProformaType() {
         this.listOfproformaType = [
             { label: 'OOP', value: 'oop' },
             { label: 'Revenue', value: 'revenue' },
-        ]
+        ];
     }
 
     // US States
-    usStatesData: any = [];
+
     usStatesInfo() {
         this.usStatesData = [];
         this.subscription.add(this.fdDataShareServie.defaultUSSData.subscribe((res) => {
             if (res) {
                 this.usStatesData = res;
-                console.log('US States Data ', this.usStatesData);
+                // console.log('US States Data ', this.usStatesData);
             }
-        }))
+        }));
     }
-
-    // US States
-    currencyData: any = [];
     currencyInfo() {
         this.currencyData = [];
         this.subscription.add(this.fdDataShareServie.defaultCUData.subscribe((res) => {
             if (res) {
                 this.currencyData = res;
-                console.log('currency Data ', this.currencyData);
+                // console.log('currency Data ', this.currencyData);
             }
-        }))
+        }));
     }
-
-    // Client Legal Entity
-    cleData: any = [];
     async cleInfo() {
         this.isPSInnerLoaderHidden = false;
         await this.fdDataShareServie.getClePO('confirm');
@@ -197,20 +283,17 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.subscription.add(this.fdDataShareServie.defaultCLEData.subscribe((res) => {
             if (res) {
                 this.cleData = res;
-                console.log('CLE Data ', this.cleData);
+                // console.log('CLE Data ', this.cleData);
             }
-        }))
+        }));
     }
-
-    // Resource Categorization
-    rcData: any = [];
     resourceCInfo() {
         this.subscription.add(this.fdDataShareServie.defaultRCData.subscribe((res) => {
             if (res) {
                 this.rcData = res;
-                console.log('Resource Categorization ', this.rcData);
+                // console.log('Resource Categorization ', this.rcData);
             }
-        }))
+        }));
     }
 
     getProformaTemplates() {
@@ -221,7 +304,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             { label: 'Japan', value: 'Japan' },
             { label: 'Korea', value: 'Korea' },
             { label: 'ROW', value: 'ROW' }
-        ]
+        ];
     }
 
     createAddToProformaFormField() {
@@ -239,7 +322,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             ProformaType: [{ value: '', disabled: true }],
             ProformaDate: ['', Validators.required],
             AdditionalComments: [''],
-        })
+        });
     }
 
     createANBCols() {
@@ -277,51 +360,50 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     // Get Confirmed InvoiceItemList
-    confirmedILIarray: any = [];
+
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
         this.confirmedRes = [];
         this.po = {};
         this.selectedAllRowData = [];
         this.selectedTotalAmt = 0;
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '', this.fdConstantsService.fdComponent.invoiceLineItems);
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        // const invoicesQuery = this.spServices.getReadURL('' + this.constantService.listNames.InvoiceLineItems.name + '',
+        // this.fdConstantsService.fdComponent.invoiceLineItems);
         // this.spServices.getBatchBodyGet(batchContents, batchGuid, invoicesQuery);
-
-        let endPoints = [invoicesQuery];
-        let userBatchBody = '';
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-        let arrResults: any = [];
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        console.log('REs in Confirmed Invoice ', res);
-        arrResults = res;
+        const invoiceObj = Object.assign({}, this.fdConstantsService.fdComponent.invoiceLineItems);
+        const res = await this.spServices.readItems(this.constantService.listNames.InvoiceLineItems.name, invoiceObj);
+        // let endPoints = [invoicesQuery];
+        // let userBatchBody = '';
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
+        // let arrResults: any = [];
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        // console.log('REs in Confirmed Invoice ', res);
+        const arrResults = res.length ? res : [];
         if (arrResults.length) {
             // this.formatData(arrResults);
-            this.confirmedILIarray = arrResults[0];
-            this.getPOListItems(arrResults[0]);
+            this.confirmedILIarray = arrResults;
+            this.getPOListItems(arrResults);
         }
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         // });
     }
-    purchaseOrders: any = [];
-    confirmedPOList: any = [];
-    confirmedPOCList: any = [];
     getPOListItems(data) {
         this.purchaseOrders = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
-            let poItem = this.searchPOId(element.PO, this.purchaseOrdersList);
-            let pocItem = this.searchPOCName(element.MainPOC, this.projectContactsData);
+            const poItem = this.searchPOId(element.PO, this.purchaseOrdersList);
+            const pocItem = this.searchPOCName(element.MainPOC, this.projectContactsData);
             let pocName = '';
             if (pocItem) {
                 pocName = pocItem.FullName ? ' - ' + pocItem.FullName : '';
-                pocItem['pocName'] = pocName;
+                pocItem.pocName = pocName;
             }
             if (poItem) {
                 this.purchaseOrders.push(poItem);
@@ -338,7 +420,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     searchPOId(poId, myArray) {
-        for (var i = 0; i < myArray.length; i++) {
+        for (let i = 0; i < myArray.length; i++) {
             if (myArray[i].ID === poId) {
                 if (this.confirmedPOList.indexOf(myArray[i]) === -1) {
                     this.confirmedPOList.push(myArray[i]);
@@ -349,7 +431,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     searchPOCName(rowItem: any, myArray) {
-        for (var i = 0; i < myArray.length; i++) {
+        for (let i = 0; i < myArray.length; i++) {
             if (myArray[i].ID === rowItem) {
                 if (this.confirmedPOCList.indexOf(myArray[i]) === -1) {
                     this.confirmedPOCList.push(myArray[i]);
@@ -358,16 +440,13 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             }
         }
     }
-
-    matchedILIArray: any = [];
-    selectedDDPO: any = {};
     onChange(data: any) {
         this.matchedILIArray = [];
         this.selectedAllRowData = [];
         this.selectedRowItemData = [];
         this.selectedTotalAmt = 0;
         // console.log(data.value);
-        let po = data.value;
+        const po = data.value;
         this.selectedDDPO = data;
         console.log('po ', po);
         if (po) {
@@ -412,21 +491,21 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         this.confirmedRes = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
-            var project: any = this.getProject(element);
+            const project: any = this.getProject(element);
             // let resCInfo = await this.fdDataShareServie.getResDetailById(this.rcData, element);
             // if (resCInfo && resCInfo.hasOwnProperty('UserName') && resCInfo.UserName.hasOwnProperty('Title')) {
             //     resCInfo = resCInfo.UserName.Title
             // }
-            let sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
-            let sowCode = element.SOWCode ? element.SOWCode : '';
-            let sowName = sowItem.Title ? sowItem.Title : '';
+            const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(element.SOWCode);
+            const sowCode = element.SOWCode ? element.SOWCode : '';
+            const sowName = sowItem.Title ? sowItem.Title : '';
             let sowcn = sowCode + ' ' + sowName;
             if (sowCode && sowName) {
                 sowcn = sowCode + ' / ' + sowName;
             }
-            let poItem = await this.getPONumber(element);
+            const poItem = await this.getPONumber(element);
             let pnumber = poItem.Number ? poItem.Number : '';
-            let pname = poItem.Name ? poItem.Name : '';
+            const pname = poItem.Name ? poItem.Name : '';
             if (pnumber === 'NA') {
                 pnumber = '';
             }
@@ -434,7 +513,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             if (pname && pnumber) {
                 ponn = pnumber + ' / ' + pname;
             }
-            let POValues = ponn;
+            const POValues = ponn;
 
             this.confirmedRes.push({
                 Id: element.ID,
@@ -443,7 +522,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 SOWValue: sowcn,
                 SOWName: sowItem.Title,
                 ProjectMileStone: project ? project.Milestone : '', // this.getMilestones(element),
-                POValues: POValues,
+                POValues,
                 PONumber: poItem.Number,
                 POName: poItem.Name,
                 ClientLegalEntity: this.selectedPurchaseNumber.ClientLegalEntity,
@@ -464,50 +543,50 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 Template: element.Template,
                 Modified: this.datePipe.transform(element.Modified, 'MMM dd, yyyy'),
                 ModifiedBy: element.Editor ? element.Editor.Title : ''
-            })
+            });
         }
-        this.createColFieldValues();
+        this.createColFieldValues(this.confirmedRes);
     }
 
     getProject(pc: any) {
-        let found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == pc.Title) {
+        const found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode === pc.Title) {
                 return x;
             }
-        })
+        });
         return found ? found : '';
     }
 
     // Project Current Milestones
     getMilestones(pc: any) {
-        let found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == pc.Title) {
+        const found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode === pc.Title) {
                 return x;
             }
-        })
+        });
         return found ? found.Milestone : '';
     }
 
     // Project Current Milestones
     getPracticeArea(pc: any) {
-        let found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == pc.Title) {
+        const found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode === pc.Title) {
                 return x;
             }
-        })
+        });
         return found ? found : '';
     }
 
     // Project Client
     getCLEObj(cle: any) {
-        let found = this.cleData.find((x) => { return x.Title == cle });
+        const found = this.cleData.find((x) => x.Title === cle);
         return found ? found : '';
     }
 
     // Project Client
     getCLE(pc: any) {
-        let found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == pc.Title) {
+        const found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode === pc.Title) {
                 return x.ClientLegalEntity;
             }
         });
@@ -515,17 +594,17 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     getPOCName(poc: any) {
-        let found = this.projectContactsData.find((x) => {
+        const found = this.projectContactsData.find((x) => {
             if (x.ID === poc.MainPOC) {
                 return x;
             }
-        })
-        return found ? found.FName + ' ' + found.LName : ''
+        });
+        return found ? found.FName + ' ' + found.LName : '';
     }
 
     getCSDetails(res) {
         if (res.hasOwnProperty('CS') && res.CS.hasOwnProperty('results') && res.CS.results.length) {
-            let title = [];
+            const title = [];
             for (let i = 0; i < res.CS.results.length; i++) {
                 const element = res.CS.results[i];
                 title.push(element.Title);
@@ -538,44 +617,30 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
     // Project PO
     getPONumber(poId) {
-        let found = this.purchaseOrdersList.find((x) => {
+        const found = this.purchaseOrdersList.find((x) => {
             if (x.ID === poId.PO) {
                 return x;
             }
-        })
-        return found ? found : ''
+        });
+        return found ? found : '';
     }
 
-    confirmedInColArray = {
-        ProjectCode: [],
-        SOWCode: [],
-        ProjectMileStone: [],
-        POName: [],
-        PONumber: [],
-        ClientLegalEntity: [],
-        ScheduledDate: [],
-        ScheduleType: [],
-        Amount: [],
-        Currency: [],
-        POCName: []
-    }
+    createColFieldValues(resArray) {
+        this.confirmedInColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.confirmedInColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
+        this.confirmedInColArray.ProjectMileStone = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label));
+        this.confirmedInColArray.POName = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label));
+        this.confirmedInColArray.ClientLegalEntity = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label));
+        this.confirmedInColArray.PONumber = this.uniqueArrayObj(resArray.map(a => { const b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label));
 
-    createColFieldValues() {
-        this.confirmedInColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.confirmedInColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.SOWValue, value: a.SOWValue }; return b; }).filter(ele => ele.label)));
-        this.confirmedInColArray.ProjectMileStone = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ProjectMileStone, value: a.ProjectMileStone }; return b; }).filter(ele => ele.label));
-        this.confirmedInColArray.POName = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.POName, value: a.POName }; return b; }).filter(ele => ele.label));
-        this.confirmedInColArray.ClientLegalEntity = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label));
-        this.confirmedInColArray.PONumber = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.PONumber, value: a.PONumber }; return b; }).filter(ele => ele.label));
+        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { const b = { label: this.datePipe.transform(a.ScheduledDate, 'MMM dd, yyyy'), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
+        this.confirmedInColArray.ScheduledDate = scheduledDate.map(a => { const b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
 
-        const scheduledDate = this.commonService.sortDateArray(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: this.datePipe.transform(a.ScheduledDate, "MMM dd, yyyy"), value: a.ScheduledDate }; return b; }).filter(ele => ele.label)));
-        this.confirmedInColArray.ScheduledDate = scheduledDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
-
-        this.confirmedInColArray.ScheduleType = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.ScheduleType, value: a.ScheduleType }; return b; }).filter(ele => ele.label)));
-        const amount = this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: parseFloat(a.Amount), value: a.Amount }; return b; }).filter(ele => ele.label));
+        this.confirmedInColArray.ScheduleType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.ScheduleType, value: a.ScheduleType }; return b; }).filter(ele => ele.label)));
+        const amount = this.uniqueArrayObj(resArray.map(a => { const b = { label: parseFloat(a.Amount), value: a.Amount }; return b; }).filter(ele => ele.label));
         this.confirmedInColArray.Amount = this.fdDataShareServie.customSort(amount, 1, 'label');
-        this.confirmedInColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
-        this.confirmedInColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(this.confirmedRes.map(a => { let b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
+        this.confirmedInColArray.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+        this.confirmedInColArray.POCName = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { const b = { label: a.POCName, value: a.POCName }; return b; }).filter(ele => ele.label)));
     }
 
     uniqueArrayObj(array: any) {
@@ -584,22 +649,15 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             return {
                 label: label1,
                 value: array.find(s => s.label === label1).value
-            }
-        })
+            };
+        });
     }
-
-
-    // On Row Selection
-    // Row Selection Array
-    selectedTotalAmt: number = 0;
-    selectedRowItemData: any = [];
     onRowSelect(event) {
-        console.log('Event ', event);
-        console.log('this.selectedAllRowData ', this.selectedAllRowData);
-        //this.selectedRowItemData.push(event.data);
+        // console.log('Event ', event);
+        // console.log('this.selectedAllRowData ', this.selectedAllRowData);
+        // this.selectedRowItemData.push(event.data);
         this.calculateData();
     }
-    uniqueST: boolean = true;
     calculateData() {
         this.selectedTotalAmt = 0;
         this.uniqueST = true;
@@ -611,22 +669,21 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     checkSelectedRowData() {
-        console.log('Event ', this.selectedRowItemData);
+        // console.log('Event ', this.selectedRowItemData);
     }
 
     onRowUnselect(event) {
         // console.log(event);
-        console.log('this.selectedAllRowData ', this.selectedAllRowData);
+        // console.log('this.selectedAllRowData ', this.selectedAllRowData);
 
-        let rowUnselectIndex = this.selectedRowItemData.indexOf(event.data);
+        const rowUnselectIndex = this.selectedRowItemData.indexOf(event.data);
         this.selectedRowItemData.splice(rowUnselectIndex, 1);
         // console.log(this.selectedRowItemData);
         this.calculateData();
     }
-    selectedAllRowData: any[] = [];
 
     handleData(event) {
-        console.log('this.selectedAllRowData ', this.selectedAllRowData);
+        // console.log('this.selectedAllRowData ', this.selectedAllRowData);
         if (this.selectedAllRowData.length && this.confirmedRes.length) {
             this.calculateData();
             this.selectedRowItemData = [];
@@ -636,13 +693,13 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     convertToExcelFile(cnf1) {
-        console.log('cnf ', cnf1);
+        // console.log('cnf ', cnf1);
         cnf1.exportCSV();
     }
 
     confirm1() {
-        let pInfo = this.getPIByPC(this.selectedRowItem);
-        console.log('pInfo ', pInfo);
+        const pInfo = this.getPIByPC(this.selectedRowItem);
+        // console.log('pInfo ', pInfo);
         this.confirmationService.confirm({
             message: 'Are you sure that you want to revert the invoice from confirmed to scheduled status?',
             header: 'Confirmation',
@@ -658,15 +715,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             }
         });
     }
-
-    items: any[];
-    confirmDialog: any = {
-        title: '',
-        text: ''
-    }
     // Open popups
     openPopup(data, popUpData) {
-        console.log('Row data  ', data);
+        // console.log('Row data  ', data);
         // console.log('pubSupportSts  ', pubSupportSts);
 
         this.items = [
@@ -676,26 +727,22 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         ];
 
     }
-
-    revertInvModal: boolean = false;
-    isHourlyProject: boolean = false;
-    selectedRowItem: any;
     openMenuContent(event, data) {
         this.isHourlyProject = false;
-        console.log(JSON.stringify(data));
+        // console.log(JSON.stringify(data));
         this.selectedRowItem = data;
-        console.log(event);
+        // console.log(event);
         this.confirmDialog.title = event.item.label;
         if (this.confirmDialog.title.toLowerCase() === 'revert invoice') {
             // this.confirm1();
-            let pInfo = this.getPIByPC(this.selectedRowItem);
+            const pInfo = this.getPIByPC(this.selectedRowItem);
             if (pInfo.hasOwnProperty('ProjectType')) {
-                if (pInfo.ProjectType.includes("Rolling")) {
+                if (pInfo.ProjectType.includes('Rolling')) {
                     this.isHourlyProject = true;
                 }
             }
 
-            console.log('pInfo ', pInfo);
+            // console.log('pInfo ', pInfo);
             this.revertInvModal = true;
         } else if (this.confirmDialog.title.toLowerCase() === 'show history') {
             this.timeline.showTimeline(data.Id, 'FD', 'InvoiceLineItems');
@@ -704,19 +751,19 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             return;
         }
     }
-
-    proformaModal: boolean = false;
     addProforma() {
         if (!this.selectedPurchaseNumber) {
-            this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message', detail: 'Please select Purchase order Number & try again.', life: 2000 });
+            this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
+             detail: 'Please select Purchase order Number & try again.', life: 2000 });
         } else {
             if (this.selectedAllRowData.length) {
                 for (let i = 0; i < this.selectedAllRowData.length; i++) {
                     const element = this.selectedAllRowData[i];
 
-                    let scheduleType = this.selectedAllRowData[0].ScheduleType;
+                    const scheduleType = this.selectedAllRowData[0].ScheduleType;
                     if (element.ScheduleType !== scheduleType) {
-                        this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message', detail: 'Please select same Schedule type & try again.', life: 2000 });
+                        this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
+                         detail: 'Please select same Schedule type & try again.', life: 2000 });
                         return;
                     }
                 }
@@ -747,24 +794,25 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                         this.addToProforma_form.removeControl('State');
                     }
 
-                    var cle = this.getCLEObj(this.selectedPurchaseNumber.ClientLegalEntity);
+                    const cle = this.getCLEObj(this.selectedPurchaseNumber.ClientLegalEntity);
                     this.generateProformaNumber(cle);
                     this.getPOCNamesForEditInv(cle);
-                }
-                else {
-                    this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message', detail: 'Proforma cant be generated on Expired PO', life: 2000 });
+                } else {
+                    this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
+                     detail: 'Proforma cant be generated on Expired PO', life: 2000 });
                 }
 
             } else {
-                this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message', detail: 'Please select one of Row Item & try again.', life: 2000 });
+                this.messageService.add({ key: 'confirmInfoToast', severity: 'info', summary: 'Info message',
+                 detail: 'Please select one of Row Item & try again.', life: 2000 });
             }
         }
     }
 
     showHideState(val: any) {
-        console.log('val ', val);
+        // console.log('val ', val);
         if (val) {
-            this.isTemplate4US = val.value === "US" ? true : false;
+            this.isTemplate4US = val.value === 'US' ? true : false;
             if (this.isTemplate4US) {
                 this.addToProforma_form.addControl('State', new FormControl('', Validators.required));
             } else {
@@ -772,17 +820,9 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             }
         }
     }
-
-
-
-    get isValidAddToProformaForm() {
-        return this.addToProforma_form.controls;
-    }
-
-    listOfPOCNames: SelectItem[];
     getPOCNamesForEditInv(rowItem: any) {
         this.listOfPOCNames = [];
-        var pocROW: any = undefined;
+        let pocROW: any;
         this.projectContactsData.filter((item) => {
             if (item.ClientLegalEntity === rowItem.Title) {
                 this.listOfPOCNames.push(item);
@@ -791,17 +831,17 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 }
             }
         });
-        console.log('this.listOfPOCNames ', this.listOfPOCNames);
+        // console.log('this.listOfPOCNames ', this.listOfPOCNames);
         if (pocROW) {
             this.addToProforma_form.patchValue({
                 POCName: pocROW
-            })
+            });
         }
 
     }
 
     pocChange(val) {
-        console.log(val)
+        // console.log(val)
     }
 
     cancelFormSub(formType) {
@@ -818,14 +858,10 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     onCLIChange(data: any) {
 
     }
-    selectedPOItem: any;
     onPOChange(data: any) {
-        console.log('Data ', data);
+        // console.log('Data ', data);
         this.selectedPOItem = data;
     }
-
-    // Project PO
-    poNames: any = [];
     getPONumberFromCLE(cli) {
         this.poNames = [];
         this.purchaseOrdersList.map((x) => {
@@ -833,14 +869,14 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 this.poNames.push(x);
             }
         });
-        console.log(this.poNames);
+        // console.log(this.poNames);
     }
 
     generateProformaNumber(cle: any) {
         let cleAcronym = '';
-        let proformaCounter: number = 0;
+        let proformaCounter = 0;
         let proformaDate = '';
-        let isOOP: boolean = false;
+        let isOOP = false;
         if (this.selectedAllRowData[0].ScheduleType) {
             isOOP = this.selectedAllRowData[0].ScheduleType.toLowerCase() === 'oop' ? true : false;
         }
@@ -848,13 +884,13 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             cleAcronym = cle.Acronym ? cle.Acronym : '';
             // console.log('cleAcronym,', cleAcronym);
             proformaCounter = cle.ProformaCounter ? parseInt(cle.ProformaCounter) + 1 : 1;
-            let sNum = '000' + proformaCounter;
-            let sFinalNum = sNum.substr(sNum.length - 4);
+            const sNum = '000' + proformaCounter;
+            const sFinalNum = sNum.substr(sNum.length - 4);
             // console.log('proformaCounter,', proformaCounter);
             const date = this.addToProforma_form.value.ProformaDate ? new Date(this.addToProforma_form.value.ProformaDate) : new Date();
             proformaDate = this.datePipe.transform(date, 'MM') + this.datePipe.transform(date, 'yy');
             // console.log('proformaDate,', proformaDate);
-            let finalVal = isOOP ? (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum + '-OOP') :
+            const finalVal = isOOP ? (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum + '-OOP') :
                 (cleAcronym + '-PRF' + '-' + proformaDate + '-' + sFinalNum);
             this.addToProforma_form.get('ProformaNumber').setValue(finalVal);
 
@@ -862,92 +898,106 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     }
 
     updatePrformaNumFromPT() {
-        var cle = this.getCLEObj(this.selectedPurchaseNumber.ClientLegalEntity);
+        const cle = this.getCLEObj(this.selectedPurchaseNumber.ClientLegalEntity);
         this.generateProformaNumber(cle);
     }
 
     getPIByPC(pc) {
-        let found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == pc.ProjectCode) {
+        const found = this.projectInfoData.find((x) => {
+            if (x.ProjectCode === pc.ProjectCode) {
                 return x;
             }
-        })
+        });
         return found ? found : '';
     }
 
     async getPFByPC() {
-        let pfobj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
+        const pfobj = Object.assign({}, this.fdConstantsService.fdComponent.projectFinances);
         pfobj.filter = pfobj.filter.replace('{{ProjectCode}}', this.selectedRowItem.ProjectCode);
-        let obj = [{
-            url: this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name, pfobj),
-            type: 'GET',
-            listName: this.constantService.listNames.ProjectFinances
-        }]
-        const res = await this.spServices.executeBatch(obj);
-        return res[0].retItems[0];
+        let response = await this.spServices.readItems(this.constantService.listNames.ProjectFinances.name, pfobj);
+        response = response.length ? response[0] : {};
+        // let obj = [{
+        //     url: this.spServices.getReadURL(this.constantService.listNames.ProjectFinances.name, pfobj),
+        //     type: 'GET',
+        //     listName: this.constantService.listNames.ProjectFinances
+        // }]
+        // const res = await this.spServices.executeBatch(obj);
+        return response;
     }
 
     async onSubmit(type: string) {
         this.formSubmit.isSubmit = true;
         if (type === 'revertInvoice') {
-            let data = [];
+            // const data = [];
+            const batchUrl = [];
             this.isPSInnerLoaderHidden = false;
             this.revertInvModal = false;
-            console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
-            let obj = {
+            // console.log('form is submitting ..... for selected row Item i.e ', this.selectedRowItem);
+            const iliData = {
+                __metadata: {
+                    type: this.constantService.listNames.InvoiceLineItems.type
+                },
                 Status: 'Scheduled'
-            }
-            obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", this.selectedRowItem.Id);
+            };
+            const iliObj = Object.assign({}, this.queryConfig);
+            iliObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, this.selectedRowItem.Id);
+            iliObj.listName = this.constantService.listNames.InvoiceLineItems.name;
+            iliObj.type = 'PATCH';
+            iliObj.data = iliData;
+            batchUrl.push(iliObj);
+
             if (this.isHourlyProject) {
-                let pInfo = this.getPIByPC(this.selectedRowItem);
+                const pInfo = this.getPIByPC(this.selectedRowItem);
                 // Update PI
-                let piObj = {
-                    ProjectType: "Deliverable-Writing",
-                    IsApproved: "No"
-                }
-                piObj['__metadata'] = { type: 'SP.Data.ProjectInformationListItem' };
-                const piEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectInformation.update.replace("{{Id}}", pInfo.Id);
-                data.push({
-                    objData: piObj,
-                    endpoint: piEndpoint,
-                    requestPost: false
-                });
+                const piData = {
+                    __metadata: {
+                        type: this.constantService.listNames.ProjectInformation.type
+                    },
+                    ProjectType: 'Deliverable-Writing',
+                    IsApproved: 'No'
+                };
+                const piObj = Object.assign({}, this.queryConfig);
+                piObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectInformation.name, pInfo.Id);
+                piObj.listName = this.constantService.listNames.ProjectInformation.name;
+                piObj.type = 'PATCH';
+                piObj.data = piData;
+                batchUrl.push(piObj);
 
                 // Update PF
-                let pf = await this.getPFByPC();
-                console.log('pf ', pf);
-                if (pf) {
-                    let pfObj = {
+                const pf = await this.getPFByPC();
+                // console.log('pf ', pf);
+                if (pf.length) {
+                    const pfData = {
+                        __metadata: {
+                            type: this.constantService.listNames.ProjectFinances.type
+                        },
                         Budget: this.selectedRowItem.Amount,
                         RevenueBudget: this.selectedRowItem.Amount
-                    }
-                    pfObj['__metadata'] = { type: 'SP.Data.ProjectFinancesListItem' };
-                    const pfEndpoint = this.fdConstantsService.fdComponent.addUpdateProjectFinances.update.replace("{{Id}}", pf.Id);
-                    data.push({
-                        objData: pfObj,
-                        endpoint: pfEndpoint,
-                        requestPost: false
-                    });
-                }
+                    };
+                    const pfObj = Object.assign({}, this.queryConfig);
+                    pfObj.url = this.spServices.getItemURL(this.constantService.listNames.ProjectFinances.name, pf.Id);
+                    pfObj.listName = this.constantService.listNames.ProjectFinances.name;
+                    pfObj.type = 'PATCH';
+                    pfObj.data = pfData;
 
+                    batchUrl.push(pfObj);
+                }
             }
-            data.push({
-                objData: obj,
-                endpoint: endpoint,
-                requestPost: false
-            })
-            this.submitForm(data, type);
+            this.submitForm(batchUrl, type);
 
         } else if (type === 'add2Proforma') {
+            const batchUrl = [];
             if (this.addToProforma_form.invalid) {
                 return;
             }
             this.isPSInnerLoaderHidden = false;
             this.submitBtn.isClicked = true;
-            console.log('form is submitting ..... & Form data is ', this.addToProforma_form.getRawValue());
-            let obj: any = {};
-            obj = {
+            // console.log('form is submitting ..... & Form data is ', this.addToProforma_form.getRawValue());
+            // let obj: any = {};
+            const prfData = {
+                __metadata: {
+                    type: this.constantService.listNames.Proforma.type
+                },
                 ClientLegalEntity: this.addToProforma_form.getRawValue().ClientLegalEntity,
                 PO: this.selectedPurchaseNumber.ID, // this.addToProforma_form.value.POName.Id,
                 MainPOC: this.addToProforma_form.value.POCName.ID,
@@ -962,125 +1012,86 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 AdditionalInfo: this.addToProforma_form.value.AdditionalComments,
                 ProformaDate: this.addToProforma_form.value.ProformaDate,
                 Status: 'Created'
-            }
-            console.log('obj ', obj);
-            obj['__metadata'] = { type: 'SP.Data.ProformaListItem' };
-            const endpoint = this.fdConstantsService.fdComponent.addUpdateProforma.createProforma;
-
+            };
+            const proformaObj = Object.assign({}, this.queryConfig);
+            proformaObj.url = this.spServices.getReadURL(this.constantService.listNames.Proforma.name);
+            proformaObj.listName = this.constantService.listNames.Proforma.name;
+            proformaObj.type = 'POST';
+            proformaObj.data = prfData;
+            batchUrl.push(proformaObj);
             // Get Cle
-            let currentCle = this.getCLEObj(obj.ClientLegalEntity);
-            let cleObj = {
+            const currentCle = this.getCLEObj(prfData.ClientLegalEntity);
+            const cleData = {
+                __metadata: {
+                    type: this.constantService.listNames.ClientLegalEntity.type
+                },
                 ID: currentCle.Id,
                 ProformaCounter: currentCle.ProformaCounter ? currentCle.ProformaCounter + 1 : 1
-            }
-            cleObj['__metadata'] = { type: 'SP.Data.ClientLegalEntityListItem' };
-            const cleEndpoint = this.fdConstantsService.fdComponent.addUpdateClientLegalEntity.update.replace('{{Id}}', currentCle.Id);
-
-            let data = [
-                {
-                    objData: obj,
-                    endpoint: endpoint,
-                    requestPost: true
-                },
-                {
-                    objData: cleObj,
-                    endpoint: cleEndpoint,
-                    requestPost: false
-                }
-            ];
-            this.submitForm(data, type);
-            // setInterval(() => {
-            //     this.isPSInnerLoaderHidden = true;
-            // }, 5000);
+            };
+            const cleObj = Object.assign({}, this.queryConfig);
+            cleObj.url = this.spServices.getItemURL(this.constantService.listNames.ClientLegalEntity.name, currentCle.Id);
+            cleObj.listName = this.constantService.listNames.ClientLegalEntity.name;
+            cleObj.type = 'PATCH';
+            cleObj.data = cleData;
+            batchUrl.push(cleObj);
+            this.submitForm(batchUrl, type);
         }
     }
-
-    batchContents: any = [];
-    async submitForm(dataEndpointArray, type: string) {
-        console.log('Form is submitting');
-
-        this.batchContents = [];
-        const batchGuid = this.spServices.generateUUID();
-        const changeSetId = this.spServices.generateUUID();
-
-        // const batchContents = this.spServices.getChangeSetBody1(changeSetId, endpoint, JSON.stringify(obj), true);
-        console.log(' dataEndpointArray ', dataEndpointArray);
-        dataEndpointArray.forEach(element => {
-            if (element)
-                this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-        });
-
-        console.log("this.batchContents ", JSON.stringify(this.batchContents));
-
-        this.batchContents.push('--changeset_' + changeSetId + '--');
-        const batchBody = this.batchContents.join('\r\n');
-        const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuid, changeSetId);
-        batchBodyContent.push('--batch_' + batchGuid + '--');
-        const sBatchData = batchBodyContent.join('\r\n');
-
+    async submitForm(batchUrl, type: string) {
         if (type === 'add2Proforma') {
-            var retCall = await this.spServices.getFDData(batchGuid, sBatchData);
-            var lineItemArray = []
+            // var retCall = await this.spServices.getFDData(batchGuid, sBatchData);
+            let retCall = await this.spServices.executeBatch(batchUrl);
+            retCall = retCall.length ? retCall.map(a => a.retItems) : [];
+            // const lineItemArray = [];
+            const innerBatchUrl = [];
             this.selectedAllRowData.forEach(element => {
-                let obj = {
+
+                const prfData = {
+                    __metadata: {
+                        type: this.constantService.listNames.InvoiceLineItems.type
+                    },
                     Status: 'Proforma Created',
                     ProformaLookup: retCall[0].ID
-                }
-                obj['__metadata'] = { type: 'SP.Data.InvoiceLineItemsListItem' };
-                const endpoint = this.fdConstantsService.fdComponent.addUpdateInvoiceLineItem.update.replace("{{Id}}", element.Id);
-                lineItemArray.push(
-                    {
-                        objData: obj,
-                        endpoint: endpoint,
-                        requestPost: false
-                    }
-                )
+                };
+                const prfObj = Object.assign({}, this.queryConfig);
+                prfObj.url = this.spServices.getItemURL(this.constantService.listNames.InvoiceLineItems.name, element.Id);
+                prfObj.listName = this.constantService.listNames.InvoiceLineItems.name;
+                prfObj.type = 'PATCH';
+                prfObj.data = prfData;
+                innerBatchUrl.push(prfObj);
             });
-
-            this.batchContents = [];
-            const batchGuidNew = this.spServices.generateUUID();
-            const changeSetId = this.spServices.generateUUID();
-            lineItemArray.forEach(element => {
-                if (element)
-                    this.batchContents = [...this.batchContents, ...this.spServices.getChangeSetBody1(changeSetId, element.endpoint, JSON.stringify(element.objData), element.requestPost)];
-            });
-
-            console.log("this.batchContents ", JSON.stringify(this.batchContents));
-
-            this.batchContents.push('--changeset_' + changeSetId + '--');
-            const batchBody = this.batchContents.join('\r\n');
-            const batchBodyContent = this.spServices.getBatchBodyPost1(batchBody, batchGuidNew, changeSetId);
-            batchBodyContent.push('--batch_' + batchGuidNew + '--');
-            const sBatchDataNew = batchBodyContent.join('\r\n');
-            await this.spServices.getFDData(batchGuidNew, sBatchDataNew);
+            await this.spServices.executeBatch(innerBatchUrl);
             const projectAppendix = await this.createProjectAppendix(this.selectedAllRowData);
-            await this.fdDataShareServie.callProformaCreation(retCall[0], this.cleData, this.projectContactsData, this.purchaseOrdersList, this.editorRef, projectAppendix);
+            await this.fdDataShareServie.callProformaCreation(retCall[0], this.cleData, this.projectContactsData,
+                this.purchaseOrdersList, this.editorRef, projectAppendix);
             this.proformaModal = false;
             this.isPSInnerLoaderHidden = true;
             this.reFetchData();
-            // this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Proforma added.', detail: '', life: 2000 });
-            this.messageService.add({ key: 'custom', severity: 'success', summary: 'Proforma Added', detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber, life: 20000 });
+            this.messageService.add({
+                key: 'custom',  severity: 'success', summary: 'Proforma Added',
+                detail: 'Proforma Number: ' + this.addToProforma_form.getRawValue().ProformaNumber, life: 20000
+            });
 
         } else {
-            await this.spServices.getFDData(batchGuid, sBatchData); //.subscribe(res => {
-            //const arrResults = res;
-            //console.log('--oo ', arrResults);
-            if (type === "revertInvoice") {
-                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message', detail: 'Reverted the invoice from Confirmed to Scheduled.', life: 20000 });
+            await this.spServices.executeBatch(batchUrl);
+            if (type === 'revertInvoice') {
+                this.messageService.add({
+                    key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
+                    detail: 'Reverted the invoice from Confirmed to Scheduled.', life: 20000
+                });
                 this.reFetchData();
-            } else if (type === "editInvoice") {
-                this.messageService.add({ key: 'confirmSuccessToast', severity: 'success', summary: 'Success message', detail: 'Invoice Updated.', life: 20000 });
+            } else if (type === 'editInvoice') {
+                this.messageService.add({
+                    key: 'confirmSuccessToast', severity: 'success', summary: 'Success message',
+                    detail: 'Invoice Updated.', life: 20000
+                });
                 this.reFetchData();
             }
             this.isPSInnerLoaderHidden = true;
-            // });
         }
-
-
     }
 
     async createProjectAppendix(selectedProjects) {
-
         const projectAppendix = [];
         let retProjects = [];
         let projects = [];
@@ -1092,8 +1103,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 if (project) {
                     projects.push(project);
                     projectProcessed.push(project.ProjectCode);
-                }
-                else {
+                } else {
                     callProjects.push(element.ProjectCode);
                 }
             }
@@ -1106,16 +1116,16 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
                 url: '',
                 type: '',
                 listName: ''
-            }
+            };
 
             callProjects.forEach(element => {
-                var getPIData = Object.assign({}, options);
-                getPIData.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfoCode);
-                getPIData.url = getPIData.url.replace("{{ProjectCode}}", element);
+                const getPIData = Object.assign({}, options);
+                getPIData.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name,
+                    this.fdConstantsService.fdComponent.projectInfoCode);
+                getPIData.url = getPIData.url.replace('{{ProjectCode}}', element);
                 getPIData.listName = this.constantService.listNames.ProjectInformation.name;
-                getPIData.type = "GET";
+                getPIData.type = 'GET';
                 batchURL.push(getPIData);
-
             });
 
             retProjects = await this.spServices.executeBatch(batchURL);
@@ -1126,13 +1136,13 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         const appendixObj = { dvcode: '', cactusSpCode: '', title: '', amount: '', poc: '' };
         selectedProjects.forEach(element => {
             const project = projects.find(e => e.ProjectCode === element.ProjectCode);
-            let appendix = Object.assign({}, appendixObj);
+            const appendix = Object.assign({}, appendixObj);
             if (project) {
                 appendix.dvcode = project.WBJID ? project.WBJID : '';
                 appendix.cactusSpCode = project.ProjectCode ? project.ProjectCode : '';
                 appendix.title = project.Title ? project.Title : '';
             }
-            console.log('element ----> ', element);
+            // console.log('element ----> ', element);
             appendix.poc = element.POCName;
             appendix.amount = element.Amount;
             projectAppendix.push(appendix);
@@ -1149,24 +1159,26 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
             this.poInfo();
             this.cleInfo();
 
-            this.getRequiredData();
+            await this.getRequiredData();
         }, 300);
     }
+
     onlyNumberKey(event) {
         // return (event.charCode == 8 || event.charCode == 0) ? null : event.charCode >= 48 && event.charCode <= 57;
-        let charCode = (event.which) ? event.which : event.keyCode;
-        if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57))
+        const charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
             return false;
+        }
         return true;
     }
-    enterPOAmtMsg: boolean = false;
+
     enteredPOAmt(val) {
-        console.log('val ', val);
-        let amt = parseInt(val);
-        let poScheduled = parseFloat(this.selectedPOItem.value.TotalScheduled ? this.selectedPOItem.value.TotalScheduled : 0);
-        let poInvoiced = parseFloat(this.selectedPOItem.value.TotalInvoiced ? this.selectedPOItem.value.TotalInvoiced : 0);
-        let poItemAmt = this.selectedPOItem.value.Amount ? this.selectedPOItem.value.Amount : 0;
-        let availableBudget = poItemAmt - (poScheduled + poInvoiced);
+        // console.log('val ', val);
+        const amt = parseInt(val);
+        const poScheduled = parseFloat(this.selectedPOItem.value.TotalScheduled ? this.selectedPOItem.value.TotalScheduled : 0);
+        const poInvoiced = parseFloat(this.selectedPOItem.value.TotalInvoiced ? this.selectedPOItem.value.TotalInvoiced : 0);
+        const poItemAmt = this.selectedPOItem.value.Amount ? this.selectedPOItem.value.Amount : 0;
+        const availableBudget = poItemAmt - (poScheduled + poInvoiced);
         if (amt > availableBudget) {
             this.enterPOAmtMsg = true;
             this.addToProforma_form.get('Amount').setValue('');
@@ -1175,12 +1187,12 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
         }
     }
 
-    //for Decimal you can use this as
-
+    // for Decimal you can use this as
     onlyDecimalNumberKey(event) {
-        let charCode = (event.which) ? event.which : event.keyCode;
-        if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57))
+        const charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode !== 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
             return false;
+        }
         return true;
     }
 
@@ -1191,26 +1203,49 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
 
     @HostListener('document:click', ['$event'])
     clickout(event) {
-        if (event.target.className === "pi pi-ellipsis-v") {
+        if (event.target.className === 'pi pi-ellipsis-v') {
             if (this.tempClick) {
-                this.tempClick.style.display = "none";
+                this.tempClick.style.display = 'none';
                 if (this.tempClick !== event.target.parentElement.children[0].children[0]) {
                     this.tempClick = event.target.parentElement.children[0].children[0];
-                    this.tempClick.style.display = "";
+                    this.tempClick.style.display = '';
                 } else {
                     this.tempClick = undefined;
                 }
             } else {
                 this.tempClick = event.target.parentElement.children[0].children[0];
-                this.tempClick.style.display = "";
+                this.tempClick.style.display = '';
             }
 
         } else {
             if (this.tempClick) {
-                this.tempClick.style.display = "none";
+                this.tempClick.style.display = 'none';
                 this.tempClick = undefined;
             }
         }
+    }
+    
+    optionFilter(event: any) {
+        if (event.target.value) {
+            this.isOptionFilter = false;
+        }
+    }
+
+    ngAfterViewChecked() {
+        if (this.confirmedRes.length && this.isOptionFilter) {
+            const obj = {
+                tableData: this.confirmTable,
+                colFields: this.confirmedInColArray
+            };
+            if (obj.tableData.filteredValue) {
+                this.commonService.updateOptionValues(obj);
+                this.cdr.detectChanges();
+            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+                this.createColFieldValues(obj.tableData.value);
+                this.isOptionFilter = false;
+            }
+        }
+        this.cdr.detectChanges();
     }
 
 }

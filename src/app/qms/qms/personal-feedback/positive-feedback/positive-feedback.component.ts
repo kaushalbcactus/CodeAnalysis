@@ -1,16 +1,17 @@
 import { QMSCommonService } from './../../services/qmscommon.service';
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { ConstantsService } from '../../../../Services/constants.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { debounceTime } from 'rxjs/operators';
 import { SPCommonService } from '../../../../Services/spcommon.service';
 import { GlobalService } from '../../../../Services/global.service';
-import { DatePipe } from '@angular/common';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subject } from 'rxjs/internal/Subject';
 import { CommonService } from '../../../../Services/common.service';
 import { DataService } from '../../../../Services/data.service';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
+import { DataTable } from 'primeng/primeng';
 
 @Component({
   selector: 'app-positive-feedback',
@@ -36,19 +37,45 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
     Resources: []
   };
   public displayedCDColumns: string[] = ['ID', 'Title', 'SentDate', 'SentBy', 'Resources'];
+  @ViewChild('pf', { static: false }) pfTable: DataTable;
   // tslint:disable: max-line-length
-  constructor(private router: Router, private globalConstant: ConstantsService, private spCommon: SPCommonService, private qmsConstant: QMSConstantsService,
-    public global: GlobalService, private datepipe: DatePipe, private common: CommonService, public data: DataService,
-    public spService: SPOperationService, private qmsCommon: QMSCommonService) {
-    this.extPFNavigationSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.initialisePFPositive();
-      }
+  constructor(
+    private router: Router,
+    private globalConstant: ConstantsService,
+    private spCommon: SPCommonService,
+    private qmsConstant: QMSConstantsService,
+    public global: GlobalService,
+    private datepipe: DatePipe,
+    private commonService: CommonService,
+    public data: DataService,
+    public spService: SPOperationService,
+    private qmsCommon: QMSCommonService,
+    private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+  ) {
+    // this.router.routeReuseStrategy.shouldReuseRoute = function () {
+    //   return false;
+    // }
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
     });
+
+    this.extPFNavigationSubscription = this.router.events.subscribe((e: any) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
   }
 
   ngOnInit() {
+    this.qmsCommon.selectedComponent = this;
+    this.initialisePFPositive();
   }
 
   ngOnDestroy() {
@@ -61,14 +88,16 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
   }
 
   colFilters(colData) {
-    this.PFColArray.ID = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.ID, value: a.ID, filterValue: +a.ID  }; return b; }));
+    this.PFColArray.ID = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.ID, value: a.ID, filterValue: +a.ID }; return b; }));
     this.PFColArray.Title = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.Title, value: a.Title, filterValue: a.Title }; return b; }));
     this.PFColArray.SentDate = this.qmsCommon.uniqueArrayObj(colData.map(a => {
-      const b = { label: this.datepipe.transform(a.SentDate, 'MMM d, yyyy'),
-                  value: this.datepipe.transform(a.SentDate, 'MMM d, yyyy') ? this.datepipe.transform(a.SentDate, 'MMM d, yyyy') : '',
-                  filterValue: new Date(a.SentDate)}; return b;
+      const b = {
+        label: this.datepipe.transform(a.SentDate, 'MMM d, yyyy'),
+        value: a.SentDate ? new Date(this.datepipe.transform(a.SentDate, 'MMM d, yyyy')) : '',
+        filterValue: new Date(a.SentDate)
+      }; return b;
     }));
-    this.PFColArray.SentBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.SentBy.Title, value: a.SentBy.Title, filterValue:  a.SentBy.Title}; return b; }));
+    this.PFColArray.SentBy = this.qmsCommon.uniqueArrayObj(colData.map(a => { const b = { label: a.SentBy, value: a.SentBy, filterValue: a.SentBy.Title }; return b; }));
   }
 
   protected initialisePFPositive() {
@@ -106,7 +135,7 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
   }
 
   appendPropertyTOObject(arrResult) {
-    const currentUserId = this.global.sharePointPageObject.userId;
+    const currentUserId = this.global.currentUser.userId;
     const datePipe = this.datepipe;
     arrResult.map((pf) => {
       const deliveryLeads = pf.DeliveryLeads.results ? pf.DeliveryLeads.results.filter(a => a.ID === currentUserId) : [];
@@ -149,7 +178,7 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
         Id: element.Id,
         ID: element.ID,
         Title: element.Title,
-        SentDate: this.datepipe.transform(element.SentDate, 'MMM d, yyyy') ? this.datepipe.transform(element.SentDate, 'MMM d, yyyy') : '',
+        SentDate: element.SentDate ? new Date(this.datepipe.transform(element.SentDate, 'MMM d, yyyy')) : '',
         SentBy: element.SentBy.Title ? element.SentBy.Title : '',
         resources: element.resources,
         fileUrl: element.FileURL.Url,
@@ -174,6 +203,30 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
     this.global.personalFeedback.external.qc = arrPFs[0];
     this.bindTable(arrPFs);
     this.colFilters(arrPFs);
+  }
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.PFRows.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.pfTable,
+        colFields: this.PFColArray,
+        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.colFilters(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+      this.cdr.detectChanges();
+    }
   }
 
 }

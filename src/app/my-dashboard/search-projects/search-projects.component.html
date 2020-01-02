@@ -55,7 +55,8 @@
 ************************************************************************************************ -->
 
   <div *ngIf="!loaderenable && tableviewenable" class="SearchProjectTable" style="padding-top: 5px;">
-    <p-table #project [columns]="cols" [value]="ProjectList" [exportFilename]="ProjectList" [paginator]="true" [rows]="10" [style]="{'font-size':'12px','min-height':'500px'}"  >
+    <p-table #project [columns]="cols" [value]="ProjectList" [exportFilename]="ProjectList" [paginator]="true"
+      [rows]="10" [style]="{'font-size':'12px','min-height':'500px'}">
 
       <ng-template pTemplate="header" let-columns>
         <tr>
@@ -70,25 +71,34 @@
           <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" style="overflow: visible;">
             <ng-container *ngIf="col.field">
 
-              <p-multiSelect filter="true"  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" *ngSwitchCase="'SOWCode'" [options]="ProjectColArray.SOWCode"   defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
-              <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'ProjectCode'" [options]="ProjectColArray.ProjectCode"  defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
-              <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'WBJID'"  defaultLabel="All" [options]="ProjectColArray.WBJID" 
-                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
-              <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'ClientLegalEntity'" [options]="ProjectColArray.ClientLegalEntity"  defaultLabel="All"
-                 (onChange)="project.filter($event.value, col.field, 'in')">
+              <p-multiSelect filter="true" resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()"
+                *ngSwitchCase="'SOWCode'" [options]="ProjectColArray.SOWCode" defaultLabel="All"
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
+                *ngSwitchCase="'ProjectCode'" [options]="ProjectColArray.ProjectCode" defaultLabel="All"
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
+                *ngSwitchCase="'WBJID'" defaultLabel="All" [options]="ProjectColArray.WBJID"
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
+                *ngSwitchCase="'ClientLegalEntity'" [options]="ProjectColArray.ClientLegalEntity" defaultLabel="All"
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
               </p-multiSelect>
-              <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'DeliverableType'" [options]="ProjectColArray.DeliverableType"  defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
-              <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'ProjectType'" [options]="ProjectColArray.ProjectType"   defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
-              <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()"  filter="true" *ngSwitchCase="'Status'" [options]="ProjectColArray.Status"  defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
-              <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'CreatedBy'" [options]="ProjectColArray.CreatedBy"  defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
-                <p-multiSelect  resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true" *ngSwitchCase="'Created'" [options]="ProjectColArray.Created"  defaultLabel="All"
-                (onChange)="project.filter($event.value, col.field, 'in')"></p-multiSelect>
+              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
+                *ngSwitchCase="'DeliverableType'" [options]="ProjectColArray.DeliverableType" defaultLabel="All"
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
+                *ngSwitchCase="'ProjectType'" [options]="ProjectColArray.ProjectType" defaultLabel="All"
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
+                *ngSwitchCase="'Status'" [options]="ProjectColArray.Status" defaultLabel="All"
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
+                *ngSwitchCase="'CreatedBy'" [options]="ProjectColArray.CreatedBy" defaultLabel="All"
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
+              <p-multiSelect resetFilterOnHide="true" (keydown.enter)="$event.preventDefault()" filter="true"
+                *ngSwitchCase="'CreatedDate'" [options]="ProjectColArray.CreatedDate" defaultLabel="All"
+                (onChange)="project.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"></p-multiSelect>
             </ng-container>
           </th>
           <th></th>
@@ -97,12 +107,12 @@
       <ng-template pTemplate="body" let-node="rowData" let-rowData let-columns="columns" let-rowIndex="rowIndex">
         <tr style="font-size: 12px;">
           <td *ngFor="let col of columns;index as i">
-            <span *ngIf="col.field === 'Created'"> {{rowData[col.field] | date:'d MMM, y, h:mm a'}} </span>
-            <span *ngIf="col.field !== 'Created'"> {{rowData[col.field]}} </span>
+            <span *ngIf="col.field === 'CreatedDate'"> {{rowData[col.field] | date:' MMM d, y, h:mm a'}} </span>
+            <span *ngIf="col.field !== 'CreatedDate'"> {{rowData[col.field]}} </span>
           </td>
           <td>
             <div>
-              <p-menu #popupMenu [popup]="true"  [model]="projectMenu">
+              <p-menu #popupMenu [popup]="true" [model]="projectMenu">
               </p-menu>
 
               <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;"
@@ -143,8 +153,9 @@
 
           <table [hidden]="modalloaderenable" class="ProjectDetails" style="width:100%;margin:10px 0px 0px 0px;">
             <tr>
-              <th>Client /  Subdivision  </th>
-              <td>{{ProjectPopupDetails.ClientLegalEntity}} <span *ngIf="ProjectPopupDetails.SubDivision">/</span> {{ProjectPopupDetails.SubDivision}}</td>
+              <th>Client / Subdivision </th>
+              <td>{{ProjectPopupDetails.ClientLegalEntity}} <span *ngIf="ProjectPopupDetails.SubDivision">/</span>
+                {{ProjectPopupDetails.SubDivision}}</td>
               <th>POC </th>
               <td>{{ProjectPopupDetails.POC}}</td>
             </tr>
@@ -158,11 +169,13 @@
               <th>Deliverable Type </th>
               <td>{{ProjectPopupDetails.DeliverableType}}</td>
               <th>Sub-Deliverable / Service </th>
-              <td>{{ProjectPopupDetails.SubDeliverable}} <span *ngIf="ProjectPopupDetails.ServiceLevel"> / </span> {{ProjectPopupDetails.ServiceLevel}} </td>
+              <td>{{ProjectPopupDetails.SubDeliverable}} <span *ngIf="ProjectPopupDetails.ServiceLevel"> / </span>
+                {{ProjectPopupDetails.ServiceLevel}} </td>
             </tr>
             <tr>
               <th>TA & Indication </th>
-              <td>{{ProjectPopupDetails.TA}} <span *ngIf="ProjectPopupDetails.Indication"> & </span> {{ProjectPopupDetails.Indication}}</td>
+              <td>{{ProjectPopupDetails.TA}} <span *ngIf="ProjectPopupDetails.Indication"> & </span>
+                {{ProjectPopupDetails.Indication}}</td>
               <th>Molecule </th>
               <td>{{ProjectPopupDetails.Molecule}}</td>
             </tr>
@@ -327,7 +340,7 @@
     <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)">
       <mat-expansion-panel-header>
         <mat-panel-title style="color:#000000;padding: 5px 0px 0px 0px;">
-          <mat-icon >folder</mat-icon> &nbsp;&nbsp; Project Drafts
+          <mat-icon>folder</mat-icon> &nbsp;&nbsp; Project Drafts
         </mat-panel-title>
 
       </mat-expansion-panel-header>

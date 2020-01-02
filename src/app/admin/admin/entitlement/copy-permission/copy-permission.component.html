@@ -1,0 +1,107 @@
+<div>
+  <div class="userRole">
+    <div class="ui-g">
+      <div class="ui-g-1">
+        <span>User:</span>
+      </div>
+      <div class="ui-g-3">
+        <p-multiSelect [options]="sourceUsersArray" defaultLabel="Select User" [(ngModel)]="sourceUsers"
+          (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"
+          (onPanelHide)="onSourceUsersChange()">
+        </p-multiSelect>
+      </div>
+      <div class="ui-g-2">
+        <span>Copy/Add Permission</span>
+      </div>
+      <div class="ui-g-3">
+        <p-dropdown [options]="destinationUsersArray" [(ngModel)]="destinationUser" filter="true"
+          resetFilterOnHide="true" placeholder='Select User' (onChange)="onDestinationUserChange()">
+        </p-dropdown>
+      </div>
+      <div class="ui-g-3">
+        <p-splitButton label="Add Permission" icon="pi pi-plus-circle" (onClick)="addPermission()" [model]="buttons">
+        </p-splitButton>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="ui-g mt-20">
+  <div class="ui-g-4" *ngIf="viewArray.sourceGroupsArray.length">
+    <p-table #sourceTable [value]="viewArray.sourceGroupsArray" [scrollable]="true" scrollHeight="400px">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Source Groups</th>
+        </tr>
+      </ng-template>
+      <!-- <ng-template pTemplate="caption">
+          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+          <input type="text" pInputText size="50" placeholder="Source Group" (input)="sourceTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+      </ng-template> -->
+      <ng-template pTemplate="body" style="overflow: auto" let-rowData let-rowIndex="rowIndex">
+        <p-card>
+          <tr>
+            <td>{{ rowIndex+1 }}.</td>
+            <td class="brandColor">
+              {{rowData}}
+            </td>
+          </tr>
+        </p-card>
+      </ng-template>
+    </p-table>
+  </div>
+  <div class="ui-g-4 brandColor" *ngIf="!viewArray.sourceGroupsArray.length">
+    No Permission in source groups
+  </div>
+  <div class="ui-g-4" *ngIf="viewArray.destinationGroupsArray.length">
+    <p-table #destinationTable [value]="viewArray.destinationGroupsArray" [scrollable]="true" scrollHeight="400px">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Destination Groups</th>
+        </tr>
+      </ng-template>
+      <!-- <ng-template pTemplate="caption">
+          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+          <input type="text" pInputText size="50" placeholder="Source Group" (input)="destinationTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+      </ng-template> -->
+      <ng-template pTemplate="body" style="overflow: auto" let-rowData let-rowIndex="rowIndex">
+        <p-card>
+          <tr>
+            <td>{{ rowIndex+1 }}.</td>
+            <td class="brandColor">
+              {{rowData}}
+            </td>
+          </tr>
+        </p-card>
+      </ng-template>
+    </p-table>
+  </div>
+  <div class="ui-g-4 brandColor" *ngIf="!viewArray.destinationGroupsArray.length">
+    No Permission in destination groups
+  </div>
+  <div class="ui-g-4" *ngIf="viewArray.finalResultArray.length">
+    <p-table #resultTable [value]="viewArray.finalResultArray" [scrollable]="true" scrollHeight="400px">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Results Groups</th>
+        </tr>
+      </ng-template>
+      <!-- <ng-template pTemplate="caption">
+          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+          <input type="text" pInputText size="50" placeholder="Source Group" (input)="resultTable.filterGlobal($event.target.value, 'contains')" style="width:auto">
+      </ng-template> -->
+      <ng-template pTemplate="body" style="overflow: auto" let-rowData let-rowIndex="rowIndex">
+        <p-card>
+          <tr>
+            <td>{{ rowIndex+1 }}.</td>
+            <td class="brandColor">
+              {{rowData}}
+            </td>
+          </tr>
+        </p-card>
+      </ng-template>
+    </p-table>
+  </div>
+  <div class="ui-g-4 brandColor" *ngIf="!viewArray.finalResultArray.length">
+    No Results
+  </div>
+</div>

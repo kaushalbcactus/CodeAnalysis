@@ -35,41 +35,41 @@
                 <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" [hidden]="!col.visibility">
                     <ng-container *ngIf="col.field">
                         <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ProjectCode'" [options]="pendinExpenseColArray.ProjectCode"
-                            defaultLabel="All" (onChange)="rc.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="rc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientLegalEntity'"
-                            [options]="pendinExpenseColArray.ClientLegalEntity" defaultLabel="All"
-                            (onChange)="rc.filter($event.value, col.field, 'in')">
+                            [options]="pendinExpenseColArray.ClientLegalEntity" defaultLabel="All" [maxSelectedLabels]="1" 
+                            (onChange)="rc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Category'" [options]="pendinExpenseColArray.Category"
-                            defaultLabel="All" (onChange)="rc.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="rc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ExpenseType'" [options]="pendinExpenseColArray.ExpenseType"
-                            defaultLabel="All" (onChange)="rc.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="rc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientAmount'" [options]="pendinExpenseColArray.ClientAmount"
-                            defaultLabel="All" (onChange)="rc.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="rc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ClientCurrency'" [options]="pendinExpenseColArray.ClientCurrency"
-                            defaultLabel="All" (onChange)="rc.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="rc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Created'" [options]="pendinExpenseColArray.Created"
-                            defaultLabel="All" (onChange)="rc.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="rc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'CreatedBy'" [options]="pendinExpenseColArray.CreatedBy"
-                            defaultLabel="All" (onChange)="rc.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="rc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ActionedBy'" [options]="pendinExpenseColArray.ActionedBy"
-                            defaultLabel="All" (onChange)="rc.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="rc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'RejectionDate'" [options]="pendinExpenseColArray.RejectionDate"
-                            defaultLabel="All" (onChange)="rc.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="rc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                         <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ActionBy'" [options]="pendinExpenseColArray.ActionBy"
-                            defaultLabel="All" (onChange)="rc.filter($event.value, col.field, 'in')">
+                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="rc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
-                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'Modified'" [options]="pendinExpenseColArray.Modified"
-                            defaultLabel="All" (onChange)="rc.filter($event.value, col.field, 'in')">
+                        <p-multiSelect (keydown.enter)="$event.preventDefault()"  resetFilterOnHide="true"  *ngSwitchCase="'ModifiedDate'" [options]="pendinExpenseColArray.ModifiedDate"
+                            defaultLabel="All" [maxSelectedLabels]="1"  (onChange)="rc.filter($event.value, col.field, 'in')" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;">
                         </p-multiSelect>
                     </ng-container>
                 </th>
@@ -84,10 +84,10 @@
                     <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
                 </td>
                 <td *ngFor="let col of columns;index as i" [hidden]="!col.visibility" class="ui-resizable-column">
-                    <ng-container *ngIf="col.field != 'Modified' &&  col.field != '' ">
+                    <ng-container *ngIf="col.field != 'ModifiedDate' &&  col.field != '' ">
                         {{rowData[col.field]}}
                     </ng-container>
-                    <ng-container *ngIf="col.field == 'Modified'">
+                    <ng-container *ngIf="col.field == 'ModifiedDate'">
                         {{rowData[col.field] | date:'MMM dd, yyyy' }}
                     </ng-container>
 

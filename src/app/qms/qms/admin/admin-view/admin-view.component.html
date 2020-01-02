@@ -48,9 +48,9 @@
           </tr>
           <tr>
               <th *ngFor="let col of columns" [ngSwitch]="col.field">
-                  <p-multiSelect *ngSwitchCase="'taskTitle'" [style]="{'width':'100%'}"  [options]="AdminColArray.TaskTitle" defaultLabel="Task Title" (onChange)="admin.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                  <p-multiSelect *ngSwitchCase="'taskCompletionDate'" [style]="{'width':'100%'}"  [options]="AdminColArray.TaskCompletionDate" defaultLabel="Task Completion Date" (onChange)="admin.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
-                  <p-multiSelect *ngSwitchCase="'rated'" [style]="{'width':'100%'}"  [options]="AdminColArray.Rated" defaultLabel="Type" (onChange)="admin.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'taskTitle'" [style]="{'width':'100%'}"  [options]="AdminColArray.taskTitle" defaultLabel="Task Title" (onChange)="admin.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'taskCompletionDate'" [style]="{'width':'100%'}"  [options]="AdminColArray.taskCompletionDate" defaultLabel="Task Completion Date" (onChange)="admin.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
+                  <p-multiSelect *ngSwitchCase="'rated'" [style]="{'width':'100%'}"  [options]="AdminColArray.rated" defaultLabel="Type" (onChange)="admin.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
                 
               </th>
               <th></th>
@@ -59,12 +59,15 @@
       <ng-template pTemplate="body" let-rowData let-columns="columns">
           <tr>
               <td *ngFor="let col of columns">
-                  <ng-container *ngIf="col.field != 'docUrlHtmlTag' && col.field != 'taskTitle' &&  col.field != ''">
+                  <ng-container *ngIf="col.field != 'docUrlHtmlTag' && col.field != 'taskTitle' && col.field != 'taskCompletionDate' &&  col.field != ''">
                       {{rowData[col.field]}}
                   </ng-container>
                   <ng-container *ngIf="col.field === 'taskTitle'">
                     {{rowData[col.field]}}
                   </ng-container>
+                  <ng-container *ngIf="col.field == 'taskCompletionDate'">
+                      {{rowData[col.field] |  date: 'MMM d, yyyy'}}
+                    </ng-container>
                   <!-- <ng-container *ngIf="col.field === 'taskTitle' && rowData['subMilestones'] !== ''">
                     {{rowData[col.field]}} - {{rowData['subMilestones']}}
                   </ng-container>

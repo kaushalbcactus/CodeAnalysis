@@ -12,13 +12,13 @@ export class ConstantsService {
   constructor(public globalService: GlobalService) { }
   loader = {
     isPSInnerLoaderHidden: false
-  }
+  };
   public userPermission = {
     isFdUserManager: false,
     isFdUserExpenseApprover: false,
     isFDUserAdmin: true,
     userPermissionMsg: false,
-  }
+  };
 
   public listNames = {
     ProjectRelatedInvoices: {
@@ -28,6 +28,10 @@ export class ConstantsService {
     InvoiceDetails: {
       name: 'InvoiceDetails',
       type: 'SP.Data.InvoiceDetailsListItem'
+    },
+    AvailableHours: {
+      name: 'AvailableHours',
+      type: 'SP.Data.AvailableHoursListItem'
     },
     SubDeliverables: {
       name: 'SubDeliverables',
@@ -155,6 +159,10 @@ export class ConstantsService {
       name: 'Schedules',
       type: 'SP.Data.SchedulesListItem'
     },
+    EarlyTaskComplete: {
+      name: 'EarlyTaskCompleteNotifications',
+      type: 'SP.Data.EarlyTaskCompleteNotificationsListItem'
+    },
     LeaveCalendar: {
       name: 'Leave Calendar',
       type: 'SP.Data.Leave_x0020_CalendarListItem'
@@ -231,6 +239,10 @@ export class ConstantsService {
       name: 'MilestoneMatrix',
       type: 'SP.Data.MilestoneMatrixListItem'
     },
+    MilestoneSubTaskMatrix: {
+      name: 'MilestoneSubTaskMatrix',
+      type: 'SP.Data.MilestoneSubTaskMatrixListItem'
+    },
     MilestoneTaskMatrix: {
       name: 'MilestoneTaskMatrix',
       type: 'SP.Data.MilestoneTaskMatrixListItem'
@@ -276,6 +288,37 @@ export class ConstantsService {
       name: 'VendorFreelancer',
       type: 'SP.Data.VendorFreelancerListItem'
     },
+    FocusGroup: {
+      name: 'Focus Group',
+      type: 'SP.Data.Focus_x0020_GroupListItem'
+    },
+    TimeZones: {
+      name: 'TimeZones',
+      type: 'SP.Data.TimeZonesListItem'
+    },
+    UserInformationList: {
+      name: 'User Information List'
+    },
+    ClientGroup: {
+      name: 'ClientGroup',
+      type: 'SP.Data.ClientGroupListItem'
+    },
+    POBudgetBreakup: {
+      name: 'POBudgetBreakup',
+      type: 'SP.Data.POBudgetBreakupListItem'
+    },
+    CLEBucketMapping: {
+      name: 'CLEBucketMapping',
+      type: 'SP.Data.CLEBucketMappingListItem'
+    },
+    EarlyTaskCompleteNotifications : {
+      name: 'EarlyTaskCompleteNotifications',
+      type: 'SP.Data.EarlyTaskCompleteNotificationsListItem'
+    },
+    SendEmail: {
+      name: 'SendEmail',
+      type: 'SP.Data.SendEmailListItem'
+    }
   };
 
   public projectStatus = {
@@ -302,13 +345,14 @@ export class ConstantsService {
     QMSAdmin: 'QMS_Admin',
     QMSLeaders: 'QMS_Leaders',
     CDAdmin: 'CD_Admin',
+    CAAdmin: 'CA_Admin',
     PFAdmin: 'PF_Admin',
     MANAGERS: 'Managers',
     PROJECT_FULL_ACCESS: 'Project-FullAccess',
     SOW_FULL_ACCESS: 'SOW-Full Access',
     SOW_CREATION_MANAGERS: 'SOW Creation Managers',
+    SYNC_USER_TO_USER_INFORMATION_LIST: 'SyncUserToUserInformationList'
   };
-
   public cdStatus = {
     Created: 'Created',
     Deleted: 'Deleted',
@@ -324,7 +368,6 @@ export class ConstantsService {
     Accepted: 'Accepted',
     Rejected: 'Rejected'
   };
-
   public FeedbackType = {
     taskRating: 'Task Feedback',
     qualitative: 'Qualitative'
@@ -357,7 +400,8 @@ export class ConstantsService {
     REJECTED: 'Rejected',
     IN_PROGRESS: 'In Progress',
     ON_HOLD: 'On Hold',
-    AUTO_CLOSED: 'Auto Closed'
+    AUTO_CLOSED: 'Auto Closed',
+    COMPLETED: 'Completed'
   };
   public SKILL_LEVEL = {
     WRITER: 'Writer',
@@ -590,8 +634,8 @@ export class ConstantsService {
   };
 
   public userType = {
-    BEST_FIT : 'Best Fit',
-    RECOMMENDED : 'Recommended'
+    BEST_FIT: 'Best Fit',
+    RECOMMENDED: 'Recommended'
   };
 
 }

@@ -1,0 +1,143 @@
+::ng-deep body .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active,
+ ::ng-deep body .ui-table .ui-sortable-column.ui-state-highlight,
+::ng-deep body .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight,
+::ng-deep body .ui-chkbox .ui-chkbox-box.ui-state-active {
+    background-color: #C53E3E !important;
+    border: #C53E3E !important;
+}
+
+::ng-deep body .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover {
+    background-color: #e28080 !important;
+}
+
+::ng-deep .ng-dropdown-panel {
+    width: 400px !important;
+    left: 0px !important;
+    right: 0px !important;
+}
+
+::ng-deep .ui-dropdown-item {
+    padding: 10px 10px 20px 10px !important;
+}
+
+::ng-deep .allocate-btn {
+    float: right !important;
+    padding: 2px 5px 2px 5px !important;
+    border: 1px solid #cdcdcd !important;
+    border-radius: 2px !important;
+}
+
+::ng-deep .allocate-btn:hover {
+    background-color: #f1cdcd;
+    border: 1px solid #f1cdcd;
+}
+
+::ng-deep .allocatedUnallocatedTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child div.ui-menu {
+    top: inherit !important;
+    left: inherit !important;
+    right: 50px !important;
+}
+
+::ng-deep .allocatedUnallocatedTable .ui-dropdown-panel {
+    left: inherit !important;
+    right: 0px !important;
+    top: 35px !important;
+}
+
+::ng-deep body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight,
+::ng-deep body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item-group.ui-state-highlight {
+    background-color: #C53E3E !important;
+}
+
+::ng-deep body .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight>span {
+    color: #ffffff !important;
+}
+
+::ng-deep .mainfilter>div>div>div.ui-dropdown-items-wrapper>ul>p-dropdownitem>li {
+    padding: 0.429em 0.857em !important;
+}
+
+::ng-deep body .ui-dropdown:not(.ui-state-disabled).ui-state-focus {
+    border-color: #C53E3E !important;
+}
+
+::ng-deep .subtaskTable>div {
+    margin: 0px !important;
+}
+
+#modalInnerLoader {
+    border: 5px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 5px solid red;
+    border-bottom: 5px solid red;
+    width: 50px;
+    height: 50px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#modalInnerLoaderText {
+    -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+    -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+    animation: loading-text-opacity 2s linear 0s infinite normal;
+    color: black;
+    font-family: "Helvetica Neue, "Helvetica", ""arial";
+    font-size: 10px;
+    font-weight: bold;
+    opacity: 0.5;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
+}
+
+::ng-deep .ui-datepicker-trigger.ui-calendar-button {
+    width: 2.357em !important;
+    padding: 2px !important;
+    background-color: #c53e3e !important;
+    border: 1px solid #c53e3e !important;
+}
+
+::ng-deep .timePicker {
+    width: 30% !important;
+    padding: 5px !important;
+    border: 1px solid #a6a6a6 !important;
+    border-radius: 4px !important;
+}
+
+::ng-deep .ui-inputswitch.ui-inputswitch-checked .ui-inputswitch-slider {
+    background-color: #c53e3e !important;
+}
+
+::ng-deep .ui-table.ui-widget {
+    margin-top: 0px !important;
+}
+
+::ng-deep .mainPage {
+    margin: 0px !important;
+    padding: 0px 0px 5px 0px !important;
+    position: sticky !important;
+    overflow: visible !important;
+    background-color: white !important;
+    z-index: 990 !important;
+    top: 0 !important;
+}
+
+:host ::ng-deep .slotTableTr>th {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 40px !important;
+    z-index: 99 !important;
+}
+
+
+/* :host ::ng-deep .slotTableTr1>th {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 90px !important;
+    z-index: 99 !important;
+} */

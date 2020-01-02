@@ -26,7 +26,7 @@ import { ProjectDraftsComponent } from './search-projects/project-drafts/project
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxGraphModule } from '@swimlane/ngx-graph';
 import { DndModule } from 'ngx-drag-drop';
-import { NgSelectModule } from '@ng-select/ng-select';
+
 import { TreeTableModule, RatingModule } from 'primeng/primeng';
 import { NgGanttEditorModule } from 'ng-gantt';
 import { ProjectmanagementModule } from '../projectmanagement/projectmanagement.module';
@@ -40,6 +40,7 @@ import { TimelineModule } from '../timeline/timeline.module';
 import { SharedModule } from '../shared/shared.module';
 import { ViewUploadDocumentDialogComponent } from '../shared/view-upload-document-dialog/view-upload-document-dialog.component';
 import { ViewUploadDocumentModule } from '../shared/view-upload-document-dialog/view-upload-document.module';
+import { CreateTaskComponent } from './fte/create-task/create-task.component';
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true
@@ -60,7 +61,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     TimeBookingDialogComponent,
     ProjectDraftsComponent,
     MyprojectsComponent,
-    DisplayProjectsComponent],
+    DisplayProjectsComponent,
+    CreateTaskComponent],
   imports: [
     SharedModule,
     ViewUploadDocumentModule,
@@ -76,7 +78,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     NgGanttEditorModule,
     TreeTableModule,
     RatingModule,
-    NgSelectModule,
     DndModule,
     NgxGraphModule,
     NgxChartsModule,
@@ -98,6 +99,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     BlockTimeDialogComponent,
     ProjectDraftsComponent,
     ViewUploadDocumentDialogComponent,
+    CreateTaskComponent
   ]
 })
 export class MyDashboardModule { }

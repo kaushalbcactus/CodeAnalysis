@@ -17,6 +17,7 @@ export class TimelineConstantsService {
     },
     getClientLegalEntity: {
       select: 'Title, ListName',
+      filter: "IsActive eq 'Yes'",
       top: '4500'
     }
   };

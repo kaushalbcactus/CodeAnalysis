@@ -21,8 +21,6 @@ import { ManageFinanceComponent } from './projectmanagement/add-projects/manage-
 import { StandardprojectComponent } from './projectmanagement/add-projects/addtimeline/standardproject/standardproject.component';
 // tslint:disable-next-line: max-line-length
 import { NonStandardprojectComponent } from './projectmanagement/add-projects/addtimeline/non-standardproject/non-standardproject.component';
-import { UsercapacityComponent } from './projectmanagement/add-projects/addtimeline/usercapacity/usercapacity.component';
-import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { PMResolve } from './PMResolve';
 import { PMMainResolve } from './PMMainResolve';
@@ -34,6 +32,8 @@ import { ProjectTimelineComponent } from './projectmanagement/all-projects/proje
 import { ViewUploadDocumentModule } from '../shared/view-upload-document-dialog/view-upload-document.module';
 import { SharedModule } from 'primeng/primeng';
 import { ViewUploadDocumentDialogComponent } from '../shared/view-upload-document-dialog/view-upload-document-dialog.component';
+import { UserCapacityModule } from '../shared/usercapacity/usercapacity.module';
+import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.component';
 
 @NgModule({
   declarations: [
@@ -52,7 +52,6 @@ import { ViewUploadDocumentDialogComponent } from '../shared/view-upload-documen
     ManageFinanceComponent,
     StandardprojectComponent,
     NonStandardprojectComponent,
-    UsercapacityComponent,
     ProjectTimelineComponent],
   imports: [
     SharedModule,
@@ -62,31 +61,31 @@ import { ViewUploadDocumentDialogComponent } from '../shared/view-upload-documen
     PrimengModule,
     FormsModule,
     NgxMaterialTimepickerModule,
-    NgSelectModule,
     ReactiveFormsModule,
     TimelineModule,
     CustomMaterialModule,
     NgbModule,
-    TaskAllocationModule
+    TaskAllocationModule,
+    UserCapacityModule
   ],
   exports: [
     AllProjectsComponent
   ],
   providers: [
     DatePipe,
-    UsercapacityComponent,
     PMResolve,
     PMMainResolve,
     DialogService,
     DynamicDialogConfig,
-    DynamicDialogRef
+    DynamicDialogRef,
   ],
   entryComponents: [
     ProjectAttributesComponent,
     ManageFinanceComponent,
     AddProjectsComponent,
     ProjectTimelineComponent,
-    ViewUploadDocumentDialogComponent
+    ViewUploadDocumentDialogComponent,
+    UsercapacityComponent,
   ]
 })
 export class ProjectmanagementModule { }

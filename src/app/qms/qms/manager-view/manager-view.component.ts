@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, ElementRef, ViewEncapsulation, SimpleChange } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild, ElementRef, ViewEncapsulation, SimpleChange, ApplicationRef, NgZone } from '@angular/core';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';
 import { CommonService } from '../../../Services/common.service';
@@ -8,10 +8,10 @@ import { GlobalService } from '../../../Services/global.service';
 // import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { SPCommonService } from '../../../Services/spcommon.service';
 import { TreeNode, MessageService } from 'primeng/api';
 import { UserFeedbackComponent } from '../user-feedback/user-feedback.component';
 import { QMSConstantsService } from '../services/qmsconstants.service';
+import { PlatformLocation, LocationStrategy } from '@angular/common';
 
 @Component({
   selector: 'app-manager-view',
@@ -52,7 +52,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     endDate: new Date(),
     count: 10,
     dateRange: {},
-    userId: this.global.currentUser.id,
+    userId: this.global.currentUser.userId,
     hideQuarters: true,
     hideDateRange: true,
     hideYears: true,
@@ -82,20 +82,60 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
   };
   constructor(private spService: SPOperationService, private globalConstant: ConstantsService, private messageService: MessageService,
     private common: CommonService, private data: DataService, private router: Router, private global: GlobalService,
-    private qmsConstant: QMSConstantsService) {
+    private qmsConstant: QMSConstantsService,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    private readonly _router: Router,
+    _applicationRef: ApplicationRef,
+    zone: NgZone
+  ) {
+    // this.router.routeReuseStrategy.shouldReuseRoute = function () {
+    //   return false;
+    // }
+    // this.navigationSubscription = this.router.events.subscribe((e: any) => {
+    //   // If it is a NavigationEnd event re-initalise the component
+    //   if (e instanceof NavigationEnd) {
+    //     this.initialiseManagerView();
+    //   }
+    // });
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.initialiseManagerView();
-      }
+      zone.run(() => _applicationRef.tick());
     });
   }
 
+  async ngOnInit() {
+    this.initialiseManagerView();
+  }
+  
   ngOnChanges(changes: SimpleChange) {
     console.log(changes);
   }
 
   initialiseManagerView() {
+    this.feedbacksColumns = [
+      { field: 'userName', header: 'Resource', visibility: true },
+    ];
+    this.feedbacksTableColumns = [
+      { field: 'userName', header: 'Resource', visibility: true, exportable: true },
+      { field: 'averageRating', header: 'Average Rating', visibility: true, exportable: true },
+    ];
+
+    this.innerTable = [
+      { field: 'userFeedback', header: 'Date', subfield: 'Date', exportable: true },
+      { field: 'userFeedback', header: 'Task', subfield: 'Task', exportable: true },
+      { field: 'userFeedback', header: 'Type', subfield: 'Type', exportable: true },
+      { field: 'userFeedback', header: 'Feedback By', subfield: 'Feedbackby', exportable: true },
+      { field: 'userFeedback', header: 'Rating', subfield: 'Rating', exportable: true },
+      { field: 'userFeedback', header: 'Comments', subfield: 'Comments', exportable: true },
+      { field: 'Parameters', header: 'Parameters', visibility: false, exportable: true },
+      { field: 'Score', header: 'Score', visibility: false, exportable: true }
+    ];
     // Set default values and re-fetch any data you need.
     this.showLoader();
     setTimeout(async () => {
@@ -106,7 +146,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
       ).subscribe(() => this.alertMessage = null);
       // fetching manager resources only once page loads
       const filterObject = Object.assign({}, this.filterObj);
-      const resources = await this.getAllResources(this.global.sharePointPageObject.userId);
+      const resources = await this.getAllResources(this.global.currentUser.userId);
       this.feedbacksRows = await this.applyFilters(filterObject, resources);
       this.feedbackTable = [];
       this.feedbacksRows.forEach(row => {
@@ -167,7 +207,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     leaders = leaders.map(obj => ({
       ...obj, UserName: { ID: obj.Id, Title: obj.Title }
     }));
-    const currentUserIndex = leaders.findIndex(u => u.UserName.ID === this.global.sharePointPageObject.userId);
+    const currentUserIndex = leaders.findIndex(u => u.UserName.ID === this.global.currentUser.userId);
     if (currentUserIndex > -1) {
       leaders.splice(currentUserIndex, 1);
       resources = [...resources, ...leaders].map(item => item)
@@ -241,26 +281,7 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
     return await this.getResourceObject(updatedResources);
   }
 
-  async ngOnInit() {
-    this.feedbacksColumns = [
-      { field: 'userName', header: 'Resource', visibility: true },
-    ];
-    this.feedbacksTableColumns = [
-      { field: 'userName', header: 'Resource', visibility: true, exportable: true },
-      { field: 'averageRating', header: 'Average Rating', visibility: true, exportable: true },
-    ];
-
-    this.innerTable = [
-      { field: 'userFeedback', header: 'Date', subfield: 'Date', exportable: true },
-      { field: 'userFeedback', header: 'Task', subfield: 'Task', exportable: true },
-      { field: 'userFeedback', header: 'Type', subfield: 'Type', exportable: true },
-      { field: 'userFeedback', header: 'Feedback By', subfield: 'Feedbackby', exportable: true },
-      { field: 'userFeedback', header: 'Rating', subfield: 'Rating', exportable: true },
-      { field: 'userFeedback', header: 'Comments', subfield: 'Comments', exportable: true },
-      { field: 'Parameters', header: 'Parameters', visibility: false, exportable: true },
-      { field: 'Score', header: 'Score', visibility: false, exportable: true }
-    ];
-  }
+  
 
   getScorecard(assignedToID, topCount, startDate, endDate) {
     const batchURL = [];
@@ -373,7 +394,8 @@ export class ManagerViewComponent implements OnInit, OnDestroy {
 
   reloadPage(filterObj) {
     this.data.changeFilterObj(filterObj);
-    this.router.navigate([this.router.url]);
+    //this.router.navigate([this.router.url]);
+    this.initialiseManagerView();
   }
 
 

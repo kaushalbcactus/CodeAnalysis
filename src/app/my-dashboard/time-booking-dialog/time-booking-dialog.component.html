@@ -18,7 +18,7 @@
 
 
     <div fxLayout="column" fxFlex="100" fxLayoutAlign="space-between start" fxLayoutGap="20px">
-        <p-table #tableId [style]="{'font-size':'12px'}" [value]="UserMilestones" [globalFilterFields]="['Entity','ProjectCode','Milestone']" id="datatable">
+        <p-table #tableId [style]="{'font-size':'12px','width' : '100%'}" [value]="UserMilestones" [globalFilterFields]="['Entity','ProjectCode','Milestone']" id="datatable">
             <ng-template pTemplate="caption">
                 <div style="text-align: right">
                     <i class="fa fa-search" style="margin:4px 4px 0 0"></i>

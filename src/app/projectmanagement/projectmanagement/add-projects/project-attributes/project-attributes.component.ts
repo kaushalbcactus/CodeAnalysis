@@ -50,9 +50,9 @@ export class ProjectAttributesComponent implements OnInit {
     private router: Router,
     private dataService: DataService
   ) { }
-  ngOnInit() {
+  async ngOnInit() {
     this.initForm();
-    this.pmCommonService.setBilledBy();
+    await this.pmCommonService.setBilledBy();
     this.isProjectAttributeLoaderHidden = false;
     this.isProjectAttributeTableHidden = true;
     setTimeout(() => {
@@ -387,7 +387,8 @@ export class ProjectAttributesComponent implements OnInit {
     this.pmObject.addProject.ProjectAttributes.PUBSupportRequired = projObj.IsPubSupport === "Yes" ? true : false;
     this.pmObject.addProject.ProjectAttributes.PUBSupportStatus = projObj.PubSupportStatus;
     const poc2Array = [];
-    if(this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value) {
+    if (this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value ||
+      this.pmObject.addProject.ProjectAttributes.BilledBy === this.pmConstant.PROJECT_TYPE.FTE.value) {
       this.isPubSupportDisabled = false;
     } else {
       this.isPubSupportDisabled = true;

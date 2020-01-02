@@ -376,6 +376,27 @@ export class ManageFinanceComponent implements OnInit {
 
   }
 
+  onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+  }
+
+  async getTosList() {
+    const approvers = await this.spServices.getGroupInfo('ExpenseApprovers');
+    let arrayTo = [];
+    if (approvers.results) {
+      if (approvers.results.length) {
+        for (const a in approvers.results) {
+          if (approvers.results[a].Email !== undefined && approvers.results[a].Email !== '') {
+            arrayTo.push(approvers.results[a].Email);
+          }
+        }
+      }
+    }
+    arrayTo = arrayTo.filter(this.onlyUnique);
+    console.log('arrayTo ', arrayTo);
+    return arrayTo;
+  }
+
   async reduceBudget() {
     if (this.selectedReason && this.selectedReasonType && this.newBudgetHrs) {
 
@@ -432,6 +453,10 @@ export class ManageFinanceComponent implements OnInit {
       arrayCC = arrayCC.concat([], cm1IdArray);
       tempArray = tempArray.concat([], this.projObj.CMLevel2ID);
       arrayTo = this.pmCommonService.getEmailId(tempArray);
+
+      const tempUserArray = await this.getTosList()
+      arrayTo = arrayTo.concat(tempUserArray);
+      arrayTo = arrayTo.filter(this.onlyUnique);
       ccIDs = this.pmCommonService.getEmailId(arrayCC);
       ccIDs.push(this.pmObject.currLoginInfo.Email);
       ///// Send approval message
@@ -526,7 +551,7 @@ export class ManageFinanceComponent implements OnInit {
       } else {
         if (this.updatedBudget < 0) {
           this.errorMsg = this.pmConstant.ERROR.ADD_PROJECT_TO_BUDGET;
-          return
+          return;
         }
       }
 
@@ -701,7 +726,8 @@ export class ManageFinanceComponent implements OnInit {
     const poIndex = this.poData.findIndex(item => item.poInfo[0].poId === this.selectedPo);
     const retPOInfo = this.poData[poIndex].poInfo[0];
     const reservePO = this.poArray.find(item => item.ID === this.selectedPo);
-
+    const poExistItem = this.existPOArray && this.existPOArray.retItems ?
+      this.existPOArray.retItems.find(poObj => poObj.Id === this.poData[poIndex].Id) : null;
     if (!retPOInfo.poRevenue) {
       this.messageService.add({
         key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
@@ -709,7 +735,10 @@ export class ManageFinanceComponent implements OnInit {
       });
     }
 
-    if ((reservePO.AmountRevenue - reservePO.RevenueLinked) < retPOInfo.poRevenue) {
+    const nAvailableToTag = reservePO.AmountRevenue - reservePO.RevenueLinked +
+      (poExistItem ? (poExistItem.AmountRevenue - retPOInfo.revenue) : 0);
+
+    if (nAvailableToTag < retPOInfo.poRevenue) {
       this.messageService.add({
         key: 'manageFinance', severity: 'error', summary: 'Error Message', sticky: true,
         detail: 'PO revenue balance should be greater than or equal to the amount to reserved on PO.'
@@ -720,26 +749,27 @@ export class ManageFinanceComponent implements OnInit {
 
     // if (retPOInfo.poRevenue) {
     if (this.unassignedBudget[0].total === 0 && this.unassignedBudget[0].revenue === 0) {
-      retPOInfo.total = retPOInfo.total + retPOInfo.poRevenue + retPOInfo.oop + retPOInfo.tax;
       retPOInfo.revenue = retPOInfo.revenue + retPOInfo.poRevenue;
-      retPOInfo.oop = retPOInfo.oop + retPOInfo.oop;
-      retPOInfo.tax = retPOInfo.tax + retPOInfo.tax;
-    }
-    if (this.unassignedBudget[0].total !== 0 && this.unassignedBudget[0].revenue !== 0) {
-      retPOInfo.total = retPOInfo.total + retPOInfo.poRevenue + retPOInfo.oop + retPOInfo.tax;
-      retPOInfo.revenue = retPOInfo.revenue + retPOInfo.poRevenue;
+      retPOInfo.total = retPOInfo.revenue + retPOInfo.oop + retPOInfo.tax;
       retPOInfo.oop = retPOInfo.oop + retPOInfo.oop ? retPOInfo.oop : 0;
       retPOInfo.tax = retPOInfo.tax + retPOInfo.tax ? retPOInfo.tax : 0;
-      this.unassignedBudget[0].total = this.unassignedBudget[0].total - retPOInfo.poRevenue - retPOInfo.oop - retPOInfo.tax;
+    }
+    if (this.unassignedBudget[0].total !== 0 && this.unassignedBudget[0].revenue !== 0) {
+
+      retPOInfo.revenue = retPOInfo.revenue + retPOInfo.poRevenue;
+      retPOInfo.total = retPOInfo.revenue + retPOInfo.oop + retPOInfo.tax;
+      retPOInfo.oop = retPOInfo.oop + retPOInfo.oop ? retPOInfo.oop : 0;
+      retPOInfo.tax = retPOInfo.tax + retPOInfo.tax ? retPOInfo.tax : 0;
+      this.unassignedBudget[0].total = this.unassignedBudget[0].total - retPOInfo.poRevenue; //- retPOInfo.oop - retPOInfo.tax;
       this.unassignedBudget[0].revenue = this.unassignedBudget[0].revenue - retPOInfo.poRevenue;
-      this.unassignedBudget[0].oop = this.unassignedBudget[0].oop - retPOInfo.oop;
-      this.unassignedBudget[0].tax = this.unassignedBudget[0].tax - retPOInfo.tax;
+      // this.unassignedBudget[0].oop = this.unassignedBudget[0].oop - retPOInfo.oop;
+      // this.unassignedBudget[0].tax = this.unassignedBudget[0].tax - retPOInfo.tax;
     }
     // Add the value to Po header.
     this.poHeader.total = this.poHeader.total + retPOInfo.poRevenue;
     this.poHeader.revenue = this.poHeader.revenue + retPOInfo.poRevenue;
-    this.poHeader.tax = this.poHeader.tax + retPOInfo.tax;
-    this.poHeader.oop = this.poHeader.oop + retPOInfo.oop;
+    // this.poHeader.tax = this.poHeader.tax + retPOInfo.tax;
+    // this.poHeader.oop = this.poHeader.oop + retPOInfo.oop;
     // }
     retPOInfo.poRevenue = 0;
     retPOInfo.poTotal = 0;
@@ -955,9 +985,7 @@ export class ManageFinanceComponent implements OnInit {
           }
         }
         this.invoiceObj.amount = amount;
-        //if(amount === 0) {
         this.invoiceObj.isInvoiceItemConfirm = false;
-        //}
         this.invoiceObj.poc = this.addPOForm.value.primarypoc;
         this.invoiceObj.pocText = this.pmCommonService.extractNamefromPOC([this.invoiceObj.poc]);
         this.invoiceObj.address = this.addPOForm.value.address;
@@ -1348,7 +1376,7 @@ export class ManageFinanceComponent implements OnInit {
           invoiceObj.proformaLookup = invoiceItem.ProformaLookup;
           invoiceObj.invoiceLookup = invoiceItem.InvoiceLookup;
 
-          if (invoiceObj.status === 'Scheduled') {
+          if (invoiceObj.status === 'Scheduled' && invoiceObj.type === 'revenue') {
 
             if (this.projectStatus === this.constant.projectStatus.Unallocated
               || this.projectStatus === this.constant.projectStatus.InProgress
@@ -1433,7 +1461,8 @@ export class ManageFinanceComponent implements OnInit {
 
 
       ///// Remove all buttons if there is approval pending
-      const budgetPending = this.existPBBBudgetArray.retItems.find(e => e.Status === this.constant.projectBudgetBreakupList.status.ApprovalPending);
+      const budgetPending = this.existPBBBudgetArray.retItems.find(e =>
+        e.Status === this.constant.projectBudgetBreakupList.status.ApprovalPending);
       if ((this.projectStatus !== this.constant.projectList.status.InDiscussion && budgetPending)
         || this.projectStatus === this.constant.projectList.status.Closed
         || this.projectStatus === this.constant.projectList.status.Cancelled) {
@@ -1450,7 +1479,6 @@ export class ManageFinanceComponent implements OnInit {
           });
         });
       }
-
       this.existPODataArray = this.poData;
       this.showPo = true;
       this.pmObject.isMainLoaderHidden = true;
@@ -1496,42 +1524,7 @@ export class ManageFinanceComponent implements OnInit {
       return invoiceProformaResult;
     }
   }
-  // async getInvoiceProformaNumber(inoviceItems) {
-  //   const uniqueInvoiceItems = this.commonService.unique(inoviceItems, 'InvoiceLookup');
-  //   const batchURL = [];
-  //   const options = {
-  //     data: null,
-  //     url: '',
-  //     type: '',
-  //     listName: ''
-  //   };
-  //   for (const invoiceItem of uniqueInvoiceItems) {
-  //     // Get InoviceItems  ##0;
-  //     const inoviceGet = Object.assign({}, options);
-  //     const invoiceFilter = Object.assign({}, this.pmConstant.QUERY.INVOICES_BY_INVOICELOOKUP);
-  //     invoiceFilter.filter = invoiceFilter.filter.replace(/{{invoiceLookup}}/gi,
-  //       invoiceItem.InvoiceLookup);
-  //     inoviceGet.url = this.spServices.getReadURL(this.constant.listNames.Invoices.name,
-  //       invoiceFilter);
-  //     inoviceGet.type = 'GET';
-  //     inoviceGet.listName = this.constant.listNames.Invoices.name;
-  //     batchURL.push(inoviceGet);
-  //     // Get Proforma  ##1;
-  //     const proformaGet = Object.assign({}, options);
-  //     const proformaFilter = Object.assign({}, this.pmConstant.QUERY.PROFORMA_BY_PROFORMALOOKUP);
-  //     proformaFilter.filter = proformaFilter.filter.replace(/{{proformaLookup}}/gi,
-  //       invoiceItem.ProformaLookup);
-  //     proformaGet.url = this.spServices.getReadURL(this.constant.listNames.Proforma.name,
-  //       proformaFilter);
-  //     proformaGet.type = 'GET';
-  //     proformaGet.listName = this.constant.listNames.Proforma.name;
-  //     batchURL.push(proformaGet);
-  //   }
-  //   const invoiceProformaResult = await this.spServices.executeBatch(batchURL);
-  //   if (invoiceProformaResult && invoiceProformaResult.length) {
-  //     return invoiceProformaResult;
-  //   }
-  // }
+
   confirmInvoiceItem(rowData) {
     this.invoiceObj = rowData;
     console.log(rowData);
@@ -1546,8 +1539,8 @@ export class ManageFinanceComponent implements OnInit {
   }
   async commitInvoiceItem(rowData) {
     const groupInfo = await this.spServices.getGroupInfo('Invoice_Team');
-    var approvers = groupInfo.results;
-    var arrayTo = [];
+    const approvers = groupInfo.results;
+    const arrayTo = [];
     if (approvers.length) {
       for (const i in approvers) {
         if (approvers[i].Email !== undefined && approvers[i].Email !== '') {
@@ -1696,7 +1689,7 @@ export class ManageFinanceComponent implements OnInit {
         const poItemArray = this.getPOData(projectFinanceBreakArray, this.poArray);
         poItemArray.forEach(element => {
           const poItemCreate = Object.assign({}, options);
-          poItemCreate.url = this.spServices.getItemURL(this.constant.listNames.PO.name, element.ID);
+          poItemCreate.url = this.spServices.getItemURL(this.constant.listNames.PO.name, +element.ID);
           poItemCreate.data = element;
           poItemCreate.type = 'PATCH';
           poItemCreate.listName = this.constant.listNames.PO.name;
@@ -1710,10 +1703,11 @@ export class ManageFinanceComponent implements OnInit {
         if (projectFinaceData.RevenueBudget !== currentBudget.RevenueBudget
           || projectFinaceData.ScheduledRevenue !== currentBudget.ScheduledRevenue
           || projectFinaceData.InvoicedRevenue !== currentBudget.InvoicedRevenue
-          || projectFinaceData.BudgetHrs !== currentBudget.BudgetHrs) {
+          || projectFinaceData.BudgetHrs !== currentBudget.BudgetHrs
+          || this.unassignedBudget[0].revenue !== 0) {
           const projectFinaceUpdate = Object.assign({}, options);
           projectFinaceUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectFinances.name,
-            this.existBudgetArray.retItems[0].ID);
+            +this.existBudgetArray.retItems[0].ID);
           projectFinaceUpdate.data = projectFinaceData;
           projectFinaceUpdate.type = 'PATCH';
           projectFinaceUpdate.listName = this.constant.listNames.ProjectFinances.name;
@@ -1723,7 +1717,7 @@ export class ManageFinanceComponent implements OnInit {
             const projectBudgetBreakupData = this.getProjectBudgetBreakupData(this.budgetData, this.projObj, false, true);
             const projectBudgetBreakupUpdate = Object.assign({}, options);
             projectBudgetBreakupUpdate.url = this.spServices.getItemURL(this.constant.listNames.ProjectBudgetBreakup.name,
-              this.existPBBBudgetArray.retItems[0].ID);
+              +this.existPBBBudgetArray.retItems[0].ID);
             projectBudgetBreakupUpdate.data = projectBudgetBreakupData;
             projectBudgetBreakupUpdate.type = 'PATCH';
             projectBudgetBreakupUpdate.listName = this.constant.listNames.ProjectBudgetBreakup.name;
@@ -1774,7 +1768,7 @@ export class ManageFinanceComponent implements OnInit {
           const sowUpdateData = this.getSOWData(this.projObj, projectFinaceData);
           if (sowUpdateData.hasOwnProperty('TotalLinked')) {
             const sowUpdate = Object.assign({}, options);
-            sowUpdate.url = this.spServices.getItemURL(this.constant.listNames.SOW.name, sowObj.ID);
+            sowUpdate.url = this.spServices.getItemURL(this.constant.listNames.SOW.name, +sowObj.ID);
             sowUpdate.data = sowUpdateData;
             sowUpdate.type = 'PATCH';
             sowUpdate.listName = this.constant.listNames.SOW.name;

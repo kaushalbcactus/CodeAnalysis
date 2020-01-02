@@ -4,7 +4,6 @@ import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from 'src/app/my-dashboard/services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { DatePipe } from '@angular/common';
-import { NodeService } from 'src/app/node.service';
 import { GlobalService } from 'src/app/Services/global.service';
 
 @Component({
@@ -31,6 +30,12 @@ export class TaskDetailsDialogComponent implements OnInit {
     ID: any; Id: any; IsPubSupport: string; Milestone: any; Milestones: any;
     ProjectCode: any; ProjectFolder: any; Title: any; WBJID: any;
   };
+  public queryConfig = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
   constructor(
     public config: DynamicDialogConfig,
     public ref: DynamicDialogRef,
@@ -40,7 +45,7 @@ export class TaskDetailsDialogComponent implements OnInit {
     private datePipe: DatePipe,
     public sharedObject: GlobalService,
     public messageService: MessageService,
-    private nodeService: NodeService) { }
+    ) { }
 
   ngOnInit() {
 
@@ -65,16 +70,16 @@ export class TaskDetailsDialogComponent implements OnInit {
   // **************************************************************************************************
   async getComments(taskId) {
 
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
 
-    const Comment = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
-    Comment.filter = Comment.filter.replace(/{{taskId}}/gi, taskId);
-
-    const CommentUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', Comment);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, CommentUrl);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    this.currentTask = this.response[0][0];
+    // const Comment = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.TaskDetails);
+    // Comment.filter = Comment.filter.replace(/{{taskId}}/gi, taskId);
+    const response = await this.spServices.readItem(this.constants.listNames.Schedules.name, taskId);
+    // const CommentUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', Comment);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, CommentUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.currentTask = response;
     this.getDocuments(this.currentTask);
   }
 
@@ -98,14 +103,15 @@ export class TaskDetailsDialogComponent implements OnInit {
   // *************************************************************************************************
 
   async getCurrentTaskProjectInformation(ProjectCode) {
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
     const project = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
     project.filter = project.filter.replace(/{{projectCode}}/gi, ProjectCode);
-    const projectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', project);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectUrl);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    this.sharedObject.DashboardData.ProjectInformation = this.response[0][0];
+    const response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, project);
+    // const projectUrl = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', project);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.sharedObject.DashboardData.ProjectInformation = response.length ? response[0] : [];
   }
 
   // **************************************************************************************************
@@ -122,21 +128,22 @@ export class TaskDetailsDialogComponent implements OnInit {
     let completeFolderRelativeUrl = '';
     const folderUrl = this.ProjectInformation.ProjectFolder;
     completeFolderRelativeUrl = folderUrl + documentsUrl;
-    const Url = this.sharedObject.sharePointPageObject.serverRelativeUrl +
-      // tslint:disable-next-line: quotemark
-      "/_api/web/getfolderbyserverrelativeurl('" + completeFolderRelativeUrl
-      // tslint:disable-next-line: quotemark
-      + "')/Files?$expand=ListItemAllFields";
+    // const Url = this.sharedObject.sharePointPageObject.serverRelativeUrl +
+    //   // tslint:disable-next-line: quotemark
+    //   "/_api/web/getfolderbyserverrelativeurl('" + completeFolderRelativeUrl
+    //   // tslint:disable-next-line: quotemark
+    //   + "')/Files?$expand=ListItemAllFields";
 
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
 
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Url);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Url);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
-    this.allDocuments = this.response[0];
-
-
+    // this.allDocuments = this.response[0];
+    const arrResult = await this.spServices.readFiles(completeFolderRelativeUrl);
+    this.response = arrResult.length ? arrResult : [];
+    this.allDocuments = this.response;
     this.DocumentArray = this.allDocuments.filter(c => c.ListItemAllFields.TaskName === this.currentTask.Title);
 
     const Ids = this.DocumentArray.map(c => c.DocIds = c.ListItemAllFields.EditorId).filter((el, i, a) => i === a.indexOf(el));
@@ -168,25 +175,42 @@ export class TaskDetailsDialogComponent implements OnInit {
   //  fetch  user data for Document
   // **************************************************************************************************
 
+  // async getUsers(Ids) {
+  //   this.batchContents = new Array();
+  //   const batchGuid = this.spServices.generateUUID();
+  //   Ids.forEach(element => {
+  //     const url = this.sharedObject.sharePointPageObject.serverRelativeUrl +
+  //       '/_api/Web/GetUserById(' + element + ')';
+  //     this.spServices.getBatchBodyGet(this.batchContents, batchGuid, url);
+  //   });
+  //   this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+  //   return this.response;
+  // }
   async getUsers(Ids) {
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+    const batchUrl = [];
     Ids.forEach(element => {
-      const url = this.sharedObject.sharePointPageObject.serverRelativeUrl +
-        '/_api/Web/GetUserById(' + element + ')';
-      this.spServices.getBatchBodyGet(this.batchContents, batchGuid, url);
+      const userObj = Object.assign({}, this.queryConfig);
+      userObj.url = this.spServices.getUserURL(element);
+      userObj.type = 'GET';
+      batchUrl.push(userObj);
+      // const url = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/_api/Web/GetUserById(' + element + ')';
+      // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, url);
     });
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.response = await this.spServices.executeBatch(batchUrl);
+    this.response = this.response.length ? this.response.map(a => a.retItems) : [];
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
     return this.response;
   }
-
   // **************************************************************************************************
   //   Download Files
   // **************************************************************************************************
 
   downloadFile() {
     if (this.selectedDocuments.length > 0) {
-      this.nodeService.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.currentTask.Title);
+      this.spServices.createZip(this.selectedDocuments.map(c => c.ServerRelativeUrl), this.currentTask.Title);
     } else {
       this.messageService.add({
         key: 'task-details', severity: 'warn', summary: 'Warning Message',

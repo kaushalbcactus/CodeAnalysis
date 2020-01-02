@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component, OnInit, ViewChild, ElementRef, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -11,6 +11,7 @@ import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
+import { DataTable } from 'primeng/primeng';
 
 declare var $;
 @Component({
@@ -20,10 +21,16 @@ declare var $;
 })
 export class SendToClientComponent implements OnInit {
   tempClick: any;
+  private options = {
+    data: null,
+    url: '',
+    type: '',
+    listName: ''
+  };
   displayedColumns: any[] = [
     { field: 'SLA', header: 'SLA', visibility: true },
     { field: 'ProjectCode', header: 'Project Code', visibility: true },
-    { field: 'shortTitle', header: 'Short Title', visibility: true },
+    { field: 'ShortTitle', header: 'Short Title', visibility: true },
     { field: 'ClientLegalEntity', header: 'Client Legal Entity', visibility: true },
     { field: 'POC', header: 'POC', visibility: true },
     { field: 'DeliverableType', header: 'Deliverable Type', visibility: true },
@@ -34,7 +41,7 @@ export class SendToClientComponent implements OnInit {
     { field: 'DueDateFormat', header: 'Due Date', visibility: false }];
   filterColumns: any[] = [
     { field: 'ProjectCode' },
-    { field: 'shortTitle' },
+    { field: 'ShortTitle' },
     { field: 'ClientLegalEntity' },
     { field: 'POC' },
     { field: 'DeliverableType' },
@@ -43,6 +50,7 @@ export class SendToClientComponent implements OnInit {
     { field: 'PreviousTaskUser' },
     { field: 'PreviousTaskStatus' }];
   @ViewChild('sendToClientTableRef', { static: true }) sct: ElementRef;
+  @ViewChild('sendToClientTableRef', { static: false }) sendToClientTableRef: DataTable;
   // tslint:disable-next-line:variable-name
   private _success = new Subject<string>();
   // tslint:disable-next-line:variable-name
@@ -60,15 +68,25 @@ export class SendToClientComponent implements OnInit {
   popItems: MenuItem[];
   public scArrays = {
     taskItems: [],
-    projectCodeArray: [],
-    shortTitleArray: [],
-    clientLegalEntityArray: [],
-    POCArray: [],
-    deliveryTypeArray: [],
-    dueDateArray: [],
-    milestoneArray: [],
-    previousTaskOwnerArray: [],
-    previousTaskStatusArray: [],
+    ProjectCode: [],
+    ShortTitle: [],
+    ClientLegalEntity: [],
+    POC: [],
+    DeliverableType: [],
+    DueDate: [],
+    Milestone: [],
+    PreviousTaskUser: [],
+    PreviousTaskStatus: [],
+
+    // projectCodeArray: [],
+    // shortTitleArray: [],
+    // clientLegalEntityArray: [],
+    // POCArray: [],
+    // deliveryTypeArray: [],
+    // dueDateArray: [],
+    // milestoneArray: [],
+    // previousTaskOwnerArray: [],
+    // previousTaskStatusArray: [],
     nextTaskArray: [],
     previousTaskArray: []
   };
@@ -111,8 +129,24 @@ export class SendToClientComponent implements OnInit {
     private pmConstant: PmconstantService,
     public pmCommonService: PMCommonService,
     public spOperations: SPOperationService,
-    public router: Router
+    public router: Router,
+    private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    _applicationRef: ApplicationRef,
+    zone: NgZone,
   ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
   }
   public changeSuccessMessage(message) {
     this._success.next(message);
@@ -120,24 +154,40 @@ export class SendToClientComponent implements OnInit {
   public changeErrorMessage(message) {
     this._error.next(message);
   }
-  downloadTask(task) {
+  async downloadTask(task) {
     // setTimeout(() => {
     const tempArray = [];
     const documentsUrl = '/Drafts/Internal/' + task.Milestone;
-    const documents = this.commonService.getTaskDocument(task.ProjectFolder, documentsUrl, task.PreviousTask);
-    for (const document in documents) {
-      if (documents[document].visiblePrevTaskDoc === true) {
+    const documents = await this.commonService.getTaskDocument(task.ProjectFolder, documentsUrl);
+    const prevTask = task.PreviousTask.split(';#');
+    documents.forEach(document => {
+
+      if (prevTask.indexOf(document.ListItemAllFields.TaskName) > -1 && document.ListItemAllFields.Status.indexOf('Complete') > -1) {
         const docObj = {
           url: '',
           fileName: ''
         };
-        docObj.url = documents[document].fileUrl;
-        docObj.fileName = documents[document].fileName;
+        docObj.url = document.ServerRelativeUrl;
+        docObj.fileName = document.Name;
         tempArray.push(docObj);
       }
-    }
+    });
+    // for (const document in documents) {
+    //   // if (documents[document].visiblePrevTaskDoc === true) {
+    //   if (task.PreviousTask.indexOf(documents[document].taskName) > -1 && documents[document].status.indexOf('Complete') > -1) {
+    //   const docObj = {
+    //       url: '',
+    //       fileName: ''
+    //     };
+    //     docObj.url = documents[document].fileUrl;
+    //     docObj.fileName = documents[document].fileName;
+    //     tempArray.push(docObj);
+    //   }
+    // }
     const fileName = task.ProjectCode + ' - ' + task.Milestone;
-    this.spServices.downloadMultipleFiles(tempArray, fileName);
+    // this.spServices.downloadMultipleFiles(tempArray, fileName);
+    this.spServices.createZip(tempArray.map(c => c.url), fileName);
+    
     // }, 500);
   }
   goToAllocationPage(task) {
@@ -159,16 +209,16 @@ export class SendToClientComponent implements OnInit {
   }
   async closeTaskWithStatus(task, options, unt) {
     const isActionRequired = await this.commonService.checkTaskStatus(task);
-    debugger;
     if (isActionRequired) {
       await this.spOperations.updateItem(this.Constant.listNames.Schedules.name, task.ID, options, this.Constant.listNames.Schedules.type);
-      const projectInfoOptions = { Status: 'Author Review' };
-      const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
-      await this.spOperations.updateItem(this.Constant.listNames.ProjectInformation.name, projectID[0].ID, projectInfoOptions,
-        this.Constant.listNames.ProjectInformation.type);
+
       // check whether next task is null or not.
       // Update the next task columnn PreviousTaskClosureDate with current date and time.
       if (task.NextTasks) {
+        const projectInfoOptions = { Status: 'Author Review' };
+        const projectID = this.pmObject.allProjectItems.filter(item => item.ProjectCode === task.ProjectCode);
+        await this.spOperations.updateItem(this.Constant.listNames.ProjectInformation.name, projectID[0].ID, projectInfoOptions,
+          this.Constant.listNames.ProjectInformation.type);
         const nextOptions = { PreviousTaskClosureDate: new Date() };
         const nextTask = this.scArrays.nextTaskArray.filter(item => item.Title === task.NextTasks);
         if (nextTask && nextTask.length) {
@@ -257,7 +307,7 @@ export class SendToClientComponent implements OnInit {
     const endDate = new Date(this.queryEndDate.setHours(23, 59, 59, 0));
     const startDateString = new Date(this.commonService.formatDate(startDate) + ' 00:00:00').toISOString();
     const endDateString = new Date(this.commonService.formatDate(endDate) + ' 23:59:00').toISOString();
-    const currentFilter = 'AssignedTo eq ' + this.globalObject.sharePointPageObject.userId + ' and ' +
+    const currentFilter = 'AssignedTo eq ' + this.globalObject.currentUser.userId + ' and ' +
       '(Status eq \'Not Started\') and (Task eq \'Send to client\') and ' +
       '((StartDate ge \'' + startDateString + '\' and StartDate le \'' + endDateString + '\') and ' +
       ' (DueDate ge \'' + startDateString + '\' and DueDate le \'' + endDateString + '\'))';
@@ -272,7 +322,7 @@ export class SendToClientComponent implements OnInit {
     };
 
 
-    this.scArrays.taskItems = await this.spServices.read('' + this.Constant.listNames.Schedules.name + '', queryOptions);
+    this.scArrays.taskItems = await this.spServices.readItems(this.Constant.listNames.Schedules.name, queryOptions);
     const projectCodeTempArray = [];
     const shortTitleTempArray = [];
     const clientLegalEntityTempArray = [];
@@ -294,9 +344,9 @@ export class SendToClientComponent implements OnInit {
       this.pmObject.tabMenuItems[2].label = 'Send to Client (' + this.pmObject.countObj.scCount + ')';
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
       const tempSendToClientArray = [];
-      const batchContents = new Array();
-      const batchGuid = this.spServices.generateUUID();
-
+      // const batchContents = new Array();
+      // const batchGuid = this.spServices.generateUUID();
+      const batchUrl = [];
       for (const task of this.scArrays.taskItems) {
         const scObj: any = $.extend(true, {}, this.pmObject.sendToClient);
         scObj.ID = task.ID;
@@ -310,7 +360,7 @@ export class SendToClientComponent implements OnInit {
         });
         if (projectObj.length) {
           scObj.ClientLegalEntity = projectObj[0].ClientLegalEntity;
-          scObj.shortTitle = projectObj[0].WBJID;
+          scObj.ShortTitle = projectObj[0].WBJID;
           scObj.DeliverableType = projectObj[0].DeliverableType;
           scObj.ProjectFolder = projectObj[0].ProjectFolder;
           // tslint:disable-next-line:only-arrow-functions
@@ -322,8 +372,8 @@ export class SendToClientComponent implements OnInit {
             scObj.POC = projecContObj[0].FullName;
           }
         }
-        scObj.DueDate = task.DueDate;
-        scObj.DueDateFormat = this.datePipe.transform(new Date(scObj.DueDate), 'MMM dd yyyy hh:mm:ss aa');
+        scObj.DueDate = new Date(this.datePipe.transform(task.DueDate, 'MMM dd, yyyy, h:mm a'));
+        scObj.DueDateFormat = this.datePipe.transform(new Date(scObj.DueDate), 'MMM dd, yyyy, h:mm a');
         scObj.Milestone = task.SubMilestones ?
           task.Milestone + ' - ' + task.SubMilestones : task.Milestone;
         if (new Date(new Date(scObj.DueDate).setHours(0, 0, 0, 0)).getTime() === new Date(new Date().setHours(0, 0, 0, 0)).getTime()) {
@@ -340,22 +390,32 @@ export class SendToClientComponent implements OnInit {
           scObj.SLA = this.pmConstant.ColorIndicator.RED;
         }
         projectCodeTempArray.push({ label: scObj.ProjectCode, value: scObj.ProjectCode });
-        shortTitleTempArray.push({ label: scObj.shortTitle, value: scObj.shortTitle });
+        shortTitleTempArray.push({ label: scObj.ShortTitle, value: scObj.ShortTitle });
         clientLegalEntityTempArray.push({ label: scObj.ClientLegalEntity, value: scObj.ClientLegalEntity });
         POCTempArray.push({ label: scObj.POC, value: scObj.POC });
         deliveryTypeTempArray.push({ label: scObj.DeliverableType, value: scObj.DeliverableType });
         dueDateTempArray.push({ label: scObj.DueDate, value: scObj.DueDate });
         milestoneTempArray.push({ label: scObj.Milestone, value: scObj.Milestone });
-        const previousTaskEndPoint = this.spServices.getReadURL('' + this.Constant.listNames.Schedules.name + '',
-          this.pmConstant.previousTaskOptions);
-        const previousTaskUpdatedEndPoint = previousTaskEndPoint.replace('{0}', scObj.PreviousTask).replace('{1}', scObj.NextTasks);
-        this.spServices.getBatchBodyGet(batchContents, batchGuid, previousTaskUpdatedEndPoint);
+
+        const preTaskObj = Object.assign({}, this.options);
+        preTaskObj.url = this.spServices.getReadURL(this.Constant.listNames.Schedules.name, this.pmConstant.previousTaskOptions);
+        preTaskObj.url = preTaskObj.url.replace('{0}', scObj.PreviousTask).replace('{1}', scObj.NextTasks);
+        preTaskObj.listName = this.Constant.listNames.Schedules.name;
+        preTaskObj.type = 'GET';
+        batchUrl.push(preTaskObj);
+
+        // const previousTaskEndPoint = this.spServices.getReadURL('' + this.Constant.listNames.Schedules.name + '',
+        //   this.pmConstant.previousTaskOptions);
+        // const previousTaskUpdatedEndPoint = previousTaskEndPoint.replace('{0}', scObj.PreviousTask).replace('{1}', scObj.NextTasks);
+        // this.spServices.getBatchBodyGet(batchContents, batchGuid, previousTaskUpdatedEndPoint);
         tempSendToClientArray.push(scObj);
       }
-      batchContents.push('--batch_' + batchGuid + '--');
-      const userBatchBody = batchContents.join('\r\n');
-      const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
+      // batchContents.push('--batch_' + batchGuid + '--');
+      // const userBatchBody = batchContents.join('\r\n');
+      // const arrResults = await this.spServices.executeGetBatchRequest(batchGuid, userBatchBody);
       let counter = 0;
+      let arrResults = await this.spServices.executeBatch(batchUrl);
+      arrResults = arrResults.length > 0 ? arrResults.map(a => a.retItems) : [];
       for (const taskItem of tempSendToClientArray) {
         const arrRes = arrResults[counter];
 
@@ -379,15 +439,19 @@ export class SendToClientComponent implements OnInit {
           this.scArrays.nextTaskArray.push(nextTask[0]);
         }
       }
-      this.scArrays.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
-      this.scArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
-      this.scArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
-      this.scArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
-      this.scArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
-      this.scArrays.dueDateArray = this.commonService.unique(dueDateTempArray, 'value');
-      this.scArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
-      this.scArrays.previousTaskOwnerArray = this.commonService.unique(previousTaskOwnerTempArray, 'value');
-      this.scArrays.previousTaskStatusArray = this.commonService.unique(previousTaskStatusTempArray, 'value');
+
+      if (tempSendToClientArray.length) {
+        this.createColFieldValues(tempSendToClientArray);
+      }
+      // this.scArrays.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
+      // this.scArrays.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
+      // this.scArrays.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
+      // this.scArrays.POCArray = this.commonService.unique(POCTempArray, 'value');
+      // this.scArrays.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
+      // this.scArrays.dueDateArray = this.commonService.unique(dueDateTempArray, 'value');
+      // this.scArrays.milestoneArray = this.commonService.unique(milestoneTempArray, 'value');
+      // this.scArrays.previousTaskOwnerArray = this.commonService.unique(previousTaskOwnerTempArray, 'value');
+      // this.scArrays.previousTaskStatusArray = this.commonService.unique(previousTaskStatusTempArray, 'value');
       this.pmObject.sendToClientArray = tempSendToClientArray;
       const tableRef: any = this.sct;
       tableRef.first = 0;
@@ -408,6 +472,34 @@ export class SendToClientComponent implements OnInit {
     }
     // this.commonService.setIframeHeight();
   }
+
+  createColFieldValues(resArray) {
+    this.scArrays.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+    this.scArrays.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
+    this.scArrays.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+    this.scArrays.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
+    this.scArrays.DeliverableType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DeliverableType, value: a.DeliverableType }; return b; }).filter(ele => ele.label)));
+
+    // this.scArrays.DueDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.DueDateFormat, value: a.DueDateFormat }; return b; }).filter(ele => ele.label)));
+    this.scArrays.DueDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.DueDateFormat, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.DueDateFormat, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
+
+    this.scArrays.Milestone = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Milestone, value: a.Milestone }; return b; }).filter(ele => ele.label)));
+    this.scArrays.PreviousTaskUser = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PreviousTaskUser, value: a.PreviousTaskUser }; return b; }).filter(ele => ele.label)));
+    this.scArrays.PreviousTaskStatus = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.PreviousTaskStatus, value: a.PreviousTaskStatus }; return b; }).filter(ele => ele.label)));
+  }
+
+  uniqueArrayObj(array: any) {
+    let sts: any = '';
+    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
+      const keys = {
+        label: label1,
+        value: array.find(s => s.label === label1).value
+      };
+      return keys ? keys : '';
+    });
+  }
+
+
   myFunction() {
     document.getElementById('myDropdown').classList.toggle('show');
   }
@@ -448,5 +540,29 @@ export class SendToClientComponent implements OnInit {
         this.tempClick = undefined;
       }
     }
+  }
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.pmObject.sendToClientArray.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.sendToClientTableRef,
+        colFields: this.scArrays,
+        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.createColFieldValues(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+    }
+    this.cdr.detectChanges();
   }
 }

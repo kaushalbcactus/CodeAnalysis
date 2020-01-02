@@ -41,14 +41,14 @@ export class FdAuthService {
             { label: 'Cancelled/Rejected', routerLink: ['cancelled-reject'] },
             { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'] },
             { label: 'Approved(Billable)', routerLink: ['approvedBillable'] }
-        ]
+        ];
         // Scheduled Tabs
         this.fdConstantsService.fdComponent.tabs.scheduleMenu = [
-            { label: 'Deliverable Based', routerLink: ['deliverable-based'] },
+            { label: 'Deliverable Based / FTE', routerLink: ['deliverablebased-fte'] },
             { label: 'OOP', routerLink: ['oop'] },
-        ]
+        ];
 
-        this.globalObject.userInfo = await this.spOperationsServices.getUserInfo(this.globalObject.sharePointPageObject.userId);
+        this.globalObject.userInfo = await this.spOperationsServices.getUserInfo(this.globalObject.currentUser.userId);
         console.log('this.globalObject.userInfo ', this.globalObject.userInfo);
         // this.constantsService.loader.isPSInnerLoaderHidden = true;
         if (this.globalObject.userInfo.Groups.results.length) {

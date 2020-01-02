@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from "rxjs/internal/BehaviorSubject";
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { FdConstantsService } from './fd-constants.service';
@@ -8,42 +8,19 @@ import { DatePipe } from '@angular/common';
 import { Observable, Subject } from 'rxjs';
 
 @Injectable({
-    providedIn: "root"
+    providedIn: 'root'
 })
 export class FDDataShareService {
+    constructor(
+        private spServices: SPOperationService,
+        private constantService: ConstantsService,
+        private fdConstantsService: FdConstantsService,
+        private globalObject: GlobalService,
+        private datePipe: DatePipe
+    ) { }
     private subject = new Subject<any>();
     private expenseCreate = new Subject<any>();
     private scheduledDate = new Subject<any>();
-
-    sendExpenseDateRange(message: any) {
-        this.subject.next(message);
-    }
-
-    clearDR() {
-        this.subject.next();
-    }
-
-    getDateRange(): Observable<any> {
-        return this.subject.asObservable();
-    }
-
-    // For Expense 
-    setExpenseAddObj() {
-        this.expenseCreate.next();
-    }
-
-    getAddExpenseSuccess(): Observable<any> {
-        return this.expenseCreate.asObservable();
-    }
-
-    // For Scheduled 
-    setScheduleAddObj(date: any) {
-        this.scheduledDate.next(date);
-    }
-
-    getScheduleDateRange(): Observable<any> {
-        return this.scheduledDate.asObservable();
-    }
 
     public expenseDateRange: any = {
         startDate: '',
@@ -60,40 +37,80 @@ export class FDDataShareService {
     // private projectInfoData: BehaviorSubject<any[]>
     defaultPIData = this.projectInfoData.asObservable();
 
-    private projectContactData = new BehaviorSubject("");
+    private projectContactData = new BehaviorSubject('');
     defaultPCData = this.projectContactData.asObservable();
 
-    private clientLEntityData = new BehaviorSubject("");
+    private clientLEntityData = new BehaviorSubject('');
     defaultCLEData = this.clientLEntityData.asObservable();
 
-    private usStatesData = new BehaviorSubject("");
+    private usStatesData = new BehaviorSubject('');
     defaultUSSData = this.usStatesData.asObservable();
 
-    private currencyData = new BehaviorSubject("");
+    private currencyData = new BehaviorSubject('');
     defaultCUData = this.currencyData.asObservable();
 
-    private poData = new BehaviorSubject("");
+    private poData = new BehaviorSubject('');
     defaultPoData = this.poData.asObservable();
 
-    private resourceCateData = new BehaviorSubject("");
+    private resourceCateData = new BehaviorSubject('');
     defaultRCData = this.resourceCateData.asObservable();
 
-    private billingEntityData = new BehaviorSubject("");
+    private billingEntityData = new BehaviorSubject('');
     defaultBEData = this.billingEntityData.asObservable();
 
-    private budgetRateData = new BehaviorSubject("");
+    private budgetRateData = new BehaviorSubject('');
     defaultBRMData = this.budgetRateData.asObservable();
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+    };
 
-    constructor(
-        private spServices: SPOperationService,
-        private constantService: ConstantsService,
-        private fdConstantsService: FdConstantsService,
-        private globalObject: GlobalService,
-        private datePipe: DatePipe
-    ) { }
+    freelancerVendersRes: any = [];
+
+    // SOWList
+
+    sowListRes: any = [];
+
+    requiredData: any = [];
+
+    // Check Projects list available
+    projectsInfo: any = [];
+    bdtRate: any = [];
+
+    sendExpenseDateRange(message: any) {
+        this.subject.next(message);
+    }
+
+    clearDR() {
+        this.subject.next();
+    }
+
+    getDateRange(): Observable<any> {
+        return this.subject.asObservable();
+    }
+
+    // For Expense
+    setExpenseAddObj() {
+        this.expenseCreate.next();
+    }
+
+    getAddExpenseSuccess(): Observable<any> {
+        return this.expenseCreate.asObservable();
+    }
+
+    // For Scheduled
+    setScheduleAddObj(date: any) {
+        this.scheduledDate.next(date);
+    }
+
+    getScheduleDateRange(): Observable<any> {
+        return this.scheduledDate.asObservable();
+    }
 
     async getCurrentUserInfo() {
-        return await this.spServices.getUserInfo(this.globalObject.sharePointPageObject.userId);
+        return await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
     }
 
     async getGroupInfo() {
@@ -101,7 +118,39 @@ export class FDDataShareService {
     }
 
     async getITInfo() {
-        return await this.spServices.getITGroupInfo('Invoice_Team');
+        return await this.spServices.getGroupInfo('Invoice_Team');
+    }
+
+    // CS Member
+    getCSMember(resCatEmails) {
+        const csMember = [];
+        if (resCatEmails.length) {
+            // tslint:disable-next-line: prefer-for-of
+            for (let e = 0; e < resCatEmails.length; e++) {
+                const element = resCatEmails[e];
+                if (element.UserName) {
+                    if (element.UserName.EMail) {
+                        csMember.push(element.UserName.EMail);
+                    }
+                } else if (element) {
+                    csMember.push(element.EMail);
+                }
+            }
+        }
+        return csMember;
+    }
+
+    // Invoice Team Member
+    getITMember(itApprovers) {
+        const itMember = [];
+        if (itApprovers.length) {
+            for (const i in itApprovers) {
+                if (itApprovers[i].Email !== undefined && itApprovers[i].Email !== '') {
+                    itMember.push(itApprovers[i].Email);
+                }
+            }
+        }
+        return itMember;
     }
 
     // Export to Excel
@@ -151,49 +200,24 @@ export class FDDataShareService {
         }
         // this.dataSource.next(data)
     }
-    freelancerVendersRes: any = [];
     async getVendorFreelanceData() {
-        if (this.freelancerVendersRes.length) {
-            return this.freelancerVendersRes;
-        } else {
-            let data = [
-                { query: this.spServices.getReadURL('' + this.constantService.listNames.VendorFreelancer.name + '', this.fdConstantsService.fdComponent.addUpdateFreelancer) },
-            ]
-            const batchContents = new Array();
-            const batchGuid = this.spServices.generateUUID();
-            let endPoints = data;
-            let userBatchBody = '';
-            for (let i = 0; i < endPoints.length; i++) {
-                const element = endPoints[i];
-                this.spServices.getBatchBodyGet(batchContents, batchGuid, element.query);
-            }
-            batchContents.push('--batch_' + batchGuid + '--');
-            userBatchBody = batchContents.join('\r\n');
-            let arrResults: any = [];
-            const res = await this.spServices.getFDData(batchGuid, userBatchBody);
-            arrResults = res;
-            if (arrResults.length) {
-                console.log('this.freelancerVendersRes ', arrResults[0]);
-                this.freelancerVendersRes = arrResults[0];
-                return this.freelancerVendersRes;
-            } else {
-                return '';
-            }
+        const vendorObj = Object.assign({}, this.fdConstantsService.fdComponent.addUpdateFreelancer);
+        const res = await this.spServices.readItems(this.constantService.listNames.VendorFreelancer.name, vendorObj);
+        const arrResults = res.length ? res : [];
+        if (arrResults.length) {
+            this.freelancerVendersRes = arrResults;
         }
+        return arrResults;
     }
-
-    // SOWList
-
-    sowListRes: any = [];
     async getSOWData() {
         if (this.sowListRes.length) {
             return this.sowListRes;
         } else {
-            let obj = [{
+            const obj = [{
                 url: this.spServices.getReadURL(this.constantService.listNames.SOW.name, this.fdConstantsService.fdComponent.sowList),
                 type: 'GET',
                 listName: this.constantService.listNames.ProjectFinances
-            }]
+            }];
             const res = await this.spServices.executeBatch(obj);
             let arrResults: any = [];
             arrResults = res;
@@ -208,134 +232,117 @@ export class FDDataShareService {
     }
 
     getSowCodeFromPI(pi: any[], element) {
-        let found = pi.find((x) => {
+        const found = pi.find((x) => {
             if (x.ProjectCode === element.Title) {
                 return x;
             }
-        })
-        return found ? found : ''
+        });
+        return found ? found : '';
     }
 
     async getSOWDetailBySOWCode(sowCode) {
         if (!this.sowListRes.length) {
             await this.getSOWData();
         }
-        let found = this.sowListRes.find((x) => {
+        const found = this.sowListRes.find((x) => {
             if (x.SOWCode === sowCode) {
                 return x;
             }
-        })
-        return found ? found : ''
+        });
+        return found ? found : '';
     }
 
-    requiredData: any = [];
-
     getResDetailById(data, ele) {
-        let found = data.find((x) => {
+        const found = data.find((x) => {
             if (x.UserName.ID === ele.EditorId) {
                 return x;
             }
-        })
-        return found ? found : ''
+        });
+        return found ? found : '';
     }
 
     async getRequiredData(): Promise<any> {
         if (!this.requiredData.length) {
             this.constantService.loader.isPSInnerLoaderHidden = false;
-            this.globalObject.userInfo = await this.spServices.getUserInfo(this.globalObject.sharePointPageObject.userId);
-            // Default Tabs & sub Menus
-            // this.fdConstantsService.fdComponent.tabs.topMenu = [
-            //     { label: 'Expenditure', routerLink: ['expenditure'] },
-            //     { label: 'Scheduled', routerLink: ['scheduled'] }
-            // ];
-            // this.fdConstantsService.fdComponent.tabs.expenditureMenu = [
-            //     { label: 'Pending Expense', routerLink: ['pending'] },
-            // ]
-            // // Scheduled Tabs
-            // this.fdConstantsService.fdComponent.tabs.scheduleMenu = [
-            //     { label: 'Deliverable Based', routerLink: ['deliverable-based'] },
-            //     // { label: 'Hourly Based', routerLink: ['hourly-based'] },
-            //     { label: 'OOP', routerLink: ['oop'] },
-            // ]
+            this.globalObject.userInfo = await this.spServices.getUserInfo(this.globalObject.currentUser.userId);
+            // const batchContents = new Array();
+            // const batchGuid = this.spServices.generateUUID();
+            const batchUrl = [];
+            // tslint:disable:max-line-length
+            const prjContactsObj = Object.assign({}, this.queryConfig);
+            prjContactsObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectContacts.name, this.fdConstantsService.fdComponent.projectContacts);
+            prjContactsObj.listName = this.constantService.listNames.ProjectContacts.name;
+            prjContactsObj.type = 'GET';
+            batchUrl.push(prjContactsObj);
 
-            // if (this.globalObject.userInfo.Groups.results.length) {
-            //     const groups = this.globalObject.userInfo.Groups.results.map(x => x.LoginName);
-            //     if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1) {
-            //         // All 
-            //         this.fdConstantsService.fdComponent.tabs.topMenu.push(
-            //             { label: 'Confirmed', routerLink: ['confirmed'] },
-            //             { label: 'Proforma', routerLink: ['proforma'] },
-            //             { label: 'Outstanding Invoices', routerLink: ['outstanding-invoices'] },
-            //             { label: 'Paid Invoices', routerLink: ['paid-invoices'] },
-            //         );
-            //         // All Expenditure Menus
-            //         this.fdConstantsService.fdComponent.tabs.expenditureMenu.push(
-            //             { label: 'Cancelled/Rejected', routerLink: ['cancelled-reject'] },
-            //             { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'] },
-            //             { label: 'Approved(Billable)', routerLink: ['approvedBillable'] }
-            //         );
+            const cleObj = Object.assign({}, this.queryConfig);
+            cleObj.url = this.spServices.getReadURL(this.constantService.listNames.ClientLegalEntity.name, this.fdConstantsService.fdComponent.clientLegalEntity);
+            cleObj.listName = this.constantService.listNames.ClientLegalEntity.name;
+            cleObj.type = 'GET';
+            batchUrl.push(cleObj);
 
-            //         // All Scheduled Tabs
-            //         this.fdConstantsService.fdComponent.tabs.scheduleMenu.push(
-            //             { label: 'Hourly Based', routerLink: ['hourly-based'] },
-            //         )
+            const usStatesObj = Object.assign({}, this.queryConfig);
+            usStatesObj.url = this.spServices.getReadURL(this.constantService.listNames.UsState.name, this.fdConstantsService.fdComponent.usStates);
+            usStatesObj.listName = this.constantService.listNames.UsState.name;
+            usStatesObj.type = 'GET';
+            batchUrl.push(usStatesObj);
 
-            //     } else if (groups.indexOf('ExpenseApprovers') > -1) {
-            //         // All Expenditure Menus
-            //         this.fdConstantsService.fdComponent.tabs.expenditureMenu.push(
-            //             { label: 'Cancelled/Rejected', routerLink: ['cancelled-reject'] },
-            //             { label: 'Approved(Non Billable)', routerLink: ['approvedNonBillable'] },
-            //             { label: 'Approved(Billable)', routerLink: ['approvedBillable'] }
-            //         );
+            const currencyObj = Object.assign({}, this.queryConfig);
+            currencyObj.url = this.spServices.getReadURL(this.constantService.listNames.Currency.name, this.fdConstantsService.fdComponent.currency);
+            currencyObj.listName = this.constantService.listNames.Currency.name;
+            currencyObj.type = 'GET';
+            batchUrl.push(currencyObj);
 
-            //     }
-            // }
-            const batchContents = new Array();
-            const batchGuid = this.spServices.generateUUID();
-            const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
-            const projectContactEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectContacts.name + '', this.fdConstantsService.fdComponent.projectContacts);
-            const clientLegalEntityEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
-            const usStates = this.spServices.getReadURL('' + this.constantService.listNames.UsState.name + '', this.fdConstantsService.fdComponent.usStates);
-            const currnecy = this.spServices.getReadURL('' + this.constantService.listNames.Currency.name + '', this.fdConstantsService.fdComponent.currency);
-            const projectPO = this.spServices.getReadURL('' + this.constantService.listNames.ProjectPO.name + '', this.fdConstantsService.fdComponent.projectPO);
-            const resourceCateg = this.spServices.getReadURL('' + this.constantService.listNames.ResourceCategorization.name + '', this.fdConstantsService.fdComponent.resourceCategorization);
-            const billingEntity = this.spServices.getReadURL('' + this.constantService.listNames.BillingEntity.name + '', this.fdConstantsService.fdComponent.billingEntity);
-            const budgetRate = this.spServices.getReadURL('' + this.constantService.listNames.BudgetRateMaster.name + '', this.fdConstantsService.fdComponent.budgetRate);
-            // const userGroup = this.spServices.getReadURL(''+this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
-            //projectInfoEndpoint,
-            let endPoints = [projectContactEndpoint, clientLegalEntityEndpoint, usStates, currnecy, projectPO, resourceCateg, billingEntity, budgetRate];
-            let userBatchBody;
-            for (let i = 0; i < endPoints.length; i++) {
-                const element = endPoints[i];
-                this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-            }
-            batchContents.push('--batch_' + batchGuid + '--');
-            userBatchBody = batchContents.join('\r\n');
+            const projectPOObj = Object.assign({}, this.queryConfig);
+            projectPOObj.url = this.spServices.getReadURL(this.constantService.listNames.PO.name, this.fdConstantsService.fdComponent.projectPO);
+            projectPOObj.listName = this.constantService.listNames.PO.name;
+            projectPOObj.type = 'GET';
+            batchUrl.push(projectPOObj);
 
-            const arrResults = await this.spServices.getFDData(batchGuid, userBatchBody);
-            this.requiredData = arrResults;
+            const resCatObj = Object.assign({}, this.queryConfig);
+            resCatObj.url = this.spServices.getReadURL(this.constantService.listNames.ResourceCategorization.name, this.fdConstantsService.fdComponent.resourceCategorization);
+            resCatObj.listName = this.constantService.listNames.ResourceCategorization.name;
+            resCatObj.type = 'GET';
+            batchUrl.push(resCatObj);
+
+            const billingEntObj = Object.assign({}, this.queryConfig);
+            billingEntObj.url = this.spServices.getReadURL(this.constantService.listNames.BillingEntity.name, this.fdConstantsService.fdComponent.billingEntity);
+            billingEntObj.listName = this.constantService.listNames.BillingEntity.name;
+            billingEntObj.type = 'GET';
+            batchUrl.push(billingEntObj);
+
+            const budgetRateObj = Object.assign({}, this.queryConfig);
+            budgetRateObj.url = this.spServices.getReadURL(this.constantService.listNames.BudgetRateMaster.name, this.fdConstantsService.fdComponent.budgetRate);
+            budgetRateObj.listName = this.constantService.listNames.BudgetRateMaster.name;
+            budgetRateObj.type = 'GET';
+            batchUrl.push(budgetRateObj);
+
+            const prjInfoObj = Object.assign({}, this.queryConfig);
+            prjInfoObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfo);
+            prjInfoObj.listName = this.constantService.listNames.ProjectInformation.name;
+            prjInfoObj.type = 'GET';
+            batchUrl.push(prjInfoObj);
+            let arrResults = await this.spServices.executeBatch(batchUrl);
+            this.requiredData = arrResults = arrResults.length ? arrResults.map(a => a.retItems) : [];
             this.setData(arrResults);
             this.constantService.loader.isPSInnerLoaderHidden = true;
-            return "";
+            return '';
         } else {
-            return "";
+            return '';
         }
     }
-
-    // Check Projects list available
-    projectsInfo: any = [];
     async checkProjectsAvailable() {
         if (this.projectsInfo.length) {
             return this.projectInfoData.next(this.projectsInfo);
         } else {
-            let obj = [{
+            const obj = [{
                 url: this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfo),
                 type: 'GET',
                 listName: this.constantService.listNames.ProjectFinances
-            }]
+            }];
             const res = await this.spServices.executeBatch(obj);
             if (res.length) {
-                console.log('this.projectsInfo ', res[0]);
+                // console.log('this.projectsInfo ', res[0]);
                 this.projectsInfo = res[0].retItems;
                 this.projectInfoData.next(this.projectsInfo);
                 return this.projectsInfo;
@@ -343,35 +350,32 @@ export class FDDataShareService {
                 return '';
             }
         }
-
-
     }
+
     // clePoPiRes: any = [];
     async getClePO(type: string) {
-        // if (this.clePoPiRes.length) {
-        //     return this.clePoPiRes;
-        // } else {
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        const clientLegalEntityEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ClientLegalEntity.name + '', this.fdConstantsService.fdComponent.clientLegalEntity);
-        const projectPO = this.spServices.getReadURL('' + this.constantService.listNames.ProjectPO.name + '', this.fdConstantsService.fdComponent.projectPO);
-        let endPoints = [clientLegalEntityEndpoint, projectPO];
-        if (type === 'hourly') {
-            const projectInfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.fdConstantsService.fdComponent.projectInfo);
-            endPoints = [clientLegalEntityEndpoint, projectPO, projectInfoEndpoint];
-        }
-        let userBatchBody;
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
+        const batchUrl = [];
+        const cleObj = Object.assign({}, this.queryConfig);
+        cleObj.url = this.spServices.getReadURL(this.constantService.listNames.ClientLegalEntity.name, this.fdConstantsService.fdComponent.clientLegalEntity);
+        cleObj.listName = this.constantService.listNames.ClientLegalEntity.name;
+        cleObj.type = 'GET';
+        batchUrl.push(cleObj);
 
-        const arrResults = await this.spServices.getFDData(batchGuid, userBatchBody);
-        // this.clePoPiRes = arrResults;
+        const projectPOObj = Object.assign({}, this.queryConfig);
+        projectPOObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectPO.name, this.fdConstantsService.fdComponent.projectPO);
+        projectPOObj.listName = this.constantService.listNames.ProjectPO.name;
+        projectPOObj.type = 'GET';
+        batchUrl.push(projectPOObj);
+        if (type === 'hourly') {
+            const hourlyObj = Object.assign({}, this.queryConfig);
+            hourlyObj.url = this.spServices.getReadURL(this.constantService.listNames.ProjectInformation.name, this.fdConstantsService.fdComponent.projectInfo);
+            hourlyObj.listName = this.constantService.listNames.ProjectInformation.name;
+            hourlyObj.type = 'GET';
+            batchUrl.push(hourlyObj);
+        }
+        let arrResults = await this.spServices.executeBatch(batchUrl);
+        arrResults = arrResults.length ? arrResults.map(a => a.retItems) : [];
         this.setClePOData(arrResults);
-        // }
     }
 
     setClePOData(data) {
@@ -380,7 +384,8 @@ export class FDDataShareService {
         }
         if (data[1]) {
             this.poData.next(data[1]);
-        } if (data[2]) {
+        }
+        if (data[2]) {
             this.projectInfoData.next(data[2]);
         }
     }
@@ -388,17 +393,19 @@ export class FDDataShareService {
     styleIndia(amount) {
         // return new Intl.NumberFormat('en-IN', { maximumSignificantDigits: 3 }).format(amount.toFixed(2))
         let x = amount.toString();
-        x = x.indexOf('.') > -1 ? x : x + '.00'
-        var afterPoint = '';
-        if (x.indexOf('.') > 0)
+        x = x.indexOf('.') > -1 ? x : x + '.00';
+        let afterPoint = '';
+        if (x.indexOf('.') > 0) {
             afterPoint = x.substring(x.indexOf('.'), x.length);
+        }
         afterPoint = afterPoint.substring(0, 3); x = Math.floor(x);
         x = x.toString();
-        var lastThree = x.substring(x.length - 3);
-        var otherNumbers = x.substring(0, x.length - 3);
-        if (otherNumbers != '')
+        let lastThree = x.substring(x.length - 3);
+        const otherNumbers = x.substring(0, x.length - 3);
+        if (otherNumbers !== '') {
             lastThree = ',' + lastThree;
-        var res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree + afterPoint;
+        }
+        const res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree + afterPoint;
         return res;
     }
 
@@ -409,9 +416,6 @@ export class FDDataShareService {
     async callProformaCreation(oProforma, cleData, projectContactsData, purchaseOrdersList, editorRef, projectAppendix) {
         ///// Generate Proforma structure
         const oProformaObj: any = this.getProformaPDFObject(oProforma, cleData, projectContactsData, purchaseOrdersList, projectAppendix);
-
-
-
         const objReturn: any = this.callInvoiceTemplate(oProformaObj, editorRef);
         if (objReturn) {
             const pdfContent: any = objReturn.pdf;
@@ -423,7 +427,7 @@ export class FDDataShareService {
             pdfContent.ListName = oCLE.ListName;
             pdfContent.HtmlContent = JSON.stringify(objReturn);
 
-            ///// Call service 
+            ///// Call service
             const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
             await this.spServices.executeJS(pdfService, pdfContent);
         }
@@ -439,13 +443,12 @@ export class FDDataShareService {
         pdfContent.ListName = this.fdConstantsService.fdComponent.selectedEditObject.ListName;
         pdfContent.HtmlContent = JSON.stringify(objReturn);
 
-        ///// Call service 
+        ///// Call service
         const pdfService = 'https://cactusspofinance.cactusglobal.com/pdfservice2/PDFService.svc/GeneratePDF';
         await this.spServices.executeJS(pdfService, pdfContent);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
         this.fdConstantsService.fdComponent.selectedComp.reFetchData(refetchType);
     }
-    bdtRate: any = [];
     getProformaPDFObject(oProformaObj, cleData, projectContactsData, purchaseOrdersList, projectAppendix) {
         const oCle = cleData.find(e => e.Title === oProformaObj.ClientLegalEntity);
         const oPOC = projectContactsData.find(e => e.ID === oProformaObj.MainPOC);
@@ -453,29 +456,28 @@ export class FDDataShareService {
         let address: any;
         if (oProformaObj.AddressType === 'Client') {
             address = oCle.APAddress ? oCle.APAddress : '';
-        }
-        else {
+        } else {
             address = oPOC.Address ? oPOC.Address : '';
         }
 
-        let addressArr = address.split(";#");
+        let addressArr = address.split(';#');
         if (addressArr.length <= 1) {
             addressArr = ['', '', '', ''];
         }
         let val = '';
-        let tax1 = oProformaObj.Template === "India" ? (parseFloat(oProformaObj.Amount) * 18 / 100).toFixed(2) : (oProformaObj.Template === "Japan" ? (parseFloat(oProformaObj.Amount) * 10 / 100).toFixed(2) : '0');
-        let tax = parseFloat(tax1.toString());
+        const tax1 = oProformaObj.Template === 'India' ? (parseFloat(oProformaObj.Amount) * 18 / 100).toFixed(2) : (oProformaObj.Template === 'Japan' ? (parseFloat(oProformaObj.Amount) * 10 / 100).toFixed(2) : '0');
+        const tax = parseFloat(tax1.toString());
         let total = '';
         let taxString = '';
 
         switch (oProformaObj.Template) {
-            case "US":
-            case "Japan":
+            case 'US':
+            case 'Japan':
                 val = this.styleUSJapan(oProformaObj.Amount);
                 taxString = this.styleUSJapan(tax);
                 total = this.styleUSJapan(oProformaObj.Amount + tax);
                 break;
-            case "India":
+            case 'India':
                 val = this.styleIndia(oProformaObj.Amount);
                 taxString = this.styleIndia(tax);
                 total = this.styleIndia(oProformaObj.Amount + tax);
@@ -483,11 +485,11 @@ export class FDDataShareService {
         }
         projectAppendix.forEach(element => {
             switch (oProformaObj.Template) {
-                case "US":
-                case "Japan":
+                case 'US':
+                case 'Japan':
                     element.Amount = this.styleUSJapan(element.amount);
                     break;
-                case "India":
+                case 'India':
                     element.Amount = this.styleIndia(element.amount);
                     break;
             }
@@ -499,7 +501,7 @@ export class FDDataShareService {
                 this.bdtRate = res;
                 console.log('this.bdtRate ', this.bdtRate);
             }
-        })
+        });
 
         const currencyObj = this.bdtRate.find(e => e.Title === oProformaObj.Currency);
 
@@ -510,24 +512,24 @@ export class FDDataShareService {
             invoice: 'Proforma',
             invoice_no: oProformaObj.Title,
             invoice_date: this.datePipe.transform(oProformaObj.ProformaDate, 'MMM d, y'),
-            usCurrencyName: oProformaObj.Currency, //'USD',
-            usCurrencySymbol: currencyObj.Symbol, //'$',
-            JpnCurrencyName: oProformaObj.Currency, //'JPY',
-            JpnCurrencySymbol: currencyObj.Symbol, //'¥',
-            IndCurrencyName: oProformaObj.Currency, //'INR',
-            IndCurrencySymbol: currencyObj.Symbol, //'Rs',
+            usCurrencyName: oProformaObj.Currency, // 'USD',
+            usCurrencySymbol: currencyObj.Symbol, // '$',
+            JpnCurrencyName: oProformaObj.Currency, // 'JPY',
+            JpnCurrencySymbol: currencyObj.Symbol, // '¥',
+            IndCurrencyName: oProformaObj.Currency, // 'INR',
+            IndCurrencySymbol: currencyObj.Symbol, // 'Rs',
             email: oPOC.EmailAddress ? oPOC.EmailAddress : '', // 'gordon.strachan@asstraZeneca.com',
             company: oCle.InvoiceName, // 'AstraZeneca UK Ltd',
-            clientcontact1: oProformaObj.Template === "US" ? oPOC.LName + ', ' + oPOC.FName : oPOC.FName + ' ' + oPOC.LName, // 'Strachan , Gordon',
-            clientcontact2: oPOC.Designation ? oPOC.Designation : '',// 'Global Publications Lead - Oncology',
-            address1: addressArr[0], //'PO Box 30 , Slik Road Business Park',
+            clientcontact1: oProformaObj.Template === 'US' ? oPOC.LName + ', ' + oPOC.FName : oPOC.FName + ' ' + oPOC.LName, // 'Strachan , Gordon',
+            clientcontact2: oPOC.Designation ? oPOC.Designation : '', // 'Global Publications Lead - Oncology',
+            address1: addressArr[0], // 'PO Box 30 , Slik Road Business Park',
             address2: addressArr[1], // 'Macclesfield , GB , SK10 2NA',
-            address3: addressArr[2], //United Kingdom',
-            address4: addressArr[3], //'United Kingdom',
+            address3: addressArr[2], // United Kingdom',
+            address4: addressArr[3], // 'United Kingdom',
             phone: oPOC.Phone ? oPOC.Phone : '', // '+44 (0) 16255170000',
             serviceDetails: oProformaObj.ProformaTitle,
             invoiceFees: val,
-            total: total,
+            total,
             purchaseOrderNumber: oPO.Number,
             tax: taxString,
             Appendix: projectAppendix

@@ -1,0 +1,119 @@
+<div class="storagebutton p-grid p-align-end">
+
+    <button type="button" pButton class="SaveButton" icon="pi pi-check" style="margin-right: 5px;" (click)="SaveGraph()" label="Save"></button>
+    <button type="button" pButton icon="pi pi-times" (click)="cancelGraph();" label="Cancel" class="ui-button-secondary" style="background-color:ghostwhite;"></button>
+
+</div>
+
+<div style="padding: 10vw;width: 100%;" [hidden]="!initialLoad">
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
+
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'" position="bottom-center">
+</p-toast>
+
+
+<div class="p-grid p-dir-col" [hidden]="initialLoad">
+    <p-card class="p-col-12">
+        <div class="p-col TaskPanel">
+            <div class="p-col" style="font-size: 1.5em; font-weight: 500; text-align: center;color: #bbbbbb;font-family: initial;padding: 0px;">Tasks</div>
+            <div class="p-grid p-align-center" style="padding: 5px 5px 20px 5px;">
+                <div *ngFor="let task of arrConstantTasks" class="p-col-align-center" pDraggable="task" (onDragStart)="dragStart($event,task)" (onDragEnd)="dragEnd($event)">
+                    <div class="task-item"><span> {{task}}</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-col task-drop taskDropArea" pDroppable="task" (onDrop)="onTaskDrop($event)" id="dropZone">
+
+            <div id="milestonetext" class="p-grid p-justify-between" style="padding: 2vh">
+                <div class="p-col-4"></div>
+                <div class="p-col-4" style="text-align: center;">Drop Tasks here</div>
+                <div class="p-col-4" style="text-align: right;">
+                    <button *ngIf="!enableZoom" type="button" style="line-height: 0px;height: 0px;" mat-icon-button title="Enable zooming" (click)="EnableZoom(true)">
+                <mat-icon>blur_on</mat-icon>
+            </button>
+                    <button *ngIf="enableZoom" type="button" style="line-height: 0px;height: 0px;" mat-icon-button title="Disable zooming" (click)="EnableZoom(false)">
+                <mat-icon>blur_off</mat-icon>
+            </button>
+                    <button *ngIf="!enablePaan" type="button" style="line-height: 0px;height: 0px;" mat-icon-button title="Enable panning" (click)="EnablePaan(true)">
+                <mat-icon>grid_on</mat-icon>
+            </button>
+                    <button *ngIf="enablePaan" type="button" style="line-height: 0px;height: 0px;" mat-icon-button title="Disable panning" (click)="EnablePaan(false)">
+                <mat-icon>grid_off</mat-icon>
+            </button>
+                    <button type="button" style="line-height: 0px;height: 0px;" mat-icon-button title="Change Orientation" (click)="ChangeOrientation()">
+                <mat-icon>autorenew</mat-icon>
+            </button>
+                    <button type="button" style="line-height: 0px;height: 0px;" mat-icon-button title="Refresh graph" (click)="ReloadGraph()">
+                <mat-icon>refresh</mat-icon>
+            </button>
+                </div>
+            </div>
+
+            <ngx-graph *ngIf="tasksHoritontal" [view]="[taskWidth,taskHeight]" class="p-grid chart-container" id="taskChart" [links]="links" [nodes]="nodes" [legend]="false" [curve]="curve" [enableZoom]="enableZoom" [draggingEnabled]="false" [panningEnabled]="enablePaan"
+                [autoCenter]="true" [style.overflow-x]="taskWidth > minWidth ? 'scroll' : ''" [style.overflow-y]="taskHeight > taskMaxHeight ? 'scroll' : ''">
+
+                <ng-template #defsTemplate>
+                    <svg:marker id="arrow2" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
+                        <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
+                    </svg:marker>
+                </ng-template>
+
+                <ng-template #nodeTemplate let-node>
+                    <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (click)="ontaskClick(node)" (contextmenu)="(node.Status ==='Not Saved' || node.Status ==='Not Started') ?  RemoveNode($event,node,'task'): ErrorMessage($event,'Task')">
+                        <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
+                        <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">
+                            {{node.label}}
+                        </svg:text>
+                    </svg:g>
+                </ng-template>
+                <ng-template #linkTemplate let-link>
+                    <svg:g class="edge">
+                        <svg:path class="line taskLine" stroke-width="5" marker-end="url(#arrow2)" (click)="RemoveLink(link,'task')">
+
+                        </svg:path>
+                    </svg:g>
+                </ng-template>
+
+            </ngx-graph>
+
+
+            <ngx-graph *ngIf="!tasksHoritontal" [view]="[taskWidth,taskHeight]" class="p-grid chart-container" id="taskChart" [links]="links" [nodes]="nodes" [legend]="false" [curve]="curve" [enableZoom]="enableZoom" [draggingEnabled]="false" [panningEnabled]="enablePaan"
+                [autoCenter]="true" [orientation]="TB" [style.overflow-x]="taskWidth > minWidth ? 'scroll' : ''" [style.overflow-y]="taskHeight > taskMaxHeight ? 'scroll' : ''">
+
+                <ng-template #defsTemplate>
+                    <svg:marker id="arrow2" viewBox="0 -5 10 10" refX="8" refY="0" markerWidth="4" markerHeight="4" orient="auto">
+                        <svg:path d="M0,-5L10,0L0,5" class="arrow-head" />
+                    </svg:marker>
+                </ng-template>
+
+                <ng-template #nodeTemplate let-node>
+
+                    <svg:g class="node" ngx-tooltip [tooltipPlacement]="'top'" [tooltipType]="'tooltip'" [tooltipTitle]="node.label" (click)="ontaskClick(node)" (contextmenu)="(node.Status ==='Not Saved' || node.Status ==='Not Started') ?  RemoveNode($event,node,'task'): ErrorMessage($event,'Task')">
+                        <svg:rect [attr.width]="node.width" [attr.style.cursor]="pointer" [attr.height]="node.height" [attr.fill]="node.color || node.options.color" />
+                        <svg:text alignment-baseline="central" [attr.x]="10" [attr.y]="node.height / 2">
+                            {{node.label}}
+                        </svg:text>
+                    </svg:g>
+
+                </ng-template>
+                <ng-template #linkTemplate let-link>
+                    <svg:g class="edge">
+                        <svg:path class="line taskLine" stroke-width="5" marker-end="url(#arrow2)" (click)="RemoveLink(link)">
+
+                        </svg:path>
+                    </svg:g>
+                </ng-template>
+
+            </ngx-graph>
+        </div>
+
+        <div class="p-col refreshGraph" style="margin-top: -5vw;width:97%;" *ngIf="grapLoading">
+            <div id="graphInnerLoader"></div>
+            <div id="graphInnerLoaderText">Refresh Graph...</div>
+        </div>
+
+    </p-card>
+</div>

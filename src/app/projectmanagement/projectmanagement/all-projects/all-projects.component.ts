@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation, HostListener } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component, OnInit, ViewChild, Output, EventEmitter, ViewEncapsulation, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PmconstantService } from '../../services/pmconstant.service';
@@ -68,17 +68,27 @@ export class AllProjectsComponent implements OnInit {
   // { field: 'CreatedBy' },
   // { field: 'CreatedDate' }];
   public allProjects = {
-    sowCodeArray: [],
-    projectCodeArray: [],
-    shortTitleArray: [],
-    clientLegalEntityArray: [],
+    SOWCode: [],
+    ProjectCode: [],
+    ShortTitle: [],
+    ClientLegalEntity: [],
+    ProjectType: [],
+    Status: [],
+    TA: [],
+    Molecule: [],
+    PrimaryResources: [],
+    POC: []
+    // sowCodeArray: [],
+    // projectCodeArray: [],
+    // shortTitleArray: [],
+    // clientLegalEntityArray: [],
+    // POCArray: [],
+    // TAArray: [],
+    // PrimaryResourcesArray: [],
+    // MoleculeArray: [],
+    // projectTypeArray: [],
+    // statusArray: [],
     // deliveryTypeArray: [],
-    POCArray: [],
-    TAArray: [],
-    PrimaryResourcesArray: [],
-    MoleculeArray: [],
-    projectTypeArray: [],
-    statusArray: [],
     // createdByArray: [],
     // createdDateArray: []
   };
@@ -137,8 +147,25 @@ export class AllProjectsComponent implements OnInit {
     private confirmationService: ConfirmationService,
     private globalObject: GlobalService,
     private route: ActivatedRoute,
-    private dataService: DataService
-  ) { }
+    private dataService: DataService,
+    private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    _applicationRef: ApplicationRef,
+    zone: NgZone,
+  ) {
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+
+  }
 
   ngOnInit() {
     this.overAllValues = [
@@ -157,6 +184,49 @@ export class AllProjectsComponent implements OnInit {
 
     this.isApprovalAction = true;
     this.reloadAllProject();
+    this.checkEarlyTaskCompleted();
+    setInterval(() => {
+      this.checkEarlyTaskCompleted();
+    }, 150000);
+  }
+
+  async checkEarlyTaskCompleted() {
+    const completedTaskFilter = Object.assign({}, this.pmConstant.QUERY.GET_EARLY_TASK_COMPLETED);
+    const lastOneHour = this.commonService.ConvertTimeformat(24,
+      this.datePipe.transform(new Date().getTime() - (1000 * 60 * 60), 'hh:mm a'));
+    const todayDate = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
+    const lastOneHourDateTime = todayDate + 'T' + lastOneHour + ':00.000';
+
+    completedTaskFilter.filter = completedTaskFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString()).
+      replace('{{LastOnceHour}}', lastOneHourDateTime);
+
+    const sResult = await this.spServices.readItems(this.constants.listNames.EarlyTaskCompleteNotifications.name, completedTaskFilter);
+    if (sResult && sResult.length) {
+      console.log(sResult);
+      let remainingUserId = [];
+      let earlyTask;
+      for (const element of sResult) {
+        const projectCSArray = element.ProjectCS.results;
+        this.messageService.add({
+          key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+          detail: 'Early task ' + element.Title + ' has completed successfully.'
+        });
+        remainingUserId = projectCSArray.filter(x => x.ID !== this.globalObject.currentUser.userId).map(x => x.ID);
+        if (remainingUserId.length) {
+          earlyTask = {
+            ProjectCSId: {
+              results: remainingUserId,
+            },
+          };
+        } else {
+          earlyTask = {
+            IsActive: 'No'
+          };
+        }
+        const retResults = await this.spServices.updateItem(this.constants.listNames.EarlyTaskCompleteNotifications.name,
+          element.ID, earlyTask, this.constants.listNames.EarlyTaskCompleteNotifications.type);
+      }
+    }
   }
 
   navigateToSOW(oProject) {
@@ -301,7 +371,7 @@ export class AllProjectsComponent implements OnInit {
       const projectObj = this.pmObject.allProjectItems.filter(c => c.ProjectCode === this.params.ProjectCode);
       if (this.params.ActionStatus) {
         if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.APPROVED) {
-          if ((this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.sharePointPageObject.userId)) {
+          if ((this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.currentUser.userId)) {
             if (projectObj[0].Status === this.constants.projectStatus.AwaitingCancelApproval) {
               await this.getGetIds(projectObj[0], this.pmConstant.ACTION.CANCEL_PROJECT);
               this.isApprovalAction = false;
@@ -328,7 +398,7 @@ export class AllProjectsComponent implements OnInit {
 
         if (projectObj && projectObj.length && this.params.ActionStatus === this.pmConstant.ACTION.REJECTED) {
           window.history.pushState({}, 'Title', window.location.href.split('?')[0]);
-          if ((this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.sharePointPageObject.userId)) {
+          if ((this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.currentUser.userId)) {
             if (projectObj[0].Status === this.constants.projectStatus.AwaitingCancelApproval) {
               const piUdpate: any = {
                 Status: this.params.ProjectStatus,
@@ -355,7 +425,7 @@ export class AllProjectsComponent implements OnInit {
       }
       if (this.params.ProjectBudgetStatus) {
         if (projectObj && projectObj.length) {
-          if (this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.sharePointPageObject.userId) {
+          if (this.pmObject.userRights.isMangers || projectObj[0].CMLevel2.ID === this.globalObject.currentUser.userId) {
             await this.approveRejectBudgetReduction(this.params.ProjectBudgetStatus, projectObj[0]);
           } else {
             this.messageService.add({
@@ -404,7 +474,7 @@ export class AllProjectsComponent implements OnInit {
           (projObj.ModifiedDate), 'MMM dd yyyy hh:mm:ss aa') : null;
         projObj.PrimaryPOC = task.PrimaryPOC;
         projObj.PrimaryPOCText = this.pmCommonService.extractNamefromPOC([projObj.PrimaryPOC]);
-        projObj.POC = projObj.PrimaryPOCText;
+        projObj.POC = projObj.PrimaryPOCText[0];
         projObj.AdditionalPOC = task.POC ? task.POC.split(';#') : [];
         projObj.AdditionalPOCText = this.pmCommonService.extractNamefromPOC(task.POC ? task.POC.split(';#') : []);
         projObj.ProjectFolder = task.ProjectFolder;
@@ -497,18 +567,21 @@ export class AllProjectsComponent implements OnInit {
         // });
         tempAllProjectArray.push(projObj);
       }
-      this.allProjects.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');
-      this.allProjects.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
-      this.allProjects.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
-      this.allProjects.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
-      // this.allProjects.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
-      this.allProjects.projectTypeArray = this.commonService.unique(projectTypeTempArray, 'value');
-      this.allProjects.statusArray = this.commonService.unique(statusTempArray, 'value');
+      if (tempAllProjectArray) {
+        this.createColFieldValues(tempAllProjectArray);
+      }
+      // this.allProjects.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');
+      // this.allProjects.projectCodeArray = this.commonService.unique(projectCodeTempArray, 'value');
+      // this.allProjects.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
+      // this.allProjects.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
+      // // this.allProjects.deliveryTypeArray = this.commonService.unique(deliveryTypeTempArray, 'value');
+      // this.allProjects.projectTypeArray = this.commonService.unique(projectTypeTempArray, 'value');
+      // this.allProjects.statusArray = this.commonService.unique(statusTempArray, 'value');
 
-      // this.allProjects.PrimaryResourcesArray = this.commonService.unique(PrimaryResourcesTempArray, 'value');
-      this.allProjects.POCArray = this.commonService.unique(POCTempArray, 'value');
-      this.allProjects.TAArray = this.commonService.unique(TATempArray, 'value');
-      this.allProjects.MoleculeArray = this.commonService.unique(MoleculeTempArray, 'value');
+      // // this.allProjects.PrimaryResourcesArray = this.commonService.unique(PrimaryResourcesTempArray, 'value');
+      // this.allProjects.POCArray = this.commonService.unique(POCTempArray, 'value');
+      // this.allProjects.TAArray = this.commonService.unique(TATempArray, 'value');
+      // this.allProjects.MoleculeArray = this.commonService.unique(MoleculeTempArray, 'value');
       // this.allProjects.createdByArray = this.commonService.unique(createdByTempArray, 'value');
       // this.allProjects.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
       this.pmObject.allProjectsArray = [];
@@ -523,7 +596,7 @@ export class AllProjectsComponent implements OnInit {
     }
 
     if (this.pmObject.columnFilter.ProjectCode && this.pmObject.columnFilter.ProjectCode.length) {
-      const codeExists = this.allProjects.projectCodeArray.find(e => e.label === this.pmObject.columnFilter.ProjectCode[0]);
+      const codeExists = this.allProjects.ProjectCode.find(e => e.label === this.pmObject.columnFilter.ProjectCode[0]);
       if (codeExists) {
         this.allProjectRef.filter(this.pmObject.columnFilter.ProjectCode, 'ProjectCode', 'in');
       } else {
@@ -548,6 +621,19 @@ export class AllProjectsComponent implements OnInit {
     }
 
     this.showFilterOptions = true;
+  }
+
+  createColFieldValues(resArray) {
+    this.allProjects.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label)));
+    this.allProjects.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+    this.allProjects.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
+    this.allProjects.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+    this.allProjects.ProjectType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectType, value: a.ProjectType }; return b; }).filter(ele => ele.label)));
+    this.allProjects.Status = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Status, value: a.Status }; return b; }).filter(ele => ele.label)));
+    this.allProjects.TA = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.TA, value: a.TA }; return b; }).filter(ele => ele.label)));
+    this.allProjects.Molecule = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Molecule, value: a.Molecule }; return b; }).filter(ele => ele.label)));
+    const poc1 = resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label);
+    this.allProjects.POC = this.commonService.sortData(this.uniqueArrayObj(poc1));
   }
 
   async approveRejectBudgetReduction(selectedStatus, projectObj) {
@@ -959,7 +1045,28 @@ export class AllProjectsComponent implements OnInit {
       }
     }
   }
-  sendApprovalEmailToManager(selectedProjectObj, reason, ) {
+  onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+  }
+
+  async getTosList() {
+    const approvers = await this.spServices.getGroupInfo('ExpenseApprovers');
+    let arrayTo = [];
+    if (approvers.results) {
+      if (approvers.results.length) {
+        for (const a in approvers.results) {
+          if (approvers.results[a].Email !== undefined && approvers.results[a].Email !== '') {
+            arrayTo.push(approvers.results[a].Email);
+          }
+        }
+      }
+    }
+    arrayTo = arrayTo.filter(this.onlyUnique);
+    console.log('arrayTo ', arrayTo);
+    return arrayTo;
+  }
+
+  async  sendApprovalEmailToManager(selectedProjectObj, reason) {
     const projectFinanceObj = this.toUpdateIds[1] && this.toUpdateIds[1].retItems && this.toUpdateIds[1].retItems.length ?
       this.toUpdateIds[1].retItems[0] : [];
     const subjectVal = 'Request to cancel the project';
@@ -982,6 +1089,9 @@ export class AllProjectsComponent implements OnInit {
     });
     tempArray = tempArray.concat(cm1IdArray, this.selectedProjectObj.CMLevel2ID);
     arrayTo = this.pmCommonService.getEmailId(tempArray);
+    const TempArray = await this.getTosList();
+    arrayTo = arrayTo.concat(TempArray);
+    arrayTo = arrayTo.filter(this.onlyUnique);
     this.pmCommonService.getTemplate(this.constants.EMAIL_TEMPLATE_NAME.CANCEL, objEmailBody, mailSubject, arrayTo,
       [this.pmObject.currLoginInfo.Email]);
     this.pmObject.isMainLoaderHidden = true;
@@ -1115,7 +1225,8 @@ export class AllProjectsComponent implements OnInit {
         batchURL.push(projectBudgetBreakCreate);
       }
     });
-    if (selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value) {
+    if (selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.DELIVERABLE.value ||
+      selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.FTE.value) {
       sowObj.TotalScheduled = sowObj.TotalScheduled ? sowObj.TotalScheduled : 0;
       sowObj.ScheduledRevenue = sowObj.ScheduledRevenue ? sowObj.ScheduledRevenue : 0;
       sowObj.TotalLinked = sowObj.TotalLinked ? sowObj.TotalLinked : 0;
@@ -1263,7 +1374,7 @@ export class AllProjectsComponent implements OnInit {
       type: '',
       listName: ''
     };
-    const piUdateData = {
+    const piUdateData: any = {
       __metadata: {
         type: this.constants.listNames.ProjectInformation.type
       },
@@ -1271,6 +1382,21 @@ export class AllProjectsComponent implements OnInit {
       PrevStatus: selectedProjectObj.Status,
       ActualStartDate: new Date()
     };
+    // logic to set current milestone for FTE-Writing project.
+    if (selectedProjectObj.ProjectType === this.pmConstant.PROJECT_TYPE.FTE.value) {
+      const todayDate = new Date();
+      const monthNames = this.pmConstant.MONTH_NAMES;
+      const todayMonthsName = monthNames[todayDate.getMonth()];
+      selectedProjectObj.monthName = todayMonthsName;
+      if (selectedProjectObj.Milestones) {
+        const firstMilestone = selectedProjectObj.Milestones.split(';#');
+        if (firstMilestone[0] === todayMonthsName) {
+          piUdateData.Milestone = firstMilestone[0];
+          piUdateData.Status = this.constants.projectStatus.InProgress;
+          this.changeMilestoneStatusFTE(selectedProjectObj);
+        }
+      }
+    }
     const piUpdate = Object.assign({}, options);
     piUpdate.data = piUdateData;
     piUpdate.listName = this.constants.listNames.ProjectInformation.name;
@@ -1307,6 +1433,72 @@ export class AllProjectsComponent implements OnInit {
         this.router.navigate(['/projectMgmt/allProjects']);
       }
     }, this.pmConstant.TIME_OUT);
+  }
+
+  async changeMilestoneStatusFTE(selectedProjectObj) {
+    const scheduleFilter = Object.assign({}, this.pmConstant.QUERY.GET_SCHEDULE_LIST_ITEM_BY_PROJECT_CODE);
+    scheduleFilter.filter = scheduleFilter.filter.replace(/{{projectCode}}/gi, selectedProjectObj.ProjectCode);
+    const sResult = await this.spServices.readItems(this.constants.listNames.Schedules.name, scheduleFilter);
+    if (sResult && sResult.length > 0) {
+      const filterResult = sResult.filter(a => a.Title.indexOf(selectedProjectObj.monthName) > -1);
+      const batchURL = [];
+      const options = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+      };
+      const statusUpdateScheduleList = {
+        __metadata: {
+          type: this.constants.listNames.Schedules.type
+        },
+        Status: this.constants.STATUS.IN_PROGRESS
+      };
+      const statusCompletedScheduleList = {
+        __metadata: {
+          type: this.constants.listNames.Schedules.type
+        },
+        Status: this.constants.STATUS.COMPLETED
+      };
+      const statusNotStartedScheduleList = {
+        __metadata: {
+          type: this.constants.listNames.Schedules.type
+        },
+        Status: this.constants.STATUS.NOT_STARTED
+      };
+      filterResult.forEach(element => {
+        if (element.Task !== this.pmConstant.task.BLOCKING ||
+          element.Task !== this.pmConstant.task.TRAINING ||
+          element.Task !== this.pmConstant.task.MEETING) {
+          const scheduleStatusUpdate = Object.assign({}, options);
+          scheduleStatusUpdate.data = statusUpdateScheduleList;
+          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+          scheduleStatusUpdate.type = 'PATCH';
+          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scheduleStatusUpdate);
+        } else if (element.Task === this.pmConstant.task.BLOCKING) {
+          const scheduleStatusUpdate = Object.assign({}, options);
+          scheduleStatusUpdate.data = statusCompletedScheduleList;
+          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+          scheduleStatusUpdate.type = 'PATCH';
+          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scheduleStatusUpdate);
+        } else {
+          const scheduleStatusUpdate = Object.assign({}, options);
+          scheduleStatusUpdate.data = statusNotStartedScheduleList;
+          scheduleStatusUpdate.listName = this.constants.listNames.Schedules.name;
+          scheduleStatusUpdate.type = 'PATCH';
+          scheduleStatusUpdate.url = this.spServices.getItemURL(this.constants.listNames.Schedules.name,
+            element.ID);
+          batchURL.push(scheduleStatusUpdate);
+        }
+      });
+      if (batchURL.length) {
+        await this.spServices.executeBatch(batchURL);
+      }
+    }
   }
   async changeProjectStatusAuditInProgress(selectedProjectObj) {
     const projectFinanceID = this.toUpdateIds[1] && this.toUpdateIds[1].retItems && this.toUpdateIds[1].retItems.length ?
@@ -1475,17 +1667,36 @@ export class AllProjectsComponent implements OnInit {
         type: '',
         listName: ''
       };
+      console.log(sResult);
       sResult.forEach(task => {
         if (!(task.Task === this.pmConstant.task.FOLLOW_UP && task.Task === this.pmConstant.task.SEND_TO_CLIENT)) {
           totalSpentTime += task.TimeSpent ? this.timeToMins(task.TimeSpent) : 0;
         }
         if (isScheduleListStatusUpdated) {
+          let newSubmilestones = task.SubMilestones;
+          if (task.SubMilestones && task.Milestone === 'Select one') {
+            newSubmilestones = '';
+            const replaceString = task.SubMilestones.indexOf(';#') > -1 ? task.SubMilestones.split(';#') : [];
+            replaceString.forEach(element => {
+              if (element) {
+                const subMilestoneTaskEle = element.split(':');
+                if (subMilestoneTaskEle.length && subMilestoneTaskEle[2] === this.constants.STATUS.IN_PROGRESS) {
+                  subMilestoneTaskEle[2] = this.constants.STATUS.COMPLETED;
+                }
+                if (subMilestoneTaskEle[2] === this.constants.STATUS.COMPLETED) {
+                  element = subMilestoneTaskEle.join(':');
+                  newSubmilestones += element + ';#';
+                }
+              }
+            });
+          }
           if (task.Status === this.constants.STATUS.NOT_CONFIRMED) {
             const scheduleData = {
               __metadata: {
                 type: this.constants.listNames.Schedules.type
               },
               Status: this.constants.STATUS.DELETED,
+              SubMilestones: newSubmilestones
             };
             const invoiceUpdate = Object.assign({}, options);
             invoiceUpdate.data = scheduleData;
@@ -1503,7 +1714,8 @@ export class AllProjectsComponent implements OnInit {
                 type: this.constants.listNames.Schedules.type
               },
               Status: this.constants.STATUS.AUTO_CLOSED,
-              ActiveCA: 'No'
+              ActiveCA: 'No',
+              SubMilestones: newSubmilestones
             };
             const invoiceUpdate = Object.assign({}, options);
             invoiceUpdate.data = scheduleData;
@@ -1999,7 +2211,7 @@ export class AllProjectsComponent implements OnInit {
     expanseQuery.filter = expanseQuery.filterByProjectCode.replace(/{{projectCode}}/gi, projectCode);
     const expanseEndPoint = this.spServices.getReadURL('' + this.constants.listNames.SpendingInfo.name +
       '', expanseQuery);
-    expanseGet.url = expanseEndPoint.replace('{0}', '' + this.globalObject.sharePointPageObject.userId);
+    expanseGet.url = expanseEndPoint.replace('{0}', '' + this.globalObject.currentUser.userId);
     expanseGet.type = 'GET';
     expanseGet.listName = this.constants.listNames.SpendingInfo.name;
     batchURL.push(expanseGet);
@@ -2025,9 +2237,6 @@ export class AllProjectsComponent implements OnInit {
 
     return resultArray;
   }
-
-
-
   getVendorNameById(freelancerVendersRes, ele) {
     const found = freelancerVendersRes.find((x) => {
       if (x.ID === ele.VendorFreelancer) {
@@ -2262,6 +2471,7 @@ export class AllProjectsComponent implements OnInit {
       this.providedProjectCode = '';
       this.pmObject.tabMenuItems[0].label = 'All Projects (0)';
       this.pmObject.tabMenuItems = [...this.pmObject.tabMenuItems];
+      this.createColFieldValues([]);
     }
   }
 
@@ -2285,7 +2495,6 @@ export class AllProjectsComponent implements OnInit {
     projectInfoFilter.filter = projectInfoFilter.filter.replace(/{{projectCode}}/gi,
       projectCode);
 
-    debugger
     const results = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInfoFilter);
     if (results && results.length) {
       this.pmObject.allProjectItems = results;
@@ -2337,4 +2546,29 @@ export class AllProjectsComponent implements OnInit {
       }
     }
   }
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.pmObject.allProjectsArray.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.allProjectRef,
+        colFields: this.allProjects,
+        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.createColFieldValues(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+    }
+    this.cdr.detectChanges();
+  }
+
 }

@@ -16,7 +16,7 @@ export class AddEditCommentComponent implements OnInit {
   modalloaderenable: boolean;
   public modalInnerLoader;
   data: any;
-  batchContents: any;
+  // batchContents: any;
   response: any;
   currentTask: any;
   commentsdb: any = [];
@@ -33,13 +33,7 @@ export class AddEditCommentComponent implements OnInit {
     private spServices: SPOperationService) { }
 
   ngOnInit() {
-
-
-
-
     this.data = this.config.data === undefined ? this.taskData : this.config.data;
-
-
     if (this.data !== undefined) {
       this.MarkComplete = this.data.MarkComplete;
       this.modalloaderenable = true;
@@ -75,12 +69,7 @@ export class AddEditCommentComponent implements OnInit {
         const toolbarContainer = document.querySelector('#toolbar-container');
         toolbarContainer.appendChild(editor.ui.view.toolbar.element);
         editor.model.document.on('change', () => {
-          if (this.editor.getData() === '') {
-            this.disableComment = false;
-          }
-          else {
-            this.disableComment = true;
-          }
+          this.disableComment = this.editor.getData() === '' ? false : true;
         });
       })
       .catch(error => {
@@ -99,17 +88,17 @@ export class AddEditCommentComponent implements OnInit {
 
   async getComments(task, firstLoad) {
 
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    let objComment = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.Comments);
+    // Comment.filter = Comment.filter.replace(/{{taskID}}/gi, task.ID);
+    this.response  = await this.spServices.readItem(this.constants.listNames.Schedules.name, task.ID, objComment);
 
-    let Comment = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.Comments);
-    Comment.filter = Comment.filter.replace(/{{taskID}}/gi, task.ID);
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+    // const CommentUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', Comment);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, CommentUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
-    const CommentUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', Comment);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, CommentUrl);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-    this.currentTask = this.response[0][0];
+    this.currentTask = this.response;
 
     await this.fetchCommentsForMilestone(this.currentTask);
 
@@ -135,13 +124,11 @@ export class AddEditCommentComponent implements OnInit {
   //  Cancel task comment
   //*********************************************************************************************************
   cancelComment() {
-
     this.editor.setData('');
     if (this.config.data !== undefined) {
       this.ref.close();
       this.commentsdb = [];
     }
-
   }
 
   //*********************************************************************************************************
@@ -185,17 +172,23 @@ export class AddEditCommentComponent implements OnInit {
   //  Get all comments of milestones
   // ***********************************************************************************************************
   async fetchCommentsForMilestone(oCurrentTask) {
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
-
+    
     let milestone = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.Milestone);
     milestone.filter = milestone.filter.replace(/{{ProjectCode}}/gi, oCurrentTask.ProjectCode).replace(/{{Milestone}}/gi, oCurrentTask.Milestone);
 
-    const MilestoneUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', milestone);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, MilestoneUrl);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.response  = await this.spServices.readItems(this.constants.listNames.Schedules.name, milestone);
 
-    this.commentsdb = this.response[0];
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+
+    // let milestone = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.Milestone);
+    // milestone.filter = milestone.filter.replace(/{{ProjectCode}}/gi, oCurrentTask.ProjectCode).replace(/{{Milestone}}/gi, oCurrentTask.Milestone);
+
+    // const MilestoneUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', milestone);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, MilestoneUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+
+    this.commentsdb = this.response.length ? this.response : [];
     if (this.commentsdb.filter(c => c.TaskComments !== null) !== undefined) {
       this.commentsdb = this.commentsdb.filter(c => c.TaskComments !== null);
       this.commentsdb.map(c => c.TaskName = c.Title).sort(c => c.Created);

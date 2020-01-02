@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ViewContainerRef, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ViewContainerRef, ViewChild, HostListener, ApplicationRef, NgZone } from '@angular/core';
 import { MessageService, DialogService, ConfirmationService } from 'primeng/api';
 import { MenuItem } from 'primeng/components/common/menuitem';
 import { FormBuilder, FormGroup, Validators, FormControl, MaxLengthValidator } from '@angular/forms';
@@ -9,7 +9,7 @@ import { GlobalService } from '../../Services/global.service';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { CreateConferenceComponent } from './create-conference/create-conference.component';
 import { CreateJournalComponent } from './create-journal/create-journal.component';
-import { DatePipe, TitleCasePipe } from '@angular/common';
+import { DatePipe, TitleCasePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subject } from 'rxjs';
 import { AddAuthorComponent } from './add-author/add-author.component';
 import { AuthorDetailsComponent } from './author-details/author-details.component';
@@ -35,7 +35,11 @@ export class PubsupportComponent implements OnInit {
         private datePipe: DatePipe,
         private confirmationService: ConfirmationService,
         private componentFactoryResolver: ComponentFactoryResolver,
-        private titlecasePipe: TitleCasePipe
+        private titlecasePipe: TitleCasePipe,
+        private platformLocation: PlatformLocation,
+        private locationStrategy: LocationStrategy,
+        _applicationRef: ApplicationRef,
+        zone: NgZone,
     ) {
 
         this.router.routeReuseStrategy.shouldReuseRoute = () => {
@@ -57,6 +61,17 @@ export class PubsupportComponent implements OnInit {
             { name: 'Closed', code: 'Closed' }
         ];
         this.selectedOption = this.overAllValues[0];
+
+        // Browser back button disabled & bookmark issue solution
+        history.pushState(null, null, window.location.href);
+        platformLocation.onPopState(() => {
+            history.pushState(null, null, window.location.href);
+        });
+
+        router.events.subscribe((uri) => {
+            zone.run(() => _applicationRef.tick());
+        });
+
     }
 
     get isValidAddUpdateJCDetailsForm() {
@@ -309,8 +324,8 @@ export class PubsupportComponent implements OnInit {
     getDocuTypes() {
         this.documentTypes = [
             { label: 'Select type', value: '' },
-            { label: 'Journal', value: 'journal' },
-            { label: 'Conference', value: 'conference' }
+            { label: 'Journal', value: 'Journal' },
+            { label: 'Conference', value: 'Conference' }
         ];
     }
 
@@ -330,7 +345,7 @@ export class PubsupportComponent implements OnInit {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         this.loggedInUserInfo = [];
         this.loggedInUserGroup = [];
-        const curruentUsrInfo = await this.spOperationsService.getUserInfo(this.globalObject.sharePointPageObject.userId);
+        const curruentUsrInfo = await this.spOperationsService.getUserInfo(this.globalObject.currentUser.userId);
         this.loggedInUserInfo = curruentUsrInfo.Groups.results;
         this.loggedInUserInfo.forEach(element => {
             if (element) {
@@ -363,7 +378,7 @@ export class PubsupportComponent implements OnInit {
             if (isManager) {
                 projectInfoEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.pubsupportService.pubsupportComponent.projectInfo);
             } else {
-                this.pubsupportService.pubsupportComponent.projectInfoUser.filter = this.pubsupportService.pubsupportComponent.projectInfoUser.filter.replace(/{{ID}}/gi, this.globalObject.sharePointPageObject.userId.toString());
+                this.pubsupportService.pubsupportComponent.projectInfoUser.filter = this.pubsupportService.pubsupportComponent.projectInfoUser.filter.replace(/{{ID}}/gi, this.globalObject.currentUser.userId.toString());
                 projectInfoEndpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.ProjectInformation.name + '', this.pubsupportService.pubsupportComponent.projectInfoUser);
             }
             arrEndPoints.push(projectInfoEndpoint);
@@ -477,7 +492,7 @@ export class PubsupportComponent implements OnInit {
             case '':
             case 'rejected': {
                 this.items = [
-                    { label: 'Add Journal conference', command: (e) => this.openMenuContent(e, data) },
+                    { label: 'Add Journal / Conference', command: (e) => this.openMenuContent(e, data) },
                     { label: 'Add Authors', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Author forms & emails', command: e => this.openMenuContent(e, data) },
                     // { label: 'Update Journal Requirement', command: e => this.openMenuContent(e, data) }
@@ -486,7 +501,7 @@ export class PubsupportComponent implements OnInit {
             }
             case 'selected': {
                 this.items = [
-                    { label: 'Edit Journal conference', command: e => this.openMenuContent(e, data) },
+                    { label: 'Edit Journal / Conference', command: e => this.openMenuContent(e, data) },
                     { label: 'Add Authors', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Author forms & emails', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Journal Requirement', command: e => this.openMenuContent(e, data) },
@@ -496,7 +511,7 @@ export class PubsupportComponent implements OnInit {
             }
             case 'resubmit to same journal': {
                 this.items = [
-                    { label: 'Edit Journal conference', command: e => this.openMenuContent(e, data) },
+                    { label: 'Edit Journal / Conference', command: e => this.openMenuContent(e, data) },
                     { label: 'Add Authors', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Author forms & emails', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Journal Requirement', command: e => this.openMenuContent(e, data) }
@@ -505,7 +520,7 @@ export class PubsupportComponent implements OnInit {
             }
             case 'submitted': {
                 this.items = [
-                    { label: 'Edit Journal conference', command: e => this.openMenuContent(e, data) },
+                    { label: 'Edit Journal / Conference', command: e => this.openMenuContent(e, data) },
                     { label: 'Add Authors', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Author forms & emails', command: e => this.openMenuContent(e, data) },
                     { label: 'Update Decision details', command: e => this.openMenuContent(e, data) },
@@ -601,26 +616,26 @@ export class PubsupportComponent implements OnInit {
             componentRef.instance.formType = 'addAuthor';
             this.ref = componentRef;
             return;
-        } else if (this.selectedModal === 'Add Journal conference') {
+        } else if (this.selectedModal === 'Add Journal / Conference') {
             // this.journalConfFormField();
             this.addJCDetailsModal = true;
             this.formatMilestone(this.milestonesList);
             if (this.selectedProject.DeliverableType === 'Abstract' || this.selectedProject.DeliverableType === 'Poster' || this.selectedProject.DeliverableType === 'Oral Presentation') {
                 this.documentTypes = [
                     { label: 'Select type', value: '' },
-                    { label: 'Conference', value: 'conference' }
+                    { label: 'Conference', value: 'Conference' }
                 ];
             } else {
                 this.documentTypes = [
                     { label: 'Select type', value: '' },
-                    { label: 'Journal', value: 'journal' },
+                    { label: 'Journal', value: 'Journal' },
                 ];
             }
             return;
-        } else if (this.selectedModal === 'Edit Journal conference') {
+        } else if (this.selectedModal === 'Edit Journal / Conference') {
             await this.getJCDetails(data);
             await this.getJCList(this.journal_Conf_data[0].element.EntryType);
-            this.addJCControls(this.journal_Conference_Edit_Detail_form, this.journal_Conf_data[0].element.EntryType,'Edit')
+            this.addJCControls(this.journal_Conference_Edit_Detail_form, this.journal_Conf_data[0].element.EntryType, 'Edit')
             this.setJCDetails(this.journal_Conf_data[0]);
             this.editJCDetailsModal = true;
             this.formatMilestone(this.milestonesList);
@@ -806,7 +821,7 @@ export class PubsupportComponent implements OnInit {
         }
         this.fileSourcePath = [];
         this.fileDestinationPath = [];
-        this.batchContents = [];
+        // this.batchContents = [];
         if (data) {
             const projectCodeData: any = data;
             const fileEndPoint = this.globalObject.sharePointPageObject.webRelativeUrl + '/' + projectCodeData.ClientLegalEntity + '/' + projectCodeData.ProjectCode + '/Publication Support/Forms/';
@@ -939,7 +954,7 @@ export class PubsupportComponent implements OnInit {
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = false;
         let endpoint;
         let jcObj = [];
-        if (type === 'journal') {
+        if (type === 'Journal') {
             this.optionLabel.title = 'JournalName';
             endpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.Journal.name + '', this.pubsupportService.pubsupportComponent.journal);
             jcObj = [{
@@ -947,7 +962,7 @@ export class PubsupportComponent implements OnInit {
                 type: 'GET',
                 listName: this.constantService.listNames.Journal.name
             }];
-        } else if (type === 'conference') {
+        } else if (type === 'Conference') {
             this.optionLabel.title = 'ConferenceName';
             endpoint = this.spOperationsService.getReadURL('' + this.constantService.listNames.Conference.name + '', this.pubsupportService.pubsupportComponent.conference);
             jcObj = [{
@@ -966,9 +981,9 @@ export class PubsupportComponent implements OnInit {
             this.jcListArray = res[0].retItems;
             console.log('this.jcListArray ', this.jcListArray);
         }
-        if (type === 'journal') {
+        if (type === 'Journal') {
             this.jcListArray = this.sortJournalData(res[0].retItems);
-        } else if (type === 'conference') {
+        } else if (type === 'Conference') {
             this.jcListArray = this.sortConferenceData(res[0].retItems);
         }
         this.pubsupportService.pubsupportComponent.isPSInnerLoaderHidden = true;
@@ -1117,7 +1132,7 @@ export class PubsupportComponent implements OnInit {
 
     setJCValue(form: any, item: any, type: string) {
         if (item.value) {
-            if (type === 'journal') {
+            if (type === 'Journal') {
                 // Set New Values
                 form.get('Name').setValue(item.value.JournalName);
                 form.get('ExpectedReviewPeriod').setValue(item.value.ExpectedReviewPeriod);
@@ -1161,7 +1176,7 @@ export class PubsupportComponent implements OnInit {
         const type = this.journal_Conference_Detail_form.get('EntryType').value;
         this.formSubmit.isSubmit = false;
         this.submitBtn.isClicked = false;
-        if (type === 'journal') {
+        if (type === 'Journal') {
             const ref = this.dialogService.open(CreateJournalComponent, {
                 data: this.jcListArray,
                 closable: false,
@@ -1178,7 +1193,7 @@ export class PubsupportComponent implements OnInit {
                     this.getJCList('journal');
                 }
             });
-        } else if (type === 'conference') {
+        } else if (type === 'Conference') {
 
             const ref = this.dialogService.open(CreateConferenceComponent, {
                 data: this.jcListArray,
@@ -1459,6 +1474,9 @@ export class PubsupportComponent implements OnInit {
         // tslint:disable-next-line: max-line-length
         const projEndpoint = this.spOperationsService.getItemURL(this.constantService.listNames.ProjectInformation.name, this.selectedProject.Id);
         const projObj: any = {
+            __metadata: {
+                type: this.constantService.listNames.ProjectInformation.type
+            },
             PubSupportStatus: 'Selected'
         };
         projObj.__metadata = { type: this.constantService.listNames.ProjectInformation.type };

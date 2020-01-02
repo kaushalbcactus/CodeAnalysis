@@ -1,0 +1,277 @@
+.mt-20 {
+    margin-top: 20px !important;
+}
+.mt-10 {
+    margin-top: 10px;
+}
+
+.mt-5{
+    margin-top: 5px !important;
+}
+
+.mr-10 {
+    margin-right: 10px;
+}
+
+.error, .compulsory{
+    color: red;
+}
+.icon-big{
+    font-size: 1.8em !important;
+}
+/* form {
+    width: 70%;
+    margin: 0 auto;
+} */
+
+.ui-dialog-content {
+    overflow-y:auto;
+    max-height: 500px;
+}
+.ui-dialog{
+    max-height: 500px !important;
+}
+.addNew{
+    width:80% !important;
+    margin-left: 5px;
+    float: left;
+}
+
+
+.filter1{
+    display: inline-block;
+    margin-left: 20px;
+}
+
+form{
+    margin: 0;
+    width: auto;
+}
+
+.download-worksheet {
+    color: #B71C1C !important;
+    font-size: 1.8em !important;
+    float: right;
+    cursor: pointer;
+}
+.td-none{text-decoration: none}
+.tableLoader{
+    position: fixed; /* or absolute */
+    /* top: 20%;
+    left: 50%;
+    z-index: 9999; */
+    width:100%;
+    left:0;right:0;top:0;bottom:0;
+    background-color: rgba(255,255,255,0.7);
+    z-index:9999;
+  }
+  /** Loader **/
+/* @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  #mainLoader{
+      border: 10px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 10px solid red;
+      border-bottom: 10px solid red;
+      width: 100px;
+      height: 100px;
+      -webkit-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;
+      margin: 0 auto;
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-top: 1%;
+    }
+    
+    #mainLoaderText{
+      -moz-animation: loading-text-opacity 2s linear 0s infinite normal;
+      -o-animation: loading-text-opacity 2s linear 0s infinite normal;
+      -webkit-animation: loading-text-opacity 2s linear 0s infinite normal;
+      animation: loading-text-opacity 2s linear 0s infinite normal;
+      color: black;
+      font-family: "Helvetica Neue, "Helvetica", ""arial";
+      font-size: 10px;
+      font-weight: bold;
+      opacity: 0.5;
+      text-align: center;
+      text-transform: uppercase;
+      top: 0;
+      margin-bottom: 1%;
+      position: relative;
+    } */
+    .ng-invalid.ng-dirty:not(form), .ng-invalid:not(form).form-submitted {
+        border: solid 2px lightcoral;
+    }
+    .ng-right-side-overlay .ui-sidebar {
+        overflow-x: auto !important; 
+        cursor: pointer;
+    }
+    .top-right-title {
+        float: right;     
+        margin-right: 20px;
+        margin-top: 5px;
+    }
+    .clearBoth{
+        clear: both;
+    }
+    .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active, 
+    .ui-button, 
+    .ui-button:enabled:active, 
+    .ui-button:enabled:hover, 
+    .ui-steps .ui-steps-item.ui-state-highlight .ui-steps-number, 
+    .ui-paginator .ui-paginator-pages .ui-paginator-page.ui-state-active, 
+    .ui-chkbox .ui-chkbox-box.ui-state-active:not(.ui-state-disabled):hover, 
+    .ui-multiselect-panel .ui-multiselect-items .ui-multiselect-item.ui-state-highlight, 
+    .ui-table .ui-sortable-column.ui-state-highlight, 
+    .ui-radiobutton .ui-radiobutton-box.ui-state-active, 
+    .ui-radiobutton .ui-radiobutton-box.ui-state-active:not(.ui-state-disabled):hover, 
+    .ui-datepicker table td>a.ui-state-active, 
+    .ui-datepicker table td>span.ui-state-active, 
+    .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item.ui-state-highlight, 
+    .ui-dropdown-panel .ui-dropdown-items .ui-dropdown-item-group.ui-state-highlight,
+    .ui-chkbox .ui-chkbox-box.ui-state-active {
+        background-color: #C53E3E !important;
+        border: 1px solid #C53E3E !important;
+    }
+    .ui-tabmenu .ui-tabmenu-nav .ui-tabmenuitem.ui-state-active .ui-menuitem-link {
+        color: #ffffff;
+    }
+    .brandColor {
+        color:  #B71C1C !important;
+    }
+    .accountableUser .ui-table .ui-table-thead > tr > th:nth-child(1),
+    .accountableUser .ui-table .ui-table-tbody > tr > td:nth-child(1)  {
+     width: 5%;
+    }
+    .accountableUser .ui-table .ui-table-thead > tr > th:nth-child(2),
+    .accountableUser .ui-table .ui-table-tbody > tr > td:nth-child(2)  {
+     width: 3%;
+    }
+    .accountableUser .ui-table .ui-table-thead > tr > th:nth-child(3),
+    .accountableUser .ui-table .ui-table-tbody > tr > td:nth-child(3)  {
+     width: 72%;
+    }
+    .accountableUser .ui-table .ui-table-thead > tr > th:nth-child(4),
+    .accountableUser .ui-table .ui-table-tbody > tr > td:nth-child(4)  {
+     width: 20%;
+    } 
+
+    .addNewBtn {
+        text-align: center;margin-top:10px;
+    }
+    .noTextDecoration {
+        text-decoration: none !important;
+    }
+    .disableColor{
+        background-color: #FFF0F0 !important;
+    }
+    .width10Per{
+        width: 10%;
+    }
+    .width5Per {
+        width: 5%;
+    }
+    .minFirstLastCol5Per .ui-table .ui-table-thead > tr> th:first-child,
+    .minFirstLastCol5Per .ui-table .ui-table-thead > tr> th:last-child,
+    .minFirstLastCol5Per .ui-table .ui-table-tbody > tr> td:first-child,
+    .minFirstLastCol5Per .ui-table .ui-table-tbody > tr> td:last-child {
+     width: 5% !important;
+    } 
+    .minFirstLastCol5Per .ui-table .ui-table-tbody tr> td{
+        word-break: break-all;
+    }
+    .card-section .card {
+        border-radius: 6px;
+        box-shadow: 0 2px 2px rgba(204, 197, 185, 0.5);
+        background-color: #FFFFFF;
+        color: #252422;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+    }
+    .card-section .card .content {
+        padding: 15px 15px 10px 15px;
+    }
+    .card-section .card .footer {
+        padding: 0;
+        line-height: 30px;
+    }
+    .card-section .card .stats {
+        color: #a9a9a9;
+        font-weight: 300;
+    }
+    .card-section .card .footer div {
+        display: inline-block;
+    }
+    /* Css for fixing scroll menu */
+    .ui-table-scrollable-header {
+        overflow: visible!important;
+    }
+    
+    .ui-table.ui-widget {
+        margin-top: 0px;
+    }
+    
+    .ui-table-resizable .ui-table-thead>tr>th {
+        overflow: visible!important;
+    }
+    
+    .adminTable div.ui-table-wrapper {
+        overflow: visible!important;
+    }
+    
+    .adminTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child {
+        overflow: visible;
+    }
+    
+    .adminTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div {
+        position: relative;
+    }
+    
+    .adminTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div>i {
+        top: 0px !important;
+    }
+    
+    .adminTable .ui-table-wrapper tbody.ui-table-tbody>tr>td:last-child>div div.ui-menu {
+        top: 0px !important;
+        left: inherit !important;
+        right: 40px !important;
+    }
+    .ui-datepicker:not(.ui-datepicker-inline) {
+        top: 0px !important;
+    }
+    /* Css for fixing scroll menu end here */
+    .pr-20 {
+        padding-right: 20px;
+    }
+    .ui-tooltip{
+        max-width: 50%;
+    }
+    .ui-tooltip .ui-tooltip-text {
+        background-color:  #B71C1C !important;
+    }
+    .ui-tooltip.ui-tooltip-top .ui-tooltip-arrow{
+        border-top-color: #B71C1C !important;
+    }
+    .ui-tooltip.ui-tooltip-left .ui-tooltip-arrow {
+        border-left-color: #B71C1C !important
+    }
+    .ui-tooltip.ui-tooltip-right .ui-tooltip-arrow{
+        border-right-color: #B71C1C !important;
+    }
+    .ui-tooltip.ui-tooltip-bottom .ui-tooltip-arrow{
+        border-bottom-color: #B71C1C !important;
+    }
+    .ui-dialog .ui-dialog-footer button {
+        margin: 0 0.5em 0 0 !important;
+        width: auto;
+      }

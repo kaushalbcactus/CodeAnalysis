@@ -12,7 +12,7 @@ export class DataService {
     endDate: new Date(),
     count: 10,
     dateRange: {},
-    userId: this.global.sharePointPageObject.userId,
+    userId: this.global.currentUser.userId,
     hideQuarters: true,
     hideDateRange: true,
     hideYears: true,

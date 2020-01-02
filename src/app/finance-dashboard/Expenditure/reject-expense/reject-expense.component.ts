@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { FormBuilder } from '@angular/forms';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -7,9 +7,10 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { FdConstantsService } from '../../fdServices/fd-constants.service';
 import { CommonService } from 'src/app/Services/common.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
-import { DatePipe } from '@angular/common';
-import { NodeService } from 'src/app/node.service';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { DataTable } from 'primeng/primeng';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-reject-expense',
@@ -38,6 +39,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
+    @ViewChild('rc', { static: false }) canRejExpenseTable: DataTable;
 
     constructor(
         private messageService: MessageService,
@@ -49,12 +51,29 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
         private commonService: CommonService,
         public fdDataShareServie: FDDataShareService,
         private datePipe: DatePipe,
-        private nodeService: NodeService) {
+        private cdr: ChangeDetectorRef,
+        private platformLocation: PlatformLocation,
+        private locationStrategy: LocationStrategy,
+        private readonly _router: Router,
+        _applicationRef: ApplicationRef,
+        zone: NgZone,
+    ) {
         this.subscription.add(this.fdDataShareServie.getDateRange().subscribe(date => {
             this.DateRange = date;
             console.log('this.DateRange ', this.DateRange);
             this.getRequiredData();
         }));
+
+        // Browser back button disabled & bookmark issue solution
+        history.pushState(null, null, window.location.href);
+        platformLocation.onPopState(() => {
+            history.pushState(null, null, window.location.href);
+        });
+
+        _router.events.subscribe((uri) => {
+            zone.run(() => _applicationRef.tick());
+        });
+
     }
 
     async ngOnInit() {
@@ -124,7 +143,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
             { field: 'ClientCurrency', header: 'Client Currency', visibility: true },
             { field: 'ApproverComments', header: 'Approver Comments', visibility: true },
             { field: 'ActionBy', header: 'Actioned By', visibility: true },
-            { field: 'Modified', header: 'Actioned Date', visibility: true, exportable: false },
+            { field: 'ModifiedDate', header: 'Actioned Date', visibility: true, exportable: false },
             { field: 'ModifiedDateFormat', header: 'Actioned Date', visibility: false },
             { field: 'SOWCode', header: 'SOW Code', visibility: false },
             { field: 'SOWName', header: 'SOW Name', visibility: false },
@@ -152,35 +171,37 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
     // On load get Required Data
     async getRequiredData() {
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = false;
-        const batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
+        // const batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
         // let obj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForRC);
         // obj.filter = obj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
-        let speInfoObj
+        let speInfoObj;
         const groups = this.globalService.userInfo.Groups.results.map(x => x.LoginName);
         if (groups.indexOf('Invoice_Team') > -1 || groups.indexOf('Managers') > -1 || groups.indexOf('ExpenseApprovers') > -1) {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForRC);
-            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate);
-        }
-        else {
+            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
+                                                 .replace('{{EndDate}}', this.DateRange.endDate);
+        } else {
             speInfoObj = Object.assign({}, this.fdConstantsService.fdComponent.spendingInfoForRCCS);
-            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate).replace('{{EndDate}}', this.DateRange.endDate).replace("{{UserID}}", this.globalService.sharePointPageObject.userId.toString());
+            speInfoObj.filter = speInfoObj.filter.replace('{{StartDate}}', this.DateRange.startDate)
+                                                 .replace('{{EndDate}}', this.DateRange.endDate)
+                                                 .replace('{{UserID}}', this.globalService.currentUser.userId.toString());
         }
+        const res = await this.spServices.readItems(this.constantService.listNames.SpendingInfo.name, speInfoObj);
+        // const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
+        // let endPoints = [sinfoEndpoint];
+        // let userBatchBody;
+        // for (let i = 0; i < endPoints.length; i++) {
+        //     const element = endPoints[i];
+        //     this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
+        // }
+        // batchContents.push('--batch_' + batchGuid + '--');
+        // userBatchBody = batchContents.join('\r\n');
 
-        const sinfoEndpoint = this.spServices.getReadURL('' + this.constantService.listNames.SpendingInfo.name + '', speInfoObj);
-        let endPoints = [sinfoEndpoint];
-        let userBatchBody;
-        for (let i = 0; i < endPoints.length; i++) {
-            const element = endPoints[i];
-            this.spServices.getBatchBodyGet(batchContents, batchGuid, element);
-        }
-        batchContents.push('--batch_' + batchGuid + '--');
-        userBatchBody = batchContents.join('\r\n');
-
-        const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
-        const arrResults = res;
-        console.log('--oo ', arrResults);
-        this.formatData(arrResults[0]);
+        // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
+        const arrResults = res.length ? res : [];
+        // console.log('--oo ', arrResults);
+        this.formatData(arrResults);
         this.isPSInnerLoaderHidden = true;
         // });
 
@@ -234,7 +255,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
         }
         this.rejectExpenses = [...this.rejectExpenses];
         this.isPSInnerLoaderHidden = true;
-        this.createColFieldValues();
+        this.createColFieldValues(this.rejectExpenses);
         this.fdConstantsService.fdComponent.isPSInnerLoaderHidden = true;
     }
 
@@ -267,30 +288,30 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
         ClientCurrency: [],
         Created: [],
         ModifiedBy: [],
-        Modified: [],
+        ModifiedDate: [],
         ActionBy: [],
         CreatedBy: []
     }
 
-    createColFieldValues() {
+    createColFieldValues(resArray) {
 
-        this.pendinExpenseColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; })));
-        this.pendinExpenseColArray.Category = this.commonService.sortData(this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
-        const ClientAmount = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
+        this.pendinExpenseColArray.ProjectCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ProjectCode, value: a.ProjectCode }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; })));
+        this.pendinExpenseColArray.Category = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Category, value: a.Category }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.ExpenseType = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ExpenseType, value: a.ExpenseType }; return b; }).filter(ele => ele.label)));
+        const ClientAmount = this.uniqueArrayObj(resArray.map(a => { let b = { label: parseFloat(a.ClientAmount), value: a.ClientAmount }; return b; }).filter(ele => ele.label));
         this.pendinExpenseColArray.ClientAmount = this.fdDataShareServie.customSort(ClientAmount, 1, 'label');
-        this.pendinExpenseColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.Created = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.Created, value: a.Created }; return b; }).filter(ele => ele.label));
+        this.pendinExpenseColArray.ClientCurrency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientCurrency, value: a.ClientCurrency }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.Created = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Created, value: a.Created }; return b; }).filter(ele => ele.label));
 
-        const modified = this.commonService.sortDateArray(this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: this.datePipe.transform(a.Modified, 'MMM d, y'), value: a.Modified }; return b; }).filter(ele => ele.label)));
-        this.pendinExpenseColArray.Modified = modified.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
+        const modified = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ModifiedDate, 'MMM d, y'), value: a.ModifiedDate }; return b; }).filter(ele => ele.label)));
+        this.pendinExpenseColArray.ModifiedDate = modified.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy')) }; return b; }).filter(ele => ele.label);
 
 
-        this.pendinExpenseColArray.ActionBy = this.commonService.sortData(this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.ActionBy, value: a.ActionBy }; return b; }).filter(ele => ele.label)));
-        //this.pendinExpenseColArray.Modified = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }).filter(ele => ele.label));
-        this.pendinExpenseColArray.CreatedBy = this.uniqueArrayObj(this.rejectExpenses.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }).filter(ele => ele.label));
+        this.pendinExpenseColArray.ActionBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ActionBy, value: a.ActionBy }; return b; }).filter(ele => ele.label)));
+        //this.pendinExpenseColArray.Modified = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Modified, value: a.Modified }; return b; }).filter(ele => ele.label));
+        this.pendinExpenseColArray.CreatedBy = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }).filter(ele => ele.label));
     }
 
     uniqueArrayObj(array: any) {
@@ -350,6 +371,29 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
                 this.tempClick = undefined;
             }
         }
+    }
+
+    isOptionFilter: boolean;
+    optionFilter(event: any) {
+        if (event.target.value) {
+            this.isOptionFilter = false;
+        }
+    }
+
+    ngAfterViewChecked() {
+        if (this.rejectExpenses.length && this.isOptionFilter) {
+            let obj = {
+                tableData: this.canRejExpenseTable,
+                colFields: this.pendinExpenseColArray,
+            }
+            if (obj.tableData.filteredValue) {
+                this.commonService.updateOptionValues(obj);
+            } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+                this.createColFieldValues(obj.tableData.value);
+                this.isOptionFilter = false;
+            }
+        }
+        this.cdr.detectChanges();
     }
 
 }

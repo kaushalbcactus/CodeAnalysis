@@ -5,12 +5,10 @@ import { MenuItem, MessageService, ConfirmationService } from 'primeng/api';
 import { PmconstantService } from '../services/pmconstant.service';
 import { PMObjectService } from '../services/pmobject.service';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
-import { NodeService } from 'src/app/node.service';
 import { PMCommonService } from '../services/pmcommon.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';
-import { SOWComponent } from './sow/sow.component';
 @Component({
   selector: 'app-projectmanagement',
   templateUrl: './projectmanagement.component.html',
@@ -51,7 +49,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     private pmConstant: PmconstantService,
     private frmbuilder: FormBuilder,
     public messageService: MessageService,
-    public nodeService: NodeService,
     public pmService: PMCommonService,
     private router: Router,
     private dataService: DataService,
@@ -469,15 +466,18 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           // tslint:disable-next-line:quotemark
           "&@TargetFileName='" + filename + "'&$expand=ListItemAllFields";
         // tslint:enable
-        this.nodeService.uploadFIle(filePathUrl, this.fileReader.result).subscribe(res => {
-          uploadedFiles.push(res.d);
-          if (uploadedFiles && uploadedFiles[0] && event.files.length === uploadedFiles.length) {
-            this.pmObject.addSOW.SOWFileURL = uploadedFiles[0].ServerRelativeUrl;
-            this.pmObject.addSOW.SOWFileName = uploadedFiles[0].Name;
-            this.pmObject.addSOW.SOWDocProperties = uploadedFiles[0];
-            // tslint:disable-next-line:max-line-length
-          }
-        });
+        const res: any = this.spServices.uploadFile(filePathUrl, this.fileReader.result)
+        // .subscribe(res => {
+        if (res) {
+          // uploadedFiles.push(res);
+          // if (uploadedFiles && uploadedFiles[0] && event.files.length === uploadedFiles.length) {
+          this.pmObject.addSOW.SOWFileURL = res.ServerRelativeUrl;
+          this.pmObject.addSOW.SOWFileName = res.Name;
+          this.pmObject.addSOW.SOWDocProperties = res;
+          // tslint:disable-next-line:max-line-length
+          // }
+        }
+        // });
       };
     });
   }
@@ -658,7 +658,6 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * @param sowObj The parameter shoudl be SOW list object.
    */
   async addUpdateSOW(sowObj) {
-    debugger;
     if (!sowObj.ID) { // Create SOW
       const sowInfoOptions = this.getSOWDataObj(sowObj);
       await this.spServices.createItem(this.constant.listNames.SOW.name, sowInfoOptions, this.constant.listNames.SOW.type);
@@ -854,7 +853,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.addAdditionalBudgetForm.reset();
     this.pmObject.isSOWFormSubmit = false;
     this.pmObject.isAdditionalBudgetVisible = false;
-    
+
     if (this.router.url === '/projectMgmt/allSOW') {
       this.dataService.publish('reload-EditSOW');
     }

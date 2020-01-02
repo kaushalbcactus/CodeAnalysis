@@ -1,27 +1,43 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AllocatedComponent } from './ca/allocated/allocated.component';
-import { ModelComponent } from './ca/model/model.component';
-import { UnallocatedComponent } from './ca/unallocated/unallocated.component';
-import { UsercapacityComponent } from './ca/usercapacity/usercapacity.component';
+// import { AllocatedComponent } from './allocated/allocated.component';
+// import { ModelComponent } from './model/model.component';
+// import { UnallocatedComponent } from './unallocated/unallocated.component';
 
 import { PrimengModule } from '../primeng/primeng.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule } from '@angular/forms';
 import { CaRoutingModule } from './ca-routing.module';
-import { CaComponent } from './ca/ca.component';
+// import { CaComponent } from './ca.component';
+import { DynamicDialogRef, DynamicDialogConfig, ConfirmationService } from 'primeng/api';
+import { UnallocatedAllocatedTasksComponent } from './unallocated-allocated-tasks/unallocated-allocated-tasks.component';
+import { UserCapacityModule } from '../shared/usercapacity/usercapacity.module';
+import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.component';
+import { CaDragdropComponent } from './ca-dragdrop/ca-dragdrop.component';
+import { CustomMaterialModule } from '../shared/material.module';
+import { NgxGraphModule } from '@swimlane/ngx-graph';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
+import { CaComponent } from './ca.component';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+
+
 
 @NgModule({
-  declarations: [AllocatedComponent, ModelComponent, UnallocatedComponent, UsercapacityComponent, CaComponent],
+  declarations: [UnallocatedAllocatedTasksComponent, CaDragdropComponent, CaComponent, ConfirmationDialogComponent],
   imports: [
     CommonModule,
     PrimengModule,
     NgbModule,
-    NgSelectModule,
     FormsModule,
-    CaRoutingModule
+    CaRoutingModule,
+    UserCapacityModule,
+    CustomMaterialModule,
+    NgxGraphModule,
+    NgxChartsModule,
+    NgxMaterialTimepickerModule,
   ],
-  entryComponents: [UsercapacityComponent, ModelComponent],
+  providers: [DynamicDialogConfig, DynamicDialogRef, ConfirmationService],
+  entryComponents: [UsercapacityComponent, CaDragdropComponent,ConfirmationDialogComponent],
 })
 export class CAModule { }

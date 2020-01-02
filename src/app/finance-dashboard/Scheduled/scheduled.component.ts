@@ -27,7 +27,7 @@ export class ScheduledComponent implements OnInit {
     private commonService: CommonService,
     public fdDataShareServie: FDDataShareService,
     private datePipe: DatePipe,
-    public fdConstantsService : FdConstantsService
+    public fdConstantsService: FdConstantsService
   ) {
     // router.events.subscribe((event: RouterEvent) => {
     //   // this.navigationInterceptor(event)
@@ -53,25 +53,12 @@ export class ScheduledComponent implements OnInit {
     }
   }
 
-  scheduleMenuList: any = [];
-
   ngOnInit() {
 
     // SetDefault Values
     const next3Months = this.commonService.getNextWorkingDay(65, new Date());
     const last1Year = this.commonService.getLastWorkingDay(260, new Date());
     this.rangeDates = [last1Year, next3Months];
-
-
-    // Default Routing
-    // this.router.navigate(['/financeDashboard/scheduled/deliverable-based']);
-
-    // Tabs list
-    this.scheduleMenuList = [
-      { label: 'Deliverable Based', routerLink: ['deliverable-based'] },
-      { label: 'Hourly Based', routerLink: ['hourly-based'] },
-      { label: 'OOP', routerLink: ['oop'] },
-    ];
 
   }
 
@@ -87,12 +74,12 @@ export class ScheduledComponent implements OnInit {
     const next3Months = this.commonService.getNextWorkingDay(65, new Date());
     const last1Year = this.commonService.getLastWorkingDay(260, new Date());
     const dates = [last1Year, next3Months];
-    let startDate = new Date(this.datePipe.transform(dates[0], "yyyy-MM-dd") + " 00:00:00").toISOString();
-    let endDate = new Date(this.datePipe.transform(dates[1], "yyyy-MM-dd") + " 23:59:00").toISOString();
-    let obj = {
+    const startDate = new Date(this.datePipe.transform(dates[0], "yyyy-MM-dd") + " 00:00:00").toISOString();
+    const endDate = new Date(this.datePipe.transform(dates[1], "yyyy-MM-dd") + " 23:59:00").toISOString();
+    const obj = {
       startDate: startDate,
       endDate: endDate
-    }
+    };
     this.fdDataShareServie.scheduleDateRange = obj;
     this.fdDataShareServie.setScheduleAddObj(obj);
   }
@@ -100,15 +87,15 @@ export class ScheduledComponent implements OnInit {
   setDefaultDateRange() {
     // SetDefault Values
     if (this.rangeDates) {
-      let startDate = new Date(this.datePipe.transform(this.rangeDates[0], "yyyy-MM-dd") + " 00:00:00").toISOString();
-      let endDate = new Date(this.datePipe.transform(this.rangeDates[1], "yyyy-MM-dd") + " 23:59:00").toISOString();
-      let obj = {
+      const startDate = new Date(this.datePipe.transform(this.rangeDates[0], "yyyy-MM-dd") + " 00:00:00").toISOString();
+      const endDate = new Date(this.datePipe.transform(this.rangeDates[1], "yyyy-MM-dd") + " 23:59:00").toISOString();
+      const obj = {
         startDate: startDate,
         endDate: endDate
-      }
+      };
       this.fdDataShareServie.scheduleDateRange = obj;
       this.fdDataShareServie.setScheduleAddObj(obj);
-      console.log('startDate ' + startDate + ' endDate' + endDate)
+      console.log('startDate ' + startDate + ' endDate' + endDate);
     }
   }
 

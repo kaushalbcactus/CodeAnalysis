@@ -64,7 +64,7 @@
             [readonlyInput]="true"   dateFormat="dd M, yy"   appendTo="body"   hideOnDateTimeSelect="true"  
             [required]="true"   [stepMinute]="15"   [showIcon]="true"   [showOnFocus]="false"   [monthNavigator]="true"
               [yearNavigator]="true"     yearRange="{{yearRange}}" [inputStyle]="{'width': '80%', 'min-width': '80%'}"
-            [disabled]="isNonStandardProposedStartDateDisabled"  inputStyleClass="ngPrime-red">
+            [disabled]="isNonStandardProposedStartDateDisabled" [minDate]="minDateValue" inputStyleClass="ngPrime-red">
           </p-calendar>
         </div>
         <div class="col-md-2 col-xs-2 col-lg-2">

@@ -128,18 +128,21 @@ export class TimeBookingDialogComponent implements OnInit {
 
   async getAllProjects(client, rowData) {
     rowData.dbProjects = [{ label: 'Select Project', value: null }];
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
-    const ProjectInformations = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
-    // tslint:disable-next-line: quotemark
-    ProjectInformations.filter += " and (ClientLegalEntity eq '" + client + "')";
-    const ProjectInformationsUrl = this.spServices.getReadURL('' +
-      this.constants.listNames.ProjectInformation.name + '', ProjectInformations);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectInformationsUrl);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    const dbProjectInformations = this.response[0].length > 0 ?
-      this.response[0].map(o => new Object({ label: o.ProjectCode + ' (' + o.WBJID + ')', value: o.ProjectCode })) : [];
 
+    let projectInfoFilter = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
+    projectInfoFilter.filter += " and (ClientLegalEntity eq '" + client + "')";
+    this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, projectInfoFilter);
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
+    // const ProjectInformations = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.ProjectInformations);
+    // // tslint:disable-next-line: quotemark
+    // ProjectInformations.filter += " and (ClientLegalEntity eq '" + client + "')";
+    // const ProjectInformationsUrl = this.spServices.getReadURL('' +
+    //   this.constants.listNames.ProjectInformation.name + '', ProjectInformations);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, ProjectInformationsUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    const dbProjectInformations = this.response.length > 0 ?
+      this.response.map(o => new Object({ label: o.ProjectCode + ' (' + o.WBJID + ')', value: o.ProjectCode })) : [];
     rowData.dbProjects.push.apply(rowData.dbProjects, dbProjectInformations);
   }
 
@@ -162,10 +165,11 @@ export class TimeBookingDialogComponent implements OnInit {
       (this.MainminDate.getDate() < 10 ? '0' + this.MainminDate.getDate() : this.MainminDate.getDate()) + 'T23:59:00.000Z';
 
     AllMilestones.filter = AllMilestones.filter.replace(/{{projectCode}}/gi, projectCode).replace(/{{DateString}}/gi, EndDate);
-    const AllMilestonesUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', AllMilestones);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, AllMilestonesUrl);
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-    const dbAllMilestones = this.response.length > 0 ? await this.getSubMilestoneMilestones(this.response[0]) : [];
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, AllMilestones);
+    // const AllMilestonesUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', AllMilestones);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, AllMilestonesUrl);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    const dbAllMilestones = this.response.length > 0 ? await this.getSubMilestoneMilestones(this.response) : [];
     rowData.dbMilestones.push.apply(rowData.dbMilestones, dbAllMilestones);
 
   }
@@ -277,20 +281,20 @@ export class TimeBookingDialogComponent implements OnInit {
 
     const startDate = new Date(this.datePipe.transform(this.weekDays[0], 'yyyy-MM-dd') + ' 00:00:00').toISOString();
     const endDate = new Date(this.datePipe.transform(this.weekDays[this.weekDays.length - 1], 'yyyy-MM-dd') + ' 23:59:00').toISOString();
-    this.batchContents = new Array();
-    const batchGuid = this.spServices.generateUUID();
+    // this.batchContents = new Array();
+    // const batchGuid = this.spServices.generateUUID();
     const AllMilestones = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.MyTimelineForBooking);
     const minDate = await this.myDashboardConstantsService.CalculateminstartDateValue(new Date(), 4);
-    AllMilestones.filter = AllMilestones.filter.replace(/{{userId}}/gi, this.sharedObject.sharePointPageObject.userId.toString());
+    AllMilestones.filter = AllMilestones.filter.replace(/{{userId}}/gi, this.sharedObject.currentUser.userId.toString());
     AllMilestones.filter += AllMilestones.filterNotCompleted;
 
     AllMilestones.filter += AllMilestones.filterDate.replace(/{{startDateString}}/gi, startDate).replace(/{{endDateString}}/gi, endDate);
-    const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', AllMilestones);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
+    // const myTaskUrl = this.spServices.getReadURL('' + this.constants.listNames.Schedules.name + '', AllMilestones);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, myTaskUrl);
 
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
-    this.allTasks = this.response[0];
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    this.response = await this.spServices.readItems(this.constants.listNames.Schedules.name, AllMilestones);
+    this.allTasks = this.response.length > 0 ? this.response : [];
 
     const tempMilestones = this.allTasks.map(o => new Object({
       ID: o.ID, Entity: o.Entity,
@@ -446,7 +450,7 @@ export class TimeBookingDialogComponent implements OnInit {
     const ProjectInformation = Object.assign({}, this.myDashboardConstantsService.mydashboardComponent.projectInfo);
     const count = 0;
     let ProjectInformationFilter = '';
-
+    const batchUrl = [];
 
 
     allProjectCodes.forEach((value, i) => {
@@ -456,12 +460,13 @@ export class TimeBookingDialogComponent implements OnInit {
     });
 
     ProjectInformation.filter = ProjectInformationFilter;
-    const projectInfoUrl = this.spServices.getReadURL('' + this.constants.listNames.projectInfo.name + '', ProjectInformation);
-    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectInfoUrl);
+    this.response = await this.spServices.readItems(this.constants.listNames.ProjectInformation.name, ProjectInformation);
+    // const projectInfoUrl = this.spServices.getReadURL('' + this.constants.listNames.projectInfo.name + '', ProjectInformation);
+    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectInfoUrl);
 
-    this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+    // this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
 
-    this.projetInformations = this.response[0];
+    this.projetInformations = this.response.length > 0 ? this.response : [];
 
     if (this.UserMilestones !== undefined) {
       this.projetInformations.forEach(element => {
@@ -532,7 +537,7 @@ export class TimeBookingDialogComponent implements OnInit {
           existingObj.TaskComments = dbTasks[i].Comments;
           count++;
           await
-            this.spOperations.updateItem(this.constants.listNames.Schedules.name, existingObj.ID, existingObj, 'SP.Data.SchedulesListItem');
+            this.spOperations.updateItem(this.constants.listNames.Schedules.name, existingObj.ID, existingObj, this.constants.listNames.Schedules.type);
         }
       } else {
         if (dbTasks[i].Entity) {
@@ -574,11 +579,12 @@ export class TimeBookingDialogComponent implements OnInit {
                 TimeSpentPerDay: timeSpentString,
                 TaskComments: dbTasks[i].Comments,
                 Title: dbTasks[i].ProjectCode + ' ' + dbTasks[i].Milestone + ' TB ' + this.sharedObject.currentUser.title,
-                AssignedToId: this.sharedObject.currentUser.id,
+                AssignedToId: this.sharedObject.currentUser.userId,
               };
               count++;
               const folderUrl = this.sharedObject.sharePointPageObject.serverRelativeUrl + '/Lists/Schedules/' + dbTasks[i].ProjectCode;
-              await this.spServices.createAndMove(this.constants.listNames.Schedules.name, obj, folderUrl);
+              await this.spServices.createItemAndMove(this.constants.listNames.Schedules.name, obj, this.constants.listNames.Schedules.type, folderUrl);
+              // await this.spServices.createAndMove(this.constants.listNames.Schedules.name, obj, folderUrl);
             }
           }
         }
@@ -676,7 +682,6 @@ export class TimeBookingDialogComponent implements OnInit {
 
 
   openDialog(rowData) {
-    console.log(rowData);
     this.displayComment = true;
     this.timebookingRow = rowData;
   }

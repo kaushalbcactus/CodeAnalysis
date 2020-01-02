@@ -8,22 +8,22 @@ import { CustomMaterialModule } from '../shared/material.module';
 import { TimelineComponent } from './timeline/timeline.component';
 import { NgGanttEditorModule } from 'ng-gantt';
 import { TreeTableModule } from 'primeng/treetable';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/api';
 import { PrimengModule } from '../primeng/primeng.module';
-import { NgSelectModule } from '@ng-select/ng-select';
-import { UserCapacityComponent } from './user-capacity/user-capacity.component';
 import { DragDropComponent } from './drag-drop/drag-drop.component';
 import { DndModule } from 'ngx-drag-drop';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgxGraphModule } from '@swimlane/ngx-graph';
 import { StickyModule } from 'ng2-sticky-kit';
-import { ResourceSectionComponent } from './resource-section/resource-section.component';
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { TaskDetailsDialogComponent } from './task-details-dialog/task-details-dialog.component';
 import { ResourcesComponent } from './resources/resources.component';
+import { UserCapacityModule } from '../shared/usercapacity/usercapacity.module';
+import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.component';
+import { CascadeDialogComponent } from './cascade-dialog/cascade-dialog.component';
 @NgModule({
-  declarations: [TaskAllocationComponent, TimelineComponent, UserCapacityComponent, DragDropComponent,
-    ResourceSectionComponent, TaskDetailsDialogComponent, ResourcesComponent],
+  declarations: [TaskAllocationComponent, TimelineComponent, DragDropComponent,
+     TaskDetailsDialogComponent, ResourcesComponent, CascadeDialogComponent],
   imports: [
     CommonModule,
     TaskAllocationRoutingModule,
@@ -34,18 +34,18 @@ import { ResourcesComponent } from './resources/resources.component';
     NgGanttEditorModule,
     TreeTableModule,
     PrimengModule,
-    NgSelectModule,
     DndModule,
     NgxGraphModule,
     NgxChartsModule,
     StickyModule,
-    NgxMaterialTimepickerModule
+    NgxMaterialTimepickerModule,
+    UserCapacityModule
   ],
   exports: [
     TimelineComponent
   ],
-  providers: [DatePipe, ConfirmationService],
-  entryComponents: [UserCapacityComponent, DragDropComponent, TaskDetailsDialogComponent]
+  providers: [DatePipe, DynamicDialogConfig, DynamicDialogRef, ConfirmationService],
+  entryComponents: [UsercapacityComponent, DragDropComponent, TaskDetailsDialogComponent]
   // providers: [TaskAllocationAPI]
 })
 export class TaskAllocationModule { }

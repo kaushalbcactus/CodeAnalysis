@@ -23,32 +23,32 @@
         <th *ngFor="let col of columns" [ngSwitch]="col.field">
           <p-multiSelect *ngSwitchCase="'ID'" [style]="{'width':'100%'}" [options]="CDColArray.ID" defaultLabel="ID"
             (onChange)="cd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-            filter="true" resetFilterOnHide="true"></p-multiSelect>
+            filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
           <p-multiSelect *ngSwitchCase="'Title'" [style]="{'width':'100%'}" [options]="CDColArray.Title"
             defaultLabel="Title" (onChange)="cd.filter($event.value, col.field, 'in')"
-            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
           <p-multiSelect *ngSwitchCase="'SentDate'" [style]="{'width':'100%'}" [options]="CDColArray.SentDate"
             defaultLabel="Sent Date" (onChange)="cd.filter($event.value, col.field, 'in')"
-            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
           <p-multiSelect *ngSwitchCase="'SentBy'" [style]="{'width':'100%'}" [options]="CDColArray.SentBy"
             defaultLabel="Sent By" (onChange)="cd.filter($event.value, col.field, 'in')"
-            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
           <p-multiSelect *ngSwitchCase="'Status'" [style]="{'width':'100%'}" [options]="CDColArray.Status"
             defaultLabel="Status" (onChange)="cd.filter($event.value, col.field, 'in')"
-            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
           <p-multiSelect *ngSwitchCase="'SeverityLevel'" [style]="{'width':'100%'}" [options]="CDColArray.SeverityLevel"
             defaultLabel="Severity Level" (onChange)="cd.filter($event.value, col.field, 'in')"
-            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
           <p-multiSelect *ngSwitchCase="'Accountable'" [style]="{'width':'100%'}" [options]="CDColArray.Accountable"
             defaultLabel="Accountable" (onChange)="cd.filter($event.value, col.field, 'in')"
-            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
           <p-multiSelect *ngSwitchCase="'Segregation'" [style]="{'width':'100%'}" [options]="CDColArray.Segregation"
             defaultLabel="Segregation" (onChange)="cd.filter($event.value, col.field, 'in')"
-            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true"></p-multiSelect>
+            (keydown.enter)="$event.preventDefault()" filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
           <p-multiSelect *ngSwitchCase="'BusinessImpact'" [style]="{'width':'100%'}"
             [options]="CDColArray.BusinessImpact" defaultLabel="Business Impact"
             (onChange)="cd.filter($event.value, col.field, 'in')" (keydown.enter)="$event.preventDefault()"
-            filter="true" resetFilterOnHide="true"></p-multiSelect>
+            filter="true" resetFilterOnHide="true" (input)="optionFilter($event)" (onPanelShow)="isOptionFilter=true;"  [maxSelectedLabels]="1" ></p-multiSelect>
         </th>
         <th></th>
       </tr>

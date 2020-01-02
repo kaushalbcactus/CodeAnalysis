@@ -31,7 +31,7 @@ export class FiltersComponent implements OnInit {
     endDate: new Date(),
     count: 10,
     dateRange: {},
-    userId: this.global.currentUser.id,
+    userId: this.global.currentUser.userId,
     // variables declared to show hide quarter, daterange, year filter
     hideQuarters: true,
     hideDateRange: true,

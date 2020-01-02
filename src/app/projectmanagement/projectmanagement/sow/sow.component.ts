@@ -1,5 +1,5 @@
-import { Component, OnInit, EventEmitter, Output, ViewChild, OnDestroy, ViewEncapsulation, HostListener } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component, OnInit, EventEmitter, Output, ViewChild, OnDestroy, ViewEncapsulation, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
+import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PmconstantService } from '../../services/pmconstant.service';
@@ -88,17 +88,17 @@ export class SOWComponent implements OnInit, OnDestroy {
     // { field: 'Budget' },
     { field: 'Status' }];
   public allSOW = {
-    sowCodeArray: [],
-    shortTitleArray: [],
-    clientLegalEntityArray: [],
-    pocArray: [],
-    createdByArray: [],
-    createdDateArray: [],
-    modifiedByArray: [],
-    modifiedDateArray: [],
-    RevenueBudgetArray: [],
-    OOPBudgetArray: [],
-    currencyArray: [],
+    SOWCode: [],
+    ShortTitle: [],
+    ClientLegalEntity: [],
+    POC: [],
+    CreatedBy: [],
+    CreatedDate: [],
+    ModifiedBy: [],
+    ModifiedDate: [],
+    RevenueBudget: [],
+    OOPBudget: [],
+    Currency: [],
   };
   public projectObj = {
     ID: 0,
@@ -140,8 +140,26 @@ export class SOWComponent implements OnInit, OnDestroy {
     private spServices: SPOperationService,
     private constants: ConstantsService,
     private router: Router,
-    public pmCommonService: PMCommonService
-  ) { }
+    public pmCommonService: PMCommonService,
+    private cdr: ChangeDetectorRef,
+    private platformLocation: PlatformLocation,
+    private locationStrategy: LocationStrategy,
+    _applicationRef: ApplicationRef,
+    zone: NgZone,
+  ) {
+
+    // Browser back button disabled & bookmark issue solution
+    history.pushState(null, null, window.location.href);
+    platformLocation.onPopState(() => {
+      history.pushState(null, null, window.location.href);
+    });
+
+    router.events.subscribe((uri) => {
+      zone.run(() => _applicationRef.tick());
+    });
+
+
+  }
 
   ngOnInit() {
     if (this.router.url.indexOf('myDashboard') > -1) {
@@ -287,7 +305,6 @@ export class SOWComponent implements OnInit, OnDestroy {
       const tempAllSOWArray = [];
       for (const task of this.pmObject.allSOWItems) {
         const sowObj = $.extend(true, {}, this.pmObject.allSOW);
-        debugger
         sowObj.ID = task.ID;
         sowObj.SOWCode = task.SOWCode;
         sowObj.ShortTitle = task.Title;
@@ -311,11 +328,11 @@ export class SOWComponent implements OnInit, OnDestroy {
         sowObj.Delivery1 = task.DeliveryLevel1 && task.DeliveryLevel1.results ?
           task.DeliveryLevel1.results.map(c => c.Title).toString() : '';
         sowObj.Delivery2 = task.DeliveryLevel2 ? task.DeliveryLevel2.Title : '';
-        sowObj.ExpiryDateFormat = this.datePipe.transform(new Date(sowObj.ExpiryDate), 'MMM dd yyyy hh:mm aa');
-        sowObj.CreatedDateFormat = this.datePipe.transform(new Date(sowObj.CreatedDate), 'MMM dd yyyy hh:mm:ss aa');
+        sowObj.ExpiryDateFormat = this.datePipe.transform(new Date(sowObj.ExpiryDate), 'MMM dd, yyyy, h:mm a');
+        sowObj.CreatedDateFormat = this.datePipe.transform(new Date(sowObj.CreatedDate), 'MMM dd, yyyy, h:mm a');
         sowObj.ModifiedBy = task.Editor ? task.Editor.Title : '';
-        sowObj.ModifiedDate = task.Modified;
-        sowObj.ModifiedDateFormat = this.datePipe.transform(new Date(sowObj.ModifiedDate), 'MMM dd yyyy hh:mm:ss aa');
+        sowObj.ModifiedDate = new Date(this.datePipe.transform(task.Modified, 'MMM dd, yyyy, h:mm a'));
+        sowObj.ModifiedDateFormat = this.datePipe.transform(new Date(sowObj.ModifiedDate), 'MMM dd, yyyy, h:mm a');
         sowObj.TotalBudget = task.TotalBudget ? task.TotalBudget : 0;
         sowObj.NetBudget = task.NetBudget ? task.NetBudget : 0;
         sowObj.OOPBudget = task.OOPBudget ? task.OOPBudget : 0;
@@ -344,27 +361,32 @@ export class SOWComponent implements OnInit, OnDestroy {
         RevenueBudgetTempArray.push({ label: sowObj.RevenueBudget, value: sowObj.RevenueBudget });
         OOPBudgetTempArray.push({ label: sowObj.OOPBudget, value: sowObj.OOPBudget });
         createDateTempArray.push({
-          label: this.datePipe.transform(sowObj.CreatedDate, 'MMM dd yyyy hh:mm:ss aa'),
+          label: this.datePipe.transform(sowObj.CreatedDate, 'MMM dd, yyyy, h:mm a'),
           value: sowObj.CreatedDate
         });
         modifiedByTempArray.push({ label: sowObj.CreatedBy, value: sowObj.CreatedBy });
         modifiedDateTempArray.push({
-          label: this.datePipe.transform(sowObj.CreatedDate, 'MMM dd yyyy hh:mm:ss aa'),
+          label: this.datePipe.transform(sowObj.CreatedDate, 'MMM dd, yyyy, h:mm a'),
           value: sowObj.CreatedDate
         });
         tempAllSOWArray.push(sowObj);
       }
-      this.allSOW.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');
-      this.allSOW.currencyArray = this.commonService.unique(currencyTempArray, 'value');
-      this.allSOW.RevenueBudgetArray = this.commonService.unique(RevenueBudgetTempArray, 'value');
-      this.allSOW.OOPBudgetArray = this.commonService.unique(OOPBudgetTempArray, 'value');
-      this.allSOW.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
-      this.allSOW.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
-      this.allSOW.pocArray = this.commonService.unique(pocTempArray, 'value');
-      this.allSOW.createdByArray = this.commonService.unique(createdByTempArray, 'value');
-      this.allSOW.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
-      this.allSOW.modifiedByArray = this.commonService.unique(modifiedByTempArray, 'value');
-      this.allSOW.modifiedDateArray = this.commonService.unique(modifiedDateTempArray, 'value');
+
+      if (tempAllSOWArray.length) {
+        this.createColFieldValues(tempAllSOWArray);
+      }
+
+      // this.allSOW.sowCodeArray = this.commonService.unique(sowCodeTempArray, 'value');
+      // this.allSOW.currencyArray = this.commonService.unique(currencyTempArray, 'value');
+      // this.allSOW.RevenueBudgetArray = this.commonService.unique(RevenueBudgetTempArray, 'value');
+      // this.allSOW.OOPBudgetArray = this.commonService.unique(OOPBudgetTempArray, 'value');
+      // this.allSOW.shortTitleArray = this.commonService.unique(shortTitleTempArray, 'value');
+      // this.allSOW.clientLegalEntityArray = this.commonService.unique(clientLegalEntityTempArray, 'value');
+      // this.allSOW.pocArray = this.commonService.unique(pocTempArray, 'value');
+      // this.allSOW.createdByArray = this.commonService.unique(createdByTempArray, 'value');
+      // this.allSOW.createdDateArray = this.commonService.unique(createDateTempArray, 'value');
+      // this.allSOW.modifiedByArray = this.commonService.unique(modifiedByTempArray, 'value');
+      // this.allSOW.modifiedDateArray = this.commonService.unique(modifiedDateTempArray, 'value');
       this.pmObject.allSOWArray = tempAllSOWArray;
 
     }
@@ -385,6 +407,40 @@ export class SOWComponent implements OnInit, OnDestroy {
     this.isAllSOWTableHidden = false;
 
   }
+
+  createColFieldValues(resArray) {
+    this.allSOW.SOWCode = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.SOWCode, value: a.SOWCode }; return b; }).filter(ele => ele.label)));
+    this.allSOW.ShortTitle = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ShortTitle, value: a.ShortTitle }; return b; }).filter(ele => ele.label)));
+    this.allSOW.ClientLegalEntity = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ClientLegalEntity, value: a.ClientLegalEntity }; return b; }).filter(ele => ele.label)));
+    this.allSOW.Currency = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.Currency, value: a.Currency }; return b; }).filter(ele => ele.label)));
+
+    const RevenueBudget = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.RevenueBudget, value: a.RevenueBudget }; return b; }).filter(ele => ele.label));
+    this.allSOW.RevenueBudget = this.commonService.customSort(RevenueBudget, 'label', 1);
+    const OOPBudget = this.uniqueArrayObj(resArray.map(a => { let b = { label: a.OOPBudget, value: a.OOPBudget }; return b; }).filter(ele => ele.label));
+    this.allSOW.OOPBudget = this.commonService.customSort(OOPBudget, 'label', 1);
+    this.allSOW.CreatedBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.CreatedBy, value: a.CreatedBy }; return b; }).filter(ele => ele.label)));
+    this.allSOW.CreatedDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.CreatedDateFormat, value: a.CreatedDateFormat }; return b; }).filter(ele => ele.label)));
+    this.allSOW.POC = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.POC, value: a.POC }; return b; }).filter(ele => ele.label)));
+    this.allSOW.ModifiedBy = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: a.ModifiedBy, value: a.ModifiedBy }; return b; }).filter(ele => ele.label)));
+
+
+    this.allSOW.ModifiedDate = this.commonService.sortData(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ModifiedDateFormat, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a.ModifiedDateFormat, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label)));
+
+    // const modifiedDate = this.commonService.sortDateArray(this.uniqueArrayObj(resArray.map(a => { let b = { label: this.datePipe.transform(a.ModifiedDate, "MMM dd, yyyy, h:mm a"), value: a.ModifiedDate }; return b; }).filter(ele => ele.label)));
+    // this.allSOW.ModifiedDate = modifiedDate.map(a => { let b = { label: this.datePipe.transform(a, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(a, 'MMM dd, yyyy, h:mm a')) }; return b; }).filter(ele => ele.label);
+  }
+
+  uniqueArrayObj(array: any) {
+    let sts: any = '';
+    return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
+      const keys = {
+        label: label1,
+        value: array.find(s => s.label === label1).value
+      };
+      return keys ? keys : '';
+    });
+  }
+
   lazyLoadTask(event) {
     const allSOWArray = this.pmObject.allSOWArray;
     this.commonService.lazyLoadTask(event, allSOWArray, this.filterColumns, this.pmConstant.filterAction.ALL_SOW);
@@ -625,4 +681,30 @@ export class SOWComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  isOptionFilter: boolean;
+  optionFilter(event: any) {
+    if (event.target.value) {
+      this.isOptionFilter = false;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.pmObject.allSOWArray.length && this.isOptionFilter) {
+      let obj = {
+        tableData: this.allProjectRef,
+        colFields: this.allSOW
+        // colFieldsArray: this.createColFieldValues(this.proformaTable.value)
+      }
+      if (obj.tableData.filteredValue) {
+        this.commonService.updateOptionValues(obj);
+      } else if (obj.tableData.filteredValue === null || obj.tableData.filteredValue === undefined) {
+        this.createColFieldValues(obj.tableData.value);
+        this.isOptionFilter = false;
+      }
+    }
+    this.cdr.detectChanges();
+  }
+
+
 }

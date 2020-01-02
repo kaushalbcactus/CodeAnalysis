@@ -14,6 +14,12 @@ declare var $;
 // tslint:disable
 export class CommonService {
     response;
+    public queryConfig = {
+        data: null,
+        url: '',
+        type: '',
+        listName: ''
+    };
     batchContents = new Array();
     public sharedTaskAllocateObj = this.sharedObject.oTaskAllocation;
     constructor(private pmObject: PMObjectService,
@@ -392,16 +398,11 @@ export class CommonService {
             }
             return result;
         });
+        return data;
     }
-    getTaskDocument(folderUrl, documentUrl, previousTask) {
-        var documents = [];
-        var completeFolderRelativeUrl = folderUrl + documentUrl;
-        var Url = "/_api/web/getfolderbyserverrelativeurl('" + completeFolderRelativeUrl + "')/Files?$expand=ListItemAllFields";
-        if (previousTask) {
-            documents = this.spServices.fetchTaskDocumentsByRestAPI(Url, previousTask);
-        } else {
-            documents = this.spServices.fetchTaskDocumentsByRestAPI(Url, null);
-        }
+    async getTaskDocument(folderUrl, documentUrl) {
+        let completeFolderRelativeUrl = folderUrl + documentUrl;
+        let documents = await this.spServices.readFiles(completeFolderRelativeUrl);
         if (documents.length) {
             documents = documents.sort(function (a, b) {
                 return new Date(a.modified) < new Date(b.modified) ? -1 : 1;
@@ -517,22 +518,12 @@ export class CommonService {
         // convert to msec
         // subtract local time zone offset
         // get UTC time in msec
-
         const checkDate = date.jsdate;
         if (checkDate) {
             date = new Date(date.jsdate);
         } else {
             date = new Date(date);
         }
-        // let offset = -1;
-        // const currentsystemOffset = (date.getTimezoneOffset() / 60 * -1);
-        // prevOffset = parseFloat(prevOffset);
-        // currentOffset = currentOffset ? parseFloat(currentOffset) : 5.5;
-        // if (currentsystemOffset === prevOffset) {
-        //   offset = currentOffset;
-        // } else {
-        //   offset = currentsystemOffset * 2 - (prevOffset);
-        // }
         const prevTimezone = parseFloat(prevOffset) * 60 * -1;
         const utc = date.getTime() + (prevTimezone * 60000);
         // create new Date object for different city
@@ -548,114 +539,7 @@ export class CommonService {
         return currentsystemOffset;
     }
 
-    getResourceByMatrix(task, allTasks) {
-        const resources = this.sharedObject.oTaskAllocation.oResources;
-        const prjDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
-        const cmL1 = prjDetails.cmLevel1.results ? prjDetails.cmLevel1.results : [];
-        const cmL2 = prjDetails.cmLevel2 ? prjDetails.cmLevel2 : [];
-        const cm = [...cmL1, ...cmL2].filter(function (item, i, ar) { return ar.indexOf(item) === i; });
-        let filteredResources = [];
-        if (task.IsCentrallyAllocated === "Yes") {
-            const oCentralGroup = {
-                userType: 'Skill',
-                Title: task.skillLevel,
-                Name: task.skillLevel,
-                SkillText: task.skillLevel
-            }
-            if ((!task.AssignedTo) || (task.AssignedTo && (!task.AssignedTo.hasOwnProperty('ID') || (task.AssignedTo.hasOwnProperty('ID') && task.AssignedTo.ID === -1)))) {
-                task.AssignedTo = oCentralGroup;
-                task.pRes = oCentralGroup.Title;
-            }
-            filteredResources.push(oCentralGroup)
-            return filteredResources;
-        }
-        else {
-            if ((task.itemType === 'Send to client' || task.itemType === 'Client Review') && cm.length > 0) {
-                for (const cmUser of cm) {
-                    cmUser.userType = '';
-                    filteredResources.push(cmUser);
-                }
-                return filteredResources;
-            }
-            else if (resources.length > 0) {
-                this.getResourcesForTask(task, allTasks, resources, prjDetails, filteredResources);
-                return this.sortResources(filteredResources);
-            }
-            else {
-                return filteredResources;
-            }
-        }
 
-    }
-
-    getResourcesForTask(task, allTasks, resources, prjDetails, filteredResources) {
-        const allocatedResources = [];
-        let similarTasksUsers = [];
-        let checkSkillLevel = false;
-        similarTasksUsers = allTasks.filter(function (objt) {
-            return objt.itemType === task.itemType;
-        });
-        similarTasksUsers.forEach(element => {
-            if (element.AssignedTo && element.AssignedTo.hasOwnProperty('ID')) {
-                const resource = resources.filter(e => e.UserName.ID === element.AssignedTo.ID);
-                const checkExclusion = this.isUserAllowed(resource[0], prjDetails);
-                if (checkExclusion) {
-                    allocatedResources.push(element.AssignedTo.ID);
-                }
-            }
-
-        });
-        resources.forEach(element => {
-            const checkExclusion = this.isUserAllowed(element, prjDetails);
-            if (checkExclusion) {
-                const taskMatchingUsers = element.Tasks.results.filter(function (objt) {
-                    return objt.Title === task.itemType;
-                });
-                if (taskMatchingUsers.length > 0) {
-                    if (task.SkillLevel && element.SkillLevel) {
-                        checkSkillLevel = element.SkillLevel.Title.indexOf(task.SkillLevel) > -1;
-                    }
-                    // if (checkSkillLevel) {
-                    const recomendedUserByDelv = element.Deliverables.results.length > 0 ?
-                        element.Deliverables.results.filter(function (objt) {
-                            return objt.Title === prjDetails.deliverable;
-                        }) : [];
-                    const recomendedUserByTa = element.TA.results.length > 0 ?
-                        element.TA.results.filter(function (objt) {
-                            return objt.Title === prjDetails.ta;
-                        }) : [];
-                    const recomendedUserByAccount = element.Account.results.length > 0 ?
-                        element.Account.results.filter(function (objt) {
-                            return objt.Title === prjDetails.account;
-                        }) : [];
-
-                    if (allocatedResources.includes(element.UserName.ID)) {
-                        element.userType = 'Allocated';
-                        filteredResources.push(element);
-                    }
-                    else if (recomendedUserByDelv.length > 0 || recomendedUserByTa.length > 0 || recomendedUserByAccount.length > 0) {
-                        if (!task.SkillLevel || (task.SkillLevel && checkSkillLevel)) {
-                            element.userType = 'Recommended';
-                            filteredResources.push(element);
-                        }
-                        else {
-                            element.userType = 'Other';
-                            filteredResources.push(element);
-                        }
-                    } else {
-                        element.userType = 'Other';
-                        filteredResources.push(element);
-                    }
-                    element.Title = element.UserName.Title;
-                    element.ID = element.UserName.ID;
-                    element.Id = element.UserName.ID;
-                    element.Name = element.UserName.Name;
-                    element.SkillText = this.getSkillName(element.SkillLevel.Title);
-                    // }
-                }
-            }
-        });
-    }
 
     ajax_checkIfCurrentUserInArray(array, currentUserID) {
         let item = '';
@@ -665,62 +549,6 @@ export class CommonService {
             });
         }
         return item;
-    }
-
-    getSkillName(sText) {
-        let skillName = '';
-        if (sText) {
-            skillName = sText.replace("Jr ", "").replace("Sr", "").replace("Medium ", "")
-                .replace(" Offsite", "").replace(" Onsite", "");
-        }
-        return skillName;
-    }
-
-    isUserAllowed(element, prjDetails) {
-        const deliveryExcUsers = element ? element.DeliverableExclusion.results.length > 0 ?
-            element.DeliverableExclusion.results.filter(function (objt) {
-                return objt.Title === prjDetails.deliverable;
-            }) : [] : [];
-        const taExcUsers = element ? element.TAExclusion.results.length > 0 ? element.TAExclusion.results.filter(function (objt) {
-            return objt.Title === prjDetails.ta;
-        }) : [] : [];
-        return deliveryExcUsers.length <= 0 && taExcUsers.length <= 0 ? true : false;
-    }
-
-
-    sortResources(filteredResources) {
-        const sortedResources = [];
-        const type = filteredResources.filter(function (objt) {
-            return objt.userType === 'Skill';
-        });
-        if (type.length) {
-            $.merge(sortedResources, type);
-        }
-        const allocated = filteredResources.filter(function (objt) {
-            return objt.userType === 'Allocated';
-        });
-        if (allocated.length) {
-            $.merge(sortedResources, allocated);
-        }
-        const recommended = filteredResources.filter(function (objt) {
-            return objt.userType === 'Recommended';
-        });
-        if (recommended.length) {
-            $.merge(sortedResources, recommended);
-        }
-        const other = filteredResources.filter(function (objt) {
-            return objt.userType === 'Other';
-        });
-        if (other.length) {
-            $.merge(sortedResources, other);
-        }
-        const cmL2 = filteredResources.filter(function (objt) {
-            return objt.userType === '';
-        });
-        if (cmL2.length) {
-            $.merge(sortedResources, cmL2);
-        }
-        return sortedResources;
     }
 
 
@@ -740,6 +568,21 @@ export class CommonService {
         } else {
             return '0:0';
         }
+    }
+
+    ConvertTimeformat(format, time) {
+        // var time = $("#starttime").val();
+        var hours = Number(time.match(/^(\d+)/)[1]);
+        var minutes = Number(time.match(/:(\d+)/)[1]);
+        var AMPM = time.match(/\s(.*)$/)[1];
+        if (AMPM.toLowerCase() === "pm" && hours < 12) hours = hours + 12;
+        if (AMPM.toLowerCase() === "am" && hours == 12) hours = hours - 12;
+        var sHours = hours.toString();
+        var sMinutes = minutes.toString();
+        if (hours < 10) sHours = "0" + sHours;
+        if (minutes < 10) sMinutes = "0" + sMinutes;
+        // alert(sHours + ":" + sMinutes);
+        return sHours + ":" + sMinutes;
     }
 
     ajax_subtractHrsMins(elem1, elem2) {
@@ -776,64 +619,58 @@ export class CommonService {
 
     async getProjectResources(projectCode, bFirstCall, bSaveRes) {
 
-         
-        this.batchContents = new Array();
-        const batchGuid = this.spServices.generateUUID();
-        let projectResource = '';
 
+        // this.batchContents = new Array();
+        // const batchGuid = this.spServices.generateUUID();
+        // let projectResource = '';
+        const batchUrl = [];
 
         // ***********************************************************************************************************************************
         // Project Information
         // ***********************************************************************************************************************************
 
+        let prjResObj = Object.assign({}, this.queryConfig);
+        prjResObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectInformation.name, this.taskAllocationService.taskallocationComponent.projectResources);
+        prjResObj.url = prjResObj.url.replace(/{{ProjectCode}}/gi, projectCode);
+        prjResObj.listName = this.constants.listNames.ProjectInformation.name;
+        prjResObj.type = 'GET';
+        batchUrl.push(prjResObj);
 
-        let projectResourcesCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.projectResources);
-        projectResourcesCall.filter = projectResourcesCall.filter.replace(/{{ProjectCode}}/gi, projectCode);
-        projectResource = this.spServices.getReadURL('' + this.constants.listNames.ProjectInformation.name + '', projectResourcesCall);
-        this.spServices.getBatchBodyGet(this.batchContents, batchGuid, projectResource);
-
-        // ***********************************************************************************************************************************
-        // Budget Hours 
-        // ***********************************************************************************************************************************
-        let budgetsCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.Budgets);
-        budgetsCall.filter = budgetsCall.filter.replace(/{{ProjectCode}}/gi, projectCode);
-        const budgetHours = this.spServices.getReadURL('' + this.constants.listNames.ProjectFinances.name + '', budgetsCall);
-        this.spServices.getBatchBodyGet(this.batchContents, batchGuid, budgetHours);
-
+        let budgetObj = Object.assign({}, this.queryConfig);
+        budgetObj.url = this.spServices.getReadURL(this.constants.listNames.ProjectFinances.name, this.taskAllocationService.taskallocationComponent.Budgets);
+        budgetObj.url = budgetObj.url.replace(/{{ProjectCode}}/gi, projectCode);
+        budgetObj.listName = this.constants.listNames.ProjectFinances.name;
+        budgetObj.type = 'GET';
+        batchUrl.push(budgetObj);
         if (bFirstCall) {
-
-
 
             // ***********************************************************************************************************************************
             // Resources
             // ***********************************************************************************************************************************
-            let resourceCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.Resources);
-            resourceCall.filter = resourceCall.filter.replace(/{{enable}}/gi, 'Yes');
-            const Resources = this.spServices.getReadURL('' + this.constants.listNames.ResourceCategorization.name + '', resourceCall);
-            this.spServices.getBatchBodyGet(this.batchContents, batchGuid, Resources);
+
+            let resourceObj = Object.assign({}, this.queryConfig);
+            resourceObj.url = this.spServices.getReadURL(this.constants.listNames.ResourceCategorization.name, this.taskAllocationService.taskallocationComponent.Resources);
+            resourceObj.url = resourceObj.url.replace(/{{enable}}/gi, 'Yes');
+            resourceObj.listName = this.constants.listNames.ResourceCategorization.name;
+            resourceObj.type = 'GET';
+            batchUrl.push(resourceObj);
 
             // ***********************************************************************************************************************************
             // Central Group
             // ***********************************************************************************************************************************
-            let cgCall = this.taskAllocationService.taskallocationComponent.getUserFromGroup.UserFromGroup;
-            const CentralGroup = cgCall.replace("{{groupName}}", 'CA_Admin');
-            this.spServices.getBatchBodyGet(this.batchContents, batchGuid, CentralGroup);
+
+            let grpResourceObj = Object.assign({}, this.queryConfig);
+            grpResourceObj.url = this.spServices.getGroupURL(this.constants.Groups.CAAdmin);
+            grpResourceObj.listName = this.constants.Groups.CAAdmin;
+            grpResourceObj.type = 'GET';
+            batchUrl.push(grpResourceObj);
         }
 
-        this.response = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-
+        const arrResult = await this.spServices.executeBatch(batchUrl);
+        this.response = arrResult.length > 0 ? arrResult.map(a => a.retItems) : [];
         if (this.response.length > 0) {
-
-        
-            this.sharedTaskAllocateObj.oResources = this.response.length > 2 ? this.response[2]:this.sharedTaskAllocateObj.oResources;
-            this.sharedTaskAllocateObj.oCentralGroup = this.response.length > 2 ? this.response[3]: this.sharedTaskAllocateObj.oCentralGroup;
-            console.log("Central group");
-            
-            console.log(this.sharedTaskAllocateObj.oCentralGroup);
-            
-            
-
-          
+            this.sharedTaskAllocateObj.oResources = this.response.length > 2 ? this.response[2] : this.sharedTaskAllocateObj.oResources;
+            this.sharedTaskAllocateObj.oCentralGroup = this.response.length > 2 ? this.response[3] : this.sharedTaskAllocateObj.oCentralGroup;
             const project = this.response[0] !== "" ? this.response[0].length > 0 ? this.setLevel1Email(this.response[0][0]) : [] : [];
             if (project.length > 0) {
                 const returnedProject = project[0];
@@ -858,6 +695,7 @@ export class CommonService {
                     futureMilestones: arrMilestones.slice(currentMilestoneIndex + 1, arrMilestones.length),
                     prevMilestone: arrMilestones.slice(currentMilestoneIndex - 1, currentMilestoneIndex),
                     allMilestones: arrMilestones,
+                    allOldMilestones: arrMilestones,
                     budgetHours: bSaveRes ? bBudgetHrs : this.response.length > 1 ? this.response[1] !== "" ? this.response[1][0].BudgetHrs : 0 : 0,
                     ta: returnedProject.TA ? returnedProject.TA : [],
                     deliverable: returnedProject ? returnedProject.DeliverableType : [],
@@ -866,17 +704,18 @@ export class CommonService {
                     status: returnedProject ? returnedProject.Status : '',
                     prevstatus: returnedProject ? returnedProject.PrevStatus : '',
                     projectFolder: returnedProject ? returnedProject.ProjectFolder : '',
+                    projectType : returnedProject ? returnedProject.ProjectType : ''
                 };
                 if (bFirstCall) {
                     this.batchContents = new Array();
                     let clCall = Object.assign({}, this.taskAllocationService.taskallocationComponent.ClientLegal);
                     clCall.filter = clCall.filter.replace(/{{ProjectDetailsaccount}}/gi, this.sharedTaskAllocateObj.oProjectDetails.account);
-                    const clientLegalurl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', clCall);
-                    this.spServices.getBatchBodyGet(this.batchContents, batchGuid, clientLegalurl);
-
-                    var Data = await this.spServices.getDataByApi(batchGuid, this.batchContents);
-                    if (Data.length > 0) {
-                        this.sharedTaskAllocateObj.oLegalEntity = Data[0];
+                    // const clientLegalurl = this.spServices.getReadURL('' + this.constants.listNames.ClientLegalEntity.name + '', clCall);
+                    // this.spServices.getBatchBodyGet(this.batchContents, batchGuid, clientLegalurl);
+                    // var Data = await this.spServices.getDataByApi(batchGuid, this.batchContents);
+                    const data = await this.spServices.readItems(this.constants.listNames.ClientLegalEntity.name, clCall);
+                    if (data.length > 0) {
+                        this.sharedTaskAllocateObj.oLegalEntity = data;
                     }
                     return project;
                 }
@@ -896,7 +735,7 @@ export class CommonService {
     // ***********************************************************************************************************************************
 
     public setLevel1Email(prjObj) {
-        
+
         if (prjObj.CMLevel1.results) {
             prjObj.CMLevel1.results = prjObj.CMLevel1.results.map(cmL1 => {
                 var cm = this.sharedTaskAllocateObj.oResources.filter(user => user.UserName.ID === cmL1.ID).map(u => u.UserName.EMail);
@@ -932,6 +771,11 @@ export class CommonService {
         })
     }
 
+    sortDataDateArray(array: any) {
+
+        return array.sort((a, b) => b.label - a.label)
+    }
+
     sortNumberArray(array: any) {
         return array.sort((a, b) => {
             if (parseFloat(a.label) && parseFloat(b.label)) {
@@ -957,8 +801,63 @@ export class CommonService {
             .map(reverseDateRepresentation)
             .sort()
             .map(reverseDateRepresentation);
-        console.log(sortedDates);
         return sortedDates;
+    }
+
+    public tableObj: any;
+    // Filter multiselct option
+    updateOptionValues(obj) {
+        this.tableObj = obj;
+        if (obj.tableData.filteredValue) {
+            if (Object.entries(obj.tableData.filters).length >= 1) {
+                this.isEmpty(obj.colFields, obj.tableData.filters);
+            }
+        }
+    }
+
+    isEmpty(obj, firstColFilter) {
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop) && !firstColFilter[prop]) {
+                this.firstFilterCol(this.tableObj.tableData.filteredValue, prop);
+            }
+        }
+    }
+
+    firstFilterCol(array, colName) {
+        this.tableObj.colFields[colName] = [];
+        let totalArr = array.map(item => item[colName]);
+        if (colName.toLowerCase().includes("date")) {
+            totalArr = this.uniqueArrayObj(totalArr.map(a => { let b = { label: this.datePipe.transform(a, "MMM dd, yyyy, h:mm a"), value: a }; return b; }).filter(ele => ele.label));
+            // totalArr = this.uniqueArrayObj(totalArr.map(a => { let b = { label: this.datePipe.transform(a, "MMM dd, yyyy, h:mm a"), value: a }; return b; }).filter(ele => ele.label));
+        }
+        // const uniqueTotalArr = totalArr.filter((item, index) => totalArr.indexOf(item) === index);
+        let uniqueTotalArr = [];
+        uniqueTotalArr = Array.from(new Set(totalArr));
+        let tempArr = [];
+        for (let i = 0; i < uniqueTotalArr.length; i++) {
+            const element = uniqueTotalArr[i];
+            if (colName.toLowerCase().includes("date")) {
+                if (element.label.includes("12:00 AM")) {
+                    tempArr.push({ label: this.datePipe.transform(element.label, 'MMM dd, yyyy'), value: new Date(this.datePipe.transform(element.value, 'MMM dd, yyyy')) });
+                } else {
+                    tempArr.push({ label: this.datePipe.transform(element.label, 'MMM dd, yyyy, h:mm a'), value: new Date(this.datePipe.transform(element.value, 'MMM dd, yyyy, h:mm a')) });
+                }
+            } else {
+                tempArr.push({ label: element, value: element });
+            }
+        }
+        // console.log(tempArr);
+        this.tableObj.colFields[colName] = [...tempArr];
+    }
+
+    uniqueArrayObj(array: any) {
+        let sts: any = '';
+        return sts = Array.from(new Set(array.map(s => s.label))).map(label1 => {
+            return {
+                label: label1,
+                value: array.find(s => s.label === label1).value
+            }
+        })
     }
 
 

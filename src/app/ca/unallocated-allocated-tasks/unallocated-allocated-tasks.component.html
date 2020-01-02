@@ -1,0 +1,309 @@
+<!-- *****************************************************************************************************
+                                                         loader enable 
+***************************************************************************************************** -->
+
+
+<!-- <p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog> -->
+
+<p-toast [style]="{marginTop: '80px'}"></p-toast>
+
+<p-toast [style]="{marginTop: '80px'}" position="top-center" key="tc" [modal]="true" [baseZIndex]="5000" closable="false"></p-toast>
+<p-toast [style]="{marginTop: '80px'}" styleClass="custom-toast" key="custom" [hideTransitionOptions]="'0ms'" position="bottom-center">
+</p-toast>
+<!-- **************************************************************************************************
+                                                        Table View Data
+**************************************************************************************************** -->
+<div class="p-grid p-justify-between mainPage">
+    <p-dropdown [options]="DropdownOptions" class="mainfilter" [(ngModel)]="selectedTab" (onChange)="getProperties()"></p-dropdown>
+
+    <button mat-raised-button type="button" [disabled]="disableSave" (click)="saveTasks(taskTable)">
+    <mat-icon>save</mat-icon> Save 
+</button>
+</div>
+
+
+<div class="p-dir-col p-align-center" style="padding-top: 10vw;" [hidden]="!loaderenable">
+    <div id="scInnerLoader"></div>
+    <div id="scInnerLoaderText">Loading...</div>
+</div>
+
+<div class="allocatedUnallocatedTable" *ngIf='!loaderenable'>
+    <p-table #taskTable class="slotTable" dataKey="Id" [columns]="displayedColumns" [value]="caGlobal.dataSource" sortMode="multiple" [lazy]="true" (onLazyLoad)="lazyLoadTask($event)" [paginator]="true" [rows]="10" [totalRecords]="caGlobal.totalRecords" rowExpandMode="multiple"
+        [loading]="caGlobal.loading" [style]="{'font-size':'13px'}" [expandedRowKeys]="expandedRows" (onRowExpand)="OnRowExpand($event)" [lazyLoadOnInit]="false">
+        <ng-template pTemplate="header" let-columns>
+            <tr class="slotTableTr">
+                <th style="width: 3%;"></th>
+                <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                    {{ col.header }}
+                    <p-sortIcon [field]="col.field"></p-sortIcon>
+                </th>
+                <th>Next Task Start</th>
+                <th>Last Task End </th>
+                <th>SC Date</th>
+                <!-- <th [pSortableColumn]="'assignedTo'">Allocated To
+                    <p-sortIcon [field]="'assignedTo'"></p-sortIcon>
+                </th> -->
+                <th style="width: 3%;"></th>
+            </tr>
+            <tr class="slotTableTr1">
+                <th></th>
+                <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid">
+                    <p-multiSelect *ngSwitchCase="'ClientName'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.clientLegalEntityArray" defaultLabel="All" class="ClientName" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'ProjectCode'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.projectCodeArray" defaultLabel="All" class="projectCode" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Milestone'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.milestoneArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Task'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.taskArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'DeliveryType'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.deliveryTypeArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'EstimatedTime'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.allocatedArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'StartDateText'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.startTimeArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'DueDateText'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.endTimeArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                </th>
+                <th colspan="4">
+                    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                    <input type="text" pInputText size="50" placeholder="Global Filter" (keydown.enter)="onEnterKey($event)" (keydown.enter)="$event.preventDefault()" (input)="taskTable.filterGlobal($event.target.value, 'contains')" style="width:95%">
+                </th>
+
+
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-task let-expanded="expanded" let-columns="columns" let-rowIndex="rowIndex">
+            <tr>
+                <td>
+                    <a href="#" [pRowToggler]="task">
+                        <i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>
+                    </a>
+                </td>
+                <td>{{task.ClientName}}</td>
+                <td><a style="color:#C53E3E;" href="{{globalService.sharePointPageObject.webAbsoluteUrl}}/allocation#/taskAllocation?ProjectCode={{task.ProjectCode}}" target="_blank">{{task.ProjectCode}}</a> <br /> ({{task.ProjectName}}) </td>
+                <td> {{task.Milestone}} <span *ngIf="task.SubMilestones && task.SubMilestones !=='Default'"> -  {{task.SubMilestones}}</span></td>
+                <td>{{task.Displaytask}}</td>
+                <td>{{task.DeliveryType}}</td>
+                <td>{{task.EstimatedTime}}</td>
+                <td>{{task.StartTime | date : 'd MMM, yyyy, hh:mm a'}}</td>
+                <td>{{task.EndTime | date : 'd MMM, yyyy, hh:mm a'}}</td>
+                <td>{{task.NextTaskStartDateText}}</td>
+                <td>{{task.LastTaskEndDateText}}</td>
+                <td>{{task.SendToClientDateText}}</td>
+                <!-- <td *ngIf="selectedTab ==='allocated'" class="ui-fluid">
+
+                    <p-dropdown [hidden]="!task.isAssignedToHidden" #allocateResource class="resourceDropdown" [options]="task.displayselectedResources" [panelStyle]="{minWidth:'25em' }" [(ngModel)]="task.allocatedResource" placeholder="Select Resource" [group]="true" filter="true"
+                        placeholder="Select Resource" (onShow)="fetchResources(task, allocateResource)" (onHide)="saveTask(task,taskTable)">
+                        <ng-template let-group pTemplate="group">
+                            <span style="margin-left:.25em">{{group.label}}</span>
+                        </ng-template>
+                        <ng-template let-item pTemplate="item">
+                            <span style="margin-left:.25em" [style.color]="item.value.Color">{{item.label}}</span>
+
+                            <button (click)="showCapacityPopup(task,item.value,allocateResource,$event)" class="ui-button-secondary allocate-btn" type="button">View Schedule</button>
+
+                        </ng-template>
+                    </p-dropdown>
+
+                    <span [hidden]="task.isAssignedToHidden">{{task.assignedTo}} </span>
+                </td> -->
+                <!-- <td *ngIf="selectedTab !=='allocated'" class="ui-fluid">
+
+                    <p-dropdown #allocateResource class="resourceDropdown" [options]="task.displayselectedResources" [panelStyle]="{minWidth:'25em' }" [(ngModel)]="task.allocatedResource" placeholder="Select Resource" [group]="true" filter="true" placeholder="Select Resource"
+                        (onShow)="fetchResources(task, allocateResource)" (onHide)="saveTask(task,taskTable)">
+                        <ng-template let-group pTemplate="group">
+                            <span style="margin-left:.25em">{{group.label}}</span>
+                        </ng-template>
+                        <ng-template let-item pTemplate="item">
+                            <span style="margin-left:.25em" [style.color]="item.value.Color">{{item.label}}</span>
+
+                            <button (click)="showCapacityPopup(task,item.value,allocateResource)" class="ui-button-secondary allocate-btn" type="button">View Schedule</button>
+
+                        </ng-template>
+                    </p-dropdown>
+                </td> -->
+                <td style="width: 3%;">
+                    <p-menu #popupMenu [style]="{'width': '16em'}" [popup]="true" [model]="taskMenu"></p-menu>
+
+                    <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(task, Slot,popupMenu);popupMenu.show($event);"></i>
+                </td>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="rowexpansion" let-Slot let-columns="columns">
+            <tr *ngIf="Slot.subTaskloaderenable">
+                <td colspan="13">
+                    <div id="modalInnerLoader"></div>
+                    <div id="modalInnerLoaderText">Loading...</div>
+                </td>
+            </tr>
+            <tr *ngIf="!Slot.subTaskloaderenable">
+                <td [attr.colspan]="13" style="padding: 0px;">
+                    <p-table #subtaskTable class="subtaskTable" [style]="{'font-size':'13px'}" [value]="Slot.SlotTasks">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width:7%"> Tasks </th>
+                                <th style="width:5%">Budget Hrs</th>
+                                <th style="width:4%">Spent Hrs</th>
+                                <th style="width:14%">Start Date</th>
+                                <th style="width:14%">End Date</th>
+                                <th style="width:10%">Assign To</th>
+                                <th style="width:4%">Allow Start</th>
+                                <th style="width:6%">Disable Cascade</th>
+                                <th style="width:1.95%"> </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-rowIndex="rowIndex">
+                            <tr class="milestoneTable" *ngIf="!Slot.subTaskloaderenable">
+                                <!-- task Name -->
+                                <td [style.text-align]="'left'">
+                                    <span> {{rowData.TaskName}}</span>
+                                </td>
+                                <!-- Budget Hrs -->
+                                <td style="text-align: center;">
+                                    <span *ngIf="!rowData.editMode">{{rowData.EstimatedTime}}</span>
+                                    <input type="number" class="form-control budgetHr" required="required" min="0" value="0" onchange="validity.valid||(value='0');" step="0.25" *ngIf=" rowData.editMode" required="required" [id]="rowData.ID" (ngModelChange)="modelChanged(rowData,Slot)" [(ngModel)]="rowData.EstimatedTime">
+                                </td>
+
+                                <!-- spent Hrs -->
+                                <td style="text-align: center;">{{rowData.SpentTime}}</td>
+                                <!-- Start Date -->
+                                <td style="padding: 5px;">
+
+                                    <span [title]="rowData.UserStart |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode  || (rowData.editMode && (rowData.Status ==='Completed' || rowData.Status ==='In Progress'))">{{rowData.UserStart |  date:' d MMM, y, h:mm a' }}</span>
+                                    <span *ngIf="rowData.editMode && (rowData.Status === 'Not Saved' || rowData.Status === 'Not Started')" style="display: flex;">
+                                        <p-calendar id="calenderIcon" [(ngModel)]="rowData.UserStartDatePart"
+                                            [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
+                                            yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
+                                            [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
+                                            [yearNavigator]="true" (onClose)="DateChangePart(rowData,Slot,'start')" appendTo="body"
+                                            [inputStyle]="{'width': '75%', 'min-width': '75%','padding':'0px'}">
+                                        </p-calendar>
+                                        <input  readonly [ngxTimepicker]="picker" 
+                                            [(ngModel)]="rowData.UserStartTimePart" class="timePicker">
+                                        <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
+                                        <ngx-material-timepicker [preventOverlayClick]="true"
+                                            (closed)="DateChangePart(rowData,Slot,'start')" #picker
+                                            [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
+                                        </ngx-material-timepicker>
+                                    </span>
+
+                                </td>
+                                <!-- End Date -->
+                                <td style="padding: 5px;">
+
+                                    <span [title]="rowData.UserEnd |  date:' d MMM, y, h:mm a'" *ngIf="!rowData.editMode  || (rowData.editMode && rowData.Status ==='Completed')">{{rowData.UserEnd |  date:' d MMM, y, h:mm a' }}</span>
+                                    <span *ngIf="rowData.editMode && rowData.Status !=='Completed'" style="display: flex;">
+        
+                                        <p-calendar id="calenderIcon" [(ngModel)]="rowData.UserEndDatePart"
+                                            [disabledDays]="[0,6]" [readonlyInput]="true" dateFormat="dd M , yy"
+                                            yearRange="{{yearsRange}}" hideOnDateTimeSelect="true" [stepMinute]="15"
+                                            [showIcon]="true" [showOnFocus]="false" [monthNavigator]="true"
+                                            [yearNavigator]="true" (onClose)="DateChangePart(rowData,Slot,'end')" appendTo="body"
+                                            [inputStyle]="{'width': '75%', 'min-width': '75%','padding':'0px'}">
+                                        </p-calendar>
+                                        <input #inputDate  readonly [ngxTimepicker]="picker"
+                                            [min]="rowData.UserStartDatePart === rowData.UserEndDatePart ? rowData.UserStartTimePart :'12:00 am'"
+                                            [(ngModel)]="rowData.UserEndTimePart" class="timePicker">
+                                        <ngx-material-timepicker-toggle [for]="picker"></ngx-material-timepicker-toggle>
+                                        <ngx-material-timepicker [preventOverlayClick]="true"
+                                            (closed)="DateChangePart(rowData,Slot,'start')" #picker
+                                            [ngxMaterialTimepickerTheme]="darkTheme" [minutesGap]="15">
+                                        </ngx-material-timepicker>
+                                    </span>
+                                </td>
+                                <!-- Assign To -->
+                                <td>
+                                    <span *ngIf="!rowData.editMode  || ( rowData.editMode && (rowData.Status ==='In Progress' || rowData.Status ==='Completed'))"> {{rowData.AssignedTo.Title}}</span>
+                                    <p-dropdown #allocateResource *ngIf="rowData.editMode && (rowData.Status ==='Not Started' || rowData.Status ==='Not Saved')" class="resourceDropdown" [options]="rowData.displayselectedResources" [panelStyle]="{minWidth:'25em' }" [(ngModel)]="rowData.allocatedResource"
+                                        placeholder="Select Resource" resetFilterOnHide="true" [group]="true" filter="true" placeholder="Select Resource" (onShow)="fetchResources(rowData,allocateResource)" (onHide)="EditSlotEnable(rowData,Slot)" (onChange)="assignedToUserChanged(rowData)"
+                                        [style]="{'width':'100%'}">
+                                        <ng-template let-group pTemplate="group">
+                                            <span style="margin-left:.25em">{{group.label}}</span>
+                                        </ng-template>
+                                        <ng-template let-item pTemplate="item">
+                                            <span style="margin-left:.25em" [style.color]="item.value.Color">{{item.label}}</span>
+
+                                            <button (click)="showCapacityPopup(rowData,item.value,allocateResource)" class="ui-button-secondary allocate-btn" type="button">View Schedule</button>
+
+                                        </ng-template>
+                                    </p-dropdown>
+                                    <!-- <p-dropdown [style]="{'width':'100%'}" *ngIf="rowData.editMode" #assignedTo class="txtTask" [options]="rowData.assignedUsers" [panelStyle]="{minWidth:'15em' }" [(ngModel)]="rowData.AssignedTo" placeholder="Select Resource" [showClear]="true" [group]="true"
+                                        filter="true" (onChange)="assignedToUserChanged(rowData)">
+                                        <ng-template let-group pTemplate="group">
+                                            <span style="margin-left:.25em">{{group.label}}</span>
+                                        </ng-template>
+                                        <ng-template let-item pTemplate="item">
+                                            <span style="margin-left:.25em">{{item.label}}</span>
+                                        </ng-template>
+                                    </p-dropdown> -->
+                                </td>
+                                <!-- Allow start -->
+                                <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
+                                    <span *ngIf="!rowData.editMode">{{rowData.allowStart === true ? 'Yes':'No'}}</span>
+
+                                    <p-inputSwitch *ngIf="rowData.editMode" (onChange)="modelChanged(rowData,Slot)" [(ngModel)]="rowData.allowStart"></p-inputSwitch>
+                                </td>
+                                <!-- Disable cascade -->
+
+                                <td [ngStyle]="{'text-align': 'rowData.editMode' ? 'center':'left'}">
+                                    <span *ngIf="!rowData.editMode">{{rowData.DisableCascade === true  ? 'Yes':'No'}}</span>
+
+                                    <p-inputSwitch *ngIf="rowData.editMode" (onChange)="modelChanged(rowData,Slot)" [(ngModel)]="rowData.DisableCascade"></p-inputSwitch>
+                                </td>
+
+                                <!-- Menu option -->
+                                <td>
+                                    <div>
+                                        <p-menu #popupMenu [popup]="true" [style]="{'text-align': 'left'}" [model]="taskMenu"></p-menu>
+
+                                        <i class="pi pi-ellipsis-v" style="font-size:2em;cursor: pointer;" (click)="openPopup(rowData,Slot, popupMenu);popupMenu.show($event);"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage" let-columns>
+            <tr>
+                <td [attr.colspan]="13" style="text-align: center;font-size: 1.5em;font-weight: 600;">
+                    No Data found
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+
+<!-- **************************************************************************************************
+                                show Previous Task  Comment and task scop on popup 
+**************************************************************************************************** -->
+
+<p-dialog header="{{taskTitle}}" [closable]="false" [modal]="true" styleClass="ScopeComment" [style]="{width: '700px', minWidth: '600px'}" [(visible)]="displayCommentenable">
+
+    <div [hidden]="modalloaderenable" class="p-grid p-dir-col p-justify-between">
+        <p-card class="p-col" *ngIf="taskType ==='Slot'">
+            <p-header style="padding: 0.5em;font-size: 1.2em;color: #af0b14;font-weight: 600; width: 100%;"><i class="fa fa-commenting" aria-hidden="true"></i>&nbsp;&nbsp; Task Previous Comments</p-header>
+            <div>
+                <span *ngIf="!caGlobal.taskPreviousComment" style="color: #c53e3e;font-size: 1em;">* No comments present for task.         
+           </span>
+                <span *ngIf="caGlobal.taskPreviousComment" [innerHTML]="caGlobal.taskPreviousComment"> 
+          </span>
+            </div>
+        </p-card>
+        <p-card class="p-col">
+            <p-header style="padding: 0.5em;font-size: 1.2em;color: #af0b14;font-weight: 600;"><i class="fa fa-comments" aria-hidden="true"></i>&nbsp;&nbsp; Scope</p-header>
+
+            <div *ngIf="taskType ==='Slot'">
+
+                <span *ngIf="caGlobal.taskScope === ''" style="color: #c53e3e;font-size: 1em;">* No scope for present slot.         
+                        </span>
+                <span *ngIf="caGlobal.taskScope !==''"> 
+                    {{caGlobal.taskScope}}
+                       </span>
+            </div>
+            <div *ngIf="taskType !=='Slot'">
+                <textarea rows="7" cols="30" style="width: 100%;" placeholder="Leave Scope" [(ngModel)]="caGlobal.taskScope" pInputTextarea></textarea>
+            </div>
+        </p-card>
+    </div>
+    <p-footer>
+        <button *ngIf="taskType !=='Slot'" type="button" pButton icon="pi pi-check" style="background-color: #af0b14;border-color:#af0b14;" (click)="saveTaskScope(caGlobal.curTaskScope, caGlobal.taskScope); displayCommentenable=false" label="Save"></button>
+        <button type="button" pButton icon="pi pi-times" (click)="displayCommentenable=false" label="Cancel" class="ui-button-secondary"></button>
+    </p-footer>
+</p-dialog>
