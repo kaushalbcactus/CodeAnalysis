@@ -220,6 +220,7 @@ export class SOWComponent implements OnInit, OnDestroy {
   addBudgetSOW(task) {
     this.pmObject.isSOWFormSubmit = false;
     this.pmObject.isAdditionalBudgetVisible = true;
+
   }
   /**
    * This method is used to add Edit SOW.

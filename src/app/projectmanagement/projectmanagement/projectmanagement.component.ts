@@ -233,6 +233,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * This method is used to initiaze the form.
    */
   initForm() {
+    debugger;
     this.addSowForm = this.frmbuilder.group({
       clientLegalEntity: ['', Validators.required],
       poc: ['', Validators.required],
@@ -245,7 +246,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       sowExpiryDate: ['', Validators.required],
       currency: ['', Validators.required],
       status: [null],
-      sowDocuments: [null],
+      sowDocuments: [],
       comments: [null],
       total: [0, [Validators.required, Validators.min(0)]],
       net: [0, [Validators.required, Validators.min(0)]],
@@ -262,7 +263,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       addNet: [0, [Validators.required, Validators.min(0)]],
       addOOP: [0, [Validators.required, Validators.min(0)]],
       addTax: [0, [Validators.required, Validators.min(0)]],
-      sowDocumentsAdd: [null],
+      sowDocumentsAdd: ['', Validators.required],
     });
   }
   /**
@@ -295,6 +296,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * This method is used to add the sow
    */
   async createSOW() {
+
+    debugger;
     this.pmObject.isSOWFormSubmit = true;
     if (this.addSowForm.valid) {
       this.pmObject.isSOWFormSubmit = false;
@@ -303,7 +306,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
           key: 'custom', severity: 'error',
           summary: 'Error Message', detail: 'Please select SOW document.'
         });
-        return;
+        return false;
       }
       // get all the value from form.
       this.pmObject.addSOW.ClientLegalEntity = this.addSowForm.value.clientLegalEntity ? this.addSowForm.value.clientLegalEntity :
@@ -382,6 +385,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * This method is used to set the field properties.
    */
   setFieldProperties() {
+    debugger;
     this.setSOWDropDownValue();
     this.onChangeClientLegalEntity();
     this.addSowForm.get('clientLegalEntity').setValue(this.pmObject.addSOW.ClientLegalEntity);
@@ -400,10 +404,18 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.addSowForm.get('oop').setValue(this.pmObject.addSOW.Budget.OOP);
     this.addSowForm.get('tax').setValue(this.pmObject.addSOW.Budget.Tax);
     this.addSowForm.get('cm').setValue(this.pmObject.addSOW.CM1);
+
     this.addSowForm.get('cm2').setValue(this.pmObject.addSOW.CM2);
     this.addSowForm.get('deliveryOptional').setValue(this.pmObject.addSOW.DeliveryOptional);
     this.addSowForm.get('delivery').setValue(this.pmObject.addSOW.Delivery);
     this.addSowForm.get('sowOwner').setValue(this.pmObject.addSOW.SOWOwner);
+    // if (this.pmObject.addSOW.SOWDocument) {
+    //   if (this.pmObject.addSOW.SOWDocument.lastIndexOf('/') > -1) {
+    //     this.addSowForm.get('sowDocuments').setValue(this.pmObject.addSOW.SOWDocument.substr(this.pmObject.addSOW.SOWDocument.lastIndexOf('/') + 1));
+    //   } else {
+    //     this.addSowForm.get('sowDocuments').setValue(this.pmObject.addSOW.SOWDocument);
+    //   }
+    // }
   }
   /**
    * This method is used to upload the file on finance/sow.
@@ -439,6 +451,10 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     if (event.target.files && event.target.files.length > 0) {
       this.selectedFile = event.target.files[0];
       this.fileReader.readAsArrayBuffer(this.selectedFile);
+
+      // this.addSowForm.patchValue({
+      //   'sowDocuments': this.selectedFile ? this.selectedFile.name : ''
+      // })
     }
   }
   /**
@@ -487,6 +503,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * @param sowObj Pass the sowObj as parameter.
    */
   createUpdateSOW(isUpdate, sowObj) {
+    debugger;
     if (!isUpdate) {
       this.addUpdateSOW(sowObj);
     } else {
@@ -739,6 +756,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
    * @param sowObj The parameter should be SOW list object.
    */
   getSOWDataObj(sowObj) {
+    debugger;
     const d = new Date();
     const year = d.getFullYear();
     const sowInfoOptions = {
@@ -757,7 +775,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       Year: year,
       CreatedDate: sowObj.SOWCreationDate,
       ExpiryDate: sowObj.SOWExpiryDate,
-      SOWLink: sowObj.SOWFileURL,
+      SOWLink: sowObj.SOWFileURL ? sowObj.SOWFileURL : sowObj.SOWDocument,
       CMLevel1Id: {
         results: sowObj.CM1 ? sowObj.CM1 : [],
       },
@@ -853,7 +871,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     this.addAdditionalBudgetForm.reset();
     this.pmObject.isSOWFormSubmit = false;
     this.pmObject.isAdditionalBudgetVisible = false;
-
+    this.selectedFile = null;
     if (this.router.url === '/projectMgmt/allSOW') {
       this.dataService.publish('reload-EditSOW');
     }
@@ -924,7 +942,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         listName: ''
       };
 
-
+       
       // Assign form value to global variable
       this.pmObject.addSOW.Addendum.TotalBudget = this.addAdditionalBudgetForm.value.addTotal;
       this.pmObject.addSOW.Addendum.NetBudget = this.addAdditionalBudgetForm.value.addNet;
@@ -1018,6 +1036,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     budgetGet.listName = this.constant.listNames.SOWBudgetBreakup.name;
     batchURL.push(budgetGet);
     const arrResults = await this.spServices.executeBatch(batchURL);
+
+    debugger;
     if (arrResults && arrResults.length) {
       const sowItem = arrResults[0].retItems[0];
       this.addSowForm.controls.sowCode.disable();
@@ -1029,6 +1049,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       this.addSowForm.controls.clientLegalEntity.disable();
       this.addSowForm.controls.sowCreationDate.disable();
       this.addSowForm.controls.cactusBillingEntity.disable();
+      // this.addSowForm.controls.sowDocuments
       this.pmService.setGlobalVariable(sowItem);
       this.pmObject.addSOW.isSOWCodeDisabled = true;
       this.pmObject.addSOW.isStatusDisabled = false;
