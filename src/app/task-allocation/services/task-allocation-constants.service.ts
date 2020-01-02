@@ -23,9 +23,9 @@ export class TaskAllocationConstantsService {
             top: 4500
         },
         Resources: {
-            select: "ID,MaxHrs,PrimarySkill,UserName/ID,UserName/EMail,UserName/Title,UserName/Name,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title",
+            select: "ID,MaxHrs,TAVisibility,PrimarySkill,UserName/ID,UserName/EMail,UserName/Title,UserName/Name,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title",
             expand: "UserName/ID,UserName/EMail,UserName/Title,UserName/Name,TimeZone/Title,SkillLevel/Title,Tasks/Title,Tasks/Status,Deliverables/Title,DeliverableExclusion/Title,TA/Title,TAExclusion/Title,Account/Title",
-            filter: "IsActive eq '{{enable}}' and TAVisibility ne 'No'",
+            filter: "IsActive eq '{{enable}}'",
             orderby: "UserName/Title asc",
             top: 4500
         },

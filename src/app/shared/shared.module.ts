@@ -15,9 +15,10 @@ import { NumberOnlyDirective } from './directives/number-only.directive';
     ReactiveFormsModule,
   ],
   exports: [
-    FormsModule,
     ReactiveFormsModule,
-    NumberOnlyDirective
+    NumberOnlyDirective,
+    CommonModule,
+    FormsModule,
   ]
 })
 export class SharedModule {

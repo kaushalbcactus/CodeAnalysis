@@ -51,7 +51,7 @@
                     <p-multiSelect *ngSwitchCase="'ClientName'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.clientLegalEntityArray" defaultLabel="All" class="ClientName" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'ProjectCode'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.projectCodeArray" defaultLabel="All" class="projectCode" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'Milestone'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.milestoneArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
-                    <p-multiSelect *ngSwitchCase="'TaskName'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.taskArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
+                    <p-multiSelect *ngSwitchCase="'Task'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.taskArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'DeliveryType'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.deliveryTypeArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'EstimatedTime'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.allocatedArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
                     <p-multiSelect *ngSwitchCase="'StartDateText'" (keydown.enter)="$event.preventDefault()" resetFilterOnHide="true" [options]="caArrays.startTimeArray" defaultLabel="All" (onChange)="taskTable.filter($event.value, col.field, 'in')"></p-multiSelect>
@@ -73,7 +73,7 @@
                     </a>
                 </td>
                 <td>{{task.ClientName}}</td>
-                <td><a style="color:#C53E3E;" href="{{globalService.sharePointPageObject.webAbsoluteUrl}}/allocation#/taskAllocation?ProjectCode={{task.ProjectCode}}" target="_blank">{{task.ProjectCode}}</a> <br /> ({{task.ProjectName}}) </td>
+                <td><a style="color:#C53E3E;" href="{{globalService.sharePointPageObject.webAbsoluteUrl}}/dashboard#/taskAllocation?ProjectCode={{task.ProjectCode}}" target="_blank">{{task.ProjectCode}}</a> <br /> ({{task.ProjectName}}) </td>
                 <td> {{task.Milestone}} <span *ngIf="task.SubMilestones && task.SubMilestones !=='Default'"> -  {{task.SubMilestones}}</span></td>
                 <td>{{task.Displaytask}}</td>
                 <td>{{task.DeliveryType}}</td>

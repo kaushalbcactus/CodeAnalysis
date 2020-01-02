@@ -146,7 +146,7 @@ export class BucketMasterdataComponent implements OnInit {
         obj.ID = item.ID;
         obj.Bucket = item.Title;
         obj.LastUpdated = new Date(new Date(item.Modified).toDateString());
-        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd yyyy hh:mm:ss aa');
+        obj.LastUpdatedFormat = this.datepipe.transform(new Date(item.Modified), 'MMM dd, yyyy');
         obj.LastUpdatedBy = item.Editor.Title;
         obj.Client = clientFilteredArray && clientFilteredArray.length ? clientFilteredArray.map(x => x.Title).join(', ') : '';
         if (obj.Client.length > 30) {

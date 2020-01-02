@@ -1014,6 +1014,7 @@ export class MyDashboardConstantsService {
         emailObj.type = 'POST';
         batchUrl.push(emailObj);*/
         EmailTemplate = EmailTemplate.replace(RegExp("'", 'gi'), '');
+        EmailTemplate = EmailTemplate.replace(/\\/g, '\\\\');
         mailSubject = mailSubject.replace(RegExp("'", 'gi'), '');
         const sendEmailObj = {
           __metadata: { type: this.constants.listNames.SendEmail.type },

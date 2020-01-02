@@ -8,7 +8,8 @@ export class TaskAllocationCommonService {
 
   constructor(public sharedObject: GlobalService) { }
   getResourceByMatrix(task, allTasks) {
-    const resources = this.sharedObject.oTaskAllocation.oResources;
+    let resources = this.sharedObject.oTaskAllocation.oResources;
+    resources = resources.filter(e=>e.TAVisibility === 'Yes');
     const prjDetails = this.sharedObject.oTaskAllocation.oProjectDetails;
     const cmL1 = prjDetails.cmLevel1.results ? prjDetails.cmLevel1.results : [];
     const cmL2 = prjDetails.cmLevel2 ? prjDetails.cmLevel2 : [];

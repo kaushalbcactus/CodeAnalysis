@@ -184,12 +184,21 @@ export class AllProjectsComponent implements OnInit {
 
     this.isApprovalAction = true;
     this.reloadAllProject();
+    this.checkEarlyTaskCompleted();
     setInterval(() => {
       this.checkEarlyTaskCompleted();
     }, 150000);
   }
+
   async checkEarlyTaskCompleted() {
-    const completedTaskFilter = this.pmConstant.QUERY.GET_EARLY_TASK_COMPLETED;
+    const completedTaskFilter = Object.assign({}, this.pmConstant.QUERY.GET_EARLY_TASK_COMPLETED);
+    const lastOneHour = this.commonService.ConvertTimeformat(24,
+      this.datePipe.transform(new Date().getTime() - (1000 * 60 * 60), 'hh:mm a'));
+    const todayDate = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
+    const lastOneHourDateTime = todayDate + 'T' + lastOneHour + ':00.000';
+
+    completedTaskFilter.filter = completedTaskFilter.filter.replace('{{UserID}}', this.globalObject.currentUser.userId.toString()).
+      replace('{{LastOnceHour}}', lastOneHourDateTime);
     this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'CheckEarlyTaskNotifications');
     const sResult = await this.spServices.readItems(this.constants.listNames.EarlyTaskCompleteNotifications.name, completedTaskFilter);
     if (sResult && sResult.length) {
@@ -197,41 +206,30 @@ export class AllProjectsComponent implements OnInit {
       let remainingUserId = [];
       let earlyTask;
       for (const element of sResult) {
-        if (element.ProjectCS && element.ProjectCS.results && element.ProjectCS.results.length) {
-          const projectCSArray = element.ProjectCS.results;
-          const userIndex = projectCSArray.findIndex(x => x.ID === this.globalObject.currentUser.userId);
-          if (userIndex > -1) {
-            projectCSArray.forEach(csElement => {
-              if (csElement.ID === this.globalObject.currentUser.userId) {
-                this.messageService.add({
-                  key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
-                  detail: 'Early task ' + element.Title + ' has completed successfully.'
-                });
-              }
-            });
-            remainingUserId = projectCSArray.filter(x => x.ID !== this.globalObject.currentUser.userId).map(x => x.ID);
-          }
-          if (remainingUserId.length) {
-            earlyTask = {
-              ProjectCSId: {
-                results: remainingUserId
-              }
-            };
-            this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'updateEarlyTaskNotification');
-            const retResults = await this.spServices.updateItem(this.constants.listNames.EarlyTaskCompleteNotifications.name,
-              element.ID, earlyTask, this.constants.listNames.EarlyTaskCompleteNotifications.type);
-          }
+        const projectCSArray = element.ProjectCS.results;
+        this.messageService.add({
+          key: 'custom', severity: 'success', summary: 'Success Message', sticky: true,
+          detail: 'Early task ' + element.Title + ' has completed successfully.'
+        });
+        remainingUserId = projectCSArray.filter(x => x.ID !== this.globalObject.currentUser.userId).map(x => x.ID);
+        if (remainingUserId.length) {
+          earlyTask = {
+            ProjectCSId: {
+              results: remainingUserId,
+            },
+          };
         } else {
           earlyTask = {
-            IsActive: 'Yes'
+            IsActive: 'No'
           };
-          this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'updateEarlyTaskNotification');
-          const retResults = await this.spServices.updateItem(this.constants.listNames.EarlyTaskCompleteNotifications.name,
-            element.ID, earlyTask, this.constants.listNames.EarlyTaskCompleteNotifications.type);
         }
+        this.commonService.SetNewrelic('projectManagment', 'allProj-allprojects', 'updateEarlyTaskNotification');
+        const retResults = await this.spServices.updateItem(this.constants.listNames.EarlyTaskCompleteNotifications.name,
+          element.ID, earlyTask, this.constants.listNames.EarlyTaskCompleteNotifications.type);
       }
     }
   }
+
   navigateToSOW(oProject) {
     this.pmObject.columnFilter.SOWCode = [oProject.SOWCode];
     this.router.navigate(['/projectMgmt/allSOW']);
@@ -1094,7 +1092,6 @@ export class AllProjectsComponent implements OnInit {
     });
     tempArray = tempArray.concat(cm1IdArray, this.selectedProjectObj.CMLevel2ID);
     arrayTo = this.pmCommonService.getEmailId(tempArray);
-    debugger;
     const TempArray = await this.getTosList();
     arrayTo = arrayTo.concat(TempArray);
     arrayTo = arrayTo.filter(this.onlyUnique);
@@ -1866,7 +1863,7 @@ export class AllProjectsComponent implements OnInit {
   }
   goToAllocationPage(task) {
     window.open(this.globalObject.sharePointPageObject.webAbsoluteUrl +
-      '/allocation#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
+      '/dashboard#/taskAllocation?ProjectCode=' + task.ProjectCode, '_blank');
   }
   async manageFinances(selectedProjectObj) {
     const projObj: any = selectedProjectObj;

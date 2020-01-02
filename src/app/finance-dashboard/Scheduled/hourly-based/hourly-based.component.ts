@@ -272,6 +272,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     createHBCCols() {
         this.hourlyBasedCols = [
             { field: 'ProjectCode', header: 'Project Code', visibility: true },
+            { field: 'ProjectTitle', header: 'Project Title', visibility: false },
             { field: 'SOWValue', header: 'SOW Code/ Name', visibility: true },
             { field: 'ProjectMileStone', header: 'Project Milestone', visibility: true },
             { field: 'ClientLegalEntity', header: 'Clent LE', visibility: true },
@@ -331,17 +332,18 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
         console.log('Project Finance Data ', data);
         for (let p = 0; p < this.projectCodes.length; p++) {
             for (let pf = 0; pf < data.length; pf++) {
-                if (this.projectCodes[p].ProjectCode == data[pf][0].Title) {
+                if (this.projectCodes[p].ProjectCode === data[pf][0].Title) {
                     const sowItem = await this.fdDataShareServie.getSOWDetailBySOWCode(this.projectCodes[p].SOWCode);
                     const poDetail = await this.getPONumber(this.projectCodes[p]);
+                    const piInfo = await this.getMilestones(this.projectCodes[p]);
                     this.hourlyBasedRes.push({
                         Id: this.projectCodes[p].ID,
                         ProjectCode: this.projectCodes[p].ProjectCode,
+                        ProjectTitle: piInfo.Title ? piInfo.Title : '',
                         SOWCode: this.projectCodes[p].SOWCode,
                         SOWValue: this.projectCodes[p].SOWCode + ' / ' + sowItem.Title,
                         SOWName: sowItem.Title,
-                        ProjectMileStone: this.getMilestones(this.projectCodes[p]),
-                        // ProjectMileStone: this.getMilestones(this.projectCodes[p]),
+                        ProjectMileStone: piInfo.Milestone ? piInfo.Milestone : '',
                         ClientLegalEntity: this.projectCodes[p].ClientLegalEntity,
                         ProposedEndDate: this.datePipe.transform(this.projectCodes[p].ProposedEndDate, 'MMM dd, yyyy, hh:mm a'),
                         POCName: this.getPOCName(this.projectCodes[p].PrimaryPOC),
@@ -390,11 +392,11 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     // Project Current Milestones
     getMilestones(pc: any) {
         const found = this.projectInfoData.find((x) => {
-            if (x.ProjectCode == pc.ProjectCode) {
+            if (x.ProjectCode === pc.ProjectCode) {
                 return x;
             }
         });
-        return found ? found.Milestone : '';
+        return found ? found : '';
     }
 
     // Project Client
@@ -544,7 +546,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
     // Go to Project Details Page
     goToProjectDetails(data: any) {
         console.log(data);
-        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/projectmanagement#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
+        window.open(this.globalService.sharePointPageObject.webAbsoluteUrl + '/dashboard#/projectMgmt/allProjects?ProjectCode=' + data.ProjectCode);
     }
 
     updateInvoice() {

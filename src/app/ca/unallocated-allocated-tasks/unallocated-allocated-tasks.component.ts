@@ -141,7 +141,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     { field: 'ClientName', header: 'Client' },
     { field: 'ProjectCode', header: 'Project' },
     { field: 'Milestone', header: 'Milestone' },
-    { field: 'TaskName', header: 'Task' },
+    { field: 'Task', header: 'Task' },
     { field: 'DeliveryType', header: 'Deliverable' },
     { field: 'EstimatedTime', header: 'Hrs' },
     { field: 'StartDateText', header: 'Start Time' },
@@ -152,7 +152,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     { field: 'ProjectCode' },
     { field: 'ProjectName' },
     { field: 'Milestone' },
-    { field: 'TaskName' },
+    { field: 'Task' },
     { field: 'DeliveryType' },
     { field: 'EstimatedTime' },
     { field: 'StartDateText' },
@@ -163,6 +163,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     { field: 'AssignedTo' }
   ];
   ngOnInit() {
+    this.globalService.currentTitle = 'Central Allocation';
     this.caGlobal.loading = true;
     this.caGlobal.totalRecords = 0;
     this.modalloaderenable = false;
@@ -894,12 +895,11 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (!task.TaskName) {
       task.TaskName = $.trim(task.Title.replace(task.ProjectCode + '', '').replace(task.Milestone + '', ''));
     }
-    const resPool = this.caCommonService.getResourceByMatrix(resourcesList,
-      task.Type && task.Type === 'Slot' ? task.TaskName : task.Task && task.Task !== 'Select One' ?
-        task.Task : task.taskType, task.SkillLevel,
+    const resPool = this.caCommonService.getResourceByMatrix(resourcesList, task.Task ? task.Task : task.taskType ? task.taskType : '', task.SkillLevel,
       projectItem[0].ClientLegalEntity, projectItem[0].TA, projectItem[0].DeliverableType);
     //  resPool = this.caCommonService.sortResources(resPool, task);
-
+    // task.Type && task.Type === 'Slot' ? task.Task : task.Task && task.Task !== 'Select One' ?
+    //   task.Task : task.Task
     if (task.PreviousAssignedUser && task.PreviousAssignedUser.ID > -1 && task.CentralAllocationDone === 'No') {
 
       let ExistingUser = resPool.find(c => c.UserName.ID === task.PreviousAssignedUser.ID && c.UserName.Title === task.PreviousAssignedUser.Title);
@@ -944,6 +944,7 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
 
     taskObj.Id = task.ID ? task.ID : task.Id;
     taskObj.Task = task.Type && task.Type === 'Slot' ? task.TaskName : task.Task ? task.Task : task.taskType;
+    taskObj.Task = taskObj.Task.split(' ')[0];
     taskObj.Timezone = task.timezone ? task.timezone : task.TimeZone;
     taskObj.Title = task.Title;
     taskObj.ProjectCode = task.projectCode ? task.projectCode : task.ProjectCode;
@@ -1719,8 +1720,8 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
         TimeZone: task.allocatedResource ? task.allocatedResource.TimeZone.hasOwnProperty('Title')
           ? task.allocatedResource.TimeZone.Title : '+5.5' : '+5.5',
         Comments: task.TaskScope ? task.TaskScope : '',
-        NextTasks: this.setPreviousAndNext(task.NextTasks, slot.Milestone, slot.ProjectCode),
-        PrevTasks: this.setPreviousAndNext(task.PrevTasks, slot.Milestone, slot.ProjectCode),
+        NextTasks: task.Status !== 'Deleted' ? this.setPreviousAndNext(task.NextTasks, slot.Milestone, slot.ProjectCode) : '',
+        PrevTasks: task.Status !== 'Deleted' ? this.setPreviousAndNext(task.PrevTasks, slot.Milestone, slot.ProjectCode) : '',
         CentralAllocationDone: 'Yes',
         IsCentrallyAllocated: 'No',
         DisableCascade: task.DisableCascade === true ? 'Yes' : 'No',
@@ -1742,7 +1743,9 @@ export class UnallocatedAllocatedTasksComponent implements OnInit {
     if (sText) {
       const arrVal = sText.split(';');
       const arrNewVal = [];
-      for (const val of arrVal) {
+      for (let val of arrVal) {
+        val = val.replace(sProject + ' ', '');
+        val = val.replace(sMilestone + ' ', '');
         arrNewVal.push(sProject + ' ' + sMilestone + ' ' + val);
       }
 

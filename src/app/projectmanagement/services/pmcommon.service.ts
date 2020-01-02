@@ -1913,6 +1913,7 @@ export class PMCommonService {
           monthEndDay = new Date(year, month + 1, 0);
         }
         const monthName = monthNames[month];
+        monthEndDay.setHours(23, 45);
         months.push({ year, month, monthName, monthStartDay, monthEndDay });
       }
     }

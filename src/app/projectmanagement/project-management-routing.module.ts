@@ -25,7 +25,7 @@ const appRoutes: Routes = [
     {path: 'pendingAllocation', component: PendingAllocationComponent, resolve: { pmData: PMResolve }},
     {path: 'inActive', component: InactiveComponent, resolve: { pmData: PMResolve }},
    // {path: 'communication', component: CommunicationComponent}
-  ]
+  ],
 }
 ];
 

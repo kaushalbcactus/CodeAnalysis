@@ -46,6 +46,8 @@ export class CapacityDashboardComponent implements OnInit {
   });
 
   ngOnInit() {
+    this.sharedObject.currentTitle = 'Capacity Dashboard';
+
     this.GetResources();
   }
 
