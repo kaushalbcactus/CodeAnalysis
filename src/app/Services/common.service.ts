@@ -695,6 +695,7 @@ export class CommonService {
                     futureMilestones: arrMilestones.slice(currentMilestoneIndex + 1, arrMilestones.length),
                     prevMilestone: arrMilestones.slice(currentMilestoneIndex - 1, currentMilestoneIndex),
                     allMilestones: arrMilestones,
+                    allOldMilestones: arrMilestones,
                     budgetHours: bSaveRes ? bBudgetHrs : this.response.length > 1 ? this.response[1] !== "" ? this.response[1][0].BudgetHrs : 0 : 0,
                     ta: returnedProject.TA ? returnedProject.TA : [],
                     deliverable: returnedProject ? returnedProject.DeliverableType : [],
