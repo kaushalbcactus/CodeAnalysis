@@ -1,5 +1,5 @@
 import { Component, OnInit, EventEmitter, Output, Input, SimpleChanges, OnDestroy } from '@angular/core';
-import { MenuItem, DynamicDialogConfig, MessageService } from 'primeng/api';
+import { MenuItem, DynamicDialogConfig, MessageService } from 'primeng';
 import { DatePipe, CommonModule } from '@angular/common';
 import { ConstantsService } from 'src/app/Services/constants.service';
 

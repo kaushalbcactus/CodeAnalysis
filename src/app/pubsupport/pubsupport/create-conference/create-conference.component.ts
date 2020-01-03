@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { DynamicDialogRef, MessageService, DynamicDialogConfig } from 'primeng/api';
+import { DynamicDialogRef, MessageService, DynamicDialogConfig } from 'primeng';
 import { PubsuportConstantsService } from '../../Services/pubsuport-constants.service';
 import { SPOperationService } from '../../../Services/spoperation.service';
 import { ConstantsService } from '../../../Services/constants.service';

@@ -6,7 +6,7 @@ import { CommonService } from '../../../Services/common.service';
 import { DatePipe } from '@angular/common';
 import { QMSConstantsService } from '../services/qmsconstants.service';
 import { QMSCommonService } from '../services/qmscommon.service';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-user-feedback',
@@ -21,7 +21,7 @@ export class UserFeedbackComponent implements OnInit {
   @ViewChild('uf', { static: true }) uf;
   @Output() setAverageRating = new EventEmitter<string>();
   @Output() feedbackData = new EventEmitter<any>();
-  @ViewChild('uf', { static: false }) userFeedbackTable: DataTable;
+  @ViewChild('uf', { static: false }) userFeedbackTable: Table;
 
   public hideTable = false;
   public hideLoader = true;

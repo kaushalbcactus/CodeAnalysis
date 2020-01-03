@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 import { removeSummaryDuplicates } from '@angular/compiler';
 import { GlobalService } from 'src/app/Services/global.service';
 import { CommonService } from 'src/app/Services/common.service';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng';
 
 @Component({
   selector: 'app-client-masterdata',
@@ -316,7 +316,7 @@ export class ClientMasterdataComponent implements OnInit {
     AmountOOP: 0
   };
 
-  @ViewChild('cmd', { static: false }) clientMasterTable: DataTable;
+  @ViewChild('cmd', { static: false }) clientMasterTable: Table;
 
 
   isOptionFilter: boolean;

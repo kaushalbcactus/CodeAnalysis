@@ -11,7 +11,7 @@ import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 
 declare var $;
 @Component({
@@ -50,7 +50,7 @@ export class ClientReviewComponent implements OnInit {
     { field: 'Milestone' },
     { field: 'DeliveryDate' }];
   @ViewChild('crTableRef', { static: true }) crRef: ElementRef;
-  @ViewChild('crTableRef', { static: true }) crTableRef: DataTable;
+  @ViewChild('crTableRef', { static: true }) crTableRef: Table;
 
   // tslint:disable-next-line:variable-name
   private _success = new Subject<string>();

@@ -11,7 +11,7 @@ import { PMObjectService } from '../../services/pmobject.service';
 import { MenuItem } from 'primeng/api';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 
 declare var $;
 @Component({
@@ -50,7 +50,7 @@ export class SendToClientComponent implements OnInit {
     { field: 'PreviousTaskUser' },
     { field: 'PreviousTaskStatus' }];
   @ViewChild('sendToClientTableRef', { static: true }) sct: ElementRef;
-  @ViewChild('sendToClientTableRef', { static: false }) sendToClientTableRef: DataTable;
+  @ViewChild('sendToClientTableRef', { static: false }) sendToClientTableRef: Table;
   // tslint:disable-next-line:variable-name
   private _success = new Subject<string>();
   // tslint:disable-next-line:variable-name

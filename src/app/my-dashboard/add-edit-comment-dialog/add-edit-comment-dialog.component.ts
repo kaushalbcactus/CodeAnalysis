@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, SimpleChanges } from '@angular/core';
 import DecoupledEditor from '../../../../node_modules/@ckeditor/ckeditor5-build-decoupled-document';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng/api';
+import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';

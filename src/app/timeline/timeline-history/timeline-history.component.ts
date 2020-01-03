@@ -3,7 +3,7 @@ import { Component, OnInit, ElementRef, ViewChild, ChangeDetectorRef } from '@an
 import { SPCommonService } from '../../Services/spcommon.service';
 import { TimelineConstantsService } from './../services/timeline-constants.service';
 import { DatePipe } from '@angular/common';
-import { LazyLoadEvent, DataTable } from 'primeng/primeng';
+import { LazyLoadEvent} from 'primeng/primeng';
 import { SPOperationService } from '../../Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { CommonService } from 'src/app/Services/common.service';
@@ -79,7 +79,7 @@ export class TimelineHistoryComponent implements OnInit {
   public hideLoader = true;
   public datesValues = '';
 
-  @ViewChild('timelineTable', { static: true }) timelineTable: DataTable;
+  @ViewChild('timelineTable', { static: true }) timelineTable: Table;
 
   constructor(
     private spStandardService: SPOperationService,

@@ -1,12 +1,12 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { SelectItemGroup } from 'primeng/components/common/selectitemgroup';
+import { SelectItemGroup } from 'primeng';
 import { FormGroup, Validators, FormControl, FormBuilder } from '@angular/forms';
-import { SelectItem } from 'primeng/components/common/selectitem';
+import { SelectItem } from 'primeng';
 import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
-import { DynamicDialogConfig, MessageService, DynamicDialogRef } from 'primeng/api';
+import { DynamicDialogConfig, MessageService, DynamicDialogRef } from 'primeng';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { Router } from '@angular/router';
 import { DataService } from 'src/app/Services/data.service';

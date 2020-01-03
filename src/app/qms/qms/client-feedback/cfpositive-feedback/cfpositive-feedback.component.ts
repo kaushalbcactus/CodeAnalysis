@@ -12,7 +12,7 @@ import { FilterComponent } from '../filter/filter.component';
 import { MenuItem, MessageService } from 'primeng/api';
 import { PopupComponent } from './popup/popup.component'
 import { QMSConstantsService } from '../../services/qmsconstants.service';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 import { CommonService } from 'src/app/Services/common.service';
 @Component({
   selector: 'app-cfpositive-feedback',
@@ -28,7 +28,7 @@ export class CFPositiveFeedbackComponent implements OnInit, OnDestroy {
 
   @ViewChild('positveFilter', { static: true }) filter: FilterComponent;
   @ViewChild('PFPopup', { static: true }) PFPopup: PopupComponent;
-  @ViewChild('cfp', { static: false }) cfpositiveTable: DataTable;
+  @ViewChild('cfp', { static: false }) cfpositiveTable: Table;
 
   public hideLoader = true;
   public hideTable = false;

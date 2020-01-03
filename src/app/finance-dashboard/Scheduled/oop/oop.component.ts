@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, SelectItem, MessageService } from 'primeng/api';
-import { Calendar, DataTable } from 'primeng/primeng';
+import { Calendar, Table } from 'primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { formatDate, DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
@@ -107,7 +107,7 @@ export class OopComponent implements OnInit, OnDestroy {
         listName: ''
     };
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-    @ViewChild('oop', { static: false }) oopTable: DataTable;
+    @ViewChild('oop', { static: false }) oopTable: Table;
 
     // Project Info 
     projectInfoData: any = [];

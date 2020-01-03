@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng/api';
+import { DynamicDialogConfig, DynamicDialogRef, MessageService } from 'primeng';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';
 import { DatePipe } from '@angular/common';
 import { GlobalService } from 'src/app/Services/global.service';
-import { eraseStyles } from '@angular/animations/browser/src/util';
 import { CommonService } from 'src/app/Services/common.service';
 
 @Component({

@@ -6,7 +6,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
-import { Http, HttpModule } from '@angular/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 // FIle upload
 import { FileUploadModule  } from 'ng2-file-upload';
@@ -27,7 +26,6 @@ import { PrimengModule } from './primeng/primeng.module';
     BrowserAnimationsModule,
     AppRoutingModule,
     HttpClientModule,
-    HttpModule,
     CommonModule,
     NgbModule,
     PrimengModule

@@ -10,7 +10,7 @@ import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 
 @Component({
     selector: 'app-pending-expense',
@@ -124,7 +124,7 @@ export class PendingExpenseComponent implements OnInit, OnDestroy {
     // List of Subscribers
     private subscription: Subscription = new Subscription();
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
-    @ViewChild('pendingExpense', { static: false }) pendingEnpenseTable: DataTable;
+    @ViewChild('pendingExpense', { static: false }) pendingEnpenseTable: Table;
 
     // Project Info
     projectInfoData: any = [];

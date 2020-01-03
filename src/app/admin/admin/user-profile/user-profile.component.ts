@@ -12,7 +12,6 @@ import { AdminObjectService } from '../../services/admin-object.service';
 import { Router } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
 import { GlobalService } from 'src/app/Services/global.service';
-import { DataTable } from 'primeng/primeng';
 import { Table } from 'primeng/table';
 @Component({
   selector: 'app-user-profile',

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
-import { DynamicDialogConfig, MessageService, MenuItem } from 'primeng/api';
+import { DynamicDialogConfig, MessageService, MenuItem } from 'primeng';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { MyDashboardConstantsService } from '../../services/my-dashboard-constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';

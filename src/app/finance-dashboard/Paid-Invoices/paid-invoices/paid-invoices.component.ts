@@ -11,7 +11,7 @@ import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/time
 import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
 import { Router } from '@angular/router';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 
 
 @Component({
@@ -70,7 +70,7 @@ export class PaidInvoicesComponent implements OnInit, OnDestroy {
 
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
     @ViewChild('popupMenu', { static: true }) popupMenu;
-    @ViewChild('pi', { static: false }) paidInvTable: DataTable;
+    @ViewChild('pi', { static: false }) paidInvTable: Table;
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
 

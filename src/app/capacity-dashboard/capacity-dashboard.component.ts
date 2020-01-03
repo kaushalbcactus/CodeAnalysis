@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChildren, QueryList, ViewChild } from '@angular/core';
 import { SelectItem } from 'primeng/api';
-import { MultiSelect, MessageService } from 'primeng/primeng';
+import { MultiSelect, MessageService } from 'primeng';
 import { FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from '../Services/global.service';
 import { SPOperationService } from '../Services/spoperation.service';

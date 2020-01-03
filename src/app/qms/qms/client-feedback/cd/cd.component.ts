@@ -13,7 +13,7 @@ import { Router, NavigationEnd } from '@angular/router';
 // import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { MenuItem, MessageService } from 'primeng/api';
 import { ActionsPopupComponent } from './actions-popup/actions-popup.component';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-cd',
@@ -24,7 +24,7 @@ export class CDComponent implements OnInit, OnDestroy {
   // @ViewChild(MatSort) cdSort: MatSort;
   @ViewChild('popupLoader', { static: true }) popupLoader: ElementRef;
   @ViewChild('CDPopup', { static: true }) CDPopup: ActionsPopupComponent;
-  @ViewChild('cd', { static: false }) cdTable: DataTable;
+  @ViewChild('cd', { static: false }) cdTable: Table;
 
   // public successMessage: string;
   CDColumns = [];

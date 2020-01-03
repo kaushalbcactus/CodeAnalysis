@@ -24,13 +24,13 @@ import { NonStandardprojectComponent } from './projectmanagement/add-projects/ad
 import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { PMResolve } from './PMResolve';
 import { PMMainResolve } from './PMMainResolve';
-import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/api';
+import { DialogService, DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { TimelineModule } from '../timeline/timeline.module';
 import { CustomMaterialModule } from '../shared/material.module';
 import { TaskAllocationModule } from '../task-allocation/task-allocation.module';
 import { ProjectTimelineComponent } from './projectmanagement/all-projects/project-timeline/project-timeline.component';
 import { ViewUploadDocumentModule } from '../shared/view-upload-document-dialog/view-upload-document.module';
-import { SharedModule } from 'primeng/primeng';
+import { SharedModule } from 'primeng';
 import { ViewUploadDocumentDialogComponent } from '../shared/view-upload-document-dialog/view-upload-document-dialog.component';
 import { UserCapacityModule } from '../shared/usercapacity/usercapacity.module';
 import { UsercapacityComponent } from '../shared/usercapacity/usercapacity.component';

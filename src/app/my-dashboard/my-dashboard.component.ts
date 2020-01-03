@@ -2,7 +2,7 @@ import {
   Component, OnInit, ViewChild, AfterViewInit, ViewChildren, QueryList, ViewContainerRef,
   ComponentFactoryResolver,
 } from '@angular/core';
-import { MenuItem, DialogService, MessageService } from 'primeng/api';
+import { MenuItem, DialogService, MessageService } from 'primeng';
 import { SPOperationService } from '../Services/spoperation.service';
 import { GlobalService } from '../Services/global.service';
 import { ConstantsService } from '../Services/constants.service';

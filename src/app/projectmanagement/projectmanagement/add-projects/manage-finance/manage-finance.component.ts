@@ -4,7 +4,7 @@ import { PMObjectService } from 'src/app/projectmanagement/services/pmobject.ser
 import { PmconstantService } from 'src/app/projectmanagement/services/pmconstant.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { DatePipe } from '@angular/common';
-import { ConfirmationService, DynamicDialogConfig, MessageService, DynamicDialogRef, SelectItem } from 'primeng/api';
+import { ConfirmationService, DynamicDialogConfig, MessageService, DynamicDialogRef, SelectItem } from 'primeng';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { PMCommonService } from 'src/app/projectmanagement/services/pmcommon.service';
 import { CommonService } from 'src/app/Services/common.service';

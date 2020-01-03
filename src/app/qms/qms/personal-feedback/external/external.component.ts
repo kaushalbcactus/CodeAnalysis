@@ -8,7 +8,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { QMSCommonService } from '../../services/qmscommon.service';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-external',
@@ -42,7 +42,7 @@ export class ExternalComponent implements OnDestroy {
     BusinessImpact: []
   };
 
-  @ViewChild('qc', { static: false }) pfTable: DataTable;
+  @ViewChild('qc', { static: false }) pfTable: Table;
   constructor(
     private spService: SPOperationService,
     private datepipe: DatePipe,

@@ -11,7 +11,7 @@ import { EditorComponent } from 'src/app/finance-dashboard/PDFEditing/editor/edi
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { Subscription } from 'rxjs';
 import { CommonService } from 'src/app/Services/common.service';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
 
 @Component({
@@ -70,7 +70,7 @@ export class OutstandingInvoicesComponent implements OnInit, OnDestroy {
     @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
     @ViewChild('replaceInvoiceFile', { static: false }) replaceInvoiceFile: ElementRef;
     @ViewChild('paymentResolvedFile', { static: false }) paymentResolvedFile: ElementRef;
-    @ViewChild('outi', { static: false }) outInvTable: DataTable;
+    @ViewChild('outi', { static: false }) outInvTable: Table;
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();

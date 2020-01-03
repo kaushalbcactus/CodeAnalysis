@@ -11,7 +11,7 @@ import { CommonService } from '../../../../Services/common.service';
 import { DataService } from '../../../../Services/data.service';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 
 @Component({
   selector: 'app-positive-feedback',
@@ -37,7 +37,7 @@ export class PositiveFeedbackComponent implements OnInit, OnDestroy {
     Resources: []
   };
   public displayedCDColumns: string[] = ['ID', 'Title', 'SentDate', 'SentBy', 'Resources'];
-  @ViewChild('pf', { static: false }) pfTable: DataTable;
+  @ViewChild('pf', { static: false }) pfTable: Table;
   // tslint:disable: max-line-length
   constructor(
     private router: Router,

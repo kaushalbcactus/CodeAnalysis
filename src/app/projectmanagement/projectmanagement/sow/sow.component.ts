@@ -4,7 +4,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { PmconstantService } from '../../services/pmconstant.service';
 import { PMObjectService } from '../../services/pmobject.service';
-import { MenuItem, DialogService } from 'primeng/api';
+import { MenuItem, DialogService } from 'primeng';
 import { DataService } from 'src/app/Services/data.service';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { SPOperationService } from 'src/app/Services/spoperation.service';

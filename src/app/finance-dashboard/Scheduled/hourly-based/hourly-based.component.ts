@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, MessageService } from 'primeng/api';
-import { Calendar, DataTable } from 'primeng/primeng';
+import { Calendar, Table } from 'primeng';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -103,7 +103,7 @@ export class HourlyBasedComponent implements OnInit, OnDestroy {
 
     minScheduleDate: Date = new Date();
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-    @ViewChild('hb', { static: false }) hourlyTable: DataTable;
+    @ViewChild('hb', { static: false }) hourlyTable: Table;
     // Purchase Order Number
     purchaseOrdersList: any = [];
 

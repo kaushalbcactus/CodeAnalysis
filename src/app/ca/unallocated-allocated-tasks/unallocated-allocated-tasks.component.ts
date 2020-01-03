@@ -10,7 +10,7 @@ import { Table } from 'primeng/table';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { CommonService } from 'src/app/Services/common.service';
-import { DialogService, MessageService, MenuItem, SelectItem } from 'primeng/primeng';
+import { DialogService, MessageService, MenuItem, SelectItem } from 'primeng';
 import { CaDragdropComponent } from '../ca-dragdrop/ca-dragdrop.component';
 import { async } from '@angular/core/testing';
 import { NgxMaterialTimepickerTheme } from 'ngx-material-timepicker';

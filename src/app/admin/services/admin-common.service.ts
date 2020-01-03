@@ -8,7 +8,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { AdminConstantService } from './admin-constant.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
-import { ControlContainer } from '@angular/forms/public_api';
+import { ControlContainer } from '@angular/forms/forms';
 const PEOPLE_PICKER_URL =
   '_api/SP.UI.ApplicationPages.ClientPeoplePickerWebServiceInterface.ClientPeoplePickerSearchUser';
 @Injectable({

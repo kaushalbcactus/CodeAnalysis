@@ -7,7 +7,7 @@ import { GlobalService } from 'src/app/Services/global.service';
 import { ConstantsService } from 'src/app/Services/constants.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
 import { CommonService } from 'src/app/Services/common.service';
-import { SelectItem, MenuItem, DialogService } from 'primeng/api';
+import { SelectItem, MenuItem, DialogService } from 'primeng';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';

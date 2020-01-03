@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ChangeDetectorRef, ApplicationRef, NgZone } from '@angular/core';
 import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
-import { Calendar, DataTable } from 'primeng/primeng';
+import { Calendar, Table } from 'primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -111,7 +111,7 @@ export class ConfirmedComponent implements OnInit, OnDestroy {
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
     @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
 
-    @ViewChild('cnf', { static: false }) confirmTable: DataTable;
+    @ViewChild('cnf', { static: false }) confirmTable: Table;
     // List of Subscribers
     private subscription: Subscription = new Subscription();
     // Project Info

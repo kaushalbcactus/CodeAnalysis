@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, ComponentFactoryResolver, ViewContainerRef, ViewChild, HostListener, ApplicationRef, NgZone } from '@angular/core';
-import { MessageService, DialogService, ConfirmationService } from 'primeng/api';
-import { MenuItem } from 'primeng/components/common/menuitem';
+import { MessageService, DialogService, ConfirmationService } from 'primeng';
+import { MenuItem } from 'primeng';
 import { FormBuilder, FormGroup, Validators, FormControl, MaxLengthValidator } from '@angular/forms';
 import { SPOperationService } from '../../Services/spoperation.service';
 import { ConstantsService } from '../../Services/constants.service';

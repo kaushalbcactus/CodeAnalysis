@@ -8,7 +8,7 @@ import { FeedbackPopupComponent } from './feedback-popup/feedback-popup.componen
 import { QMSConstantsService } from '../services/qmsconstants.service';
 import { QMSCommonService } from '../services/qmscommon.service';
 import { MessageService } from 'primeng/api';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
 
 @Component({
@@ -25,7 +25,7 @@ export class ReviewerDetailViewComponent implements OnInit {
   // For Reviewer pending tasks table
   @Output() myEvent = new EventEmitter<string>();
   @ViewChild(FeedbackPopupComponent, { static: true }) popup: FeedbackPopupComponent;
-  @ViewChild('rd', { static: false }) rdTable: DataTable;
+  @ViewChild('rd', { static: false }) rdTable: Table;
 
   public hideLoader = true;
   public hideTable = false;

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation, ViewChild, OnDestroy, HostListener, ElementRef, ApplicationRef, NgZone, TemplateRef, ChangeDetectorRef } from '@angular/core';
 import { Message, ConfirmationService, MessageService, SelectItem } from 'primeng/api';
-import { Calendar, DataTable } from 'primeng/primeng';
+import { Calendar, Table } from 'primeng';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
 import { SPOperationService } from 'src/app/Services/spoperation.service';
@@ -76,7 +76,7 @@ export class ProformaComponent implements OnInit, OnDestroy {
     @ViewChild('editorRef', { static: true }) editorRef: EditorComponent;
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
 
-    @ViewChild('pfc', { static: false }) proformaTable: DataTable;
+    @ViewChild('pfc', { static: false }) proformaTable: Table;
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();

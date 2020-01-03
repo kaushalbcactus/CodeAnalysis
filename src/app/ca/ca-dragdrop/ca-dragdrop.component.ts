@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogRef, DynamicDialogConfig, MessageService, DialogService } from 'primeng/api';
+import { DynamicDialogRef, DynamicDialogConfig, MessageService, DialogService } from 'primeng';
 import { GlobalService } from 'src/app/Services/global.service';
 import * as shape from 'd3-shape';
 import { CACommonService } from '../caservices/cacommon.service';

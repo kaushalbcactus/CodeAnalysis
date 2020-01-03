@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DynamicDialogRef, DialogService } from 'primeng/api';
+import { DynamicDialogRef, DialogService } from 'primeng';
 
 @Component({
   selector: 'app-confirmation-dialog',

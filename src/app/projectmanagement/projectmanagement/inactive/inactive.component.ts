@@ -11,7 +11,7 @@ import { MenuItem } from 'primeng/api';
 import { TimelineHistoryComponent } from 'src/app/timeline/timeline-history/timeline-history.component';
 import { PMCommonService } from '../../services/pmcommon.service';
 import { Router } from '@angular/router';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 import { PlatformLocation, LocationStrategy } from '@angular/common';
 declare var $: any;
 @Component({
@@ -22,7 +22,7 @@ declare var $: any;
 })
 export class InactiveComponent implements OnInit {
   tempClick: any;
-  @ViewChild('iapTableRef', { static: false }) iapTableRef: DataTable;
+  @ViewChild('iapTableRef', { static: false }) iapTableRef: Table;
 
   displayedColumns: any[] = [
     { field: 'ProjectCode', header: 'Project Code' },

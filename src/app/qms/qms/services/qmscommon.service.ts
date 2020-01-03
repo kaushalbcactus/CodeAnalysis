@@ -1,6 +1,6 @@
 import { SPOperationService } from './../../../Services/spoperation.service';
 import { Injectable } from '@angular/core';
-import { MessageService } from 'primeng/primeng';
+import { MessageService } from 'primeng';
 import { CommonService } from 'src/app/Services/common.service';
 
 @Injectable({

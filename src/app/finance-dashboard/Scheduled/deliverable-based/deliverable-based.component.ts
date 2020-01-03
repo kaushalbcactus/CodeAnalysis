@@ -1,7 +1,7 @@
 
 import { Component, OnInit, ViewChild, ViewEncapsulation, OnDestroy, HostListener, ApplicationRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { MessageService, Message, SelectItem } from 'primeng/api';
-import { Calendar, DataTable } from 'primeng/primeng';
+import { Calendar, Table } from 'primeng';
 import { ConfirmationService } from 'primeng/api';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { GlobalService } from 'src/app/Services/global.service';
@@ -110,7 +110,7 @@ export class DeliverableBasedComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
 
     @ViewChild('timelineRef', { static: true }) timeline: TimelineHistoryComponent;
-    @ViewChild('db', { static: false }) deliverableTable: DataTable;
+    @ViewChild('db', { static: false }) deliverableTable: Table;
     // Project Info
     projectInfoData: any = [];
 

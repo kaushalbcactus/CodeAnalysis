@@ -10,7 +10,7 @@ import { SPCommonService } from '../../../../Services/spcommon.service';
 import { QMSConstantsService } from '../../services/qmsconstants.service';
 import { QMSCommonService } from '../../services/qmscommon.service';
 import { MessageService } from 'primeng/api';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
 
 @Component({
@@ -68,7 +68,7 @@ export class AdminViewComponent implements OnInit {
     Drafts: [],
   };
 
-  @ViewChild('admin', { static: false }) adminTable: DataTable;
+  @ViewChild('admin', { static: false }) adminTable: Table;
 
   constructor(
 

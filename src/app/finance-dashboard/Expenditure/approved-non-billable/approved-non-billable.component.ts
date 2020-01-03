@@ -9,7 +9,7 @@ import { CommonService } from '../../../Services/common.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
 
 @Component({
@@ -58,7 +58,7 @@ export class ApprovedNonBillableComponent implements OnInit, OnDestroy {
         listName: ''
       };
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
-    @ViewChild('anb', { static: false }) approvedNBTable: DataTable;
+    @ViewChild('anb', { static: false }) approvedNBTable: Table;
 
     constructor(
         private messageService: MessageService,

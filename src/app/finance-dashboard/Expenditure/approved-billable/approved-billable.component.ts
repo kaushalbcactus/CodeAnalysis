@@ -10,7 +10,7 @@ import { CommonService } from '../../../Services/common.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
 
 @Component({
@@ -105,7 +105,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
     private subscription: Subscription = new Subscription();
 
     @ViewChild('fileInput', { static: false }) fileInput: ElementRef;
-    @ViewChild('ab', { static: false }) approvedBTable: DataTable;
+    @ViewChild('ab', { static: false }) approvedBTable: Table;
 
     // Project Info
     projectInfoData: any = [];
@@ -823,7 +823,7 @@ export class ApprovedBillableComponent implements OnInit, OnDestroy {
         // let arrResults: any = [];
         // const res = await this.spServices.getFDData(batchGuid, userBatchBody); //.subscribe(res => {
 
-            this.commonService.SetNewrelic('Finance-Dashboard', 'approved-billable', 'GetPFPFBPBB');
+        this.commonService.SetNewrelic('Finance-Dashboard', 'approved-billable', 'GetPFPFBPBB');
         const res = await this.spServices.executeBatch(batchUrl);
         const arrResults = res.length ? res.map(a => a.retItems) : [];
         if (arrResults.length) {

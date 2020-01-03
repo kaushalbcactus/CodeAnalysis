@@ -9,7 +9,7 @@ import { CommonService } from 'src/app/Services/common.service';
 import { FDDataShareService } from '../../fdServices/fd-shareData.service';
 import { DatePipe, PlatformLocation, LocationStrategy } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { DataTable } from 'primeng/primeng';
+import { Table } from 'primeng/table';
 import { Router } from '@angular/router';
 
 @Component({
@@ -39,7 +39,7 @@ export class RejectExpenseComponent implements OnInit, OnDestroy {
 
     // List of Subscribers 
     private subscription: Subscription = new Subscription();
-    @ViewChild('rc', { static: false }) canRejExpenseTable: DataTable;
+    @ViewChild('rc', { static: false }) canRejExpenseTable: Table;
 
     constructor(
         private messageService: MessageService,
