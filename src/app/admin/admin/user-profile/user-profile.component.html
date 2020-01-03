@@ -17,6 +17,9 @@
     </div>
 </div>
 <div class="clearBoth"></div>
+<div [hidden]='true'>
+    <p-table #up [columns]="userProfileColumns" [value]="userProfileData" exportFilename="User Profile"></p-table>
+</div>
 <div class="adminTable">
     <div *ngIf="showTable">
         <p-table #up [columns]="userProfileColumns" [value]="userProfileData" exportFilename="User Profile"
@@ -117,9 +120,7 @@
         <span>No User profile data found.</span>
     </div>
 </div>
-<div [hidden]='true'>
-    <p-table #up></p-table>
-</div>
+
 <div *ngIf="isUserProfileRightSideVisible" class="ng-right-side-overlay">
     <p-sidebar [(visible)]="isUserProfileRightSideVisible" position="right" styleClass="ui-sidebar-md">
         <p-table [value]="userProfileViewDataArray">

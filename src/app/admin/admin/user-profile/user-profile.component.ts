@@ -140,9 +140,7 @@ export class UserProfileComponent implements OnInit {
   };
   filteredCountriesMultiple: any[];
   showTable = true;
-  @ViewChild('up', { static: false }) userProfileTable: Table;
-  @ViewChildren('up') eventsTable: Table;
-
+  
   /**
    * Construct a method to create an instance of required component.
    *
@@ -197,7 +195,6 @@ export class UserProfileComponent implements OnInit {
    */
   async ngOnInit() {
     this.initialAddUserForm();
-    // console.log('eventsTable ', this.eventsTable);
     this.minPastMonth = new Date(new Date().setDate(new Date().getDate() - 30));
     const currentYear = new Date();
     this.yearRange = (currentYear.getFullYear() - 10) + ':' + (currentYear.getFullYear() + 10);
@@ -656,7 +653,6 @@ export class UserProfileComponent implements OnInit {
   onChangeSelect() {
     if (this.selectedOption === this.adminConstants.LOGICAL_FIELD.INACTIVE) {
       this.showTable = false;
-      // console.log(this.userProfileTable);
       this.showUserInput = true;
       const emptyProjects = [];
       this.userProfileData = [...emptyProjects];
