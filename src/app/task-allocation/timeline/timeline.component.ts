@@ -100,6 +100,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     pubSupportMembers: { results: [] },
     primaryResources: { results: [] },
     allMilestones: [],
+    allOldMilestones: [],
     ta: [],
     deliverable: [],
     account: [],
@@ -2010,12 +2011,16 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
       milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'No' : milestoneTask.ActiveCA;
       milestoneTask.itemType = milestoneTask.itemType.replace(/Slot/g, '');
-      const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
-      let newName = taskCount ? milestoneTask.itemType + taskCount : milestoneTask.itemType;
-      const counter = taskCount ? +taskCount : 1;
+      // const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
+      // let newName = taskCount ? milestoneTask.itemType + taskCount : milestoneTask.itemType;
+      let newName = '';
+      // const counter = taskCount ? +taskCount : 1;
       if (milestoneTask.IsCentrallyAllocated === 'Yes') {
-        newName = this.getNewTaskName(milestoneTask, subMilestone, counter, newName);
+        newName = milestoneTask.itemType;
+        newName = this.getNewTaskName(milestoneTask, subMilestone, newName);
         milestoneTask.IsCentrallyAllocated = 'No';
+      } else {
+        newName = milestoneTask.pName;
       }
       if (milestoneTask.nextTask) {
         const nextTasks = milestoneTask.nextTask.split(';');
@@ -2044,10 +2049,11 @@ export class TimelineComponent implements OnInit, OnDestroy {
       milestoneTask.IsCentrallyAllocated = 'Yes';
       milestoneTask.ActiveCA = this.sharedObject.oTaskAllocation.oProjectDetails.currentMilestone === milestoneTask.milestone ? 'Yes' : milestoneTask.ActiveCA;
       milestoneTask.itemType = milestoneTask.itemType + 'Slot';
-      const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
-      let newName = milestoneTask.itemType + taskCount;
-      const counter = taskCount ? +taskCount : 1;
-      newName = this.getNewTaskName(milestoneTask, subMilestone, counter, newName);
+      // const taskCount = milestoneTask.pName.match(/\d+$/) ? ' ' + milestoneTask.pName.match(/\d+$/)[0] : '';
+      // let newName = milestoneTask.itemType + taskCount;
+      // const counter = taskCount ? +taskCount : 1;
+      let newName = milestoneTask.itemType;
+      newName = this.getNewTaskName(milestoneTask, subMilestone, newName);
       if (milestoneTask.nextTask) {
         const nextTasks = milestoneTask.nextTask.split(';');
         nextTasks.forEach(task => {
@@ -2074,14 +2080,15 @@ export class TimelineComponent implements OnInit, OnDestroy {
     }
   }
 
-  getNewTaskName(milestoneTask, subMilestone, counter, originalName) {
-    let getItem = subMilestone.children.filter(e => e.data.pName === originalName)
+  getNewTaskName(milestoneTask, subMilestone, originalName) {
+    let counter = 1;
+    let getItem = subMilestone.children.filter(e => e.data.pName === originalName);
     while (getItem.length) {
       counter++;
       originalName = milestoneTask.itemType + ' ' + counter;
-      getItem = subMilestone.children.filter(e => e.data.pName === originalName)
+      getItem = subMilestone.children.filter(e => e.data.pName === originalName);
     }
-   
+
     return originalName;
   }
   // *************************************************************************************************
@@ -3123,6 +3130,17 @@ export class TimelineComponent implements OnInit, OnDestroy {
 
   setMilestoneForAddUpdate(sentMilestone, bAdd) {
     let currentMilestone = sentMilestone.data;
+    // let newCurrentMilestoneName = null;
+    // if (currentMilestone.isCurrent && currentMilestone.status === 'Deleted') {
+    //   const currentMilestoneName = currentMilestone.pName.indexOf(' (') ? currentMilestone.pName.split(' (')[0] : currentMilestone.pName;
+    //   const newCurrentMilestoneIndex = this.oProjectDetails.allOldMilestones.findIndex(t => t === currentMilestoneName);
+    //   newCurrentMilestoneName = newCurrentMilestoneIndex > 0 ? this.oProjectDetails.allOldMilestones[newCurrentMilestoneIndex - 1] : '';
+    //   const newCurrentMilestone = this.milestoneData.find((obj) => {
+    //     return obj.data.pName === newCurrentMilestoneName;
+    //   });
+    //   newCurrentMilestone.data.isCurrent = true;
+    //   newCurrentMilestone.data.pName = newCurrentMilestone.data.pName + ' (Current)';
+    // }
     let url = '';
     let data = {};
     currentMilestone.submilestone = this.getSubMilestoneStatus(sentMilestone, '').join(';#');
@@ -3130,7 +3148,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
     const milestoneEndDate = new Date(currentMilestone.pEnd);
     currentMilestone.tatBusinessDays = this.commonService.calcBusinessDays(milestoneStartDate, milestoneEndDate);
     if (!bAdd) {
-      const updateData = {
+      let updateData: any = {
         __metadata: { type: 'SP.Data.SchedulesListItem' },
         Actual_x0020_Start_x0020_Date: milestoneStartDate,
         Actual_x0020_End_x0020_Date: milestoneEndDate,
@@ -3139,7 +3157,7 @@ export class TimelineComponent implements OnInit, OnDestroy {
         ExpectedTime: '' + currentMilestone.budgetHours,
         Status: currentMilestone.status === 'Not Saved' ? currentMilestone.isCurrent ? 'Not Started' : 'Not Confirmed' : currentMilestone.status,
         TATBusinessDays: currentMilestone.tatBusinessDays,
-        SubMilestones: currentMilestone.submilestone
+        SubMilestones: currentMilestone.submilestone,
       };
       url = this.spServices.getItemURL(this.constants.listNames.Schedules.name, +currentMilestone.pID);
       data = updateData;
@@ -3174,7 +3192,12 @@ export class TimelineComponent implements OnInit, OnDestroy {
   async executeBulkRequests(currentMilestoneUpdated, restructureMilstoneStr, updatedResources, batchUrl) {
     let updateProjectRes = {};
     const projectID = this.oProjectDetails.projectID;
-    const currentMilestone = this.oProjectDetails.currentMilestone;
+    let currentMilestone = this.oProjectDetails.currentMilestone;
+    const isCurrentMilestoneDeleted = this.oProjectDetails.allMilestones.find(m => m === currentMilestone) ? false : true;
+    if (isCurrentMilestoneDeleted) {
+      const newCurrentMilestoneIndex = this.oProjectDetails.allOldMilestones.findIndex(t => t === currentMilestone);
+      currentMilestone = newCurrentMilestoneIndex > 0 ? this.oProjectDetails.allOldMilestones[newCurrentMilestoneIndex - 1] : '';
+    }
     updateProjectRes = {
       __metadata: { type: 'SP.Data.ProjectInformationListItem' },
       WritersId: { results: updatedResources.writer.results },
