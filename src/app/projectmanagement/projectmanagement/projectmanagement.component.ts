@@ -378,6 +378,8 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
     } else {
       this.validateAllFormFields(this.addSowForm);
     }
+
+    this.selectedFile = null;
   }
   /**
    * This method is used to set the field properties.
@@ -937,7 +939,7 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
         listName: ''
       };
 
-       
+
       // Assign form value to global variable
       this.pmObject.addSOW.Addendum.TotalBudget = this.addAdditionalBudgetForm.value.addTotal;
       this.pmObject.addSOW.Addendum.NetBudget = this.addAdditionalBudgetForm.value.addNet;
@@ -1000,7 +1002,16 @@ export class ProjectmanagementComponent implements OnInit, OnDestroy {
       }
     } else {
       this.validateAllFormFields(this.addAdditionalBudgetForm);
+      if (!this.selectedFile) {
+        this.messageService.add({
+          key: 'custom', severity: 'error',
+          summary: 'Error Message', detail: 'Please select SOW document.'
+        });
+        return false;
+      }
+
     }
+    this.selectedFile = null;
   }
   /**
    * This method is used to get the edit SOWObj value based on selected sow.
